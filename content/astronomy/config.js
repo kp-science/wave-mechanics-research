@@ -31,7 +31,7 @@ window.KP_CONFIG = {
   numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
 
   // ─── สถานะการเปิดสอน ───
-  status:       'open', // ✅ deploy แล้ว · พร้อมรับ roster
+  status:       'coming-soon', // 🧪 TEST auto-lock — จะเปลี่ยนกลับ 'open' หลังเทส
   numClasses:   3,
   classes:      ['ม.5/2', 'ม.5/3', 'ม.5/4'] // TODO: ปรับชื่อห้องตามจริงภายหลัง
 };
