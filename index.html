@@ -267,6 +267,11 @@
   .course-card.locked:hover{border-color:rgba(244,63,94,.35)}
   .course-card.locked .course-title{color:var(--fg-dim)}
   .course-card.locked .course-desc{color:var(--fg-muted)}
+  /* ป้องกันคลิกเมื่อ <a> ถูก locked (auto-lock JS อัปเดต class เอง) */
+  a.course-card.locked{pointer-events:none}
+  a.course-card.locked .course-cta{display:none}
+  /* Teacher link ที่วิชาถูก lock — ซ่อน */
+  .teacher-link.hidden{display:none}
 
   .badge-locked{
     background:rgba(244,63,94,.12);color:#fda4af;
@@ -467,8 +472,8 @@
 
     <div class="course-grid">
 
-      <!-- ฟิสิกส์ 3 -->
-      <a class="course-card active" href="KP-Classroom.html?course=physics3">
+      <!-- ฟิสิกส์ 3 — status อ่านจาก content/physics3/config.js (auto-lock) -->
+      <a class="course-card active" data-course="physics3" href="KP-Classroom.html?course=physics3">
         <span class="course-badge badge-open">● LIVE · เปิดเรียน</span>
         <div class="course-icon-wrap">🌊</div>
         <div class="course-title">ฟิสิกส์ 3</div>
@@ -482,8 +487,8 @@
         <span class="course-cta">เข้าห้องเรียน</span>
       </a>
 
-      <!-- ดาราศาสตร์ — active หลัง deploy Apps Script แล้ว -->
-      <a class="course-card active" href="KP-Classroom.html?course=astronomy">
+      <!-- ดาราศาสตร์ — status อ่านจาก content/astronomy/config.js (auto-lock) -->
+      <a class="course-card active" data-course="astronomy" href="KP-Classroom.html?course=astronomy">
         <span class="course-badge badge-open">● LIVE · เปิดเรียน</span>
         <div class="course-icon-wrap">🌌</div>
         <div class="course-title">ดาราศาสตร์</div>
@@ -501,10 +506,10 @@
     <!-- Teacher quick-links (per course) -->
     <div class="teacher-link-wrap">
       <span style="color:var(--fg-muted);font-size:12.5px;margin-right:6px">🔐 ครูเข้าระบบ:</span>
-      <a class="teacher-link" href="KP-Classroom.html?course=physics3#teacher">
+      <a class="teacher-link" data-teacher-course="physics3" href="KP-Classroom.html?course=physics3#teacher">
         🌊 <span>ฟิสิกส์ 3</span>
       </a>
-      <a class="teacher-link" href="KP-Classroom.html?course=astronomy#teacher">
+      <a class="teacher-link" data-teacher-course="astronomy" href="KP-Classroom.html?course=astronomy#teacher">
         🌌 <span>ดาราศาสตร์</span>
       </a>
     </div>
@@ -566,7 +571,66 @@
 </footer>
 
 <script>
-// Returning student: swap active course CTA to "กลับเข้าห้องเรียน"
+// ═══════════════════════════════════════════════════
+// Auto-lock: อ่าน status จาก content/{course}/config.js
+// เปลี่ยน status ใน config.js = landing card เปลี่ยนตาม
+// ═══════════════════════════════════════════════════
+async function fetchCourseStatus(courseId){
+  try {
+    const text = await fetch(`content/${courseId}/config.js?_=${Date.now()}`).then(r => r.text());
+    // regex match  status: 'open' / "coming-soon" ฯลฯ
+    const m = text.match(/status\s*:\s*['"]([\w-]+)['"]/);
+    return m ? m[1] : 'coming-soon';
+  } catch(e){
+    console.warn('fetch status fail for', courseId, e);
+    return null; // fetch ล้ม → คง state เดิม (hardcode)
+  }
+}
+
+function applyCourseStatus(card, status){
+  if (!status) return;
+  const badge = card.querySelector('.course-badge');
+  const cta   = card.querySelector('.course-cta');
+  const href  = card.getAttribute('href');
+
+  if (status === 'open'){
+    card.classList.remove('locked', 'coming');
+    card.classList.add('active');
+    if (badge){ badge.className = 'course-badge badge-open'; badge.textContent = '● LIVE · เปิดเรียน'; }
+    if (cta) cta.style.display = '';
+  } else if (status === 'coming-soon'){
+    card.classList.remove('active', 'coming');
+    card.classList.add('locked');
+    if (badge){ badge.className = 'course-badge badge-locked'; badge.textContent = '🔒 LOCKED · ครูกำลังเตรียม'; }
+    // href ไม่ลบเผื่อ user อยากเข้าดู · CSS pointer-events:none บล็อกแทน
+  } else if (status === 'closed'){
+    card.classList.remove('active', 'coming');
+    card.classList.add('locked');
+    if (badge){ badge.className = 'course-badge badge-locked'; badge.textContent = '🔒 CLOSED · ปิดเทอมแล้ว'; }
+  }
+}
+
+function applyTeacherLinkStatus(courseId, status){
+  const link = document.querySelector(`.teacher-link[data-teacher-course="${courseId}"]`);
+  if (!link) return;
+  // ซ่อน teacher link ถ้าวิชา locked (ครูเข้าไม่ได้อยู่ดี)
+  if (status !== 'open') link.classList.add('hidden');
+  else link.classList.remove('hidden');
+}
+
+(async function autoLock(){
+  const cards = document.querySelectorAll('.course-card[data-course]');
+  await Promise.all(Array.from(cards).map(async card => {
+    const id = card.dataset.course;
+    const status = await fetchCourseStatus(id);
+    if (status){
+      applyCourseStatus(card, status);
+      applyTeacherLinkStatus(id, status);
+    }
+  }));
+})();
+
+// Returning student: swap active course CTA
 (function(){
   if (localStorage.getItem('wave_student')){
     const cta = document.querySelector('.course-card.active .course-cta');
