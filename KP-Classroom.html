@@ -7,14 +7,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <!-- ═══════════════════════════════════════════════════════════════
-     Content Pack (subject-specific data) — ดู content/README.md
-     เปลี่ยนวิชา = แก้ไฟล์ใน content/ ไม่ต้องแตะ HTML นี้
+     Content Pack (subject-specific data)
+     รองรับ ?course=physics3 | astronomy  (default = physics3)
+     Content ต่อวิชาอยู่ใน content/{course}/ — ดู content/README.md
      ═══════════════════════════════════════════════════════════════ -->
-<script src="content/config.js"></script>
-<script src="content/plans.js"></script>
-<script src="content/tools.js"></script>
-<script src="content/media.js"></script>
-<script src="content/questions.js"></script>
+<script>
+  // อ่าน ?course= จาก URL · ถ้าไม่มี → default physics3
+  window.KP_COURSE = new URLSearchParams(location.search).get('course') || 'physics3';
+  const base = 'content/' + window.KP_COURSE;
+  document.write(
+    '<script src="'+base+'/config.js"><\/script>' +
+    '<script src="'+base+'/plans.js"><\/script>' +
+    '<script src="'+base+'/tools.js"><\/script>' +
+    '<script src="'+base+'/media.js"><\/script>' +
+    '<script src="'+base+'/questions.js"><\/script>'
+  );
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#e0f2ff,#f0f4f8);color:#1a202c;font-size:16px;line-height:1.55;min-height:100vh}
