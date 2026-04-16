@@ -55,39 +55,33 @@
   .section-title{font-size:22px;font-weight:700;color:var(--blue-900);margin:36px 0 20px;display:flex;align-items:center;gap:10px}
   .section-title::before{content:'';width:4px;height:24px;background:linear-gradient(to bottom,var(--blue-700),var(--teal));border-radius:2px}
 
-  /* ─── Lessons (Accordion) ─── */
-  .lessons{margin-bottom:48px}
-  .lesson{background:#fff;border-radius:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(13,42,92,.06);overflow:hidden;transition:box-shadow .2s}
-  .lesson:hover{box-shadow:0 6px 20px rgba(13,42,92,.1)}
-  .lesson-head{width:100%;padding:18px 22px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;font-family:inherit;color:inherit;text-align:left;transition:background .15s}
-  .lesson-head:hover{background:#f8fafc}
-  .lesson-head:disabled{cursor:not-allowed;opacity:.55}
-  .lesson-no{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:var(--blue-100);color:var(--blue-700);font-weight:700;border-radius:10px;flex-shrink:0;font-size:15px}
-  .lesson-title{flex:1;font-weight:600;color:var(--blue-900);font-size:16px}
-  .lesson-status{font-size:13px;padding:4px 11px;border-radius:12px;font-weight:600;white-space:nowrap}
-  .lesson-status.ready{background:#e8f5e9;color:#2e7d32}
-  .lesson-status.progress{background:#fff3e0;color:#e65100}
-  .lesson-status.coming{background:#eceff1;color:#546e7a}
-  .chev{font-size:12px;color:var(--gray-500);transition:transform .25s;margin-left:4px}
-  .lesson.open .chev{transform:rotate(180deg)}
-  .lesson-body{max-height:0;overflow:hidden;transition:max-height .3s ease-out}
-  .lesson.open .lesson-body{max-height:2000px}
-  .lesson-inner{padding:0 22px 22px 22px;border-top:1px solid #eef2f7}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:16px}
-  .card{display:block;padding:14px;background:#f8fafc;border-radius:10px;text-decoration:none;color:inherit;border:1px solid transparent;transition:all .18s}
-  .card:hover{background:#fff;border-color:var(--blue-100);box-shadow:0 4px 12px rgba(13,42,92,.08);transform:translateY(-2px)}
-  .card-icon{font-size:24px;margin-bottom:6px}
-  .card-name{font-weight:600;font-size:14px;color:var(--blue-900);margin-bottom:4px;line-height:1.4}
-  .card-desc{font-size:12px;color:var(--gray-500);line-height:1.5}
-  .card-tag{display:inline-block;margin-top:8px;padding:2px 8px;background:var(--blue-100);color:var(--blue-700);border-radius:10px;font-size:11px;font-weight:600}
-  .tag-sim{background:#e1f5fe;color:#0277bd}
-  .tag-ws{background:#fff9c4;color:#f57f17}
-  .tag-tool{background:#f3e5f5;color:#6a1b9a}
-  .tag-info{background:#e8f5e9;color:#2e7d32}
-  .tag-hub{background:#ffebee;color:#c62828}
+  /* ─── Course Cards ─── */
+  .courses{margin-bottom:48px}
+  .course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .course-card{position:relative;background:#fff;border-radius:16px;padding:24px 22px 22px;box-shadow:0 4px 16px rgba(13,42,92,.08);border:2px solid transparent;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;gap:10px;overflow:hidden;text-decoration:none;color:inherit}
+  .course-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue-700),var(--teal));opacity:.5}
+  .course-card.active::before{opacity:1;height:5px}
+  .course-card.active:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(13,42,92,.15);border-color:var(--blue-100)}
+  .course-card.coming{background:linear-gradient(135deg,#f8fafc,#eef2f7);cursor:default;opacity:.82}
+  .course-card.coming::before{background:linear-gradient(90deg,#94a3b8,#cbd5e1)}
+  .course-card.coming:hover{transform:none}
 
-  /* ─── Empty / Coming soon ─── */
-  .coming-msg{padding:20px 22px;color:var(--gray-500);font-size:14px;background:#f8fafc;border-top:1px solid #eef2f7;font-style:italic}
+  .course-badge{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px}
+  .badge-open{background:#e8f5e9;color:#2e7d32}
+  .badge-soon{background:#eceff1;color:#546e7a}
+
+  .course-icon{font-size:48px;line-height:1;margin-bottom:2px}
+  .course-title{font-size:22px;font-weight:800;color:var(--blue-900);letter-spacing:-.3px}
+  .course-card.coming .course-title{color:#475569}
+  .course-meta{font-size:13px;color:var(--gray-500);font-weight:500}
+  .course-desc{font-size:14px;color:var(--gray-700);line-height:1.55;flex:1;margin-top:4px}
+  .course-card.coming .course-desc{color:#64748b}
+
+  .course-stats{display:flex;gap:14px;padding:10px 0 4px;border-top:1px dashed #e0e7f0;margin-top:8px}
+  .course-stats span{font-size:12px;color:var(--gray-500);font-weight:600}
+
+  .course-cta{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:10px 18px;background:var(--blue-700);color:#fff;border-radius:10px;font-weight:700;font-size:14px;align-self:flex-start;transition:background .2s,transform .2s}
+  .course-card.active:hover .course-cta{background:var(--blue-900);transform:translateX(3px)}
 
   /* ─── About ─── */
   .about{background:linear-gradient(135deg,#fff,#f8fafc);border-radius:16px;padding:28px 32px;margin-bottom:48px;border:1px solid #e0e7f0}
@@ -107,15 +101,12 @@
     .role-card{padding:24px 20px}
     .role-icon{font-size:44px}
     .role-card h2{font-size:20px}
-    .lesson-head{padding:14px 16px;gap:10px;flex-wrap:wrap}
-    .lesson-no{width:36px;height:36px;font-size:14px}
-    .lesson-title{font-size:15px}
-    .lesson-status{font-size:11px;padding:3px 9px}
-    .lesson-inner{padding:0 16px 16px}
-    .cards{grid-template-columns:1fr;gap:10px}
+    .course-grid{grid-template-columns:1fr;gap:14px}
+    .course-card{padding:20px 18px}
+    .course-icon{font-size:42px}
+    .course-title{font-size:20px}
+    .about{padding:22px 20px}
   }
-
-  .nohits{text-align:center;padding:40px 20px;color:var(--gray-500);font-size:14px;display:none}
 </style>
 </head>
 <body>
@@ -155,226 +146,53 @@
     </a>
   </section>
 
-  <!-- ═════════ SEARCH ═════════ -->
-  <div class="search-wrap">
-    <input id="searchInput" class="search-input" placeholder="🔍 ค้นหาสื่อ/ใบงาน เช่น POE, Four-tier, simulation, infographic..." oninput="filterCards()">
-  </div>
+  <!-- ═════════ COURSES ═════════ -->
+  <section class="courses">
+    <h2 class="section-title">📚 คอสออนไลน์</h2>
+    <div class="course-grid">
 
-  <!-- ═════════ LESSONS ═════════ -->
-  <section class="lessons">
-    <h2 class="section-title">📚 บทเรียน · 10 บท</h2>
+      <!-- คอสที่เปิดสอน: คลื่นกล -->
+      <a class="course-card active" href="KP-Classroom.html">
+        <div class="course-badge badge-open">🟢 เปิดสอน</div>
+        <div class="course-icon">🌊</div>
+        <div class="course-title">คลื่นกล</div>
+        <div class="course-meta">ฟิสิกส์ 3 (ว30203) · ม.5</div>
+        <div class="course-desc">การเกิดคลื่น · ชนิดคลื่น · v = fλ · สะท้อน/หักเห · แทรกสอด · คลื่นนิ่ง · เลี้ยวเบน</div>
+        <div class="course-stats">
+          <span>📖 10 บทเรียน</span>
+          <span>⏱ 20 คาบ</span>
+        </div>
+        <div class="course-cta">เริ่มเรียน →</div>
+      </a>
 
-    <!-- ─── บทที่ 1 ─── -->
-    <div class="lesson open" data-no="1">
-      <button class="lesson-head" onclick="toggleLesson(this)">
-        <span class="lesson-no">01</span>
-        <span class="lesson-title">การเกิดคลื่น ชนิดของคลื่น และส่วนประกอบ</span>
-        <span class="lesson-status ready">✅ พร้อมเรียน</span>
-        <span class="chev">▼</span>
-      </button>
-      <div class="lesson-body">
-        <div class="lesson-inner">
-        <div class="cards">
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/00_Index_สื่อและเครื่องมือแผน1.html" data-search="index แผน1 รวม">
-            <div class="card-icon">📋</div>
-            <div class="card-name">สารบัญบทที่ 1</div>
-            <div class="card-desc">รวมลิงก์สื่อทั้งหมดของบทนี้</div>
-            <span class="card-tag tag-hub">Index</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/แผน1_Infographic.html" data-search="infographic สรุป ภาพรวม">
-            <div class="card-icon">🖼️</div>
-            <div class="card-name">Infographic สรุปบท</div>
-            <div class="card-desc">ภาพรวม K/P/A · 5E+POE · การประเมิน</div>
-            <span class="card-tag tag-info">สรุป</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/wave-types.html" data-search="wave types ชนิดคลื่น ตามขวาง ตามยาว transverse longitudinal simulation">
-            <div class="card-icon">🌊</div>
-            <div class="card-name">Simulation: ชนิดของคลื่น</div>
-            <div class="card-desc">Interactive เปรียบเทียบคลื่นน้ำ/เสียง/เชือก</div>
-            <span class="card-tag tag-sim">Simulation</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/wave-components.html" data-search="wave components ส่วนประกอบ amplitude wavelength frequency">
-            <div class="card-icon">📐</div>
-            <div class="card-name">Simulation: ส่วนประกอบของคลื่น</div>
-            <div class="card-desc">A/λ/T/f/v/φ + POE · preset ตัวกลาง 3 แบบ</div>
-            <span class="card-tag tag-sim">Simulation</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/wave-poe-lab.html" data-search="poe lab ทดลอง predict observe explain">
-            <div class="card-icon">🔬</div>
-            <div class="card-name">POE Lab · คลื่นเสียง</div>
-            <div class="card-desc">ทดลอง Predict-Observe-Explain คลื่นเสียง</div>
-            <span class="card-tag tag-sim">Virtual Lab</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ01_ConceptCartoon_ของลอยในทะเล.html" data-search="concept cartoon ของลอย ทะเล engage">
-            <div class="card-icon">💬</div>
-            <div class="card-name">Concept Cartoon: ของลอยในทะเล</div>
-            <div class="card-desc">กระตุ้นคิด 3 ตัวละคร → POE-P</div>
-            <span class="card-tag tag-ws">กิจกรรม</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ02_POE-01_ใบบันทึกPOE.html" data-search="poe บันทึก predict observe explain">
-            <div class="card-icon">📝</div>
-            <div class="card-name">ใบบันทึก POE-01</div>
-            <div class="card-desc">Predict · Observe · Explain (ใช้ E1-E3)</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ03_MatrixTable_ใบกิจกรรม1.1.html" data-search="matrix table เปรียบเทียบ ตามขวาง ตามยาว">
-            <div class="card-icon">📊</div>
-            <div class="card-name">ใบงาน 1.1: Matrix Table</div>
-            <div class="card-desc">เปรียบเทียบคลื่นตามขวาง vs ตามยาว</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ04_SpotTheError_ใบกิจกรรม1.2.html" data-search="spot the error ข้อผิดพลาด misconception">
-            <div class="card-icon">🔍</div>
-            <div class="card-name">ใบงาน 1.2: Spot the Error</div>
-            <div class="card-desc">หาข้อผิดพลาด 4 ข้อ (ชน Misconception)</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ05_F1_Fourtier_PrePost.html" data-search="four-tier formative pre post f1 มโนทัศน์">
-            <div class="card-icon">📝</div>
-            <div class="card-name">F1 Four-tier Pre/Post</div>
-            <div class="card-desc">ข้อสอบมโนทัศน์ 3 ข้อ · คำนวณ Normalized gain</div>
-            <span class="card-tag tag-tool">ประเมิน</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html" data-search="traffic light สัญญาณไฟ ประเมินตนเอง">
-            <div class="card-icon">🚦</div>
-            <div class="card-name">TL-01 · Traffic Light</div>
-            <div class="card-desc">บัตรประเมินตนเอง 🟢🟡🔴</div>
-            <span class="card-tag tag-tool">ประเมิน</span>
-          </a>
-          <a class="card" href="แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html" data-search="metacognitive journal 3-2-1 สะท้อนคิด">
-            <div class="card-icon">📓</div>
-            <div class="card-name">MJ-01 · Journal 3-2-1</div>
-            <div class="card-desc">3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม</div>
-            <span class="card-tag tag-tool">สะท้อนคิด</span>
-          </a>
-        </div>
-        </div>
+      <!-- Placeholder: ดาราศาสตร์ -->
+      <div class="course-card coming">
+        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
+        <div class="course-icon">🌌</div>
+        <div class="course-title">ดาราศาสตร์</div>
+        <div class="course-meta">ฟิสิกส์ดาราศาสตร์ · ม.5-6</div>
+        <div class="course-desc">ระบบสุริยะ · ดาวฤกษ์ · กาแล็กซี · เอกภพวิทยา</div>
       </div>
-    </div>
 
-    <!-- ─── บทที่ 2 ─── -->
-    <div class="lesson" data-no="2">
-      <button class="lesson-head" onclick="toggleLesson(this)">
-        <span class="lesson-no">02</span>
-        <span class="lesson-title">ความเร็วคลื่น v = fλ</span>
-        <span class="lesson-status ready">✅ พร้อมเรียน</span>
-        <span class="chev">▼</span>
-      </button>
-      <div class="lesson-body">
-        <div class="lesson-inner">
-        <div class="cards">
-          <a class="card" href="แผน02_ความเร็วคลื่น/00_Index_สื่อและเครื่องมือแผน2.html" data-search="index แผน2 รวม">
-            <div class="card-icon">📋</div>
-            <div class="card-name">สารบัญบทที่ 2</div>
-            <div class="card-desc">รวมลิงก์สื่อทั้งหมดของบทนี้</div>
-            <span class="card-tag tag-hub">Index</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/แผน2_Infographic.html" data-search="infographic สรุป v=fλ">
-            <div class="card-icon">🖼️</div>
-            <div class="card-name">Infographic สรุปบท</div>
-            <div class="card-desc">ภาพรวม v=fλ · K/P/A · 5E+POE</div>
-            <span class="card-tag tag-info">สรุป</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/wave-on-a-string.html" data-search="wave on a string เชือก ความเร็ว แรงตึง simulation">
-            <div class="card-icon">🎸</div>
-            <div class="card-name">Lab 38: Wave on a String</div>
-            <div class="card-desc">วัดความเร็วคลื่นในเชือก 4 วิธี · export CSV</div>
-            <span class="card-tag tag-sim">Virtual Lab</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/สื่อ01_ConceptCartoon_เชือกกระโดดสามพี่น้อง.html" data-search="concept cartoon เชือกกระโดด v=fλ">
-            <div class="card-icon">💬</div>
-            <div class="card-name">Concept Cartoon: เชือกกระโดด 3 พี่น้อง</div>
-            <div class="card-desc">ใครส่งคลื่นเร็วกว่า? f, T, A หรือ μ?</div>
-            <span class="card-tag tag-ws">กิจกรรม</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/สื่อ02_POE-01_ใบบันทึกPOE.html" data-search="poe บันทึก แผน2">
-            <div class="card-icon">📝</div>
-            <div class="card-name">ใบบันทึก POE-01</div>
-            <div class="card-desc">Predict-Observe-Explain v=fλ</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/สื่อ03_โจทย์คำนวณ_ใบกิจกรรม2.1.html" data-search="โจทย์ คำนวณ v=fλ ใบกิจกรรม 2.1">
-            <div class="card-icon">🧮</div>
-            <div class="card-name">ใบงาน 2.1: โจทย์คำนวณ v=fλ</div>
-            <div class="card-desc">โจทย์ 5 ข้อ สสวท. → สอวน./PAT2</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/สื่อ04_SpotTheError_ใบกิจกรรม2.2.html" data-search="spot the error ข้อผิดพลาด แผน2">
-            <div class="card-icon">🔍</div>
-            <div class="card-name">ใบงาน 2.2: Spot the Error</div>
-            <div class="card-desc">หาข้อผิดพลาด 3 ข้อ (M2.1, M2.4)</div>
-            <span class="card-tag tag-ws">ใบงาน</span>
-          </a>
-          <a class="card" href="แผน02_ความเร็วคลื่น/สื่อ05_F2_Fourtier_PrePost.html" data-search="four-tier f2 pre post มโนทัศน์ v=fλ">
-            <div class="card-icon">📝</div>
-            <div class="card-name">F2 Four-tier Pre/Post</div>
-            <div class="card-desc">ข้อสอบมโนทัศน์ v=fλ 3 ข้อ</div>
-            <span class="card-tag tag-tool">ประเมิน</span>
-          </a>
-        </div>
-        </div>
+      <!-- Placeholder: คลื่นแม่เหล็กไฟฟ้า -->
+      <div class="course-card coming">
+        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
+        <div class="course-icon">⚡</div>
+        <div class="course-title">คลื่นแม่เหล็กไฟฟ้า</div>
+        <div class="course-meta">ฟิสิกส์ 4 · ม.6</div>
+        <div class="course-desc">สนามไฟฟ้า · สนามแม่เหล็ก · แสง · สเปกตรัม EM</div>
       </div>
-    </div>
 
-    <!-- ─── บทที่ 3-10 (ยังไม่มีเนื้อหา) ─── -->
-    <div class="lesson" data-no="3">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">03</span>
-        <span class="lesson-title">การซ้อนทับและหลักของฮอยเกนส์</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="4">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">04</span>
-        <span class="lesson-title">การสะท้อนของคลื่น</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="5">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">05</span>
-        <span class="lesson-title">การหักเหของคลื่น</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="6">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">06</span>
-        <span class="lesson-title">การแทรกสอดของคลื่น</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="7">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">07</span>
-        <span class="lesson-title">คลื่นนิ่ง</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="8">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">08</span>
-        <span class="lesson-title">การเลี้ยวเบนของคลื่น</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="9">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">09</span>
-        <span class="lesson-title">บูรณาการคลื่นกล</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
-    <div class="lesson" data-no="10">
-      <button class="lesson-head" disabled>
-        <span class="lesson-no">10</span>
-        <span class="lesson-title">ทบทวน + ข้อสอบ Post-test</span>
-        <span class="lesson-status coming">⏳ กำลังจัดทำ</span>
-      </button>
-    </div>
+      <!-- Placeholder: ฟิสิกส์อะตอม -->
+      <div class="course-card coming">
+        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
+        <div class="course-icon">⚛️</div>
+        <div class="course-title">ฟิสิกส์อะตอม</div>
+        <div class="course-meta">ฟิสิกส์แนวหน้า · ม.6</div>
+        <div class="course-desc">โฟตอน · ระดับพลังงาน · กัมมันตรังสี · ฟิสิกส์ควอนตัม</div>
+      </div>
 
-    <div class="nohits" id="nohits">ไม่พบสื่อที่ตรงกับคำค้น 😕</div>
+    </div>
   </section>
 
   <!-- ═════════ About ═════════ -->
@@ -392,65 +210,11 @@
 </footer>
 
 <script>
-// ─── Accordion ───
-function toggleLesson(head){
-  const lesson = head.closest('.lesson');
-  if (head.disabled) return;
-  lesson.classList.toggle('open');
-}
-
-// ─── Search (ข้าม lesson ที่ disabled) ───
-function filterCards(){
-  const q = document.getElementById('searchInput').value.toLowerCase().trim();
-  const lessons = document.querySelectorAll('.lesson');
-  const nohits = document.getElementById('nohits');
-  let anyVisible = false;
-
-  lessons.forEach(lesson => {
-    const cards = lesson.querySelectorAll('.card');
-    if (cards.length === 0){
-      // lesson ว่าง (coming soon) — ซ่อนตอนค้นหา
-      lesson.style.display = q ? 'none' : '';
-      return;
-    }
-    let visibleCount = 0;
-    cards.forEach(card => {
-      const text = (card.dataset.search || '') + ' ' + card.textContent;
-      const match = !q || text.toLowerCase().includes(q);
-      card.style.display = match ? '' : 'none';
-      if (match) visibleCount++;
-    });
-
-    if (visibleCount === 0){
-      lesson.style.display = 'none';
-    } else {
-      lesson.style.display = '';
-      lesson.classList.add('open'); // ขยาย lesson ถ้ามี match
-      anyVisible = true;
-    }
-  });
-
-  // ถ้าไม่มีคำค้น → คืน state เดิม (เปิดบทที่ 1)
-  if (!q){
-    lessons.forEach((l, i) => {
-      l.classList.toggle('open', i === 0);
-    });
-    nohits.style.display = 'none';
-  } else {
-    nohits.style.display = anyVisible ? 'none' : 'block';
-  }
-}
-
-// ─── Restore last session (ถ้ามี) ───
+// ─── Restore last session: ถ้ามี → เปลี่ยนปุ่มนักเรียนเป็น "กลับเข้าห้องเรียน" ───
 (function(){
-  const hasStudent = localStorage.getItem('wave_student');
-  if (hasStudent){
-    // ถ้ามี session เก่า → แสดงปุ่ม "กลับเข้าห้องเรียน" เด่น
-    const card = document.querySelector('.role-card.student');
-    if (card){
-      const btn = card.querySelector('.role-btn');
-      if (btn) btn.textContent = '🔄 กลับเข้าห้องเรียน →';
-    }
+  if (localStorage.getItem('wave_student')){
+    const btn = document.querySelector('.role-card.student .role-btn');
+    if (btn) btn.textContent = '🔄 กลับเข้าห้องเรียน →';
   }
 })();
 </script>
