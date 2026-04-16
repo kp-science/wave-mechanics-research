@@ -29,5 +29,11 @@ window.KP_CONFIG = {
   teacherPass:  'komanepapato2569', // จะเปลี่ยนเมื่อ deploy Apps Script ใหม่
 
   // ─── Scope ───
-  numPlans:     0 // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
+  numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
+
+  // ─── สถานะการเปิดสอน (ใช้ lock การ์ดใน landing) ───
+  // 'open' = เปิดให้นักเรียน login · 'coming-soon' = lock · 'closed' = ปิดเทอม
+  status:       'coming-soon', // เปลี่ยนเป็น 'open' เมื่อ: (1) deploy Apps Script (2) upload roster (3) มี content
+  numClasses:   3,
+  classes:      ['ม.5/2', 'ม.5/3', 'ม.5/4'] // TODO: ปรับชื่อห้องตามจริง
 };

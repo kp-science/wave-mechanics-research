@@ -175,76 +175,6 @@
   .container{max-width:1200px;margin:0 auto;padding:0 24px}
   main{padding-bottom:100px}
 
-  /* ═══════════ ROLE CARDS ═══════════ */
-  .roles{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-    gap:20px;margin-top:-60px;margin-bottom:80px;
-  }
-  .role-card{
-    position:relative;
-    background:linear-gradient(135deg,rgba(30,33,74,.6),rgba(12,14,39,.6));
-    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-    border:1px solid var(--glass-border);
-    border-radius:24px;padding:36px 32px;
-    text-decoration:none;color:inherit;
-    display:flex;flex-direction:column;gap:14px;
-    transition:all .4s cubic-bezier(.2,.8,.3,1);
-    overflow:hidden;
-  }
-  /* Aurora glow ring */
-  .role-card::before{
-    content:'';position:absolute;inset:-1px;border-radius:24px;
-    padding:1.5px;background:var(--grad-student);
-    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    opacity:0;transition:opacity .35s;pointer-events:none;
-  }
-  .role-card.teacher::before{background:var(--grad-teacher)}
-  .role-card:hover{transform:translateY(-6px);border-color:var(--glass-border-hover);box-shadow:0 30px 60px -12px rgba(168,85,247,.35)}
-  .role-card.teacher:hover{box-shadow:0 30px 60px -12px rgba(244,63,94,.35)}
-  .role-card:hover::before{opacity:1}
-
-  /* Background aurora on hover */
-  .role-card::after{
-    content:'';position:absolute;top:-40%;right:-40%;
-    width:300px;height:300px;border-radius:50%;
-    background:radial-gradient(circle,rgba(168,85,247,.25),transparent 65%);
-    opacity:0;transition:opacity .4s;pointer-events:none;
-  }
-  .role-card.teacher::after{background:radial-gradient(circle,rgba(244,63,94,.25),transparent 65%)}
-  .role-card:hover::after{opacity:1}
-
-  .role-icon-wrap{
-    width:62px;height:62px;border-radius:18px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:32px;
-    background:var(--grad-student);
-    box-shadow:0 8px 32px rgba(34,211,238,.3),0 0 0 1px rgba(255,255,255,.1) inset;
-    position:relative;
-  }
-  .role-card.teacher .role-icon-wrap{
-    background:var(--grad-teacher);
-    box-shadow:0 8px 32px rgba(244,63,94,.3),0 0 0 1px rgba(255,255,255,.1) inset;
-  }
-
-  .role-card h2{font-size:26px;font-weight:700;color:var(--fg);letter-spacing:-.5px;font-family:'Space Grotesk',sans-serif}
-  .role-card p{color:var(--fg-dim);font-size:15px;flex:1;line-height:1.65}
-
-  .role-btn{
-    display:inline-flex;align-items:center;gap:8px;
-    background:rgba(255,255,255,.08);
-    border:1px solid var(--glass-border);
-    color:var(--fg);
-    padding:13px 24px;border-radius:12px;
-    font-weight:600;font-size:14.5px;
-    align-self:flex-start;
-    transition:all .3s;
-    font-family:'Space Grotesk',sans-serif;
-    letter-spacing:.2px;
-  }
-  .role-card:hover .role-btn{background:var(--grad-student);border-color:transparent;transform:translateX(4px);box-shadow:0 10px 28px rgba(34,211,238,.35)}
-  .role-card.teacher:hover .role-btn{background:var(--grad-teacher);box-shadow:0 10px 28px rgba(244,63,94,.35)}
-
   /* ═══════════ SECTION TITLE ═══════════ */
   .section-title{
     font-family:'Space Grotesk',sans-serif;
@@ -253,10 +183,39 @@
     letter-spacing:-1.2px;margin-bottom:10px;
   }
   .section-title .accent{background:var(--grad-course);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .section-title .accent-alt{background:linear-gradient(135deg,#fbbf24 0%,#ec4899 50%,#a855f7 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+  /* Divider between sections */
+  .courses.online{position:relative;padding-top:40px}
+  .courses.online::before{
+    content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+    width:120px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--violet),transparent);
+  }
+
+  /* Teacher quick-link */
+  .teacher-link-wrap{
+    text-align:center;margin-top:28px;margin-bottom:8px;
+  }
+  .teacher-link{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:10px 22px;
+    background:var(--glass);backdrop-filter:blur(12px);
+    border:1px solid var(--glass-border);
+    color:var(--fg-dim);text-decoration:none;
+    border-radius:100px;font-size:13.5px;font-weight:500;
+    font-family:'Space Grotesk',sans-serif;letter-spacing:.3px;
+    transition:all .25s;
+  }
+  .teacher-link:hover{
+    border-color:rgba(251,191,36,.4);color:var(--amber);
+    background:rgba(251,191,36,.05);
+  }
   .section-desc{color:var(--fg-dim);font-size:16px;margin-bottom:32px;max-width:600px}
 
   /* ═══════════ COURSES ═══════════ */
-  .courses{margin-bottom:80px}
+  .courses{margin-bottom:64px}
+  .courses:first-of-type{margin-top:-80px;position:relative;z-index:5} /* ซ้อน hero */
   .course-grid{
     display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;
   }
@@ -294,6 +253,24 @@
     opacity:.72;cursor:default;
   }
   .course-card.coming:hover{opacity:.85;border-color:var(--glass-border-hover)}
+
+  /* Locked course (ครูยังไม่เปิดระบบ) */
+  .course-card.locked{
+    background:linear-gradient(135deg,rgba(30,20,40,.55),rgba(15,10,25,.55));
+    cursor:not-allowed;position:relative;
+  }
+  .course-card.locked::after{
+    content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    font-size:80px;opacity:.08;pointer-events:none;filter:blur(1px);
+  }
+  .course-card.locked:hover{border-color:rgba(244,63,94,.35)}
+  .course-card.locked .course-title{color:var(--fg-dim)}
+  .course-card.locked .course-desc{color:var(--fg-muted)}
+
+  .badge-locked{
+    background:rgba(244,63,94,.12);color:#fda4af;
+    border:1px solid rgba(244,63,94,.25);
+  }
 
   .course-badge{
     display:inline-flex;align-items:center;gap:6px;
@@ -437,9 +414,9 @@
     .hero{padding:72px 16px 110px}
     .hero-avatar{width:104px;height:104px;margin-bottom:22px}
     .container{padding:0 16px}
-    .roles{gap:14px;margin-top:-40px;margin-bottom:56px}
-    .role-card{padding:30px 26px;border-radius:22px}
-    .role-card h2{font-size:22px}
+    .courses:first-of-type{margin-top:-40px}
+    .section-title{font-size:26px;margin-bottom:8px}
+    .teacher-link{font-size:12.5px;padding:9px 18px}
     .course-grid{gap:14px}
     .course-card{padding:24px 22px}
     .course-title{font-size:21px}
@@ -482,75 +459,83 @@
 <main>
 <div class="container">
 
-  <!-- ═════════ ROLE CARDS ═════════ -->
-  <section class="roles">
-    <a class="role-card student" href="KP-Classroom.html">
-      <div class="role-icon-wrap">👩‍🎓</div>
-      <h2>สำหรับนักเรียน</h2>
-      <p>ทำใบงาน บันทึก POE ทำข้อสอบ Four-tier และส่งงานออนไลน์ ที่เดียวจบ</p>
-      <span class="role-btn">🚀 เข้าห้องเรียน</span>
-    </a>
-    <a class="role-card teacher" href="KP-Classroom.html#teacher">
-      <div class="role-icon-wrap">👨‍🏫</div>
-      <h2>สำหรับครู</h2>
-      <p>Dashboard จัดการนักเรียน ดูข้อมูล real-time เปิด/ปิดบทเรียน ส่งฟีดแบ็ก</p>
-      <span class="role-btn">🔐 เข้าระบบครู</span>
-    </a>
-  </section>
-
-  <!-- ═════════ COURSES ═════════ -->
+  <!-- ═════════ SECTION: ห้องเรียนโรงเรียน ═════════ -->
   <section class="courses">
-    <h2 class="section-title">📚 <span class="accent">คอสออนไลน์</span></h2>
-    <p class="section-desc">เรียนฟิสิกส์ออนไลน์ผ่านสื่อ interactive · simulation · ใบงานดิจิทัล · ข้อสอบวัดมโนทัศน์</p>
+    <h2 class="section-title">📚 <span class="accent">สำหรับนักเรียน</span> · ห้องเรียน</h2>
+    <p class="section-desc">วิชาที่เปิดสอนในโรงเรียน · นักเรียนเข้าเรียนด้วย PIN ที่ครูแจก · ข้อมูลส่งตรงถึงครู</p>
 
     <div class="course-grid">
 
-      <!-- คอสที่เปิดสอน: ฟิสิกส์ 3 (เริ่มที่หน่วยคลื่น) -->
+      <!-- ฟิสิกส์ 3 -->
       <a class="course-card active" href="KP-Classroom.html?course=physics3">
-        <span class="course-badge badge-open">● LIVE · เปิดสอน</span>
+        <span class="course-badge badge-open">● LIVE · เปิดเรียน</span>
         <div class="course-icon-wrap">🌊</div>
         <div class="course-title">ฟิสิกส์ 3</div>
         <div class="course-meta">📘 ว30203 · ม.5 · เทอม 1/2569</div>
         <div class="course-desc">SHM · คลื่นกล · เสียง · แสง — เริ่มที่หน่วย <b>คลื่นกล</b> (10 แผน · 20 คาบ)</div>
         <div class="course-stats">
           <span>📖 4 หน่วย</span>
-          <span>🧪 5E+POE</span>
           <span>👥 1 ห้อง</span>
-        </div>
-        <span class="course-cta">เริ่มเรียนเลย</span>
-      </a>
-
-      <!-- คอสที่เปิดสอน: ดาราศาสตร์ -->
-      <a class="course-card active" href="KP-Classroom.html?course=astronomy">
-        <span class="course-badge badge-open">● LIVE · เปิดสอน</span>
-        <div class="course-icon-wrap">🌌</div>
-        <div class="course-title">ดาราศาสตร์</div>
-        <div class="course-meta">📘 ม.5 · เทอม 1/2569</div>
-        <div class="course-desc">ระบบสุริยะ · ดาวฤกษ์ · กาแล็กซี · เอกภพวิทยา (กำลังจัดทำ curriculum)</div>
-        <div class="course-stats">
-          <span>🚧 กำลังจัดทำ</span>
           <span>🧪 5E+POE</span>
-          <span>👥 3 ห้อง</span>
         </div>
         <span class="course-cta">เข้าห้องเรียน</span>
       </a>
 
-      <!-- Placeholder: คลื่นแม่เหล็กไฟฟ้า -->
-      <div class="course-card coming">
-        <span class="course-badge badge-soon">◌ SOON</span>
-        <div class="course-icon-wrap">⚡</div>
-        <div class="course-title">คลื่นแม่เหล็กไฟฟ้า</div>
-        <div class="course-meta">📘 ฟิสิกส์ 4 · ม.6</div>
-        <div class="course-desc">สนามไฟฟ้า · สนามแม่เหล็ก · แสง · สเปกตรัม EM</div>
+      <!-- ดาราศาสตร์ — LOCKED จนกว่าจะ deploy Apps Script + upload roster -->
+      <div class="course-card locked" title="ครูกำลังเตรียมระบบ · จะเปิดใช้เร็วๆ นี้">
+        <span class="course-badge badge-locked">🔒 LOCKED · ครูกำลังเตรียม</span>
+        <div class="course-icon-wrap">🌌</div>
+        <div class="course-title">ดาราศาสตร์</div>
+        <div class="course-meta">📘 ม.5 · เทอม 1/2569</div>
+        <div class="course-desc">ระบบสุริยะ · ดาวฤกษ์ · กาแล็กซี · เอกภพวิทยา</div>
+        <div class="course-stats">
+          <span>🚧 กำลังจัดทำ</span>
+          <span>👥 3 ห้อง</span>
+          <span>🧪 5E+POE</span>
+        </div>
       </div>
 
-      <!-- Placeholder: ฟิสิกส์อะตอม -->
+    </div>
+    <!-- Teacher quick-link -->
+    <div class="teacher-link-wrap">
+      <a class="teacher-link" href="KP-Classroom.html?course=physics3#teacher">
+        🔐 <span>เข้าสู่ระบบครู (Teacher Dashboard)</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═════════ SECTION: คอสออนไลน์ (self-enroll) ═════════ -->
+  <section class="courses online">
+    <h2 class="section-title">🎓 <span class="accent-alt">คอสออนไลน์</span> · สมัครเรียนได้ทุกคน</h2>
+    <p class="section-desc">เรียนฟรีออนไลน์ · ไม่จำกัดโรงเรียน · สมัครได้ด้วยตัวเอง <em>(ระบบเปิดสมัครเร็วๆ นี้)</em></p>
+
+    <div class="course-grid">
+
+      <!-- Placeholder: คลื่นกล -->
       <div class="course-card coming">
-        <span class="course-badge badge-soon">◌ SOON</span>
+        <span class="course-badge badge-soon">◌ เปิดสมัครเร็วๆ นี้</span>
+        <div class="course-icon-wrap">🌊</div>
+        <div class="course-title">คลื่นกล</div>
+        <div class="course-meta">🎓 คอสออนไลน์ · ฟรี</div>
+        <div class="course-desc">เรียนคลื่นกลแบบจัดเต็ม 10 บท · Simulation + ใบงาน + ประเมินตนเอง</div>
+      </div>
+
+      <!-- Placeholder: ดาราศาสตร์ -->
+      <div class="course-card coming">
+        <span class="course-badge badge-soon">◌ เปิดสมัครเร็วๆ นี้</span>
+        <div class="course-icon-wrap">🌌</div>
+        <div class="course-title">ดาราศาสตร์</div>
+        <div class="course-meta">🎓 คอสออนไลน์ · ฟรี</div>
+        <div class="course-desc">ระบบสุริยะ · ดาวฤกษ์ · กาแล็กซี · เอกภพวิทยา</div>
+      </div>
+
+      <!-- Placeholder: ฟิสิกส์แนวหน้า -->
+      <div class="course-card coming">
+        <span class="course-badge badge-soon">◌ เปิดสมัครเร็วๆ นี้</span>
         <div class="course-icon-wrap">⚛️</div>
-        <div class="course-title">ฟิสิกส์อะตอม</div>
-        <div class="course-meta">📘 ฟิสิกส์แนวหน้า · ม.6</div>
-        <div class="course-desc">โฟตอน · ระดับพลังงาน · กัมมันตรังสี · ฟิสิกส์ควอนตัม</div>
+        <div class="course-title">ฟิสิกส์แนวหน้า</div>
+        <div class="course-meta">🎓 คอสออนไลน์ · ฟรี</div>
+        <div class="course-desc">โฟตอน · ระดับพลังงาน · กัมมันตรังสี · ควอนตัม</div>
       </div>
 
     </div>
@@ -575,11 +560,11 @@
 </footer>
 
 <script>
-// Returning student: swap CTA
+// Returning student: swap active course CTA to "กลับเข้าห้องเรียน"
 (function(){
   if (localStorage.getItem('wave_student')){
-    const btn = document.querySelector('.role-card.student .role-btn');
-    if (btn) btn.textContent = '🔄 กลับเข้าห้องเรียน';
+    const cta = document.querySelector('.course-card.active .course-cta');
+    if (cta) cta.textContent = '🔄 กลับเข้าห้องเรียน';
   }
 })();
 </script>

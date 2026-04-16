@@ -28,5 +28,11 @@ window.KP_CONFIG = {
   teacherPass:  'komanepapato2569',
 
   // ─── Scope ───
-  numPlans:     10  // คลื่นกล 10 แผน · หน่วยอื่นจะเพิ่มภายหลัง
+  numPlans:     10,  // คลื่นกล 10 แผน · หน่วยอื่นจะเพิ่มภายหลัง
+
+  // ─── สถานะการเปิดสอน (ใช้ lock การ์ดใน landing) ───
+  // 'open' = เปิดให้นักเรียน login · 'coming-soon' = lock · 'closed' = ปิดเทอม
+  status:       'open',
+  numClasses:   1,
+  classes:      ['ม.5/1']
 };
