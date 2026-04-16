@@ -30,8 +30,10 @@ window.KP_CONFIG = {
   // ─── Scope ───
   numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
 
-  // ─── สถานะการเปิดสอน ───
-  status:       'coming-soon', // 🧪 TEST auto-lock — จะเปลี่ยนกลับ 'open' หลังเทส
+  // ─── สถานะการเปิดสอน (default ถ้า server ไม่ตอบ) ───
+  // จริงๆ ใช้ค่าจาก Apps Script Script Property (COURSE_STATUS) เป็นหลัก
+  // ค่านี้เป็น fallback เฉย
+  status:       'open',
   numClasses:   3,
   classes:      ['ม.5/2', 'ม.5/3', 'ม.5/4'] // TODO: ปรับชื่อห้องตามจริงภายหลัง
 };

@@ -572,19 +572,33 @@
 
 <script>
 // ═══════════════════════════════════════════════════
-// Auto-lock: อ่าน status จาก content/{course}/config.js
-// เปลี่ยน status ใน config.js = landing card เปลี่ยนตาม
+// Auto-lock (Phase 5)
+// 1. ลองถาม Apps Script (ครูเปิด/ปิดเองได้จาก Teacher Dashboard)
+// 2. Fallback อ่าน status จาก content/{course}/config.js
 // ═══════════════════════════════════════════════════
 async function fetchCourseStatus(courseId){
+  // 1) ลอง Apps Script ก่อน — ต้องได้ apiUrl จาก config.js
+  let configText = '';
   try {
-    const text = await fetch(`content/${courseId}/config.js?_=${Date.now()}`).then(r => r.text());
-    // regex match  status: 'open' / "coming-soon" ฯลฯ
-    const m = text.match(/status\s*:\s*['"]([\w-]+)['"]/);
-    return m ? m[1] : 'coming-soon';
-  } catch(e){
-    console.warn('fetch status fail for', courseId, e);
-    return null; // fetch ล้ม → คง state เดิม (hardcode)
+    configText = await fetch(`content/${courseId}/config.js?_=${Date.now()}`).then(r => r.text());
+  } catch(e){ /* ignore */ }
+
+  const apiMatch = configText.match(/apiUrl\s*:\s*['"]([^'"]+)['"]/);
+  if (apiMatch && apiMatch[1]){
+    try {
+      // Timeout 3 วิ เพื่อไม่ให้ landing หน่วง
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 3000);
+      const r = await fetch(apiMatch[1] + '?action=courseStatus', {signal: ctrl.signal})
+        .then(x => x.json()).catch(() => null);
+      clearTimeout(timer);
+      if (r && r.course_status) return r.course_status;
+    } catch(e){ /* fall through to config.js */ }
   }
+
+  // 2) Fallback — อ่าน status จาก config.js
+  const m = configText.match(/status\s*:\s*['"]([\w-]+)['"]/);
+  return m ? m[1] : 'coming-soon';
 }
 
 function applyCourseStatus(card, status){
