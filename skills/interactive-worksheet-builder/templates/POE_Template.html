@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>📝 POE — [ชื่อหัวข้อ]</title>
+<style>
+/* ============================================
+   POE Template — Interactive Worksheet Builder
+   แก้ไขตรง [PLACEHOLDER] ให้ตรงกับเนื้อหาของคุณ
+   ============================================ */
+
+*{box-sizing:border-box;margin:0}
+body{font-family:'Sarabun','Segoe UI',sans-serif;background:#f0f2f5;color:#1a1a2e;line-height:1.7;padding:16px}
+
+.worksheet{max-width:800px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(0,0,0,.08);padding:24px}
+.worksheet h2{text-align:center;font-size:20px;margin-bottom:16px;color:#0d47a1}
+
+.info{background:#e8f4fd;border:1.5px solid #90caf9;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:14px}
+
+.section{margin:16px 0;padding:14px;border-radius:10px}
+.section h3{font-size:16px;margin-bottom:10px}
+.section label{display:block;margin:4px 0;cursor:pointer}
+
+/* P O E สี */
+.predict{border-left:6px solid #1976d2;background:#e3f2fd}
+.predict h3{color:#0d47a1}
+.observe{border-left:6px solid #ef6c00;background:#fff3e0}
+.observe h3{color:#c05621}
+.explain{border-left:6px solid #2e7d32;background:#e8f5e9}
+.explain h3{color:#1b5e20}
+
+textarea{width:100%;border:1.5px solid #cbd5e1;border-radius:6px;padding:8px;font-family:inherit;font-size:14px;min-height:60px;resize:vertical}
+input[type=text]{border:1.5px solid #cbd5e1;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px}
+
+.matrix{width:100%;border-collapse:collapse;font-size:13px;margin:8px 0}
+.matrix th{background:#e3f2fd;color:#0d47a1;padding:6px;text-align:center;border:1px solid #90caf9;font-size:12px}
+.matrix td{padding:5px;border:1px solid #cbd5e1;text-align:center}
+.matrix input{width:100%;border:none;text-align:center;font-family:inherit;font-size:13px}
+
+.conf-row{margin-top:8px}
+.conf-row b{margin-right:8px}
+.conf-row label{margin-right:12px}
+
+.misconception-box{background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:16px}
+.misconception-box b{color:#c53030}
+
+.submit-bar{text-align:center;margin-top:20px}
+.btn-submit{background:#1565c0;color:#fff;border:none;padding:10px 28px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer}
+.btn-submit:hover{background:#0d47a1}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.status{margin-top:8px;font-size:14px}
+.status.ok{color:#2e7d32}
+.status.error{color:#c53030}
+
+.btn-print{background:#455a64;color:#fff;border:none;padding:8px 20px;border-radius:8px;font-size:14px;cursor:pointer;margin-top:8px}
+
+/* ===== Print CSS ===== */
+@media print{
+  body{background:#fff!important;color:#000!important;font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:0}
+  .worksheet{box-shadow:none!important;border:none!important;padding:0!important;max-width:100%}
+  .submit-bar,.btn-print,.no-print{display:none!important}
+  .print-header{display:flex!important;justify-content:space-between;border:2px solid #000;padding:6px 12px;margin-bottom:10px;font-size:11pt}
+  .section{border:1.5px solid #999!important;border-radius:6px!important;padding:10px!important;margin:8px 0!important;page-break-inside:avoid;background:#fff!important}
+  .section h3{font-size:13pt;color:#000!important;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:6px}
+  textarea{border:none!important;border-bottom:1.5px solid #000!important;min-height:60px!important;background:repeating-linear-gradient(transparent,transparent 22px,#ccc 22px,#ccc 23px)!important;font-size:11pt;resize:none!important;width:100%!important;padding:4px!important}
+  input[type=text]{border:none!important;border-bottom:1.5px solid #000!important;font-size:11pt;background:transparent!important}
+  input[type=radio],input[type=checkbox]{-webkit-appearance:auto!important;appearance:auto!important;width:14px;height:14px}
+  .matrix th,.matrix td{border:1px solid #666!important;padding:4px!important}
+  .matrix th{background:#e0e0e0!important}
+  .misconception-box{border:1.5px solid #c00!important;background:#fff!important}
+  @page{size:A4;margin:1.2cm 1.5cm}
+}
+.print-header{display:none}
+</style>
+</head>
+<body>
+
+<div class="worksheet">
+  <h2>📝 POE — [ชื่อหัวข้อ เช่น การซ้อนทับของคลื่น]</h2>
+
+  <!-- Print-only header -->
+  <div class="print-header">
+    <span><b>ชื่อ:</b> ............................. &nbsp; <b>เลขที่:</b> ...... &nbsp; <b>ห้อง:</b> ......</span>
+    <span><b>วิชา:</b> [วิชา] &nbsp; <b>หัวข้อ:</b> [หัวข้อ] &nbsp; <b>วันที่:</b> ......./......./.......</span>
+  </div>
+
+  <!-- Info -->
+  <div class="info">
+    <b>🎯 คำถามหลัก:</b> [เขียนคำถามหลักที่นักเรียนต้องตอบ]
+    <br><b>กิจกรรม:</b> [ระบุกิจกรรม/การทดลอง/simulation ที่ใช้]
+  </div>
+
+  <!-- ===== P: PREDICT ===== -->
+  <div class="section predict">
+    <h3>🔮 P · Predict (ทำนาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #1976d2;border-radius:12px;padding:2px 10px">ก่อนทดลอง · 3 นาที</span></h3>
+
+    <div style="margin:8px 0">ฉันคิดว่า [สถานการณ์] จะ:</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+      <label><input type="radio" name="pred" value="optA"> [ตัวเลือก A]</label>
+      <label><input type="radio" name="pred" value="optB"> [ตัวเลือก B]</label>
+      <label><input type="radio" name="pred" value="optC"> [ตัวเลือก C]</label>
+    </div>
+
+    <div style="margin-bottom:4px"><b>เหตุผลที่คิดเช่นนั้น:</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;padding-left:4px">
+      <label><input type="radio" name="reason_opt" value="R1"> [Misconception A — เขียนเหมือนนักเรียนพูด]</label>
+      <label><input type="radio" name="reason_opt" value="R2"> [Misconception B — ความเข้าใจผิดที่พบบ่อย]</label>
+      <label><input type="radio" name="reason_opt" value="R3"> [เหตุผลที่ถูกต้องตามหลักวิทยาศาสตร์]</label>
+      <label><input type="radio" name="reason_opt" value="R4"> [Misconception C — อีกแบบที่พบ]</label>
+      <label><input type="radio" name="reason_opt" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
+    </div>
+    <textarea id="reason_text" placeholder="ถ้าเลือก 'อื่นๆ' หรือต้องการอธิบายเพิ่มเติม พิมพ์ที่นี่..."></textarea>
+
+    <div class="conf-row">
+      <b>ความมั่นใจ:</b>
+      <label><input type="radio" name="p_conf" value="high"> มาก</label>
+      <label><input type="radio" name="p_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="p_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- ===== O: OBSERVE ===== -->
+  <div class="section observe">
+    <h3>👁 O · Observe (สังเกต) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #ef6c00;border-radius:12px;padding:2px 10px">[กิจกรรม] · [เวลา] · [รูปแบบ]</span></h3>
+
+    <!--
+      ===== ออกแบบส่วนนี้ตามกิจกรรมจริง =====
+      ตัวอย่าง: textarea, ตาราง measurement, 2-column card, radio สรุป
+      ดู references/poe-pattern.md สำหรับรูปแบบต่างๆ
+    -->
+
+    <label style="font-size:13px">สิ่งที่สังเกตได้จาก [กิจกรรม]:</label>
+    <textarea id="o_observe1" placeholder="บันทึกสิ่งที่เห็น/วัดได้..." style="min-height:80px"></textarea>
+
+    <!-- ตาราง measurement (ถ้ามี) -->
+    <!--
+    <table class="matrix">
+      <tr><th>ครั้งที่</th><th>[ตัวแปร 1]</th><th>[ตัวแปร 2]</th><th>[ผลลัพธ์]</th></tr>
+      <tr><td>1</td><td><input type="text" id="o_r1c1"></td><td><input type="text" id="o_r1c2"></td><td><input type="text" id="o_r1c3"></td></tr>
+      <tr><td>2</td><td><input type="text" id="o_r2c1"></td><td><input type="text" id="o_r2c2"></td><td><input type="text" id="o_r2c3"></td></tr>
+      <tr><td>3</td><td><input type="text" id="o_r3c1"></td><td><input type="text" id="o_r3c2"></td><td><input type="text" id="o_r3c3"></td></tr>
+    </table>
+    -->
+
+    <div style="background:#fff;border:1.5px solid #ef6c00;border-radius:8px;padding:10px;margin-top:10px;font-size:14px">
+      <b>สรุปจากการสังเกต:</b>
+      <textarea id="o_summary" placeholder="สรุปสิ่งที่สังเกตได้โดยรวม..." style="min-height:50px;margin-top:6px"></textarea>
+    </div>
+  </div>
+
+  <!-- ===== E: EXPLAIN ===== -->
+  <div class="section explain">
+    <h3>✍️ E · Explain (อธิบาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #2e7d32;border-radius:12px;padding:2px 10px">เชื่อม P↔O · 7 นาที</span></h3>
+
+    <label><b>1) เปรียบเทียบ P กับ O:</b> คำทำนายกับผลสังเกตตรงกันหรือไม่?</label>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 6px">
+      <label><input type="radio" name="e_po" value="match"> ตรงกัน</label>
+      <label><input type="radio" name="e_po" value="partial"> ตรงบางส่วน</label>
+      <label><input type="radio" name="e_po" value="diff"> ไม่ตรง</label>
+    </div>
+    <textarea id="e_match" placeholder="อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร..." style="min-height:55px"></textarea>
+
+    <div style="margin-top:10px"><b>2) จากผลการสังเกต ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding-left:4px">
+      <label><input type="checkbox" id="e_c1"> [หลักการที่แก้ Misconception A ← map กับ R1]</label>
+      <label><input type="checkbox" id="e_c2"> [หลักการที่แก้ Misconception B ← map กับ R2]</label>
+      <label><input type="checkbox" id="e_c3"> [หลักการที่ถูกต้อง ← map กับ R3]</label>
+      <label><input type="checkbox" id="e_c4"> [หลักการที่แก้ Misconception C ← map กับ R4]</label>
+    </div>
+
+    <label><b>3) สรุปหลักการด้วยภาษาของนักเรียนเอง:</b></label>
+    <textarea id="e_principle" placeholder="จากการทดลอง สรุปได้ว่า..." style="min-height:70px"></textarea>
+
+    <div class="conf-row" style="margin-top:8px">
+      <b>ความมั่นใจในคำอธิบาย:</b>
+      <label><input type="radio" name="e_conf" value="high"> มาก</label>
+      <label><input type="radio" name="e_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="e_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- Misconception alert -->
+  <div class="misconception-box">
+    <b>⚠️ Misconception ที่ตรวจสอบ:</b> [M_xx] ([ชื่อ]) · [M_yy] ([ชื่อ])
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <button class="btn-submit" id="submitBtn">📤 ส่งใบ POE</button>
+    <div class="status" id="stat"></div>
+    <br>
+    <button class="btn-print no-print" onclick="window.print()">🖨️ พิมพ์เป็น PDF</button>
+  </div>
+</div>
+
+<script>
+/* ============================================
+   CONFIG — แก้ไข API_URL ให้ตรงกับ Apps Script ของคุณ
+   ============================================ */
+const API_URL = ''; // ← ใส่ URL ของ Google Apps Script ที่ deploy แล้ว
+const SHEET_NAME = 'POE_P[N]'; // ← แก้ [N] เป็นเลขแผน
+
+/* Helper: ดึง value จาก element */
+function val(id) { return (document.getElementById(id) || {}).value?.trim() || ''; }
+function radio(name) { return (document.querySelector(`input[name="${name}"]:checked`) || {}).value || ''; }
+function checks(ids) { return ids.filter(id => document.getElementById(id)?.checked).join(','); }
+
+/* ============================================
+   SUBMIT HANDLER
+   ============================================ */
+document.getElementById('submitBtn').onclick = async () => {
+  const payload = {
+    // P
+    p_prediction: radio('pred'),
+    p_reason_opt: radio('reason_opt'),
+    p_reason_text: val('reason_text'),
+    p_confidence: radio('p_conf'),
+    // O
+    o_observe1: val('o_observe1'),
+    o_summary: val('o_summary'),
+    // E
+    e_po_compare: radio('e_po'),
+    e_match: val('e_match'),
+    e_checks: checks(['e_c1','e_c2','e_c3','e_c4']),
+    e_principle: val('e_principle'),
+    e_confidence: radio('e_conf')
+  };
+
+  // Validate minimum fields
+  const missing = [];
+  if (!payload.p_reason_opt && !payload.p_reason_text) missing.push('เหตุผล (P)');
+  if (!payload.e_match) missing.push('เปรียบเทียบ P↔O (E)');
+  if (!payload.e_principle) missing.push('สรุปหลักการ (E)');
+
+  const stat = document.getElementById('stat');
+  if (missing.length) {
+    stat.className = 'status error';
+    stat.textContent = '❌ กรอกอย่างน้อย: ' + missing.join(' · ');
+    return;
+  }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  stat.className = 'status';
+  stat.textContent = '⏳ กำลังส่ง...';
+
+  if (!API_URL) {
+    // ไม่มี API → download JSON แทน
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = SHEET_NAME + '_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    stat.className = 'status ok';
+    stat.textContent = '✅ ดาวน์โหลด JSON สำเร็จ (ยังไม่ได้ตั้งค่า API)';
+    btn.disabled = false;
+    return;
+  }
+
+  try {
+    await fetch(API_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action: 'submit', sheet: SHEET_NAME, timestamp: new Date().toISOString(), ...payload })
+    });
+    stat.className = 'status ok';
+    stat.textContent = '✅ ส่งสำเร็จ!';
+  } catch (e) {
+    stat.className = 'status error';
+    stat.textContent = '❌ ส่งไม่สำเร็จ: ' + e.message;
+    btn.disabled = false;
+  }
+};
+</script>
+
+</body>
+</html>
