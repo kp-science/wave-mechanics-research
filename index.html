@@ -3,109 +3,326 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌊 คลื่นกล · ห้องเรียนออนไลน์ · ม.5</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>KP-Classroom · ห้องเรียนออนไลน์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
+
   :root{
-    --blue-900:#0d2a5c; --blue-700:#1565c0; --blue-500:#1976d2; --blue-100:#e3f2fd;
-    --teal:#26a69a; --green:#43a047; --orange:#fb8c00; --gray-500:#64748b; --gray-700:#334155;
-    --surface:#ffffff; --bg:#f0f7ff;
+    /* ─── Base ─── */
+    --ink-900:#0a0e27;
+    --ink-700:#1e2749;
+    --ink-500:#475569;
+    --ink-300:#94a3b8;
+    --ink-100:#e2e8f0;
+    --surface:#fafbff;
+    --white:#ffffff;
+
+    /* ─── Brand (indigo → violet → fuchsia) ─── */
+    --indigo:#6366f1;
+    --violet:#8b5cf6;
+    --fuchsia:#d946ef;
+    --rose:#f43f5e;
+    --amber:#fbbf24;
+    --emerald:#10b981;
+    --cyan:#22d3ee;
+
+    /* ─── Gradients ─── */
+    --grad-hero:linear-gradient(135deg,#6366f1 0%,#8b5cf6 45%,#d946ef 100%);
+    --grad-text:linear-gradient(135deg,#fff 0%,#e9d5ff 50%,#fbcfe8 100%);
+    --grad-student:linear-gradient(135deg,#6366f1,#8b5cf6);
+    --grad-teacher:linear-gradient(135deg,#f59e0b,#f43f5e);
+    --grad-course:linear-gradient(135deg,#06b6d4,#6366f1);
+    --grad-warm:linear-gradient(135deg,#fef3c7,#fce7f3);
+
+    /* ─── Shadows (tinted) ─── */
+    --sh-sm:0 1px 3px rgba(10,14,39,.06);
+    --sh-md:0 8px 24px rgba(99,102,241,.10);
+    --sh-lg:0 20px 50px rgba(99,102,241,.18);
+    --sh-glow-indigo:0 0 0 1px rgba(99,102,241,.1), 0 12px 40px rgba(139,92,246,.2);
+    --sh-glow-amber:0 0 0 1px rgba(245,158,11,.15), 0 12px 40px rgba(244,63,94,.18);
   }
-  body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--gray-700);line-height:1.6;min-height:100vh}
 
-  /* ─── Hero ─── */
-  .hero{position:relative;background:linear-gradient(135deg,#0d2a5c 0%,#1565c0 55%,#26a69a 100%);color:#fff;overflow:hidden;padding:56px 20px 72px;text-align:center}
-  .hero::before{content:'';position:absolute;inset:0;background-image:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,.08) 0%, transparent 50%),
-    radial-gradient(circle at 80% 70%, rgba(255,255,255,.06) 0%, transparent 45%);
-    pointer-events:none}
-  .wave-deco{position:absolute;bottom:-1px;left:0;right:0;height:60px;pointer-events:none}
-  .hero-content{position:relative;max-width:900px;margin:0 auto}
-  .hero-logo{font-size:64px;line-height:1;margin-bottom:16px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.2))}
-  .hero-title{font-size:clamp(32px,6vw,52px);font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
-  .hero-subtitle{font-size:clamp(15px,2.5vw,18px);font-weight:500;opacity:.95;margin-bottom:10px}
-  .hero-meta{font-size:13px;opacity:.82;font-weight:400}
-  .hero-meta span{display:inline-block;padding:3px 10px;background:rgba(255,255,255,.12);border-radius:20px;margin:0 3px;backdrop-filter:blur(10px)}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'IBM Plex Sans Thai','Inter',system-ui,sans-serif;
+    background:var(--surface);
+    color:var(--ink-900);
+    line-height:1.65;
+    min-height:100vh;
+    font-feature-settings:"cv11","ss01";
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
 
-  /* ─── Main layout ─── */
-  .container{max-width:1120px;margin:0 auto;padding:0 20px}
+  /* ═══════════ HERO ═══════════ */
+  .hero{
+    position:relative;
+    background:var(--grad-hero);
+    color:#fff;
+    padding:96px 20px 140px;
+    overflow:hidden;
+    text-align:center;
+  }
+  /* Decorative gradient blobs */
+  .hero::before,.hero::after{content:'';position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;opacity:.5}
+  .hero::before{width:500px;height:500px;background:radial-gradient(circle,#ec4899,transparent 70%);top:-150px;left:-150px}
+  .hero::after{width:600px;height:600px;background:radial-gradient(circle,#22d3ee,transparent 70%);bottom:-200px;right:-150px;opacity:.35}
 
-  /* ─── Role Cards ─── */
-  .roles{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:-40px;position:relative;z-index:2;margin-bottom:48px}
-  .role-card{background:var(--surface);border-radius:20px;padding:32px 28px;box-shadow:0 12px 40px rgba(13,42,92,.12);text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden;border:2px solid transparent}
-  .role-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--blue-700),var(--teal))}
-  .role-card.student::before{background:linear-gradient(90deg,#1976d2,#26a69a)}
-  .role-card.teacher::before{background:linear-gradient(90deg,#f57c00,#c62828)}
-  .role-card:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(13,42,92,.18);border-color:var(--blue-100)}
-  .role-icon{font-size:56px;line-height:1}
-  .role-card h2{font-size:24px;color:var(--blue-900);font-weight:700}
-  .role-card p{color:var(--gray-500);font-size:15px;flex:1}
-  .role-btn{display:inline-flex;align-items:center;gap:6px;background:var(--blue-700);color:#fff;padding:11px 22px;border-radius:10px;font-weight:600;font-size:15px;align-self:flex-start;transition:background .2s}
-  .role-card.teacher .role-btn{background:#f57c00}
-  .role-card:hover .role-btn{background:var(--blue-900)}
-  .role-card.teacher:hover .role-btn{background:#c62828}
+  .hero-inner{position:relative;max-width:960px;margin:0 auto;z-index:2}
 
-  /* ─── Search ─── */
-  .search-wrap{margin-bottom:32px}
-  .search-input{width:100%;padding:14px 18px;font-size:15px;border:2px solid #cbd5e1;border-radius:12px;background:#fff;font-family:inherit;transition:border-color .2s,box-shadow .2s}
-  .search-input:focus{outline:none;border-color:var(--blue-500);box-shadow:0 0 0 4px rgba(25,118,210,.12)}
+  .hero-pill{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,.25);
+    color:#fff;padding:8px 18px;border-radius:100px;
+    font-size:13px;font-weight:500;margin-bottom:26px;letter-spacing:.3px
+  }
+  .hero-pill .dot{width:6px;height:6px;background:#a7f3d0;border-radius:50%;box-shadow:0 0 12px #a7f3d0}
 
-  /* ─── Section title ─── */
-  .section-title{font-size:22px;font-weight:700;color:var(--blue-900);margin:36px 0 20px;display:flex;align-items:center;gap:10px}
-  .section-title::before{content:'';width:4px;height:24px;background:linear-gradient(to bottom,var(--blue-700),var(--teal));border-radius:2px}
+  .hero-title{
+    font-family:'Inter','IBM Plex Sans Thai',sans-serif;
+    font-size:clamp(44px,8vw,82px);
+    font-weight:800;
+    line-height:1.05;
+    letter-spacing:-2.5px;
+    margin-bottom:20px;
+    background:var(--grad-text);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .hero-title .emoji{-webkit-text-fill-color:initial;background:initial;display:inline-block;transform:translateY(-6px)}
 
-  /* ─── Course Cards ─── */
-  .courses{margin-bottom:48px}
-  .course-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-  .course-card{position:relative;background:#fff;border-radius:16px;padding:24px 22px 22px;box-shadow:0 4px 16px rgba(13,42,92,.08);border:2px solid transparent;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;gap:10px;overflow:hidden;text-decoration:none;color:inherit}
-  .course-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue-700),var(--teal));opacity:.5}
-  .course-card.active::before{opacity:1;height:5px}
-  .course-card.active:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(13,42,92,.15);border-color:var(--blue-100)}
-  .course-card.coming{background:linear-gradient(135deg,#f8fafc,#eef2f7);cursor:default;opacity:.82}
-  .course-card.coming::before{background:linear-gradient(90deg,#94a3b8,#cbd5e1)}
-  .course-card.coming:hover{transform:none}
+  .hero-tagline{font-size:clamp(17px,2.4vw,22px);font-weight:400;color:rgba(255,255,255,.92);max-width:640px;margin:0 auto 28px;line-height:1.5}
 
-  .course-badge{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px}
-  .badge-open{background:#e8f5e9;color:#2e7d32}
-  .badge-soon{background:#eceff1;color:#546e7a}
+  .hero-meta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .hero-meta .chip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:rgba(255,255,255,.1);backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.18);
+    color:rgba(255,255,255,.92);
+    padding:6px 14px;border-radius:100px;font-size:13px;font-weight:500
+  }
 
-  .course-icon{font-size:48px;line-height:1;margin-bottom:2px}
-  .course-title{font-size:22px;font-weight:800;color:var(--blue-900);letter-spacing:-.3px}
-  .course-card.coming .course-title{color:#475569}
-  .course-meta{font-size:13px;color:var(--gray-500);font-weight:500}
-  .course-desc{font-size:14px;color:var(--gray-700);line-height:1.55;flex:1;margin-top:4px}
-  .course-card.coming .course-desc{color:#64748b}
+  /* Wave divider */
+  .wave-svg{position:absolute;bottom:-2px;left:0;right:0;width:100%;height:80px;display:block;pointer-events:none}
 
-  .course-stats{display:flex;gap:14px;padding:10px 0 4px;border-top:1px dashed #e0e7f0;margin-top:8px}
-  .course-stats span{font-size:12px;color:var(--gray-500);font-weight:600}
+  /* ═══════════ CONTAINER ═══════════ */
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+  main{padding-bottom:80px}
 
-  .course-cta{display:inline-flex;align-items:center;gap:6px;margin-top:6px;padding:10px 18px;background:var(--blue-700);color:#fff;border-radius:10px;font-weight:700;font-size:14px;align-self:flex-start;transition:background .2s,transform .2s}
-  .course-card.active:hover .course-cta{background:var(--blue-900);transform:translateX(3px)}
+  /* ═══════════ ROLE CARDS ═══════════ */
+  .roles{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+    gap:20px;margin-top:-80px;position:relative;z-index:5;margin-bottom:64px
+  }
+  .role-card{
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:24px;padding:36px 32px;
+    box-shadow:var(--sh-glow-indigo);
+    text-decoration:none;color:inherit;
+    display:flex;flex-direction:column;gap:14px;
+    transition:transform .3s cubic-bezier(.2,.8,.3,1),box-shadow .3s;
+    position:relative;overflow:hidden;
+  }
+  .role-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:4px;
+    background:var(--grad-student);opacity:.8;border-radius:24px 24px 0 0
+  }
+  .role-card.teacher::before{background:var(--grad-teacher)}
+  .role-card.teacher{box-shadow:var(--sh-glow-amber)}
+  .role-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 28px 60px rgba(99,102,241,.24)}
+  .role-card.teacher:hover{box-shadow:0 28px 60px rgba(244,63,94,.22)}
 
-  /* ─── About ─── */
-  .about{background:linear-gradient(135deg,#fff,#f8fafc);border-radius:16px;padding:28px 32px;margin-bottom:48px;border:1px solid #e0e7f0}
-  .about h2{font-size:20px;color:var(--blue-900);margin-bottom:12px;font-weight:700}
-  .about p{font-size:14px;color:var(--gray-500);margin-bottom:8px}
-  .about p:last-child{margin-bottom:0}
+  .role-icon-wrap{
+    width:60px;height:60px;border-radius:18px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:30px;margin-bottom:4px;
+    background:var(--grad-student);
+    box-shadow:0 8px 20px rgba(139,92,246,.35);
+  }
+  .role-card.teacher .role-icon-wrap{background:var(--grad-teacher);box-shadow:0 8px 20px rgba(244,63,94,.35)}
 
-  /* ─── Footer ─── */
-  .footer{background:#0d2a5c;color:rgba(255,255,255,.75);text-align:center;padding:24px 20px;font-size:13px;margin-top:40px}
-  .footer a{color:#fff;text-decoration:none}
+  .role-card h2{font-size:26px;font-weight:700;color:var(--ink-900);letter-spacing:-.5px}
+  .role-card p{color:var(--ink-500);font-size:15px;flex:1;line-height:1.65}
 
-  /* ─── Mobile ─── */
-  @media (max-width: 640px){
-    .hero{padding:40px 16px 56px}
+  .role-btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--ink-900);color:#fff;
+    padding:13px 24px;border-radius:14px;
+    font-weight:600;font-size:14.5px;
+    align-self:flex-start;
+    transition:all .25s;
+    letter-spacing:.1px;
+  }
+  .role-card:hover .role-btn{background:var(--grad-student);transform:translateX(4px);box-shadow:0 8px 24px rgba(99,102,241,.4)}
+  .role-card.teacher:hover .role-btn{background:var(--grad-teacher);box-shadow:0 8px 24px rgba(244,63,94,.4)}
+
+  /* ═══════════ SECTION TITLE ═══════════ */
+  .section-title{
+    font-size:clamp(28px,4vw,40px);
+    font-weight:800;color:var(--ink-900);
+    letter-spacing:-1px;
+    margin:56px 0 8px;
+    display:flex;align-items:center;gap:12px;
+  }
+  .section-desc{color:var(--ink-500);font-size:16px;margin-bottom:28px;max-width:560px}
+
+  /* ═══════════ COURSES ═══════════ */
+  .courses{margin-bottom:72px}
+  .course-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;
+  }
+  .course-card{
+    position:relative;background:#fff;border:1px solid var(--ink-100);
+    border-radius:22px;padding:28px 26px;
+    box-shadow:var(--sh-sm);
+    display:flex;flex-direction:column;gap:12px;
+    text-decoration:none;color:inherit;
+    overflow:hidden;
+    transition:all .3s cubic-bezier(.2,.8,.3,1);
+  }
+  /* glow ring for active */
+  .course-card.active{
+    background:linear-gradient(180deg,#fff 60%,#f5f3ff 100%);
+    border-color:rgba(99,102,241,.25);
+  }
+  .course-card.active::after{
+    content:'';position:absolute;inset:0;border-radius:22px;
+    padding:1.5px;background:var(--grad-course);
+    -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    pointer-events:none;opacity:0;transition:opacity .3s;
+  }
+  .course-card.active:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+  .course-card.active:hover::after{opacity:1}
+
+  .course-card.coming{
+    background:linear-gradient(135deg,#fafbff 0%,#f5f3ff 100%);
+    border-color:var(--ink-100);
+    opacity:.88;
+  }
+
+  .course-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11.5px;font-weight:700;
+    padding:5px 11px;border-radius:100px;
+    letter-spacing:.4px;text-transform:uppercase;
+    align-self:flex-start;
+  }
+  .badge-open{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#047857}
+  .badge-soon{background:linear-gradient(135deg,#e0e7ff,#ede9fe);color:#6d28d9}
+
+  .course-icon-wrap{
+    width:56px;height:56px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:30px;margin-top:4px;
+    background:var(--grad-course);
+    box-shadow:0 8px 20px rgba(6,182,212,.25);
+  }
+  .course-card.coming .course-icon-wrap{
+    background:linear-gradient(135deg,#cbd5e1,#94a3b8);
+    box-shadow:none;
+  }
+
+  .course-title{
+    font-size:24px;font-weight:800;color:var(--ink-900);
+    letter-spacing:-.5px;line-height:1.25;
+  }
+  .course-card.coming .course-title{color:var(--ink-700)}
+  .course-meta{
+    font-size:13px;color:var(--ink-500);font-weight:500;
+    display:inline-flex;align-items:center;gap:6px;
+  }
+  .course-desc{
+    font-size:14.5px;color:var(--ink-700);line-height:1.6;flex:1;
+  }
+  .course-card.coming .course-desc{color:var(--ink-500)}
+
+  .course-stats{
+    display:flex;gap:16px;padding-top:14px;margin-top:4px;
+    border-top:1px solid var(--ink-100);
+  }
+  .course-stats span{
+    font-size:12.5px;color:var(--ink-500);font-weight:600;
+    display:inline-flex;align-items:center;gap:4px;
+  }
+
+  .course-cta{
+    display:inline-flex;align-items:center;gap:8px;
+    margin-top:4px;padding:11px 20px;
+    background:var(--ink-900);color:#fff;
+    border-radius:12px;font-weight:600;font-size:14px;
+    align-self:flex-start;
+    transition:all .25s;
+  }
+  .course-card.active:hover .course-cta{
+    background:var(--grad-course);transform:translateX(4px);
+    box-shadow:0 8px 22px rgba(6,182,212,.35);
+  }
+
+  /* ═══════════ ABOUT ═══════════ */
+  .about{
+    position:relative;
+    background:var(--grad-warm);
+    border-radius:28px;padding:40px 44px;
+    margin-bottom:48px;
+    overflow:hidden;
+  }
+  .about::before{
+    content:'';position:absolute;right:-80px;top:-80px;
+    width:280px;height:280px;border-radius:50%;
+    background:radial-gradient(circle,rgba(251,191,36,.35),transparent 70%);
+    pointer-events:none;
+  }
+  .about-inner{position:relative;max-width:760px}
+  .about h2{
+    font-size:28px;color:var(--ink-900);margin-bottom:14px;
+    font-weight:800;letter-spacing:-.6px;
+  }
+  .about p{font-size:15.5px;color:var(--ink-700);margin-bottom:12px;line-height:1.75}
+  .about b{color:var(--ink-900);font-weight:700}
+  .about-link{
+    display:inline-flex;align-items:center;gap:6px;
+    margin-top:8px;color:var(--ink-900);font-weight:700;
+    text-decoration:none;font-size:15px;
+    transition:gap .25s;
+  }
+  .about-link:hover{gap:12px}
+  .about-link::after{content:'→';transition:transform .25s}
+  .about-link:hover::after{transform:translateX(2px)}
+
+  /* ═══════════ FOOTER ═══════════ */
+  .footer{
+    background:var(--ink-900);color:rgba(255,255,255,.7);
+    text-align:center;padding:36px 24px;font-size:13.5px;
+    position:relative;overflow:hidden;
+  }
+  .footer::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,var(--indigo),transparent);
+  }
+  .footer b{color:#fff;font-weight:600}
+  .footer-brand{display:inline-flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700;color:#fff}
+  .footer-brand .logo{font-size:20px}
+
+  /* ═══════════ MOBILE ═══════════ */
+  @media (max-width:720px){
+    .hero{padding:64px 16px 110px}
     .container{padding:0 16px}
-    .roles{gap:12px;margin-top:-28px;margin-bottom:32px}
-    .role-card{padding:24px 20px}
-    .role-icon{font-size:44px}
-    .role-card h2{font-size:20px}
-    .course-grid{grid-template-columns:1fr;gap:14px}
-    .course-card{padding:20px 18px}
-    .course-icon{font-size:42px}
-    .course-title{font-size:20px}
-    .about{padding:22px 20px}
+    .roles{gap:14px;margin-top:-60px;margin-bottom:44px}
+    .role-card{padding:28px 24px;border-radius:20px}
+    .role-card h2{font-size:22px}
+    .course-grid{gap:14px}
+    .course-card{padding:24px 22px}
+    .course-title{font-size:21px}
+    .about{padding:32px 26px;border-radius:22px}
+    .about h2{font-size:24px}
   }
 </style>
 </head>
@@ -113,108 +330,124 @@
 
 <!-- ═════════ HERO ═════════ -->
 <header class="hero">
-  <svg class="wave-deco" viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="#f0f7ff"/>
-  </svg>
-  <div class="hero-content">
-    <div class="hero-logo">🌊</div>
-    <h1 class="hero-title">คลื่นกล</h1>
-    <div class="hero-subtitle">ห้องเรียนออนไลน์ · ฟิสิกส์ 3 (ว30203) · ม.5</div>
+  <div class="hero-inner">
+    <div class="hero-pill">
+      <span class="dot"></span>
+      <span>เปิดเรียนแล้ว · ปีการศึกษา 2569</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="emoji">🌊</span> KP-Classroom
+    </h1>
+    <p class="hero-tagline">
+      ห้องเรียนออนไลน์ · ทำใบงาน · เรียนรู้ผ่านสื่อ interactive<br>
+      บันทึกความคิด ส่งงาน และได้รับฟีดแบ็กจากครูแบบ real-time
+    </p>
     <div class="hero-meta">
-      <span>👨‍🏫 ครูโกเมน ปาปะโถ</span>
-      <span>🏫 โรงเรียนสตรีวิทยา</span>
-      <span>📅 ปีการศึกษา 2569</span>
+      <span class="chip">👨‍🏫 ครูโกเมน ปาปะโถ</span>
+      <span class="chip">🏫 โรงเรียนสตรีวิทยา</span>
+      <span class="chip">📘 ฟิสิกส์ ม.5</span>
     </div>
   </div>
+  <svg class="wave-svg" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1350,70 1440,40 L1440,80 L0,80 Z" fill="#fafbff"/>
+  </svg>
 </header>
 
-<main class="container">
+<main>
+<div class="container">
 
   <!-- ═════════ ROLE CARDS ═════════ -->
   <section class="roles">
     <a class="role-card student" href="KP-Classroom.html">
-      <div class="role-icon">👩‍🎓</div>
+      <div class="role-icon-wrap">👩‍🎓</div>
       <h2>สำหรับนักเรียน</h2>
-      <p>เข้าสู่ห้องเรียนเพื่อทำใบงาน บันทึก POE ข้อสอบ Four-tier และส่งงานออนไลน์</p>
-      <span class="role-btn">🚀 เข้าห้องเรียน →</span>
+      <p>ทำใบงาน บันทึก POE ทำข้อสอบ Four-tier และส่งงานออนไลน์ ที่เดียวจบ</p>
+      <span class="role-btn">🚀 เข้าห้องเรียน</span>
     </a>
     <a class="role-card teacher" href="KP-Classroom.html#teacher">
-      <div class="role-icon">👨‍🏫</div>
+      <div class="role-icon-wrap">👨‍🏫</div>
       <h2>สำหรับครู</h2>
-      <p>เข้าสู่ Teacher Dashboard เปิด/ปิดบทเรียน ดูข้อมูลนักเรียน และจัดการสื่อการสอน</p>
-      <span class="role-btn">🔐 เข้าระบบครู →</span>
+      <p>Dashboard จัดการนักเรียน ดูข้อมูล real-time เปิด/ปิดบทเรียน ส่งฟีดแบ็ก</p>
+      <span class="role-btn">🔐 เข้าระบบครู</span>
     </a>
   </section>
 
   <!-- ═════════ COURSES ═════════ -->
   <section class="courses">
     <h2 class="section-title">📚 คอสออนไลน์</h2>
+    <p class="section-desc">เรียนฟิสิกส์ออนไลน์ผ่านสื่อ interactive · simulation · ใบงานดิจิทัล · ข้อสอบวัดมโนทัศน์</p>
+
     <div class="course-grid">
 
       <!-- คอสที่เปิดสอน: คลื่นกล -->
       <a class="course-card active" href="KP-Classroom.html">
-        <div class="course-badge badge-open">🟢 เปิดสอน</div>
-        <div class="course-icon">🌊</div>
+        <span class="course-badge badge-open">🟢 เปิดสอน</span>
+        <div class="course-icon-wrap">🌊</div>
         <div class="course-title">คลื่นกล</div>
-        <div class="course-meta">ฟิสิกส์ 3 (ว30203) · ม.5</div>
+        <div class="course-meta">📘 ฟิสิกส์ 3 (ว30203) · ม.5</div>
         <div class="course-desc">การเกิดคลื่น · ชนิดคลื่น · v = fλ · สะท้อน/หักเห · แทรกสอด · คลื่นนิ่ง · เลี้ยวเบน</div>
         <div class="course-stats">
           <span>📖 10 บทเรียน</span>
           <span>⏱ 20 คาบ</span>
+          <span>🧪 5E+POE</span>
         </div>
-        <div class="course-cta">เริ่มเรียน →</div>
+        <span class="course-cta">เริ่มเรียนเลย</span>
       </a>
 
       <!-- Placeholder: ดาราศาสตร์ -->
       <div class="course-card coming">
-        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
-        <div class="course-icon">🌌</div>
+        <span class="course-badge badge-soon">🔜 เร็วๆ นี้</span>
+        <div class="course-icon-wrap">🌌</div>
         <div class="course-title">ดาราศาสตร์</div>
-        <div class="course-meta">ฟิสิกส์ดาราศาสตร์ · ม.5-6</div>
+        <div class="course-meta">📘 ฟิสิกส์ดาราศาสตร์ · ม.5–6</div>
         <div class="course-desc">ระบบสุริยะ · ดาวฤกษ์ · กาแล็กซี · เอกภพวิทยา</div>
       </div>
 
       <!-- Placeholder: คลื่นแม่เหล็กไฟฟ้า -->
       <div class="course-card coming">
-        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
-        <div class="course-icon">⚡</div>
+        <span class="course-badge badge-soon">🔜 เร็วๆ นี้</span>
+        <div class="course-icon-wrap">⚡</div>
         <div class="course-title">คลื่นแม่เหล็กไฟฟ้า</div>
-        <div class="course-meta">ฟิสิกส์ 4 · ม.6</div>
+        <div class="course-meta">📘 ฟิสิกส์ 4 · ม.6</div>
         <div class="course-desc">สนามไฟฟ้า · สนามแม่เหล็ก · แสง · สเปกตรัม EM</div>
       </div>
 
       <!-- Placeholder: ฟิสิกส์อะตอม -->
       <div class="course-card coming">
-        <div class="course-badge badge-soon">🔜 เร็วๆ นี้</div>
-        <div class="course-icon">⚛️</div>
+        <span class="course-badge badge-soon">🔜 เร็วๆ นี้</span>
+        <div class="course-icon-wrap">⚛️</div>
         <div class="course-title">ฟิสิกส์อะตอม</div>
-        <div class="course-meta">ฟิสิกส์แนวหน้า · ม.6</div>
+        <div class="course-meta">📘 ฟิสิกส์แนวหน้า · ม.6</div>
         <div class="course-desc">โฟตอน · ระดับพลังงาน · กัมมันตรังสี · ฟิสิกส์ควอนตัม</div>
       </div>
 
     </div>
   </section>
 
-  <!-- ═════════ About ═════════ -->
+  <!-- ═════════ ABOUT ═════════ -->
   <section class="about">
-    <h2>📖 เกี่ยวกับรายวิชา</h2>
-    <p>ห้องเรียนออนไลน์สำหรับรายวิชา <b>ฟิสิกส์ 3 (ว30203)</b> หน่วยการเรียนรู้ <b>คลื่นกล</b> — ประกอบด้วย <b>10 บทเรียน</b> ครอบคลุมการเกิดคลื่น ชนิดของคลื่น ความเร็วคลื่น สมบัติของคลื่น (สะท้อน-หักเห-แทรกสอด-เลี้ยวเบน) และคลื่นนิ่ง</p>
-    <p>บทเรียนออกแบบตามกระบวนการ <b>5E Inquiry</b> ผสมเทคนิค <b>POE</b> (Predict–Observe–Explain) พร้อมระบบประเมินมโนทัศน์แบบ <b>Four-tier Diagnostic Test</b> และการสะท้อนคิดด้วย Metacognitive Journal</p>
-    <p style="margin-top:14px"><a href="KP-Classroom.html" style="color:var(--blue-700);font-weight:600;text-decoration:none">🚀 เริ่มเรียนเลย →</a></p>
+    <div class="about-inner">
+      <h2>เกี่ยวกับ KP-Classroom</h2>
+      <p>แพลตฟอร์มห้องเรียนออนไลน์สำหรับวิชาฟิสิกส์ ออกแบบตามกระบวนการ <b>5E Inquiry</b> ผสมเทคนิค <b>POE</b> (Predict–Observe–Explain) และระบบประเมินมโนทัศน์แบบ <b>Four-tier Diagnostic Test</b></p>
+      <p>นักเรียนทำใบงาน · บันทึกความคิด · ส่งงาน · รับฟีดแบ็ก — ครูดูข้อมูลได้ real-time ผ่าน Teacher Dashboard</p>
+      <a class="about-link" href="KP-Classroom.html">เข้าใช้งานเลย</a>
+    </div>
   </section>
 
+</div>
 </main>
 
 <footer class="footer">
-  © ปีการศึกษา 2569 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · สพม. กรุงเทพมหานคร เขต 1
+  <div class="footer-brand"><span class="logo">🌊</span>KP-Classroom</div>
+  <div>© ปีการศึกษา 2569 · <b>ครูโกเมน ปาปะโถ</b> · โรงเรียนสตรีวิทยา · สพม.กทม. เขต 1</div>
 </footer>
 
 <script>
-// ─── Restore last session: ถ้ามี → เปลี่ยนปุ่มนักเรียนเป็น "กลับเข้าห้องเรียน" ───
+// Returning student: swap CTA
 (function(){
   if (localStorage.getItem('wave_student')){
     const btn = document.querySelector('.role-card.student .role-btn');
-    if (btn) btn.textContent = '🔄 กลับเข้าห้องเรียน →';
+    if (btn) btn.textContent = '🔄 กลับเข้าห้องเรียน';
   }
 })();
 </script>
