@@ -1935,23 +1935,61 @@ function escapeHtml(s){
 
 // ═══════════════════════════════════════════════════════════
 // TEACHER DASHBOARD (Tabbed)
+// Phase 4: verify รหัสผ่านฝั่ง server (Apps Script Properties)
+// ไม่เก็บรหัสใน config.js · เก็บใน sessionStorage เท่านั้น
 // ═══════════════════════════════════════════════════════════
-const TEACHER_PASS = KP_CONFIG.teacherPass; // โหลดจาก content/config.js (Phase 4 จะย้ายไป server-side)
-const TEACHER_SESS = 'teacher_ok';        // sessionStorage key
+const TEACHER_SESS   = 'teacher_ok';   // flag บอกว่า verify แล้ว
+const TEACHER_PW_KEY = 'teacher_pw';   // sessionStorage เก็บรหัส (คืนค่าตอน close tab)
 let teacherCurrentTab = 'overview';
 
-function isTeacherAuthed(){
-  return sessionStorage.getItem(TEACHER_SESS) === '1';
+function getTeacherPassword(){
+  return sessionStorage.getItem(TEACHER_PW_KEY) || '';
 }
 
-function openTeacher(){
+function isTeacherAuthed(){
+  return sessionStorage.getItem(TEACHER_SESS) === '1' && !!getTeacherPassword();
+}
+
+async function openTeacher(){
   if (isTeacherAuthed()){ enterTeacherMode(); return; }
   const pw = prompt('🔐 รหัสผ่านครู:');
-  if (pw !== TEACHER_PASS){
-    if (pw !== null) alert('❌ รหัสผ่านไม่ถูกต้อง');
+  if (pw === null) return; // user cancelled
+
+  // Fallback สำหรับ backward compat (ถ้ายังไม่ deploy Apps Script v3)
+  // หรือ config.js มี teacherPass อยู่ — เทียบ client-side ก่อน
+  const legacyPass = (typeof KP_CONFIG !== 'undefined' && KP_CONFIG.teacherPass) ? KP_CONFIG.teacherPass : '';
+
+  // Verify ฝั่ง server ก่อน
+  let verified = false;
+  if (isApiConfigured()){
+    try {
+      const r = await fetch(API_URL + '?_t=' + Date.now(), {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'verifyAdmin', teacher_pw: pw})
+      });
+      // no-cors = อ่าน response ไม่ได้ → ใช้ GET verify แทน
+    } catch(e){}
+    try {
+      const vr = await fetch(API_URL + '?action=verifyAdmin&pw=' + encodeURIComponent(pw))
+        .then(r=>r.json()).catch(()=>null);
+      if (vr && vr.verified === true) verified = true;
+    } catch(e){}
+  }
+
+  // Fallback: ถ้า server verify ไม่ได้ (CORS/no backend) → ใช้ legacy client-side check
+  if (!verified && legacyPass && pw === legacyPass){
+    verified = true;
+    console.warn('Using legacy client-side password check (Phase 4 server verify failed)');
+  }
+
+  if (!verified){
+    alert('❌ รหัสผ่านไม่ถูกต้อง หรือ server ไม่ตอบสนอง');
     return;
   }
+
   sessionStorage.setItem(TEACHER_SESS, '1');
+  sessionStorage.setItem(TEACHER_PW_KEY, pw);
   enterTeacherMode();
 }
 
@@ -1969,6 +2007,7 @@ function enterTeacherMode(){
 function logoutTeacher(){
   if (!confirm('ออกจากโหมดครู?')) return;
   sessionStorage.removeItem(TEACHER_SESS);
+  sessionStorage.removeItem(TEACHER_PW_KEY); // Phase 4: ล้างรหัสจาก session
   // คืนค่า topBar logout เป็นของนักเรียน
   const sBtn = document.querySelector('#topBar .btn-logout');
   if (sBtn) sBtn.setAttribute('onclick', 'logout()');
@@ -2197,7 +2236,7 @@ async function doUploadStudents(){
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({
         action:'uploadStudents',
-        teacher_pw: TEACHER_PASS,
+        teacher_pw: getTeacherPassword(),
         rows: rows
       })
     });
@@ -2345,7 +2384,7 @@ async function savePlan(planNo){
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({
         action:'updateSetting',
-        teacher_pw: TEACHER_PASS,
+        teacher_pw: getTeacherPassword(),
         scope: 'plan', plan: planNo, item_id: '',
         status, opens_at, note
       })
@@ -2367,7 +2406,7 @@ async function toggleItem(planNo, scope, itemId, isOpen){
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({
         action:'updateSetting',
-        teacher_pw: TEACHER_PASS,
+        teacher_pw: getTeacherPassword(),
         scope, plan: planNo, item_id: itemId,
         status
       })
@@ -2594,7 +2633,7 @@ async function doSendFeedback(){
       method:'POST', mode:'no-cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
       body: JSON.stringify({
-        action:'sendFeedback', teacher_pw: TEACHER_PASS,
+        action:'sendFeedback', teacher_pw: getTeacherPassword(),
         to_student_id: r.student_id, to_name: r.full_name,
         plan, type:'manual', message:msg, poe_score: poe!==''?Number(poe):undefined
       })
@@ -2725,7 +2764,7 @@ async function submitObOrGr(sheet, payload, stat, btn){
   btn.disabled = true; stat.className='status'; stat.textContent='⏳ กำลังส่ง...';
   try {
     await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({ action:'submit', sheet, teacher_password:TEACHER_PASS,
+      body: JSON.stringify({ action:'submit', sheet, teacher_password:getTeacherPassword(),
                               timestamp:new Date().toISOString(), ...payload })});
     stat.className='status ok'; stat.textContent='✅ บันทึกเรียบร้อย';
   } catch(e){ stat.className='status error'; stat.textContent='❌ '+e.message; }

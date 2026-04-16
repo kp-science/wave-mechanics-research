@@ -23,8 +23,9 @@ window.KP_CONFIG = {
   // ─── Backend (Apps Script Web App URL · แยกจาก Physics 3) ───
   apiUrl:       'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec',
 
-  // ─── Admin Password ───
-  teacherPass:  'komanepapato2569',
+  // ─── Admin Password (Phase 4: server-side) ───
+  // ⚠️ รหัสเก็บใน Apps Script Properties (ชื่อ 'TEACHER_PASSWORD')
+  // ห้ามใส่รหัสในไฟล์นี้ (repo public)
 
   // ─── Scope ───
   numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum

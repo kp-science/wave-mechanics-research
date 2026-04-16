@@ -23,9 +23,10 @@ window.KP_CONFIG = {
   // ─── Backend (Apps Script Web App URL — ของวิชานี้เท่านั้น) ───
   apiUrl:       'https://script.google.com/macros/s/AKfycbwoI8M3mJ3wKdNHUigoK4LFbZJH0f94WykTfBz97KPgeTo0Zi-N9DZdiEGzW3u6jofiwA/exec',
 
-  // ─── Admin Password ───
-  // ⚠️ Phase 4 จะย้ายไป Apps Script Properties (server-side verify)
-  teacherPass:  'komanepapato2569',
+  // ─── Admin Password (Phase 4: server-side) ───
+  // ⚠️ รหัสเก็บใน Apps Script Properties (ชื่อ 'TEACHER_PASSWORD')
+  // ห้ามใส่รหัสในไฟล์นี้ (repo public)
+  // ครูตั้งผ่าน: Apps Script Editor → Project Settings (⚙) → Script Properties
 
   // ─── Scope ───
   numPlans:     10,  // คลื่นกล 10 แผน · หน่วยอื่นจะเพิ่มภายหลัง
