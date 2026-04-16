@@ -492,14 +492,11 @@ function applyBranding(){
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
   applyBranding();
+  initLoginUI();  // render UI ด้วย cache ก่อน (dropdown ว่างถ้ายังไม่มี roster)
 
-  // โหลดรายชื่อนักเรียนจาก API (ถ้าครูอัปโหลดแล้ว)
-  await loadStudents();
-  initLoginUI();
-
-  // Restore student session (localStorage)
+  // Restore student session (localStorage · sync)
   const s = localStorage.getItem(LS_STU);
   if (s) {
     state.student = JSON.parse(s);
@@ -507,15 +504,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (sub) state.submitted = JSON.parse(sub);
   }
 
-  // Restore teacher session (sessionStorage) — ลำดับก่อนนักเรียน
+  // Restore teacher session
   if (isTeacherAuthed()){
     enterTeacherMode();
-    return;
+  } else if (state.student){
+    showHome();
+  } else {
+    showView('view-login');  // ← หน้า login แสดงทันที (<150ms)
   }
 
-  // ถ้ามี student session ให้เปิดหน้านักเรียน ไม่งั้นไปหน้า login
-  if (state.student){ showHome(); }
-  else { showView('view-login'); }
+  // Background: โหลดรายชื่อนักเรียน (ไม่ block UI) · re-render login ถ้ายังอยู่หน้านั้น
+  loadStudents().then(() => {
+    if (document.getElementById('view-login').classList.contains('active')){
+      initLoginUI();  // refresh dropdown หลัง roster มา
+    }
+  }).catch(e => console.warn('background loadStudents:', e));
 });
 
 // โหลดรายชื่อนักเรียนจาก API
@@ -1959,20 +1962,12 @@ async function openTeacher(){
   // หรือ config.js มี teacherPass อยู่ — เทียบ client-side ก่อน
   const legacyPass = (typeof KP_CONFIG !== 'undefined' && KP_CONFIG.teacherPass) ? KP_CONFIG.teacherPass : '';
 
-  // Verify ฝั่ง server ก่อน
+  // Verify ฝั่ง server (GET · อ่าน response ได้)
   let verified = false;
   if (isApiConfigured()){
     try {
-      const r = await fetch(API_URL + '?_t=' + Date.now(), {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify({action:'verifyAdmin', teacher_pw: pw})
-      });
-      // no-cors = อ่าน response ไม่ได้ → ใช้ GET verify แทน
-    } catch(e){}
-    try {
       const vr = await fetch(API_URL + '?action=verifyAdmin&pw=' + encodeURIComponent(pw))
-        .then(r=>r.json()).catch(()=>null);
+        .then(r => r.json()).catch(() => null);
       if (vr && vr.verified === true) verified = true;
     } catch(e){}
   }
