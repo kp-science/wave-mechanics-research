@@ -43,7 +43,7 @@
 - **Infographic** — HTML Timeline 9 phase ตาม Layout Pattern มาตรฐาน
 - **สื่อชุด** — Concept Cartoon · POE-01 · ใบกิจกรรม · Spot-the-Error · Fx Four-tier · TL-01 · MJ-01 · OB-01 · POE Rubric
 - **Flowchart** — แผนภาพลำดับกิจกรรม (.docx)
-- **PLAN_MEDIA[N]** — JS object ใน `วิจัยคลื่นกล_WebApp.html`
+- **PLAN_MEDIA[N]** — JS object ใน `KP-Classroom.html`
 - **Docx** — แผนการสอนฉบับสมบูรณ์ (11 หัวข้อ)
 
 ---

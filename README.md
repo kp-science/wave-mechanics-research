@@ -13,7 +13,7 @@
 
 - **GitHub Pages:** https://kp-science.github.io/wave-mechanics-research/
 - **หน้าแรก:** [`index.html`](index.html) — รวมลิงก์สื่อทั้งหมด
-- **WebApp หลัก:** [`วิจัยคลื่นกล_WebApp.html`](วิจัยคลื่นกล_WebApp.html) — ระบบเก็บข้อมูลนักเรียน + Teacher Dashboard
+- **WebApp หลัก:** [`KP-Classroom.html`](KP-Classroom.html) — ระบบเก็บข้อมูลนักเรียน + Teacher Dashboard
 - **เริ่มต้นใช้งาน:** [`QuickStart_3Steps.html`](QuickStart_3Steps.html)
 
 ---
@@ -56,7 +56,7 @@
 ```
 wave-mechanics-research/
 ├── index.html                      หน้าแรก (Hub page)
-├── วิจัยคลื่นกล_WebApp.html         WebApp หลัก (Student + Teacher)
+├── KP-Classroom.html               WebApp หลัก (Student + Teacher) — engine กลาง ใช้ข้ามวิชาได้
 ├── QuickStart_3Steps.html          คู่มือเริ่มต้น 3 ขั้น
 ├── 00_ส่วนกลาง_วิจัยและวPA/          Mapping, คู่มือ วPA, เอกสารส่วนกลาง
 ├── skills/                         Skill reusable
