@@ -705,11 +705,51 @@ function refreshInboxBadge(){
   }
 }
 
-// คืนสถานะของแผน (จาก state.settings หรือค่าเริ่มต้น)
+// ═════ Settings v2 helpers (Phase 2: plan/tool/media scope) ═════
+// scope='plan': default locked ยกเว้นแผน 1 · ต้องมี row เปิด
+// scope='tool': default OPEN · ต้องมี row ชี้ locked ชัดเจน
+// scope='media': default OPEN · ต้องมี row ชี้ locked ชัดเจน
+function findSetting(scope, planNo, itemId){
+  if (!Array.isArray(state.settings)) return null;
+  return state.settings.find(x =>
+    String(x.scope || 'plan') === scope &&
+    Number(x.plan) === Number(planNo) &&
+    String(x.item_id || '') === String(itemId || '')
+  );
+}
+
+// Plan-level gate (ของเดิม · backward compat)
 function getGate(planNo){
-  const s = state.settings.find(x => Number(x.plan) === Number(planNo));
+  const s = findSetting('plan', planNo, '');
   if (!s) return { status: planNo===1 ? 'open' : 'locked', opens_at:'', closes_at:'', note:'' };
   return s;
+}
+
+// Tool-level gate — default OPEN
+function getToolGate(planNo, toolId){
+  const s = findSetting('tool', planNo, toolId);
+  if (!s) return { status: 'open', opens_at:'', closes_at:'', note:'' };
+  return s;
+}
+
+// Media-level gate — default OPEN (item_no = 'no' field ใน media item)
+function getMediaGate(planNo, mediaNo){
+  const s = findSetting('media', planNo, mediaNo);
+  if (!s) return { status: 'open', opens_at:'', closes_at:'', note:'' };
+  return s;
+}
+
+// นับ tool/media ที่ถูก lock ในแผน (ใช้โชว์ badge)
+function countLockedItems(planNo){
+  const locked = { tool: 0, media: 0 };
+  if (!Array.isArray(state.settings)) return locked;
+  state.settings.forEach(s => {
+    if (Number(s.plan) !== Number(planNo)) return;
+    if (s.status !== 'locked') return;
+    if (s.scope === 'tool') locked.tool++;
+    else if (s.scope === 'media') locked.media++;
+  });
+  return locked;
 }
 
 function gateLabel(g){
@@ -761,17 +801,28 @@ function renderTools(){
   toolList.forEach(key => {
     const def = TOOL_DEFS[key];
     if (!def) return;
+
+    // Phase 2: ครูปิด tool รายตัว → ซ่อนเลย (ไม่แสดงการ์ด)
+    const toolGate = getToolGate(state.currentPlan, key);
+    if (toolGate.status === 'locked') return;
+
     const doneKey = `plan${state.currentPlan}_${key}`;
     const done = !!state.submitted[doneKey];
 
     let stateClass = '';
     let gateNote = '';
+    // Plan-level gate (เดิม) · override tool-level
     if (gate.status === 'locked'){
       stateClass = ' locked';
       gateNote = `<div class="meta" style="color:#607d8b;font-size:12px">🔒 ${gate.note || 'รอครูเปิด'}</div>`;
     } else if (gate.status === 'preview'){
       stateClass = ' preview';
       const opens = gate.opens_at ? new Date(gate.opens_at).toLocaleString('th-TH') : 'ยังไม่กำหนด';
+      gateNote = `<div class="meta" style="color:#e65100;font-size:12px">⏰ จะเปิด ${opens}</div>`;
+    } else if (toolGate.status === 'preview'){
+      // tool-level preview (when plan is open)
+      stateClass = ' preview';
+      const opens = toolGate.opens_at ? new Date(toolGate.opens_at).toLocaleString('th-TH') : 'ยังไม่กำหนด';
       gateNote = `<div class="meta" style="color:#e65100;font-size:12px">⏰ จะเปิด ${opens}</div>`;
     }
 
@@ -2190,30 +2241,98 @@ async function renderPlansTab(){
 
 function renderPlansList(){
   const el = document.getElementById('plansList');
-  let html = `<div class="setting-row" style="font-weight:800;background:#f5f5f5">
-    <div>แผน</div><div>ชื่อ</div><div>สถานะ</div><div>เปิดเมื่อ</div><div>หมายเหตุ</div><div></div>
+  let html = `<div style="margin-bottom:10px;padding:10px 14px;background:#e3f2fd;border-left:4px solid #1565c0;border-radius:6px;font-size:13px;color:#0d47a1">
+    💡 <b>เคล็ดลับ:</b> ถ้าแผน open แล้ว แต่อยากซ่อน tool/สื่อย่อยบางตัว → กด "⚙ จัดการย่อย" แล้วติ๊ก checkbox ออก
   </div>`;
+
   PLANS.forEach(p => {
     const g = getGate(p.no);
     const opens = g.opens_at ? new Date(g.opens_at).toISOString().slice(0,16) : '';
+    const locked = countLockedItems(p.no);
+    const toolList = PLAN_TOOLS[p.no] || [];
+    const hasMedia = !!(PLAN_MEDIA[p.no] && PLAN_MEDIA[p.no].sections);
+
     html += `
-      <div class="setting-row">
-        <div class="plan-ttl">แผน ${p.no}</div>
-        <div style="font-size:13px">${p.title}<br><span style="color:#999;font-size:11px">คาบ ${p.periods}</span></div>
-        <div>
-          <select id="st_${p.no}">
-            <option value="open" ${g.status==='open'?'selected':''}>open ✅</option>
-            <option value="preview" ${g.status==='preview'?'selected':''}>preview ⏰</option>
-            <option value="locked" ${g.status==='locked'?'selected':''}>locked 🔒</option>
-            <option value="readonly" ${g.status==='readonly'?'selected':''}>readonly 🔎</option>
-          </select>
+      <div class="plan-row-card" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:10px;overflow:hidden">
+        <div class="setting-row" style="margin:0;border:0;padding:10px 14px">
+          <div class="plan-ttl">แผน ${p.no}</div>
+          <div style="font-size:13px">${p.title}<br><span style="color:#999;font-size:11px">คาบ ${p.periods}${locked.tool||locked.media ? ` · <span style="color:#c62828">🔒 ปิด ${locked.tool} tool, ${locked.media} สื่อ</span>`:''}</span></div>
+          <div>
+            <select id="st_${p.no}">
+              <option value="open" ${g.status==='open'?'selected':''}>open ✅</option>
+              <option value="preview" ${g.status==='preview'?'selected':''}>preview ⏰</option>
+              <option value="locked" ${g.status==='locked'?'selected':''}>locked 🔒</option>
+              <option value="readonly" ${g.status==='readonly'?'selected':''}>readonly 🔎</option>
+            </select>
+          </div>
+          <div><input type="datetime-local" id="op_${p.no}" value="${opens}"></div>
+          <div><input type="text" id="nt_${p.no}" value="${escapeHtml(g.note||'')}" placeholder="หมายเหตุ"></div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="btn-sm" onclick="savePlan(${p.no})">บันทึก</button>
+            ${(toolList.length || hasMedia) ? `<button class="btn-sm" style="background:#6a1b9a" onclick="togglePlanDetail(${p.no})">⚙ ย่อย</button>` : ''}
+          </div>
         </div>
-        <div><input type="datetime-local" id="op_${p.no}" value="${opens}"></div>
-        <div><input type="text" id="nt_${p.no}" value="${escapeHtml(g.note||'')}" placeholder="หมายเหตุ"></div>
-        <div><button class="btn-sm" onclick="savePlan(${p.no})">บันทึก</button></div>
+        <div id="plan-detail-${p.no}" style="display:none;padding:12px 14px;background:#faf8ff;border-top:1px solid #e9e2f5">
+          ${renderPlanDetailContent(p.no)}
+        </div>
       </div>`;
   });
   el.innerHTML = html;
+}
+
+function renderPlanDetailContent(planNo){
+  const toolList = PLAN_TOOLS[planNo] || [];
+  const media = PLAN_MEDIA[planNo];
+  let html = '';
+
+  // ── Tools ──
+  if (toolList.length){
+    html += `<div style="font-weight:700;color:#4a148c;margin-bottom:8px">🔧 Tools (${toolList.length})</div>`;
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;margin-bottom:14px">`;
+    toolList.forEach(toolId => {
+      const def = TOOL_DEFS[toolId];
+      if (!def) return;
+      const tg = getToolGate(planNo, toolId);
+      const isOpen = tg.status !== 'locked';
+      html += `
+        <label class="item-toggle" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;border:1.5px solid ${isOpen?'#a5d6a7':'#ef9a9a'};border-radius:8px;cursor:pointer;font-size:13px">
+          <input type="checkbox" ${isOpen?'checked':''} onchange="toggleItem(${planNo},'tool','${toolId}',this.checked)" style="width:16px;height:16px;cursor:pointer">
+          <span>${def.ico} ${escapeHtml(def.name)}</span>
+        </label>`;
+    });
+    html += `</div>`;
+  }
+
+  // ── Media ──
+  if (media && media.sections){
+    html += `<div style="font-weight:700;color:#4a148c;margin-bottom:8px">📚 สื่อ/เครื่องมือ</div>`;
+    media.sections.forEach(sec => {
+      html += `<div style="font-size:12px;color:#666;margin:6px 0 4px">${sec.title}</div>`;
+      html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px;margin-bottom:10px">`;
+      sec.items.forEach(it => {
+        const mg = getMediaGate(planNo, it.no);
+        const isOpen = mg.status !== 'locked';
+        html += `
+          <label class="item-toggle" style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#fff;border:1.5px solid ${isOpen?'#a5d6a7':'#ef9a9a'};border-radius:8px;cursor:pointer;font-size:12px">
+            <input type="checkbox" ${isOpen?'checked':''} onchange="toggleItem(${planNo},'media','${it.no}',this.checked)" style="width:16px;height:16px;cursor:pointer">
+            <span><b>${it.no}</b> · ${escapeHtml(it.t)}</span>
+          </label>`;
+      });
+      html += `</div>`;
+    });
+  }
+
+  if (!toolList.length && !(media && media.sections)){
+    html = '<div style="color:#999;font-size:13px;font-style:italic">ยังไม่มี tool/สื่อในแผนนี้</div>';
+  }
+
+  return html;
+}
+
+function togglePlanDetail(planNo){
+  const el = document.getElementById('plan-detail-'+planNo);
+  if (!el) return;
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
 }
 
 async function savePlan(planNo){
@@ -2227,18 +2346,53 @@ async function savePlan(planNo){
       body: JSON.stringify({
         action:'updateSetting',
         teacher_pw: TEACHER_PASS,
-        plan: planNo, status, opens_at, note
+        scope: 'plan', plan: planNo, item_id: '',
+        status, opens_at, note
       })
     });
     // อัปเดต cache local
-    const idx = state.settings.findIndex(s => Number(s.plan)===planNo);
-    const newRec = {plan:planNo, status, opens_at, closes_at:'', note};
-    if (idx >= 0) state.settings[idx] = newRec;
-    else state.settings.push(newRec);
+    upsertSettingCache('plan', planNo, '', {status, opens_at, closes_at:'', note});
     alert(`✅ บันทึกแผน ${planNo} เป็น "${status}" แล้ว`);
   } catch(e){
     alert('❌ ผิดพลาด: ' + e.message);
   }
+}
+
+// Phase 2: toggle tool/media item open/locked
+async function toggleItem(planNo, scope, itemId, isOpen){
+  const status = isOpen ? 'open' : 'locked';
+  try {
+    await fetch(API_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'updateSetting',
+        teacher_pw: TEACHER_PASS,
+        scope, plan: planNo, item_id: itemId,
+        status
+      })
+    });
+    // อัปเดต cache + rerender
+    upsertSettingCache(scope, planNo, itemId, {status, opens_at:'', closes_at:'', note:''});
+    renderPlansList(); // rerender เพื่อ update badge "ปิด X tool, Y สื่อ"
+    // เปิด detail กลับคืนเพราะ rerender ปิดไว้
+    const detail = document.getElementById('plan-detail-'+planNo);
+    if (detail) detail.style.display = 'block';
+  } catch(e){
+    alert('❌ ผิดพลาด: ' + e.message);
+  }
+}
+
+function upsertSettingCache(scope, planNo, itemId, fields){
+  if (!Array.isArray(state.settings)) state.settings = [];
+  const idx = state.settings.findIndex(s =>
+    String(s.scope||'plan') === scope &&
+    Number(s.plan) === Number(planNo) &&
+    String(s.item_id||'') === String(itemId||'')
+  );
+  const rec = {scope, plan:planNo, item_id:itemId, ...fields};
+  if (idx >= 0) state.settings[idx] = {...state.settings[idx], ...rec};
+  else state.settings.push(rec);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -2279,6 +2433,9 @@ function renderMediaBody(){
     <div class="media-section-title">${sec.title}</div>
     <div class="media-grid">
       ${sec.items.map(it => {
+        // Phase 2: filter out locked media items
+        const mg = getMediaGate(mediaCurrentPlan, it.no);
+        if (mg.status === 'locked') return '';
         const chips = (it.chips||[]).map(c => `<span class="chip ${c[0]}">${c[1]}</span>`).join('');
         const meta = it.meta ? `<div class="meta">${it.meta}</div>` : '';
         const href = encodeURI(`${data.folder}/${it.file}`);
