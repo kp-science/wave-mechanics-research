@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 1 — การเกิดคลื่น ชนิดของคลื่น และส่วนประกอบของคลื่น</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: #f0f4f8; color: #1a202c; font-size: 15px; line-height: 1.6; }
+
+  /* ─── HERO ─── */
+  .hero { background: linear-gradient(135deg, #0f2c5c 0%, #1a4a8a 50%, #1565c0 100%); color: white; padding: 36px 40px 28px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%); border-radius: 50%; }
+  .hero-wave { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; overflow: hidden; }
+  .hero-wave svg { display: block; }
+  .hero-top { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  .hero-badge { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); border-radius: 16px; padding: 10px 20px; text-align: center; min-width: 110px; backdrop-filter: blur(4px); }
+  .hero-badge .plan-num { font-size: 36px; font-weight: 800; line-height: 1; }
+  .hero-badge .plan-label { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .hero-info { flex: 1; }
+  .hero-info h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+  .hero-info .subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { background: rgba(255,255,255,0.18); border-radius: 20px; padding: 3px 12px; font-size: 13px; white-space: nowrap; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2); }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 14px; opacity: 0.92; }
+  .meta-icon { font-size: 18px; }
+
+  /* ─── LAYOUT ─── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 40px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ─── CARDS ─── */
+  .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+  .card-icon { font-size: 22px; }
+  .card-title { font-size: 17px; font-weight: 700; color: #1a202c; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #718096; margin-bottom: 4px; }
+
+  /* ─── CONCEPT BOX ─── */
+  .concept-box { background: linear-gradient(135deg, #ebf8ff, #e6f0fb); border-left: 5px solid #3182ce; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; font-size: 15px; line-height: 1.75; }
+
+  /* ─── WAVE CARDS ─── */
+  .wave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+  .wave-card { border-radius: 12px; padding: 14px; position: relative; overflow: hidden; }
+  .wave-card.transverse { background: #e9f5e9; border-left: 4px solid #38a169; }
+  .wave-card.longitudinal { background: #fff3e0; border-left: 4px solid #e88c00; }
+  .wave-card.mechanical { background: #e8eaf6; border-left: 4px solid #5c6bc0; }
+  .wave-card.em { background: #fce4ec; border-left: 4px solid #e91e63; }
+  .wave-card.pulse { background: #f3e5f5; border-left: 4px solid #8e24aa; }
+  .wave-card.continuous { background: #e0f7fa; border-left: 4px solid #0097a7; }
+  .wave-type-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .wave-type-sub { font-size: 13px; color: #4a5568; }
+  .wave-examples { font-size: 12.5px; color: #718096; margin-top: 6px; }
+  .wave-svg-box { background: white; border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center; }
+  svg.wave-diagram { width: 100%; max-width: 260px; height: 60px; }
+
+  /* ─── TIMELINE ─── */
+  .timeline-wrap { margin-top: 6px; }
+  .phase { display: flex; gap: 14px; margin-bottom: 16px; position: relative; }
+  .phase::before { content: ''; position: absolute; left: 24px; top: 52px; bottom: -16px; width: 2px; background: #e2e8f0; }
+  .phase:last-child::before { display: none; }
+  .phase-dot { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: white; z-index: 1; }
+  .phase-dot.tlc       { background: #7e57c2; }
+  .phase-dot.ft        { background: #1e88e5; }
+  .phase-dot.engage    { background: #2e7d32; }
+  .phase-dot.explore   { background: #ef6c00; }
+  .phase-dot.explain   { background: #c62828; }
+  .phase-dot.elaborate { background: #8d6e63; }
+  .phase-dot.mj        { background: #4e342e; }
+  .phase-body { flex: 1; }
+  .phase-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .phase-name { font-size: 17px; font-weight: 700; }
+  .phase-name.tlc       { color: #5e35b1; }
+  .phase-name.ft        { color: #1565c0; }
+  .phase-name.engage    { color: #1b5e20; }
+  .phase-name.explore   { color: #c05621; }
+  .phase-name.explain   { color: #b71c1c; }
+  .phase-name.elaborate { color: #5d4037; }
+  .phase-name.mj        { color: #3e2723; }
+  .phase-time { background: #edf2f7; border-radius: 20px; padding: 2px 10px; font-size: 12.5px; color: #4a5568; font-weight: 600; }
+  .vpa-badge { background: #ebf4ff; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #2b6cb0; font-weight: 600; }
+  .obj-badge { background: #fff4cc; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #8a6d00; font-weight: 700; }
+  .misc-badge { background: #ffe4d6; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #b53c00; font-weight: 700; }
+  .phase-activities { list-style: none; }
+  .phase-activities li { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: start; padding: 6px 0; border-bottom: 1px dashed #edf2f7; font-size: 14px; color: #2d3748; }
+  .phase-activities li:last-child { border-bottom: none; }
+  .li-tool { justify-self: end; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .li-text { position: relative; padding-left: 18px; }
+  .li-text::before { content: '▸'; position: absolute; left: 0; color: #a0aec0; }
+  .poe-tag { display: inline-block; background: #fef3c7; color: #92400e; border-radius: 6px; padding: 0 6px; font-size: 11.5px; font-weight: 700; margin-left: 4px; vertical-align: middle; }
+  .tool-tag { display: inline-block; background: #e3f2fd; color: #0d47a1; border-radius: 6px; padding: 0 6px; font-size: 11.5px; font-weight: 700; margin-left: 4px; vertical-align: middle; }
+
+  /* ─── PHASE TOOLS (front of phase-head) ─── */
+  .phase-tools { display: inline-flex; gap: 4px; flex-wrap: wrap; margin-right: 6px; padding-right: 8px; border-right: 2px dashed #cbd5e0; }
+  .tool-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1.5px solid #90cdf4; color: #2b6cb0; border-radius: 8px; padding: 2px 8px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .tool-chip.cc    { border-color: #f6ad55; color: #c05621; background: #fffaf0; }
+  .tool-chip.sim   { border-color: #9f7aea; color: #553c9a; background: #faf5ff; }
+  .tool-chip.slinky{ border-color: #ed8936; color: #9c4221; background: #fff5f7; }
+  .tool-chip.poe   { border-color: #38a169; color: #276749; background: #f0fff4; }
+  .tool-chip.tl    { border-color: #805ad5; color: #553c9a; background: #faf5ff; }
+  .tool-chip.mj    { border-color: #8b5a2b; color: #744210; background: #fffbeb; }
+  .tool-chip.ft    { border-color: #4299e1; color: #2b6cb0; background: #ebf8ff; }
+  .tool-chip.work  { border-color: #48bb78; color: #276749; background: #f0fff4; }
+
+  /* ─── COMPETENCY / CHARACTERISTIC BADGES ─── */
+  .comp-badge { display: inline-flex; align-items: center; gap: 3px; background: #e6fffa; color: #234e52; border: 1px solid #81e6d9; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+  .char-badge { display: inline-flex; align-items: center; gap: 3px; background: #fefcbf; color: #744210; border: 1px solid #ecc94b; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+
+  /* ─── POE CHIP (P1/O1/E1) ─── */
+  .poe-chip { display: inline-flex; align-items: center; gap: 3px; border-radius: 8px; padding: 2px 10px; font-size: 12.5px; font-weight: 800; color: #fff; letter-spacing: 0.3px; }
+  .poe-chip.p { background: #5a67d8; }
+  .poe-chip.o { background: #dd6b20; }
+  .poe-chip.e { background: #38a169; }
+
+  /* ─── MISCONCEPTIONS ─── */
+  .misc-box { background: #fff5f5; border: 1.5px solid #fc8181; border-radius: 12px; padding: 14px; margin-top: 14px; }
+  .misc-title { font-weight: 700; color: #c53030; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .misc-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .misc-id { background: #c53030; color: white; border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+  .misc-text { font-size: 13.5px; color: #2d3748; }
+  .misc-correct { font-size: 13px; color: #276749; font-weight: 600; margin-top: 3px; display: flex; align-items: flex-start; gap: 4px; }
+
+  /* ─── ASSESS TABLE ─── */
+  .assess-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .assess-table th { background: #2b6cb0; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .assess-table td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .assess-table tr:nth-child(even) td { background: #f7fafc; }
+  .assess-table tr:hover td { background: #ebf8ff; }
+
+  /* ─── วPA TABLE ─── */
+  .vpa-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .vpa-table th { background: #553c9a; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .vpa-table td { padding: 8px 10px; border-bottom: 1px solid #e9d8fd; vertical-align: top; }
+  .vpa-table tr:nth-child(even) td { background: #faf5ff; }
+  .vpa-num { background: #6b46c1; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .e5-tag { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 11.5px; font-weight: 600; color: white; }
+  .e5-tlc       { background: #7e57c2; }
+  .e5-ft        { background: #1e88e5; }
+  .e5-engage    { background: #2e7d32; }
+  .e5-explore   { background: #ef6c00; }
+  .e5-explain   { background: #c62828; }
+  .e5-elaborate { background: #8d6e63; }
+  .e5-mj        { background: #4e342e; }
+  .e5-all       { background: #718096; }
+
+  /* ─── TOOLS ─── */
+  .tool-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 14px; }
+  .tool-item:last-child { border-bottom: none; }
+  .tool-num { background: #edf2f7; color: #4a5568; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+
+  /* ─── OBJECTIVES ─── */
+  .obj-group { margin-bottom: 14px; }
+  .obj-group:last-child { margin-bottom: 0; }
+  .obj-type { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px; }
+  .obj-type.k { background: #bee3f8; color: #1a365d; }
+  .obj-type.p { background: #c6f6d5; color: #1c4532; }
+  .obj-type.a { background: #feebc8; color: #652b19; }
+  .obj-list { list-style: none; }
+  .obj-list li { padding: 4px 0 4px 26px; position: relative; font-size: 14px; color: #2d3748; }
+  .obj-list li::before { content: '✓'; position: absolute; left: 0; color: #38a169; font-weight: 700; }
+  .obj-code { display: inline-block; background: #1a365d; color: #fff; border-radius: 4px; font-size: 11px; padding: 1px 6px; margin-right: 4px; font-weight: 700; }
+  .obj-code.p { background: #1c4532; }
+  .obj-code.a { background: #652b19; }
+
+  /* ─── COMPETENCIES ─── */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .comp-item { background: #f7fafc; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+  .comp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ─── POE RUBRIC ─── */
+  .rubric-strip { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .rubric-score { flex: 1; min-width: 80px; border-radius: 10px; padding: 10px; text-align: center; border: 2px solid transparent; }
+  .rubric-score .score-num { font-size: 26px; font-weight: 800; line-height: 1; }
+  .rubric-score .score-desc { font-size: 12px; margin-top: 4px; }
+  .rubric-score:nth-child(1) { background: #fff5f5; border-color: #fc8181; color: #c53030; }
+  .rubric-score:nth-child(2) { background: #fffaf0; border-color: #f6ad55; color: #c05621; }
+  .rubric-score:nth-child(3) { background: #f0fff4; border-color: #9ae6b4; color: #276749; }
+  .rubric-score:nth-child(4) { background: #ebf8ff; border-color: #90cdf4; color: #2b6cb0; }
+
+  /* ─── FOOTER ─── */
+  .footer { text-align: center; padding: 20px; color: #a0aec0; font-size: 13px; border-top: 1px solid #e2e8f0; margin-top: 10px; }
+
+  /* ─── SECTION TITLE ─── */
+  .section-heading { font-size: 20px; font-weight: 800; color: #1a202c; margin: 28px 0 14px; padding-left: 14px; border-left: 5px solid #3182ce; }
+
+  /* ─── POE CHAIN ─── */
+  .poe-chain { display: flex; align-items: center; gap: 0; margin: 14px 0; flex-wrap: wrap; }
+  .poe-step { flex: 1; min-width: 100px; padding: 12px 10px; text-align: center; font-weight: 700; font-size: 15px; color: white; position: relative; }
+  .poe-sub { font-size: 12px; font-weight: 400; margin-top: 2px; opacity: 0.9; }
+</style>
+</head>
+<body>
+
+<!-- ════════════ HERO ════════════ -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">1</div>
+      <div class="plan-label">แผนการสอน</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px; opacity:0.75; margin-bottom:4px; font-weight:600; letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 9 คลื่นกล · ม.5</p>
+      <h1>การเกิดคลื่น ชนิดของคลื่น และส่วนประกอบของคลื่น</h1>
+      <div class="subtitle">หน่วยคลื่นกล · แผน 1/10 · คาบที่ 1–2</div>
+      <div class="hero-tags">
+        <span class="tag">🎯 5E Inquiry</span>
+        <span class="tag">🔬 POE</span>
+        <span class="tag">🧠 วPA ด้านที่ 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ Misconception M1.1–M1.4</span>
+        <span class="tag">💻 HTML Simulation</span>
+        <span class="tag">📝 Four-tier F1</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-icon">⏱</span> <strong>คาบ 1–2 · 100 นาที</strong></div>
+    <div class="meta-item"><span class="meta-icon">👨‍🏫</span> นายโกเมน ปาปะโถ</div>
+    <div class="meta-item"><span class="meta-icon">📚</span> สสวท. ฟิสิกส์ เล่ม 3 · 9.1.1–9.1.3</div>
+    <div class="meta-item"><span class="meta-icon">🎯</span> ผลการเรียนรู้ข้อ 1</div>
+    <div class="meta-item"><span class="meta-icon">🏫</span> โรงเรียนสตรีวิทยา</div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,20 C200,0 400,40 600,20 C800,0 1000,40 1200,20 L1200,40 L0,40 Z" fill="#f0f4f8"/>
+    </svg>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ══ SECTION 1: สาระสำคัญ ══ -->
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    <strong>คลื่น</strong> คือการถ่ายโอน<strong>พลังงาน</strong>ผ่านตัวกลาง โดยที่ <strong>อนุภาคของตัวกลางไม่เคลื่อนที่ตามคลื่น</strong> แต่สั่นรอบตำแหน่งสมดุล<br>
+    จำแนกคลื่นได้หลายแบบ: กล/EM · ตามขวาง/ตามยาว · ดล/ต่อเนื่อง · และมีส่วนประกอบ λ, A, T, f ที่สัมพันธ์กันผ่าน v = fλ
+  </div>
+
+  <!-- Wave Types -->
+  <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px;">
+    <div class="wave-card mechanical">
+      <div class="wave-type-title">🌊 คลื่นกล</div>
+      <div class="wave-type-sub">Mechanical Wave · ต้องการตัวกลาง</div>
+      <div class="wave-examples">คลื่นน้ำ · คลื่นเสียง · คลื่นในเชือก</div>
+    </div>
+    <div class="wave-card em">
+      <div class="wave-type-title">⚡ คลื่นแม่เหล็กไฟฟ้า</div>
+      <div class="wave-type-sub">EM Wave · ไม่ต้องการตัวกลาง</div>
+      <div class="wave-examples">แสง · คลื่นวิทยุ · รังสี X</div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr; gap:10px;">
+      <div class="wave-card pulse" style="padding:10px;">
+        <div class="wave-type-title" style="font-size:13px;">💥 คลื่นดล</div>
+        <div class="wave-examples">รบกวน 1 ครั้ง</div>
+      </div>
+      <div class="wave-card continuous" style="padding:10px;">
+        <div class="wave-type-title" style="font-size:13px;">〰️ คลื่นต่อเนื่อง</div>
+        <div class="wave-examples">รบกวนซ้ำๆ สม่ำเสมอ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wave-grid" style="margin-bottom:20px;">
+    <div class="wave-card transverse">
+      <div class="wave-type-title">📈 คลื่นตามขวาง (Transverse)</div>
+      <div class="wave-type-sub">ทิศการสั่น <strong>⊥</strong> ทิศเดินคลื่น</div>
+      <div class="wave-svg-box">
+        <svg class="wave-diagram" viewBox="0 0 260 60">
+          <path d="M10,30 C32,10 52,50 74,30 C96,10 116,50 138,30 C160,10 180,50 202,30 C224,10 244,50 250,30" fill="none" stroke="#38a169" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="wave-examples" style="margin-top:6px;">เชือก · แสง · คลื่นน้ำ</div>
+    </div>
+    <div class="wave-card longitudinal">
+      <div class="wave-type-title">📊 คลื่นตามยาว (Longitudinal)</div>
+      <div class="wave-type-sub">ทิศการสั่น <strong>//</strong> ทิศเดินคลื่น</div>
+      <div class="wave-svg-box">
+        <svg class="wave-diagram" viewBox="0 0 260 60">
+          <rect x="10" y="20" width="20" height="20" rx="2" fill="#f6ad5580"/>
+          <rect x="38" y="20" width="8" height="20" rx="2" fill="#e88c00"/>
+          <rect x="54" y="20" width="20" height="20" rx="2" fill="#f6ad5580"/>
+          <rect x="82" y="20" width="8" height="20" rx="2" fill="#e88c00"/>
+          <rect x="98" y="20" width="20" height="20" rx="2" fill="#f6ad5580"/>
+          <rect x="126" y="20" width="8" height="20" rx="2" fill="#e88c00"/>
+          <rect x="142" y="20" width="20" height="20" rx="2" fill="#f6ad5580"/>
+          <rect x="170" y="20" width="8" height="20" rx="2" fill="#e88c00"/>
+          <rect x="186" y="20" width="20" height="20" rx="2" fill="#f6ad5580"/>
+        </svg>
+      </div>
+      <div class="wave-examples" style="margin-top:6px;">เสียง · คลื่นในสปริง (อัด–ขยาย)</div>
+    </div>
+  </div>
+
+  <!-- Misconceptions -->
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 1 (จาก Master 33 ตัว)</div>
+    <div class="misc-item">
+      <span class="misc-id">M1.1</span>
+      <div>
+        <div class="misc-text">❌ <em>"อนุภาคของตัวกลางเคลื่อนที่ไปกับคลื่น"</em> <span style="font-size:11px;color:#718096;">[★ MWCS]</span></div>
+        <div class="misc-correct">✅ อนุภาค<strong>สั่นอยู่กับที่</strong>รอบตำแหน่งสมดุล · คลื่นพาพลังงาน ไม่ใช่มวล</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M1.2</span>
+      <div>
+        <div class="misc-text">❌ <em>"เสียงเป็นคลื่นตามขวาง"</em> <span style="font-size:11px;color:#718096;">[★ MWCS]</span></div>
+        <div class="misc-correct">✅ เสียงเป็น<strong>คลื่นตามยาว</strong> อาศัยการอัด–ขยายของอากาศ</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M1.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"คลื่นเคลื่อนที่เป็นเส้นตรงเสมอ"</em> <span style="font-size:11px;color:#718096;">[CL]</span></div>
+        <div class="misc-correct">✅ คลื่นแผ่เป็น<strong>หน้าคลื่น</strong> (สเฟียร์/ระนาบ) ขึ้นกับแหล่งกำเนิด</div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M1.4</span>
+      <div>
+        <div class="misc-text">❌ <em>"คาบ T กับความยาวคลื่น λ เป็นสิ่งเดียวกัน"</em> <span style="font-size:11px;color:#718096;">[CL]</span></div>
+        <div class="misc-correct">✅ <strong>T เป็นเวลา</strong> (s) · <strong>λ เป็นระยะทาง</strong> (m) · สัมพันธ์กันผ่าน v = λ/T</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 2: จุดประสงค์ ══ -->
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <span class="card-title">ด้านความรู้ ทักษะ และเจตคติ (KPA)</span>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K1</span>อธิบายการเกิดคลื่นและจำแนกคลื่นตามขวาง/ตามยาว พร้อมระบุทิศการสั่นของอนุภาคเทียบกับทิศการเคลื่อนที่ของคลื่น</li>
+          <li><span class="obj-code">K2</span>ระบุส่วนประกอบของคลื่น (λ, A, T, f) จากรูปกราฟและคลื่นจริงได้ถูกต้อง</li>
+          <li><span class="obj-code">K3</span>แก้ไขมโนทัศน์ที่คลาดเคลื่อน M1.1–M1.4 โดยอธิบายว่าอนุภาคสั่นอยู่กับที่ และเสียงเป็นคลื่นตามยาว</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P1</span>ออกแบบและดำเนินการทดลอง Slinky ตรวจสอบทิศการสั่นของตัวกลางเทียบกับทิศการเคลื่อนที่ของคลื่น</li>
+          <li><span class="obj-code p">P2</span>เชื่อมโยงข้อมูลจาก Slinky และ simulation สร้างคำอธิบาย P↔O↔E อย่างสมบูรณ์</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A1</span>แสดงความมุ่งมั่น ร่วมแลกเปลี่ยนในกลุ่ม และยอมรับผลการทดลองแม้ขัดกับการทำนายของตนเอง</li>
+          <li><span class="obj-code a">A2</span>สะท้อนการเรียนรู้ของตนเอง ระบุสิ่งที่เข้าใจ–สงสัย และตั้งคำถามเพิ่มเติมเกี่ยวกับคลื่นในชีวิตประจำวัน</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💪</span>
+        <span class="card-title">สมรรถนะ & คุณลักษณะ</span>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-item"><span class="comp-dot" style="background:#3182ce"></span>การสื่อสาร</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#805ad5"></span>การคิด</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#e53e3e"></span>การแก้ปัญหา</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#dd6b20"></span>ทักษะชีวิต</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#38a169"></span>การใช้เทคโนโลยี</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#1e88e5"></span>การรวมพลัง/ทำงานเป็นทีม</div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-label">คุณลักษณะอันพึงประสงค์</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+          <span style="background:#f7fafc; border:1.5px solid #e2e8f0; border-radius:20px; padding:4px 14px; font-size:13.5px;">🏆 มีวินัย</span>
+          <span style="background:#f7fafc; border:1.5px solid #e2e8f0; border-radius:20px; padding:4px 14px; font-size:13.5px;">📖 ใฝ่เรียนรู้</span>
+          <span style="background:#f7fafc; border:1.5px solid #e2e8f0; border-radius:20px; padding:4px 14px; font-size:13.5px;">💪 มุ่งมั่นในการทำงาน</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-label">กระบวนการ POE</div>
+        <div class="poe-chain" style="margin-top:8px;">
+          <div class="poe-step" style="background:#3182ce; border-radius:8px 0 0 8px;">
+            <span>🔮 P<div class="poe-sub">Predict</div></span>
+          </div>
+          <div class="poe-step" style="background:#dd6b20;">
+            <span>👁 O<div class="poe-sub">Observe</div></span>
+          </div>
+          <div class="poe-step" style="background:#38a169; border-radius:0 8px 8px 0;">
+            <span>✍️ E<div class="poe-sub">Explain</div></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 3: กิจกรรม 5E + POE ══ -->
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + POE · 9 ขั้น)</h2>
+  <div class="card">
+    <div class="timeline-wrap">
+
+      <!-- TLC Pre -->
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name tlc">TLC ก่อนเรียน — Traffic Light Check</span>
+            <span class="phase-time">⏱ 0–3 นาที</span>
+            <span class="obj-badge">A1</span>
+            <span class="vpa-badge">วPA 4, 7</span>
+            <span class="comp-badge">💬 สื่อสาร</span>
+            <span class="char-badge">🏆 มีวินัย</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">นักเรียนยกบัตร 🟢🟡🔴 ประเมินความพร้อมของตนเอง</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🎯 นักเรียนและครูร่วมกันตั้งเป้าหมายของคาบ (5W1H)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- F1 Pre -->
+      <div class="phase">
+        <div class="phase-dot ft">F1</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name ft">Formative Pre-test — Four-tier F1</span>
+            <span class="phase-time">⏱ 3–8 นาที</span>
+            <span class="obj-badge">K1, K2, K3</span>
+            <span class="misc-badge">M1.1, M1.2, M1.4</span>
+            <span class="vpa-badge">วPA 2, 6</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="char-badge">🏆 มีวินัย</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 F1-Pre</span></span><span class="li-text">นักเรียนทำ Four-tier 3 ข้อ (T1 คำตอบ · T2 มั่นใจ · T3 เหตุผล · T4 มั่นใจ)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🔍 ครูเก็บ baseline Sound / Misconception / Guessing / No-Knowledge → ใช้ในบทที่ 4</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- E1 Engage -->
+      <div class="phase">
+        <div class="phase-dot engage">E1</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name engage">Engage — กระตุ้นความสนใจ</span>
+            <span class="phase-time">⏱ 8–23 นาที</span>
+            <span class="obj-badge">P1, A1</span>
+            <span class="misc-badge">M1.1</span>
+            <span class="vpa-badge">วPA 1, 2, 4</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="comp-badge">💬 สื่อสาร</span>
+            <span class="char-badge">📖 ใฝ่เรียนรู้</span>
+            <span class="poe-chip p">P1 · Predict</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip cc">🎴 Concept Cartoon</span></span><span class="li-text">📌 นักเรียนดู <strong>Concept Cartoon</strong> "ของลอยในทะเล" 3 ตัวละครถกเถียงว่าของลอยถูกคลื่นพาไปหรือไม่ <span class="poe-tag">POE-P</span></span></li>
+            <li><span class="li-tool"></span><span class="li-text">🤔 นักเรียนคิดเดี่ยว 2' → คู่ 3' → กลุ่ม 5' → แชร์ชั้น 5' (Think–Pair–Share)</span></li>
+            <li><span class="li-tool"><span class="tool-chip poe">📋 POE-01</span></span><span class="li-text">✍️ นักเรียนเขียนคำทำนาย <strong>P (Predict)</strong> ลงใบ POE-01 พร้อมเหตุผล</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- E2 Explore -->
+      <div class="phase">
+        <div class="phase-dot explore">E2</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name explore">Explore — สำรวจและทดลอง</span>
+            <span class="phase-time">⏱ 23–53 นาที</span>
+            <span class="obj-badge">P1, P2, A1</span>
+            <span class="misc-badge">M1.1, M1.2</span>
+            <span class="vpa-badge">วPA 3, 4, 7</span>
+            <span class="comp-badge">🛠 แก้ปัญหา</span>
+            <span class="comp-badge">🤝 รวมพลัง</span>
+            <span class="comp-badge">💻 เทคโนโลยี</span>
+            <span class="char-badge">🏆 มีวินัย</span>
+            <span class="char-badge">📖 ใฝ่เรียนรู้</span>
+            <span class="poe-chip o">O1 · Observe</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip slinky">🧪 Slinky</span></span><span class="li-text">🌀 <strong>ฐาน 1</strong> · นักเรียนสร้างคลื่นด้วย Slinky 2 แบบ (ตามขวาง/ตามยาว) วางริบบิ้นบนขด สังเกตการเคลื่อนของริบบิ้น</span></li>
+            <li><span class="li-tool"><span class="tool-chip sim">💻 wave-types.html</span></span><span class="li-text">💻 <strong>ฐาน 2</strong> · นักเรียนเปิด simulation <strong>wave-types.html</strong> เปรียบเทียบคลื่นน้ำ/คลื่นเสียง/คลื่นในเชือก</span></li>
+            <li><span class="li-tool"><span class="tool-chip poe">📋 POE-01</span></span><span class="li-text">👁 นักเรียนบันทึก <strong>O (Observe)</strong> ลงใบ POE-01: ทิศการสั่นของอนุภาค, ทิศคลื่น, ประเภทคลื่น <span class="poe-tag">POE-O</span></span></li>
+            <li><span class="li-tool"></span><span class="li-text">🧭 จัดกลุ่มละ 4 คน หมุนฐาน 2 ฐาน ฐานละ 12' + สรุป 6'</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- E3 Explain -->
+      <div class="phase">
+        <div class="phase-dot explain">E3</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name explain">Explain — อภิปรายและสรุป</span>
+            <span class="phase-time">⏱ 53–73 นาที</span>
+            <span class="obj-badge">K1, K3, P2</span>
+            <span class="misc-badge">M1.1, M1.2</span>
+            <span class="vpa-badge">วPA 3, 5, 6</span>
+            <span class="comp-badge">💬 สื่อสาร</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="char-badge">💪 มุ่งมั่น</span>
+            <span class="poe-chip e">E1 · Explain</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">📢 ตัวแทนกลุ่มนำเสนอผลสังเกต (Gallery walk 8')</span></li>
+            <li><span class="li-tool"></span><span class="li-text">💬 นักเรียนและครูร่วมกันอภิปรายและสร้างข้อสรุป: "อนุภาคสั่นอยู่กับที่ · พลังงานเท่านั้นเคลื่อนที่"</span></li>
+            <li><span class="li-tool"><span class="tool-chip poe">📋 POE-01</span></span><span class="li-text">✍️ นักเรียนเขียน <strong>E (Explain)</strong> เชื่อม P↔O ในใบ POE-01 <span class="poe-tag">POE-E</span></span></li>
+            <li><span class="li-tool"></span><span class="li-text">🏆 สรุปแก้ Misconception M1.1 และ M1.2 ด้วยหลักฐาน 2 แหล่ง (Slinky + Sim)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- E4 Elaborate -->
+      <div class="phase">
+        <div class="phase-dot elaborate">E4</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name elaborate">Elaborate — ขยายและประยุกต์</span>
+            <span class="phase-time">⏱ 73–88 นาที</span>
+            <span class="obj-badge">K2, P2</span>
+            <span class="misc-badge">M1.3, M1.4</span>
+            <span class="vpa-badge">วPA 5, 6</span>
+            <span class="comp-badge">🛠 แก้ปัญหา</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="char-badge">💪 มุ่งมั่น</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip work">📄 ใบงาน 1.1</span></span><span class="li-text">📋 <strong>Matrix Table</strong> · นักเรียนคู่กรอกตารางเปรียบเทียบคลื่นตามขวาง/ตามยาว (ทิศสั่น · ทิศคลื่น · ตัวอย่าง · ส่วนประกอบ)</span></li>
+            <li><span class="li-tool"><span class="tool-chip work">📄 ใบงาน 1.2</span></span><span class="li-text">🔍 <strong>Spot the Error</strong> · นักเรียนหาข้อผิดพลาดในรูปคลื่น 4 รูป เน้น M1.3 (คลื่นเส้นตรง) และ M1.4 (T vs λ)</span></li>
+            <li><span class="li-tool"><span class="tool-chip sim">💻 wave-components.html</span></span><span class="li-text">〰️ <strong>Simulation ส่วนประกอบของคลื่น</strong> · นักเรียนคู่เลื่อน slider A, f, v บน KP Science Sim · สังเกตกราฟ y–x (Snapshot) คู่กับ y–t (Motion) · ใช้ preset ตัวกลาง 3 แบบ (เชือกหนัก/น้ำตื้น/เชือกเบา) เพื่อยืนยันว่า f คงที่ แต่ λ เปลี่ยน (ชน M1.4)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">✅ เฉลยรวม + อภิปราย เน้นส่วนประกอบคลื่น (λ, A, T, f) เชื่อมสู่ v = fλ ในแผน 2 🌱</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TLC Post -->
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name tlc">TLC หลังเรียน</span>
+            <span class="phase-time">⏱ 88–91 นาที</span>
+            <span class="obj-badge">A1</span>
+            <span class="vpa-badge">วPA 6, 7</span>
+            <span class="comp-badge">💬 สื่อสาร</span>
+            <span class="char-badge">🏆 มีวินัย</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">นักเรียนยกบัตร 🟢🟡🔴 ครั้งที่ 2 เปรียบเทียบความเข้าใจก่อน–หลัง (เป้าหมาย บัตรเขียว ≥ 60%)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">📊 ครูใช้ข้อมูลจัดกลุ่มช่วยเหลือในแผน 2</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- F1 Post -->
+      <div class="phase">
+        <div class="phase-dot ft">F1</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name ft">Formative Post-test — Four-tier F1</span>
+            <span class="phase-time">⏱ 91–98 นาที</span>
+            <span class="obj-badge">K1, K2, K3</span>
+            <span class="misc-badge">M1.1, M1.2, M1.4</span>
+            <span class="vpa-badge">วPA 5, 6</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="char-badge">💪 มุ่งมั่น</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 F1-Post</span></span><span class="li-text">นักเรียนทำ Four-tier 3 ข้อซ้ำ (ข้อเดียวกับ F1 Pre)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">📈 คำนวณ % Sound (เป้าหมาย ≥ 80%) และอัตราการลด Misconception (≥ 20%) → เข้าสู่ FT-Analytics (บทที่ 4)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- MJ -->
+      <div class="phase">
+        <div class="phase-dot mj">MJ</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name mj">Metacognitive Journal 3-2-1</span>
+            <span class="phase-time">⏱ 98–100 นาที</span>
+            <span class="obj-badge">A2</span>
+            <span class="vpa-badge">วPA 6, 8</span>
+            <span class="comp-badge">🧠 คิด</span>
+            <span class="comp-badge">❤️ ทักษะชีวิต</span>
+            <span class="char-badge">📖 ใฝ่เรียนรู้</span>
+            <span class="char-badge">💪 มุ่งมั่น</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip mj">📓 MJ-01</span></span><span class="li-text">นักเรียนเขียน <strong>3</strong> สิ่งที่เข้าใจ · <strong>2</strong> สิ่งที่น่าสนใจ · <strong>1</strong> คำถามที่ยังสงสัย</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🔗 ครูใช้ 1 คำถามจาก MJ เป็น Hook ของแผน 2 (Feed-forward)</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SECTION 4: สื่อ ══ -->
+  <h2 class="section-heading">🛠 สื่อและแหล่งการเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📦</span>
+        <span class="card-title">สื่อที่ใช้ในแผน</span>
+      </div>
+      <div class="tool-item"><span class="tool-num">1</span>🎭 Concept Cartoon "ของลอยในทะเล" (ใบกิจกรรม 1.0)</div>
+      <div class="tool-item"><span class="tool-num">2</span>🌀 Slinky + ริบบิ้นสี (สาธิต + ทดลองกลุ่ม 8 ชุด)</div>
+      <div class="tool-item"><span class="tool-num">3</span>💻 HTML Simulation: <em>wave-types.html</em> (เทียบคลื่นน้ำ/เสียง/เชือก)</div>
+      <div class="tool-item"><span class="tool-num">4</span>💻 HTML Simulation: <em>wave-components.html</em> (ส่วนประกอบคลื่น A/λ/T/f/v/φ + POE ตัวกลาง)</div>
+      <div class="tool-item"><span class="tool-num">5</span>📝 ใบบันทึก POE-01 (Predict / Observe / Explain)</div>
+      <div class="tool-item"><span class="tool-num">6</span>📋 Matrix Table (ใบกิจกรรม 1.1)</div>
+      <div class="tool-item"><span class="tool-num">7</span>🔍 Spot the Error (ใบกิจกรรม 1.2)</div>
+      <div class="tool-item"><span class="tool-num">8</span>📝 Four-tier F1 Pre/Post (3 ข้อ) บน Google Form</div>
+      <div class="tool-item"><span class="tool-num">9</span>🚦 Traffic Light Card TL-01 (🟢🟡🔴)</div>
+      <div class="tool-item"><span class="tool-num">10</span>📓 Metacognitive Journal MJ-01 (3-2-1)</div>
+      <div class="tool-item"><span class="tool-num">11</span>👁 แบบสังเกตพฤติกรรม OB-01</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⭐</span>
+        <span class="card-title">เนื้อหาขยาย (Enrichment)</span>
+      </div>
+      <div style="background:#fffbeb; border:1.5px solid #f6e05e; border-radius:10px; padding:14px; margin-bottom:14px;">
+        <div style="font-weight:700; color:#744210; font-size:14px; margin-bottom:8px;">🌍 คลื่นแผ่นดินไหว P-wave / S-wave</div>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1; background:white; border-radius:8px; padding:10px; border-left:3px solid #dd6b20;">
+            <div style="font-weight:700; color:#c05621; font-size:13px;">P-wave</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">Primary · ตามยาว · ผ่านของแข็ง + ของเหลว</div>
+          </div>
+          <div style="flex:1; background:white; border-radius:8px; padding:10px; border-left:3px solid #3182ce;">
+            <div style="font-weight:700; color:#2b6cb0; font-size:13px;">S-wave</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">Secondary · ตามขวาง · ผ่านของแข็งเท่านั้น</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#ebf8ff; border:1.5px solid #90cdf4; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#1a365d; font-size:14px; margin-bottom:6px;">🔗 เชื่อมสู่แผนถัดไป</div>
+        <div style="font-size:13px; color:#2d3748;">
+          • <strong>แผน 2:</strong> ส่วนประกอบของคลื่นและเฟส → ต่อยอด K2<br>
+          • <strong>แผน 3–4:</strong> v = fλ → ต่อยอด M1.4 (T vs λ)<br>
+          • <strong>แผน 10:</strong> FT-02 Post-test → ตรวจสอบ M1.1–M1.4 ในภาพรวม
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 5: การวัดและประเมินผล ══ -->
+  <h2 class="section-heading">📏 การวัดและประเมินผล</h2>
+  <div class="card">
+    <table class="assess-table">
+      <thead>
+        <tr>
+          <th>ด้าน / วัตถุประสงค์</th>
+          <th>ตัวแปรที่วัด</th>
+          <th>เครื่องมือ / กิจกรรมที่วัด</th>
+          <th>เกณฑ์ผ่าน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>K1 · K2 · K3</strong><br><small>ด้านความรู้</small></td>
+          <td>มโนทัศน์คลื่น / ส่วนประกอบ / การลด Misconception</td>
+          <td>F1 Four-tier (Pre+Post) ข้อ 1–3 · FT-02 ภาพรวม</td>
+          <td>% Sound ≥ 80% · Misconception ลด ≥ 20%</td>
+        </tr>
+        <tr>
+          <td><strong>P1 · P2</strong><br><small>ด้านทักษะกระบวนการ</small></td>
+          <td>ทักษะสืบเสาะ · การสร้างคำอธิบาย P↔O↔E</td>
+          <td>POE Rubric 0–3 (ฉาก E1–E3) · ใบ POE-01 · OB-01</td>
+          <td>POE เฉลี่ย ≥ 2.0 / 3.0</td>
+        </tr>
+        <tr>
+          <td><strong>A1</strong><br><small>ด้านเจตคติ</small></td>
+          <td>ความมุ่งมั่น · การยอมรับผล</td>
+          <td>TL-01 (ก่อน+หลัง) · OB-01</td>
+          <td>บัตรเขียว ≥ 60%</td>
+        </tr>
+        <tr>
+          <td><strong>A2</strong><br><small>Metacognition</small></td>
+          <td>Self-regulation · การตั้งคำถาม</td>
+          <td>MJ-01 (3-2-1)</td>
+          <td>เขียนครบ 3-2-1</td>
+        </tr>
+        <tr>
+          <td><strong>สมรรถนะ · คุณลักษณะ</strong></td>
+          <td>การสื่อสาร · การคิด · การทำงานร่วมกัน</td>
+          <td>OB-01 · การอภิปราย Gallery walk</td>
+          <td>สังเกตตลอดกิจกรรม</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px;">
+      <div class="section-label">เกณฑ์ POE Rubric (0–3)</div>
+      <div class="rubric-strip">
+        <div class="rubric-score"><div class="score-num">0</div><div class="score-desc">ไม่ตอบ / ไม่เกี่ยวข้อง</div></div>
+        <div class="rubric-score"><div class="score-num">1</div><div class="score-desc">อธิบายบางส่วน ขาดการเชื่อมหลักการ</div></div>
+        <div class="rubric-score"><div class="score-num">2</div><div class="score-desc">ทำนายผิด แต่ Explain ถูกตามหลักการ</div></div>
+        <div class="rubric-score"><div class="score-num">3</div><div class="score-desc">ทำนายถูก + อธิบาย P↔O สมบูรณ์ ≥ 3 ประโยค</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION 6: วPA ด้านที่ 1 · ทักษะการจัดการเรียนรู้ฯ (8 ตัวชี้วัด) ══ -->
+  <h2 class="section-heading">🔗 การเชื่อมโยงกับ วPA ด้านที่ 1 · ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน (8 ตัวชี้วัด)</h2>
+  <div class="card">
+    <div style="background:#fff3e0;padding:10px 14px;border-radius:8px;border-left:4px solid #ef6c00;margin-bottom:12px;font-size:13px">
+      📘 <b>อ้างอิง:</b> ตัวชี้วัดตามเกณฑ์ ก.ค.ศ. (ว21/2564) — คะแนน × 2.5 · รวม 80 คะแนน
+    </div>
+    <table class="vpa-table">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>ตัวชี้วัด วPA ด้านที่ 1</th>
+          <th>หลักฐาน/กิจกรรมในคาบนี้</th>
+          <th style="width:130px;">ขั้นของแผน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="vpa-num">1</span></td>
+          <td><strong>ผู้เรียนสามารถเข้าถึงสิ่งที่เรียนและเข้าใจบทเรียน</strong></td>
+          <td>Concept Cartoon "ของลอยในทะเล" · HTML Sim wave-types · ภาษาเหมาะ ม.5</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-explore">E2</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">2</span></td>
+          <td><strong>ผู้เรียนสามารถเชื่อมโยงความรู้/ประสบการณ์เดิมกับการเรียนรู้ใหม่</strong></td>
+          <td>F1 Pre-test (Four-tier) · ประสบการณ์คลื่นน้ำ/ทะเล · เชื่อมกับเสียงที่เรียนมา</td>
+          <td><span class="e5-tag e5-ft">F1</span> <span class="e5-tag e5-engage">E1</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">3</span></td>
+          <td><strong>ผู้เรียนได้สร้างความรู้เอง / ประสบการณ์ใหม่จากการเรียนรู้</strong></td>
+          <td>POE (P-O-E) · Slinky 2 แบบ · wave-types Sim · Gallery walk</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-explore">E2</span> <span class="e5-tag e5-explain">E3</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">4</span></td>
+          <td><strong>ผู้เรียนได้รับการกระตุ้นและเกิดแรงจูงใจในการเรียนรู้</strong></td>
+          <td>Concept Cartoon ขัดแย้งมโนทัศน์ · สถานการณ์จริง · Motivation Likert ใน MJ</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-mj">MJ</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">5</span></td>
+          <td><strong>ผู้เรียนได้รับการพัฒนาทักษะความเชี่ยวชาญจากการเรียนรู้</strong></td>
+          <td>Matrix Table เปรียบเทียบคลื่น · Spot-the-Error · wave-components.html (ส่วนประกอบคลื่น) · ฝึกจำแนกตามขวาง/ตามยาว</td>
+          <td><span class="e5-tag e5-elaborate">E4</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">6</span></td>
+          <td><strong>ผู้เรียนได้รับข้อมูลสะท้อนกลับเพื่อปรับปรุงการเรียนรู้</strong></td>
+          <td>เฉลย F1 ทันที + อธิบาย Tier 3 · Feedback Inbox WebApp · Peer feedback</td>
+          <td><span class="e5-tag e5-ft">F1</span> <span class="e5-tag e5-explain">E3</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">7</span></td>
+          <td><strong>ผู้เรียนได้รับการพัฒนาการเรียนรู้ในบรรยากาศชั้นเรียนที่เหมาะสม</strong></td>
+          <td>TL-01 Traffic Light ก่อน–หลัง · Think-Pair-Share · OB-01 สังเกตพฤติกรรม</td>
+          <td><span class="e5-tag e5-tlc">TLC</span> <span class="e5-tag e5-explore">E2</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">8</span></td>
+          <td><strong>ผู้เรียนสามารถกำกับการเรียนรู้และมีการเรียนรู้แบบนำตนเอง</strong></td>
+          <td>MJ-01 3-2-1 · Goal Setting · Motivation Likert · เลือกวิธีศึกษาเพิ่มด้วยตนเอง</td>
+          <td><span class="e5-tag e5-mj">MJ</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ══ Timeline Summary ══ -->
+  <h2 class="section-heading">⏱ Timeline สรุป 100 นาที</h2>
+  <div class="card">
+    <div style="display:flex; gap:0; border-radius:12px; overflow:hidden; margin-bottom:8px;">
+      <div style="flex:3; background:#7e57c2; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:12px;">TLC</div>
+        <div style="font-size:10px; opacity:0.9;">0–3'</div>
+      </div>
+      <div style="flex:5; background:#1e88e5; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:12px;">F1 Pre</div>
+        <div style="font-size:10px; opacity:0.9;">3–8'</div>
+      </div>
+      <div style="flex:15; background:#2e7d32; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:13px;">E1 Engage</div>
+        <div style="font-size:10px; opacity:0.9;">8–23'</div>
+        <div style="font-size:10px; margin-top:2px; opacity:0.85;">Concept Cartoon · POE-P</div>
+      </div>
+      <div style="flex:30; background:#ef6c00; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:13px;">E2 Explore</div>
+        <div style="font-size:10px; opacity:0.9;">23–53'</div>
+        <div style="font-size:10px; margin-top:2px; opacity:0.85;">Slinky · Sim · POE-O</div>
+      </div>
+      <div style="flex:20; background:#c62828; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:13px;">E3 Explain</div>
+        <div style="font-size:10px; opacity:0.9;">53–73'</div>
+        <div style="font-size:10px; margin-top:2px; opacity:0.85;">Gallery · POE-E · แก้ M</div>
+      </div>
+      <div style="flex:15; background:#8d6e63; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:13px;">E4 Elaborate</div>
+        <div style="font-size:10px; opacity:0.9;">73–88'</div>
+        <div style="font-size:10px; margin-top:2px; opacity:0.85;">Matrix · Spot · Sim</div>
+      </div>
+      <div style="flex:3; background:#7e57c2; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:12px;">TLC</div>
+        <div style="font-size:10px; opacity:0.9;">88–91'</div>
+      </div>
+      <div style="flex:7; background:#1e88e5; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:12px;">F1 Post</div>
+        <div style="font-size:10px; opacity:0.9;">91–98'</div>
+      </div>
+      <div style="flex:2; background:#4e342e; padding:8px 6px; text-align:center; color:white;">
+        <div style="font-weight:800; font-size:12px;">MJ</div>
+        <div style="font-size:10px; opacity:0.9;">98–100'</div>
+      </div>
+    </div>
+    <div style="font-size:12.5px; color:#718096; text-align:center;">รวม 100 นาที · กลุ่ม 4 คน · เป้าหมาย: Misconception M1.1–M1.4 ลดลง ≥ 20% · Sound ≥ 80% · POE ≥ 2.0 · บัตรเขียว ≥ 60%</div>
+  </div>
+
+  <!-- ══ บันทึกหลังแผน ══ -->
+  <h2 class="section-heading">📓 บันทึกหลังแผน (After Action Review)</h2>
+  <div class="card">
+    <table class="assess-table">
+      <thead>
+        <tr>
+          <th style="width:25%;">หัวข้อ</th>
+          <th>สิ่งที่บันทึก</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>ผลการจัดกิจกรรม</strong></td><td>นักเรียนเข้าใจ/ไม่เข้าใจจุดใด · บัตรเขียวก่อน/หลัง · % Sound F1</td></tr>
+        <tr><td><strong>ปัญหาและอุปสรรค</strong></td><td>เวลาไม่พอขั้นใด · Slinky ไม่พอ · Sim ค้าง ฯลฯ</td></tr>
+        <tr><td><strong>แนวทางแก้ไข</strong></td><td>ปรับเวลา · เตรียมอุปกรณ์สำรอง · ปรับคำถามให้ชัดขึ้น</td></tr>
+        <tr><td><strong>ข้อเสนอแนะเพื่อปรับปรุง</strong></td><td>ส่งต่อ Hook ไปแผน 2 จากคำถามใน MJ 3-2-1</td></tr>
+        <tr><td><strong>ข้อมูลสู่บทที่ 4</strong></td><td>คะแนน F1 Pre/Post · POE Rubric · TL · OB-01</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="footer">
+  แผนการจัดการเรียนรู้ที่ 1 · การเกิดคลื่น ชนิดของคลื่น และส่วนประกอบของคลื่น · ว30203 ฟิสิกส์ 3 · ม.5 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569
+</div>
+
+</body>
+</html>

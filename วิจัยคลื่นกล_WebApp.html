@@ -1,0 +1,3413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>วิจัยคลื่นกล · WebApp นักเรียน · ครูโกเมน</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#e0f2ff,#f0f4f8);color:#1a202c;font-size:16px;line-height:1.55;min-height:100vh}
+
+/* ═══════ APP SHELL ═══════ */
+.app{max-width:1100px;margin:0 auto;padding:0 16px}
+header.top{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
+header.top .brand{font-size:20px;font-weight:800;display:flex;align-items:center;gap:10px}
+header.top .brand .logo{background:#fff;color:#1565c0;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+header.top .user{font-size:13px;opacity:.95;display:flex;align-items:center;gap:10px}
+.btn-logout{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-size:12px}
+.btn-logout:hover{background:rgba(255,255,255,.3)}
+.view{display:none;padding:24px 0}
+.view.active{display:block;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ═══════ LOGIN VIEW ═══════ */
+.login-wrap{min-height:calc(100vh - 80px);display:flex;align-items:center;justify-content:center;padding:40px 16px}
+.login-card{background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.12);padding:36px 40px;max-width:500px;width:100%}
+.login-card h1{font-size:28px;color:#0f2c5c;text-align:center;margin-bottom:4px}
+.login-card .sub{text-align:center;color:#666;margin-bottom:24px;font-size:14px}
+.login-card label{display:block;font-weight:600;color:#333;font-size:14px;margin:14px 0 4px}
+.login-card input,.login-card select{width:100%;padding:11px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:15px}
+.login-card input:focus,.login-card select:focus{outline:none;border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-primary{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;padding:14px;border-radius:10px;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;width:100%;margin-top:20px;transition:all .15s}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(21,101,192,.35)}
+
+/* ═══════ HOME VIEW ═══════ */
+.hero{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:20px}
+.hero h2{font-size:24px;margin-bottom:6px}
+.hero .tag-row{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+.hero .chip{background:rgba(255,255,255,.2);padding:4px 12px;border-radius:14px;font-size:13px}
+.plans-nav{background:#fff;border-radius:14px;padding:14px 18px;margin-bottom:18px;box-shadow:0 2px 6px rgba(0,0,0,.05);overflow-x:auto}
+.plans-nav .lbl{font-size:13px;color:#666;font-weight:700;margin-bottom:8px}
+.plan-btns{display:flex;gap:8px;min-width:max-content}
+.plan-btn{background:#f1f5f9;border:2px solid #cbd5e1;color:#475569;padding:8px 14px;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer;font-size:14px;white-space:nowrap;transition:all .15s}
+.plan-btn.active{background:#1565c0;border-color:#1565c0;color:#fff}
+.plan-btn:hover:not(.active){background:#e0f2ff;border-color:#1565c0}
+.plan-btn.done{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20}
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tool-card{background:#fff;border-radius:14px;padding:16px 18px;box-shadow:0 2px 6px rgba(0,0,0,.06);border:2px solid transparent;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.tool-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.12)}
+.tool-card .bar{position:absolute;top:0;left:0;right:0;height:6px}
+.tool-card .ico{font-size:32px;margin-bottom:6px;margin-top:6px}
+.tool-card h3{font-size:16px;color:#0f2c5c;margin-bottom:4px}
+.tool-card .desc{font-size:13px;color:#666;line-height:1.4}
+.tool-card .meta{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+.tool-card .badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700}
+.tool-card.done{border-color:#2e7d32}
+.tool-card.done::after{content:"✓ ส่งแล้ว";position:absolute;top:10px;right:10px;background:#2e7d32;color:#fff;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:700}
+/* tool color bars */
+.tc-ft .bar{background:#1e88e5}.tc-ft .badge{background:#e3f2fd;color:#0d47a1}
+.tc-poe .bar{background:#ef6c00}.tc-poe .badge{background:#fff3e0;color:#c05621}
+.tc-tl .bar{background:#7e57c2}.tc-tl .badge{background:#ede7f6;color:#4527a0}
+.tc-mj .bar{background:#4e342e}.tc-mj .badge{background:#efebe9;color:#3e2723}
+.tc-up .bar{background:#7b1fa2}.tc-up .badge{background:#f3e5f5;color:#4a148c}
+.tc-ma .bar{background:#00897b}.tc-ma .badge{background:#b2dfdb;color:#004d40}
+.tc-sp .bar{background:#c62828}.tc-sp .badge{background:#ffebee;color:#b71c1c}
+
+/* ═══════ TOOL VIEW ═══════ */
+.tool-header{background:#fff;border-radius:14px;padding:18px 22px;margin-bottom:16px;box-shadow:0 2px 6px rgba(0,0,0,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.tool-header h2{font-size:22px;color:#0f2c5c}
+.tool-header .meta{font-size:13px;color:#666}
+.btn-back{background:#f1f5f9;border:1.5px solid #cbd5e1;color:#475569;padding:8px 14px;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer;font-size:13px}
+.btn-back:hover{background:#e0f2ff;border-color:#1565c0;color:#1565c0}
+.tool-body{background:#fff;border-radius:14px;padding:24px 28px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+
+/* Shared form styles */
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fafbfc}
+.item .no{display:inline-block;background:#1e88e5;color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:800}
+.item .stem{font-size:16px;margin:8px 0;font-weight:600}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.tier{margin:10px 0;background:#fff;border:1px dashed #bbb;border-radius:10px;padding:10px 14px}
+.tier b{color:#0d47a1}
+.tier.t3 b{color:#1b5e20}.tier.t2 b,.tier.t4 b{color:#c05621}
+.opt{margin:6px 0;padding:4px 6px;border-radius:4px;cursor:pointer}
+.opt:hover{background:#e3f2fd}
+.opt input[type=radio],.opt input[type=checkbox]{margin-right:8px;transform:scale(1.1);cursor:pointer}
+.opt label{cursor:pointer}
+.cert{display:flex;gap:20px;flex-wrap:wrap}
+.cert label{cursor:pointer;padding:4px 10px;border-radius:4px}
+.cert label:hover{background:#fff3e0}
+.phase-select{background:#fff3e0;border:2px solid #ef6c00;padding:12px 16px;border-radius:10px;margin:12px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.phase-select label{font-weight:700;color:#c05621;cursor:pointer;padding:6px 14px;border:2px solid #ef6c00;border-radius:20px}
+.phase-select label:has(input:checked){background:#ef6c00;color:#fff}
+.info{background:#e3f2fd;border-left:6px solid #1976d2;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+textarea{width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;min-height:70px}
+textarea:focus{outline:none;border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+input[type=text],input[type=number]{padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:15px}
+
+/* Submit */
+.submit-bar{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#1b5e20;border:none;font-family:inherit;font-size:18px;font-weight:800;padding:12px 30px;border-radius:10px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .15s}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+
+/* Traffic Light */
+.tl-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+.tl-card{border-radius:14px;padding:24px 16px;text-align:center;color:#fff;cursor:pointer;border:4px solid transparent;transition:all .15s;font-family:inherit}
+.tl-card:hover{transform:translateY(-3px)}
+.tl-card.selected{border-color:#0f2c5c;box-shadow:0 0 0 4px #ffd54f}
+.tl-g{background:linear-gradient(135deg,#43a047,#2e7d32)}
+.tl-y{background:linear-gradient(135deg,#fdd835,#f9a825);color:#5c4000}
+.tl-r{background:linear-gradient(135deg,#e53935,#c62828)}
+.tl-card .ico{font-size:50px;margin-bottom:6px}
+.tl-card .lbl{font-size:20px;font-weight:800}
+.tl-card .mean{font-size:13px;opacity:.95;margin-top:4px}
+
+/* Matrix table */
+.matrix{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.matrix th,.matrix td{border:1.5px solid #777;padding:8px 10px;text-align:left;vertical-align:top}
+.matrix th{background:#00897b;color:#fff}
+.matrix td textarea{min-height:50px;border:1px solid #e2e8f0}
+
+/* MJ */
+.mj-sec{border-radius:14px;padding:14px 18px;margin:12px 0}
+.mj-three{background:#e8f5e9;border-left:6px solid #2e7d32}
+.mj-two{background:#fff3e0;border-left:6px solid #ef6c00}
+.mj-one{background:#ffebee;border-left:6px solid #c62828}
+.mj-sec h3{font-size:18px;margin-bottom:8px}
+.mj-three h3{color:#1b5e20}.mj-two h3{color:#c05621}.mj-one h3{color:#b71c1c}
+
+/* ═══════ GATING & LOCK STATES ═══════ */
+.tool-card.locked{opacity:.55;cursor:not-allowed;background:#f5f5f5}
+.tool-card.locked:hover{transform:none;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.tool-card.locked::before{content:"🔒";position:absolute;top:10px;right:10px;font-size:20px;background:#607d8b;color:#fff;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.tool-card.preview{background:#fff8e1;border-color:#ffb300;cursor:pointer}
+.tool-card.preview::before{content:"⏰";position:absolute;top:10px;right:10px;font-size:18px;background:#ffb300;color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.plan-btn.locked{background:#eceff1;color:#90a4ae;border-color:#cfd8dc;cursor:not-allowed}
+.plan-btn.locked::after{content:" 🔒"}
+.plan-btn.preview{background:#fff8e1;color:#e65100;border-color:#ffb300}
+.plan-btn.preview::after{content:" ⏰"}
+
+/* ═══════ FEEDBACK INBOX ═══════ */
+.inbox-btn{background:#fff;color:#ef6c00;border:2px solid #ef6c00;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;position:relative}
+.inbox-btn:hover{background:#ef6c00;color:#fff}
+.inbox-badge{position:absolute;top:-6px;right:-6px;background:#d32f2f;color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:12px;min-width:22px;text-align:center}
+.fb-card{background:#fff;border-radius:12px;padding:16px 18px;margin:12px 0;box-shadow:0 2px 6px rgba(0,0,0,.05);border-left:6px solid #ef6c00}
+.fb-card.unread{background:#fff8e1;border-left-color:#d84315}
+.fb-card.unread::after{content:"ใหม่";background:#d32f2f;color:#fff;font-size:11px;padding:2px 9px;border-radius:10px;margin-left:8px;font-weight:800}
+.fb-card .meta{font-size:12px;color:#666;margin-bottom:6px}
+.fb-card .msg{font-size:15px;line-height:1.6;white-space:pre-wrap}
+.fb-card .score{display:inline-block;background:#ef6c00;color:#fff;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:800;margin-top:6px}
+
+/* ═══════ MEDIA CARDS (Teacher resource index) ═══════ */
+.media-section-title{font-size:17px;font-weight:800;color:#0f2c5c;margin:18px 0 10px;padding-left:10px;border-left:5px solid #1565c0}
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.media-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:14px 16px;transition:all .15s;text-decoration:none;color:inherit;display:block}
+.media-card:hover{border-color:#1565c0;box-shadow:0 4px 10px rgba(21,101,192,.15);transform:translateY(-2px)}
+.media-card .no{display:inline-block;background:#1565c0;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;margin-right:6px}
+.media-card .t{font-size:15.5px;font-weight:700;color:#0f2c5c;margin:4px 0}
+.media-card .d{font-size:13px;color:#555;margin-top:4px;line-height:1.45}
+.media-card .meta{font-size:12px;color:#888;margin-top:6px}
+.media-card .chip{display:inline-block;background:#e3f2fd;color:#0d47a1;font-size:11px;padding:2px 8px;border-radius:10px;margin:2px 4px 0 0;font-weight:700}
+.media-card .chip.k{background:#fff4cc;color:#8a6d00}
+.media-card .chip.p{background:#cce9e6;color:#004d40}
+.media-card .chip.a{background:#fbdce6;color:#880e4f}
+.media-card .chip.m{background:#ffe4d6;color:#b53c00}
+.media-card .chip.w{background:#ede7f6;color:#4527a0}
+.media-card.e1{border-top:6px solid #2e7d32}
+.media-card.e2{border-top:6px solid #ef6c00}
+.media-card.e3{border-top:6px solid #c62828}
+.media-card.e4{border-top:6px solid #8d6e63}
+.media-card.ft{border-top:6px solid #1e88e5}
+.media-card.tlc{border-top:6px solid #7e57c2}
+.media-card.mj{border-top:6px solid #4e342e}
+.media-card.rubric{border-top:6px solid #ef6c00}
+.media-card.ob{border-top:6px solid #2e7d32}
+.media-card.info{border-top:6px solid #0f2c5c}
+.media-card.sim{border-top:6px solid #9f7aea}
+.media-plan-select{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.media-plan-select select{padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;color:#0f2c5c}
+.media-link-out{background:#e8f5e9;border-left:6px solid #2e7d32;padding:12px 16px;border-radius:10px;font-size:13.5px;margin-top:16px}
+.media-link-out b{color:#1b5e20}
+
+/* ═══════ TEACHER TABS ═══════ */
+.tab-nav{display:flex;gap:4px;margin-bottom:16px;overflow-x:auto;border-bottom:2px solid #e0e0e0;padding-bottom:0}
+.tab-btn{background:transparent;border:none;padding:10px 18px;font-family:inherit;font-weight:700;font-size:14px;color:#666;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.tab-btn.active{color:#1565c0;border-bottom-color:#1565c0}
+.tab-btn:hover:not(.active){color:#1565c0;background:#e3f2fd}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .2s}
+
+/* Settings rows */
+.setting-row{display:grid;grid-template-columns:80px 1fr 140px 160px 160px 80px;gap:8px;align-items:center;padding:10px;border-bottom:1px solid #eee}
+.setting-row:hover{background:#f5faff}
+.setting-row .plan-ttl{font-weight:600}
+.setting-row select,.setting-row input[type=datetime-local]{padding:6px 8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:13px}
+.setting-row input[type=text]{padding:6px 8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:13px;width:100%}
+.btn-sm{background:#1565c0;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:inherit;font-weight:700;font-size:12px}
+.btn-sm:hover{background:#0d47a1}
+.btn-sm.danger{background:#c62828}.btn-sm.danger:hover{background:#8b0000}
+.status-tag{display:inline-block;padding:3px 9px;border-radius:10px;font-size:12px;font-weight:800}
+.st-open{background:#c8e6c9;color:#1b5e20}
+.st-locked{background:#cfd8dc;color:#37474f}
+.st-preview{background:#fff3e0;color:#e65100}
+.st-readonly{background:#e1bee7;color:#6a1b9a}
+
+/* Student upload */
+.upload-area{background:#f8f9fa;border:2px dashed #90a4ae;border-radius:10px;padding:16px;margin:12px 0}
+.upload-area textarea{width:100%;min-height:140px;font-family:'SF Mono','Menlo',monospace;font-size:13px;background:#fff}
+.stu-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px;background:#fff;border-radius:8px;overflow:hidden}
+.stu-table th{background:#6a1b9a;color:#fff;padding:8px 10px;text-align:left}
+.stu-table td{padding:7px 10px;border-bottom:1px solid #eee}
+.stu-table tr:hover{background:#f5faff}
+
+@media (max-width:640px){
+  .row2{grid-template-columns:1fr}
+  .tl-cards{grid-template-columns:1fr}
+  .tools-grid{grid-template-columns:1fr}
+  .hero h2{font-size:20px}
+  .setting-row{grid-template-columns:1fr;gap:4px}
+}
+@media print{
+  body{background:#fff !important;color:#000 !important;font-size:12pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  header.top, .btn-back, .tab-nav, #planNav, #viewHome, #viewLogin, #viewTeacher, .inbox-btn, .warn-config{display:none !important}
+  .view{display:none !important}
+  #view-tool{display:block !important}
+  /* Header: ยังแสดงชื่อเครื่องมือ แต่ซ่อนปุ่ม */
+  .tool-header{border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:8px}
+  .tool-header h2{font-size:16pt;color:#000 !important}
+  .tool-header .meta{font-size:10pt;color:#333 !important}
+  .tool-header button{display:none !important}
+  .tool-body{box-shadow:none !important;border:none !important;padding:0 !important}
+  /* Print student info bar */
+  .print-student-bar{display:flex !important;justify-content:space-between;border:2px solid #000;border-radius:0;padding:6px 12px;margin-bottom:10px;font-size:11pt;background:#f5f5f5 !important}
+  /* Info boxes */
+  .info{background:#f0f0f0 !important;border:1px solid #999;font-size:10pt;padding:8px !important;border-radius:4px !important;page-break-inside:avoid}
+  /* Items/sections */
+  .item{border:1.5px solid #999 !important;border-radius:6px !important;padding:10px !important;margin:8px 0 !important;page-break-inside:avoid;background:#fff !important}
+  .item h3{font-size:13pt;color:#000 !important;border-bottom:1px solid #ccc;padding-bottom:4px;margin-bottom:6px}
+  /* Textareas → เส้นเขียน */
+  textarea{border:none !important;border-bottom:1.5px solid #000 !important;min-height:60px !important;background:repeating-linear-gradient(transparent,transparent 22px,#ccc 22px,#ccc 23px) !important;font-size:11pt;resize:none !important;width:100% !important;padding:4px !important}
+  /* Input fields */
+  input[type=text]{border:none !important;border-bottom:1.5px solid #000 !important;font-size:11pt;background:transparent !important}
+  /* Radio/checkbox → ยังแสดง */
+  input[type=radio], input[type=checkbox]{-webkit-appearance:auto !important;appearance:auto !important;width:14px;height:14px}
+  /* Tables */
+  .matrix, table.data{border-collapse:collapse !important;font-size:10pt}
+  .matrix th, .matrix td, table.data th, table.data td{border:1px solid #666 !important;padding:4px !important}
+  .matrix th, table.data th{background:#e0e0e0 !important}
+  /* Submit bar → ซ่อน */
+  .submit-bar{display:none !important}
+  /* Status tags */
+  .status{display:none !important}
+  /* Misconception box */
+  [style*="fff5f5"]{border:1.5px solid #c00 !important;background:#fff !important}
+  .mis-tag{border:1px solid #666;padding:1px 6px;border-radius:8px;font-size:9pt}
+  /* Links in print */
+  a[href]:after{content:"" !important}
+  a{color:#000 !important;text-decoration:underline !important}
+  /* Grid layouts stay */
+  [style*="grid-template-columns"]{gap:8px !important}
+  /* Page setup */
+  @page{size:A4;margin:1.2cm 1.5cm}
+  /* Force page breaks between major sections if content is long */
+  .print-page-break{page-break-before:always}
+}
+/* Screen: ซ่อน print-only elements */
+.print-student-bar{display:none}
+.print-page-break{display:none}
+body.printing-tool #topBar{display:none !important}
+</style>
+</head>
+<body>
+
+<header class="top" id="topBar" style="display:none">
+  <div class="brand"><span class="logo">🌊</span>วิจัยคลื่นกล · ม.5</div>
+  <div class="user">
+    <span id="userLabel"></span>
+    <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+  </div>
+</header>
+
+<div class="app">
+
+<!-- ═══════════ VIEW: LOGIN ═══════════ -->
+<div class="view active" id="view-login">
+  <div class="login-wrap">
+    <div class="login-card">
+      <h1>🌊 วิจัยคลื่นกล</h1>
+      <div class="sub">โรงเรียนสตรีวิทยา · ครูโกเมน ปาปะโถ · ปีการศึกษา 2569</div>
+
+      <!-- โหมดเลือกจากรายชื่อ (ค่าเริ่มต้น เมื่อครูอัปโหลดรายชื่อแล้ว) -->
+      <div id="login-roster" style="display:none">
+        <label>🏫 ห้องของฉัน</label>
+        <select id="sel-class"><option value="">-- เลือกห้อง --</option></select>
+
+        <label>👤 ชื่อของฉัน</label>
+        <select id="sel-name" disabled><option value="">-- เลือกห้องก่อน --</option></select>
+
+        <label>🔐 รหัสยืนยัน 4 ตัวท้าย (เลขประจำตัวประชาชน)</label>
+        <input type="password" id="in-pin" inputmode="numeric" maxlength="4" placeholder="0000">
+
+        <button class="btn-primary" onclick="loginRoster()">เข้าสู่ระบบ 🚀</button>
+        <div style="text-align:center;margin-top:10px">
+          <a href="#" onclick="switchLoginMode('manual');return false;" style="color:#1565c0;font-size:12px">ไม่พบชื่อในรายการ? กรอกด้วยตัวเอง</a>
+        </div>
+      </div>
+
+      <!-- โหมดกรอกเอง (fallback) -->
+      <div id="login-manual">
+        <label>ชื่อ-สกุล</label>
+        <input type="text" id="in-name" placeholder="เช่น สมหญิง รักเรียน" autocomplete="name">
+        <div class="row2">
+          <div>
+            <label>เลขที่</label>
+            <input type="number" id="in-no" placeholder="15" min="1" max="50">
+          </div>
+          <div>
+            <label>ห้อง</label>
+            <select id="in-class">
+              <option value="">เลือกห้อง</option>
+              <option>5/1</option><option>5/2</option><option>5/3</option><option>5/4</option>
+              <option>5/5</option><option>5/6</option><option>5/7</option><option>5/8</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="login()">เข้าสู่ระบบ 🚀</button>
+        <div id="switch-roster-link" style="text-align:center;margin-top:10px;display:none">
+          <a href="#" onclick="switchLoginMode('roster');return false;" style="color:#1565c0;font-size:12px">กลับไปเลือกจากรายชื่อ</a>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:#888">
+        ข้อมูลของนักเรียนจะถูกใช้เพื่องานวิจัยในชั้นเรียนเท่านั้น
+      </div>
+      <div style="text-align:center;margin-top:16px;border-top:1px solid #eee;padding-top:12px">
+        <a href="#" onclick="openTeacher();return false;" style="color:#1565c0;font-size:13px;text-decoration:none">🔐 เข้าสู่ระบบครู (Teacher Dashboard)</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ VIEW: HOME ═══════════ -->
+<div class="view" id="view-home">
+  <div class="hero">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px">
+        <h2 id="hero-greet">สวัสดี นักเรียน 👋</h2>
+        <div>เลือกแผนการเรียนและเครื่องมือที่ครูแจ้งให้ทำในคาบนี้</div>
+        <div class="tag-row">
+          <span class="chip">📘 ฟิสิกส์ 3 · ว30203</span>
+          <span class="chip">📚 คลื่นกล</span>
+          <span class="chip" id="chip-progress">✓ 0 เครื่องมือ</span>
+        </div>
+      </div>
+      <button class="inbox-btn" onclick="showInbox()">
+        📬 กล่องฟีดแบ็ก
+        <span class="inbox-badge" id="inboxBadge" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="plans-nav">
+    <div class="lbl">📋 เลือกแผน:</div>
+    <div class="plan-btns" id="planBtns"></div>
+  </div>
+
+  <div class="tools-grid" id="toolsGrid"></div>
+</div>
+
+<!-- ═══════════ VIEW: INBOX (Feedback) ═══════════ -->
+<div class="view" id="view-inbox">
+  <div class="tool-header">
+    <div>
+      <h2>📬 กล่องฟีดแบ็กจากครู</h2>
+      <div class="meta" id="inboxMeta">—</div>
+    </div>
+    <button class="btn-back" onclick="goHome()">← กลับหน้าแรก</button>
+  </div>
+  <div class="tool-body" id="inboxBody">
+    <div class="info">⏳ กำลังโหลด...</div>
+  </div>
+</div>
+
+<!-- ═══════════ VIEW: TEACHER DASHBOARD ═══════════ -->
+<div class="view" id="view-teacher">
+  <div class="tool-header">
+    <div>
+      <h2>🔐 Teacher Dashboard</h2>
+      <div class="meta">ครูโกเมน ปาปะโถ · ดูสรุปข้อมูลวิจัย real-time</div>
+    </div>
+    <button class="btn-back" onclick="logoutTeacher()">← ออก</button>
+  </div>
+  <div class="tool-body">
+    <div id="teacherContent">
+      <div class="info">📊 กำลังดึงข้อมูลจาก Google Sheets...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ VIEW: TOOL (dynamic) ═══════════ -->
+<div class="view" id="view-tool">
+  <div class="tool-header">
+    <div>
+      <h2 id="toolTitle">—</h2>
+      <div class="meta" id="toolMeta">—</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button class="btn-back" onclick="printToolView()" title="พิมพ์ / บันทึกเป็น PDF" style="background:#2e7d32">🖨️ PDF</button>
+      <button class="btn-back" onclick="goHome()">← กลับหน้าแรก</button>
+    </div>
+  </div>
+  <div class="tool-body" id="toolBody"></div>
+</div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ⚙️ CONFIG — ครูตั้งค่าจุดเดียว
+// ═══════════════════════════════════════════════════════════
+const API_URL = 'https://script.google.com/macros/s/AKfycbwoI8M3mJ3wKdNHUigoK4LFbZJH0f94WykTfBz97KPgeTo0Zi-N9DZdiEGzW3u6jofiwA/exec';
+const SCHOOL = 'สตรีวิทยา';
+const YEAR   = '2569';
+
+// ═══════════════════════════════════════════════════════════
+// PLAN & TOOL REGISTRY
+// แต่ละแผนมี list ของเครื่องมือที่ใช้ในคาบนั้น
+// ═══════════════════════════════════════════════════════════
+const PLANS = [
+  { no:1, title:'การเกิดคลื่นและชนิดของคลื่น', periods:'1–2' },
+  { no:2, title:'ส่วนประกอบของคลื่นและเฟส', periods:'3–4' },
+  { no:3, title:'ความสัมพันธ์ v=fλ (1)', periods:'5–6' },
+  { no:4, title:'ความสัมพันธ์ v=fλ (2) สรุป', periods:'7–8' },
+  { no:5, title:'ซ้อนทับ / ฮอยเกนส์', periods:'9–11' },
+  { no:6, title:'สะท้อน / หักเห', periods:'12–13' },
+  { no:7, title:'แทรกสอด / คลื่นนิ่ง', periods:'14–16' },
+  { no:8, title:'เลี้ยวเบน', periods:'17–18' },
+  { no:9, title:'บูรณาการ', periods:'19–20' },
+  { no:10,title:'ทบทวน + FT-02', periods:'21–22' }
+];
+
+// Tool types available per plan (currently implemented for Plan 1; ขยายได้ภายหลัง)
+const PLAN_TOOLS = {
+  1: ['tl-pre','f1-pre','poe','matrix','spot','tl-post','f1-post','mj','upload'],
+  2: ['tl-pre','f2-pre','poe','calc2','spot2','tl-post','f2-post','mj','upload'],
+  3: ['tl-pre','f3-pre','poe','tl-post','f3-post','mj','upload'],
+  4: ['tl-pre','f4-pre','poe','tl-post','f4-post','mj','upload'],
+  5: ['tl-pre','f5-pre','poe','tl-post','f5-post','mj','upload'],
+  6: ['tl-pre','f6-pre','poe','tl-post','f6-post','mj','upload'],
+  7: ['tl-pre','f7-pre','poe','tl-post','f7-post','mj','upload'],
+  8: ['tl-pre','f8-pre','poe','tl-post','f8-post','mj','upload'],
+  9: ['tl-pre','f9-pre','poe','tl-post','f9-post','mj','upload'],
+  10:['tl-pre','ft02','tl-post','mj','upload']
+};
+
+const TOOL_DEFS = {
+  'tl-pre':  { ico:'🚦', name:'TL-01 ก่อนเรียน', desc:'ยกบัตร 🟢🟡🔴 ประเมินตนเองก่อนคาบ', sheet:'TL', color:'tc-tl' },
+  'tl-post': { ico:'🚦', name:'TL-01 หลังเรียน', desc:'ยกบัตร 🟢🟡🔴 ประเมินตนเองหลังคาบ', sheet:'TL', color:'tc-tl' },
+  'f1-pre':  { ico:'📝', name:'F1 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f1-post': { ico:'📝', name:'F1 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f2-pre':  { ico:'📝', name:'F2 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ v=fλ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f2-post': { ico:'📝', name:'F2 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ v=fλ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f3-pre':  { ico:'📝', name:'F3 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f3-post': { ico:'📝', name:'F3 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f4-pre':  { ico:'📝', name:'F4 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f4-post': { ico:'📝', name:'F4 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f5-pre':  { ico:'📝', name:'F5 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f5-post': { ico:'📝', name:'F5 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f6-pre':  { ico:'📝', name:'F6 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f6-post': { ico:'📝', name:'F6 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f7-pre':  { ico:'📝', name:'F7 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f7-post': { ico:'📝', name:'F7 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f8-pre':  { ico:'📝', name:'F8 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f8-post': { ico:'📝', name:'F8 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'f9-pre':  { ico:'📝', name:'F9 Four-tier · Pre', desc:'ข้อสอบมโนทัศน์ 3 ข้อ ก่อนเรียน', sheet:'F_Pre', color:'tc-ft' },
+  'f9-post': { ico:'📝', name:'F9 Four-tier · Post', desc:'ข้อสอบมโนทัศน์ 3 ข้อ หลังเรียน', sheet:'F_Post', color:'tc-ft' },
+  'poe':     { ico:'🔮', name:'POE-01', desc:'บันทึก Predict · Observe · Explain', sheet:'POE', color:'tc-poe' },
+  'matrix':  { ico:'📊', name:'ใบ 1.1 · Matrix Table', desc:'เปรียบเทียบคลื่นตามขวาง/ตามยาว', sheet:'Matrix', color:'tc-ma' },
+  'spot':    { ico:'🔍', name:'ใบ 1.2 · Spot the Error', desc:'หาข้อผิดพลาด 4 ข้อความ', sheet:'Spot', color:'tc-sp' },
+  'calc2':   { ico:'🧮', name:'ใบ 2.1 · โจทย์คำนวณ v=fλ', desc:'โจทย์ 5 ข้อ พื้นฐาน→ท้าทาย', sheet:'Calc', color:'tc-ma' },
+  'spot2':   { ico:'🔍', name:'ใบ 2.2 · Spot the Error', desc:'หาข้อผิดพลาด 3 ข้อ (M2.1, M2.4)', sheet:'Spot', color:'tc-sp' },
+  'mj':      { ico:'📓', name:'MJ-01 · Journal 3-2-1', desc:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม', sheet:'MJ', color:'tc-mj' },
+  'upload':  { ico:'📎', name:'อัปโหลดใบงาน', desc:'ส่งไฟล์ PDF/รูปใบงานที่เขียนมือ', sheet:'Upload', color:'tc-up' },
+  'ft02':    { ico:'🏆', name:'FT-02 Post-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ', sheet:'FT02', color:'tc-ft' }
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  student: null,        // {student_id, name, no, class}
+  currentPlan: 1,
+  currentTool: null,
+  submitted: {},        // { 'plan1_f1-pre': true, ... }
+  students: [],         // รายชื่อนักเรียนจาก API
+  settings: [],         // สถานะการเปิด-ปิดแผน
+  feedback: [],         // ฟีดแบ็กของนักเรียนคนนี้
+  loginMode: 'roster'   // 'roster' | 'manual'
+};
+
+// LocalStorage keys
+const LS_STU = 'wave_student';
+const LS_SUB = 'wave_submitted';
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', async () => {
+  // โหลดรายชื่อนักเรียนจาก API (ถ้าครูอัปโหลดแล้ว)
+  await loadStudents();
+  initLoginUI();
+
+  // Restore student session (localStorage)
+  const s = localStorage.getItem(LS_STU);
+  if (s) {
+    state.student = JSON.parse(s);
+    const sub = localStorage.getItem(LS_SUB);
+    if (sub) state.submitted = JSON.parse(sub);
+  }
+
+  // Restore teacher session (sessionStorage) — ลำดับก่อนนักเรียน
+  if (isTeacherAuthed()){
+    enterTeacherMode();
+    return;
+  }
+
+  // ถ้ามี student session ให้เปิดหน้านักเรียน ไม่งั้นไปหน้า login
+  if (state.student){ showHome(); }
+  else { showView('view-login'); }
+});
+
+// โหลดรายชื่อนักเรียนจาก API
+async function loadStudents(){
+  if (!isApiConfigured()) return;
+  try {
+    const r = await fetch(API_URL + '?action=students').then(x => x.json());
+    if (r.status === 'ok') state.students = r.students || [];
+  } catch(e){ console.warn('โหลดรายชื่อไม่สำเร็จ:', e); }
+}
+
+// โหลดสถานะแผน
+async function loadSettings(){
+  if (!isApiConfigured()) return;
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000); // timeout 8 วินาที
+    const r = await fetch(API_URL + '?action=settings', {signal:ctrl.signal}).then(x => x.json());
+    clearTimeout(timer);
+    if (r.status === 'ok') state.settings = r.settings || [];
+  } catch(e){ console.warn('โหลด settings ไม่สำเร็จ:', e); }
+}
+
+// โหลดฟีดแบ็กของนักเรียนคนนี้
+async function loadFeedback(){
+  if (!isApiConfigured() || !state.student) return;
+  try {
+    const sid = state.student.student_id || '';
+    const r = await fetch(API_URL + '?action=feedback&student_id=' + encodeURIComponent(sid))
+                   .then(x => x.json());
+    if (r.status === 'ok') state.feedback = r.feedback || [];
+  } catch(e){ console.warn('โหลด feedback ไม่สำเร็จ:', e); }
+}
+
+// ตั้งโหมด login ตามรายชื่อที่โหลดมา
+function initLoginUI(){
+  if (state.students.length > 0){
+    state.loginMode = 'roster';
+    document.getElementById('login-roster').style.display = 'block';
+    document.getElementById('login-manual').style.display = 'none';
+    document.getElementById('switch-roster-link').style.display = 'block';
+    // เติม dropdown ห้อง (unique)
+    const classes = [...new Set(state.students.map(s => s.class).filter(Boolean))].sort();
+    const selC = document.getElementById('sel-class');
+    classes.forEach(c => {
+      const o = document.createElement('option'); o.value=c; o.textContent=c;
+      selC.appendChild(o);
+    });
+    selC.onchange = () => {
+      const c = selC.value;
+      const selN = document.getElementById('sel-name');
+      selN.innerHTML = '<option value="">-- เลือกชื่อ --</option>';
+      if (!c){ selN.disabled = true; return; }
+      const list = state.students.filter(s => s.class === c)
+                   .sort((a,b) => Number(a.number||0) - Number(b.number||0));
+      list.forEach(s => {
+        const o = document.createElement('option');
+        o.value = s.student_id;
+        o.textContent = `เลขที่ ${s.number || '—'} · ${s.full_name}`;
+        selN.appendChild(o);
+      });
+      selN.disabled = false;
+    };
+  } else {
+    // ยังไม่มีรายชื่อ → ใช้ manual
+    state.loginMode = 'manual';
+    document.getElementById('login-roster').style.display = 'none';
+    document.getElementById('login-manual').style.display = 'block';
+    document.getElementById('switch-roster-link').style.display = 'none';
+  }
+}
+
+function switchLoginMode(mode){
+  state.loginMode = mode;
+  if (mode === 'roster'){
+    document.getElementById('login-roster').style.display = 'block';
+    document.getElementById('login-manual').style.display = 'none';
+  } else {
+    document.getElementById('login-roster').style.display = 'none';
+    document.getElementById('login-manual').style.display = 'block';
+  }
+}
+
+function showView(id){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOGIN / LOGOUT
+// ═══════════════════════════════════════════════════════════
+function login(){
+  const name = document.getElementById('in-name').value.trim();
+  const no = document.getElementById('in-no').value.trim();
+  const cls = document.getElementById('in-class').value;
+  if (!name || !no || !cls){
+    alert('⚠️ กรอกชื่อ เลขที่ และห้องให้ครบก่อน');
+    return;
+  }
+  // manual mode: สร้าง student_id ชั่วคราวจาก class+no
+  const sid = `${cls.replace('/','_')}_${no}`;
+  state.student = { student_id:sid, name, no:Number(no), class:cls };
+  localStorage.setItem(LS_STU, JSON.stringify(state.student));
+  showHome();
+}
+
+async function loginRoster(){
+  const sid = document.getElementById('sel-name').value;
+  const pin = document.getElementById('in-pin').value.trim();
+  if (!sid){ alert('⚠️ เลือกห้องและชื่อก่อน'); return; }
+  if (!/^\d{4}$/.test(pin)){ alert('⚠️ กรอกรหัส 4 หลักให้ครบ'); return; }
+
+  // verify PIN
+  try {
+    const r = await fetch(API_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'verifyPin', student_id:sid, pin4:pin})
+    });
+    // no-cors จะ verify ตอน login ไม่ได้ (ได้ response กลับไม่ได้)
+    // → ใช้ GET verify แทน
+  } catch(e){}
+
+  try {
+    // ใช้ GET param เพื่ออ่าน response ได้
+    const vr = await fetch(API_URL + '?action=verify&student_id=' + encodeURIComponent(sid) + '&pin4=' + encodeURIComponent(pin))
+                    .then(r => r.json()).catch(()=>null);
+    // หาก route ไม่รองรับ GET verify → ข้าม (trust client, เก็บ pin ไว้ใน payload เพื่อให้ครูตรวจภายหลัง)
+  } catch(e){}
+
+  const stu = state.students.find(s => String(s.student_id) === String(sid));
+  if (!stu){ alert('ไม่พบนักเรียนคนนี้'); return; }
+  state.student = {
+    student_id: stu.student_id,
+    name:  stu.full_name,
+    no:    Number(stu.number || 0),
+    class: stu.class,
+    pin4:  pin  // เก็บไว้ verify ฝั่ง submit
+  };
+  localStorage.setItem(LS_STU, JSON.stringify(state.student));
+  showHome();
+}
+
+function logout(){
+  if (!confirm('ออกจากระบบ? (ข้อมูลที่ยังไม่ได้ส่งจะหายไป)')) return;
+  localStorage.removeItem(LS_STU);
+  localStorage.removeItem(LS_SUB);
+  state.student = null; state.currentPlan = 1; state.currentTool = null; state.submitted = {};
+  document.getElementById('topBar').style.display = 'none';
+  showView('view-login');
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOME
+// ═══════════════════════════════════════════════════════════
+async function showHome(){
+  document.getElementById('topBar').style.display = 'flex';
+  document.getElementById('userLabel').textContent =
+    `👤 ${state.student.name} · เลขที่ ${state.student.no} · ห้อง ${state.student.class}`;
+  document.getElementById('hero-greet').textContent = `สวัสดี ${state.student.name} 👋`;
+
+  // โหลดสถานะแผน + ฟีดแบ็ก (parallel)
+  await Promise.all([loadSettings(), loadFeedback()]);
+
+  // อัปเดต badge ของกล่องฟีดแบ็ก
+  const unread = state.feedback.filter(f => !f.read_at).length;
+  const badge = document.getElementById('inboxBadge');
+  if (unread > 0){
+    badge.textContent = unread;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // ถ้า currentPlan ถูกล็อก → เลื่อนไปแผนแรกที่เปิด
+  const cur = getGate(state.currentPlan);
+  if (cur.status === 'locked'){
+    const firstOpen = PLANS.find(p => getGate(p.no).status === 'open');
+    if (firstOpen) state.currentPlan = firstOpen.no;
+  }
+
+  renderPlanNav();
+  renderTools();
+  showView('view-home');
+}
+
+// คืนสถานะของแผน (จาก state.settings หรือค่าเริ่มต้น)
+function getGate(planNo){
+  const s = state.settings.find(x => Number(x.plan) === Number(planNo));
+  if (!s) return { status: planNo===1 ? 'open' : 'locked', opens_at:'', closes_at:'', note:'' };
+  return s;
+}
+
+function gateLabel(g){
+  if (g.status === 'open') return '✅ เปิด';
+  if (g.status === 'preview') return '⏰ ยังไม่เปิด';
+  if (g.status === 'readonly') return '🔎 อ่านอย่างเดียว';
+  return '🔒 ล็อก';
+}
+
+function renderPlanNav(){
+  const wrap = document.getElementById('planBtns');
+  wrap.innerHTML = '';
+  PLANS.forEach(p => {
+    const g = getGate(p.no);
+    const b = document.createElement('button');
+    let cls = 'plan-btn';
+    if (p.no===state.currentPlan) cls += ' active';
+    if (g.status === 'locked') cls += ' locked';
+    else if (g.status === 'preview') cls += ' preview';
+    b.className = cls;
+    b.textContent = `แผน ${p.no}`;
+    b.title = `${p.title} · ${gateLabel(g)}` + (g.note?` · ${g.note}`:'');
+    b.onclick = () => {
+      if (g.status === 'locked'){
+        alert('🔒 แผนนี้ยังไม่เปิด — ' + (g.note || 'รอครูเปิดในคาบที่กำหนด'));
+        return;
+      }
+      state.currentPlan = p.no;
+      renderPlanNav();
+      renderTools();
+    };
+    wrap.appendChild(b);
+  });
+}
+
+function renderTools(){
+  const plan = PLANS.find(p => p.no===state.currentPlan);
+  const grid = document.getElementById('toolsGrid');
+  grid.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.style.gridColumn = '1/-1';
+  header.innerHTML = `<h3 style="color:#0f2c5c;margin-bottom:6px">แผน ${plan.no}: ${plan.title}</h3>
+    <div style="color:#666;font-size:14px;margin-bottom:14px">คาบ ${plan.periods}</div>`;
+  grid.appendChild(header);
+
+  const toolList = PLAN_TOOLS[state.currentPlan] || [];
+  const gate = getGate(state.currentPlan);
+  toolList.forEach(key => {
+    const def = TOOL_DEFS[key];
+    if (!def) return;
+    const doneKey = `plan${state.currentPlan}_${key}`;
+    const done = !!state.submitted[doneKey];
+
+    let stateClass = '';
+    let gateNote = '';
+    if (gate.status === 'locked'){
+      stateClass = ' locked';
+      gateNote = `<div class="meta" style="color:#607d8b;font-size:12px">🔒 ${gate.note || 'รอครูเปิด'}</div>`;
+    } else if (gate.status === 'preview'){
+      stateClass = ' preview';
+      const opens = gate.opens_at ? new Date(gate.opens_at).toLocaleString('th-TH') : 'ยังไม่กำหนด';
+      gateNote = `<div class="meta" style="color:#e65100;font-size:12px">⏰ จะเปิด ${opens}</div>`;
+    }
+
+    const card = document.createElement('div');
+    card.className = `tool-card ${def.color}${done?' done':''}${stateClass}`;
+    card.innerHTML = `
+      <div class="bar"></div>
+      <div class="ico">${def.ico}</div>
+      <h3>${def.name}</h3>
+      <div class="desc">${def.desc}</div>
+      <div class="meta"><span class="badge">แผน ${state.currentPlan}</span></div>
+      ${gateNote}`;
+    card.onclick = () => {
+      if (gate.status === 'locked'){
+        alert('🔒 แผนนี้ยังไม่เปิด — ' + (gate.note || 'รอครูเปิด'));
+        return;
+      }
+      if (gate.status === 'preview'){
+        const opens = gate.opens_at ? new Date(gate.opens_at).toLocaleString('th-TH') : '';
+        alert('⏰ เครื่องมือนี้จะเปิดวันที่ ' + (opens || 'ตามที่ครูกำหนด'));
+        return;
+      }
+      openTool(key);
+    };
+    grid.appendChild(card);
+  });
+
+  // progress chip
+  const total = toolList.length;
+  const doneCount = toolList.filter(k => state.submitted[`plan${state.currentPlan}_${k}`]).length;
+  document.getElementById('chip-progress').textContent = `✓ ${doneCount}/${total} เครื่องมือ`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOOL OPENING (ROUTER)
+// ═══════════════════════════════════════════════════════════
+function openTool(key){
+  state.currentTool = key;
+  const def = TOOL_DEFS[key];
+  document.getElementById('toolTitle').textContent = `${def.ico} ${def.name}`;
+  document.getElementById('toolMeta').textContent = `แผน ${state.currentPlan} · ${def.desc}`;
+  const body = document.getElementById('toolBody');
+  body.innerHTML = '';
+  // Print-only header: ชื่อ เลขที่ ห้อง แผน เครื่องมือ
+  const stu = state.student || {};
+  body.innerHTML = `<div class="print-student-bar">
+    <span><b>ชื่อ:</b> ${stu.name||'.............................'} &nbsp; <b>เลขที่:</b> ${stu.no||'......'} &nbsp; <b>ห้อง:</b> ${stu.class||'......'}</span>
+    <span><b>แผน ${state.currentPlan}</b> · ${def.name} · วิจัยคลื่นกล ม.5 · ${new Date().toLocaleDateString('th-TH')}</span>
+  </div>`;
+  if (!isApiConfigured()){
+    body.innerHTML += `<div class="warn-config">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — ข้อมูลจะไม่ถูกส่งจริง (จะบันทึกใน browser และ download .json แทน)</div>`;
+  }
+
+  // Route by tool type
+  if (key.startsWith('f') && key.includes('-pre'))  return renderFTForm(body, 'pre', key);
+  if (key.startsWith('f') && key.includes('-post')) return renderFTForm(body, 'post', key);
+  if (key === 'ft02')   return renderFTForm(body, 'post', key, true);
+  if (key === 'tl-pre') return renderTL(body, 'pre');
+  if (key === 'tl-post')return renderTL(body, 'post');
+  if (key === 'poe' && state.currentPlan === 1) return renderPOE1(body);
+  if (key === 'poe' && state.currentPlan === 2) return renderPOE2(body);
+  if (key === 'poe')    return renderPOE(body);
+  if (key === 'matrix') return renderMatrix(body);
+  if (key === 'spot')   return renderSpot(body);
+  if (key === 'calc2')  return renderCalc2(body);
+  if (key === 'spot2')  return renderSpot2(body);
+  if (key === 'mj')     return renderMJ(body);
+  if (key === 'upload') return renderUpload(body);
+
+  showView('view-tool');
+}
+
+function goHome(){ state.currentTool=null; showHome(); }
+
+// ═══════════════════════════════════════════════════════════
+// อัปโหลดใบงาน (PDF/รูป) → Google Drive
+// ═══════════════════════════════════════════════════════════
+function renderUpload(body){
+  const plan = state.currentPlan;
+  const toolOpts = (PLAN_TOOLS[plan]||[])
+    .filter(k => k!=='tl-pre' && k!=='tl-post' && k!=='upload')
+    .map(k => { const d=TOOL_DEFS[k]; return d ? `<option value="${k}">${d.ico} ${d.name}</option>` : ''; })
+    .join('');
+  body.innerHTML += `
+    <div class="info"><b>📤 อัปโหลดใบงาน:</b> ส่งไฟล์ใบงานที่เขียนมือแล้วสแกน/ถ่ายรูป ระบบจะเก็บใน Google Drive ของครู</div>
+    <div class="item" style="border-left:6px solid #7b1fa2">
+      <h3 style="color:#4a148c">📎 เลือกไฟล์ + ระบุประเภทใบงาน</h3>
+      <div style="margin-bottom:10px">
+        <label style="font-weight:700">ใบงานที่ส่ง:</label>
+        <select id="upload_tool" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:14px;margin-left:6px">
+          ${toolOpts}
+        </select>
+      </div>
+      <div style="border:2px dashed #7b1fa2;border-radius:12px;padding:24px;text-align:center;background:#f3e5f5;cursor:pointer;position:relative" id="dropZone">
+        <div style="font-size:40px;margin-bottom:8px">📄</div>
+        <div style="font-weight:700;color:#4a148c;font-size:16px">กดเลือกไฟล์ หรือลากวางที่นี่</div>
+        <div style="font-size:13px;color:#666;margin-top:4px">รองรับ: PDF, JPG, PNG · ขนาดไม่เกิน 5 MB</div>
+        <input type="file" id="upload_file" accept=".pdf,.jpg,.jpeg,.png" style="position:absolute;inset:0;opacity:0;cursor:pointer">
+      </div>
+      <div id="upload_preview" style="margin-top:10px;display:none">
+        <div style="background:#e8f5e9;border:1.5px solid #4caf50;border-radius:8px;padding:8px 12px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:24px">✅</span>
+          <div><b id="upload_fname">—</b><br><span style="font-size:12px;color:#666" id="upload_fsize">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="submit-bar">
+      <button class="btn-submit" id="uploadBtn" disabled>📤 อัปโหลดไฟล์</button>
+      <div class="status" id="uploadStat"></div>
+    </div>`;
+
+  const fileInput = document.getElementById('upload_file');
+  const dropZone = document.getElementById('dropZone');
+  const preview = document.getElementById('upload_preview');
+  const btn = document.getElementById('uploadBtn');
+  let selectedFile = null;
+
+  function handleFile(file){
+    if (!file) return;
+    if (file.size > 5*1024*1024){
+      alert('❌ ไฟล์ใหญ่เกิน 5 MB'); return;
+    }
+    selectedFile = file;
+    document.getElementById('upload_fname').textContent = file.name;
+    document.getElementById('upload_fsize').textContent = (file.size/1024).toFixed(0) + ' KB · ' + file.type;
+    preview.style.display = 'block';
+    btn.disabled = false;
+  }
+
+  fileInput.onchange = e => handleFile(e.target.files[0]);
+  dropZone.ondragover = e => { e.preventDefault(); dropZone.style.background='#ce93d8'; };
+  dropZone.ondragleave = () => { dropZone.style.background='#f3e5f5'; };
+  dropZone.ondrop = e => { e.preventDefault(); dropZone.style.background='#f3e5f5'; handleFile(e.dataTransfer.files[0]); };
+
+  btn.onclick = async () => {
+    if (!selectedFile) return;
+    const stat = document.getElementById('uploadStat');
+    const toolKey = document.getElementById('upload_tool').value;
+    stat.className='status'; stat.textContent='⏳ กำลังอัปโหลด...';
+    btn.disabled = true;
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64 = reader.result.split(',')[1];
+        const stu = state.student||{};
+        const payload = {
+          action: 'uploadFile',
+          student_id: stu.student_id||'unknown',
+          student_name: stu.name||'unknown',
+          student_class: stu.class||'',
+          plan: state.currentPlan,
+          tool: toolKey,
+          filename: selectedFile.name,
+          mimeType: selectedFile.type,
+          data: base64
+        };
+        await fetch(API_URL, {
+          method:'POST', mode:'no-cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(payload)
+        });
+        stat.className='status ok'; stat.textContent='✅ อัปโหลดสำเร็จ! ไฟล์ถูกส่งเข้า Google Drive แล้ว';
+        // Mark as submitted
+        const subKey = 'plan'+state.currentPlan+'_upload_'+toolKey;
+        state.submitted[subKey] = true;
+        try { localStorage.setItem(LS_SUB, JSON.stringify(state.submitted)); } catch(e){}
+      };
+      reader.readAsDataURL(selectedFile);
+    } catch(e){
+      stat.className='status error'; stat.textContent='❌ เกิดข้อผิดพลาด: '+e.message;
+      btn.disabled = false;
+    }
+  };
+  showView('view-tool');
+}
+
+function printToolView(){
+  // ให้ browser เปิด print dialog → เลือก "Save as PDF"
+  document.body.classList.add('printing-tool');
+  setTimeout(()=>{ window.print(); setTimeout(()=>document.body.classList.remove('printing-tool'), 500); }, 100);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SUBMIT (generic)
+// ═══════════════════════════════════════════════════════════
+async function submitData(sheetName, payload, statusEl, btnEl){
+  // เช็ค gate ก่อนส่ง (กัน readonly/locked)
+  const g = getGate(state.currentPlan);
+  if (g.status === 'locked' || g.status === 'readonly'){
+    statusEl.className = 'status error';
+    statusEl.textContent = '❌ แผนนี้ ' + gateLabel(g) + ' ส่งข้อมูลไม่ได้';
+    return;
+  }
+
+  const full = {
+    ...payload,
+    school: SCHOOL,
+    year: YEAR,
+    plan: state.currentPlan,
+    student_id: state.student.student_id || '',
+    student_name: state.student.name,
+    student_no: state.student.no,
+    class: state.student.class,
+    submitted_at: new Date().toISOString(),
+    source: 'web'
+  };
+
+  if (!isApiConfigured()){
+    // Offline fallback: download JSON
+    const blob = new Blob([JSON.stringify(full,null,2)],{type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${sheetName}_${state.student.name}_${state.student.no}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    statusEl.className = 'status success';
+    statusEl.innerHTML = '✅ บันทึกข้อมูลเป็นไฟล์ .json เรียบร้อย (ยังไม่เชื่อม Sheets)';
+    markDone();
+    return;
+  }
+
+  btnEl.disabled = true;
+  statusEl.className = 'status loading';
+  statusEl.textContent = '⏳ กำลังส่งข้อมูล...';
+
+  try {
+    await fetch(API_URL, {
+      method:'POST',
+      mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({ sheet:sheetName, payload:full })
+    });
+    statusEl.className = 'status success';
+    statusEl.innerHTML = '✅ ส่งข้อมูลสำเร็จ! 🎉';
+    btnEl.textContent = '✅ ส่งแล้ว';
+    markDone();
+    setTimeout(()=>goHome(), 1500);
+  } catch(err){
+    statusEl.className = 'status error';
+    statusEl.textContent = '❌ ผิดพลาด: ' + err.message;
+    btnEl.disabled = false;
+  }
+}
+
+function markDone(){
+  const k = `plan${state.currentPlan}_${state.currentTool}`;
+  state.submitted[k] = true;
+  localStorage.setItem(LS_SUB, JSON.stringify(state.submitted));
+}
+
+// ═══════════════════════════════════════════════════════════
+// FT (Four-tier) — ข้อสอบ F1 Pre/Post ของแผน 1 (ตัวอย่าง)
+// ═══════════════════════════════════════════════════════════
+const FT_BANK = {
+  1: [
+    { misc:'M1.1', stem:'เมื่อลูกมะพร้าวลอยในน้ำและมีคลื่นทะเลผ่าน ลูกมะพร้าวเคลื่อนที่อย่างไร?',
+      opts:{ก:'ถูกคลื่นพาไปตามทิศคลื่น',ข:'สั่นขึ้น-ลงอยู่กับที่ ไม่เคลื่อนตามคลื่น',ค:'เคลื่อนสวนทิศกับคลื่น',ง:'อยู่นิ่งไม่เคลื่อนไหว'},
+      reasons:['น้ำทั้งก้อนไหลพาสิ่งของไป','คลื่นพาพลังงาน แต่อนุภาคตัวกลางสั่นอยู่กับที่','คลื่นน้ำเคลื่อนแต่ไม่มีผลต่อของลอย','ลูกมะพร้าวหนักเกินกว่าคลื่นจะพาไป'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M1.2', stem:'คลื่นเสียงที่เดินทางในอากาศเป็นคลื่นชนิดใด?',
+      opts:{ก:'ตามขวาง (โมเลกุลสั่นตั้งฉากกับทิศคลื่น)',ข:'ตามยาว (โมเลกุลสั่นในทิศเดียวกับทิศคลื่น)',ค:'แม่เหล็กไฟฟ้า',ง:'ไม่ใช่คลื่น'},
+      reasons:['เสียงในอากาศเหมือนแสง เป็นคลื่นตามขวาง','เกิดส่วนอัด-ส่วนขยายเคลื่อนขนานกับทิศเสียง','เสียงไม่ต้องการตัวกลาง','เสียงเดินทางเป็นเส้นตรงไม่มีรูปคลื่น'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M1.4', stem:'ในกราฟการกระจัด–เวลา ปริมาณใดคือ "คาบ (T)" ของคลื่น?',
+      opts:{ก:'ระยะทางระหว่างยอดคลื่นถัดกัน',ข:'เวลาที่อนุภาคใช้ในการสั่น 1 รอบ',ค:'ความสูงสูงสุดของยอดคลื่น',ง:'จำนวนรอบที่สั่นใน 1 วินาที'},
+      reasons:['คาบและความยาวคลื่นเป็นสิ่งเดียวกัน','คาบคือเวลา (s) ต่างจาก λ ที่เป็นระยะทาง (m)','คาบคือแอมพลิจูด','คาบคือความถี่'],
+      key:{t1:'ข',t3:'2'} }
+  ],
+  // ───────── แผน 2: ส่วนประกอบของคลื่นและเฟส (M4, M5) ─────────
+  2: [
+    { misc:'M5', stem:'คลื่นดล (pulse) แตกต่างจากคลื่นต่อเนื่อง (continuous wave) อย่างไร?',
+      opts:{ก:'เหมือนกันทุกประการ ต่างแค่ชื่อเรียก',ข:'คลื่นดลเกิดจากการรบกวนครั้งเดียว แต่คลื่นต่อเนื่องเกิดจากการสั่นซ้ำหลายครั้ง',ค:'คลื่นดลมีความถี่สูงกว่าคลื่นต่อเนื่อง',ง:'คลื่นดลเคลื่อนที่เร็วกว่าคลื่นต่อเนื่อง'},
+      reasons:['ทั้งสองชนิดเป็นการเคลื่อนที่ของพลังงานเหมือนกันจึงไม่มีความต่าง','คลื่นดลคือชุดของลูกคลื่นจำกัดจากการรบกวนครั้งเดียว ส่วนคลื่นต่อเนื่องเกิดจากการสั่นเป็นคาบ','คลื่นดลเกิดจากแหล่งกำเนิดที่สั่นเร็ว','ความเร็วของคลื่นขึ้นกับชนิดของคลื่นดล/ต่อเนื่อง'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M4', stem:'เมื่อคลื่นเคลื่อนจากตัวกลางที่มีความหนาแน่นน้อยไปยังตัวกลางที่มีความหนาแน่นมาก ปริมาณใดเปลี่ยนแปลง?',
+      opts:{ก:'ความถี่เปลี่ยน ความยาวคลื่นคงที่',ข:'ความถี่คงที่ ความยาวคลื่นเปลี่ยน',ค:'ทั้งความถี่และความยาวคลื่นเปลี่ยน',ง:'ทั้งสองปริมาณคงที่'},
+      reasons:['ตัวกลางใหม่บังคับให้คลื่นสั่นในความถี่ที่แตกต่างกัน','ความถี่ถูกกำหนดโดยแหล่งกำเนิด ไม่เปลี่ยนตามตัวกลาง เมื่อ v เปลี่ยน λ จึงเปลี่ยนตามสมการ v=fλ','ตัวกลางเปลี่ยนทุกปริมาณของคลื่น','พลังงานคลื่นถูกดูดซับจนทั้งหมดเปลี่ยน'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M4', stem:'เฟส (phase) ของจุดสองจุดบนคลื่นต่อเนื่องที่ห่างกัน 1 ความยาวคลื่นมีค่าเท่าใด?',
+      opts:{ก:'ต่างเฟส 90° (π/2 rad)',ข:'ต่างเฟส 180° (π rad)',ค:'เฟสตรงกัน (0 หรือ 2π rad)',ง:'ต่างเฟส 270° (3π/2 rad)'},
+      reasons:['ระยะ 1 λ คือ 1 ใน 4 ของรอบ','ระยะ 1 λ คือ ครึ่งรอบ','ระยะ 1 λ คือ 1 รอบเต็ม จุดทั้งสองกลับมาที่ตำแหน่งเดียวกันในการสั่น','ระยะ 1 λ คือ 3 ใน 4 ของรอบ'],
+      key:{t1:'ค',t3:'3'} }
+  ],
+  // ───────── แผน 3: ความสัมพันธ์ v=fλ (1) (M4) ─────────
+  3: [
+    { misc:'M4', stem:'ถ้าเราสั่นปลายเชือกด้วยความถี่ 2 Hz ทำให้เกิดคลื่นในเชือก หากเราเพิ่มความถี่เป็น 4 Hz โดยเชือกเดิม ความยาวคลื่นจะเป็นอย่างไร?',
+      opts:{ก:'คงที่ (λ ไม่เปลี่ยน)',ข:'เพิ่มขึ้นเป็น 2 เท่า',ค:'ลดลงเหลือครึ่งเดียว',ง:'เพิ่มขึ้นเป็น 4 เท่า'},
+      reasons:['ความยาวคลื่นไม่ขึ้นกับความถี่','λ แปรผันตรงกับ f ตามสมการ','เชือกเดิม v คงที่ เมื่อ f เพิ่ม 2 เท่า λ ต้องลดครึ่งเพื่อให้ v=fλ คงที่','f เพิ่ม 2 เท่า λ เพิ่ม 4 เท่าตาม'],
+      key:{t1:'ค',t3:'3'} },
+    { misc:'M4', stem:'ความเร็วของคลื่นในเชือกขึ้นกับปริมาณใดเป็นหลัก?',
+      opts:{ก:'ความถี่ของการสั่นปลายเชือก',ข:'แอมพลิจูดของคลื่น',ค:'ความตึงของเชือกและความหนาแน่นเชิงเส้น',ง:'ความยาวรวมของเชือก'},
+      reasons:['ความถี่ของผู้สั่นกำหนดความเร็วของคลื่น','แอมพลิจูดสูงทำให้คลื่นเร็วขึ้น','v = √(T/μ) ขึ้นกับแรงดึงและ μ ของตัวกลาง ไม่ขึ้นกับ f','คลื่นในเชือกยาวจะเดินทางเร็วกว่า'],
+      key:{t1:'ค',t3:'3'} },
+    { misc:'M4', stem:'คลื่นน้ำมีความเร็ว 2 m/s และความถี่ 4 Hz ความยาวคลื่นเท่าใด?',
+      opts:{ก:'8 m',ข:'2 m',ค:'1 m',ง:'0.5 m'},
+      reasons:['λ = v × f = 2×4 = 8','λ = f − v = 4−2 = 2','λ = v/f แต่คิดเป็น v × f','λ = v/f = 2/4 = 0.5 m'],
+      key:{t1:'ง',t3:'4'} }
+  ],
+  // ───────── แผน 4: v=fλ (2) สรุป (M4) ─────────
+  4: [
+    { misc:'M4', stem:'คลื่นเสียงเคลื่อนจากอากาศ (v≈340 m/s) เข้าสู่น้ำ (v≈1500 m/s) ความถี่เสียงในน้ำเปรียบเทียบกับในอากาศเป็นอย่างไร?',
+      opts:{ก:'ความถี่เพิ่มขึ้นตามความเร็ว',ข:'ความถี่เท่าเดิม',ค:'ความถี่ลดลงเพราะตัวกลางหนาแน่นขึ้น',ง:'ขึ้นกับอุณหภูมิของน้ำ'},
+      reasons:['v เพิ่ม f ก็ต้องเพิ่มตาม','ความถี่ถูกกำหนดโดยแหล่งกำเนิดเสียง ไม่ขึ้นกับตัวกลาง','ตัวกลางหนาแน่นขวางการสั่นทำให้ความถี่ลด','ความถี่ขึ้นกับอุณหภูมิของตัวกลาง'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M4', stem:'สำหรับคลื่นที่มีคาบ T และความถี่ f ความสัมพันธ์ใดถูกต้อง?',
+      opts:{ก:'f = T',ข:'f = 1/T',ค:'f = T²',ง:'f = 2T'},
+      reasons:['ความถี่และคาบคือสิ่งเดียวกัน','ความถี่คือส่วนกลับของคาบ f = 1/T','ความถี่คือกำลังสองของคาบ','ความถี่คือสองเท่าของคาบ'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M4', stem:'คลื่นในเชือกที่ต่อจากเชือกบางเข้าเชือกหนา ภาพสุดท้ายของคลื่นในเชือกหนาจะเป็นอย่างไรเมื่อเทียบกับเชือกบาง?',
+      opts:{ก:'ความถี่ลด λ เพิ่ม v ลด',ข:'ความถี่คงที่ λ ลด v ลด',ค:'ความถี่เพิ่ม λ คงที่ v เพิ่ม',ง:'ทุกค่าคงเดิม'},
+      reasons:['เชือกหนา μ มาก คลื่นช้าลง แต่ f ถูกกำหนดที่ต้นเชือก ไม่เปลี่ยน','f เปลี่ยนเมื่อข้ามสื่อกลางเสมอ','v ใหม่ = v เดิม × (μ ใหม่/μ เดิม)','การเปลี่ยนเชือกไม่มีผลต่อคลื่น'],
+      key:{t1:'ข',t3:'1'} }
+  ],
+  // ───────── แผน 5: ซ้อนทับ/ฮอยเกนส์ (M_sup) ─────────
+  5: [
+    { misc:'M_sup', stem:'คลื่นดล 2 คลื่นเคลื่อนสวนทางกันแล้วซ้อนทับกันพอดี หลังจากซ้อนทับและผ่านกันไป รูปร่างของแต่ละคลื่นจะเป็นอย่างไร?',
+      opts:{ก:'คลื่นทั้งสองจะรวมเป็นคลื่นใหม่ถาวร',ข:'รูปร่างของแต่ละคลื่นจะคงเดิมเหมือนก่อนซ้อนทับ',ค:'คลื่นทั้งสองจะหักล้างหายไป',ง:'คลื่นหนึ่งจะดูดอีกคลื่นไว้'},
+      reasons:['คลื่นที่มาเจอกันจะรวมตัวกันถาวร','หลักการซ้อนทับ: ขณะซ้อนทับกระจัดรวมกัน แต่หลังจากผ่านกัน คลื่นแต่ละอันคงรูปเดิม (linearity)','คลื่นที่สวนทางจะหักล้างกันเสมอ','คลื่นที่แอมพลิจูดสูงจะดูดคลื่นที่เล็กกว่า'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_sup', stem:'คลื่นดล A สูง +2 cm และคลื่นดล B สูง −3 cm เดินทางมาซ้อนทับพอดี ณ ตำแหน่งนั้น การกระจัดรวมของตัวกลางเท่ากับเท่าใด?',
+      opts:{ก:'+5 cm',ข:'−1 cm',ค:'+6 cm',ง:'−5 cm'},
+      reasons:['บวกค่าสัมบูรณ์ |2|+|3|','หลักการซ้อนทับบวกแบบพีชคณิต: +2 + (−3) = −1 cm','คูณกันได้ 6','เอาผลรวมแล้วกลับเครื่องหมาย'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_sup', stem:'หลักการของฮอยเกนส์ (Huygens) กล่าวถึงการแพร่ของหน้าคลื่นอย่างไร?',
+      opts:{ก:'หน้าคลื่นเคลื่อนที่เป็นเส้นตรงเสมอ ไม่แตกเป็นคลื่นย่อย',ข:'ทุกจุดบนหน้าคลื่นทำหน้าที่เป็นแหล่งกำเนิดคลื่นย่อย เสมือนเป็นจุดกำเนิดใหม่',ค:'หน้าคลื่นขึ้นกับตัวกลางเท่านั้น',ง:'คลื่นใหม่เกิดเฉพาะที่ขอบของหน้าคลื่น'},
+      reasons:['คลื่นเคลื่อนเป็นเส้นตรงตามกฎของฮอยเกนส์','ทุกจุดบนหน้าคลื่นเป็นแหล่งกำเนิดคลื่นย่อยที่รวมกันเป็นหน้าคลื่นถัดไป','หลักฮอยเกนส์เกี่ยวกับตัวกลาง','คลื่นใหม่เกิดเฉพาะที่ขอบ'],
+      key:{t1:'ข',t3:'2'} }
+  ],
+  // ───────── แผน 6: สะท้อน/หักเห (M_ref) ─────────
+  6: [
+    { misc:'M_ref', stem:'คลื่นในเชือกเคลื่อนไปกระทบ "ปลายตรึง (fixed end)" เฟสของคลื่นสะท้อนเป็นอย่างไร?',
+      opts:{ก:'เฟสเดิม (ไม่เปลี่ยน)',ข:'เปลี่ยนเฟส 180°',ค:'เปลี่ยนเฟส 90°',ง:'เปลี่ยนเป็น 360°'},
+      reasons:['ปลายตรึงเปรียบเสมือนกระจก คลื่นสะท้อนไม่เปลี่ยนเฟส','ปลายตรึงทำให้เกิดแรงปฏิกิริยาตรงข้าม คลื่นสะท้อนกลับเฟส (phase flip 180°)','เฟสเปลี่ยนแค่ 90° ที่ปลาย','เฟสเปลี่ยน 360° = เหมือนเดิม'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_ref', stem:'คลื่นในเชือกที่กระทบ "ปลายอิสระ (free end)" เฟสของคลื่นสะท้อนเป็นอย่างไร?',
+      opts:{ก:'เฟสเดิม (ไม่เปลี่ยน)',ข:'เปลี่ยนเฟส 180°',ค:'เปลี่ยนเฟส 90°',ง:'ไม่มีคลื่นสะท้อน'},
+      reasons:['ปลายอิสระไม่มีแรงปฏิกิริยาย้อนกลับ เฟสจึงคงเดิม','ปลายอิสระเปลี่ยนเฟสเหมือนปลายตรึง','ทุกการสะท้อนเปลี่ยน 90°','ปลายอิสระทำให้คลื่นหาย'],
+      key:{t1:'ก',t3:'1'} },
+    { misc:'M_ref', stem:'เมื่อคลื่นน้ำเคลื่อนจากน้ำลึก (v เร็ว) เข้าสู่น้ำตื้น (v ช้า) ด้วยมุมตกกระทบ 30° มุมหักเหจะเป็นอย่างไร?',
+      opts:{ก:'เท่ากับ 30°',ข:'มากกว่า 30° (หักออกจากเส้นปกติ)',ค:'น้อยกว่า 30° (หักเข้าหาเส้นปกติ)',ง:'เท่ากับ 90°'},
+      reasons:['กฎหักเหให้มุมเท่าเดิม','v ลดทำให้มุมหักเหกางออก','กฎสเนลล์: sinθ₁/sinθ₂ = v₁/v₂ เมื่อ v₂ < v₁ จะได้ θ₂ < θ₁ คือหักเข้าหาเส้นปกติ','มุมหักเหเป็น 90° ทุกการเปลี่ยนตัวกลาง'],
+      key:{t1:'ค',t3:'3'} }
+  ],
+  // ───────── แผน 7: แทรกสอด/คลื่นนิ่ง (M_int) ─────────
+  7: [
+    { misc:'M_int', stem:'ในการแทรกสอดของคลื่น 2 แหล่งกำเนิดที่มีเฟสตรงกัน เมื่อ Δr = nλ (n = 0, 1, 2, ...) ตำแหน่งนั้นคือ?',
+      opts:{ก:'บัพ (จุดที่ไม่เกิดการสั่น)',ข:'ปฏิบัพ (จุดที่สั่นแรงสุด — เสริมกันสูงสุด)',ค:'จุดกึ่งกลางระหว่างบัพและปฏิบัพ',ง:'จุดที่คลื่นหยุดเคลื่อนที่'},
+      reasons:['Δr = nλ คือความต่างที่ทำให้หักล้างกันพอดี','Δr = nλ คือ คลื่น 2 ขบวนมาถึงด้วยเฟสตรงกัน → เสริมกัน → ปฏิบัพ (antinode)','ที่ Δr = nλ คลื่นอยู่กึ่งกลาง','Δr = nλ ทำให้คลื่นดับ'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_int', stem:'เงื่อนไขของ "บัพ (node)" ในการแทรกสอดของคลื่น 2 แหล่งเฟสตรงกัน คือ?',
+      opts:{ก:'Δr = nλ',ข:'Δr = (n+½)λ',ค:'Δr = 0 เท่านั้น',ง:'Δr = 2nλ'},
+      reasons:['Δr ที่เป็นจำนวนเต็มของ λ คือบัพ','Δr = (n+½)λ ทำให้คลื่น 2 ขบวนต่างเฟสกัน 180° → หักล้าง → บัพ','บัพเกิดเมื่อ Δr = 0 เท่านั้น','บัพเกิดเมื่อ Δr เป็นเลขคู่ของ λ'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_int', stem:'คลื่นนิ่ง (standing wave) เกิดจากการซ้อนทับของคลื่นแบบใด?',
+      opts:{ก:'คลื่น 2 ขบวนที่มีความถี่ต่างกัน',ข:'คลื่น 2 ขบวนที่มีความถี่และแอมพลิจูดเท่ากัน เดินทางสวนทิศ',ค:'คลื่นเดียวที่สะท้อนจากผิวโค้ง',ง:'คลื่น 3 ขบวนที่แอมพลิจูดลดลง'},
+      reasons:['ความถี่ต่างกันทำให้เกิดบีต ไม่ใช่คลื่นนิ่ง','คลื่นตกและคลื่นสะท้อนที่มี f และ A เท่ากัน เดินสวนทาง เกิดบัพ-ปฏิบัพคงที่ = คลื่นนิ่ง','คลื่นเดียวสะท้อนผิวโค้งให้คลื่นนิ่ง','ต้องการ 3 ขบวน'],
+      key:{t1:'ข',t3:'2'} }
+  ],
+  // ───────── แผน 8: เลี้ยวเบน (M_dif) ─────────
+  8: [
+    { misc:'M_dif', stem:'ถ้าช่องเปิดมีความกว้างน้อยกว่าความยาวคลื่น (d < λ) คลื่นจะเป็นอย่างไร?',
+      opts:{ก:'คลื่นผ่านช่องไม่ได้เลย',ข:'คลื่นเลี้ยวเบนออกจากช่องแผ่เป็นวงกลมได้เต็มที่',ค:'คลื่นสะท้อนกลับทั้งหมด',ง:'คลื่นหยุดที่ช่อง'},
+      reasons:['ช่องเล็กกว่า λ กั้นคลื่น','ช่องเล็กกว่า λ เกิดเลี้ยวเบนมากที่สุด คลื่นแผ่ออกจากช่องเป็นคลื่นครึ่งวงกลม','คลื่นสะท้อนกลับทั้งหมดเมื่อช่องเล็ก','ช่องเล็กทำให้คลื่นหยุด'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_dif', stem:'มุมเลี้ยวเบนของคลื่นผ่านช่องเดี่ยวขึ้นกับอะไร?',
+      opts:{ก:'ขึ้นกับความถี่เท่านั้น',ข:'ขึ้นกับความกว้างของช่อง (d) และความยาวคลื่น (λ); ยิ่ง λ/d ใหญ่ ยิ่งเลี้ยวเบนมาก',ค:'ไม่ขึ้นกับช่อง ขึ้นกับแอมพลิจูด',ง:'ขึ้นกับสีของคลื่น'},
+      reasons:['มุมเลี้ยวเบนไม่เกี่ยวกับช่อง','sinθ ∝ λ/d จึงขึ้นกับทั้งสอง','แอมพลิจูดเป็นตัวกำหนดการเลี้ยวเบน','เฉพาะแสงเท่านั้นที่เลี้ยวเบน'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_dif', stem:'การทดลองช่องคู่ของยัง (Young\'s double slit) แสดงปรากฏการณ์ใด?',
+      opts:{ก:'การสะท้อนแบบพิเศษ',ข:'การเลี้ยวเบนที่ช่อง + การแทรกสอดของคลื่น 2 ขบวน ทำให้เกิดแถบสว่าง-มืดสลับกัน',ค:'การหักเหของแสง',ง:'การดูดกลืนแสง'},
+      reasons:['คลื่นสะท้อนแบบพิเศษผ่านช่อง 2 ช่อง','คลื่นจากช่อง 2 ช่องเลี้ยวเบนแล้วแทรกสอดกันเกิดแถบเสริม-หักล้าง (แถบสว่าง-มืด)','การหักเหผ่านช่อง','การดูดกลืนพลังงานของคลื่น'],
+      key:{t1:'ข',t3:'2'} }
+  ],
+  // ───────── แผน 9: บูรณาการ (ทุก Misconception) ─────────
+  9: [
+    { misc:'M1+M3', stem:'คลื่นเสียงที่ดังจากลำโพงผ่านอากาศ ส่วนใดเคลื่อนที่ตามทิศของเสียง?',
+      opts:{ก:'โมเลกุลอากาศเคลื่อนไปตามเสียง',ข:'พลังงานเคลื่อนไปตามทิศเสียง ส่วนโมเลกุลสั่นอยู่กับที่ในแนวขนาน',ค:'ทั้งโมเลกุลและพลังงานเคลื่อนที่ไปด้วยกัน',ง:'ไม่มีอะไรเคลื่อนที่ เป็นคลื่นสถิต'},
+      reasons:['อากาศไหลพาเสียง','คลื่นถ่ายโอนพลังงาน แต่อนุภาคตัวกลางสั่นอยู่กับที่','โมเลกุลและพลังงานเคลื่อนพร้อมกัน','คลื่นเสียงเป็นคลื่นสถิต'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_ref+M_int', stem:'ในท่อปิดปลายเดียว ปลายปิดทำหน้าที่เหมือนปลายตรึง จุดที่ปลายปิดเป็น...',
+      opts:{ก:'ปฏิบัพ (antinode) ของการกระจัด',ข:'บัพ (node) ของการกระจัด เพราะโมเลกุลเคลื่อนที่ไม่ได้ที่ผนัง',ค:'จุดกลางของคลื่น',ง:'ไม่มีความหมาย'},
+      reasons:['ปลายปิดทำให้เกิดสั่นสูงสุด','ที่ผนังโมเลกุลเคลื่อนที่ไม่ได้ → การกระจัด = 0 → บัพ','เป็นจุดกลางของคลื่น','ไม่มีผลต่อคลื่น'],
+      key:{t1:'ข',t3:'2'} },
+    { misc:'M_dif+M4', stem:'คลื่นน้ำความยาวคลื่น 2 cm ผ่านช่องกว้าง 1 cm จะเกิดอะไร?',
+      opts:{ก:'คลื่นผ่านไม่ได้เพราะช่องแคบเกิน',ข:'คลื่นเลี้ยวเบนแผ่กว้างมาก เพราะ d < λ; ความถี่ไม่เปลี่ยน',ค:'ความถี่ของคลื่นเพิ่มขึ้นเพราะถูกบีบ',ง:'คลื่นสะท้อนกลับทั้งหมด'},
+      reasons:['ช่องเล็กกว่า λ กั้นคลื่น','d < λ ทำให้เลี้ยวเบนมาก ความถี่ถูกกำหนดโดยแหล่งกำเนิด','ช่องแคบทำให้ f เพิ่ม','ช่องแคบทำให้สะท้อนทั้งหมด'],
+      key:{t1:'ข',t3:'2'} }
+  ]
+  // หมายเหตุ: ข้อสอบ Four-tier ข้างต้นเป็น DRAFT — ครูควรตรวจสอบความถูกต้องเชิงวิชาการอีกครั้งก่อนใช้จริง
+};
+
+function renderFTForm(body, phase, toolKey){
+  const plan = state.currentPlan;
+  const bank = FT_BANK[plan];
+  if (!bank){
+    body.innerHTML += `<div class="info">⚠️ ยังไม่มีข้อสอบ Four-tier สำหรับแผน ${plan} (ครูต้องเพิ่ม FT_BANK[${plan}] ในโค้ด)</div>`;
+    showView('view-tool');
+    return;
+  }
+  const color = phase==='pre' ? '#1565c0' : '#c62828';
+  body.innerHTML += `<div class="info" style="border-color:${color};background:${phase==='pre'?'#e3f2fd':'#ffebee'}">
+    <b>วิธีทำ Four-tier:</b> เลือก Tier 1 (คำตอบ) · Tier 2 (มั่นใจ?) · Tier 3 (เหตุผล) · Tier 4 (มั่นใจในเหตุผล?)</div>`;
+
+  const form = document.createElement('form');
+  form.id = 'ftForm';
+  bank.forEach((q,i) => {
+    const n = i+1;
+    let optsHtml = '';
+    Object.entries(q.opts).forEach(([k,v]) => {
+      optsHtml += `<div class="opt"><label><input type="radio" name="q${n}_t1" value="${k}" required> ${k}. ${v}</label></div>`;
+    });
+    let reasonHtml = '';
+    q.reasons.forEach((r,ri) => {
+      reasonHtml += `<div class="opt"><label><input type="radio" name="q${n}_t3" value="${ri+1}" required> ${ri+1}) ${r}</label></div>`;
+    });
+    form.innerHTML += `
+    <div class="item">
+      <div><span class="no">ข้อ ${n}</span> <span class="mis-tag">${q.misc}</span></div>
+      <div class="stem">${q.stem}</div>
+      <div class="tier"><b>Tier 1 · คำตอบ:</b>${optsHtml}</div>
+      <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+        <div class="cert"><label><input type="radio" name="q${n}_t2" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q${n}_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+      <div class="tier t3"><b>Tier 3 · เหตุผล:</b>${reasonHtml}</div>
+      <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+        <div class="cert"><label><input type="radio" name="q${n}_t4" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q${n}_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+    </div>`;
+  });
+  form.innerHTML += `
+    <div class="submit-bar">
+      <h3>✅ ตรวจคำตอบครบทุกข้อแล้ว กดส่ง</h3>
+      <button type="submit" class="btn-submit" id="btnSub">📤 ส่งคำตอบ</button>
+      <div class="status" id="stat"></div>
+    </div>`;
+  body.appendChild(form);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const st = document.getElementById('stat');
+    const bt = document.getElementById('btnSub');
+    const payload = { phase:phase };
+    bank.forEach((q,i) => {
+      const n = i+1;
+      ['t1','t2','t3','t4'].forEach(t => {
+        const v = document.querySelector(`input[name="q${n}_${t}"]:checked`);
+        if (!v){ payload[`q${n}_${t}`]=''; return; }
+        payload[`q${n}_${t}`] = v.value;
+      });
+      // classify
+      const t1=payload[`q${n}_t1`],t2=payload[`q${n}_t2`],t3=payload[`q${n}_t3`],t4=payload[`q${n}_t4`];
+      let cat='No-K';
+      if (t1===q.key.t1){
+        if (t2!=='มั่นใจ') cat='Guessing';
+        else if (t3===q.key.t3 && t4==='มั่นใจ') cat='Sound';
+        else cat='Misconception';
+      }
+      payload[`q${n}_category`] = cat;
+      payload[`q${n}_misc`] = q.misc;
+    });
+    const sheet = phase==='pre' ? `F_Pre_P${state.currentPlan}` : `F_Post_P${state.currentPlan}`;
+    submitData(sheet, payload, st, bt);
+  });
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// TL-01 Traffic Light
+// ═══════════════════════════════════════════════════════════
+function renderTL(body, phase){
+  const q = phase==='pre'
+    ? 'ฉันพร้อมและเข้าใจเรื่องของคาบนี้แค่ไหน?'
+    : 'หลังทำกิจกรรมแล้ว ฉันเข้าใจและมั่นใจในความรู้แค่ไหน?';
+  body.innerHTML += `
+    <div class="info"><b>คำถาม ${phase==='pre'?'ก่อนเรียน':'หลังเรียน'}:</b> ${q}</div>
+    <div class="tl-cards" id="tlCards">
+      <div class="tl-card tl-g" data-v="green"><div class="ico">🟢</div><div class="lbl">เขียว</div><div class="mean">เข้าใจ พร้อมเรียน</div></div>
+      <div class="tl-card tl-y" data-v="yellow"><div class="ico">🟡</div><div class="lbl">เหลือง</div><div class="mean">กังวลบางส่วน</div></div>
+      <div class="tl-card tl-r" data-v="red"><div class="ico">🔴</div><div class="lbl">แดง</div><div class="mean">ยังไม่เข้าใจ</div></div>
+    </div>
+    <div style="margin:16px 0">
+      <label style="font-weight:700;color:#4527a0">สิ่งที่อยากบอกครู (ถ้ามี):</label>
+      <textarea id="tlNote" placeholder="เช่น อยากให้ครูอธิบายเรื่อง... อีกครั้ง"></textarea>
+    </div>
+    <div class="submit-bar">
+      <button class="btn-submit" id="tlBtn" disabled>📤 ส่งข้อมูล (เลือกบัตรก่อน)</button>
+      <div class="status" id="tlStat"></div>
+    </div>`;
+  let selected = null;
+  document.querySelectorAll('#tlCards .tl-card').forEach(c => {
+    c.onclick = () => {
+      document.querySelectorAll('#tlCards .tl-card').forEach(x => x.classList.remove('selected'));
+      c.classList.add('selected');
+      selected = c.dataset.v;
+      const b = document.getElementById('tlBtn');
+      b.disabled = false;
+      b.textContent = '📤 ส่งคำตอบ';
+    };
+  });
+  document.getElementById('tlBtn').onclick = () => {
+    if (!selected) return;
+    submitData(`TL_P${state.currentPlan}`, {
+      phase:phase, color:selected,
+      note:document.getElementById('tlNote').value.trim()
+    }, document.getElementById('tlStat'), document.getElementById('tlBtn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// POE-01
+// ═══════════════════════════════════════════════════════════
+function renderPOE(body){
+  body.innerHTML += `
+    <div class="info"><b>POE:</b> บันทึกสิ่งที่คุณ <b>ทำนาย (P)</b> · <b>สังเกต (O)</b> · <b>อธิบาย (E)</b> ตลอดการทดลอง</div>
+    <div class="item" style="border-left:6px solid #ef6c00">
+      <h3 style="color:#c05621">🔮 Predict (ทำนาย) — ก่อนทดลอง</h3>
+      <label>สถานการณ์/คำถามที่ทำนาย:</label>
+      <textarea id="poe_situation" placeholder="เช่น เมื่อคลื่นเคลื่อนผ่านลูกมะพร้าวลอยน้ำ ฉันคิดว่า..."></textarea>
+      <label>เหตุผลที่ทำนาย:</label>
+      <textarea id="poe_pred_reason" placeholder="เพราะ..."></textarea>
+    </div>
+    <div class="item" style="border-left:6px solid #1976d2">
+      <h3 style="color:#0d47a1">👁 Observe (สังเกต) — ขณะทดลอง</h3>
+      <label>สิ่งที่สังเกตได้:</label>
+      <textarea id="poe_observe" placeholder="บันทึกสิ่งที่เห็น ฟัง สัมผัสได้จริง..."></textarea>
+    </div>
+    <div class="item" style="border-left:6px solid #2e7d32">
+      <h3 style="color:#1b5e20">💡 Explain (อธิบาย) — หลังทดลอง</h3>
+      <label>การทำนายถูกต้องหรือไม่? (ตรง/ไม่ตรงกับที่สังเกตได้)</label>
+      <textarea id="poe_match" placeholder="ทำนาย... แต่สังเกตได้... จึง..."></textarea>
+      <label>อธิบายโดยเชื่อมกับหลักการทางวิทยาศาสตร์:</label>
+      <textarea id="poe_explain" placeholder="เขียนอย่างน้อย 3 ประโยค โดยอ้างหลักการ เช่น คลื่นถ่ายโอนพลังงาน..." style="min-height:100px"></textarea>
+    </div>
+    <div class="submit-bar">
+      <button class="btn-submit" id="poeBtn">📤 ส่งใบ POE</button>
+      <div class="status" id="poeStat"></div>
+    </div>`;
+  document.getElementById('poeBtn').onclick = () => {
+    const pl = {
+      situation:val('poe_situation'),
+      predict_reason:val('poe_pred_reason'),
+      observe:val('poe_observe'),
+      match:val('poe_match'),
+      explain:val('poe_explain')
+    };
+    if (!pl.situation || !pl.observe || !pl.explain){
+      const s = document.getElementById('poeStat');
+      s.className='status error'; s.textContent='❌ กรอกอย่างน้อย: สถานการณ์ · Observe · Explain';
+      return;
+    }
+    submitData(`POE_P${state.currentPlan}`, pl,
+      document.getElementById('poeStat'), document.getElementById('poeBtn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// Matrix Table
+// ═══════════════════════════════════════════════════════════
+function renderMatrix(body){
+  const rows = [
+    ['ทิศการสั่นของอนุภาคตัวกลาง',''],
+    ['ทิศการเคลื่อนที่ของคลื่น',''],
+    ['ลักษณะรูปร่างของคลื่น',''],
+    ['ตัวอย่างคลื่น',''],
+    ['ต้องการตัวกลางหรือไม่',''],
+    ['เกิดส่วนอัด/ส่วนขยายหรือไม่','']
+  ];
+  let rowHtml = '';
+  rows.forEach((r,i) => {
+    rowHtml += `<tr><td><b>${i+1}. ${r[0]}</b></td>
+      <td><textarea id="mx_tv_${i}" placeholder="คลื่นตามขวาง..."></textarea></td>
+      <td><textarea id="mx_lg_${i}" placeholder="คลื่นตามยาว..."></textarea></td></tr>`;
+  });
+  body.innerHTML += `
+    <div class="info"><b>ใบกิจกรรม 1.1:</b> เปรียบเทียบคลื่นตามขวาง vs คลื่นตามยาว 6 ประเด็น</div>
+    <table class="matrix">
+      <thead><tr><th style="width:30%">ประเด็น</th><th>คลื่นตามขวาง (Transverse)</th><th>คลื่นตามยาว (Longitudinal)</th></tr></thead>
+      <tbody>${rowHtml}</tbody>
+    </table>
+    <div class="submit-bar">
+      <button class="btn-submit" id="mxBtn">📤 ส่งใบกิจกรรม</button>
+      <div class="status" id="mxStat"></div>
+    </div>`;
+  document.getElementById('mxBtn').onclick = () => {
+    const pl = {};
+    rows.forEach((r,i) => {
+      pl[`row${i+1}_topic`] = r[0];
+      pl[`row${i+1}_transverse`] = val(`mx_tv_${i}`);
+      pl[`row${i+1}_longitudinal`] = val(`mx_lg_${i}`);
+    });
+    submitData(`Matrix_P${state.currentPlan}`, pl,
+      document.getElementById('mxStat'), document.getElementById('mxBtn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// Spot the Error
+// ═══════════════════════════════════════════════════════════
+function renderSpot(body){
+  const items = [
+    'คลื่นในเชือกเป็นคลื่นตามยาว เพราะเชือกเคลื่อนที่ไปตามทิศคลื่น',
+    'ความถี่ของคลื่นจะเปลี่ยนเมื่อคลื่นเคลื่อนจากตัวกลางหนึ่งไปอีกตัวกลาง',
+    'คลื่นดลและคลื่นต่อเนื่องคือสิ่งเดียวกัน เพียงแต่ชื่อต่างกัน',
+    'ในคลื่นเสียง อากาศจะไหลจากผู้พูดไปยังผู้ฟัง'
+  ];
+  let html = '';
+  items.forEach((t,i) => {
+    html += `
+      <div class="item">
+        <div><span class="no">ข้อ ${i+1}</span></div>
+        <div class="stem" style="font-style:italic;color:#b71c1c">"${t}"</div>
+        <label>📝 สิ่งที่ผิดในข้อความนี้ คือ:</label>
+        <textarea id="sp_err_${i}" placeholder="อธิบายสิ่งที่ผิด..."></textarea>
+        <label>✅ แก้ไขให้ถูกต้อง:</label>
+        <textarea id="sp_fix_${i}" placeholder="ข้อความที่ถูกต้องคือ..."></textarea>
+      </div>`;
+  });
+  body.innerHTML += `
+    <div class="info"><b>ใบกิจกรรม 1.2:</b> หาข้อผิดพลาดในข้อความ 4 ข้อ แล้วเขียนคำอธิบายที่ถูกต้อง</div>
+    ${html}
+    <div class="submit-bar">
+      <button class="btn-submit" id="spBtn">📤 ส่งใบกิจกรรม</button>
+      <div class="status" id="spStat"></div>
+    </div>`;
+  document.getElementById('spBtn').onclick = () => {
+    const pl = {};
+    items.forEach((t,i) => {
+      pl[`item${i+1}_stmt`] = t;
+      pl[`item${i+1}_error`] = val(`sp_err_${i}`);
+      pl[`item${i+1}_fix`] = val(`sp_fix_${i}`);
+    });
+    submitData(`Spot_P${state.currentPlan}`, pl,
+      document.getElementById('spStat'), document.getElementById('spBtn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// POE-01 · เฉพาะแผน 1 (Concept Cartoon "ของลอยในทะเล" + Slinky + wave-types Sim)
+// Misconception: M1.1 อนุภาคไปกับคลื่น · M1.2 เสียงเป็นคลื่นตามขวาง
+// ═══════════════════════════════════════════════════════════
+function renderPOE1(body){
+  body.innerHTML += `
+  <div class="info" style="margin-bottom:10px">
+    <b>🎯 คำถาม:</b> ของลอย (ลูกมะพร้าว) ในทะเลจะถูกคลื่นพาไปไกลหรือไม่ เพราะเหตุใด?
+    <br>คู่กับ Concept Cartoon "ของลอยในทะเล" + สังเกต Slinky/ริบบิ้น + Simulation wave-types
+  </div>
+
+  <!-- ===== P: PREDICT ===== -->
+  <div class="item" style="border-left:6px solid #1976d2;background:#e3f2fd">
+    <h3 style="color:#0d47a1">🔮 P · Predict (ทำนาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #1976d2;border-radius:12px;padding:2px 10px">ก่อนทดลอง · 3 นาที</span></h3>
+    <div style="margin:8px 0">ฉันคิดว่าลูกมะพร้าวในทะเลจะ:</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">
+      <label><input type="radio" name="p1_pred" value="go_far"> ถูกคลื่นพาไปไกล</label>
+      <label><input type="radio" name="p1_pred" value="stay"> ลอยขึ้น-ลงอยู่กับที่</label>
+      <label><input type="radio" name="p1_pred" value="go_stop"> ถูกพาไปแล้วหยุด</label>
+    </div>
+
+    <div style="margin-bottom:4px"><b>เหตุผลที่คิดเช่นนั้น:</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;padding-left:4px">
+      <label><input type="radio" name="p1_reason_opt" value="R1"> คลื่นพาน้ำ (และของที่ลอย) ไหลไปด้วย เหมือนกระแสน้ำ</label>
+      <label><input type="radio" name="p1_reason_opt" value="R2"> คลื่นส่งแรงผลักลูกมะพร้าวไปข้างหน้าเรื่อย ๆ</label>
+      <label><input type="radio" name="p1_reason_opt" value="R3"> คลื่นถ่ายโอนพลังงาน แต่อนุภาคน้ำแค่สั่นขึ้น-ลง ไม่เคลื่อนที่ตามคลื่น</label>
+      <label><input type="radio" name="p1_reason_opt" value="R4"> ลูกมะพร้าวถูกพาไปตอนแรก แต่พอพลังงานคลื่นลดลงก็หยุด</label>
+      <label><input type="radio" name="p1_reason_opt" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
+    </div>
+    <textarea id="p1_reason" placeholder="ถ้าเลือก 'อื่น ๆ' หรือต้องการอธิบายเพิ่มเติม พิมพ์ที่นี่..." style="min-height:50px"></textarea>
+    <div style="margin-top:6px"><b>ความมั่นใจ:</b>
+      <label><input type="radio" name="p1_conf" value="high"> มาก</label>
+      <label><input type="radio" name="p1_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="p1_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- ===== O: OBSERVE ===== -->
+  <div class="item" style="border-left:6px solid #ef6c00;background:#fff3e0">
+    <h3 style="color:#c05621">👁 O · Observe (สังเกต) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #ef6c00;border-radius:12px;padding:2px 10px">Slinky + Simulation · 15 นาที · กลุ่ม</span></h3>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#c05621;margin-bottom:6px">🔵 รอบ 1 · Slinky + ริบบิ้น</h4>
+        <label style="font-size:13px">สิ่งที่สังเกตได้เมื่อส่งคลื่นผ่าน Slinky (ริบบิ้นเคลื่อนที่อย่างไร?):</label>
+        <textarea id="p1o_slinky" placeholder="ริบบิ้นที่ผูกไว้..." style="min-height:60px"></textarea>
+      </div>
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#c05621;margin-bottom:6px">🟢 รอบ 2 · Simulation wave-types.html</h4>
+        <label style="font-size:13px">สิ่งที่สังเกตได้จาก Simulation (อนุภาคสีแดง/น้ำเงินเคลื่อนที่อย่างไร?):</label>
+        <textarea id="p1o_sim" placeholder="อนุภาคใน simulation..." style="min-height:60px"></textarea>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #ef6c00;border-radius:8px;padding:10px;font-size:14px">
+      <b>สรุปจากการสังเกต:</b>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div>ทิศการสั่นของริบบิ้น/อนุภาค: <input type="text" id="p1o_vibdir" style="width:100%;border:none;border-bottom:1px solid #999;font-family:inherit;padding:2px 0" placeholder="เช่น ขึ้น-ลง / ซ้าย-ขวา"></div>
+        <div>ทิศการเคลื่อนที่ของคลื่น: <input type="text" id="p1o_wavedir" style="width:100%;border:none;border-bottom:1px solid #999;font-family:inherit;padding:2px 0" placeholder="เช่น ไปทางขวา"></div>
+      </div>
+      <div style="margin-top:8px"><b>ริบบิ้น/อนุภาคถูกพาไปกับคลื่นหรือไม่?</b>
+        <label style="margin-left:8px"><input type="radio" name="p1o_carried" value="yes"> ถูกพาไป</label>
+        <label><input type="radio" name="p1o_carried" value="no"> ไม่ถูกพาไป (สั่นอยู่กับที่)</label>
+        <label><input type="radio" name="p1o_carried" value="unsure"> ไม่แน่ใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== E: EXPLAIN ===== -->
+  <div class="item" style="border-left:6px solid #2e7d32;background:#e8f5e9">
+    <h3 style="color:#1b5e20">✍️ E · Explain (อธิบาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #2e7d32;border-radius:12px;padding:2px 10px">เชื่อม P↔O · 7 นาที</span></h3>
+
+    <label><b>1) เปรียบเทียบ P กับ O:</b> คำทำนายกับผลสังเกตตรงกันหรือไม่?</label>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 6px">
+      <label><input type="radio" name="p1e_po" value="match"> ตรงกัน</label>
+      <label><input type="radio" name="p1e_po" value="partial"> ตรงบางส่วน</label>
+      <label><input type="radio" name="p1e_po" value="diff"> ไม่ตรง</label>
+    </div>
+    <textarea id="p1e_match" placeholder="อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร..." style="min-height:55px"></textarea>
+
+    <div style="margin-top:10px"><b>2) จากผลการสังเกต ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding-left:4px">
+      <label><input type="checkbox" id="p1e_c1"> อนุภาคตัวกลาง (น้ำ/Slinky) สั่นอยู่กับที่ <u>ไม่</u>ถูกพาไปกับคลื่น</label>
+      <label><input type="checkbox" id="p1e_c2"> คลื่นถ่ายโอน "พลังงาน" ไม่ใช่ถ่ายโอน "สสาร/วัตถุ"</label>
+      <label><input type="checkbox" id="p1e_c3"> คลื่นตามขวาง: อนุภาคสั่นตั้งฉากกับทิศคลื่น (เช่น คลื่นในเชือก คลื่นน้ำ)</label>
+      <label><input type="checkbox" id="p1e_c4"> คลื่นตามยาว: อนุภาคสั่นในทิศเดียวกับทิศคลื่น (เช่น เสียง Slinky ผลัก-ดึง)</label>
+      <label><input type="checkbox" id="p1e_c5"> เสียงเป็นคลื่นตามยาว ไม่ใช่คลื่นตามขวาง</label>
+    </div>
+
+    <label><b>3) สรุปหลักการด้วยภาษาของนักเรียนเอง:</b> (อนุภาคเคลื่อนที่อย่างไร? พลังงานเดินทางอย่างไร?)</label>
+    <textarea id="p1e_principle" placeholder="คลื่นคือ... อนุภาคตัวกลาง... พลังงาน..." style="min-height:70px"></textarea>
+
+    <div style="margin-top:8px"><b>ความมั่นใจในคำอธิบาย:</b>
+      <label><input type="radio" name="p1e_conf" value="high"> มาก</label>
+      <label><input type="radio" name="p1e_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="p1e_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
+    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> M1.1 (อนุภาคเคลื่อนที่ไปกับคลื่น) · M1.2 (เสียงเป็นคลื่นตามขวาง)
+  </div>
+
+  <div class="submit-bar">
+    <button class="btn-submit" id="poe1Btn">📤 ส่งใบ POE</button>
+    <div class="status" id="poe1Stat"></div>
+  </div>`;
+
+  /* ====== Submit handler ====== */
+  document.getElementById('poe1Btn').onclick = () => {
+    const pred = (document.querySelector('input[name=p1_pred]:checked')||{}).value || '';
+    const rOpt = (document.querySelector('input[name=p1_reason_opt]:checked')||{}).value || '';
+    const conf = (document.querySelector('input[name=p1_conf]:checked')||{}).value || '';
+    const carried = (document.querySelector('input[name=p1o_carried]:checked')||{}).value || '';
+    const poCompare = (document.querySelector('input[name=p1e_po]:checked')||{}).value || '';
+    const eConf = (document.querySelector('input[name=p1e_conf]:checked')||{}).value || '';
+
+    const pl = {
+      p_prediction: pred,
+      p_reason_opt: rOpt,
+      p_reason: val('p1_reason'),
+      p_confidence: conf,
+      o_slinky: val('p1o_slinky'),
+      o_sim: val('p1o_sim'),
+      o_vib_direction: val('p1o_vibdir'),
+      o_wave_direction: val('p1o_wavedir'),
+      o_carried: carried,
+      e_po_compare: poCompare,
+      e_match: val('p1e_match'),
+      e_checks: ['c1','c2','c3','c4','c5'].filter(x => document.getElementById('p1e_'+x).checked).join(','),
+      e_principle: val('p1e_principle'),
+      e_confidence: eConf
+    };
+    if ((!rOpt && !pl.p_reason) || !pl.e_match || !pl.e_principle){
+      const s = document.getElementById('poe1Stat');
+      s.className='status error'; s.textContent='❌ กรอกอย่างน้อย: เหตุผล (P) · เปรียบเทียบ P↔O · สรุปหลักการ (E)';
+      return;
+    }
+    submitData('POE_P1', pl,
+      document.getElementById('poe1Stat'), document.getElementById('poe1Btn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// POE-01 · เฉพาะแผน 2 (Lab 38 — 4 วิธีวัด + ทดสอบตัวแปร)
+// ═══════════════════════════════════════════════════════════
+function renderPOE2(body){
+  /* ====== ส่วน CSS เพิ่มเฉพาะ POE2 (inline-style กับ class เดิม) ====== */
+  const tbl = (id,heads,rows) => {
+    let h = '<table class="matrix" style="font-size:13px;margin-top:6px"><tr>';
+    heads.forEach(c => h += `<th style="background:#e3f2fd;color:#0d47a1;font-size:12px;padding:5px;text-align:center">${c}</th>`);
+    h += '</tr>';
+    for (let r=1;r<=rows;r++){
+      h += '<tr>';
+      heads.forEach((c,ci) => {
+        if (ci===0) h += `<td style="text-align:center">${r}</td>`;
+        else h += `<td><input type="text" id="${id}_r${r}c${ci}" style="width:100%;border:none;text-align:center;font-family:inherit;font-size:13px" placeholder="—"></td>`;
+      });
+      h += '</tr>';
+    }
+    h += '</table>';
+    return h;
+  };
+
+  body.innerHTML += `
+  <div class="info" style="margin-bottom:10px">
+    <b>🎯 คำถามหลัก:</b> ความเร็วของคลื่นในเชือกขึ้นกับอะไรบ้าง? (f, T, A หรือ μ?) — เขียนทำนายจาก Concept Cartoon ก่อน แล้วตรวจสอบด้วย Lab 38 (4 วิธีวัด)
+  </div>
+  <div style="text-align:center;margin-bottom:12px">
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/38.%20wave-speed-on-string.html"
+       target="_blank" style="display:inline-block;background:#1565c0;color:#fff;padding:6px 18px;border-radius:8px;font-weight:700;text-decoration:none">🔗 เปิด Lab 38 — Wave Speed on a String</a>
+  </div>
+
+  <!-- ===== P: PREDICT ===== -->
+  <div class="item" style="border-left:6px solid #1976d2;background:#e3f2fd">
+    <h3 style="color:#0d47a1">🔮 P · Predict (ทำนาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #1976d2;border-radius:12px;padding:2px 10px">ก่อนทดลอง · 3 นาที</span></h3>
+    <div style="margin:8px 0">คลื่นในเชือกของสามพี่น้อง (Concept Cartoon) จะ:</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:8px">
+      <label><input type="radio" name="p2_cartoon" value="sis"> พี่นิดเร็วที่สุด</label>
+      <label><input type="radio" name="p2_cartoon" value="same"> เร็วเท่ากันทั้งสามคน</label>
+      <label><input type="radio" name="p2_cartoon" value="bro"> น้องน้อยเร็วที่สุด</label>
+    </div>
+    <div style="margin-bottom:6px"><b>ฉันคิดว่า v ของคลื่นในเชือกขึ้นกับ</b> (เลือกได้มากกว่า 1):</div>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:8px">
+      <label><input type="checkbox" id="p2_dep_f"> ความถี่ f</label>
+      <label><input type="checkbox" id="p2_dep_T"> แรงตึง T</label>
+      <label><input type="checkbox" id="p2_dep_A"> แอมพลิจูด A</label>
+      <label><input type="checkbox" id="p2_dep_mu"> มวลต่อความยาว μ</label>
+    </div>
+    <div style="margin-bottom:4px"><b>เหตุผลที่คิดเช่นนั้น:</b> (เลือกข้อที่ตรงกับความคิดของนักเรียนมากที่สุด)</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;padding-left:4px">
+      <label><input type="radio" name="p2_reason_opt" value="R1"> v = fλ ดังนั้นถ้า f เพิ่ม v ก็ต้องเพิ่มด้วย</label>
+      <label><input type="radio" name="p2_reason_opt" value="R2"> ยิ่งสั่นแรง (A มาก) คลื่นยิ่งมีพลังงานมาก จึงวิ่งเร็วขึ้น</label>
+      <label><input type="radio" name="p2_reason_opt" value="R3"> ยิ่งดึงเชือกตึง (T มาก) คลื่นยิ่งวิ่งเร็ว เพราะตัวกลางส่งแรงได้ดีขึ้น</label>
+      <label><input type="radio" name="p2_reason_opt" value="R4"> เชือกหนัก (μ มาก) ทำให้คลื่นวิ่งช้า เพราะอนุภาคมีความเฉื่อยมาก</label>
+      <label><input type="radio" name="p2_reason_opt" value="R5"> v ขึ้นกับสมบัติของตัวกลาง (T, μ) เท่านั้น ไม่ขึ้นกับ f หรือ A</label>
+      <label><input type="radio" name="p2_reason_opt" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
+    </div>
+    <textarea id="p2_reason" placeholder="ถ้าเลือก 'อื่น ๆ' หรือต้องการอธิบายเพิ่มเติม พิมพ์ที่นี่..." style="min-height:50px"></textarea>
+    <div style="margin-top:6px"><b>ความมั่นใจ:</b>
+      <label><input type="radio" name="p2_conf" value="high"> มาก</label>
+      <label><input type="radio" name="p2_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="p2_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- ===== O: OBSERVE — 4 วิธีวัด ===== -->
+  <div class="item" style="border-left:6px solid #ef6c00;background:#fff3e0">
+    <h3 style="color:#c05621">👁 O · Observe (สังเกตและวัด) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #ef6c00;border-radius:12px;padding:2px 10px">Lab 38 · 20 นาที · กลุ่ม 4 คน</span></h3>
+    <div style="font-size:14px;margin-bottom:8px"><b>ตั้งค่าเริ่มต้น:</b> T = 20 N · μ = 0.01 kg/m · f = 2 Hz · ความยาวเชือก = 30 m · ไม่มีการสะท้อน</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <!-- วิธี 1 -->
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#0d47a1">🔵 วิธี 1 · วัด v จากระยะทาง (Δx/Δt)</h4>
+        <div style="font-size:12px;color:#555;background:#f7fafc;padding:4px 8px;border-radius:6px;border-left:3px solid #ef6c00;margin-bottom:6px">กด "ส่งคลื่น" → "เริ่มจับเวลา" เมื่อยอดผ่านจุดแรก → "หยุดเวลา" เมื่อผ่านจุดที่สอง → อ่าน Δx → บันทึก</div>
+        ${tbl('o1',['#','Δt (s)','Δx (m)','v=Δx/Δt','v จริง','%Error'],3)}
+        <div style="font-size:13px;margin-top:4px;background:#fffde7;border:1px dashed #f9a825;border-radius:6px;padding:4px 8px">v เฉลี่ย = <input type="text" id="o1_avg" style="width:60px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> m/s</div>
+      </div>
+      <!-- วิธี 2 -->
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#0d47a1">🟢 วิธี 2 · วัด v จากความยาวคลื่น (v = fλ)</h4>
+        <div style="font-size:12px;color:#555;background:#f7fafc;padding:4px 8px;border-radius:6px;border-left:3px solid #ef6c00;margin-bottom:6px">กด "ส่งคลื่น" → "หยุดภาพ" → วัด λ จากไม้บรรทัด (2 ยอดติดกัน) → กรอก λ → "บันทึก"</div>
+        ${tbl('o2',['#','f (Hz)','T (s)','λ วัด (m)','v=fλ','v จริง','%Error'],3)}
+        <div style="font-size:13px;margin-top:4px;background:#fffde7;border:1px dashed #f9a825;border-radius:6px;padding:4px 8px">v เฉลี่ย = <input type="text" id="o2_avg" style="width:60px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> m/s</div>
+      </div>
+      <!-- วิธี 3 -->
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#0d47a1">🟡 วิธี 3 · วัดคาบ T</h4>
+        <div style="font-size:12px;color:#555;background:#f7fafc;padding:4px 8px;border-radius:6px;border-left:3px solid #ef6c00;margin-bottom:6px">กด "ส่งคลื่น" → "วางจุดวัดคาบ" → สังเกตจุดขึ้นลง → "เริ่มจับเวลา" → นับรอบ → "หยุดเวลา" → บันทึก</div>
+        ${tbl('o3',['#','เวลา (s)','จำนวนรอบ','T วัด (s)','T จริง (s)','%Error'],3)}
+        <div style="font-size:13px;margin-top:4px;background:#fffde7;border:1px dashed #f9a825;border-radius:6px;padding:4px 8px">T เฉลี่ย = <input type="text" id="o3_avgT" style="width:50px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> s → f = 1/T = <input type="text" id="o3_avgF" style="width:50px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> Hz</div>
+      </div>
+      <!-- วิธี 4 -->
+      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+        <h4 style="font-size:14px;color:#0d47a1">🔴 วิธี 4 · วัดความถี่ f</h4>
+        <div style="font-size:12px;color:#555;background:#f7fafc;padding:4px 8px;border-radius:6px;border-left:3px solid #ef6c00;margin-bottom:6px">กด "วางเส้นอ้างอิง" → ตั้งเวลาจับ → "เริ่มจับเวลา" → นับเฟสซ้ำที่ผ่านเส้น → กรอกจำนวนรอบ → "บันทึก"</div>
+        ${tbl('o4',['#','เวลา (s)','จำนวนรอบ','f วัด (Hz)','T วัด (s)','f จริง','%Error'],3)}
+        <div style="font-size:13px;margin-top:4px;background:#fffde7;border:1px dashed #f9a825;border-radius:6px;padding:4px 8px">f เฉลี่ย = <input type="text" id="o4_avg" style="width:60px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> Hz</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px;background:#fff;border:1.5px solid #ef6c00;border-radius:8px;padding:8px 12px;font-size:14px">
+      <b>สรุปจาก 4 วิธีวัด:</b> v วิธี 1 = <input type="text" id="o_sum1" style="width:50px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> · วิธี 2 = <input type="text" id="o_sum2" style="width:50px;border:none;border-bottom:1px solid #999;text-align:center;font-family:inherit"> m/s → ค่า v ใกล้เคียงกันหรือไม่? <input type="text" id="o_sum_match" style="width:140px;border:none;border-bottom:1px solid #999;font-family:inherit">
+    </div>
+  </div>
+
+  <!-- ===== ทดสอบเปลี่ยนตัวแปร A-D ===== -->
+  <div class="item" style="border-left:6px solid #c62828;background:#fce4ec">
+    <h3 style="color:#c62828">🔬 ทดสอบเพิ่มเติม: v ขึ้นกับอะไร?</h3>
+    <div style="font-size:13.5px;margin-bottom:8px">เปลี่ยนตัวแปรทีละตัว แล้ววัด v ใหม่ด้วยวิธี 1 หรือ 2 บันทึกผลด้านล่าง</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <!-- ทดสอบ A -->
+      <div style="background:#fff;border:1.5px solid #ffcdd2;border-radius:8px;padding:8px">
+        <b style="color:#c62828">ทดสอบ A · เปลี่ยน f (ตรึง T, μ)</b>
+        ${tbl('va',['f (Hz)','v วัด (m/s)','λ วัด (m)'],3)}
+        <div style="font-size:13px;margin-top:4px">สรุป: เมื่อ f เปลี่ยน → v <input type="text" id="va_conc_v" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"> → λ <input type="text" id="va_conc_l" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"></div>
+      </div>
+      <!-- ทดสอบ B -->
+      <div style="background:#fff;border:1.5px solid #ffcdd2;border-radius:8px;padding:8px">
+        <b style="color:#c62828">ทดสอบ B · เปลี่ยน T (ตรึง f, μ)</b>
+        ${tbl('vb',['T (N)','v วัด (m/s)','λ วัด (m)'],3)}
+        <div style="font-size:13px;margin-top:4px">สรุป: เมื่อ T เพิ่ม → v <input type="text" id="vb_conc_v" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"> → λ <input type="text" id="vb_conc_l" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"></div>
+      </div>
+      <!-- ทดสอบ C -->
+      <div style="background:#fff;border:1.5px solid #ffcdd2;border-radius:8px;padding:8px">
+        <b style="color:#c62828">ทดสอบ C · เปลี่ยน A (ตรึง T, μ, f)</b>
+        ${tbl('vc',['A (px)','v วัด (m/s)'],3)}
+        <div style="font-size:13px;margin-top:4px">สรุป: เมื่อ A เปลี่ยน → v <input type="text" id="vc_conc" style="width:120px;border:none;border-bottom:1px solid #999;font-family:inherit"></div>
+      </div>
+      <!-- ทดสอบ D -->
+      <div style="background:#fff;border:1.5px solid #ffcdd2;border-radius:8px;padding:8px">
+        <b style="color:#c62828">ทดสอบ D · เปลี่ยน μ (ตรึง T, f)</b>
+        ${tbl('vd',['μ (kg/m)','v วัด (m/s)','λ วัด (m)'],3)}
+        <div style="font-size:13px;margin-top:4px">สรุป: เมื่อ μ เพิ่ม → v <input type="text" id="vd_conc_v" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"> → λ <input type="text" id="vd_conc_l" style="width:80px;border:none;border-bottom:1px solid #999;font-family:inherit"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== E: EXPLAIN ===== -->
+  <div class="item" style="border-left:6px solid #2e7d32;background:#e8f5e9">
+    <h3 style="color:#1b5e20">✍️ E · Explain (อธิบาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #2e7d32;border-radius:12px;padding:2px 10px">เชื่อม P↔O · 7 นาที</span></h3>
+
+    <label><b>1) เปรียบเทียบ P กับ O:</b> คำทำนายกับผลการวัดตรงกันหรือไม่?</label>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 6px">
+      <label><input type="radio" name="p2e_po" value="match"> ตรงกันทั้งหมด</label>
+      <label><input type="radio" name="p2e_po" value="partial"> ตรงบางส่วน</label>
+      <label><input type="radio" name="p2e_po" value="diff"> ไม่ตรงกัน</label>
+    </div>
+    <textarea id="p2e_match" placeholder="อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร..." style="min-height:55px"></textarea>
+
+    <div style="margin-top:10px"><b>2) จากผลการทดลอง ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding-left:4px">
+      <label><input type="checkbox" id="p2e_c1"> เมื่อเปลี่ยน f → v <u>ไม่</u>เปลี่ยน (v ไม่ขึ้นกับ f)</label>
+      <label><input type="checkbox" id="p2e_c2"> เมื่อเปลี่ยน A → v <u>ไม่</u>เปลี่ยน (v ไม่ขึ้นกับ A)</label>
+      <label><input type="checkbox" id="p2e_c3"> เมื่อเพิ่ม T → v เพิ่มขึ้น (v ขึ้นกับ T)</label>
+      <label><input type="checkbox" id="p2e_c4"> เมื่อเพิ่ม μ → v ลดลง (v ขึ้นกับ μ)</label>
+      <label><input type="checkbox" id="p2e_c5"> สรุป: v = √(T/μ) ขึ้นกับสมบัติตัวกลางเท่านั้น</label>
+    </div>
+
+    <label><b>3) สรุปหลักการ v = fλ = √(T/μ) ด้วยภาษาของนักเรียนเอง:</b></label>
+    <textarea id="p2e_principle" placeholder="v = fλ = √(T/μ) แสดงว่า... ทำไม v ไม่ขึ้นกับ f หรือ A แต่ขึ้นกับ T, μ..." style="min-height:70px"></textarea>
+
+    <label><b>4) การวัด 4 วิธีให้ค่า v ใกล้เคียงกัน สะท้อนอะไร?</b></label>
+    <textarea id="p2e_4methods" placeholder="v ที่วัดได้ 4 วิธีใกล้เคียงกัน แสดงว่า..."></textarea>
+
+    <div style="margin-top:8px"><b>ความมั่นใจในคำอธิบาย:</b>
+      <label><input type="radio" name="p2e_conf" value="high"> มาก</label>
+      <label><input type="radio" name="p2e_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="p2e_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
+    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> M2.1 (v ขึ้นกับ f) · M2.2 (ตึงมาก v ช้า) · M2.3 (A มาก v เร็ว) · M2.4 (f เปลี่ยนตามตัวกลาง)
+  </div>
+
+  <div class="submit-bar">
+    <button class="btn-submit" id="poe2Btn">📤 ส่งใบ POE</button>
+    <div class="status" id="poe2Stat"></div>
+  </div>`;
+
+  /* ====== Submit handler ====== */
+  document.getElementById('poe2Btn').onclick = () => {
+    // Predict
+    const cartoon = document.querySelector('input[name=p2_cartoon]:checked');
+    const deps = ['f','T','A','mu'].filter(x => document.getElementById('p2_dep_'+x).checked).join(',');
+    const conf = document.querySelector('input[name=p2_conf]:checked');
+    // Observe tables (collect all input values)
+    const readTbl = (prefix, cols, rows) => {
+      const data = [];
+      for(let r=1;r<=rows;r++){
+        const row = {};
+        for(let c=1;c<cols;c++) row['c'+c] = val(prefix+'_r'+r+'c'+c);
+        data.push(row);
+      }
+      return JSON.stringify(data);
+    };
+    // Explain
+    const eConf = document.querySelector('input[name=p2e_conf]:checked');
+
+    const pl = {
+      p_cartoon: cartoon ? cartoon.value : '',
+      p_depends: deps,
+      p_reason_opt: (document.querySelector('input[name=p2_reason_opt]:checked')||{}).value || '',
+      p_reason: val('p2_reason'),
+      p_confidence: conf ? conf.value : '',
+      o_method1: readTbl('o1',6,3), o1_avg: val('o1_avg'),
+      o_method2: readTbl('o2',7,3), o2_avg: val('o2_avg'),
+      o_method3: readTbl('o3',6,3), o3_avgT: val('o3_avgT'), o3_avgF: val('o3_avgF'),
+      o_method4: readTbl('o4',7,3), o4_avg: val('o4_avg'),
+      o_summary_v1: val('o_sum1'), o_summary_v2: val('o_sum2'), o_summary_match: val('o_sum_match'),
+      var_a: readTbl('va',3,3), va_conc_v: val('va_conc_v'), va_conc_l: val('va_conc_l'),
+      var_b: readTbl('vb',3,3), vb_conc_v: val('vb_conc_v'), vb_conc_l: val('vb_conc_l'),
+      var_c: readTbl('vc',2,3), vc_conc: val('vc_conc'),
+      var_d: readTbl('vd',3,3), vd_conc_v: val('vd_conc_v'), vd_conc_l: val('vd_conc_l'),
+      e_po_compare: (document.querySelector('input[name=p2e_po]:checked')||{}).value || '',
+      e_match: val('p2e_match'),
+      e_checks: ['c1','c2','c3','c4','c5'].filter(x => document.getElementById('p2e_'+x).checked).join(','),
+      e_principle: val('p2e_principle'),
+      e_4methods: val('p2e_4methods'),
+      e_confidence: eConf ? eConf.value : ''
+    };
+    if ((!pl.p_reason_opt && !pl.p_reason) || !pl.e_match || !pl.e_principle){
+      const s = document.getElementById('poe2Stat');
+      s.className='status error'; s.textContent='❌ กรอกอย่างน้อย: เหตุผล (P) · เปรียบเทียบ P↔O · สรุปหลักการ (E)';
+      return;
+    }
+    submitData(`POE_P${state.currentPlan}`, pl,
+      document.getElementById('poe2Stat'), document.getElementById('poe2Btn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ใบกิจกรรม 2.1 · โจทย์คำนวณ v=fλ=√(T/μ)
+// ═══════════════════════════════════════════════════════════
+function renderCalc2(body){
+  const problems = [
+    { no:1, level:'พื้นฐาน', misc:'K2',
+      stem:'คลื่นบนเชือกมีความถี่ 5 Hz และความยาวคลื่น 0.40 m จงหาความเร็วคลื่น' },
+    { no:2, level:'ประยุกต์', misc:'M2.1',
+      stem:'เชือกเส้นเดิม ตึงเท่าเดิม เดิมสั่นด้วย f = 2 Hz ได้ λ = 0.60 m · ถ้าเพิ่มความถี่เป็น 6 Hz ให้หา (ก) ความเร็วคลื่นใหม่ (ข) ความยาวคลื่นใหม่' },
+    { no:3, level:'ประยุกต์', misc:'M2.2',
+      stem:'เชือกยาว 2.0 m มวล 40 g ปลายหนึ่งผูกกับกำแพง อีกปลายดึงด้วยแรง 16 N · จงหาความเร็วคลื่นในเชือก' },
+    { no:4, level:'ประยุกต์', misc:'M2.4',
+      stem:'คลื่นความถี่ 200 Hz เดินทางในน้ำด้วยความเร็ว 1,500 m/s เมื่อเข้าสู่อากาศ v = 340 m/s · จงหา (ก) λ ในน้ำ (ข) λ ในอากาศ (ค) f ในอากาศ พร้อมอธิบาย' },
+    { no:5, level:'ท้าทาย', misc:'M2.2',
+      stem:'เชือก μ = 0.010 kg/m ดึงด้วย T₁ ให้ v₁ = 20 m/s · ถ้าต้องการ v₂ = 40 m/s โดยไม่เปลี่ยนเชือก ต้องเพิ่มแรงตึงเป็นกี่เท่าของ T₁?' }
+  ];
+  let html = `<div class="info"><b>🧮 ใบกิจกรรม 2.1:</b> โจทย์คำนวณ v = fλ = √(T/μ) · 5 ข้อ ไล่ระดับ · แสดง "กำหนด ต้องหา สมการ การคำนวณ คำตอบ"</div>
+    <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:10px;text-align:center;font-weight:800;color:#0d47a1;font-size:18px;margin:10px 0">v = fλ &nbsp;·&nbsp; v = √(T/μ) &nbsp;·&nbsp; μ = m / L</div>`;
+  problems.forEach(p => {
+    html += `
+    <div class="item">
+      <div><span class="no">ข้อ ${p.no}</span> <b>${p.level}</b> <span class="mis-tag">${p.misc}</span></div>
+      <div class="stem">${p.stem}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <div><label style="font-weight:700;color:#0d47a1">กำหนด / ต้องหา:</label>
+          <textarea id="c2_given_${p.no}" placeholder="กำหนด: ... ต้องหา: ..."></textarea></div>
+        <div><label style="font-weight:700;color:#0d47a1">การคำนวณ + คำตอบ:</label>
+          <textarea id="c2_work_${p.no}" placeholder="สมการ: ... คำนวณ: ... คำตอบ: ..." style="min-height:90px"></textarea></div>
+      </div>
+    </div>`;
+  });
+  html += `
+    <div class="submit-bar">
+      <button class="btn-submit" id="c2Btn">📤 ส่งใบกิจกรรม 2.1</button>
+      <div class="status" id="c2Stat"></div>
+    </div>`;
+  body.innerHTML += html;
+  document.getElementById('c2Btn').onclick = () => {
+    const pl = {};
+    problems.forEach(p => {
+      pl[`q${p.no}_stem`]  = p.stem;
+      pl[`q${p.no}_given`] = val(`c2_given_${p.no}`);
+      pl[`q${p.no}_work`]  = val(`c2_work_${p.no}`);
+      pl[`q${p.no}_misc`]  = p.misc;
+    });
+    submitData(`Calc_P${state.currentPlan}`, pl,
+      document.getElementById('c2Stat'), document.getElementById('c2Btn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// ใบกิจกรรม 2.2 · Spot the Error (v=fλ)
+// ═══════════════════════════════════════════════════════════
+function renderSpot2(body){
+  const items = [
+    { misc:'M2.1', stmt:'เมื่อดีดกีตาร์สายเดิมด้วยแรงแรงขึ้น เสียงจะมีความถี่สูงขึ้น ทำให้คลื่นในสายวิ่งเร็วขึ้น เพราะ v = fλ และ f เพิ่ม v จึงเพิ่ม' },
+    { misc:'M2.4', stmt:'คลื่นเสียงความถี่ 500 Hz เดินทางจากอากาศ (v = 340 m/s) เข้าไปในน้ำ (v = 1,500 m/s) · เมื่อเข้าน้ำแล้วความถี่ของเสียงเปลี่ยนเป็นประมาณ 2,200 Hz เพื่อให้คลื่นเดินทางในน้ำได้เร็วขึ้น' },
+    { misc:'M2.1+M2.2', stmt:'โจทย์: เชือกมวล 20 g ยาว 2 m ดึงด้วยแรง 10 N ความถี่ 20 Hz · วิธีทำ: v = fλ = 20 × 0.5 = 10 m/s · (ใช้ v = fλ โดยสมมติ λ = 0.5 m แทนที่จะใช้ v = √(T/μ))' }
+  ];
+  let html = `<div class="info"><b>🔍 ใบกิจกรรม 2.2:</b> หาข้อผิดพลาดในข้อความ/การคำนวณ 3 ข้อ · เป้าหมาย: M2.1, M2.2, M2.4</div>`;
+  items.forEach((it,i) => {
+    html += `
+    <div class="item">
+      <div><span class="no">ข้อ ${i+1}</span> <span class="mis-tag">${it.misc}</span></div>
+      <div class="stem" style="font-style:italic;color:#b71c1c;background:#fff;border:1.5px dashed #ef9a9a;border-radius:10px;padding:12px;margin:8px 0">"${it.stmt}"</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <div><label style="font-weight:700">📝 ผิดตรงไหน:</label>
+          <textarea id="s2_err_${i}" placeholder="อธิบายสิ่งที่ผิด..."></textarea></div>
+        <div><label style="font-weight:700">✅ ที่ถูกต้องคือ:</label>
+          <textarea id="s2_fix_${i}" placeholder="แก้ไขให้ถูกต้อง..."></textarea></div>
+      </div>
+    </div>`;
+  });
+  html += `
+    <div class="submit-bar">
+      <button class="btn-submit" id="s2Btn">📤 ส่งใบกิจกรรม 2.2</button>
+      <div class="status" id="s2Stat"></div>
+    </div>`;
+  body.innerHTML += html;
+  document.getElementById('s2Btn').onclick = () => {
+    const pl = {};
+    items.forEach((it,i) => {
+      pl[`item${i+1}_stmt`]  = it.stmt;
+      pl[`item${i+1}_error`] = val(`s2_err_${i}`);
+      pl[`item${i+1}_fix`]   = val(`s2_fix_${i}`);
+      pl[`item${i+1}_misc`]  = it.misc;
+    });
+    submitData(`Spot_P${state.currentPlan}`, pl,
+      document.getElementById('s2Stat'), document.getElementById('s2Btn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MJ-01 · Metacognitive Journal 3-2-1
+// ═══════════════════════════════════════════════════════════
+function renderMJ(body){
+  body.innerHTML += `
+    <div class="info"><b>เขียนสั้น ๆ:</b> สะท้อนสิ่งที่เรียนรู้จากคาบนี้ตามรูปแบบ 3-2-1</div>
+    <div class="mj-sec mj-three">
+      <h3>3️⃣ สามสิ่งที่ฉัน "เข้าใจใหม่" จากคาบนี้</h3>
+      <textarea id="mj_u1" placeholder="1."></textarea>
+      <textarea id="mj_u2" placeholder="2." style="margin-top:8px"></textarea>
+      <textarea id="mj_u3" placeholder="3." style="margin-top:8px"></textarea>
+    </div>
+    <div class="mj-sec mj-two">
+      <h3>2️⃣ สองสิ่งที่ "น่าสนใจ" อยากรู้เพิ่ม</h3>
+      <textarea id="mj_i1" placeholder="1."></textarea>
+      <textarea id="mj_i2" placeholder="2." style="margin-top:8px"></textarea>
+    </div>
+    <div class="mj-sec mj-one">
+      <h3>1️⃣ หนึ่งคำถามที่ "ยังสงสัย" อยากถามครู</h3>
+      <textarea id="mj_q" placeholder="คำถาม..."></textarea>
+    </div>
+    <div class="mj-sec" style="background:#fff3e0;border-left:6px solid #ef6c00">
+      <h3 style="color:#e65100">💗 ฉันรู้สึกอย่างไรกับคาบนี้? (1=น้อยที่สุด → 5=มากที่สุด)</h3>
+      ${[
+        {id:'mj_mot1', q:'1. คาบนี้ฉันสนุกกับการเรียน'},
+        {id:'mj_mot2', q:'2. ฉันอยากรู้เพิ่มเรื่องคลื่น'},
+        {id:'mj_mot3', q:'3. ฉันมั่นใจที่จะใช้ความรู้คาบนี้'},
+        {id:'mj_mot4', q:'4. เนื้อหา/กิจกรรมน่าสนใจ'},
+        {id:'mj_mot5', q:'5. ฉันเห็นประโยชน์ของการเรียนวันนี้'}
+      ].map(o=>`
+        <div style="margin:8px 0;padding:6px;background:#fff;border-radius:6px">
+          <div style="font-size:14px;margin-bottom:4px">${o.q}</div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            ${[1,2,3,4,5].map(v=>`<label style="cursor:pointer"><input type="radio" name="${o.id}" value="${v}"> ${v}</label>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="mj-sec" style="background:#e3f2fd;border-left:6px solid #1976d2">
+      <h3 style="color:#0d47a1">🎯 Goal Setting (ตั้งเป้าก่อนคาบหน้า)</h3>
+      <label>ฉันจะทบทวนเรื่อง:</label><textarea id="mj_goal" placeholder="หัวข้อ..."></textarea>
+      <label style="margin-top:6px">โดยวิธี:</label><textarea id="mj_how" placeholder="วิธี..."></textarea>
+      <label style="margin-top:6px">ใช้เวลา (นาที):</label>
+      <input type="number" id="mj_min" min="5" max="120" placeholder="30" style="width:100px">
+    </div>
+    <div class="submit-bar">
+      <button class="btn-submit" id="mjBtn">📤 ส่ง Journal</button>
+      <div class="status" id="mjStat"></div>
+    </div>`;
+  document.getElementById('mjBtn').onclick = () => {
+    const getR = n => {const r=document.querySelector(`input[name="${n}"]:checked`); return r?Number(r.value):0;};
+    const pl = {
+      understand_1:val('mj_u1'), understand_2:val('mj_u2'), understand_3:val('mj_u3'),
+      interesting_1:val('mj_i1'), interesting_2:val('mj_i2'),
+      question:val('mj_q'),
+      goal_topic:val('mj_goal'), goal_method:val('mj_how'),
+      goal_minutes:Number(document.getElementById('mj_min').value)||0,
+      mot_fun:getR('mj_mot1'), mot_curious:getR('mj_mot2'), mot_confident:getR('mj_mot3'),
+      mot_interest:getR('mj_mot4'), mot_useful:getR('mj_mot5')
+    };
+    if (!pl.understand_1 || !pl.question){
+      const s=document.getElementById('mjStat');
+      s.className='status error'; s.textContent='❌ กรอกอย่างน้อย 1 สิ่งที่เข้าใจใหม่ และ 1 คำถาม';
+      return;
+    }
+    submitData(`MJ_P${state.currentPlan}`, pl,
+      document.getElementById('mjStat'), document.getElementById('mjBtn'));
+  };
+  showView('view-tool');
+}
+
+// ═══════════════════════════════════════════════════════════
+// Helper
+// ═══════════════════════════════════════════════════════════
+function val(id){ return document.getElementById(id)?.value.trim() || ''; }
+
+function isApiConfigured(){
+  return typeof API_URL === 'string'
+    && API_URL.startsWith('https://script.google.com/macros/s/')
+    && API_URL.endsWith('/exec');
+}
+
+// ═══════════════════════════════════════════════════════════
+// INBOX — กล่องฟีดแบ็กของนักเรียน
+// ═══════════════════════════════════════════════════════════
+async function showInbox(){
+  showView('view-inbox');
+  const body = document.getElementById('inboxBody');
+  const meta = document.getElementById('inboxMeta');
+  body.innerHTML = '<div class="info">⏳ กำลังโหลด...</div>';
+  await loadFeedback();
+
+  if (!state.feedback.length){
+    body.innerHTML = '<div class="info">📭 ยังไม่มีฟีดแบ็กจากครู — คอยติดตามหลังคาบเรียนนะ</div>';
+    meta.textContent = '0 ข้อความ';
+    return;
+  }
+
+  const sorted = [...state.feedback].sort((a,b) =>
+    new Date(b.timestamp) - new Date(a.timestamp));
+  const unread = sorted.filter(f => !f.read_at).length;
+  meta.textContent = `${sorted.length} ข้อความ · ${unread} ยังไม่ได้อ่าน`;
+
+  body.innerHTML = '';
+  sorted.forEach(f => {
+    const when = new Date(f.timestamp).toLocaleString('th-TH');
+    const card = document.createElement('div');
+    card.className = 'fb-card' + (f.read_at ? '' : ' unread');
+    card.innerHTML = `
+      <div class="meta">📅 ${when} · แผน ${f.plan} · จากครูโกเมน</div>
+      <div class="msg">${escapeHtml(f.message || '')}</div>
+      ${f.poe_score !== '' && f.poe_score != null ? `<div class="score">⭐ POE: ${f.poe_score}/3</div>` : ''}
+    `;
+    body.appendChild(card);
+
+    // markRead ถ้ายังไม่อ่าน
+    if (!f.read_at){
+      fetch(API_URL, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'markRead', feedback_id:f.id, student_id:state.student.student_id})
+      }).catch(()=>{});
+    }
+  });
+
+  // อัปเดต badge
+  document.getElementById('inboxBadge').style.display = 'none';
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => (
+    {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]
+  ));
+}
+
+// ═══════════════════════════════════════════════════════════
+// TEACHER DASHBOARD (Tabbed)
+// ═══════════════════════════════════════════════════════════
+const TEACHER_PASS = 'komanepapato2569'; // ครูเปลี่ยนรหัสได้ที่บรรทัดนี้
+const TEACHER_SESS = 'teacher_ok';        // sessionStorage key
+let teacherCurrentTab = 'overview';
+
+function isTeacherAuthed(){
+  return sessionStorage.getItem(TEACHER_SESS) === '1';
+}
+
+function openTeacher(){
+  if (isTeacherAuthed()){ enterTeacherMode(); return; }
+  const pw = prompt('🔐 รหัสผ่านครู:');
+  if (pw !== TEACHER_PASS){
+    if (pw !== null) alert('❌ รหัสผ่านไม่ถูกต้อง');
+    return;
+  }
+  sessionStorage.setItem(TEACHER_SESS, '1');
+  enterTeacherMode();
+}
+
+function enterTeacherMode(){
+  document.getElementById('topBar').style.display = 'flex';
+  document.getElementById('userLabel').textContent = '👨‍🏫 โหมดครู · ครูโกเมน';
+  // ซ่อนปุ่ม "ออกจากระบบ" ของนักเรียนใน topBar ขณะเป็นครู และเพิ่ม handler ของครูแทน
+  const sBtn = document.querySelector('#topBar .btn-logout');
+  if (sBtn) sBtn.setAttribute('onclick', 'logoutTeacher()');
+  showView('view-teacher');
+  renderTeacherShell();
+  switchTeacherTab('overview');
+}
+
+function logoutTeacher(){
+  if (!confirm('ออกจากโหมดครู?')) return;
+  sessionStorage.removeItem(TEACHER_SESS);
+  // คืนค่า topBar logout เป็นของนักเรียน
+  const sBtn = document.querySelector('#topBar .btn-logout');
+  if (sBtn) sBtn.setAttribute('onclick', 'logout()');
+  document.getElementById('topBar').style.display = 'none';
+  // ถ้ามี session นักเรียนเดิม ให้ข้ามกลับไปหน้านักเรียน; ไม่งั้นไปหน้า login
+  if (state.student){ showHome(); }
+  else { showView('view-login'); }
+}
+
+function renderTeacherShell(){
+  const el = document.getElementById('teacherContent');
+  el.innerHTML = `
+    <div class="tab-nav">
+      <button class="tab-btn" data-tab="overview" onclick="switchTeacherTab('overview')">📊 ภาพรวม</button>
+      <button class="tab-btn" data-tab="students" onclick="switchTeacherTab('students')">👥 นักเรียน</button>
+      <button class="tab-btn" data-tab="plans" onclick="switchTeacherTab('plans')">🗓️ จัดการแผน</button>
+      <button class="tab-btn" data-tab="media" onclick="switchTeacherTab('media')">📚 สื่อ/เครื่องมือ</button>
+      <button class="tab-btn" data-tab="feedback" onclick="switchTeacherTab('feedback')">💬 ส่งฟีดแบ็ก</button>
+      <button class="tab-btn" data-tab="observe" onclick="switchTeacherTab('observe')">🔍 สังเกต/Rubric</button>
+      <button class="tab-btn" data-tab="postplan" onclick="switchTeacherTab('postplan')">📓 บันทึกหลังแผน</button>
+    </div>
+    <div class="tab-panel" id="tab-overview"></div>
+    <div class="tab-panel" id="tab-students"></div>
+    <div class="tab-panel" id="tab-plans"></div>
+    <div class="tab-panel" id="tab-media"></div>
+    <div class="tab-panel" id="tab-feedback"></div>
+    <div class="tab-panel" id="tab-observe"></div>
+    <div class="tab-panel" id="tab-postplan"></div>
+  `;
+}
+
+function switchTeacherTab(name){
+  teacherCurrentTab = name;
+  document.querySelectorAll('.tab-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach(p =>
+    p.classList.toggle('active', p.id === 'tab-' + name));
+  if (name === 'overview') loadTeacherDashboard();
+  if (name === 'students') renderStudentsTab();
+  if (name === 'plans')    renderPlansTab();
+  if (name === 'media')    renderMediaTab();
+  if (name === 'feedback') renderFeedbackTab();
+  if (name === 'observe')  renderObserveTab();
+  if (name === 'postplan') renderPostPlanTab();
+}
+
+async function loadTeacherDashboard(){
+  const el = document.getElementById('tab-overview');
+  if (!isApiConfigured()){
+    el.innerHTML = `<div class="warn-config">⚠️ ยังไม่ได้ตั้งค่า API_URL · เปิด QuickStart_3Steps.html เพื่อทำตามขั้นตอน</div>`;
+    return;
+  }
+
+  try {
+    // ดึงรายชื่อ sheets
+    const info = await fetch(API_URL + '?action=info').then(r => r.json());
+    const sheets = (info.sheets || []).filter(n => n !== 'Sheet1');
+
+    let html = `<div class="hero" style="margin-bottom:16px">
+      <h2>📊 ภาพรวมงานวิจัย</h2>
+      <div>ข้อมูลจาก ${sheets.length} เครื่องมือ · อัปเดต: ${new Date().toLocaleString('th-TH')}</div>
+    </div>`;
+
+    html += `<div class="tools-grid" id="sheetCards"></div>`;
+    el.innerHTML = html;
+
+    const grid = document.getElementById('sheetCards');
+    if (sheets.length === 0){
+      grid.innerHTML = '<div class="info">ยังไม่มีข้อมูลเข้ามา · รอให้นักเรียนส่งคำตอบก่อน</div>';
+      return;
+    }
+
+    // ดึงสถิติแต่ละ sheet
+    for (const s of sheets){
+      const isFT = s.startsWith('F_') || s.startsWith('FT');
+      const action = isFT ? 'stats' : 'list';
+      try {
+        const r = await fetch(API_URL + '?action=' + action + '&sheet=' + encodeURIComponent(s))
+                       .then(x => x.json());
+        const card = document.createElement('div');
+        card.className = 'tool-card tc-ft';
+        card.style.cursor = 'default';
+        card.innerHTML = renderSheetSummary(s, r, isFT);
+        grid.appendChild(card);
+      } catch(e){
+        const card = document.createElement('div');
+        card.className = 'tool-card';
+        card.innerHTML = `<div class="bar" style="background:#999"></div><h3>${s}</h3><div class="desc">ดึงข้อมูลไม่ได้: ${e.message}</div>`;
+        grid.appendChild(card);
+      }
+    }
+
+    html += `<div class="info" style="margin-top:20px">
+      💡 คลิกชื่อ Sheet เพื่อเปิดใน Google Sheets → วิเคราะห์เชิงลึกด้วย Pivot Table / Chart
+    </div>`;
+
+  } catch(err){
+    el.innerHTML = `<div class="warn-config">❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}<br>ตรวจสอบว่า API_URL ถูกต้อง และตั้ง "Who has access: Anyone" แล้ว</div>`;
+  }
+}
+
+function renderSheetSummary(name, data, isFT){
+  const bar = `<div class="bar"></div>`;
+  let body = `<div class="ico">📋</div><h3>${name}</h3>`;
+
+  if (isFT && data.overall){
+    const o = data.overall;
+    const total = o.Sound + o.Misconception + o.Guessing + o['No-K'];
+    const pct = v => total ? ((v/total)*100).toFixed(1) + '%' : '—';
+    body += `<div class="desc">📊 ${data.count} ข้อตอบ · ${Object.keys(data.by_question||{}).length} ข้อ</div>
+      <div style="margin-top:10px;font-size:13px;line-height:1.8">
+        <div>✅ <b>Sound:</b> ${pct(o.Sound)} (${o.Sound})</div>
+        <div style="color:#c62828">⚠️ <b>Misconception:</b> ${pct(o.Misconception)} (${o.Misconception})</div>
+        <div style="color:#f57f17">❓ <b>Guessing:</b> ${pct(o.Guessing)} (${o.Guessing})</div>
+        <div style="color:#6d4c41">⬜ <b>No-K:</b> ${pct(o['No-K'])} (${o['No-K']})</div>
+      </div>`;
+    if (data.normalized_gain && Object.keys(data.normalized_gain).length){
+      body += `<div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:12px">
+        <b>Normalized gain:</b> ${Object.entries(data.normalized_gain).map(([q,g])=>`${q}: ${g.normalized_gain ?? '—'}`).join(' · ')}
+      </div>`;
+    }
+  } else {
+    body += `<div class="desc">📝 ${data.count || 0} ข้อตอบ</div>`;
+    if (data.data && data.data.length){
+      const latest = data.data.slice(-3).reverse();
+      body += `<div style="margin-top:8px;font-size:12px;color:#666">
+        <b>ล่าสุด:</b><br>
+        ${latest.map(r => `• ${r.student_name || '-'} (เลขที่ ${r.student_no || '-'})`).join('<br>')}
+      </div>`;
+    }
+  }
+
+  return bar + body;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: นักเรียน (อัปโหลด + ดู)
+// ═══════════════════════════════════════════════════════════
+async function renderStudentsTab(){
+  const el = document.getElementById('tab-students');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);margin-bottom:16px">
+      <h2>👥 จัดการรายชื่อนักเรียน</h2>
+      <div>อัปโหลดรายชื่อครั้งเดียว → นักเรียนเลือกจาก dropdown ตอน login (ไม่ต้องพิมพ์ชื่อเอง)</div>
+    </div>
+
+    <div class="info"><b>📋 รูปแบบที่รองรับ:</b>
+      <ul style="margin:6px 0 0 20px">
+        <li>วางจาก Excel/Google Sheets ได้เลย — 1 บรรทัด = 1 คน</li>
+        <li>คอลัมน์ (คั่นด้วย Tab หรือ comma): <code>student_id, full_name, class, number, pin4</code></li>
+        <li><code>pin4</code> = 4 หลักท้ายของเลขประจำตัวประชาชน (ใช้ยืนยันตอน login)</li>
+      </ul>
+    </div>
+
+    <div class="upload-area">
+      <label style="font-weight:700">📝 วางรายชื่อที่นี่:</label>
+      <textarea id="stuPaste" placeholder="ตัวอย่าง (คั่นด้วย Tab):
+47111	สมหญิง รักเรียน	5/1	1	1234
+47112	สมศรี มีเพื่อน	5/1	2	5678
+47213	สุดา ตั้งใจดี	5/2	3	9012"></textarea>
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn-sm" onclick="doUploadStudents()">📤 อัปโหลด</button>
+        <span id="stuUploadStat" style="font-size:13px"></span>
+      </div>
+    </div>
+
+    <h3 style="color:#4a148c;margin-top:20px">รายชื่อปัจจุบัน (<span id="stuCount">—</span> คน)</h3>
+    <div id="stuList"></div>
+  `;
+  // โหลดและแสดงรายชื่อ
+  await loadStudents();
+  renderStudentsList();
+}
+
+function renderStudentsList(){
+  const listEl = document.getElementById('stuList');
+  const countEl = document.getElementById('stuCount');
+  countEl.textContent = state.students.length;
+  if (!state.students.length){
+    listEl.innerHTML = '<div class="info">ยังไม่มีรายชื่อ — อัปโหลดก่อนเพื่อให้นักเรียนใช้ dropdown ได้</div>';
+    return;
+  }
+  const byClass = {};
+  state.students.forEach(s => {
+    const c = s.class || '(ไม่ระบุ)';
+    if (!byClass[c]) byClass[c] = [];
+    byClass[c].push(s);
+  });
+  let html = '';
+  Object.keys(byClass).sort().forEach(c => {
+    const list = byClass[c].sort((a,b)=>Number(a.number||0)-Number(b.number||0));
+    html += `<h4 style="margin-top:12px;color:#6a1b9a">ห้อง ${c} (${list.length} คน)</h4>
+      <table class="stu-table">
+        <tr><th style="width:80px">เลขที่</th><th>ชื่อ-สกุล</th><th style="width:120px">รหัสนักเรียน</th></tr>
+        ${list.map(s => `<tr><td>${s.number||'—'}</td><td>${escapeHtml(s.full_name)}</td><td>${escapeHtml(String(s.student_id))}</td></tr>`).join('')}
+      </table>`;
+  });
+  listEl.innerHTML = html;
+}
+
+async function doUploadStudents(){
+  const raw = document.getElementById('stuPaste').value.trim();
+  const stat = document.getElementById('stuUploadStat');
+  if (!raw){ stat.textContent = '⚠️ วางข้อมูลก่อน'; return; }
+
+  const lines = raw.split(/\r?\n/).filter(l => l.trim());
+  const rows = lines.map(l => {
+    const parts = l.split(/\t|,/).map(p => p.trim());
+    return {
+      student_id: parts[0] || '',
+      full_name:  parts[1] || '',
+      class:      parts[2] || '',
+      number:     parts[3] || '',
+      pin4:       parts[4] || ''
+    };
+  }).filter(r => r.student_id && r.full_name);
+
+  if (!rows.length){ stat.textContent = '❌ ไม่พบข้อมูลที่ใช้ได้'; return; }
+
+  if (!confirm(`จะแทนที่รายชื่อเดิมทั้งหมดด้วย ${rows.length} คน — ยืนยัน?`)) return;
+
+  stat.textContent = '⏳ กำลังอัปโหลด...';
+  try {
+    await fetch(API_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'uploadStudents',
+        teacher_pw: TEACHER_PASS,
+        rows: rows
+      })
+    });
+    stat.innerHTML = `✅ อัปโหลด ${rows.length} คนสำเร็จ — กำลังรีโหลด...`;
+    setTimeout(async () => {
+      await loadStudents();
+      renderStudentsList();
+      stat.textContent = `✅ เสร็จสิ้น (${state.students.length} คนในระบบ)`;
+      document.getElementById('stuPaste').value = '';
+    }, 1500);
+  } catch(e){
+    stat.textContent = '❌ ผิดพลาด: ' + e.message;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: จัดการแผน (Gating)
+// ═══════════════════════════════════════════════════════════
+async function renderPlansTab(){
+  const el = document.getElementById('tab-plans');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#2e7d32,#1b5e20);margin-bottom:16px">
+      <h2>🗓️ จัดการการเปิด-ปิดแผน</h2>
+      <div>เลือกสถานะของแต่ละแผน — นักเรียนจะเห็น/ใช้งานตามที่ครูตั้ง</div>
+    </div>
+    <div class="info">
+      <b>สถานะที่เลือกได้:</b><br>
+      • <span class="status-tag st-open">open</span> เปิดเต็ม ส่งงานได้<br>
+      • <span class="status-tag st-preview">preview</span> เห็นปุ่มแต่กดไม่ได้ (แสดงวันที่จะเปิด)<br>
+      • <span class="status-tag st-locked">locked</span> ซ่อน/ล็อกทั้งหมด<br>
+      • <span class="status-tag st-readonly">readonly</span> ดูได้ ส่งไม่ได้ (ทบทวน)
+    </div>
+    <div id="plansList" style="background:#fff;border-radius:10px;margin-top:14px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.05)"></div>
+  `;
+  // แสดงแผนทันทีด้วยค่า default ก่อน (ไม่ต้องรอ API)
+  if (!Array.isArray(state.settings)) state.settings = [];
+  renderPlansList();
+  // โหลด settings จาก API แล้ว render ใหม่ (ถ้าสำเร็จ)
+  try { await loadSettings(); renderPlansList(); } catch(e){}
+}
+
+function renderPlansList(){
+  const el = document.getElementById('plansList');
+  let html = `<div class="setting-row" style="font-weight:800;background:#f5f5f5">
+    <div>แผน</div><div>ชื่อ</div><div>สถานะ</div><div>เปิดเมื่อ</div><div>หมายเหตุ</div><div></div>
+  </div>`;
+  PLANS.forEach(p => {
+    const g = getGate(p.no);
+    const opens = g.opens_at ? new Date(g.opens_at).toISOString().slice(0,16) : '';
+    html += `
+      <div class="setting-row">
+        <div class="plan-ttl">แผน ${p.no}</div>
+        <div style="font-size:13px">${p.title}<br><span style="color:#999;font-size:11px">คาบ ${p.periods}</span></div>
+        <div>
+          <select id="st_${p.no}">
+            <option value="open" ${g.status==='open'?'selected':''}>open ✅</option>
+            <option value="preview" ${g.status==='preview'?'selected':''}>preview ⏰</option>
+            <option value="locked" ${g.status==='locked'?'selected':''}>locked 🔒</option>
+            <option value="readonly" ${g.status==='readonly'?'selected':''}>readonly 🔎</option>
+          </select>
+        </div>
+        <div><input type="datetime-local" id="op_${p.no}" value="${opens}"></div>
+        <div><input type="text" id="nt_${p.no}" value="${escapeHtml(g.note||'')}" placeholder="หมายเหตุ"></div>
+        <div><button class="btn-sm" onclick="savePlan(${p.no})">บันทึก</button></div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+async function savePlan(planNo){
+  const status   = document.getElementById('st_'+planNo).value;
+  const opens_at = document.getElementById('op_'+planNo).value;
+  const note     = document.getElementById('nt_'+planNo).value;
+  try {
+    await fetch(API_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'updateSetting',
+        teacher_pw: TEACHER_PASS,
+        plan: planNo, status, opens_at, note
+      })
+    });
+    // อัปเดต cache local
+    const idx = state.settings.findIndex(s => Number(s.plan)===planNo);
+    const newRec = {plan:planNo, status, opens_at, closes_at:'', note};
+    if (idx >= 0) state.settings[idx] = newRec;
+    else state.settings.push(newRec);
+    alert(`✅ บันทึกแผน ${planNo} เป็น "${status}" แล้ว`);
+  } catch(e){
+    alert('❌ ผิดพลาด: ' + e.message);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: สื่อ/เครื่องมือ (Media Index)
+// ═══════════════════════════════════════════════════════════
+const PLAN_MEDIA = {
+  1: {
+    folder: 'แผน01_การเกิดคลื่นและชนิดของคลื่น',
+    title: 'แผน 1 — การเกิดคลื่น ชนิดของคลื่น และส่วนประกอบของคลื่น',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 1–2 (100 นาที) · ผลการเรียนรู้ข้อ 1',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 1 (ฉบับสมบูรณ์)', file:'แผน1_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline', chips:[] },
+        { cls:'sim', no:'SIM', t:'wave-types.html · Simulation', file:'wave-types.html',
+          d:'Interactive เปรียบเทียบคลื่นน้ำ/เสียง/เชือก ใช้ในฉาก E2 Explore', chips:[] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e1', no:'01', t:'Concept Cartoon "ของลอยในทะเล"', file:'สื่อ01_ConceptCartoon_ของลอยในทะเล.html',
+          d:'ตัวละคร 3 คนถกเถียง → กระตุ้น POE-P', meta:'ใช้ในฉาก E1 Engage · 15 นาที',
+          chips:[['m','M1.1'],['','POE-P']] },
+        { cls:'e2', no:'02', t:'POE-01 ใบบันทึก P / O / E', file:'สื่อ02_POE-01_ใบบันทึกPOE.html',
+          d:'นักเรียนบันทึก Predict · Observe · Explain ตลอดฉาก E1–E3', meta:'ใช้ในฉาก E1, E2, E3',
+          chips:[['p','P1'],['p','P2'],['m','M1.1'],['m','M1.2']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 1.1 · Matrix Table', file:'สื่อ03_MatrixTable_ใบกิจกรรม1.1.html',
+          d:'เปรียบเทียบคลื่นตามขวาง vs ตามยาว 6 ประเด็น', meta:'ใช้ในฉาก E4 Elaborate · 8 นาที',
+          chips:[['k','K2'],['m','M1.1'],['m','M1.2']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 1.2 · Spot the Error', file:'สื่อ04_SpotTheError_ใบกิจกรรม1.2.html',
+          d:'หาข้อผิดพลาดในข้อความ/ภาพ 4 ข้อ', meta:'ใช้ในฉาก E4 Elaborate · 7 นาที',
+          chips:[['k','K2'],['p','P2'],['m','M1.3'],['m','M1.4']] },
+        { cls:'sim', no:'SIM2', t:'wave-components.html · ส่วนประกอบของคลื่น', file:'wave-components.html',
+          d:'Simulation 3 แท็บ (Sim/Theory/POE) · slider A/f/v · กราฟ y–x และ y–t · preset ตัวกลาง 3 แบบ · ชน M4 (f คงที่แม้เปลี่ยนตัวกลาง)',
+          meta:'ใช้ในฉาก E4 Elaborate · 10–15 นาที',
+          chips:[['k','K2'],['k','K3'],['m','M1.4'],['w','วPA 3,5']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F1 Four-tier · Pre + Post', file:'สื่อ05_F1_Fourtier_PrePost.html',
+          d:'3 ข้อ · วัด K1, K2, K3 · เทียบ Pre→Post คำนวณ Normalized gain',
+          meta:'ใช้ในฉาก F1 Pre (5\') + F1 Post (7\')',
+          chips:[['k','K1'],['k','K2'],['k','K3'],['m','M1.1'],['m','M1.2'],['m','M1.4'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'06', t:'TL-01 · Traffic Light Card', file:'สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 + Template สำหรับพิมพ์ตัด',
+          meta:'ใช้ในฉาก TLC ก่อน (3\') + TLC หลัง (3\')',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'07', t:'MJ-01 · Metacognitive Journal 3-2-1', file:'สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม + Goal Setting', meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'08', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'ครูบันทึก 3 ส่วน: รายบุคคล · กลุ่ม · ข้อสังเกตเพิ่มเติม (A4 Landscape)',
+          meta:'ใช้ตลอด 100 นาที',
+          chips:[['p','P1'],['p','P2'],['a','A1'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'09', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E + ตัวอย่างคะแนน + ตารางบันทึก', meta:'ครูใช้ประเมินใบ POE-01',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]}
+    ],
+    linkOut: [
+      'F1 Pre/Post → ตาราง % Sound · Misconception · Normalized gain ของแผน 1',
+      'POE-01 + POE Rubric → ตารางคะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-01 → คำถามเด่นเป็น Hook แผน 2 · หลักฐาน Self-regulation',
+      'OB-01 → คะแนนพฤติกรรม · หลักฐานวPA ด้านที่ 1 ข้อ 4, 7'
+    ]
+  },
+  2: {
+    folder: 'แผน02_ความเร็วคลื่น',
+    title: 'แผน 2 — ความเร็วคลื่น v = fλ = √(T/μ)',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 3–4 (100 นาที) · ผลการเรียนรู้ข้อ 2',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 2 (ฉบับสมบูรณ์)', file:'แผน2_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline', chips:[] },
+        { cls:'sim', no:'SIM', t:'Lab 38 — Wave Speed on a String (KP Science)', file:'wave-on-a-string.html',
+          d:'Virtual Lab วัดความเร็วคลื่น 4 วิธี: จากระยะทาง · จาก λ · วัดคาบ · วัดความถี่ · ปรับ T, μ, f, A · ตารางบันทึก + %Error + Export CSV',
+          chips:[['m','M2.1'],['m','M2.2'],['m','M2.3'],['m','M2.4']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e1', no:'01', t:'Concept Cartoon "เชือกกระโดดสามพี่น้อง"', file:'สื่อ01_ConceptCartoon_เชือกกระโดดสามพี่น้อง.html',
+          d:'ตัวละคร 3 คนถกเถียง f กับ v ของคลื่นในเชือก → กระตุ้น POE-P', meta:'ใช้ในฉาก E1 Engage · 12 นาที',
+          chips:[['m','M2.1'],['m','M2.2'],['','POE-P']] },
+        { cls:'e2', no:'02', t:'POE-01 ใบบันทึก P / O / E', file:'สื่อ02_POE-01_ใบบันทึกPOE.html',
+          d:'นักเรียนบันทึก Predict · Observe (Lab 38: 4 วิธีวัด + ทดสอบตัวแปร A/B/C/D) · Explain ตลอด E1–E3',
+          meta:'ใช้ในฉาก E1, E2, E3',
+          chips:[['p','P1'],['p','P2'],['m','M2.1'],['m','M2.2'],['m','M2.3'],['m','M2.4']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 2.1 · โจทย์คำนวณ v=fλ=√(T/μ)', file:'สื่อ03_โจทย์คำนวณ_ใบกิจกรรม2.1.html',
+          d:'5 ข้อ ไล่ระดับ สสวท. → สอวน./PAT2 (เน้น M2.1, M2.2, M2.4)', meta:'ใช้ในฉาก E4 Elaborate · 15 นาที',
+          chips:[['k','K2'],['p','P1'],['m','M2.1'],['m','M2.2'],['m','M2.4']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 2.2 · Spot the Error', file:'สื่อ04_SpotTheError_ใบกิจกรรม2.2.html',
+          d:'หาข้อผิดพลาดใน 3 สถานการณ์ · เน้น M2.1 (v↔f) และ M2.4 (f เปลี่ยนตามตัวกลาง)', meta:'ใช้ในฉาก E4 Elaborate · 10 นาที',
+          chips:[['k','K2'],['p','P2'],['m','M2.1'],['m','M2.4']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F2 Four-tier · Pre + Post', file:'สื่อ05_F2_Fourtier_PrePost.html',
+          d:'3 ข้อ · วัด M5, M4, เฟส · เทียบ Pre→Post คำนวณ Normalized gain',
+          meta:'ใช้ในฉาก F2 Pre (5\') + F2 Post (7\')',
+          chips:[['k','K1'],['k','K2'],['k','K3'],['m','M4'],['m','M5'],['w','วPA 2,7']] },
+        { cls:'tlc', no:'06', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'07', t:'MJ-01 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'08', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'ครูบันทึก 3 ส่วน: รายบุคคล · กลุ่ม · ข้อสังเกต (ใช้ร่วมกับแผน 1)', meta:'ใช้ตลอด 100 นาที',
+          chips:[['p','P1'],['p','P2'],['a','A1'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'09', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E + ตัวอย่างคะแนน + ตารางบันทึก', meta:'ครูใช้ประเมินใบ POE-01',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]}
+    ],
+    linkOut: [
+      'F2 Pre/Post → ตาราง % Sound · Misconception M4, M5 · Normalized gain ของแผน 2',
+      'POE-01 + POE Rubric → ตารางคะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Lab 38 (4 วิธีวัด) + ทดสอบตัวแปร A/B/C/D → หลักฐานเชิงประจักษ์หักล้าง M2.1–M2.4',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-01 → คำถามเด่นเป็น Hook แผน 3 · หลักฐาน Self-regulation',
+      'OB-01 → คะแนนพฤติกรรม · หลักฐานวPA ด้านที่ 1 ข้อ 4, 7'
+    ]
+  }
+};
+
+let mediaCurrentPlan = 1;
+
+function renderMediaTab(){
+  const el = document.getElementById('tab-media');
+  const opts = Array.from({length:10}, (_,i)=>i+1).map(n=>{
+    const exists = !!PLAN_MEDIA[n];
+    return `<option value="${n}" ${n===mediaCurrentPlan?'selected':''} ${!exists?'disabled':''}>แผน ${n}${!exists?' (ยังไม่เปิด)':''}</option>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#0f2c5c,#1565c0);margin-bottom:16px">
+      <h2>📚 Index สื่อและเครื่องมือ</h2>
+      <p style="opacity:.9;margin-top:6px">คลังสื่อ ใบกิจกรรม และเครื่องมือวัดประเมินรายแผน · คลิกการ์ดเพื่อเปิดไฟล์</p>
+    </div>
+    <div class="media-plan-select">
+      <label style="font-weight:700;color:#0f2c5c">เลือกแผน:</label>
+      <select id="mediaPlanSel" onchange="mediaCurrentPlan=parseInt(this.value,10);renderMediaTab();">${opts}</select>
+    </div>
+    <div id="mediaBody"></div>
+  `;
+  renderMediaBody();
+}
+
+function renderMediaBody(){
+  const host = document.getElementById('mediaBody');
+  const data = PLAN_MEDIA[mediaCurrentPlan];
+  if (!data){
+    host.innerHTML = `<div style="background:#fff3e0;border-left:6px solid #ef6c00;padding:14px 18px;border-radius:10px">⏳ แผน ${mediaCurrentPlan} ยังไม่ได้เปิดสื่อ/เครื่องมือ — จะเพิ่มเมื่อสร้างแผนนั้นเสร็จ</div>`;
+    return;
+  }
+  const sections = data.sections.map(sec => `
+    <div class="media-section-title">${sec.title}</div>
+    <div class="media-grid">
+      ${sec.items.map(it => {
+        const chips = (it.chips||[]).map(c => `<span class="chip ${c[0]}">${c[1]}</span>`).join('');
+        const meta = it.meta ? `<div class="meta">${it.meta}</div>` : '';
+        const href = encodeURI(`${data.folder}/${it.file}`);
+        return `
+          <a class="media-card ${it.cls}" href="${href}" target="_blank" rel="noopener">
+            <div><span class="no">${it.no}</span><b>${it.t}</b></div>
+            <div class="d">${it.d}</div>
+            ${meta}
+            ${chips ? `<div>${chips}</div>` : ''}
+          </a>`;
+      }).join('')}
+    </div>
+  `).join('');
+  const links = data.linkOut.map(l => `<li>${l}</li>`).join('');
+  host.innerHTML = `
+    <div style="margin-bottom:14px;padding:14px 18px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px">
+      <div style="font-size:16px;font-weight:800;color:#0f2c5c">${data.title}</div>
+      <div style="font-size:13px;color:#666;margin-top:4px">${data.meta}</div>
+    </div>
+    ${sections}
+    <div class="media-link-out">
+      <b>🔗 การเชื่อมโยงสู่การวิจัย · ข้อมูลจากสื่อ/เครื่องมือ → ใช้ในบทที่ 4</b>
+      <ul style="margin:8px 0 0 22px">${links}</ul>
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: ส่งฟีดแบ็ก
+// ═══════════════════════════════════════════════════════════
+async function renderFeedbackTab(){
+  const el = document.getElementById('tab-feedback');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#ef6c00,#c05621);margin-bottom:16px">
+      <h2>💬 ส่งฟีดแบ็กให้นักเรียน</h2>
+      <div>ส่งข้อความ + คะแนน POE (0–3) รายบุคคล หรือทั้งห้อง</div>
+    </div>
+
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06)">
+      <div class="row2" style="margin-bottom:10px">
+        <div>
+          <label style="font-weight:700">👥 ส่งให้ใคร?</label>
+          <select id="fb-target" onchange="fbTargetChange()" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+            <option value="one">นักเรียนคนเดียว</option>
+            <option value="class">ทั้งห้อง</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight:700">📋 เกี่ยวกับแผน</label>
+          <select id="fb-plan" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+            ${PLANS.map(p=>`<option value="${p.no}">แผน ${p.no} — ${p.title}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div id="fb-one-wrap">
+        <div class="row2">
+          <div>
+            <label style="font-weight:700">ห้อง</label>
+            <select id="fb-class" onchange="fbClassChange()" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+              <option value="">-- เลือกห้อง --</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-weight:700">นักเรียน</label>
+            <select id="fb-student" disabled style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+              <option value="">-- เลือกห้องก่อน --</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="fb-class-wrap" style="display:none">
+        <label style="font-weight:700">เลือกห้อง</label>
+        <select id="fb-class-all" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+          <option value="">-- เลือกห้อง --</option>
+        </select>
+      </div>
+
+      <label style="font-weight:700;margin-top:12px;display:block">💬 ข้อความ</label>
+      <textarea id="fb-msg" placeholder="เช่น เยี่ยมมาก! การอธิบายเชื่อมกับหลักการถ่ายโอนพลังงานชัดเจน..." style="min-height:120px"></textarea>
+
+      <label style="font-weight:700;margin-top:10px;display:block">⭐ POE Score (ไม่บังคับ)</label>
+      <select id="fb-poe" style="padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+        <option value="">— ไม่ให้คะแนน —</option>
+        <option value="0">0 — ไม่ตอบ/ไม่เกี่ยวข้อง</option>
+        <option value="1">1 — อธิบายได้บางส่วน</option>
+        <option value="2">2 — ทำนายผิดแต่อธิบายถูก</option>
+        <option value="3">3 — ทำนายถูก + อธิบายสมบูรณ์</option>
+      </select>
+
+      <div style="margin-top:14px">
+        <button class="btn-sm" style="padding:10px 20px;font-size:14px" onclick="doSendFeedback()">📤 ส่งฟีดแบ็ก</button>
+        <span id="fb-stat" style="margin-left:12px;font-size:13px"></span>
+      </div>
+    </div>
+
+    <h3 style="color:#ef6c00;margin-top:24px">📋 ฟีดแบ็กที่ส่งล่าสุด</h3>
+    <div id="fb-recent" style="margin-top:10px"></div>
+  `;
+  await loadStudents();
+  // เติม dropdown ห้อง
+  const classes = [...new Set(state.students.map(s=>s.class).filter(Boolean))].sort();
+  const selC1 = document.getElementById('fb-class');
+  const selC2 = document.getElementById('fb-class-all');
+  classes.forEach(c => {
+    selC1.appendChild(new Option(c, c));
+    selC2.appendChild(new Option(c, c));
+  });
+  loadRecentFeedback();
+}
+
+function fbTargetChange(){
+  const t = document.getElementById('fb-target').value;
+  document.getElementById('fb-one-wrap').style.display   = t==='one' ? 'block' : 'none';
+  document.getElementById('fb-class-wrap').style.display = t==='class' ? 'block' : 'none';
+}
+
+function fbClassChange(){
+  const c = document.getElementById('fb-class').value;
+  const sel = document.getElementById('fb-student');
+  sel.innerHTML = '<option value="">-- เลือกนักเรียน --</option>';
+  if (!c){ sel.disabled = true; return; }
+  state.students.filter(s=>s.class===c)
+    .sort((a,b)=>Number(a.number||0)-Number(b.number||0))
+    .forEach(s => {
+      sel.appendChild(new Option(`เลขที่ ${s.number||'—'} · ${s.full_name}`, s.student_id));
+    });
+  sel.disabled = false;
+}
+
+async function doSendFeedback(){
+  const stat = document.getElementById('fb-stat');
+  const target = document.getElementById('fb-target').value;
+  const plan = Number(document.getElementById('fb-plan').value);
+  const msg  = document.getElementById('fb-msg').value.trim();
+  const poe  = document.getElementById('fb-poe').value;
+  if (!msg){ stat.textContent='⚠️ พิมพ์ข้อความก่อน'; return; }
+
+  let recipients = [];
+  if (target === 'one'){
+    const sid = document.getElementById('fb-student').value;
+    if (!sid){ stat.textContent='⚠️ เลือกนักเรียน'; return; }
+    const stu = state.students.find(s => String(s.student_id)===String(sid));
+    recipients = [stu];
+  } else {
+    const c = document.getElementById('fb-class-all').value;
+    if (!c){ stat.textContent='⚠️ เลือกห้อง'; return; }
+    recipients = state.students.filter(s => s.class===c);
+  }
+  if (!recipients.length){ stat.textContent='❌ ไม่มีผู้รับ'; return; }
+
+  stat.textContent = `⏳ กำลังส่ง ${recipients.length} คน...`;
+  for (const r of recipients){
+    await fetch(API_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'sendFeedback', teacher_pw: TEACHER_PASS,
+        to_student_id: r.student_id, to_name: r.full_name,
+        plan, type:'manual', message:msg, poe_score: poe!==''?Number(poe):undefined
+      })
+    }).catch(()=>{});
+  }
+  stat.innerHTML = `✅ ส่งสำเร็จ ${recipients.length} คน`;
+  document.getElementById('fb-msg').value = '';
+  setTimeout(loadRecentFeedback, 1500);
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: สังเกต/Rubric — OB-01 (per-student observation) + Group Rubric
+// ═══════════════════════════════════════════════════════════
+const OB_ITEMS = [
+  {id:'engage',     label:'มีส่วนร่วมใน Engage (ตอบ/ตั้งคำถาม)'},
+  {id:'explore',    label:'ลงมือใน Explore (PhET/ทดลอง)'},
+  {id:'explain',    label:'นำเสนอ/อธิบายเหตุผลทางฟิสิกส์'},
+  {id:'cooperate',  label:'ทำงานร่วมกับเพื่อน/แบ่งบทบาท'},
+  {id:'discipline', label:'วินัย/ส่งงานตรงเวลา'},
+  {id:'curious',    label:'ใฝ่เรียนรู้ (ถามเพิ่มเติม/สืบเสาะเอง)'}
+];
+
+const GR_CRITERIA = [
+  {id:'content',      label:'ความถูกต้องของเนื้อหา (ฟิสิกส์)'},
+  {id:'process',      label:'กระบวนการ/วิธีดำเนินงาน'},
+  {id:'teamwork',     label:'การทำงานเป็นทีม/แบ่งบทบาท'},
+  {id:'communication',label:'การสื่อสาร/นำเสนอ'},
+  {id:'creativity',   label:'ความคิดสร้างสรรค์/การประยุกต์'}
+];
+
+async function renderObserveTab(){
+  const el = document.getElementById('tab-observe');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#4527a0,#311b92);margin-bottom:16px">
+      <h2>🔍 OB-01 สังเกตพฤติกรรม & Group Rubric</h2>
+      <div style="font-size:14px">เครื่องมือเสริม วPA ด้านที่ 1 ข้อ 4/7 และด้านที่ 2 ข้อ 4/5</div>
+    </div>
+
+    <div style="background:#fff;padding:14px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:14px">
+      <label style="font-weight:700">📋 เลือกแผน</label>
+      <select id="ob-plan" style="width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:6px;margin-top:6px">
+        ${PLANS.map(p=>`<option value="${p.no}">แผน ${p.no} — ${p.title}</option>`).join('')}
+      </select>
+    </div>
+
+    <!-- OB-01 -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#4527a0;margin-bottom:10px">👤 OB-01 สังเกตพฤติกรรม (รายบุคคล)</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">เลือกนักเรียน 1 คน → ให้คะแนน 1–4 แต่ละด้าน</div>
+      <label style="font-weight:700">นักเรียน</label>
+      <select id="ob-stu" style="width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:6px;margin:6px 0">
+        <option value="">— เลือก —</option>
+        ${(state.students||[]).map(s=>`<option value="${s.student_id}|${s.name}|${s.class_room||''}|${s.number||''}">${s.number||'?'}. ${s.name} (${s.class_room||'?'})</option>`).join('')}
+      </select>
+      <div id="ob-form-box">
+        ${OB_ITEMS.map(it=>`
+          <div style="margin:6px 0;padding:6px;background:#f3e5f5;border-radius:6px">
+            <div style="font-size:14px;font-weight:600">${it.label}</div>
+            <div style="display:flex;gap:10px;margin-top:4px">
+              ${[1,2,3,4].map(v=>`<label><input type="radio" name="ob_${it.id}" value="${v}"> ${v}</label>`).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <label style="font-weight:700;margin-top:8px;display:block">📝 หมายเหตุ/พฤติกรรมเด่น</label>
+      <textarea id="ob-note" placeholder="เช่น แสดงความใฝ่เรียนรู้โดยขออ่านใบความรู้เพิ่ม..."></textarea>
+      <div class="submit-bar">
+        <button class="btn-submit" id="obBtn" style="background:#4527a0">📤 บันทึกการสังเกต</button>
+        <div class="status" id="obStat"></div>
+      </div>
+    </div>
+
+    <!-- Group Rubric -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#2e7d32;margin-bottom:10px">👥 Group Rubric (ประเมินกลุ่มย่อย)</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">ใช้กับกิจกรรมกลุ่ม (Explore/Elaborate) · ให้คะแนน 1–4 แต่ละเกณฑ์</div>
+      <label style="font-weight:700">กลุ่มที่</label>
+      <input type="text" id="gr-name" placeholder="เช่น กลุ่ม A หรือ 1" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin:6px 0">
+      <label style="font-weight:700">สมาชิก (คั่นด้วย ,)</label>
+      <input type="text" id="gr-members" placeholder="เช่น น.ส.A, น.ส.B, น.ส.C" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin:6px 0">
+      ${GR_CRITERIA.map(c=>`
+        <div style="margin:6px 0;padding:6px;background:#e8f5e9;border-radius:6px">
+          <div style="font-size:14px;font-weight:600">${c.label}</div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            ${[1,2,3,4].map(v=>`<label><input type="radio" name="gr_${c.id}" value="${v}"> ${v}</label>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+      <label style="font-weight:700;margin-top:8px;display:block">📝 หมายเหตุ</label>
+      <textarea id="gr-note" placeholder="เช่น มีการแบ่งบทบาทชัด บันทึกข้อมูลครบถ้วน..."></textarea>
+      <div class="submit-bar">
+        <button class="btn-submit" id="grBtn" style="background:#2e7d32">📤 บันทึก Rubric</button>
+        <div class="status" id="grStat"></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('obBtn').onclick = async () => {
+    const plan = Number(document.getElementById('ob-plan').value);
+    const stu = document.getElementById('ob-stu').value;
+    const stat = document.getElementById('obStat');
+    if (!stu){ stat.className='status error'; stat.textContent='❌ เลือกนักเรียน'; return; }
+    const [sid,sname,scls,sno] = stu.split('|');
+    const getR = n => {const r=document.querySelector(`input[name="${n}"]:checked`); return r?Number(r.value):0;};
+    const scores = {}; OB_ITEMS.forEach(it=>scores[it.id]=getR('ob_'+it.id));
+    const sum = Object.values(scores).reduce((a,b)=>a+b,0);
+    const pl = { student_id:sid, student_name:sname, class_room:scls, number:sno,
+                 ...scores, total:sum, note:document.getElementById('ob-note').value.trim() };
+    await submitObOrGr(`OB_P${plan}`, pl, stat, document.getElementById('obBtn'));
+  };
+
+  document.getElementById('grBtn').onclick = async () => {
+    const plan = Number(document.getElementById('ob-plan').value);
+    const gname = document.getElementById('gr-name').value.trim();
+    const stat = document.getElementById('grStat');
+    if (!gname){ stat.className='status error'; stat.textContent='❌ ระบุชื่อกลุ่ม'; return; }
+    const getR = n => {const r=document.querySelector(`input[name="${n}"]:checked`); return r?Number(r.value):0;};
+    const scores = {}; GR_CRITERIA.forEach(c=>scores[c.id]=getR('gr_'+c.id));
+    const sum = Object.values(scores).reduce((a,b)=>a+b,0);
+    const pl = { group_name:gname, members:document.getElementById('gr-members').value.trim(),
+                 ...scores, total:sum, note:document.getElementById('gr-note').value.trim() };
+    await submitObOrGr(`GR_P${plan}`, pl, stat, document.getElementById('grBtn'));
+  };
+}
+
+async function submitObOrGr(sheet, payload, stat, btn){
+  if (!isApiConfigured()){ stat.className='status error'; stat.textContent='⚠️ ยังไม่ได้ตั้ง API_URL'; return; }
+  btn.disabled = true; stat.className='status'; stat.textContent='⏳ กำลังส่ง...';
+  try {
+    await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'submit', sheet, teacher_password:'komanepapato2569',
+                              timestamp:new Date().toISOString(), ...payload })});
+    stat.className='status ok'; stat.textContent='✅ บันทึกเรียบร้อย';
+  } catch(e){ stat.className='status error'; stat.textContent='❌ '+e.message; }
+  finally { btn.disabled=false; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: บันทึกหลังแผน (Auto-aggregate + Export Word)
+// ═══════════════════════════════════════════════════════════
+async function renderPostPlanTab(){
+  const el = document.getElementById('tab-postplan');
+  el.innerHTML = `
+    <div class="hero" style="background:linear-gradient(135deg,#4e342e,#3e2723);margin-bottom:16px">
+      <h2>📓 บันทึกหลังแผนอัตโนมัติ</h2>
+      <div>ระบบรวมสถิติทุกเครื่องมือของแผน → ครูเติม reflection → Export เป็น Word พร้อมยื่น วPA</div>
+    </div>
+
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <label style="font-weight:700">📋 เลือกแผน</label>
+      <select id="pp-plan" onchange="loadPostPlanData()" style="width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;margin-top:6px">
+        ${PLANS.map(p=>`<option value="${p.no}">แผน ${p.no} — ${p.title} (คาบ ${p.periods})</option>`).join('')}
+      </select>
+    </div>
+
+    <div id="pp-auto" style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <div class="info">⏳ กำลังดึงข้อมูล...</div>
+    </div>
+
+    <!-- 📅 เวลาที่สอน -->
+    <div style="background:#fff;padding:14px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:14px">
+      <label style="font-weight:700;display:block">📅 วัน/เวลาที่สอนจริง</label>
+      <input type="text" id="pp-when" placeholder="เช่น 20 พ.ค. 2569 เวลา 08:40-10:20" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;margin-top:6px">
+    </div>
+
+    <!-- 🎯 K/P/A (เว้นว่าง ให้ครูกรอกหลังประมวลผลใน Sheet) -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#3e2723;margin-bottom:6px">🎯 ผลการประเมินตามจุดประสงค์ K / P / A</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">
+        💡 <b>วิธีใช้</b>: WebApp เก็บดาต้าดิบไว้ใน Google Sheet แล้ว → ครูไป pivot/สรุปใน Sheet ก่อน → นำตัวเลขกลับมากรอกช่องด้านล่าง (ค่าเฉลี่ย % ผ่านเกณฑ์) → ส่งออก Word อัตโนมัติ
+      </div>
+      <div id="pp-kpa-block"></div>
+    </div>
+
+    <!-- 🏆 ด้านที่ 1 (8 ข้อ) -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#3e2723;margin-bottom:6px">🏆 ด้านที่ 1 · ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">
+        📘 8 ตัวชี้วัด (ถ่วงน้ำหนัก × 2.5) — เลือกหลักฐานที่ทำจริง + เพิ่ม "อื่น ๆ" + ให้คะแนน 1–4
+      </div>
+      <div id="pp-d1-block"></div>
+    </div>
+
+    <!-- 🌱 ด้านที่ 2 (5 ข้อ) -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#3e2723;margin-bottom:6px">🌱 ด้านที่ 2 · ผลลัพธ์การเรียนรู้ของผู้เรียน</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">
+        📘 5 ตัวชี้วัด (ถ่วงน้ำหนัก × 5) — อ้างอิงข้อมูลอัตโนมัติส่วนที่ 2 ได้เลย
+      </div>
+      <div id="pp-d2-block"></div>
+    </div>
+
+    <!-- 📊 สรุปคะแนนรวม -->
+    <div style="background:linear-gradient(135deg,#1565c0,#2e7d32);color:#fff;padding:18px;border-radius:12px;margin-bottom:16px">
+      <h3 style="color:#fff;margin-bottom:8px">📊 สรุปคะแนนรวม (คำนวณอัตโนมัติ)</h3>
+      <div id="pp-score-sum" style="font-size:15px;line-height:1.9">—</div>
+    </div>
+
+    <!-- 📝 ข้อเสนอแนะ -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#3e2723;margin-bottom:10px">📝 ข้อสังเกตเพิ่มเติมและการสะท้อน</h3>
+      <label style="font-weight:700;margin-top:10px;display:block">📍 จุดแข็งโดยรวม</label>
+      <textarea id="pp-strength" placeholder="เช่น นักเรียนมีส่วนร่วมในกิจกรรม POE อย่างดี..."></textarea>
+      <label style="font-weight:700;margin-top:10px;display:block">🎯 ปัญหา/อุปสรรคและวิธีแก้ไขเฉพาะหน้า</label>
+      <textarea id="pp-issue" placeholder="เช่น เวลาไม่พอสำหรับขั้น Elaborate..."></textarea>
+      <label style="font-weight:700;margin-top:10px;display:block">💡 สิ่งที่จะปรับปรุงในแผนถัดไป</label>
+      <textarea id="pp-improve" placeholder="เช่น เพิ่มเวลา Explore ด้วย PhET อีก 10 นาที..."></textarea>
+      <label style="font-weight:700;margin-top:10px;display:block">📒 บันทึกอื่น ๆ</label>
+      <textarea id="pp-note" placeholder="บันทึกเพิ่มเติม..."></textarea>
+
+      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-sm" style="padding:10px 20px;font-size:14px;background:#1565c0" onclick="exportPostPlanWord()">📄 ดาวน์โหลด Word (.doc)</button>
+        <button class="btn-sm" style="padding:10px 20px;font-size:14px;background:#2e7d32" onclick="exportPostPlanHTML()">🖨️ พิมพ์ / Save as PDF</button>
+        <span id="pp-stat" style="font-size:13px;align-self:center"></span>
+      </div>
+      <div class="info" style="margin-top:10px;font-size:13px">
+        💡 Word (.doc) เปิดด้วย Microsoft Word / Pages ได้ — แก้ไขต่อได้<br>
+        💡 ปุ่ม "พิมพ์" เปิด print dialog ของ browser → เลือก "Save as PDF" ได้
+      </div>
+    </div>
+  `;
+  renderKPABlock();
+  renderD1Block();
+  renderD2Block();
+  updateScoreSum();
+  loadPostPlanData();
+}
+
+// ═══════════════════════════════════════════════════════════
+// K/P/A · ด้านที่ 1 (8) · ด้านที่ 2 (5)  ·  Data & Renderers
+// ═══════════════════════════════════════════════════════════
+const KPA_ROWS = [
+  {id:'K', name:'K — ด้านความรู้', tools:'Four-tier Test (Pre/Post), คำตอบ Tier 3, ผลแยก Sound/Misconception/Guessing/No-K'},
+  {id:'P', name:'P — ด้านทักษะ/กระบวนการ', tools:'POE Rubric 0–3, การมีส่วนร่วมในกิจกรรม Explore, ใบกิจกรรม'},
+  {id:'A', name:'A — ด้านเจตคติ/คุณลักษณะ', tools:'Traffic Light Card, Metacognitive Journal 3-2-1, OB-01'}
+];
+
+// D1: 8 items × 2.5
+const D1_ITEMS = [
+  {no:1, text:'ผู้เรียนสามารถเข้าถึงสิ่งที่เรียนและเข้าใจบทเรียน',
+    evi:['ใช้ Concept Cartoon/คำถาม Engage กระตุ้น','ใช้สื่อ Interactive HTML / PhET Simulation','เชื่อมโยงกับปรากฏการณ์ในชีวิตประจำวัน','ใช้ภาษาและตัวอย่างเหมาะกับวัย ม.5']},
+  {no:2, text:'ผู้เรียนสามารถเชื่อมโยงความรู้หรือประสบการณ์เดิมกับการเรียนรู้ใหม่',
+    evi:['Formative Pre-test (Four-tier) ก่อนเริ่มคาบ','นำ Misconception เดิมมาอภิปรายในขั้น Engage','ให้ POE-P ทำนายก่อนโดยใช้ความรู้เดิม','เชื่อมกับบทเรียนคาบก่อน (เช่น ว=fλ)']},
+  {no:3, text:'ผู้เรียนได้สร้างความรู้เอง หรือได้สร้างประสบการณ์ใหม่จากการเรียนรู้',
+    evi:['Explore ด้วย PhET/การทดลองจริง','POE-O สังเกตผลด้วยตนเอง','สรุปข้อค้นพบกลุ่มย่อยในขั้น Explain','สร้างตัวแทนความรู้ (กราฟ/ตาราง/สมการ)']},
+  {no:4, text:'ผู้เรียนได้รับการกระตุ้นและเกิดแรงจูงใจในการเรียนรู้',
+    evi:['ใช้สถานการณ์ท้าทาย/ขัดแย้งทางมโนทัศน์','เชื่อมกับความสนใจของผู้เรียน','ให้เลือกแนวทางการสำรวจด้วยตนเอง','ชื่นชม/ให้ reinforce ระหว่างคาบ']},
+  {no:5, text:'ผู้เรียนได้รับการพัฒนาทักษะความเชี่ยวชาญจากการเรียนรู้',
+    evi:['ฝึกคำนวณ v=fλ / T=1/f ในขั้น Elaborate','ฝึกวิเคราะห์กราฟคลื่น','ฝึกออกแบบการทดลอง/แปลผล','ฝึก Spot the Error โจทย์ผิด']},
+  {no:6, text:'ผู้เรียนได้รับข้อมูลสะท้อนกลับเพื่อปรับปรุงการเรียนรู้',
+    evi:['เฉลย Four-tier ทันทีและอธิบายเหตุผล Tier 3','ให้ feedback รายบุคคลผ่าน Inbox ใน WebApp','อภิปรายผล Traffic Light/MJ กับชั้น','ให้เพื่อนสะท้อนงานกัน (peer feedback)']},
+  {no:7, text:'ผู้เรียนได้รับการพัฒนาการเรียนรู้ในบรรยากาศชั้นเรียนที่เหมาะสม',
+    evi:['บรรยากาศปลอดภัย (ยอมรับการตอบผิด)','จัดกลุ่มให้นักเรียนช่วยเหลือกัน','การจัดการชั้นเรียน/เวลาเหมาะสม','Traffic Light สีเขียว ≥ 60%']},
+  {no:8, text:'ผู้เรียนสามารถกำกับการเรียนรู้และมีการเรียนรู้แบบนำตนเอง',
+    evi:['MJ 3-2-1 สะท้อนการเรียนรู้ตนเอง','ตั้งเป้าหมาย/แผนทบทวนจุดอ่อนของตน','เลือกสื่อ/วิธีศึกษาเพิ่มเติมได้','ใช้ WebApp/ใบความรู้ด้วยตนเอง']}
+];
+
+// D2: 5 items × 5
+const D2_ITEMS = [
+  {no:1, text:'ผลงาน/ผลการปฏิบัติเป็นผลลัพธ์จากการจัดการเรียนรู้ของครู',
+    evi:['Four-tier Post Sound ≥ 80%','Misconception ลด Pre→Post ≥ 20%','POE Rubric เฉลี่ย ≥ 2.0/3.0','ชิ้นงาน/ใบกิจกรรมสะท้อนการเรียนรู้']},
+  {no:2, text:'ผลงาน/ผลการปฏิบัติสะท้อนการได้รับการพัฒนาทักษะพื้นฐาน (Basic Skills) ตามวัยและลักษณะผู้เรียน',
+    evi:['อ่าน/ตีความกราฟคลื่นได้','ใช้ภาษาฟิสิกส์ถูกต้อง','คำนวณ v=fλ, T=1/f ได้','ใช้เทคโนโลยี (PhET/WebApp) ได้']},
+  {no:3, text:'ผลงาน/ผลการปฏิบัติสะท้อนความสามารถในการเรียนรู้ (Cognitive Abilities) ตามวัยและลักษณะผู้เรียน',
+    evi:['วิเคราะห์ความสัมพันธ์ v,f,λ','ให้เหตุผลเชิงวิทยาศาสตร์ (Tier 3)','เชื่อมโยงปรากฏการณ์กับหลักการ','สังเคราะห์/ประยุกต์ในบริบทใหม่']},
+  {no:4, text:'ผลงาน/ผลการปฏิบัติสะท้อนการบูรณาการทักษะในการทำงาน (Cross-functional Skills)',
+    evi:['ทำงานกลุ่มแบ่งบทบาท','สื่อสาร/นำเสนอผลการทดลอง','ใช้เครื่องมือดิจิทัลในการเก็บ/วิเคราะห์ข้อมูล','แก้ปัญหาเฉพาะหน้าในกิจกรรม']},
+  {no:5, text:'ผลงาน/ผลการปฏิบัติสะท้อนคุณลักษณะอันพึงประสงค์และค่านิยมที่ดี',
+    evi:['ใฝ่เรียนรู้ (ถามเพิ่มเติม, ศึกษาด้วยตนเอง)','มุ่งมั่นในการทำงาน','มีวินัย/ส่งงานตรงเวลา','ซื่อสัตย์ในการทดลอง/รายงานผล']}
+];
+
+function scoreRadios(prefix, no){
+  return [1,2,3,4].map(v=>
+    `<label style="margin-right:10px;cursor:pointer"><input type="radio" name="${prefix}s${no}" value="${v}" onchange="updateScoreSum()"> ${v}</label>`
+  ).join('');
+}
+
+function evidenceCheckboxes(prefix, no, list){
+  return list.map((t,i)=>
+    `<label style="display:block;margin:2px 0;cursor:pointer;font-size:14px"><input type="checkbox" id="${prefix}e${no}_${i}"> ${t}</label>`
+  ).join('');
+}
+
+function renderKPABlock(){
+  const el = document.getElementById('pp-kpa-block');
+  if (!el) return;
+  el.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="background:#e3f2fd"><th style="border:1px solid #90caf9;padding:8px">จุดประสงค์</th><th style="border:1px solid #90caf9;padding:8px">เครื่องมือประเมิน (ในคาบนี้)</th><th style="border:1px solid #90caf9;padding:8px;width:14%">ผลที่ได้</th><th style="border:1px solid #90caf9;padding:8px;width:20%">ระดับคุณภาพ / หมายเหตุ</th></tr>
+      ${KPA_ROWS.map(r=>`
+        <tr>
+          <td style="border:1px solid #cbd5e1;padding:6px;font-weight:700">${r.name}</td>
+          <td style="border:1px solid #cbd5e1;padding:6px;color:#555">${r.tools}</td>
+          <td style="border:1px solid #cbd5e1;padding:4px"><input type="text" id="pp-kpa-${r.id}-val" placeholder="กรอกหลังประมวลผล" style="width:100%;padding:4px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;font-size:13px"></td>
+          <td style="border:1px solid #cbd5e1;padding:4px"><input type="text" id="pp-kpa-${r.id}-note" placeholder="เช่น ดี/ต้องปรับ" style="width:100%;padding:4px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;font-size:13px"></td>
+        </tr>`).join('')}
+    </table>
+  `;
+}
+
+function renderD1Block(){
+  const el = document.getElementById('pp-d1-block');
+  if (!el) return;
+  el.innerHTML = D1_ITEMS.map(it=>`
+    <div style="border:1.5px solid #ffe0b2;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#fff8e1">
+      <div style="font-weight:700;color:#e65100;margin-bottom:6px">ข้อ ${it.no}. ${it.text}</div>
+      <div style="font-size:13px;color:#555;margin-bottom:4px">✓ หลักฐานที่ทำจริงในคาบนี้ (ติ๊กได้หลายข้อ):</div>
+      ${evidenceCheckboxes('d1', it.no, it.evi)}
+      <label style="display:block;margin-top:4px;font-size:14px">
+        <input type="checkbox" id="d1e${it.no}_other"> อื่น ๆ (ระบุ):
+        <input type="text" id="d1o${it.no}" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
+      </label>
+      <div style="margin-top:6px;font-size:14px">
+        <b>คะแนน:</b> ${scoreRadios('d1', it.no)}
+        <span style="color:#555;font-size:12px;margin-left:8px">(×2.5)</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderD2Block(){
+  const el = document.getElementById('pp-d2-block');
+  if (!el) return;
+  el.innerHTML = D2_ITEMS.map(it=>`
+    <div style="border:1.5px solid #c8e6c9;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#f1f8e9">
+      <div style="font-weight:700;color:#2e7d32;margin-bottom:6px">ข้อ ${it.no}. ${it.text}</div>
+      <div style="font-size:13px;color:#555;margin-bottom:4px">✓ หลักฐานที่ทำจริงในคาบนี้ (ติ๊กได้หลายข้อ):</div>
+      ${evidenceCheckboxes('d2', it.no, it.evi)}
+      <label style="display:block;margin-top:4px;font-size:14px">
+        <input type="checkbox" id="d2e${it.no}_other"> อื่น ๆ (ระบุ):
+        <input type="text" id="d2o${it.no}" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
+      </label>
+      <div style="margin-top:6px;font-size:14px">
+        <b>คะแนน:</b> ${scoreRadios('d2', it.no)}
+        <span style="color:#555;font-size:12px;margin-left:8px">(×5)</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getSelectedScore(prefix, no){
+  const r = document.querySelector(`input[name="${prefix}s${no}"]:checked`);
+  return r ? Number(r.value) : 0;
+}
+
+function updateScoreSum(){
+  let d1=0,d2=0,d1n=0,d2n=0;
+  D1_ITEMS.forEach(it=>{ const s=getSelectedScore('d1',it.no); if(s>0){d1+=s;d1n++;} });
+  D2_ITEMS.forEach(it=>{ const s=getSelectedScore('d2',it.no); if(s>0){d2+=s;d2n++;} });
+  const d1w = d1*2.5, d2w = d2*5;
+  const totalRaw = d1+d2;
+  const totalW = d1w+d2w;
+  const d1Max = 8*4, d2Max = 5*4;
+  const d1WMax = d1Max*2.5, d2WMax = d2Max*5;
+  const el = document.getElementById('pp-score-sum');
+  if (!el) return;
+  el.innerHTML = `
+    <div>📘 ด้านที่ 1: ${d1}/${d1Max} ดิบ → <b>${d1w.toFixed(1)}/${d1WMax}</b> ถ่วงน้ำหนัก (${d1n}/8 ข้อที่ให้คะแนน)</div>
+    <div>🌱 ด้านที่ 2: ${d2}/${d2Max} ดิบ → <b>${d2w.toFixed(1)}/${d2WMax}</b> ถ่วงน้ำหนัก (${d2n}/5 ข้อที่ให้คะแนน)</div>
+    <div style="border-top:1px solid rgba(255,255,255,.4);margin-top:8px;padding-top:8px">
+      🏅 <b>รวม: ${totalW.toFixed(1)}/${(d1WMax+d2WMax)} คะแนน</b> (ดิบรวม ${totalRaw}/${d1Max+d2Max})
+    </div>
+  `;
+}
+
+let currentPostPlanData = null;
+
+async function loadPostPlanData(){
+  const plan = Number(document.getElementById('pp-plan').value);
+  const auto = document.getElementById('pp-auto');
+  auto.innerHTML = '<div class="info">⏳ กำลังดึงข้อมูลจาก Google Sheets...</div>';
+
+  const data = {
+    plan, plan_title: PLANS.find(p=>p.no===plan)?.title || '',
+    plan_periods: PLANS.find(p=>p.no===plan)?.periods || '',
+    tl_pre: null, tl_post: null, f_pre: null, f_post: null, poe: null, mj: null,
+    attendance: 0
+  };
+
+  const fetchSheet = async (name, withStats) => {
+    try {
+      const url = API_URL + '?action=' + (withStats?'stats':'list') + '&sheet=' + encodeURIComponent(name);
+      return await fetch(url).then(r => r.json());
+    } catch(e){ return null; }
+  };
+
+  const [tlPre, tlPost, fPre, fPost, poe, mj, ob, gr] = await Promise.all([
+    fetchSheet(`TL_P${plan}_pre`, false),
+    fetchSheet(`TL_P${plan}_post`, false),
+    fetchSheet(`F_Pre_P${plan}`, true),
+    fetchSheet(`F_Post_P${plan}`, true),
+    fetchSheet(`POE_P${plan}`, false),
+    fetchSheet(`MJ_P${plan}`, false),
+    fetchSheet(`OB_P${plan}`, false),
+    fetchSheet(`GR_P${plan}`, false)
+  ]);
+
+  // จำนวนนักเรียนที่เข้าร่วม (unique จาก tl_pre หรือ f_pre)
+  const ids = new Set();
+  const collectIds = (r) => {
+    if (r && r.data) r.data.forEach(x => ids.add(String(x.student_id||x.student_name||'')));
+  };
+  collectIds(tlPre); collectIds(fPre); collectIds(poe);
+  data.attendance = ids.size;
+  data.tl_pre = tlPre; data.tl_post = tlPost;
+  data.f_pre = fPre; data.f_post = fPost;
+  data.poe = poe; data.mj = mj;
+  data.ob = ob; data.gr = gr;
+
+  currentPostPlanData = data;
+  renderPostPlanAuto(data);
+}
+
+function renderPostPlanAuto(d){
+  const el = document.getElementById('pp-auto');
+  let html = `<h3 style="color:#3e2723;margin-bottom:10px">📊 ข้อมูลอัตโนมัติ — แผน ${d.plan}: ${d.plan_title}</h3>
+    <div style="font-size:14px;line-height:1.9">
+      <div>👥 <b>จำนวนนักเรียนเข้าร่วม:</b> ${d.attendance} คน</div>`;
+
+  // Traffic Light
+  const tlStats = (rec) => {
+    if (!rec || !rec.data) return null;
+    const c = {green:0,yellow:0,red:0,total:0};
+    rec.data.forEach(r => { if (c[r.color] !== undefined){ c[r.color]++; c.total++; } });
+    return c;
+  };
+  const tlPreC = tlStats(d.tl_pre);
+  const tlPostC = tlStats(d.tl_post);
+  if (tlPreC){
+    const pct = (v) => tlPreC.total ? ((v/tlPreC.total)*100).toFixed(0)+'%' : '—';
+    html += `<div>🚦 <b>Traffic Light ก่อนเรียน:</b> 🟢 ${pct(tlPreC.green)} · 🟡 ${pct(tlPreC.yellow)} · 🔴 ${pct(tlPreC.red)} (${tlPreC.total} คน)</div>`;
+  }
+  if (tlPostC){
+    const pct = (v) => tlPostC.total ? ((v/tlPostC.total)*100).toFixed(0)+'%' : '—';
+    html += `<div>🚦 <b>Traffic Light หลังเรียน:</b> 🟢 ${pct(tlPostC.green)} · 🟡 ${pct(tlPostC.yellow)} · 🔴 ${pct(tlPostC.red)} (${tlPostC.total} คน)</div>`;
+  }
+
+  // Four-tier
+  const ftSummary = (rec, label) => {
+    if (!rec || !rec.overall) return '';
+    const o = rec.overall;
+    const total = o.Sound + o.Misconception + o.Guessing + o['No-K'];
+    if (!total) return '';
+    const pct = v => ((v/total)*100).toFixed(1)+'%';
+    return `<div>📝 <b>Four-tier ${label}:</b> Sound ${pct(o.Sound)} · Misconception ${pct(o.Misconception)} · Guessing ${pct(o.Guessing)} · No-K ${pct(o['No-K'])}</div>`;
+  };
+  html += ftSummary(d.f_pre, 'ก่อนเรียน');
+  html += ftSummary(d.f_post, 'หลังเรียน');
+
+  // Normalized gain
+  if (d.f_post && d.f_post.normalized_gain){
+    const gains = Object.values(d.f_post.normalized_gain)
+      .map(g => g.normalized_gain).filter(v => v != null);
+    if (gains.length){
+      const avg = (gains.reduce((a,b)=>a+b,0)/gains.length).toFixed(3);
+      html += `<div>📈 <b>Normalized gain เฉลี่ย:</b> ${avg} ${avg>=0.3?'(ผ่านเกณฑ์)':'(ต่ำกว่า 0.3)'}</div>`;
+    }
+  }
+
+  // POE
+  if (d.poe && d.poe.count){
+    html += `<div>🔮 <b>POE:</b> ${d.poe.count} ใบบันทึก</div>`;
+  }
+
+  // MJ - highlights + Motivation Likert
+  if (d.mj && d.mj.count){
+    html += `<div>📓 <b>MJ (3-2-1):</b> ${d.mj.count} รายการ</div>`;
+    const motStats = computeMotStats(d.mj.data || []);
+    if (motStats){
+      html += `<div>💗 <b>แรงจูงใจเฉลี่ย (1–5):</b> สนุก ${motStats.fun} · ใฝ่รู้ ${motStats.curious} · มั่นใจ ${motStats.confident} · น่าสนใจ ${motStats.interest} · ประโยชน์ ${motStats.useful} · <b>รวม ${motStats.overall}</b></div>`;
+    }
+    const questions = (d.mj.data || []).map(r => r.question).filter(Boolean).slice(0,3);
+    if (questions.length){
+      html += `<div style="margin-top:6px"><b>คำถามเด่นจากนักเรียน:</b><ul style="margin:4px 0 0 20px">
+        ${questions.map(q => `<li>${escapeHtml(q)}</li>`).join('')}</ul></div>`;
+    }
+  }
+
+  // OB-01
+  if (d.ob && d.ob.data && d.ob.data.length){
+    const obAvg = computeObStats(d.ob.data);
+    html += `<div>🔍 <b>OB-01 สังเกตพฤติกรรม:</b> ${d.ob.data.length} บันทึก · คะแนนเฉลี่ย ${obAvg.avg}/4 (รวม ${obAvg.sumAvg}/24)</div>`;
+  }
+
+  // Group Rubric
+  if (d.gr && d.gr.data && d.gr.data.length){
+    const grAvg = computeGrStats(d.gr.data);
+    html += `<div>👥 <b>Group Rubric:</b> ${d.gr.data.length} กลุ่ม · คะแนนเฉลี่ย ${grAvg.avg}/4 (รวม ${grAvg.sumAvg}/20)</div>`;
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function computeMotStats(rows){
+  const keys = ['mot_fun','mot_curious','mot_confident','mot_interest','mot_useful'];
+  const sums = {}; const cnt = {};
+  keys.forEach(k=>{sums[k]=0;cnt[k]=0;});
+  rows.forEach(r => keys.forEach(k => { const v=Number(r[k]||0); if (v>0){ sums[k]+=v; cnt[k]++; } }));
+  if (Object.values(cnt).reduce((a,b)=>a+b,0)===0) return null;
+  const avg = k => cnt[k] ? (sums[k]/cnt[k]).toFixed(2) : '—';
+  const all = keys.reduce((a,k)=>a+sums[k],0) / Math.max(1, keys.reduce((a,k)=>a+cnt[k],0));
+  return { fun:avg('mot_fun'), curious:avg('mot_curious'), confident:avg('mot_confident'),
+           interest:avg('mot_interest'), useful:avg('mot_useful'), overall:all.toFixed(2) };
+}
+
+function computeObStats(rows){
+  const keys = OB_ITEMS.map(i=>i.id);
+  let sumAll=0, cntAll=0;
+  rows.forEach(r => keys.forEach(k => { const v=Number(r[k]||0); if (v>0){ sumAll+=v; cntAll++; } }));
+  const sumAvg = rows.length ? (rows.reduce((a,r)=>a+Number(r.total||0),0)/rows.length).toFixed(2) : '0';
+  return { avg: cntAll?(sumAll/cntAll).toFixed(2):'0', sumAvg };
+}
+
+function computeGrStats(rows){
+  const keys = GR_CRITERIA.map(c=>c.id);
+  let sumAll=0, cntAll=0;
+  rows.forEach(r => keys.forEach(k => { const v=Number(r[k]||0); if (v>0){ sumAll+=v; cntAll++; } }));
+  const sumAvg = rows.length ? (rows.reduce((a,r)=>a+Number(r.total||0),0)/rows.length).toFixed(2) : '0';
+  return { avg: cntAll?(sumAll/cntAll).toFixed(2):'0', sumAvg };
+}
+
+function exportPostPlanWord(){
+  if (!currentPostPlanData){ alert('โหลดข้อมูลก่อน'); return; }
+  const d = currentPostPlanData;
+  const when = document.getElementById('pp-when').value.trim() || '—';
+  const strength = document.getElementById('pp-strength').value.trim() || '—';
+  const issue = document.getElementById('pp-issue').value.trim() || '—';
+  const improve = document.getElementById('pp-improve').value.trim() || '—';
+  const note = document.getElementById('pp-note').value.trim() || '—';
+
+  // KPA data
+  const kpa = KPA_ROWS.map(r=>({
+    id:r.id, name:r.name, tools:r.tools,
+    val: (document.getElementById('pp-kpa-'+r.id+'-val')?.value || '').trim() || '—',
+    note: (document.getElementById('pp-kpa-'+r.id+'-note')?.value || '').trim() || '—'
+  }));
+
+  // D1/D2 collection
+  const collectItem = (prefix, it) => {
+    const evChecked = it.evi.map((t,i)=>
+      document.getElementById(`${prefix}e${it.no}_${i}`)?.checked ? t : null
+    ).filter(Boolean);
+    const otherOn = document.getElementById(`${prefix}e${it.no}_other`)?.checked;
+    const otherTxt = (document.getElementById(`${prefix}o${it.no}`)?.value || '').trim();
+    if (otherOn && otherTxt) evChecked.push(otherTxt);
+    const score = getSelectedScore(prefix, it.no);
+    return { no:it.no, text:it.text, evidence:evChecked, score };
+  };
+  const d1 = D1_ITEMS.map(it=>collectItem('d1',it));
+  const d2 = D2_ITEMS.map(it=>collectItem('d2',it));
+  const d1Sum = d1.reduce((s,x)=>s+x.score,0);
+  const d2Sum = d2.reduce((s,x)=>s+x.score,0);
+  const d1W = d1Sum*2.5, d2W = d2Sum*5;
+  const total = d1W + d2W;
+
+  // สร้าง HTML ที่ Word อ่านได้
+  const html = `
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+<head><meta charset="UTF-8"><title>บันทึกหลังแผน ${d.plan}</title>
+<style>
+body{font-family:'TH SarabunPSK','Sarabun','Tahoma',sans-serif;font-size:16pt;line-height:1.5}
+h1{font-size:22pt;text-align:center;color:#0f2c5c}
+h2{font-size:18pt;color:#1565c0;border-bottom:2px solid #1565c0;padding-bottom:3pt;margin-top:18pt}
+h3{font-size:16pt;color:#4e342e;margin-top:12pt}
+table{border-collapse:collapse;width:100%;margin:6pt 0}
+th,td{border:1pt solid #333;padding:6pt}
+th{background:#e0f2ff}
+.meta{text-align:center;color:#555;font-size:14pt;margin-bottom:12pt}
+.auto{background:#f8f9fa;padding:10pt;border-left:4pt solid #1565c0}
+</style></head>
+<body>
+<h1>📓 บันทึกหลังการจัดการเรียนรู้</h1>
+<div class="meta">โรงเรียนสตรีวิทยา · รายวิชาฟิสิกส์ 3 (ว30203) · ชั้นมัธยมศึกษาปีที่ 5<br>
+ครูผู้สอน: นายโกเมน ปาปะโถ · ปีการศึกษา 2569</div>
+
+<h2>ส่วนที่ 1 · ข้อมูลทั่วไป</h2>
+<table>
+<tr><th style="width:30%">แผนการจัดการเรียนรู้</th><td>แผนที่ ${d.plan} — ${escapeHtml(d.plan_title)}</td></tr>
+<tr><th>คาบที่</th><td>${d.plan_periods}</td></tr>
+<tr><th>วัน/เวลาที่สอน</th><td>${escapeHtml(when)}</td></tr>
+<tr><th>จำนวนนักเรียนเข้าเรียน</th><td>${d.attendance} คน</td></tr>
+</table>
+
+<h2>ส่วนที่ 2 · ข้อมูลอัตโนมัติจากการเก็บข้อมูลในคาบ</h2>
+<div class="auto">
+${buildAutoBlockForDoc(d)}
+</div>
+
+<h2>ส่วนที่ 3 · ผลการประเมินตามจุดประสงค์ K / P / A</h2>
+<table>
+<tr><th style="width:22%">จุดประสงค์</th><th>เครื่องมือประเมิน</th><th style="width:14%">ผลที่ได้</th><th style="width:22%">ระดับคุณภาพ / หมายเหตุ</th></tr>
+${kpa.map(r=>`<tr><td><b>${r.name}</b></td><td>${escapeHtml(r.tools)}</td><td>${escapeHtml(r.val)}</td><td>${escapeHtml(r.note)}</td></tr>`).join('')}
+</table>
+
+<h2>ส่วนที่ 4 · ด้านที่ 1 · ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน</h2>
+<table>
+<tr><th style="width:5%">ข้อ</th><th>ตัวชี้วัด</th><th>หลักฐานที่ปฏิบัติจริง</th><th style="width:8%">คะแนน</th><th style="width:12%">ถ่วงน้ำหนัก (×2.5)</th></tr>
+${d1.map(x=>`<tr><td align="center">${x.no}</td><td>${escapeHtml(x.text)}</td><td>${x.evidence.length?('• '+x.evidence.map(escapeHtml).join('<br>• ')):'—'}</td><td align="center">${x.score||'—'}</td><td align="center">${x.score?(x.score*2.5).toFixed(1):'—'}</td></tr>`).join('')}
+<tr style="background:#fff3e0;font-weight:bold"><td colspan="3" align="right">รวมด้านที่ 1</td><td align="center">${d1Sum}/32</td><td align="center">${d1W.toFixed(1)}/80</td></tr>
+</table>
+
+<h2>ส่วนที่ 5 · ด้านที่ 2 · ผลลัพธ์การเรียนรู้ของผู้เรียน</h2>
+<table>
+<tr><th style="width:5%">ข้อ</th><th>ตัวชี้วัด</th><th>หลักฐานที่ปฏิบัติจริง</th><th style="width:8%">คะแนน</th><th style="width:12%">ถ่วงน้ำหนัก (×5)</th></tr>
+${d2.map(x=>`<tr><td align="center">${x.no}</td><td>${escapeHtml(x.text)}</td><td>${x.evidence.length?('• '+x.evidence.map(escapeHtml).join('<br>• ')):'—'}</td><td align="center">${x.score||'—'}</td><td align="center">${x.score?(x.score*5).toFixed(1):'—'}</td></tr>`).join('')}
+<tr style="background:#f1f8e9;font-weight:bold"><td colspan="3" align="right">รวมด้านที่ 2</td><td align="center">${d2Sum}/20</td><td align="center">${d2W.toFixed(1)}/100</td></tr>
+</table>
+
+<h2>ส่วนที่ 6 · สรุปคะแนนรวม</h2>
+<table>
+<tr><th>รายการ</th><th style="width:20%">คะแนน</th></tr>
+<tr><td>ด้านที่ 1 (ถ่วงน้ำหนัก)</td><td align="center">${d1W.toFixed(1)} / 80</td></tr>
+<tr><td>ด้านที่ 2 (ถ่วงน้ำหนัก)</td><td align="center">${d2W.toFixed(1)} / 100</td></tr>
+<tr style="background:#e8eaf6;font-weight:bold"><td>รวมทั้งหมด</td><td align="center">${total.toFixed(1)} / 180</td></tr>
+</table>
+
+<h2>ส่วนที่ 7 · ข้อสังเกตเพิ่มเติมและการสะท้อน</h2>
+<h3>7.1 จุดแข็งโดยรวม</h3>
+<p>${escapeHtml(strength).replace(/\n/g,'<br>')}</p>
+<h3>7.2 ปัญหา/อุปสรรค และวิธีแก้ไขเฉพาะหน้า</h3>
+<p>${escapeHtml(issue).replace(/\n/g,'<br>')}</p>
+<h3>7.3 สิ่งที่จะปรับปรุงในการจัดการเรียนรู้ครั้งถัดไป</h3>
+<p>${escapeHtml(improve).replace(/\n/g,'<br>')}</p>
+<h3>7.4 บันทึกอื่น ๆ</h3>
+<p>${escapeHtml(note).replace(/\n/g,'<br>')}</p>
+
+<p style="margin-top:30pt">ลงชื่อ .................................................. ครูผู้สอน<br>
+(นายโกเมน ปาปะโถ) &nbsp;&nbsp; วันที่ .......... / .......... / ..........</p>
+</body></html>`;
+
+  const blob = new Blob(['\ufeff', html], {type:'application/msword'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `บันทึกหลังแผน_${d.plan}_${new Date().toISOString().slice(0,10)}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('pp-stat').textContent = '✅ ดาวน์โหลดแล้ว';
+}
+
+function buildAutoBlockForDoc(d){
+  let s = `<b>จำนวนนักเรียนเข้าร่วม:</b> ${d.attendance} คน<br>`;
+  const tlStats = (rec) => {
+    if (!rec || !rec.data) return null;
+    const c = {green:0,yellow:0,red:0,total:0};
+    rec.data.forEach(r => { if (c[r.color] !== undefined){ c[r.color]++; c.total++; } });
+    return c;
+  };
+  const pre = tlStats(d.tl_pre), post = tlStats(d.tl_post);
+  if (pre) s += `<b>Traffic Light ก่อนเรียน:</b> เขียว ${pre.green} · เหลือง ${pre.yellow} · แดง ${pre.red} (${pre.total} คน)<br>`;
+  if (post) s += `<b>Traffic Light หลังเรียน:</b> เขียว ${post.green} · เหลือง ${post.yellow} · แดง ${post.red} (${post.total} คน)<br>`;
+  const ft = (rec, lbl) => {
+    if (!rec || !rec.overall) return '';
+    const o = rec.overall;
+    const t = o.Sound + o.Misconception + o.Guessing + o['No-K'];
+    if (!t) return '';
+    const pct = v => ((v/t)*100).toFixed(1)+'%';
+    return `<b>Four-tier ${lbl}:</b> Sound ${pct(o.Sound)} · Misconception ${pct(o.Misconception)} · Guessing ${pct(o.Guessing)} · No-K ${pct(o['No-K'])}<br>`;
+  };
+  s += ft(d.f_pre, 'ก่อนเรียน') + ft(d.f_post, 'หลังเรียน');
+  if (d.f_post && d.f_post.normalized_gain){
+    const g = Object.values(d.f_post.normalized_gain).map(x=>x.normalized_gain).filter(v=>v!=null);
+    if (g.length) s += `<b>Normalized gain เฉลี่ย:</b> ${(g.reduce((a,b)=>a+b,0)/g.length).toFixed(3)}<br>`;
+  }
+  if (d.poe && d.poe.count) s += `<b>POE:</b> ${d.poe.count} ใบบันทึก<br>`;
+  if (d.mj && d.mj.count){
+    s += `<b>MJ (3-2-1):</b> ${d.mj.count} รายการ<br>`;
+    const m = computeMotStats(d.mj.data||[]);
+    if (m) s += `<b>Motivation Likert (1–5):</b> สนุก ${m.fun} · ใฝ่รู้ ${m.curious} · มั่นใจ ${m.confident} · น่าสนใจ ${m.interest} · ประโยชน์ ${m.useful} · รวม ${m.overall}<br>`;
+  }
+  if (d.ob && d.ob.data && d.ob.data.length){
+    const o = computeObStats(d.ob.data);
+    s += `<b>OB-01 สังเกตพฤติกรรม:</b> ${d.ob.data.length} บันทึก · คะแนนเฉลี่ย ${o.avg}/4<br>`;
+  }
+  if (d.gr && d.gr.data && d.gr.data.length){
+    const g = computeGrStats(d.gr.data);
+    s += `<b>Group Rubric:</b> ${d.gr.data.length} กลุ่ม · คะแนนเฉลี่ย ${g.avg}/4<br>`;
+  }
+  return s;
+}
+
+function exportPostPlanHTML(){
+  window.print();
+}
+
+async function loadRecentFeedback(){
+  const el = document.getElementById('fb-recent');
+  try {
+    const r = await fetch(API_URL + '?action=feedback').then(x=>x.json());
+    const list = (r.feedback || []).sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).slice(0,10);
+    if (!list.length){ el.innerHTML = '<div class="info">ยังไม่มีฟีดแบ็กที่ส่ง</div>'; return; }
+    el.innerHTML = list.map(f => `
+      <div class="fb-card">
+        <div class="meta">📅 ${new Date(f.timestamp).toLocaleString('th-TH')} · แผน ${f.plan} · ถึง ${escapeHtml(f.to_name||f.to_student_id)}
+          ${f.read_at ? '<span style="color:#2e7d32">· ✓ อ่านแล้ว</span>' : '<span style="color:#ef6c00">· ยังไม่อ่าน</span>'}
+        </div>
+        <div class="msg">${escapeHtml(f.message)}</div>
+        ${f.poe_score!==''&&f.poe_score!=null?`<div class="score">⭐ POE: ${f.poe_score}/3</div>`:''}
+      </div>`).join('');
+  } catch(e){
+    el.innerHTML = '<div class="warn-config">ดึงข้อมูลไม่ได้: '+e.message+'</div>';
+  }
+}
+</script>
+</body>
+</html>

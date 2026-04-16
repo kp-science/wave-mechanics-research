@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KP Science Simulation — ส่วนประกอบของคลื่น (แผน 1 · E4)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0e1a;
+  --panel:   #111827;
+  --panel2:  #1a2235;
+  --border:  #2d3748;
+  --accent:  #818cf8;
+  --accent2: #38bdf8;
+  --accent3: #34d399;
+  --accent4: #fb923c;
+  --accent5: #f472b6;
+  --text:    #e2e8f0;
+  --muted:   #94a3b8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Sarabun','TH Sarabun New',sans-serif; font-size: 15px; min-height: 100vh; overflow-x: hidden; }
+.mono { font-family: 'Share Tech Mono', monospace; }
+
+/* Header */
+header { background: linear-gradient(135deg, #0f172a, #1e293b); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 14px; }
+header .icon { font-size: 2rem; }
+header h1 { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+header p { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+header .badge { margin-left: auto; background: #1e2a4a; border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+
+/* Nav */
+nav { display: flex; gap: 4px; padding: 8px 16px; background: #0f172a; border-bottom: 1px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+nav button { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-family: 'Sarabun',sans-serif; font-size: 0.85rem; font-weight: 600; white-space: nowrap; transition: all .2s; }
+nav button:hover { border-color: var(--accent); color: var(--accent); }
+nav button.active { background: var(--accent); border-color: var(--accent); color: #0a0e1a; }
+
+/* Tab */
+.tab-section { display: none; }
+.tab-section.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+/* Control Bar */
+.cbar { background: var(--panel); border-bottom: 1px solid var(--border); padding: 8px 16px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-family: 'Sarabun',sans-serif; font-weight: 700; font-size: 0.85rem; transition: .15s; }
+.btn-play { background: #1b5e20; color: #fff; }
+.btn-play:hover { background: #2e7d32; }
+.btn-play.playing { background: #b71c1c; }
+.btn-reset { background: #0d47a1; color: #fff; }
+.btn-reset:hover { background: #1565c0; }
+.cbar-label { font-size: 0.8rem; color: var(--muted); margin-left: 8px; }
+.speed-wrap { display: flex; align-items: center; gap: 6px; }
+.sl-speed { width: 80px; accent-color: var(--accent2); }
+
+/* Sim Layout */
+.sim-wrap { display: grid; grid-template-columns: 1fr 260px; gap: 0; height: calc(100vh - 130px); min-height: 480px; }
+@media (max-width: 768px) { .sim-wrap { grid-template-columns: 1fr; height: auto; } }
+
+/* Canvas Area */
+.canvas-area { display: flex; flex-direction: column; gap: 0; background: var(--bg); padding: 10px 12px 6px; overflow: hidden; }
+.graph-box { flex: 1; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; position: relative; margin-bottom: 8px; min-height: 160px; }
+.graph-box:last-child { margin-bottom: 0; }
+.graph-label { position: absolute; top: 8px; left: 10px; font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; z-index: 2; }
+.graph-label span { color: var(--accent); }
+.graph-label .readout-λ { color: var(--accent3); }
+.graph-label .readout-T  { color: var(--accent4); }
+canvas { display: block; width: 100%; height: 100%; border-radius: 10px; }
+
+/* Side Panel */
+.side-panel { background: var(--panel); border-left: 1px solid var(--border); padding: 14px 14px; display: flex; flex-direction: column; gap: 14px; overflow-y: auto; }
+@media (max-width: 768px) { .side-panel { border-left: none; border-top: 1px solid var(--border); padding: 12px; } }
+
+.panel-section { background: var(--panel2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.panel-title { font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 10px; }
+
+/* Sliders */
+.sl-row { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
+.sl-row:last-child { margin-bottom: 0; }
+.sl-sym { font-size: 1rem; font-weight: 800; color: var(--accent); min-width: 18px; text-align: center; }
+.sl-name { font-size: 0.78rem; color: var(--muted); min-width: 52px; }
+.sl-range { flex: 1; accent-color: var(--accent); cursor: pointer; }
+.val-input { width: 48px; padding: 2px 4px; background: #0f172a; border: 1.5px solid var(--accent2); border-radius: 5px; color: var(--accent3); font-weight: 700; font-size: 0.82rem; text-align: center; -moz-appearance: textfield; }
+.val-input::-webkit-outer-spin-button, .val-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.val-input:focus { outline: none; border-color: var(--accent); }
+.sl-unit { font-size: 0.72rem; color: var(--muted); min-width: 28px; }
+
+/* Readout */
+.readout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ro-item { background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 8px 8px 6px; text-align: center; }
+.ro-sym { font-size: 1.1rem; font-weight: 800; line-height: 1; }
+.ro-val { font-family: 'Share Tech Mono',monospace; font-size: 0.88rem; font-weight: 700; margin: 2px 0; }
+.ro-unit { font-size: 0.68rem; color: var(--muted); }
+.ro-A   { border-color: #48bb78; } .ro-A   .ro-sym { color: #48bb78; }
+.ro-λ   { border-color: var(--accent3); } .ro-λ   .ro-sym, .ro-λ   .ro-val { color: var(--accent3); }
+.ro-T   { border-color: var(--accent4); } .ro-T   .ro-sym, .ro-T   .ro-val { color: var(--accent4); }
+.ro-f   { border-color: var(--accent5); } .ro-f   .ro-sym, .ro-f   .ro-val { color: var(--accent5); }
+.ro-v   { border-color: var(--accent2); } .ro-v   .ro-sym, .ro-v   .ro-val { color: var(--accent2); }
+.ro-k   { border-color: var(--accent); }  .ro-k   .ro-sym, .ro-k   .ro-val { color: var(--accent); }
+
+/* Medium presets */
+.medium-btns { display: flex; flex-direction: column; gap: 6px; }
+.btn-medium { width: 100%; padding: 7px; border: 1.5px solid var(--border); background: #0f172a; color: var(--muted); border-radius: 7px; cursor: pointer; font-family: 'Sarabun',sans-serif; font-size: 0.8rem; font-weight: 600; transition: .15s; text-align: left; }
+.btn-medium:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-medium.active { border-color: var(--accent2); color: #0a0e1a; background: var(--accent2); }
+.btn-medium span { font-family: 'Share Tech Mono',monospace; font-size: 0.75rem; opacity: 0.85; }
+
+/* Misc note */
+.misc-note { background: #2d1a1a; border: 1px solid #fc8181; border-radius: 8px; padding: 8px 10px; font-size: 0.78rem; color: #fc8181; line-height: 1.55; }
+.misc-note strong { color: #f87171; }
+.misc-note.green { background: #1a2d1a; border-color: #68d391; color: #68d391; }
+.misc-note.green strong { color: #68d391; }
+
+/* ─── THEORY TAB ─── */
+.theory-wrap { max-width: 860px; margin: 0 auto; padding: 24px 20px; }
+.theory-section { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+.theory-section h3 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+table.comp-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+table.comp-table th { background: #1e2a4a; color: var(--accent); padding: 8px 10px; text-align: left; font-weight: 600; }
+table.comp-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--text); }
+table.comp-table tr:last-child td { border-bottom: none; }
+table.comp-table tr:nth-child(even) td { background: var(--panel2); }
+.sym-big { font-size: 1.3rem; font-weight: 800; }
+.formula-box { background: #1e2a4a; border: 1px solid var(--accent); border-radius: 10px; padding: 14px 18px; margin: 10px 0; font-family: 'Share Tech Mono',monospace; font-size: 1rem; color: var(--accent3); text-align: center; line-height: 2; }
+.formula-box .main { font-size: 1.25rem; font-weight: 700; color: var(--accent); }
+.misc-card { background: #2d1a1a; border: 1px solid #fc8181; border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+.misc-card:last-child { margin-bottom: 0; }
+.misc-card .misc-id { display: inline-block; background: #c53030; color: white; border-radius: 6px; padding: 2px 8px; font-size: 0.75rem; font-weight: 700; margin-bottom: 6px; }
+.misc-card p { font-size: 0.88rem; color: #fed7d7; line-height: 1.6; }
+.misc-card .correct { color: #68d391; font-weight: 600; margin-top: 6px; display: block; }
+.graph-explain { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .graph-explain { grid-template-columns: 1fr; } }
+.ge-box { background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; }
+.ge-box h4 { font-size: 0.88rem; font-weight: 700; margin-bottom: 8px; }
+.ge-box ul { padding-left: 18px; font-size: 0.84rem; color: var(--muted); line-height: 1.8; }
+.ge-box ul li { color: var(--text); }
+
+/* ─── POE TAB ─── */
+.poe-container { max-width: 800px; margin: 0 auto; padding: 24px 20px; display: grid; gap: 14px; }
+.poe-header { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+.poe-header h3 { color: var(--accent); font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.poe-header p { font-size: 0.85rem; color: var(--muted); }
+.poe-card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.poe-badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; margin-bottom: 10px; }
+.poe-badge.predict { background: #1e3a5f; color: var(--accent2); border: 1px solid var(--accent2); }
+.poe-badge.observe { background: #1a3320; color: var(--accent3); border: 1px solid var(--accent3); }
+.poe-badge.explain { background: #2d1a3a; color: var(--accent); border: 1px solid var(--accent); }
+.poe-question { color: var(--text); margin-bottom: 12px; font-size: 0.92rem; line-height: 1.65; }
+.poe-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; font-style: italic; }
+.poe-input { width: 100%; min-height: 90px; background: var(--panel2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px; font-family: 'Sarabun',sans-serif; font-size: 0.9rem; resize: vertical; }
+.poe-input:focus { outline: none; border-color: var(--accent); }
+.btn-poe-save { margin-top: 12px; padding: 8px 22px; background: var(--accent); border: none; border-radius: 8px; color: #0a0e1a; font-family: 'Sarabun',sans-serif; font-weight: 700; cursor: pointer; transition: .15s; font-size: 0.9rem; }
+.btn-poe-save:hover { opacity: 0.85; }
+.poe-tip { background: #1e2a4a; border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; font-size: 0.82rem; color: var(--muted); margin-top: 8px; }
+.poe-tip strong { color: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="icon">〰️</div>
+  <div>
+    <h1>ส่วนประกอบของคลื่น</h1>
+    <p>KP Science Simulation · ฟิสิกส์ 3 (ว30203) · แผนที่ 1 · E4 ขยายและประยุกต์ · ม.5</p>
+  </div>
+  <div class="badge">KP Science</div>
+</header>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <button class="active" onclick="showTab('sim',this)">🎬 Simulation</button>
+  <button onclick="showTab('theory',this)">📐 เนื้อหา/ทฤษฎี</button>
+  <button onclick="showTab('poe',this)">🔮 POE</button>
+</nav>
+
+<!-- ═══════════════════════════════════════ -->
+<!--              TAB: SIMULATION            -->
+<!-- ═══════════════════════════════════════ -->
+<div id="tab-sim" class="tab-section active">
+
+  <!-- Control Bar -->
+  <div class="cbar">
+    <button class="btn btn-play" id="playBtn" onclick="togglePlay()">▶ เริ่ม</button>
+    <button class="btn btn-reset" onclick="resetSim()">↺ รีเซ็ต</button>
+    <span class="cbar-label">ความเร็วแอนิเมชัน:</span>
+    <div class="speed-wrap">
+      <span style="font-size:0.78rem;color:var(--muted);">0.1×</span>
+      <input class="sl-speed" type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+      <span style="font-size:0.78rem;color:var(--muted);">3×</span>
+      <span class="mono" id="speedVal" style="color:var(--accent2);font-size:0.82rem;min-width:28px;">1.0×</span>
+    </div>
+    <span class="cbar-label" style="margin-left:auto;">⏱ t = <span class="mono" id="timeDisplay" style="color:var(--accent4);">0.000</span> s</span>
+  </div>
+
+  <!-- Sim Layout -->
+  <div class="sim-wrap">
+
+    <!-- Canvas Area -->
+    <div class="canvas-area">
+      <!-- y–x graph -->
+      <div class="graph-box" id="box-yx">
+        <div class="graph-label">กราฟ y–x &nbsp;|&nbsp; <span>snapshot ณ เวลา t</span> &nbsp;|&nbsp; <span class="readout-λ">λ = <span id="lbl-lambda">—</span> m</span></div>
+        <canvas id="canvas-yx"></canvas>
+      </div>
+      <!-- y–t graph -->
+      <div class="graph-box" id="box-yt">
+        <div class="graph-label">กราฟ y–t &nbsp;|&nbsp; <span>อนุภาคที่ x = x₀</span> &nbsp;|&nbsp; <span class="readout-T">T = <span id="lbl-T">—</span> s</span></div>
+        <canvas id="canvas-yt"></canvas>
+      </div>
+    </div>
+
+    <!-- Side Panel -->
+    <div class="side-panel">
+
+      <!-- Sliders -->
+      <div class="panel-section">
+        <div class="panel-title">ควบคุมตัวแปร</div>
+
+        <div class="sl-row">
+          <span class="sl-sym">A</span>
+          <span class="sl-name">แอมพลิจูด</span>
+          <input class="sl-range" type="range" id="sl-A" min="0.1" max="1.0" step="0.05" value="0.5">
+          <input class="val-input" type="number" id="vi-A" min="0.1" max="1.0" step="0.05" value="0.5">
+          <span class="sl-unit">m</span>
+        </div>
+
+        <div class="sl-row">
+          <span class="sl-sym" style="color:var(--accent5);">f</span>
+          <span class="sl-name">ความถี่</span>
+          <input class="sl-range" type="range" id="sl-f" min="0.5" max="4" step="0.1" value="1" style="accent-color:var(--accent5);">
+          <input class="val-input" type="number" id="vi-f" min="0.5" max="4" step="0.1" value="1" style="border-color:var(--accent5);color:var(--accent5);">
+          <span class="sl-unit">Hz</span>
+        </div>
+
+        <div class="sl-row">
+          <span class="sl-sym" style="color:var(--accent2);">v</span>
+          <span class="sl-name">อัตราเร็ว</span>
+          <input class="sl-range" type="range" id="sl-v" min="1" max="8" step="0.5" value="3" style="accent-color:var(--accent2);">
+          <input class="val-input" type="number" id="vi-v" min="1" max="8" step="0.5" value="3" style="border-color:var(--accent2);color:var(--accent2);">
+          <span class="sl-unit">m/s</span>
+        </div>
+      </div>
+
+      <!-- Readouts -->
+      <div class="panel-section">
+        <div class="panel-title">ค่าที่คำนวณได้</div>
+        <div class="readout-grid">
+          <div class="ro-item ro-A">
+            <div class="ro-sym">A</div>
+            <div class="ro-val" id="ro-A">—</div>
+            <div class="ro-unit">เมตร (m)</div>
+          </div>
+          <div class="ro-item ro-f">
+            <div class="ro-sym">f</div>
+            <div class="ro-val" id="ro-f">—</div>
+            <div class="ro-unit">เฮิรตซ์ (Hz)</div>
+          </div>
+          <div class="ro-item ro-T">
+            <div class="ro-sym">T</div>
+            <div class="ro-val" id="ro-T">—</div>
+            <div class="ro-unit">วินาที (s)</div>
+          </div>
+          <div class="ro-item ro-λ">
+            <div class="ro-sym">λ</div>
+            <div class="ro-val" id="ro-λ">—</div>
+            <div class="ro-unit">เมตร (m)</div>
+          </div>
+          <div class="ro-item ro-v">
+            <div class="ro-sym">v</div>
+            <div class="ro-val" id="ro-v">—</div>
+            <div class="ro-unit">m/s</div>
+          </div>
+          <div class="ro-item ro-k">
+            <div class="ro-sym">k</div>
+            <div class="ro-val" id="ro-k">—</div>
+            <div class="ro-unit">rad/m</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medium Presets (M4 demo) -->
+      <div class="panel-section">
+        <div class="panel-title">🧪 เปลี่ยนตัวกลาง (f คงที่!)</div>
+        <div class="medium-btns">
+          <button class="btn-medium" onclick="setMedium(2,'btn-m1')" id="btn-m1">🪢 เชือกหนัก<br><span>v = 2 m/s → λ ลดลง</span></button>
+          <button class="btn-medium active" onclick="setMedium(3,'btn-m2')" id="btn-m2">💧 น้ำตื้น<br><span>v = 3 m/s (default)</span></button>
+          <button class="btn-medium" onclick="setMedium(6,'btn-m3')" id="btn-m3">🪢 เชือกเบา<br><span>v = 6 m/s → λ เพิ่มขึ้น</span></button>
+        </div>
+        <div class="misc-note green" style="margin-top:8px;">
+          <strong>✅ สังเกต:</strong> f <strong>ไม่เปลี่ยน</strong> ไม่ว่าจะเปลี่ยนตัวกลางอย่างไร — f ขึ้นอยู่กับแหล่งกำเนิดเท่านั้น
+        </div>
+      </div>
+
+      <!-- Misconception warning -->
+      <div class="misc-note">
+        <strong>⚠️ M4:</strong> f ≠ เปลี่ยนตามตัวกลาง<br>
+        <strong>⚠️ M5:</strong> T (วินาที) ≠ λ (เมตร) — อ่านจากกราฟคนละชุด
+      </div>
+
+    </div><!-- /side-panel -->
+  </div><!-- /sim-wrap -->
+</div><!-- /tab-sim -->
+
+<!-- ═══════════════════════════════════════ -->
+<!--              TAB: THEORY               -->
+<!-- ═══════════════════════════════════════ -->
+<div id="tab-theory" class="tab-section">
+  <div class="theory-wrap">
+
+    <div class="theory-section">
+      <h3>📌 ส่วนประกอบของคลื่น 6 ตัวแปร</h3>
+      <table class="comp-table">
+        <thead>
+          <tr><th>สัญลักษณ์</th><th>ชื่อ</th><th>หน่วย</th><th>ความหมาย</th><th>อ่านจากกราฟ</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="sym-big" style="color:#48bb78;">A</span></td>
+            <td>แอมพลิจูด</td>
+            <td>m, cm</td>
+            <td>การกระจัดสูงสุดจากแนวสมดุล • พลังงานคลื่น ∝ A²</td>
+            <td>ทั้ง y–x และ y–t (ความสูง)</td>
+          </tr>
+          <tr>
+            <td><span class="sym-big" style="color:var(--accent3);">λ</span></td>
+            <td>ความยาวคลื่น</td>
+            <td>m</td>
+            <td>ระยะห่างระหว่างจุดเฟสเดียวกัน 2 จุดที่ใกล้ที่สุด</td>
+            <td><strong style="color:var(--accent3);">y–x เท่านั้น</strong> (แกน x คือระยะทาง)</td>
+          </tr>
+          <tr>
+            <td><span class="sym-big" style="color:var(--accent4);">T</span></td>
+            <td>คาบ</td>
+            <td>s</td>
+            <td>เวลาที่อนุภาคสั่นครบ 1 รอบ • T = 1/f</td>
+            <td><strong style="color:var(--accent4);">y–t เท่านั้น</strong> (แกน t คือเวลา)</td>
+          </tr>
+          <tr>
+            <td><span class="sym-big" style="color:var(--accent5);">f</span></td>
+            <td>ความถี่</td>
+            <td>Hz = s⁻¹</td>
+            <td>จำนวนรอบต่อวินาที • f = 1/T • <strong style="color:var(--accent5);">คงที่ตามแหล่งกำเนิด</strong></td>
+            <td>y–t (= 1/T)</td>
+          </tr>
+          <tr>
+            <td><span class="sym-big" style="color:var(--accent2);">v</span></td>
+            <td>อัตราเร็วคลื่น</td>
+            <td>m/s</td>
+            <td>ขึ้นกับคุณสมบัติของตัวกลาง • ไม่ขึ้นกับ A หรือ f</td>
+            <td>v = fλ = λ/T</td>
+          </tr>
+          <tr>
+            <td><span class="sym-big" style="color:var(--accent);">φ</span></td>
+            <td>เฟส</td>
+            <td>rad</td>
+            <td>สถานะการสั่น ณ ตำแหน่ง x และเวลา t ใดๆ</td>
+            <td>Δφ = 2nπ → In-phase • Δφ = (2n+1)π → Anti-phase</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="theory-section">
+      <h3>📐 สมการหลัก</h3>
+      <div class="formula-box">
+        <div class="main">y(x, t) = A · sin(kx − ωt)</div>
+        <br>
+        k = 2π/λ &nbsp;&nbsp;&nbsp; ω = 2πf &nbsp;&nbsp;&nbsp; <span style="color:var(--accent3);">v = fλ = λ/T = ω/k</span>
+        <br>
+        T = 1/f &nbsp;&nbsp;&nbsp; λ = v/f &nbsp;&nbsp;&nbsp; f คงที่ตามแหล่งกำเนิด
+      </div>
+    </div>
+
+    <div class="theory-section">
+      <h3>📊 อ่านค่าจากกราฟ 2 ประเภท</h3>
+      <div class="graph-explain">
+        <div class="ge-box">
+          <h4 style="color:var(--accent3);">กราฟ y–x (Snapshot)</h4>
+          <ul>
+            <li>แกนนอน = <strong>ระยะทาง x</strong> (m)</li>
+            <li>แกนตั้ง = การกระจัด y</li>
+            <li>ความสูง peak → peak = <strong>A</strong></li>
+            <li>ระยะห่าง peak → peak = <strong>λ</strong></li>
+            <li>ไม่สามารถอ่าน T ได้จากกราฟนี้</li>
+          </ul>
+        </div>
+        <div class="ge-box">
+          <h4 style="color:var(--accent4);">กราฟ y–t (Particle)</h4>
+          <ul>
+            <li>แกนนอน = <strong>เวลา t</strong> (s)</li>
+            <li>แกนตั้ง = การกระจัด y</li>
+            <li>ความสูง peak → peak = <strong>A</strong></li>
+            <li>ระยะ peak → peak ในแกน t = <strong>T</strong></li>
+            <li>ไม่สามารถอ่าน λ ได้จากกราฟนี้</li>
+          </ul>
+        </div>
+      </div>
+      <div class="misc-card" style="margin-top:14px;">
+        <span class="misc-id">M5</span>
+        <p>❌ สับสน T กับ λ — อ่าน "ช่วง" จากกราฟผิดกราฟ<br>
+        <span class="correct">✅ T (วินาที) อ่านจาก y–t เท่านั้น · λ (เมตร) อ่านจาก y–x เท่านั้น · หน่วยต่างกัน วัดคนละสิ่ง</span></p>
+      </div>
+    </div>
+
+    <div class="theory-section">
+      <h3>⚠️ Misconception เป้าหมาย</h3>
+      <div class="misc-card">
+        <span class="misc-id">M4</span>
+        <p>❌ <em>"ความถี่ f เปลี่ยนแปลงเมื่อคลื่นผ่านตัวกลางต่างกัน"</em>
+        <span class="correct">✅ f คงที่ตามแหล่งกำเนิดเสมอ — เมื่อ v เพิ่ม → λ เพิ่ม (λ = v/f) ส่วน f ไม่เปลี่ยน</span></p>
+      </div>
+      <div class="misc-card">
+        <span class="misc-id">M5</span>
+        <p>❌ <em>"สับสนระหว่าง T (วินาที) กับ λ (เมตร)"</em>
+        <span class="correct">✅ T = เวลาครบ 1 รอบ (s) · λ = ระยะทางครบ 1 รอบ (m) · คนละปริมาณ คนละหน่วย อ่านจากกราฟคนละชุด</span></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!--               TAB: POE                 -->
+<!-- ═══════════════════════════════════════ -->
+<div id="tab-poe" class="tab-section">
+  <div class="poe-container">
+
+    <div class="poe-header">
+      <h3>🔮 POE — ส่วนประกอบของคลื่น (แผน 1 E4)</h3>
+      <p>ทำส่วน P ก่อนรัน Simulation · ทำส่วน O ขณะรัน · ทำส่วน E หลังรันเสร็จ</p>
+    </div>
+
+    <!-- Predict -->
+    <div class="poe-card">
+      <div class="poe-badge predict">P — ทำนาย (ก่อนรัน simulation)</div>
+      <p class="poe-question">
+        ถ้าเราเปลี่ยนตัวกลาง (เช่น จากเชือกหนักเป็นเชือกเบา) ทำให้อัตราเร็วคลื่น v เพิ่มขึ้น 2 เท่า<br>
+        <strong>นักเรียนคาดว่า f, λ, T จะเปลี่ยนแปลงอย่างไร?</strong>
+      </p>
+      <p class="poe-sub">💡 คิดเดี่ยวก่อน ห้ามปรึกษาเพื่อน · เขียนเหตุผลประกอบอย่างน้อย 2 ประโยค</p>
+      <textarea id="poe-predict" class="poe-input" placeholder="P: คำทำนายของฉัน...&#10;&#10;ฉันคิดว่า f จะ...เพราะ...&#10;ฉันคิดว่า λ จะ...เพราะ...&#10;ฉันคิดว่า T จะ...เพราะ..."></textarea>
+    </div>
+
+    <!-- Observe -->
+    <div class="poe-card">
+      <div class="poe-badge observe">O — สังเกต (ขณะรัน simulation)</div>
+      <p class="poe-question">
+        ไปที่แท็บ <strong>Simulation</strong> กด "เปลี่ยนตัวกลาง" จากน้ำตื้น → เชือกเบา (v = 6 m/s)<br>
+        สังเกตค่าใน <strong>readout panel</strong> และรูปร่างกราฟ y–x · บันทึกสิ่งที่เห็นจริงๆ
+      </p>
+      <p class="poe-sub">💡 บันทึกตัวเลขจาก readout ให้ครบ ไม่ต้องตีความในขั้นนี้</p>
+      <textarea id="poe-observe" class="poe-input" placeholder="O: สิ่งที่สังเกตได้จริง...&#10;&#10;f ก่อน = ___ Hz · หลัง = ___ Hz&#10;λ ก่อน = ___ m · หลัง = ___ m&#10;T ก่อน = ___ s · หลัง = ___ s"></textarea>
+      <div class="poe-tip"><strong>💡 คำใบ้:</strong> ดูที่ panel ด้านขวา — ro-f, ro-λ, ro-T จะอัปเดตอัตโนมัติ · สังเกตว่า readout ตัวไหนเปลี่ยน ตัวไหนคงที่</div>
+    </div>
+
+    <!-- Explain -->
+    <div class="poe-card">
+      <div class="poe-badge explain">E — อธิบาย (หลังรันเสร็จ)</div>
+      <p class="poe-question">
+        เปรียบเทียบคำทำนาย (P) กับสิ่งที่สังเกต (O) — ตรงกันหรือไม่? เพราะอะไร?<br>
+        อธิบายโดยใช้สมการ <strong>v = fλ</strong> เป็นหลักฐาน
+      </p>
+      <textarea id="poe-explain" class="poe-input" placeholder="E: อธิบายด้วยหลักการ...&#10;&#10;คำทำนายของฉัน (ตรง/ไม่ตรง) กับสิ่งที่สังเกต เพราะ...&#10;จาก v = fλ เมื่อ v เพิ่ม 2 เท่า (f คงที่) ดังนั้น λ = v/f จะ...&#10;สรุปว่า f คือ..."></textarea>
+      <button class="btn-poe-save" onclick="savePOE()">💾 ดาวน์โหลด POE บันทึก</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══ JAVASCRIPT ═══ -->
+<script>
+'use strict';
+
+/* ─── STATE ─── */
+let isPlaying = false, t = 0, animId = null, lastTs = null, speed = 1.0;
+let A = 0.5, f = 1.0, v = 3.0;  // physics units: m, Hz, m/s
+
+// y-t history buffer
+const YT_BUFFER = 800;
+let ytHistory = new Array(YT_BUFFER).fill(0);
+
+/* ─── CANVAS REFS ─── */
+let cvYX, ctxYX, cvYT, ctxYT;
+
+/* ─── TAB SWITCH ─── */
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'sim') { resizeCanvases(); if (!isPlaying) drawAll(); }
+}
+
+/* ─── ANIMATION ─── */
+function loop(ts) {
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs) / 1000, 0.05) * speed;
+  lastTs = ts;
+  t += dt;
+  // push y-t value
+  const omega = 2 * Math.PI * f;
+  ytHistory.push(A * Math.sin(-omega * t));
+  ytHistory.shift();
+  drawAll();
+  updateReadouts();
+  document.getElementById('timeDisplay').textContent = t.toFixed(3);
+  animId = requestAnimationFrame(loop);
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('playBtn');
+  if (isPlaying) {
+    lastTs = null;
+    animId = requestAnimationFrame(loop);
+    btn.textContent = '⏸ หยุด';
+    btn.classList.add('playing');
+  } else {
+    cancelAnimationFrame(animId);
+    btn.textContent = '▶ เริ่ม';
+    btn.classList.remove('playing');
+  }
+}
+
+function resetSim() {
+  cancelAnimationFrame(animId);
+  isPlaying = false; t = 0; lastTs = null;
+  ytHistory.fill(0);
+  document.getElementById('playBtn').textContent = '▶ เริ่ม';
+  document.getElementById('playBtn').classList.remove('playing');
+  document.getElementById('timeDisplay').textContent = '0.000';
+  drawAll();
+  updateReadouts();
+}
+
+/* ─── DRAW ─── */
+function drawAll() {
+  drawYX();
+  drawYT();
+}
+
+function drawYX() {
+  if (!ctxYX) return;
+  const W = cvYX.width, H = cvYX.height;
+  const ctx = ctxYX;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, W, H);
+
+  const lambda = v / f;
+  const k = (2 * Math.PI) / lambda;
+  const omega = 2 * Math.PI * f;
+  const cx = W / 2, cy = H / 2;
+  const pxPerMeter = W / (3.5 * lambda);  // show ~3.5 wavelengths
+  const Apx = A * pxPerMeter * lambda * 0.45;  // visual amplitude
+
+  // Grid
+  ctx.strokeStyle = '#1e2a4a';
+  ctx.lineWidth = 1;
+  // horizontal center
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  // vertical grid every λ/2
+  const halfLambdaPx = (lambda / 2) * pxPerMeter;
+  for (let x = cx % halfLambdaPx; x < W; x += halfLambdaPx) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+
+  // Axes labels
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '11px Sarabun, sans-serif';
+  ctx.fillText('y', 8, 18);
+  ctx.fillText('x (m)', W - 40, cy - 6);
+  ctx.fillStyle = '#4a5568';
+  ctx.fillText('0', cx - 8, cy + 14);
+
+  // Wave
+  ctx.beginPath();
+  ctx.strokeStyle = '#818cf8';
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#818cf8';
+  for (let px = 0; px <= W; px++) {
+    const xm = (px - cx) / pxPerMeter;
+    const y_val = Apx * Math.sin(k * xm - omega * t);
+    const py = cy - y_val;
+    px === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // λ arrow (from cx to cx + λ_px)
+  const lambdaPx = lambda * pxPerMeter;
+  const arrowY = cy + Apx + 22;
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(cx, arrowY); ctx.lineTo(cx + lambdaPx, arrowY); ctx.stroke();
+  // arrowheads
+  ctx.fillStyle = '#34d399';
+  ctx.beginPath(); ctx.moveTo(cx, arrowY); ctx.lineTo(cx + 8, arrowY - 4); ctx.lineTo(cx + 8, arrowY + 4); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx + lambdaPx, arrowY); ctx.lineTo(cx + lambdaPx - 8, arrowY - 4); ctx.lineTo(cx + lambdaPx - 8, arrowY + 4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#34d399';
+  ctx.font = 'bold 12px Sarabun, sans-serif';
+  ctx.fillText('λ = ' + lambda.toFixed(2) + ' m', cx + lambdaPx/2 - 28, arrowY + 16);
+
+  // A arrow (vertical)
+  const axX = 20;
+  ctx.strokeStyle = '#48bb78';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(axX, cy); ctx.lineTo(axX, cy - Apx); ctx.stroke();
+  ctx.fillStyle = '#48bb78';
+  ctx.beginPath(); ctx.moveTo(axX, cy - Apx); ctx.lineTo(axX - 4, cy - Apx + 8); ctx.lineTo(axX + 4, cy - Apx + 8); ctx.closePath(); ctx.fill();
+  ctx.font = 'bold 11px Sarabun, sans-serif';
+  ctx.fillText('A', axX + 5, cy - Apx/2);
+
+  // Moving particle marker at cx
+  const yParticle = Apx * Math.sin(-omega * t);
+  ctx.beginPath();
+  ctx.arc(cx, cy - yParticle, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#fb923c';
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Axis ticks
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px Share Tech Mono, monospace';
+  for (let i = -2; i <= 2; i++) {
+    const xPx = cx + i * lambdaPx;
+    if (xPx < 0 || xPx > W) continue;
+    ctx.fillText((i * lambda).toFixed(1), xPx - 8, cy + 18);
+  }
+
+  // Direction arrow
+  ctx.strokeStyle = '#a0aec0';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(W - 60, 20); ctx.lineTo(W - 20, 20); ctx.stroke();
+  ctx.fillStyle = '#a0aec0';
+  ctx.beginPath(); ctx.moveTo(W - 20, 20); ctx.lineTo(W - 28, 16); ctx.lineTo(W - 28, 24); ctx.closePath(); ctx.fill();
+  ctx.font = '11px Sarabun, sans-serif';
+  ctx.fillText('→ v', W - 70, 16);
+}
+
+function drawYT() {
+  if (!ctxYT) return;
+  const W = cvYT.width, H = cvYT.height;
+  const ctx = ctxYT;
+  ctx.clearRect(0, 0, W, H);
+
+  ctx.fillStyle = '#0f172a';
+  ctx.fillRect(0, 0, W, H);
+
+  const T = 1 / f;
+  const lambda = v / f;
+  const pxPerMeter = W / (3.5 * lambda);
+  const Apx = A * pxPerMeter * lambda * 0.45;
+  const cy = H / 2;
+  // Time window = 3 periods
+  const timeWindow = 3 * T;
+
+  // Grid
+  ctx.strokeStyle = '#1e2a4a';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  const TPx = W / 3;  // 1 period = W/3 pixels
+  for (let i = 0; i <= 3; i++) {
+    const x = i * TPx;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+
+  // Axes labels
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '11px Sarabun, sans-serif';
+  ctx.fillText('y', 8, 18);
+  ctx.fillText('t (s)', W - 38, cy - 6);
+
+  // Draw y-t curve from history
+  ctx.beginPath();
+  ctx.strokeStyle = '#fb923c';
+  ctx.lineWidth = 2.5;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = '#fb923c';
+  const bufLen = ytHistory.length;
+  for (let i = 0; i < bufLen; i++) {
+    const px = (i / bufLen) * W;
+    const yVal = ytHistory[i] * pxPerMeter * lambda * 0.45;
+    const py = cy - yVal;
+    i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // T arrow (span 1 period in latest region)
+  const t1Px = W - TPx;
+  const t2Px = W;
+  const arrowY = cy + Apx + 22;
+  ctx.strokeStyle = '#fb923c';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(t1Px, arrowY); ctx.lineTo(t2Px - 1, arrowY); ctx.stroke();
+  ctx.fillStyle = '#fb923c';
+  ctx.beginPath(); ctx.moveTo(t1Px, arrowY); ctx.lineTo(t1Px + 8, arrowY - 4); ctx.lineTo(t1Px + 8, arrowY + 4); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(t2Px, arrowY); ctx.lineTo(t2Px - 8, arrowY - 4); ctx.lineTo(t2Px - 8, arrowY + 4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#fb923c';
+  ctx.font = 'bold 12px Sarabun, sans-serif';
+  ctx.fillText('T = ' + T.toFixed(3) + ' s', t1Px + TPx/2 - 30, arrowY + 16);
+
+  // A arrow
+  const axX = 20;
+  ctx.strokeStyle = '#48bb78';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(axX, cy); ctx.lineTo(axX, cy - Apx); ctx.stroke();
+  ctx.fillStyle = '#48bb78';
+  ctx.beginPath(); ctx.moveTo(axX, cy - Apx); ctx.lineTo(axX - 4, cy - Apx + 8); ctx.lineTo(axX + 4, cy - Apx + 8); ctx.closePath(); ctx.fill();
+  ctx.font = 'bold 11px Sarabun, sans-serif';
+  ctx.fillText('A', axX + 5, cy - Apx/2);
+
+  // Current time dot
+  ctx.beginPath();
+  ctx.arc(W - 2, cy - ytHistory[YT_BUFFER - 1] * pxPerMeter * lambda * 0.45, 5, 0, Math.PI * 2);
+  ctx.fillStyle = '#fb923c';
+  ctx.fill();
+  ctx.strokeStyle = '#ffffff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Time labels
+  ctx.fillStyle = '#94a3b8';
+  ctx.font = '10px Share Tech Mono, monospace';
+  const tNow = t;
+  for (let i = 0; i <= 3; i++) {
+    const tLabel = tNow - timeWindow * (1 - i / 3);
+    const xPx = (i / 3) * W;
+    if (tLabel >= 0) ctx.fillText(tLabel.toFixed(1) + 's', xPx + 2, cy + 18);
+  }
+}
+
+/* ─── READOUTS ─── */
+function updateReadouts() {
+  const lambda = v / f;
+  const T = 1 / f;
+  const k = (2 * Math.PI) / lambda;
+  document.getElementById('ro-A').textContent = A.toFixed(2);
+  document.getElementById('ro-f').textContent = f.toFixed(2);
+  document.getElementById('ro-T').textContent = T.toFixed(3);
+  document.getElementById('ro-λ').textContent = lambda.toFixed(3);
+  document.getElementById('ro-v').textContent = v.toFixed(1);
+  document.getElementById('ro-k').textContent = k.toFixed(3);
+  document.getElementById('lbl-lambda').textContent = lambda.toFixed(2);
+  document.getElementById('lbl-T').textContent = T.toFixed(3);
+}
+
+/* ─── RESIZE ─── */
+function resizeCanvases() {
+  const boxYX = document.getElementById('box-yx');
+  const boxYT = document.getElementById('box-yt');
+  if (!boxYX || !boxYT) return;
+  cvYX.width  = boxYX.clientWidth  || 600;
+  cvYX.height = boxYX.clientHeight || 200;
+  cvYT.width  = boxYT.clientWidth  || 600;
+  cvYT.height = boxYT.clientHeight || 200;
+  if (!isPlaying) { drawAll(); updateReadouts(); }
+}
+
+/* ─── MEDIUM PRESETS ─── */
+function setMedium(newV, btnId) {
+  v = newV;
+  document.getElementById('sl-v').value = newV;
+  document.getElementById('vi-v').value = newV;
+  document.querySelectorAll('.btn-medium').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById(btnId);
+  if (el) el.classList.add('active');
+  if (!isPlaying) { drawAll(); updateReadouts(); }
+}
+
+/* ─── POE SAVE ─── */
+function savePOE() {
+  const p = document.getElementById('poe-predict').value.trim();
+  const o = document.getElementById('poe-observe').value.trim();
+  const e = document.getElementById('poe-explain').value.trim();
+  if (!p && !o && !e) { alert('กรุณากรอกข้อมูลอย่างน้อย 1 ช่อง'); return; }
+  const text = `=== POE บันทึก — ส่วนประกอบของคลื่น ===\nแผนที่ 1 · E4 ขยายและประยุกต์ · ฟิสิกส์ 3 (ว30203) · ม.5\n\nP — ทำนาย:\n${p || '(ไม่ได้กรอก)'}\n\nO — สังเกต:\n${o || '(ไม่ได้กรอก)'}\n\nE — อธิบาย:\n${e || '(ไม่ได้กรอก)'}`;
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'POE_แผน1_E4_ส่วนประกอบคลื่น.txt';
+  a.click();
+}
+
+/* ─── INIT ─── */
+window.addEventListener('DOMContentLoaded', () => {
+  cvYX = document.getElementById('canvas-yx');
+  ctxYX = cvYX.getContext('2d');
+  cvYT = document.getElementById('canvas-yt');
+  ctxYT = cvYT.getContext('2d');
+
+  // Speed slider
+  const spd = document.getElementById('speedSlider');
+  spd.addEventListener('input', () => {
+    speed = parseFloat(spd.value);
+    document.getElementById('speedVal').textContent = speed.toFixed(1) + '×';
+  });
+
+  // Slider ↔ Input sync
+  const _v2s = {
+    'vi-A': 'sl-A',
+    'vi-f': 'sl-f',
+    'vi-v': 'sl-v'
+  };
+  const paramMap = { 'sl-A': 'A', 'sl-f': 'f', 'sl-v': 'v' };
+
+  function applyParam(sid, val) {
+    if (sid === 'sl-A') A = val;
+    if (sid === 'sl-f') f = val;
+    if (sid === 'sl-v') { v = val; updateMediumBtns(val); }
+    if (!isPlaying) { drawAll(); updateReadouts(); }
+    else { updateReadouts(); }
+  }
+
+  function updateMediumBtns(newV) {
+    document.querySelectorAll('.btn-medium').forEach(b => b.classList.remove('active'));
+    if (newV === 2) document.getElementById('btn-m1').classList.add('active');
+    else if (newV === 3) document.getElementById('btn-m2').classList.add('active');
+    else if (newV === 6) document.getElementById('btn-m3').classList.add('active');
+  }
+
+  Object.entries(_v2s).forEach(([vi, si]) => {
+    const sl = document.getElementById(si);
+    const inp = document.getElementById(vi);
+    if (!sl || !inp) return;
+
+    sl.addEventListener('input', () => {
+      const val = parseFloat(sl.value);
+      inp.value = val;
+      applyParam(si, val);
+    });
+
+    inp.addEventListener('change', () => {
+      let val = Math.max(+sl.min, Math.min(+sl.max, parseFloat(inp.value) || parseFloat(sl.value)));
+      inp.value = val;
+      sl.value = val;
+      applyParam(si, val);
+    });
+  });
+
+  // Resize
+  const ro = new ResizeObserver(() => resizeCanvases());
+  ro.observe(document.getElementById('box-yx'));
+  ro.observe(document.getElementById('box-yt'));
+
+  setTimeout(() => {
+    resizeCanvases();
+    updateReadouts();
+  }, 100);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>F1 Four-tier Pre/Post (แผน 1) · Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 32px}
+.head{border-bottom:3px solid #1565c0;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#0f2c5c}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#1565c0;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.post{background:#c62828}
+.info{background:#e3f2fd;border-left:6px solid #1976d2;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.phase-select{background:#fff3e0;border:2px solid #ef6c00;padding:12px 16px;border-radius:10px;margin:12px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.phase-select label{font-weight:700;color:#c05621;cursor:pointer;padding:6px 14px;border:2px solid #ef6c00;border-radius:20px;transition:all .15s}
+.phase-select input[type=radio]{margin-right:6px}
+.phase-select input[type=radio]:checked + span{color:#fff}
+.phase-select label:has(input:checked){background:#ef6c00;color:#fff}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,.15)}
+.item{border:2px solid #cfd8e3;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fff}
+.item .no{display:inline-block;background:#1e88e5;color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:800}
+.item .stem{font-size:16px;margin:8px 0;font-weight:600}
+.tier{margin:10px 0;background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:10px 14px}
+.tier b{color:#0d47a1}
+.tier.t3 b{color:#1b5e20}
+.tier.t2 b, .tier.t4 b{color:#c05621}
+.opt{margin:6px 0;padding:4px 6px;border-radius:4px;cursor:pointer;transition:background .1s}
+.opt:hover{background:#e3f2fd}
+.opt input[type=radio]{margin-right:8px;transform:scale(1.1);cursor:pointer}
+.opt label{cursor:pointer}
+.cert{display:flex;gap:20px;flex-wrap:wrap}
+.cert label{cursor:pointer;padding:4px 10px;border-radius:4px}
+.cert label:hover{background:#fff3e0}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.submit-bar{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#1b5e20;border:none;font-family:inherit;font-size:18px;font-weight:800;padding:12px 30px;border-radius:10px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:all .15s}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.25)}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed;transform:none}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.post-banner{background:linear-gradient(135deg,#c62828,#ef5350);color:#fff;padding:16px 20px;border-radius:12px;margin:16px 0}
+.post-banner h2{font-size:20px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar,.phase-select{display:none}}
+</style></head>
+<body>
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 F1 Four-tier Diagnostic · แผน 1</h1>
+      <div class="meta"><span class="tag">แผน 1</span><span class="tag" id="phaseTag">F1-Pre</span> 3 ข้อ · วัด M1.1, M1.2, M1.4</div>
+    </div>
+    <div class="meta" style="color:#1565c0;font-weight:700">💾 ส่งออนไลน์ผ่านปุ่มด้านล่าง</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">
+    ⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — โปรดเปิดไฟล์ <code>_SETUP_AppsScript_Database.html</code> และทำตามขั้นตอน แล้ววาง URL ในโค้ด JavaScript ของไฟล์นี้
+  </div>
+
+  <div class="info">
+    <b>วิธีทำ Four-tier:</b> เลือกคำตอบแต่ละ Tier ให้ครบ → <b>Tier 1</b> คำตอบ · <b>Tier 2</b> ความมั่นใจในคำตอบ · <b>Tier 3</b> เหตุผล · <b>Tier 4</b> ความมั่นใจในเหตุผล
+  </div>
+
+  <!-- Phase selector -->
+  <div class="phase-select">
+    <b>เลือกช่วงเวลา:</b>
+    <label><input type="radio" name="phase" value="pre" checked onchange="updatePhase()"><span>🟦 Pre-test (ก่อนเรียน)</span></label>
+    <label><input type="radio" name="phase" value="post" onchange="updatePhase()"><span>🟥 Post-test (หลังเรียน)</span></label>
+  </div>
+
+  <!-- Student info -->
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" placeholder="เช่น สมหญิง รักเรียน" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" placeholder="15" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="ftForm">
+
+  <!-- ข้อ 1 M1.1 -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="mis-tag">M1.1</span></div>
+    <div class="stem">เมื่อลูกมะพร้าวลอยอยู่ในน้ำและมีคลื่นทะเลเคลื่อนผ่าน ลูกมะพร้าวจะเคลื่อนที่อย่างไร?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ก" required> ก. ถูกคลื่นพาเคลื่อนที่ไปตามทิศของคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ข"> ข. สั่นขึ้น-ลงอยู่กับที่ ไม่เคลื่อนตามคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ค"> ค. เคลื่อนที่สวนทิศกับคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ง"> ง. อยู่นิ่งไม่เคลื่อนไหวใดๆ</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert">
+        <label><input type="radio" name="q1_t2" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q1_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="1" required> 1) น้ำทั้งก้อนไหลพาสิ่งของไปกับคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="2"> 2) คลื่นพาพลังงานเคลื่อนที่ แต่อนุภาคของตัวกลางสั่นอยู่กับที่</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="3"> 3) คลื่นน้ำเคลื่อนที่แต่ไม่ส่งผลต่อของลอย</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="4"> 4) ลูกมะพร้าวหนักเกินกว่าที่คลื่นจะพาไปได้</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert">
+        <label><input type="radio" name="q1_t4" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q1_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 2 M1.2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="mis-tag">M1.2</span></div>
+    <div class="stem">คลื่นเสียงที่เดินทางในอากาศเป็นคลื่นชนิดใด?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ก" required> ก. คลื่นตามขวาง เพราะโมเลกุลอากาศสั่นตั้งฉากกับทิศคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ข"> ข. คลื่นตามยาว เพราะโมเลกุลอากาศสั่นในทิศเดียวกับทิศคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ค"> ค. คลื่นแม่เหล็กไฟฟ้า เพราะเดินทางในอากาศได้</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ง"> ง. ไม่ใช่คลื่น เพราะเราได้ยินเสียงทันทีทุกทิศ</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert">
+        <label><input type="radio" name="q2_t2" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q2_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="1" required> 1) เสียงเคลื่อนในอากาศจึงเหมือนแสงเป็นคลื่นตามขวาง</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="2"> 2) อากาศเกิดส่วนอัดและส่วนขยายซึ่งเคลื่อนขนานกับทิศเสียง</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="3"> 3) เสียงไม่ต้องการตัวกลางเหมือนคลื่นแม่เหล็กไฟฟ้า</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="4"> 4) เสียงเดินทางเป็นเส้นตรงและไม่มีรูปร่างคลื่น</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert">
+        <label><input type="radio" name="q2_t4" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q2_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 3 M1.4 -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="mis-tag">M1.4</span></div>
+    <div class="stem">ในกราฟการกระจัดของอนุภาค–เวลา ปริมาณใดคือ "คาบ (T)" ของคลื่น?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ก" required> ก. ระยะทางระหว่างยอดคลื่นสองยอดที่อยู่ถัดกัน</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ข"> ข. เวลาที่อนุภาคใช้ในการสั่น 1 รอบ</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ค"> ค. ความสูงสูงสุดของยอดคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ง"> ง. จำนวนรอบที่อนุภาคสั่นใน 1 วินาที</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert">
+        <label><input type="radio" name="q3_t2" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q3_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="1" required> 1) คาบและความยาวคลื่นเป็นสิ่งเดียวกัน</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="2"> 2) คาบคือเวลา (s) ต่างจากความยาวคลื่น λ ซึ่งเป็นระยะทาง (m)</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="3"> 3) คาบคือแอมพลิจูดของคลื่น</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="4"> 4) คาบคือความถี่ซึ่งมีหน่วยเป็น Hz</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert">
+        <label><input type="radio" name="q3_t4" value="มั่นใจ" required> มั่นใจ</label>
+        <label><input type="radio" name="q3_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submit bar -->
+  <div class="submit-bar">
+    <h3>✅ ตรวจคำตอบครบทุกข้อแล้ว กดปุ่มด้านล่างเพื่อส่ง</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+
+  <div class="foot">F1 Four-tier Interactive · แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// ⚙️ การตั้งค่า · ครูแก้ URL ตรงนี้เพียงบรรทัดเดียว
+// ═══════════════════════════════════════════════════════════
+const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME = 'F1_Plan1';
+const PLAN = 1;
+
+// ═══════════════════════════════════════════════════════════
+// เฉลยและการจำแนกประเภท
+// ═══════════════════════════════════════════════════════════
+const ANSWER_KEY = {
+  q1: { t1: 'ข', t3: '2', misc: 'M1.1' },
+  q2: { t1: 'ข', t3: '2', misc: 'M1.2' },
+  q3: { t1: 'ข', t3: '2', misc: 'M1.4' }
+};
+
+function classify(t1, t2, t3, t4, key) {
+  if (t1 !== key.t1) return 'No-K';
+  if (t2 !== 'มั่นใจ') return 'Guessing';
+  if (t3 !== key.t3 || t4 !== 'มั่นใจ') return 'Misconception';
+  return 'Sound';
+}
+
+function updatePhase() {
+  const phase = document.querySelector('input[name=phase]:checked').value;
+  const tag = document.getElementById('phaseTag');
+  if (phase === 'pre') {
+    tag.textContent = 'F1-Pre';
+    tag.style.background = '#1565c0';
+  } else {
+    tag.textContent = 'F1-Post';
+    tag.style.background = '#c62828';
+  }
+}
+
+// Check config warning
+window.addEventListener('DOMContentLoaded', () => {
+  if (API_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE' || !API_URL.startsWith('https://')) {
+    document.getElementById('configWarn').classList.add('show');
+  }
+  // Default date = today
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('test_date').value = today;
+});
+
+// Submit handler
+document.getElementById('ftForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSubmit');
+  const status = document.getElementById('status');
+
+  // Collect ID
+  const name = document.getElementById('student_name').value.trim();
+  const no = document.getElementById('student_no').value.trim();
+  const cls = document.getElementById('class').value.trim();
+  const date = document.getElementById('test_date').value;
+  if (!name || !no || !cls) {
+    status.className = 'status error';
+    status.textContent = '❌ กรอกชื่อ เลขที่ และห้องให้ครบก่อน';
+    return;
+  }
+
+  // Collect answers
+  const getVal = n => {
+    const el = document.querySelector(`input[name="${n}"]:checked`);
+    return el ? el.value : '';
+  };
+
+  const answers = {};
+  let incomplete = false;
+  ['q1','q2','q3'].forEach(q => {
+    ['t1','t2','t3','t4'].forEach(t => {
+      const v = getVal(`${q}_${t}`);
+      if (!v) incomplete = true;
+      answers[`${q}_${t}`] = v;
+    });
+    // classify
+    answers[`${q}_category`] = classify(
+      answers[`${q}_t1`], answers[`${q}_t2`],
+      answers[`${q}_t3`], answers[`${q}_t4`],
+      ANSWER_KEY[q]
+    );
+    answers[`${q}_misc`] = ANSWER_KEY[q].misc;
+  });
+
+  if (incomplete) {
+    status.className = 'status error';
+    status.textContent = '❌ ยังตอบไม่ครบทุกข้อ กรุณาตรวจสอบ';
+    return;
+  }
+
+  const phase = document.querySelector('input[name=phase]:checked').value;
+
+  const payload = {
+    phase: phase,
+    plan: PLAN,
+    student_name: name,
+    student_no: Number(no),
+    class: cls,
+    test_date: date,
+    ...answers
+  };
+
+  // Check config
+  if (API_URL === 'PASTE_YOUR_APPS_SCRIPT_URL_HERE' || !API_URL.startsWith('https://')) {
+    status.className = 'status error';
+    status.innerHTML = '⚠️ ครูยังไม่ได้ตั้งค่า API URL<br>แต่ข้อมูลของนักเรียนถูกบันทึกในหน่วยความจำเครื่องแล้ว · <a href="#" onclick="downloadJSON();return false;" style="color:#0d47a1;text-decoration:underline">คลิกเพื่อ Download .json</a>';
+    window._lastPayload = payload;
+    return;
+  }
+
+  // Submit
+  btn.disabled = true;
+  status.className = 'status loading';
+  status.textContent = '⏳ กำลังส่ง...';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Apps Script web app requires no-cors for simple POST
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ sheet: SHEET_NAME, payload: payload })
+    });
+    // With no-cors we can't read response; assume success if no error thrown
+    status.className = 'status success';
+    status.innerHTML = '✅ ส่งคำตอบสำเร็จ! ขอบคุณนักเรียน 🎉<br><small>ระบบบันทึกข้อมูลเรียบร้อย · ปิดหน้าต่างนี้ได้</small>';
+    btn.textContent = '✅ ส่งแล้ว';
+  } catch (err) {
+    status.className = 'status error';
+    status.textContent = '❌ เกิดข้อผิดพลาด: ' + err.message + ' · กรุณาลองใหม่หรือแจ้งครู';
+    btn.disabled = false;
+  }
+});
+
+// Offline fallback: download as JSON
+function downloadJSON() {
+  if (!window._lastPayload) return;
+  const blob = new Blob([JSON.stringify(window._lastPayload, null, 2)],
+    {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `F1_${window._lastPayload.phase}_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body></html>

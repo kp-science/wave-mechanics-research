@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>คู่มือติดตั้ง Google Apps Script + Sheets สำหรับเก็บข้อมูลวิจัย</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&family=Fira+Code&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 32px}
+.hero{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:14px;padding:22px 26px;margin-bottom:20px}
+.hero h1{font-size:26px;margin-bottom:4px}
+.hero .sub{opacity:.9}
+h2{font-size:20px;color:#0f2c5c;margin:18px 0 10px;padding-left:10px;border-left:5px solid #1565c0}
+h3{font-size:17px;color:#1565c0;margin:14px 0 8px}
+ol{margin-left:24px;margin-bottom:10px}
+ol li{margin:6px 0}
+.step{background:#e3f2fd;border-left:6px solid #1976d2;padding:12px 16px;border-radius:8px;margin:10px 0}
+.warn{background:#fff3e0;border-left:6px solid #ef6c00;padding:10px 14px;border-radius:8px;margin:10px 0}
+.ok{background:#e8f5e9;border-left:6px solid #2e7d32;padding:10px 14px;border-radius:8px;margin:10px 0}
+pre{background:#1e1e1e;color:#dcdcdc;padding:16px;border-radius:10px;overflow-x:auto;font-family:'Fira Code',monospace;font-size:13px;line-height:1.5;margin:10px 0}
+.kw{color:#569cd6}.st{color:#ce9178}.cm{color:#6a9955;font-style:italic}.fn{color:#dcdcaa}.num{color:#b5cea8}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:'Fira Code',monospace;font-size:13px;color:#c05621}
+.url-box{background:#fff8e1;border:2px dashed #f9a825;padding:10px 14px;border-radius:8px;font-family:'Fira Code',monospace;font-size:13px;word-break:break-all;margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+th,td{border:1.5px solid #777;padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#1565c0;color:#fff}
+.foot{text-align:center;color:#888;font-size:13px;margin-top:20px;border-top:1px solid #eee;padding-top:12px}
+</style></head>
+<body>
+<div class="page">
+  <div class="hero">
+    <h1>⚙️ คู่มือติดตั้งระบบเก็บข้อมูลนักเรียน (Google Apps Script + Sheets)</h1>
+    <div class="sub">สำหรับงานวิจัยคลื่นกล · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+  </div>
+
+  <h2>🎯 ภาพรวมระบบ</h2>
+  <div class="ok">
+    <b>หลักการทำงาน:</b> นักเรียนเปิดไฟล์ HTML → กรอกคำตอบ → กดปุ่ม "ส่งคำตอบ" → ข้อมูลถูกส่งไปบันทึกใน Google Sheets ของครู → ครูเปิด Sheets เพื่อวิเคราะห์ (Pivot, สูตร, Normalized Gain)
+  </div>
+  <p><b>องค์ประกอบ 3 อย่าง:</b></p>
+  <ol>
+    <li><b>Google Sheet</b> — ที่เก็บข้อมูล (Database) 1 ไฟล์ต่อ 1 เครื่องมือ หรือใช้ sheet หลายแท็บในไฟล์เดียว</li>
+    <li><b>Apps Script (Web App)</b> — สคริปต์ที่รับข้อมูลจาก HTML แล้วเขียนลง Sheet</li>
+    <li><b>ไฟล์ HTML</b> — มีปุ่ม "ส่งคำตอบ" ที่ยิง fetch POST ไปยัง URL ของ Web App</li>
+  </ol>
+
+  <h2>📋 ขั้นตอนติดตั้ง (ทำครั้งเดียว · ใช้เวลา 10–15 นาที)</h2>
+
+  <div class="step">
+    <h3>ขั้นที่ 1 · สร้าง Google Sheet</h3>
+    <ol>
+      <li>ไปที่ <code>https://sheets.new</code> (หรือ Google Drive → New → Google Sheets)</li>
+      <li>ตั้งชื่อไฟล์: <code>วิจัยคลื่นกล_Database_2569</code></li>
+      <li>เปลี่ยนชื่อแท็บแรกเป็น <code>F1_Plan1</code> (สำหรับ F1 แผน 1)</li>
+      <li>ไม่ต้องใส่หัวตารางเอง — สคริปต์จะสร้างให้อัตโนมัติเมื่อมีข้อมูลเข้ามาครั้งแรก</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <h3>ขั้นที่ 2 · เปิด Apps Script</h3>
+    <ol>
+      <li>ใน Google Sheet ที่เพิ่งสร้าง → เมนู <b>Extensions</b> → <b>Apps Script</b></li>
+      <li>จะเปิดหน้าต่าง Editor ใหม่ มีไฟล์ <code>Code.gs</code></li>
+      <li>ลบโค้ดเก่าทั้งหมด แล้ววางโค้ดด้านล่างนี้แทน</li>
+    </ol>
+  </div>
+
+  <h3>📝 โค้ด Apps Script (Code.gs) — คัดลอกทั้งหมด</h3>
+<pre><span class="cm">// ============================================</span>
+<span class="cm">// Research Data Collector — วิจัยคลื่นกล</span>
+<span class="cm">// ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</span>
+<span class="cm">// ============================================</span>
+
+<span class="kw">function</span> <span class="fn">doPost</span>(e) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> data = JSON.<span class="fn">parse</span>(e.postData.contents);
+    <span class="kw">const</span> sheetName = data.sheet || <span class="st">'Default'</span>;
+    <span class="kw">const</span> ss = SpreadsheetApp.<span class="fn">getActiveSpreadsheet</span>();
+    <span class="kw">let</span> sheet = ss.<span class="fn">getSheetByName</span>(sheetName);
+    <span class="kw">if</span> (!sheet) sheet = ss.<span class="fn">insertSheet</span>(sheetName);
+
+    <span class="kw">const</span> payload = data.payload || {};
+    <span class="kw">const</span> keys = Object.<span class="fn">keys</span>(payload);
+
+    <span class="cm">// ถ้า sheet ว่าง → สร้างหัวตารางจาก keys</span>
+    <span class="kw">if</span> (sheet.<span class="fn">getLastRow</span>() === <span class="num">0</span>) {
+      sheet.<span class="fn">appendRow</span>([<span class="st">'timestamp'</span>, ...keys]);
+      sheet.<span class="fn">getRange</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>, keys.length + <span class="num">1</span>)
+           .<span class="fn">setFontWeight</span>(<span class="st">'bold'</span>)
+           .<span class="fn">setBackground</span>(<span class="st">'#1565c0'</span>)
+           .<span class="fn">setFontColor</span>(<span class="st">'#ffffff'</span>);
+      sheet.<span class="fn">setFrozenRows</span>(<span class="num">1</span>);
+    }
+
+    <span class="cm">// ดึง header ปัจจุบัน แล้วเรียง value ตามลำดับ header</span>
+    <span class="kw">const</span> headers = sheet.<span class="fn">getRange</span>(<span class="num">1</span>, <span class="num">1</span>, <span class="num">1</span>, sheet.<span class="fn">getLastColumn</span>()).<span class="fn">getValues</span>()[<span class="num">0</span>];
+    <span class="kw">const</span> row = headers.<span class="fn">map</span>(h =&gt; {
+      <span class="kw">if</span> (h === <span class="st">'timestamp'</span>) <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Date</span>();
+      <span class="kw">return</span> payload[h] !== <span class="kw">undefined</span> ? payload[h] : <span class="st">''</span>;
+    });
+
+    <span class="cm">// ถ้ามี key ใหม่ที่ยังไม่มีใน header → เพิ่มคอลัมน์</span>
+    <span class="kw">const</span> newKeys = keys.<span class="fn">filter</span>(k =&gt; !headers.<span class="fn">includes</span>(k));
+    <span class="kw">if</span> (newKeys.length &gt; <span class="num">0</span>) {
+      sheet.<span class="fn">getRange</span>(<span class="num">1</span>, headers.length + <span class="num">1</span>, <span class="num">1</span>, newKeys.length)
+           .<span class="fn">setValues</span>([newKeys])
+           .<span class="fn">setFontWeight</span>(<span class="st">'bold'</span>)
+           .<span class="fn">setBackground</span>(<span class="st">'#1565c0'</span>)
+           .<span class="fn">setFontColor</span>(<span class="st">'#ffffff'</span>);
+      newKeys.<span class="fn">forEach</span>(k =&gt; row.<span class="fn">push</span>(payload[k]));
+    }
+
+    sheet.<span class="fn">appendRow</span>(row);
+
+    <span class="kw">return</span> ContentService
+      .<span class="fn">createTextOutput</span>(JSON.<span class="fn">stringify</span>({status:<span class="st">'ok'</span>, row:sheet.<span class="fn">getLastRow</span>()}))
+      .<span class="fn">setMimeType</span>(ContentService.MimeType.JSON);
+
+  } <span class="kw">catch</span> (err) {
+    <span class="kw">return</span> ContentService
+      .<span class="fn">createTextOutput</span>(JSON.<span class="fn">stringify</span>({status:<span class="st">'error'</span>, message:err.toString()}))
+      .<span class="fn">setMimeType</span>(ContentService.MimeType.JSON);
+  }
+}
+
+<span class="kw">function</span> <span class="fn">doGet</span>() {
+  <span class="kw">return</span> ContentService
+    .<span class="fn">createTextOutput</span>(<span class="st">'Research Data Collector is running.'</span>);
+}</pre>
+
+  <div class="step">
+    <h3>ขั้นที่ 3 · Deploy เป็น Web App</h3>
+    <ol>
+      <li>กด <b>Save</b> (💾) — ตั้งชื่อโปรเจกต์ <code>วิจัยคลื่นกล_Collector</code></li>
+      <li>กด <b>Deploy</b> (มุมขวาบน) → <b>New deployment</b></li>
+      <li>กดรูปเฟือง ⚙️ ข้างคำว่า "Select type" → เลือก <b>Web app</b></li>
+      <li>ตั้งค่า:
+        <ul style="margin-left:24px;margin-top:6px">
+          <li><b>Description:</b> <code>F1 Research v1</code></li>
+          <li><b>Execute as:</b> <code>Me (komanepapato@gmail.com)</code></li>
+          <li><b>Who has access:</b> <code>Anyone</code> ⚠️ <b>สำคัญ</b> ต้องเลือก Anyone ไม่งั้นนักเรียนส่งไม่ได้</li>
+        </ul>
+      </li>
+      <li>กด <b>Deploy</b> → อนุญาต (Authorize access) → เลือกบัญชี Google ของตนเอง → กด <b>Advanced</b> → <b>Go to ... (unsafe)</b> → <b>Allow</b>
+        <div class="warn" style="margin-top:8px;font-size:13px">Google แจ้งว่า "unsafe" เพราะเป็นสคริปต์ของเราเอง ปลอดภัย</div>
+      </li>
+      <li>จะได้ URL ลักษณะนี้ คัดลอกเก็บไว้:</li>
+    </ol>
+    <div class="url-box">https://script.google.com/macros/s/AKfycbx.........../exec</div>
+  </div>
+
+  <div class="step">
+    <h3>ขั้นที่ 4 · วาง URL ลงในไฟล์ HTML</h3>
+    <ol>
+      <li>เปิดไฟล์ <code>สื่อ05_F1_Fourtier_PrePost.html</code> ด้วย text editor (เช่น Notepad, VS Code)</li>
+      <li>ค้นหาบรรทัด: <code>const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';</code></li>
+      <li>แทนที่ <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code> ด้วย URL ที่คัดลอกจากขั้นที่ 3</li>
+      <li>บันทึกไฟล์</li>
+    </ol>
+  </div>
+
+  <div class="ok">
+    <h3>✅ ทดสอบระบบ</h3>
+    <ol>
+      <li>เปิดไฟล์ HTML ในเบราว์เซอร์ (Chrome/Edge)</li>
+      <li>กรอกชื่อทดสอบ + เลือกคำตอบครบทุกข้อ</li>
+      <li>กดปุ่ม "📤 ส่งคำตอบ" → ควรขึ้นข้อความ "✅ ส่งสำเร็จ"</li>
+      <li>เปิด Google Sheet → ตรวจสอบว่ามีข้อมูลเข้าแท็บ <code>F1_Plan1</code></li>
+    </ol>
+  </div>
+
+  <h2>📊 โครงสร้างข้อมูลใน Sheet</h2>
+  <table>
+    <thead><tr><th>คอลัมน์</th><th>ตัวอย่าง</th><th>การใช้งานในบทที่ 4</th></tr></thead>
+    <tbody>
+      <tr><td>timestamp</td><td>2026-05-12 09:15:23</td><td>ระบุ Pre/Post ตามวัน</td></tr>
+      <tr><td>phase</td><td>pre / post</td><td>แยกกลุ่มเปรียบเทียบ</td></tr>
+      <tr><td>plan</td><td>1</td><td>กรองตามแผน</td></tr>
+      <tr><td>student_name</td><td>สมหญิง รักเรียน</td><td>Matching Pre–Post รายบุคคล</td></tr>
+      <tr><td>student_no</td><td>15</td><td>เลขที่</td></tr>
+      <tr><td>class</td><td>5/1</td><td>ห้อง</td></tr>
+      <tr><td>q1_t1 ... q3_t4</td><td>ข, มั่นใจ, 2, มั่นใจ</td><td>วิเคราะห์ Four-tier</td></tr>
+      <tr><td>q1_category</td><td>Sound / Misconception / Guessing / No-K</td><td>คำนวณ %</td></tr>
+    </tbody>
+  </table>
+
+  <h2>🧮 สูตรวิเคราะห์ใน Sheets (ใช้ในบทที่ 4)</h2>
+  <pre><span class="cm">// นับจำนวน Sound Understanding ข้อ 1 Post</span>
+=COUNTIFS(phase,<span class="st">"post"</span>, q1_category,<span class="st">"Sound"</span>)
+
+<span class="cm">// % Sound ข้อ 1 Post</span>
+=COUNTIFS(phase,<span class="st">"post"</span>, q1_category,<span class="st">"Sound"</span>) / COUNTIF(phase,<span class="st">"post"</span>) * <span class="num">100</span>
+
+<span class="cm">// Normalized Gain รายข้อ</span>
+=(Post_Sound_pct - Pre_Sound_pct) / (<span class="num">100</span> - Pre_Sound_pct)</pre>
+
+  <h2>🔐 ความปลอดภัย</h2>
+  <div class="warn">
+    <b>สิ่งที่ควรรู้:</b>
+    <ul style="margin-left:24px;margin-top:6px">
+      <li>URL Web App เป็นความลับ — อย่าเผยแพร่สาธารณะ ใช้เฉพาะในไฟล์ HTML ที่แจกนักเรียน</li>
+      <li>"Anyone" คือใครก็ยิง POST มาได้ (ถ้ารู้ URL) แต่ไฟล์นักเรียนไม่ติด internet ให้เสิร์ช ก็ปลอดภัยระดับหนึ่ง</li>
+      <li>หากต้องการเพิ่มความปลอดภัย: เพิ่ม secret token ใน payload แล้วเช็คใน doPost</li>
+    </ul>
+  </div>
+
+  <h2>🔄 ขยายไปเครื่องมืออื่น</h2>
+  <p>ใช้ URL Web App <b>เดียวกัน</b> ได้กับทุกไฟล์ เพียงเปลี่ยนค่า <code>sheet</code> ใน payload:</p>
+  <table>
+    <thead><tr><th>เครื่องมือ</th><th>sheet name</th></tr></thead>
+    <tbody>
+      <tr><td>F1 Four-tier แผน 1</td><td><code>F1_Plan1</code></td></tr>
+      <tr><td>POE-01 แผน 1</td><td><code>POE_Plan1</code></td></tr>
+      <tr><td>TL-01 แผน 1</td><td><code>TL_Plan1</code></td></tr>
+      <tr><td>MJ-01 แผน 1</td><td><code>MJ_Plan1</code></td></tr>
+      <tr><td>F2 Four-tier แผน 2</td><td><code>F1_Plan2</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="foot">Setup Guide · วิจัยคลื่นกล · ครูโกเมน ปาปะโถ · 2569</div>
+</div>
+</body></html>

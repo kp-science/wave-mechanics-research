@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>คู่มือตั้งค่าแบบละเอียด · วิจัยคลื่นกล</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#e0f2ff,#f0f4f8);min-height:100vh;padding:24px;color:#1a202c;font-size:16px;line-height:1.65}
+.page{max-width:920px;margin:0 auto 40px;background:#fff;border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.08);padding:36px 44px}
+.hero{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:14px;padding:24px 28px;margin-bottom:24px;text-align:center}
+.hero h1{font-size:30px;margin-bottom:6px}
+.hero .sub{opacity:.92;font-size:15px}
+
+.toc{background:#e3f2fd;border-left:6px solid #1976d2;border-radius:10px;padding:14px 20px;margin-bottom:24px}
+.toc h3{color:#0d47a1;margin-bottom:8px;font-size:16px}
+.toc ol{margin-left:22px}
+.toc a{color:#1565c0;text-decoration:none;font-weight:600}
+.toc a:hover{text-decoration:underline}
+
+.step-wrap{border:2px solid #1565c0;border-radius:14px;margin:28px 0;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.05)}
+.step-head{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;padding:18px 24px;display:flex;align-items:center;gap:16px}
+.step-head .num{width:48px;height:48px;background:#fff;color:#1565c0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;flex-shrink:0}
+.step-head h2{font-size:22px}
+.step-head .time{display:inline-block;background:rgba(255,255,255,.25);font-size:12px;font-weight:700;padding:4px 12px;border-radius:12px;margin-left:10px}
+.step-body{padding:22px 28px;background:#fafbfc}
+
+.substep{background:#fff;border-left:5px solid #1565c0;border-radius:8px;padding:14px 18px;margin:14px 0;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.substep .t{font-weight:800;color:#0f2c5c;font-size:15px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.substep .t .mini{display:inline-block;background:#1565c0;color:#fff;border-radius:50%;width:26px;height:26px;text-align:center;line-height:26px;font-size:13px}
+.substep p{margin:6px 0}
+
+code{background:#f1f5f9;padding:2px 8px;border-radius:4px;font-family:Consolas,'Courier New',monospace;color:#c05621;font-size:14px;font-weight:700}
+kbd{background:#333;color:#fff;padding:2px 8px;border-radius:4px;font-family:Consolas,monospace;font-size:13px;border:1px solid #000;box-shadow:0 2px 0 #111}
+
+.mock{background:#fff;border:2px solid #cbd5e1;border-radius:10px;margin:12px 0;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.mock-head{background:#e2e8f0;padding:8px 14px;font-size:12px;color:#475569;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #cbd5e1}
+.mock-head .dots{display:flex;gap:6px}
+.mock-head .dots span{width:10px;height:10px;border-radius:50%;display:block}
+.mock-head .dots span:nth-child(1){background:#ef4444}
+.mock-head .dots span:nth-child(2){background:#f59e0b}
+.mock-head .dots span:nth-child(3){background:#10b981}
+.mock-body{padding:14px 18px;font-family:Consolas,monospace;font-size:13px;line-height:1.7;white-space:pre-wrap;color:#1e293b;background:#f8fafc}
+.mock-ui{padding:14px 18px;background:#fff}
+.mock-ui .btn{display:inline-block;padding:6px 14px;border-radius:5px;margin:4px 4px 4px 0;font-size:13px;font-weight:600}
+.mock-ui .btn-blue{background:#1a73e8;color:#fff}
+.mock-ui .btn-white{background:#fff;color:#1a73e8;border:1px solid #dadce0}
+.mock-ui .btn-gray{background:#f8f9fa;color:#3c4043;border:1px solid #dadce0}
+.mock-ui .field{display:block;margin:8px 0;padding:8px 12px;background:#f8f9fa;border:1px solid #dadce0;border-radius:4px;font-size:13px}
+.mock-ui .field .label{color:#5f6368;font-size:11px;font-weight:600;text-transform:uppercase}
+.mock-ui .arrow{color:#1a73e8;font-size:18px;margin:0 6px}
+
+.warn{background:#fff8e1;border-left:6px solid #f9a825;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px}
+.ok{background:#e8f5e9;border-left:6px solid #2e7d32;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px}
+.error{background:#ffebee;border-left:6px solid #c62828;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px}
+.tip{background:#ede7f6;border-left:6px solid #5e35b1;border-radius:8px;padding:12px 16px;margin:10px 0;font-size:14px}
+
+.check-list{background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:16px 20px;margin:16px 0}
+.check-list h4{color:#1b5e20;margin-bottom:8px}
+.check-list ul{list-style:none;margin-left:0}
+.check-list li{padding:4px 0;font-size:14px}
+.check-list li::before{content:"☐ ";color:#2e7d32;font-weight:700;font-size:18px;margin-right:6px}
+
+.faq{background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin:12px 0;overflow:hidden}
+.faq summary{padding:12px 18px;background:#f8fafc;cursor:pointer;font-weight:700;color:#0f2c5c;font-size:15px}
+.faq summary:hover{background:#e3f2fd}
+.faq[open] summary{background:#e3f2fd;border-bottom:1px solid #e2e8f0}
+.faq .content{padding:14px 18px}
+
+.big-btn{display:inline-block;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;padding:10px 22px;border-radius:8px;text-decoration:none;font-weight:700;margin:8px 8px 8px 0;font-size:14px}
+.big-btn:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.big-btn.green{background:linear-gradient(135deg,#2e7d32,#1b5e20)}
+
+.done-box{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;padding:22px 26px;border-radius:14px;margin-top:30px;text-align:center}
+.done-box h3{font-size:22px;margin-bottom:6px}
+
+.emoji-key{font-size:20px;margin-right:4px}
+h3.section{color:#0d47a1;font-size:18px;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid #e3f2fd}
+
+ol.clicks{list-style:none;margin-left:0;counter-reset:clicks}
+ol.clicks > li{counter-increment:clicks;background:#fff;padding:10px 14px 10px 44px;margin:8px 0;border-radius:8px;border:1px solid #e2e8f0;position:relative}
+ol.clicks > li::before{content:counter(clicks);position:absolute;left:10px;top:10px;width:24px;height:24px;background:#1565c0;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+</style></head>
+<body>
+
+<div class="page">
+
+<div class="hero">
+  <h1>📘 คู่มือตั้งค่าแบบละเอียด (ทุกคลิก)</h1>
+  <div class="sub">สำหรับครูที่ไม่เคยใช้ Apps Script มาก่อน · ใช้เวลา 10–15 นาที</div>
+</div>
+
+<div class="toc">
+  <h3>📋 สารบัญ</h3>
+  <ol>
+    <li><a href="#s1">ขั้นที่ 1 · สร้าง Google Sheet (1 นาที)</a></li>
+    <li><a href="#s2">ขั้นที่ 2 · เปิด Apps Script Editor (1 นาที)</a></li>
+    <li><a href="#s3">ขั้นที่ 3 · คัดลอกและวางโค้ด (2 นาที)</a></li>
+    <li><a href="#s4">ขั้นที่ 4 · บันทึกโปรเจกต์ (30 วินาที)</a></li>
+    <li><a href="#s5">ขั้นที่ 5 · Deploy เป็น Web App (3 นาที)</a></li>
+    <li><a href="#s6">ขั้นที่ 6 · อนุญาตสิทธิ์การเข้าถึง (2 นาที)</a></li>
+    <li><a href="#s7">ขั้นที่ 7 · คัดลอก URL Web App (30 วินาที)</a></li>
+    <li><a href="#s8">ขั้นที่ 8 · วาง URL ลงเว็บแอป (1 นาที)</a></li>
+    <li><a href="#s9">ขั้นที่ 9 · ทดสอบระบบ (2 นาที)</a></li>
+    <li><a href="#faq">❓ ปัญหาที่พบบ่อยและวิธีแก้</a></li>
+  </ol>
+</div>
+
+<div class="warn">
+  <b>📌 เตรียมตัวก่อนเริ่ม:</b>
+  <ul style="margin:6px 0 0 22px">
+    <li>ล็อกอิน Gmail บน Chrome ด้วยบัญชี <code>komanepapato@gmail.com</code> (หรือบัญชีที่ใช้สอน)</li>
+    <li>ปิด Ad-blocker ถ้ามี (อาจบล็อก Apps Script)</li>
+    <li>เปิด 2 แท็บ: แท็บนี้ + แท็บ Chrome สำหรับทำตาม</li>
+  </ul>
+</div>
+
+<!-- ═══════════ STEP 1 ═══════════ -->
+<div class="step-wrap" id="s1">
+  <div class="step-head">
+    <div class="num">1</div>
+    <div><h2>สร้าง Google Sheet เปล่า <span class="time">⏱ 1 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">1.1</span> เปิดแท็บใหม่ใน Chrome</div>
+      <p>พิมพ์ URL นี้ใน address bar แล้วกด <kbd>Enter</kbd>:</p>
+      <div class="mock"><div class="mock-body">https://sheets.new</div></div>
+      <p>หรือคลิก:</p>
+      <a href="https://sheets.new" target="_blank" class="big-btn">📊 เปิด sheets.new</a>
+      <p style="font-size:13px;color:#666;margin-top:6px">💡 URL นี้เป็นทางลัดของ Google — จะสร้าง Sheet เปล่าใหม่ทันที</p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">1.2</span> ตั้งชื่อไฟล์</div>
+      <p>มุมบนซ้ายจะเห็นข้อความ "Untitled spreadsheet" — คลิกที่ข้อความนั้น</p>
+      <div class="mock">
+        <div class="mock-head"><div class="dots"><span></span><span></span><span></span></div><div>Google Sheets</div><div></div></div>
+        <div class="mock-ui">
+          📊 <span style="color:#5f6368">Untitled spreadsheet</span> <span style="color:#1a73e8">← คลิกที่นี่</span>
+        </div>
+      </div>
+      <p>พิมพ์ชื่อใหม่:</p>
+      <div class="mock"><div class="mock-body">วิจัยคลื่นกล_Database_2569</div></div>
+      <p>กด <kbd>Enter</kbd> หรือคลิกที่อื่นเพื่อบันทึก</p>
+    </div>
+
+    <div class="ok">
+      ✅ <b>ตรวจสอบ:</b> มุมบนซ้ายต้องแสดงชื่อ "วิจัยคลื่นกล_Database_2569" (ไม่ใช่ Untitled อีกต่อไป)
+    </div>
+
+    <div class="warn">
+      ⚠️ <b>สำคัญ:</b> <b>อย่าปิดแท็บนี้</b> — ต้องใช้ในขั้นต่อไป
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 2 ═══════════ -->
+<div class="step-wrap" id="s2">
+  <div class="step-head">
+    <div class="num">2</div>
+    <div><h2>เปิด Apps Script Editor <span class="time">⏱ 1 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">2.1</span> หาเมนู Extensions</div>
+      <p>ใน Sheet ที่เพิ่งสร้าง — มองแถบเมนูด้านบน (ใต้ชื่อไฟล์):</p>
+      <div class="mock"><div class="mock-body">File   Edit   View   Insert   Format   Data   Tools   <span style="background:#fef3c7;padding:2px 6px">Extensions</span>   Help</div></div>
+      <p>คลิกคำว่า <code>Extensions</code></p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">2.2</span> เลือก Apps Script</div>
+      <p>เมนูย่อยจะแสดงขึ้นมา มองหา:</p>
+      <div class="mock"><div class="mock-body">📦 Add-ons
+⚙️ <span style="background:#fef3c7;padding:2px 6px">Apps Script</span>       ← คลิกที่นี่
+📊 AppSheet
+🎨 Macros</div></div>
+      <p>คลิก <code>Apps Script</code></p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">2.3</span> รอหน้า Editor เปิด</div>
+      <p>จะมีแท็บใหม่เปิดขึ้น (<code>script.google.com</code>) แสดงหน้า Code Editor</p>
+      <p>ถ้าเป็นครั้งแรก อาจขึ้นหน้าต้อนรับ → กด <b>Close</b> หรือ <b>Skip</b></p>
+    </div>
+
+    <div class="ok">
+      ✅ <b>ตรวจสอบ:</b> หน้าจอควรแสดงหน้าต่างคล้ายนี้:
+      <div class="mock" style="margin-top:8px">
+        <div class="mock-head"><div class="dots"><span></span><span></span><span></span></div><div>Apps Script · Untitled project</div><div></div></div>
+        <div class="mock-ui" style="background:#263238;color:#eceff1;font-family:Consolas,monospace;padding:16px">
+<span style="color:#c792ea">function</span> <span style="color:#82aaff">myFunction</span>() {<br>
+&nbsp;&nbsp;<br>
+}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 3 ═══════════ -->
+<div class="step-wrap" id="s3">
+  <div class="step-head">
+    <div class="num">3</div>
+    <div><h2>คัดลอกและวางโค้ด <span class="time">⏱ 2 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">3.1</span> ลบโค้ดเดิม</div>
+      <p>ในหน้า Editor คลิกลงในกล่องโค้ด → กด <kbd>Ctrl</kbd>+<kbd>A</kbd> (เลือกทั้งหมด) → กด <kbd>Delete</kbd></p>
+      <p>ตอนนี้กล่องควรว่างเปล่า</p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">3.2</span> เปิดไฟล์โค้ดจากผม</div>
+      <p>เปิดไฟล์ <code>AppsScript_Code.gs</code> (ใน Finder/File Explorer):</p>
+      <a href="AppsScript_Code.gs" target="_blank" class="big-btn">📋 เปิด AppsScript_Code.gs</a>
+      <p style="font-size:13px;color:#666;margin-top:6px">ไฟล์จะเปิดในแท็บใหม่แสดงโค้ดเป็นข้อความ</p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">3.3</span> คัดลอกโค้ดทั้งหมด</div>
+      <p>ในแท็บที่เปิดไฟล์ <code>AppsScript_Code.gs</code>:</p>
+      <ol class="clicks">
+        <li>คลิกในพื้นที่แสดงโค้ด</li>
+        <li>กด <kbd>Ctrl</kbd>+<kbd>A</kbd> — ข้อความทั้งหมดจะถูกไฮไลต์เป็นสีฟ้า</li>
+        <li>กด <kbd>Ctrl</kbd>+<kbd>C</kbd> — คัดลอกเข้า clipboard</li>
+      </ol>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">3.4</span> วางในหน้า Apps Script</div>
+      <p>สลับกลับไปแท็บ Apps Script Editor:</p>
+      <ol class="clicks">
+        <li>คลิกในกล่องโค้ดที่ว่างเปล่า</li>
+        <li>กด <kbd>Ctrl</kbd>+<kbd>V</kbd> — โค้ดควรปรากฏในกล่อง</li>
+      </ol>
+    </div>
+
+    <div class="ok">
+      ✅ <b>ตรวจสอบ:</b> กล่องโค้ดต้องเริ่มต้นด้วย:
+      <div class="mock"><div class="mock-body">// ═══════════════════════════════════════════════════════════════════
+// Research Data Collector + Analytics — วิจัยคลื่นกล
+// ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+// ═══════════════════════════════════════════════════════════════════</div></div>
+      และลงท้ายด้วย <code>.setMimeType(ContentService.MimeType.JSON);<br>}</code> โดยรวมมี <b>ประมาณ 140 บรรทัด</b>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 4 ═══════════ -->
+<div class="step-wrap" id="s4">
+  <div class="step-head">
+    <div class="num">4</div>
+    <div><h2>บันทึกโปรเจกต์ <span class="time">⏱ 30 วินาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">4.1</span> กดปุ่ม Save</div>
+      <p>มองหาไอคอนรูปแผ่นดิสก์ 💾 หรือกด <kbd>Ctrl</kbd>+<kbd>S</kbd></p>
+      <div class="mock mock-ui">
+        <span class="btn btn-gray">🏃 Run</span>
+        <span class="btn btn-gray">🐛 Debug</span>
+        <span class="btn btn-gray">💾 Save project</span> <span class="arrow">←</span> คลิกที่นี่
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">4.2</span> ตั้งชื่อโปรเจกต์</div>
+      <p>ถ้าเป็นครั้งแรกที่บันทึก จะมี popup ถามชื่อโปรเจกต์:</p>
+      <div class="mock mock-ui">
+        <div class="field"><div class="label">Project title</div>วิจัยคลื่นกล_Collector</div>
+        <span class="btn btn-gray">Cancel</span>
+        <span class="btn btn-blue">Rename project</span>
+      </div>
+      <p>พิมพ์ชื่อ <code>วิจัยคลื่นกล_Collector</code> → กด <b>Rename project</b></p>
+    </div>
+
+    <div class="ok">
+      ✅ <b>ตรวจสอบ:</b> มุมบนซ้ายของ Editor ต้องแสดงชื่อ "วิจัยคลื่นกล_Collector" (ไม่ใช่ Untitled project)
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 5 ═══════════ -->
+<div class="step-wrap" id="s5">
+  <div class="step-head">
+    <div class="num">5</div>
+    <div><h2>Deploy เป็น Web App <span class="time">⏱ 3 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">5.1</span> เปิดเมนู Deploy</div>
+      <p>มุม<b>ขวาบน</b>ของหน้า Editor จะมีปุ่มสีน้ำเงิน:</p>
+      <div class="mock mock-ui" style="text-align:right">
+        <span class="btn btn-white">🔗 Share</span>
+        <span class="btn btn-blue">🚀 Deploy ▾</span> <span class="arrow">←</span> คลิกที่นี่
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">5.2</span> เลือก New deployment</div>
+      <p>เมนูย่อยจะแสดง:</p>
+      <div class="mock mock-ui">
+        <div style="padding:6px 12px;background:#fef3c7">🆕 New deployment ← คลิกที่นี่</div>
+        <div style="padding:6px 12px;color:#5f6368">📋 Manage deployments</div>
+        <div style="padding:6px 12px;color:#5f6368">🧪 Test deployments</div>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">5.3</span> เลือก Type: Web app</div>
+      <p>Popup "New deployment" จะแสดงขึ้น มองหาปุ่ม ⚙️ ข้างคำว่า "Select type":</p>
+      <div class="mock mock-ui">
+        <div style="border-bottom:1px solid #e2e8f0;padding-bottom:10px;margin-bottom:10px"><b>New deployment</b></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <span style="background:#e8f0fe;color:#1a73e8;padding:8px;border-radius:50%;font-size:16px">⚙️</span>
+          <span style="color:#5f6368">Select type</span>
+          <span class="arrow">←</span> คลิกไอคอนเฟือง
+        </div>
+      </div>
+      <p>เลือกตัวเลือกจากรายการ:</p>
+      <div class="mock mock-ui">
+        <div style="padding:6px 12px;color:#5f6368">📚 Library</div>
+        <div style="padding:6px 12px;background:#fef3c7">🌐 Web app ← เลือกตัวนี้</div>
+        <div style="padding:6px 12px;color:#5f6368">📦 Add-on</div>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">5.4</span> กรอกรายละเอียดการ Deploy</div>
+      <p>ฟอร์มจะแสดง 4 ช่อง — กรอกตามนี้<b>ทุกช่อง</b>:</p>
+      <div class="mock mock-ui">
+        <div class="field"><div class="label">Description (optional)</div>วิจัยคลื่นกล v1</div>
+        <div class="field"><div class="label">Web app — Execute as</div>Me (komanepapato@gmail.com)</div>
+        <div class="field" style="border:2px solid #c62828;background:#ffebee"><div class="label" style="color:#c62828">Web app — Who has access ⚠️ สำคัญมาก</div><b>Anyone</b></div>
+      </div>
+      <div class="error">
+        🚨 <b>ต้องเลือก "Anyone" เท่านั้น</b> ถ้าเลือก "Only myself" หรือ "Anyone with Google account" → นักเรียนส่งข้อมูลไม่ได้!
+        <br>หากเลือก <code>Anyone</code> ไม่ได้ ให้อ่าน <a href="#fix-anyone" style="color:#c62828"><b>วิธีแก้ด้านล่าง</b></a>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">5.5</span> กดปุ่ม Deploy</div>
+      <div class="mock mock-ui" style="text-align:right">
+        <span class="btn btn-gray">Cancel</span>
+        <span class="btn btn-blue">Deploy</span> <span class="arrow">←</span> คลิกที่นี่
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 6 ═══════════ -->
+<div class="step-wrap" id="s6">
+  <div class="step-head">
+    <div class="num">6</div>
+    <div><h2>อนุญาตสิทธิ์การเข้าถึง (OAuth) <span class="time">⏱ 2 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="warn">
+      <b>ทำไมต้องมีขั้นนี้:</b> Google ต้องการอนุญาตให้สคริปต์เขียนข้อมูลลง Sheet ของครู — ต้องยืนยันว่าครูเป็นเจ้าของและยินยอม
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">6.1</span> กด Authorize access</div>
+      <p>Popup จะแสดง:</p>
+      <div class="mock mock-ui">
+        <div style="padding:16px"><b>Authorization required</b><br>
+          <span style="color:#5f6368;font-size:13px">This project requires your permission to access your data.</span>
+        </div>
+        <div style="text-align:right;border-top:1px solid #e2e8f0;padding-top:10px">
+          <span class="btn btn-gray">Cancel</span>
+          <span class="btn btn-blue">Authorize access</span> <span class="arrow">←</span> คลิก
+        </div>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">6.2</span> เลือกบัญชี Google</div>
+      <p>หน้าต่างใหม่จะเปิดขึ้น ถามว่าต้องการใช้บัญชีไหน:</p>
+      <div class="mock mock-ui">
+        <div style="padding:10px">Choose an account to continue to <b>วิจัยคลื่นกล_Collector</b></div>
+        <div style="padding:10px;background:#fef3c7;border-radius:4px;margin:4px 0">👤 โกเมน ปาปะโถ<br><small style="color:#5f6368">komanepapato@gmail.com</small></div>
+      </div>
+      <p>คลิกบัญชีของตนเอง</p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">6.3</span> ผ่านหน้าเตือน "Google hasn't verified"</div>
+      <p>จะขึ้นหน้าเตือน<b>สีแดง/เหลือง</b> แบบนี้:</p>
+      <div class="mock mock-ui" style="background:#fff8e1;border-radius:8px;padding:16px">
+        <div style="font-size:30px">⚠️</div>
+        <div style="font-weight:700;font-size:16px;margin:8px 0">Google hasn't verified this app</div>
+        <div style="color:#5f6368;font-size:13px">The app is requesting access to sensitive info in your Google Account...</div>
+        <div style="margin-top:12px">
+          <span class="btn btn-white">Back to safety</span>
+          <span style="color:#1a73e8;cursor:pointer;font-size:13px;text-decoration:underline">Advanced</span> <span class="arrow">←</span> คลิกตรงนี้
+        </div>
+      </div>
+      <div class="ok">
+        💡 <b>ไม่ใช่ไวรัสหรือมัลแวร์</b> — Google เตือนเพราะสคริปต์นี้เป็นของส่วนตัวที่ยังไม่ได้ผ่าน review publc — ปลอดภัย 100% เพราะครูเป็นผู้เขียนเองและจะเขียนข้อมูลลง Sheet ของครูเอง
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">6.4</span> คลิก "Go to ... (unsafe)"</div>
+      <p>หลังกด Advanced จะมีลิงก์ข้อความสีฟ้าโผล่ด้านล่าง:</p>
+      <div class="mock mock-ui" style="background:#fff8e1;border-radius:8px;padding:14px">
+        <div style="color:#5f6368;font-size:13px;margin-bottom:6px">Continue only if you understand the risks...</div>
+        <span style="color:#1a73e8;cursor:pointer;text-decoration:underline">Go to วิจัยคลื่นกล_Collector (unsafe)</span> <span class="arrow">←</span> คลิกตรงนี้
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">6.5</span> กดปุ่ม Allow</div>
+      <p>หน้าสุดท้ายจะแสดงรายการสิ่งที่สคริปต์จะทำ:</p>
+      <div class="mock mock-ui">
+        <div style="font-weight:700;margin-bottom:8px">วิจัยคลื่นกล_Collector wants to:</div>
+        <div style="padding:6px 0;color:#3c4043;font-size:13px">✓ See, edit, create, and delete your Google Sheets spreadsheets</div>
+        <div style="padding:6px 0;color:#3c4043;font-size:13px">✓ Connect to an external service</div>
+        <div style="text-align:right;margin-top:12px;border-top:1px solid #e2e8f0;padding-top:10px">
+          <span class="btn btn-white">Cancel</span>
+          <span class="btn btn-blue">Allow</span> <span class="arrow">←</span> คลิก
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 7 ═══════════ -->
+<div class="step-wrap" id="s7">
+  <div class="step-head">
+    <div class="num">7</div>
+    <div><h2>คัดลอก URL Web App <span class="time">⏱ 30 วินาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">7.1</span> หน้า "Deployment successfully updated"</div>
+      <p>หลังผ่าน OAuth หน้านี้จะแสดง:</p>
+      <div class="mock mock-ui">
+        <div style="font-weight:700;color:#1e8e3e;margin-bottom:10px">✓ New deployment</div>
+        <div style="margin:8px 0">
+          <div class="label" style="color:#5f6368;font-size:11px;font-weight:600;text-transform:uppercase">Deployment ID</div>
+          <div style="background:#f8f9fa;padding:8px;border-radius:4px;font-family:monospace;font-size:12px">AKfycby...................</div>
+        </div>
+        <div style="margin:8px 0">
+          <div class="label" style="color:#5f6368;font-size:11px;font-weight:600;text-transform:uppercase">Web app URL ⭐</div>
+          <div style="background:#fff9c4;padding:8px;border-radius:4px;font-family:monospace;font-size:12px;border:2px solid #f9a825">https://script.google.com/macros/s/AKfycbx................/exec</div>
+          <span class="btn btn-gray" style="margin-top:6px">📋 Copy</span> <span class="arrow">←</span> คลิก
+        </div>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">7.2</span> วาง URL ลง Notepad ชั่วคราว</div>
+      <p>เพื่อความปลอดภัย ให้เปิด Notepad (หรือ TextEdit) → วาง URL ลงไป → เซฟเป็น <code>url_backup.txt</code></p>
+      <div class="tip">
+        💡 <b>เก็บ URL นี้ให้ดี</b> — ถ้าหายต้องทำ Deploy ใหม่หมด
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">7.3</span> ปิด Popup</div>
+      <p>กด <b>Done</b> มุมล่างขวาของ popup</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 8 ═══════════ -->
+<div class="step-wrap" id="s8">
+  <div class="step-head">
+    <div class="num">8</div>
+    <div><h2>วาง URL ลงเว็บแอป <span class="time">⏱ 1 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">8.1</span> เปิดไฟล์เว็บแอปด้วย Text Editor</div>
+      <p><b>Mac:</b> Finder → ไปที่โฟลเดอร์ <code>วิจัย</code> → คลิกขวาที่ <code>วิจัยคลื่นกล_WebApp.html</code> → <b>Open With</b> → <b>TextEdit</b></p>
+      <p><b>Windows:</b> File Explorer → คลิกขวา → <b>Open with</b> → <b>Notepad</b></p>
+      <div class="warn">
+        ⚠️ อย่าดับเบิลคลิกธรรมดา ไฟล์จะเปิดในเบราว์เซอร์ ต้องเปิดด้วย Text Editor เท่านั้น
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">8.2</span> ค้นหาจุดที่ต้องแก้</div>
+      <p>กด <kbd>Ctrl</kbd>+<kbd>F</kbd> (หรือ <kbd>Cmd</kbd>+<kbd>F</kbd> บน Mac)</p>
+      <p>พิมพ์ข้อความค้นหา:</p>
+      <div class="mock"><div class="mock-body">PASTE_YOUR_APPS_SCRIPT_URL_HERE</div></div>
+      <p>กด <kbd>Enter</kbd> → เคอร์เซอร์จะกระโดดไปที่บรรทัด:</p>
+      <div class="mock"><div class="mock-body">const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';</div></div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">8.3</span> แทนที่ด้วย URL จริง</div>
+      <p>ลบข้อความ <code>PASTE_YOUR_APPS_SCRIPT_URL_HERE</code> ออก (เฉพาะข้อความ <b>อย่าลบ</b> เครื่องหมาย <code>'</code> ทั้งสองข้าง)</p>
+      <p>วาง URL ที่คัดลอกมา:</p>
+      <div class="mock">
+        <div class="mock-head"><div class="dots"><span></span><span></span><span></span></div><div>ก่อนแก้</div><div></div></div>
+        <div class="mock-body" style="color:#c62828">const API_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';</div>
+      </div>
+      <div class="mock">
+        <div class="mock-head"><div class="dots"><span></span><span></span><span></span></div><div>หลังแก้ (ถูกต้อง)</div><div></div></div>
+        <div class="mock-body" style="color:#2e7d32">const API_URL = 'https://script.google.com/macros/s/AKfycbx........../exec';</div>
+      </div>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">8.4</span> บันทึกไฟล์</div>
+      <p>กด <kbd>Ctrl</kbd>+<kbd>S</kbd> (Windows) หรือ <kbd>Cmd</kbd>+<kbd>S</kbd> (Mac)</p>
+      <p>ปิด Text Editor</p>
+    </div>
+
+    <div class="check-list">
+      <h4>✅ เช็คลิสต์หลังแก้ไข</h4>
+      <ul>
+        <li>URL เริ่มต้นด้วย <code>https://script.google.com/macros/s/</code></li>
+        <li>URL ลงท้ายด้วย <code>/exec</code></li>
+        <li>เครื่องหมาย <code>'</code> (single quote) อยู่ครบทั้งซ้ายและขวาของ URL</li>
+        <li>มี <code>;</code> (semicolon) ที่ท้ายบรรทัด</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ STEP 9 ═══════════ -->
+<div class="step-wrap" id="s9">
+  <div class="step-head">
+    <div class="num">9</div>
+    <div><h2>ทดสอบระบบ <span class="time">⏱ 2 นาที</span></h2></div>
+  </div>
+  <div class="step-body">
+
+    <div class="substep">
+      <div class="t"><span class="mini">9.1</span> เปิดเว็บแอป</div>
+      <p>ดับเบิลคลิกไฟล์ <code>วิจัยคลื่นกล_WebApp.html</code> — จะเปิดในเบราว์เซอร์ เห็นหน้า Login</p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">9.2</span> Login ด้วยข้อมูลทดสอบ</div>
+      <ul style="margin-left:22px">
+        <li>ชื่อ: <code>ทดสอบ ระบบ</code></li>
+        <li>เลขที่: <code>99</code></li>
+        <li>ห้อง: <code>5/1</code></li>
+      </ul>
+      <p>กด <b>เข้าสู่ระบบ</b></p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">9.3</span> ส่งข้อมูลทดลอง</div>
+      <p>ที่หน้า Home → คลิก "🚦 TL-01 ก่อนเรียน" → เลือกบัตรสีใดๆ → กด <b>ส่งคำตอบ</b></p>
+      <p>ถ้าสำเร็จจะขึ้น: <code style="background:#c8e6c9;color:#1b5e20">✅ ส่งข้อมูลสำเร็จ! 🎉</code></p>
+    </div>
+
+    <div class="substep">
+      <div class="t"><span class="mini">9.4</span> ตรวจสอบใน Google Sheet</div>
+      <p>กลับไปที่แท็บ Google Sheet ที่สร้างในขั้น 1 → รีเฟรช (<kbd>F5</kbd>)</p>
+      <p>ด้านล่างจะมีแท็บใหม่โผล่ขึ้นชื่อ <code>TL_P1</code> พร้อมข้อมูลที่ส่ง:</p>
+      <div class="mock">
+        <div class="mock-head"><div class="dots"><span></span><span></span><span></span></div><div>วิจัยคลื่นกล_Database_2569</div><div></div></div>
+        <div class="mock-ui" style="font-family:monospace;font-size:12px">
+          <table style="width:100%;border-collapse:collapse">
+            <tr style="background:#1565c0;color:#fff"><th>timestamp</th><th>school</th><th>plan</th><th>student_name</th><th>phase</th><th>color</th></tr>
+            <tr><td>2026-04-16 10:30</td><td>สตรีวิทยา</td><td>1</td><td>ทดสอบ ระบบ</td><td>pre</td><td>green</td></tr>
+          </table>
+          <div style="margin-top:10px;border-top:1px solid #ccc;padding-top:6px">Sheets ด้านล่าง: [Sheet1] [<b>TL_P1</b>] ← แท็บใหม่</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="done-box">
+      <h3>🎉 ติดตั้งสำเร็จ! พร้อมใช้งานจริง</h3>
+      <p style="margin-top:8px">แจกไฟล์ <code style="background:rgba(255,255,255,.2);color:#fff">วิจัยคลื่นกล_WebApp.html</code> ให้นักเรียนได้เลย — หรืออัปโหลดขึ้น Google Drive / GitHub Pages เพื่อแจก URL</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════ FAQ ═══════════ -->
+<h3 class="section" id="faq">❓ ปัญหาที่พบบ่อยและวิธีแก้</h3>
+
+<details class="faq" id="fix-anyone">
+  <summary>🔴 เลือก "Anyone" ใน Who has access ไม่ได้ / ไม่มีตัวเลือกนี้</summary>
+  <div class="content">
+    <b>สาเหตุ:</b> บัญชี Google เป็น Google Workspace (แบบโรงเรียน/องค์กร) ที่ admin จำกัดสิทธิ์
+    <br><br>
+    <b>วิธีแก้:</b>
+    <ol>
+      <li>ออกจาก Apps Script</li>
+      <li>ใช้บัญชี Gmail ส่วนตัว (ที่ลงท้ายด้วย <code>@gmail.com</code>) แทน</li>
+      <li>สร้าง Google Sheet ใหม่ด้วยบัญชีส่วนตัว → ทำซ้ำตั้งแต่ขั้นที่ 1</li>
+    </ol>
+    <b>ทางเลือก:</b> ถ้าต้องใช้บัญชีโรงเรียน → เลือก "Anyone with Google account" แทน นักเรียนต้องล็อกอิน Google ก่อนส่งข้อมูล
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🔴 กด "Advanced" แล้วไม่เห็นลิงก์ "Go to ... (unsafe)"</summary>
+  <div class="content">
+    <b>สาเหตุ:</b> เบราว์เซอร์บล็อก JavaScript หรือใช้ Incognito Mode
+    <br><br>
+    <b>วิธีแก้:</b>
+    <ol>
+      <li>เปิด Chrome แบบปกติ (ไม่ใช่ Incognito)</li>
+      <li>ปิด Extension ประเภท Privacy/Ad-blocker ชั่วคราว</li>
+      <li>รีเฟรชหน้า → ลอง Deploy ใหม่</li>
+    </ol>
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🟡 นักเรียนกด "ส่งคำตอบ" แต่ข้อมูลไม่เข้า Sheet</summary>
+  <div class="content">
+    <b>ตรวจสอบ 3 จุด:</b>
+    <ol>
+      <li><b>URL ถูกต้อง?</b> — ต้องลงท้ายด้วย <code>/exec</code> ไม่ใช่ <code>/dev</code></li>
+      <li><b>Who has access = Anyone?</b> — ไปที่ Apps Script → Deploy → Manage deployments → ดูค่า Access</li>
+      <li><b>Deploy เวอร์ชันล่าสุด?</b> — ถ้าแก้โค้ดแล้วต้อง <b>Deploy → New version</b> ไม่งั้นโค้ดเก่าจะยังทำงาน</li>
+    </ol>
+    <b>วิธีดู error:</b> เปิดเว็บแอปในเบราว์เซอร์ → กด <kbd>F12</kbd> (เปิด DevTools) → แท็บ Console → ส่งข้อมูลอีกครั้ง → ดูข้อความ error สีแดง
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🟡 ต้องการแก้โค้ด Apps Script ทีหลัง ทำอย่างไร</summary>
+  <div class="content">
+    <ol>
+      <li>เปิด Google Sheet ที่สร้างไว้ → Extensions → Apps Script</li>
+      <li>แก้โค้ดตามต้องการ → <kbd>Ctrl</kbd>+<kbd>S</kbd></li>
+      <li>กด Deploy → <b>Manage deployments</b></li>
+      <li>คลิกไอคอนดินสอ ✏️ ข้าง deployment เดิม</li>
+      <li>เปลี่ยน Version เป็น <b>New version</b> → Deploy</li>
+    </ol>
+    <div class="tip">💡 URL เดิมยังใช้ได้ ไม่ต้องเปลี่ยนในเว็บแอป</div>
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🟢 ทำไมข้อมูลนักเรียนเข้าหลายแท็บ (Sheet) ไม่รวมกัน</summary>
+  <div class="content">
+    <b>ออกแบบมาแบบนี้ตั้งใจ</b> — เครื่องมือแต่ละประเภทแยก Sheet เพื่อ:
+    <ul style="margin-left:22px">
+      <li>วิเคราะห์แต่ละเครื่องมือแยกได้ง่าย (ไม่ปนกัน)</li>
+      <li>สูตร <code>COUNTIF</code> คำนวณเฉพาะ Sheet ที่ต้องการ</li>
+      <li>เปรียบเทียบ Pre vs Post ใช้ 2 Sheets (F_Pre_P1, F_Post_P1)</li>
+    </ul>
+    <b>รายการ Sheet ที่จะถูกสร้างอัตโนมัติ:</b>
+    <div class="mock"><div class="mock-body">TL_P1       → Traffic Light แผน 1
+F_Pre_P1    → Four-tier Pre แผน 1
+F_Post_P1   → Four-tier Post แผน 1
+POE_P1      → POE แผน 1
+Matrix_P1   → Matrix Table แผน 1
+Spot_P1     → Spot the Error แผน 1
+MJ_P1       → Metacognitive Journal แผน 1
+... (และของแผน 2-10 เช่นเดียวกัน)</div></div>
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🟢 จะแจกเว็บแอปให้นักเรียนอย่างไร</summary>
+  <div class="content">
+    <b>ตัวเลือก A: ส่งไฟล์ตรง</b> (ง่ายที่สุด)
+    <ol>
+      <li>ส่งไฟล์ <code>วิจัยคลื่นกล_WebApp.html</code> ผ่าน Line/Email/Classroom</li>
+      <li>นักเรียนดาวน์โหลด → ดับเบิลคลิกเปิด</li>
+    </ol>
+
+    <b>ตัวเลือก B: Upload ขึ้น Google Drive</b>
+    <ol>
+      <li>อัปโหลดไฟล์ขึ้น Google Drive</li>
+      <li>คลิกขวา → Share → Anyone with the link</li>
+      <li>ใช้ <b>drive.google.com/viewerng/viewer?url=...</b> preview ได้ แต่เร็วกว่าถ้าใช้ Netlify/GitHub Pages</li>
+    </ol>
+
+    <b>ตัวเลือก C: GitHub Pages (ฟรี มี URL สั้น)</b>
+    <ol>
+      <li>สมัคร github.com (ถ้ายังไม่มี)</li>
+      <li>สร้าง repository ใหม่ → อัปโหลดไฟล์</li>
+      <li>Settings → Pages → Enable → ได้ URL แบบ <code>username.github.io/xxx</code></li>
+      <li>สร้าง QR Code จาก URL → แจกในห้องเรียน</li>
+    </ol>
+  </div>
+</details>
+
+<details class="faq">
+  <summary>🟢 ครูจะดูสรุป % Sound/Misconception แบบ dashboard ได้ที่ไหน</summary>
+  <div class="content">
+    <ol>
+      <li>เปิด <code>วิจัยคลื่นกล_WebApp.html</code></li>
+      <li>ที่หน้า Login → ด้านล่างมีลิงก์ <b>🔐 เข้าสู่ระบบครู</b> → คลิก</li>
+      <li>ใส่รหัสผ่าน: <code>komanepapato2569</code> (แก้ได้ในโค้ด)</li>
+      <li>จะเห็น Dashboard แสดง % Sound/Misc/Guessing/No-K และ Normalized Gain รายข้อ · รายแผน · real-time</li>
+    </ol>
+    <div class="tip">💡 Dashboard ดึงข้อมูลจาก Apps Script โดยตรง — ข้อมูลสดทุกครั้งที่เปิด</div>
+  </div>
+</details>
+
+<div style="text-align:center;color:#888;font-size:13px;margin-top:30px;border-top:1px solid #eee;padding-top:16px">
+  คู่มือตั้งค่าแบบละเอียด · วิจัยคลื่นกล · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+  <br><br>
+  หากติดขั้นใด ส่งข้อความพร้อมภาพหน้าจอมาที่ Claude ผมช่วยดีบักได้ทันที
+</div>
+
+</div>
+</body></html>

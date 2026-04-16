@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Lab 38 · Wave Speed on a String · แผน 2 v=fλ=√(T/μ)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#0a1930;color:#e2e8f0;font-size:15px;line-height:1.6;padding:24px;min-height:100vh}
+.page{max-width:900px;margin:0 auto}
+.head{background:linear-gradient(135deg,#0f2c5c,#1565c0);padding:22px 28px;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.head h1{font-size:24px;color:#fff}
+.head .meta{font-size:13px;color:rgba(255,255,255,.85)}
+.tag{display:inline-block;background:rgba(255,255,255,.2);color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.body-card{background:#111d36;border-radius:0 0 16px 16px;padding:24px 28px}
+.info{background:rgba(255,255,255,.06);border-left:4px solid #4fc3f7;padding:10px 16px;border-radius:8px;font-size:14px;margin-bottom:16px}
+.info b{color:#4fc3f7}
+
+/* ปุ่มเปิด Sim */
+.open-btn{display:block;text-align:center;margin:20px auto;padding:18px 40px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;font-family:inherit;font-size:22px;font-weight:800;border:none;border-radius:14px;cursor:pointer;text-decoration:none;box-shadow:0 4px 20px rgba(21,101,192,.5);transition:all .2s;letter-spacing:0.5px}
+.open-btn:hover{background:linear-gradient(135deg,#1976d2,#1565c0);box-shadow:0 6px 28px rgba(21,101,192,.7);transform:translateY(-2px)}
+.open-btn .sub{display:block;font-size:13px;font-weight:400;margin-top:4px;opacity:.85}
+.qr-note{text-align:center;color:rgba(255,255,255,.5);font-size:13px;margin:8px 0 20px}
+
+/* 4 แท็บ */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.tab{background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px}
+.tab .num{display:inline-block;background:#1565c0;color:#fff;width:26px;height:26px;border-radius:50%;text-align:center;line-height:26px;font-weight:800;font-size:13px;margin-right:6px}
+.tab h3{font-size:15px;color:#fff;margin-bottom:4px;display:inline}
+.tab .desc{font-size:12.5px;color:rgba(255,255,255,.6);margin-top:4px}
+.tab .tool{font-size:11.5px;color:#4fc3f7;margin-top:4px}
+.tab .table-head{font-size:11px;color:rgba(255,255,255,.4);margin-top:6px;font-family:monospace;letter-spacing:.5px}
+
+/* ตัวแปร */
+.vars{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 18px;margin:16px 0}
+.vars h3{color:#4fc3f7;font-size:15px;margin-bottom:8px}
+.vars .grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.vars .v{background:rgba(255,255,255,.05);border-radius:8px;padding:6px 10px;font-size:13px}
+.vars .v b{color:#fff}
+.vars .v span{color:#4fc3f7}
+
+/* Misconception */
+.misc{background:rgba(255,82,82,.06);border-left:4px solid #ff5252;padding:12px 16px;border-radius:8px;margin:16px 0}
+.misc b{color:#ff8a80;font-size:15px}
+.misc .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+.misc .m{background:rgba(255,255,255,.04);border:1px dashed rgba(255,82,82,.25);border-radius:8px;padding:6px 10px;font-size:13px}
+.misc .m em{color:#ff8a80;font-weight:700}
+
+.foot{text-align:center;color:rgba(255,255,255,.3);font-size:12px;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+@media(max-width:600px){.tabs{grid-template-columns:1fr}.head h1{font-size:18px}.open-btn{font-size:18px;padding:14px 24px}}
+</style></head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div>
+      <h1>🌊 Lab 38 — ความเร็วคลื่นในเส้นเชือก</h1>
+      <div class="meta"><span class="tag">แผน 2</span><span class="tag">SIM</span> v = fλ = √(T/μ) · ใช้ในขั้น E2 Explore + E3 Explain</div>
+    </div>
+    <div class="meta">KP Science · Virtual Physics Lab</div>
+  </div>
+
+  <div class="body-card">
+
+    <div class="info">
+      <b>🎯 วัตถุประสงค์:</b> วัดความเร็วคลื่นในเชือกด้วย 4 วิธี แล้วเปลี่ยนตัวแปร (T, μ, f, A) เพื่อสังเกตผลต่อ v · ใช้ยืนยัน/หักล้าง Misconception M2.1–M2.4
+    </div>
+
+    <!-- ===== ปุ่มเปิด Simulation ===== -->
+    <a class="open-btn" href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/38.%20wave-speed-on-string.html" target="_blank">
+      ▶ เปิด Lab 38 — Wave Speed on a String
+      <span class="sub">คลิกเพื่อเปิด Simulation ในแท็บใหม่ · ใช้ได้ทั้งคอมพิวเตอร์และมือถือ</span>
+    </a>
+    <div class="qr-note">หรือพิมพ์ลิงก์ย่อ: <b style="color:#4fc3f7">kp-science.github.io</b> → Virtual Physics Lab 02 → Lab 38</div>
+
+    <!-- ===== 4 วิธีวัด ===== -->
+    <div class="tabs">
+      <div class="tab">
+        <span class="num">1</span><h3>วัด v จากระยะทาง</h3>
+        <div class="desc">ส่งคลื่น → จับเวลายอดคลื่นเคลื่อนผ่าน 2 จุด → อ่านระยะทาง Δx จากไม้บรรทัด</div>
+        <div class="tool">v = Δx / Δt</div>
+        <div class="table-head">ตาราง: Δt · Δx · v วัด · v จริง · %Error</div>
+      </div>
+      <div class="tab">
+        <span class="num">2</span><h3>วัด v จากความยาวคลื่น</h3>
+        <div class="desc">ส่งคลื่น → หยุดภาพ → วัด λ จากไม้บรรทัด (ระยะระหว่าง 2 ยอดติดกัน)</div>
+        <div class="tool">v = f × λ</div>
+        <div class="table-head">ตาราง: f · T · λ วัด · v=fλ · v จริง · %Error</div>
+      </div>
+      <div class="tab">
+        <span class="num">3</span><h3>วัดคาบ T</h3>
+        <div class="desc">วางจุดวัดคาบบนเชือก → สังเกตจุดเคลื่อนขึ้นลง → จับเวลาหลายรอบ → T = เวลา/จำนวนรอบ</div>
+        <div class="tool">f(สุ่ม) = ซ่อนไว้ · นักเรียนวัดเอง</div>
+        <div class="table-head">ตาราง: เวลา · จำนวนรอบ · T วัด · T จริง · %Error</div>
+      </div>
+      <div class="tab">
+        <span class="num">4</span><h3>วัดความถี่ f</h3>
+        <div class="desc">วางเส้นอ้างอิง → ตั้งเวลาจับ → นับเฟสซ้ำที่ผ่านเส้น → f = จำนวนรอบ/เวลา</div>
+        <div class="tool">f(สุ่ม) = ซ่อนไว้ · นักเรียนวัดเอง</div>
+        <div class="table-head">ตาราง: เวลา · จำนวนรอบ · f วัด · T วัด · f จริง · %Error</div>
+      </div>
+    </div>
+
+    <!-- ===== ตัวแปรควบคุม ===== -->
+    <div class="vars">
+      <h3>🎛 ตัวแปรที่ปรับได้ใน Simulation</h3>
+      <div class="grid">
+        <div class="v"><b>T</b> แรงตึง (N) <span>→ สไลเดอร์</span></div>
+        <div class="v"><b>μ</b> ความหนาแน่นเชิงเส้น (kg/m) <span>→ สไลเดอร์</span></div>
+        <div class="v"><b>f</b> ความถี่ (Hz) <span>→ สไลเดอร์</span></div>
+        <div class="v"><b>A</b> แอมพลิจูด (px) <span>→ สไลเดอร์</span></div>
+        <div class="v"><b>แดมป์</b> การหน่วง <span>→ สไลเดอร์</span></div>
+        <div class="v"><b>ปลายเชือก</b> ไม่สะท้อน / ตรึง / อิสระ <span>→ เลือก</span></div>
+      </div>
+    </div>
+
+    <!-- ===== Misconception ===== -->
+    <div class="misc">
+      <b>⚠️ Misconception ที่ Simulation นี้ช่วยหักล้าง:</b>
+      <div class="row2">
+        <div class="m"><em>M2.1</em> v ขึ้นกับ f → วัด v ที่ f ต่างกัน พบ v คงที่ (ถ้า T, μ เท่าเดิม)</div>
+        <div class="m"><em>M2.2</em> ตึงมาก v ช้า → เพิ่ม T แล้ววัด v ใหม่ พบ v เร็วขึ้น (∝ √T)</div>
+        <div class="m"><em>M2.3</em> A มาก v เร็ว → เปลี่ยน A แล้ววัด v พบ v คงที่</div>
+        <div class="m"><em>M2.4</em> f เปลี่ยนตามตัวกลาง → เปลี่ยน μ พบ v, λ เปลี่ยน แต่ f คงเดิม</div>
+      </div>
+    </div>
+
+    <div class="foot">wave-on-a-string.html · Lab 38 KP Science · แผน 2 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+  </div>
+
+</div>
+</body></html>

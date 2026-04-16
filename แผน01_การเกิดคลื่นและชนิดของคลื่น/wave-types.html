@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wave Types Explorer — KP Science Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #0a0e1a;
+  --panel:   #111827;
+  --panel2:  #1a2235;
+  --border:  #1e3a5f;
+  --accent:  #818cf8;
+  --accent2: #38bdf8;
+  --accent3: #34d399;
+  --accent4: #fb923c;
+  --accent5: #f472b6;
+  --text:    #e2e8f0;
+  --muted:   #94a3b8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Sarabun', 'TH Sarabun New', sans-serif;
+  font-size: 15px; min-height: 100vh; overflow-x: hidden;
+}
+header {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 20px; display: flex; align-items: center; gap: 14px;
+}
+header .icon { font-size: 2rem; }
+header h1 { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+header p { font-size: 0.82rem; color: var(--muted); }
+header .badge {
+  margin-left: auto; background: #1e3a5f; border: 1px solid var(--accent);
+  color: var(--accent); padding: 3px 12px; border-radius: 20px;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+}
+nav {
+  display: flex; gap: 4px; padding: 10px 20px;
+  background: #0f172a; border-bottom: 1px solid var(--border);
+}
+nav button {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--muted); padding: 7px 16px; border-radius: 8px;
+  cursor: pointer; font-family: 'Sarabun', sans-serif;
+  font-size: 0.85rem; font-weight: 600; transition: all .2s;
+}
+nav button:hover { border-color: var(--accent); color: var(--accent); }
+nav button.active { background: var(--accent); border-color: var(--accent); color: #0a0e1a; }
+.tab-section { display: none; }
+.tab-section.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ===== SIM TAB ===== */
+.sim-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 0; height: calc(100vh - 115px); min-height: 480px;
+}
+.canvas-wrap {
+  position: relative; background: #060b14;
+  border-right: 1px solid var(--border);
+}
+canvas#simCanvas { display: block; width: 100%; height: 100%; }
+
+/* observation prompt at bottom of canvas */
+.obs-prompt {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(10,14,26,0.88); backdrop-filter: blur(4px);
+  border-top: 1px solid var(--border);
+  padding: 10px 18px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.obs-prompt .q { color: var(--accent); font-weight: 600; font-size: 0.9rem; }
+.obs-choice { display: flex; gap: 12px; }
+.obs-choice label {
+  display: flex; align-items: center; gap: 6px;
+  color: var(--muted); cursor: pointer; font-size: 0.88rem;
+  transition: color .15s;
+}
+.obs-choice label:hover { color: var(--text); }
+.obs-choice input[type="radio"] { accent-color: var(--accent); }
+
+/* right panel */
+.side-panel {
+  background: var(--panel); overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.panel-section { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.panel-title {
+  font-size: 0.78rem; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px;
+}
+
+/* mode buttons */
+.mode-btns { display: flex; flex-direction: column; gap: 6px; }
+.mode-btn {
+  padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--panel2); color: var(--muted); cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 0.88rem; font-weight: 600;
+  text-align: left; transition: all .2s; display: flex; align-items: center; gap: 8px;
+}
+.mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.mode-btn.active { background: #2d1e6e; border-color: var(--accent); color: var(--accent); }
+.mode-btn .mode-icon { font-size: 1.1rem; }
+
+/* control buttons */
+.ctrl-btns { display: flex; gap: 8px; }
+.btn {
+  flex: 1; padding: 8px 6px; border: none; border-radius: 6px;
+  cursor: pointer; font-family: 'Sarabun', sans-serif;
+  font-weight: 700; font-size: 0.85rem; transition: .15s;
+}
+.btn-play { background: #1b5e20; color: #fff; }
+.btn-play:hover { background: #2e7d32; }
+.btn-play.playing { background: #b71c1c; }
+.btn-reset { background: #0d47a1; color: #fff; }
+.btn-reset:hover { background: #1565c0; }
+
+/* sliders */
+.sl-row { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+.sl-label { font-size: 0.8rem; color: var(--muted); flex-shrink: 0; min-width: 70px; }
+.sl-range { flex: 1; accent-color: var(--accent); cursor: pointer; }
+.sl-unit { font-size: 0.75rem; color: var(--muted); min-width: 22px; flex-shrink: 0; }
+.val-input {
+  width: 48px; padding: 2px 5px; background: var(--panel2);
+  border: 1.5px solid var(--accent2); border-radius: 5px;
+  color: var(--accent3); font-weight: 700; font-size: 0.82rem;
+  text-align: center; -moz-appearance: textfield; flex-shrink: 0;
+}
+.val-input::-webkit-outer-spin-button, .val-input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.val-input:focus { outline: none; border-color: var(--accent); color: var(--text); }
+
+/* readout */
+.readout-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.readout-box {
+  background: var(--panel2); border: 1px solid var(--border);
+  border-radius: 7px; padding: 8px 10px; text-align: center;
+}
+.readout-box .r-label { font-size: 0.7rem; color: var(--muted); }
+.readout-box .r-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem; color: var(--accent3); font-weight: 700;
+  margin-top: 2px;
+}
+
+/* particle info */
+.particle-info {
+  background: #2d1e0a; border: 1px solid var(--accent4);
+  border-radius: 8px; padding: 10px 12px; font-size: 0.85rem;
+}
+.particle-info .pi-title { color: var(--accent4); font-weight: 700; margin-bottom: 6px; font-size: 0.82rem; }
+.particle-info .pi-row { display: flex; justify-content: space-between; margin-bottom: 3px; }
+.particle-info .pi-key { color: var(--muted); }
+.particle-info .pi-val { color: var(--text); font-weight: 600; font-family: 'Share Tech Mono', monospace; font-size: 0.82rem; }
+
+/* legend */
+.legend { display: flex; flex-direction: column; gap: 5px; }
+.leg-row { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--muted); }
+.leg-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.leg-line { width: 28px; height: 3px; flex-shrink: 0; border-radius: 2px; }
+
+/* ===== THEORY TAB ===== */
+.theory-wrap { max-width: 860px; margin: 0 auto; padding: 24px 20px; }
+.theory-wrap h2 { color: var(--accent); font-size: 1.2rem; margin-bottom: 16px; }
+.theory-section { margin-bottom: 20px; }
+.theory-section h3 { color: var(--accent2); font-size: 1rem; margin-bottom: 8px; }
+.theory-section p, .theory-section li { color: var(--muted); line-height: 1.7; margin-bottom: 6px; }
+.theory-section ul { padding-left: 20px; }
+.compare-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.compare-table th, .compare-table td {
+  padding: 9px 14px; border: 1px solid var(--border);
+  text-align: left; font-size: 0.88rem;
+}
+.compare-table th { background: var(--panel); color: var(--accent); font-weight: 700; }
+.compare-table td { background: var(--panel2); color: var(--muted); }
+.compare-table td:first-child { color: var(--text); font-weight: 600; }
+.formula-box {
+  background: var(--panel); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent); border-radius: 8px;
+  padding: 14px 16px; margin: 12px 0;
+  font-family: 'Share Tech Mono', monospace; font-size: 0.92rem;
+  color: var(--accent3); line-height: 1.9;
+}
+.misconception-box {
+  background: #2d1a1a; border: 1px solid #f87171;
+  border-radius: 8px; padding: 14px 16px; margin: 12px 0;
+}
+.misconception-box .mc-title { color: #f87171; font-weight: 700; margin-bottom: 6px; }
+.misconception-box .mc-wrong { color: #fca5a5; margin-bottom: 6px; }
+.misconception-box .mc-right { color: var(--accent3); }
+
+footer {
+  text-align: center; padding: 10px; font-size: 0.75rem; color: var(--muted);
+  border-top: 1px solid var(--border); background: #0f172a;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon">🌊</div>
+  <div>
+    <h1>Wave Types Explorer</h1>
+    <p>คลื่นตามขวาง vs คลื่นตามยาว — สังเกตการเคลื่อนที่ของอนุภาค</p>
+  </div>
+  <span class="badge">KP Science Simulation</span>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('sim',this)">🎬 Simulation</button>
+  <button onclick="showTab('theory',this)">📐 เนื้อหา/ทฤษฎี</button>
+</nav>
+
+<!-- ===== SIM TAB ===== -->
+<div id="tab-sim" class="tab-section active">
+  <div class="sim-layout">
+
+    <!-- Canvas -->
+    <div class="canvas-wrap">
+      <canvas id="simCanvas"></canvas>
+      <div class="obs-prompt">
+        <span class="q">🔍 สังเกต: จุดสีแดงเคลื่อนที่ตามทิศเดียวกับคลื่นหรือไม่?</span>
+        <div class="obs-choice">
+          <label><input type="radio" name="obs" value="yes"> ใช่ — อนุภาคเคลื่อนที่ตามคลื่น</label>
+          <label><input type="radio" name="obs" value="no"> ไม่ใช่ — อนุภาคสั่นรอบตำแหน่งสมดุล</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Side panel -->
+    <div class="side-panel">
+
+      <div class="panel-section">
+        <div class="panel-title">🔀 เลือกโหมดคลื่น</div>
+        <div class="mode-btns">
+          <button id="btn-transverse" class="mode-btn active" onclick="setMode('transverse')">
+            <span class="mode-icon">〰️</span>
+            <div>
+              <div>คลื่นตามขวาง</div>
+              <div style="font-size:0.72rem; color:var(--muted); font-weight:400;">เชือก / น้ำ</div>
+            </div>
+          </button>
+          <button id="btn-longitudinal" class="mode-btn" onclick="setMode('longitudinal')">
+            <span class="mode-icon">↔️</span>
+            <div>
+              <div>คลื่นตามยาว</div>
+              <div style="font-size:0.72rem; color:var(--muted); font-weight:400;">สปริง / เสียง</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">▶ ควบคุม</div>
+        <div class="ctrl-btns" style="margin-bottom:10px;">
+          <button id="playBtn" class="btn btn-play" onclick="togglePlay()">▶ เริ่ม</button>
+          <button class="btn btn-reset" onclick="resetSim()">↺ Reset</button>
+        </div>
+        <div class="sl-row">
+          <span class="sl-label" style="color:var(--accent);">⚡ ความเร็ว</span>
+          <input class="sl-range" type="range" id="sl-speed" min="0.1" max="3" step="0.1" value="1">
+          <input class="val-input" type="number" id="vi-speed" min="0.1" max="3" step="0.1" value="1">
+          <span class="sl-unit">×</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">🎛 ปรับตัวแปร</div>
+        <div class="sl-row">
+          <span class="sl-label">ความถี่ f</span>
+          <input class="sl-range" type="range" id="sl-freq" min="0.3" max="2.5" step="0.1" value="1">
+          <input class="val-input" type="number" id="vi-freq" min="0.3" max="2.5" step="0.1" value="1">
+          <span class="sl-unit">Hz</span>
+        </div>
+        <div class="sl-row">
+          <span class="sl-label">แอมพลิจูด A</span>
+          <input class="sl-range" type="range" id="sl-amp" min="10" max="90" step="5" value="50">
+          <input class="val-input" type="number" id="vi-amp" min="10" max="90" step="5" value="50">
+          <span class="sl-unit">px</span>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📊 ค่าปัจจุบัน</div>
+        <div class="readout-grid">
+          <div class="readout-box">
+            <div class="r-label">ทิศคลื่น</div>
+            <div class="r-val" id="rd-wdir">→</div>
+          </div>
+          <div class="readout-box">
+            <div class="r-label">ทิศสั่นอนุภาค</div>
+            <div class="r-val" id="rd-pdir">↕</div>
+          </div>
+          <div class="readout-box">
+            <div class="r-label">ความสัมพันธ์</div>
+            <div class="r-val" id="rd-rel" style="font-size:0.8rem;">ตั้งฉาก</div>
+          </div>
+          <div class="readout-box">
+            <div class="r-label">ชนิดคลื่น</div>
+            <div class="r-val" id="rd-type" style="font-size:0.75rem;">ตามขวาง</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section" id="particle-info-panel">
+        <div class="panel-title">🔴 อนุภาคที่สังเกต</div>
+        <div class="particle-info">
+          <div class="pi-title">อนุภาคตัวกลาง (จุดสีแดง)</div>
+          <div class="pi-row">
+            <span class="pi-key">ตำแหน่งสมดุล x₀</span>
+            <span class="pi-val" id="pi-x0">—</span>
+          </div>
+          <div class="pi-row">
+            <span class="pi-key">การขจัด y</span>
+            <span class="pi-val" id="pi-y">—</span>
+          </div>
+          <div class="pi-row">
+            <span class="pi-key">ความเร็วสั่น vy</span>
+            <span class="pi-val" id="pi-vy">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">📖 คำอธิบาย</div>
+        <div class="legend">
+          <div class="leg-row"><div class="leg-dot" style="background:#ef4444;"></div> อนุภาคที่สังเกต (จุดสีแดง)</div>
+          <div class="leg-row"><div class="leg-line" style="background:#64748b; border:1px dashed #64748b;"></div> ตำแหน่งสมดุล</div>
+          <div class="leg-row"><div class="leg-line" style="background:var(--accent4);"></div> ลูกศรทิศการสั่น</div>
+          <div class="leg-row"><div class="leg-dot" style="background:#60a5fa; width:10px; height:10px;"></div> อนุภาคทั่วไป</div>
+          <div class="leg-row" id="leg-compress" style="display:none;"><div class="leg-dot" style="background:rgba(239,68,68,0.3); border: 1px solid #ef4444; border-radius:2px;"></div> โซนอัด (compression)</div>
+          <div class="leg-row" id="leg-expand" style="display:none;"><div class="leg-dot" style="background:rgba(96,165,250,0.2); border: 1px solid #60a5fa; border-radius:2px;"></div> โซนขยาย (rarefaction)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== THEORY TAB ===== -->
+<div id="tab-theory" class="tab-section">
+  <div class="theory-wrap">
+    <h2>🌊 คลื่นกล — ชนิดของคลื่น</h2>
+
+    <div class="theory-section">
+      <h3>คลื่นกลคืออะไร</h3>
+      <p>คลื่นกล (Mechanical Wave) คือการถ่ายโอนพลังงานจากจุดหนึ่งไปยังอีกจุดหนึ่งผ่านตัวกลาง โดยที่อนุภาคของตัวกลาง <strong>ไม่ได้เคลื่อนที่ตามคลื่น</strong> แต่จะสั่นรอบตำแหน่งสมดุลของตัวเอง</p>
+    </div>
+
+    <div class="misconception-box">
+      <div class="mc-title">⚠️ ความเข้าใจคลาดเคลื่อน M1</div>
+      <div class="mc-wrong">❌ ความเชื่อผิด: "อนุภาคของตัวกลาง (เช่น น้ำ) เคลื่อนที่ไปตามทิศที่คลื่นเดินทาง"</div>
+      <div class="mc-right">✅ ที่ถูกต้อง: "อนุภาคสั่นรอบตำแหน่งสมดุล คลื่นพาพลังงาน ไม่ใช่สาร"</div>
+    </div>
+
+    <div class="theory-section">
+      <h3>ชนิดของคลื่นกลตามทิศการสั่น</h3>
+      <table class="compare-table">
+        <tr>
+          <th>คุณสมบัติ</th>
+          <th>คลื่นตามขวาง (Transverse)</th>
+          <th>คลื่นตามยาว (Longitudinal)</th>
+        </tr>
+        <tr>
+          <td>ทิศสั่นของอนุภาค</td>
+          <td>ตั้งฉากกับทิศเดินทางของคลื่น</td>
+          <td>ขนานกับทิศเดินทางของคลื่น</td>
+        </tr>
+        <tr>
+          <td>ลักษณะ</td>
+          <td>สันคลื่น (Crest) + ท้องคลื่น (Trough)</td>
+          <td>โซนอัด (Compression) + โซนขยาย (Rarefaction)</td>
+        </tr>
+        <tr>
+          <td>ตัวอย่าง</td>
+          <td>คลื่นเชือก, คลื่นน้ำ, คลื่น S ของแผ่นดินไหว</td>
+          <td>คลื่นเสียง, คลื่นสปริง, คลื่น P ของแผ่นดินไหว</td>
+        </tr>
+        <tr>
+          <td>ตัวกลาง</td>
+          <td>ของแข็ง, ผิวของเหลว</td>
+          <td>ของแข็ง, ของเหลว, แก๊ส</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="theory-section">
+      <h3>สมการคลื่น</h3>
+      <div class="formula-box">
+y(x, t) = A · sin(kx − ωt)
+
+k  = 2π/λ    (wave number, rad/m)
+ω  = 2πf     (angular frequency, rad/s)
+v  = fλ = ω/k  (wave speed, m/s)
+T  = 1/f      (period, s)
+      </div>
+      <p style="font-size:0.85rem; color:var(--muted);">โดยที่ A = แอมพลิจูด (m), λ = ความยาวคลื่น (m), f = ความถี่ (Hz)</p>
+    </div>
+
+    <div class="theory-section">
+      <h3>สรุปหลักการสำคัญ</h3>
+      <ul>
+        <li>คลื่นพา <strong>พลังงาน</strong> ไม่ใช่พาสาร</li>
+        <li>อนุภาคของตัวกลาง <strong>สั่นรอบตำแหน่งสมดุล</strong> เท่านั้น</li>
+        <li>ความถี่ของคลื่นขึ้นกับ <strong>แหล่งกำเนิด</strong> ไม่ใช่ตัวกลาง</li>
+        <li>ความเร็วคลื่นขึ้นกับ <strong>ตัวกลาง</strong> และอุณหภูมิ</li>
+      </ul>
+    </div>
+
+    <div style="font-size:0.78rem; color:var(--muted); border-top:1px solid var(--border); padding-top:12px; margin-top:20px;">
+      อ้างอิง: หลักสูตรแกนกลาง 2551 (ปรับปรุง 2560) | Halliday, Resnick &amp; Krane — Physics
+    </div>
+  </div>
+</div>
+
+<footer>KP Science Simulation | ฟิสิกส์ 3 (ว30203) ม.5 | Wave Types Explorer | ครูโกเมน ปาปะโถ — โรงเรียนสตรีวิทยา | 2569</footer>
+
+<script>
+// ===== State =====
+let mode = 'transverse'; // 'transverse' | 'longitudinal'
+let isPlaying = false, t = 0, animId = null, lastTs = null, speed = 1.0;
+let freq = 1.0, amp = 50;
+const N_PARTICLES = 20;
+const TRACKED_IDX = 10; // red tracked particle
+
+// ===== Tab =====
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== Mode =====
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-transverse').classList.toggle('active', m === 'transverse');
+  document.getElementById('btn-longitudinal').classList.toggle('active', m === 'longitudinal');
+  // show/hide legend
+  document.getElementById('leg-compress').style.display = (m === 'longitudinal') ? 'flex' : 'none';
+  document.getElementById('leg-expand').style.display   = (m === 'longitudinal') ? 'flex' : 'none';
+  updateReadout();
+  if (!isPlaying) draw();
+}
+
+// ===== Playback =====
+function togglePlay() {
+  isPlaying = !isPlaying;
+  const btn = document.getElementById('playBtn');
+  if (isPlaying) {
+    lastTs = null;
+    animId = requestAnimationFrame(loop);
+    btn.textContent = '⏸ หยุด';
+    btn.classList.add('playing');
+  } else {
+    cancelAnimationFrame(animId);
+    btn.textContent = '▶ เริ่ม';
+    btn.classList.remove('playing');
+  }
+}
+
+function resetSim() {
+  cancelAnimationFrame(animId);
+  isPlaying = false; t = 0; lastTs = null;
+  const btn = document.getElementById('playBtn');
+  btn.textContent = '▶ เริ่ม';
+  btn.classList.remove('playing');
+  // clear radio
+  document.querySelectorAll('input[name="obs"]').forEach(r => r.checked = false);
+  draw();
+  updateReadout();
+}
+
+function loop(ts) {
+  if (!lastTs) lastTs = ts;
+  const dt = Math.min((ts - lastTs) / 1000, 0.05) * speed;
+  lastTs = ts;
+  t += dt;
+  draw();
+  updateReadout();
+  animId = requestAnimationFrame(loop);
+}
+
+// ===== Canvas =====
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  canvas.width  = wrap.clientWidth  || 800;
+  canvas.height = wrap.clientHeight || 480;
+  if (!isPlaying) draw();
+}
+window.addEventListener('resize', resizeCanvas);
+
+// ===== Draw =====
+function draw() {
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background grid
+  ctx.strokeStyle = '#0d1525';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (let y = 0; y < H; y += 40) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  const centerY = H * 0.5;
+
+  if (mode === 'transverse') {
+    drawTransverse(W, H, centerY);
+  } else {
+    drawLongitudinal(W, H, centerY);
+  }
+
+  // Wave direction arrow
+  drawArrow(ctx, 40, H - 40, 120, H - 40, '#38bdf8', '→ ทิศคลื่น');
+}
+
+function drawTransverse(W, H, cy) {
+  const omega = 2 * Math.PI * freq;
+  const k = (2 * Math.PI) / (W * 0.7); // wave fits ~1.4 wavelengths
+
+  // Equilibrium line (dashed)
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.restore();
+
+  // Wave (sine)
+  ctx.beginPath();
+  ctx.strokeStyle = '#818cf8';
+  ctx.lineWidth = 3;
+  for (let x = 0; x <= W; x++) {
+    const y = cy - amp * Math.sin(k * x - omega * t);
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Glow
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  ctx.filter = 'blur(6px)';
+  ctx.beginPath();
+  ctx.strokeStyle = '#818cf8';
+  ctx.lineWidth = 8;
+  for (let x = 0; x <= W; x++) {
+    const y = cy - amp * Math.sin(k * x - omega * t);
+    x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // Particles
+  const spacing = W / (N_PARTICLES + 1);
+  for (let i = 0; i <= N_PARTICLES + 1; i++) {
+    const px = i * spacing;
+    const py = cy - amp * Math.sin(k * px - omega * t);
+
+    if (i === TRACKED_IDX) {
+      // Red tracked particle
+      // Equilibrium line for this particle
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(px, cy - amp * 1.6); ctx.lineTo(px, cy + amp * 1.6); ctx.stroke();
+      ctx.restore();
+
+      // Oscillation arrow
+      const vy = -amp * omega * Math.cos(k * px - omega * t);
+      const arrowLen = Math.min(Math.abs(vy) * 0.25, amp * 0.8);
+      const arrowDir = vy < 0 ? -1 : 1;
+      if (arrowLen > 4) {
+        drawArrow(ctx, px, py, px, py + arrowDir * arrowLen, '#fb923c', null);
+      }
+
+      // Red dot
+      ctx.beginPath();
+      ctx.arc(px, py, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      ctx.strokeStyle = '#fca5a5';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '700 12px Sarabun, sans-serif';
+      ctx.fillText('อนุภาคที่สังเกต', px + 13, py - 5);
+    } else {
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#3b82f6';
+      ctx.fill();
+    }
+  }
+
+  // Update particle info
+  const trackedX = TRACKED_IDX * spacing;
+  const trackedY = cy - amp * Math.sin(k * trackedX - omega * t);
+  const disp = -(trackedY - cy);
+  const vel = amp * 2 * Math.PI * freq * Math.cos(k * trackedX - omega * t);
+  document.getElementById('pi-x0').textContent = Math.round(trackedX) + ' px';
+  document.getElementById('pi-y').textContent = disp.toFixed(1) + ' px';
+  document.getElementById('pi-vy').textContent = vel.toFixed(1) + ' px/s';
+}
+
+function drawLongitudinal(W, H, cy) {
+  const omega = 2 * Math.PI * freq;
+  const k = (2 * Math.PI) / (W * 0.7);
+  const spacing = W / (N_PARTICLES + 1);
+
+  // Compression / Rarefaction zones background
+  for (let x = 0; x < W; x += 4) {
+    const compression = -Math.sin(k * x - omega * t); // +1 = compress
+    if (compression > 0) {
+      ctx.fillStyle = `rgba(239,68,68,${compression * 0.12})`;
+    } else {
+      ctx.fillStyle = `rgba(96,165,250,${-compression * 0.1})`;
+    }
+    ctx.fillRect(x, cy - amp * 1.8, 4, amp * 3.6);
+  }
+
+  // Equilibrium line (dashed)
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.restore();
+
+  // Particles displaced longitudinally
+  for (let i = 1; i <= N_PARTICLES; i++) {
+    const px0 = i * spacing; // equilibrium x
+    const disp = amp * 0.5 * Math.sin(k * px0 - omega * t); // x displacement
+    const px = px0 + disp;
+
+    if (i === TRACKED_IDX) {
+      // equilibrium marker
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(px0, cy - amp * 1.4); ctx.lineTo(px0, cy + amp * 1.4); ctx.stroke();
+      ctx.restore();
+
+      // Oscillation arrow (horizontal)
+      const vx = amp * 0.5 * omega * Math.cos(k * px0 - omega * t);
+      const arrowLen = Math.min(Math.abs(vx) * 0.25, amp * 0.7);
+      const arrowDir = vx >= 0 ? 1 : -1;
+      if (arrowLen > 4) {
+        drawArrow(ctx, px, cy, px + arrowDir * arrowLen, cy, '#fb923c', null);
+      }
+
+      // Red dot
+      ctx.beginPath();
+      ctx.arc(px, cy, 10, 0, Math.PI * 2);
+      ctx.fillStyle = '#ef4444';
+      ctx.fill();
+      ctx.strokeStyle = '#fca5a5';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#fca5a5';
+      ctx.font = '700 12px Sarabun, sans-serif';
+      ctx.fillText('อนุภาคที่สังเกต', px + 13, cy - 12);
+
+      // Update particle info
+      document.getElementById('pi-x0').textContent = Math.round(px0) + ' px';
+      document.getElementById('pi-y').textContent = disp.toFixed(1) + ' px (แนวนอน)';
+      document.getElementById('pi-vy').textContent = vx.toFixed(1) + ' px/s';
+    } else {
+      ctx.beginPath();
+      ctx.arc(px, cy, 5, 0, Math.PI * 2);
+      const brightness = Math.abs(Math.sin(k * px0 - omega * t));
+      const r = Math.round(60 + brightness * 100);
+      ctx.fillStyle = `rgb(${r}, ${Math.round(r * 0.8)}, 250)`;
+      ctx.fill();
+    }
+  }
+
+  // Zone labels
+  ctx.font = '600 11px Sarabun, sans-serif';
+  for (let x = 0; x < W; x += 80) {
+    const comp = -Math.sin(k * x - omega * t);
+    if (comp > 0.5) {
+      ctx.fillStyle = 'rgba(239,68,68,0.7)';
+      ctx.fillText('อัด', x + 5, cy - amp * 1.7);
+    } else if (comp < -0.5) {
+      ctx.fillStyle = 'rgba(96,165,250,0.7)';
+      ctx.fillText('ขยาย', x + 5, cy - amp * 1.7);
+    }
+  }
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, label) {
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.sqrt(dx * dx + dy * dy);
+  if (len < 2) return;
+  const ux = dx / len, uy = dy / len;
+  const headLen = Math.min(12, len * 0.4);
+
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.fillStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+
+  // Arrowhead
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - headLen * ux + headLen * 0.4 * (-uy),
+             y2 - headLen * uy + headLen * 0.4 * ux);
+  ctx.lineTo(x2 - headLen * ux - headLen * 0.4 * (-uy),
+             y2 - headLen * uy - headLen * 0.4 * ux);
+  ctx.closePath();
+  ctx.fill();
+
+  if (label) {
+    ctx.font = '600 12px Sarabun, sans-serif';
+    ctx.fillStyle = color;
+    ctx.fillText(label, x2 + 8, y2 + 4);
+  }
+}
+
+function updateReadout() {
+  if (mode === 'transverse') {
+    document.getElementById('rd-wdir').textContent = '→';
+    document.getElementById('rd-pdir').textContent = '↕';
+    document.getElementById('rd-rel').textContent = 'ตั้งฉาก';
+    document.getElementById('rd-type').textContent = 'ตามขวาง';
+    document.getElementById('rd-rel').style.color = 'var(--accent3)';
+  } else {
+    document.getElementById('rd-wdir').textContent = '→';
+    document.getElementById('rd-pdir').textContent = '↔';
+    document.getElementById('rd-rel').textContent = 'ขนาน';
+    document.getElementById('rd-type').textContent = 'ตามยาว';
+    document.getElementById('rd-rel').style.color = 'var(--accent4)';
+  }
+}
+
+// ===== Slider Sync =====
+window.addEventListener('DOMContentLoaded', () => {
+  const _v2s = {
+    'vi-speed': 'sl-speed',
+    'vi-freq': 'sl-freq',
+    'vi-amp': 'sl-amp',
+  };
+
+  function syncVal(inp) {
+    const sl = document.getElementById(_v2s[inp.id]);
+    if (!sl) return;
+    let v = Math.max(parseFloat(sl.min), Math.min(parseFloat(sl.max), parseFloat(inp.value) || 0));
+    inp.value = v.toFixed(sl.step.includes('.') ? sl.step.split('.')[1].length : 0);
+    sl.value = v;
+    sl.dispatchEvent(new Event('input'));
+  }
+
+  Object.entries(_v2s).forEach(([vi, si]) => {
+    const sl = document.getElementById(si);
+    const inp = document.getElementById(vi);
+    if (!sl || !inp) return;
+    sl.addEventListener('input', () => {
+      inp.value = parseFloat(sl.value);
+      applyParams();
+    });
+    inp.addEventListener('blur', () => syncVal(inp));
+  });
+
+  resizeCanvas();
+  updateReadout();
+  draw();
+});
+
+function applyParams() {
+  speed = parseFloat(document.getElementById('sl-speed').value) || 1;
+  freq  = parseFloat(document.getElementById('sl-freq').value)  || 1;
+  amp   = parseFloat(document.getElementById('sl-amp').value)   || 50;
+  if (!isPlaying) draw();
+}
+</script>
+</body>
+</html>
