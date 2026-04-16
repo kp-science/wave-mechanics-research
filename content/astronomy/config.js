@@ -20,20 +20,17 @@ window.KP_CONFIG = {
   teacherFullName: 'นายโกเมน ปาปะโถ',
   year:         '2569',
 
-  // ─── Backend ───
-  // TODO: สร้าง Google Sheet + deploy Apps Script ใหม่สำหรับดาราศาสตร์
-  //       แล้วเปลี่ยน URL ด้านล่าง (ข้อมูลจะเข้า Sheet เฉพาะวิชานี้ ไม่ปนกับฟิสิกส์)
-  apiUrl:       '', // จะใส่ภายหลัง · เว้นว่าง = mode demo (ไม่ส่งข้อมูล)
+  // ─── Backend (Apps Script Web App URL · แยกจาก Physics 3) ───
+  apiUrl:       'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec',
 
   // ─── Admin Password ───
-  teacherPass:  'komanepapato2569', // จะเปลี่ยนเมื่อ deploy Apps Script ใหม่
+  teacherPass:  'komanepapato2569',
 
   // ─── Scope ───
   numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
 
-  // ─── สถานะการเปิดสอน (ใช้ lock การ์ดใน landing) ───
-  // 'open' = เปิดให้นักเรียน login · 'coming-soon' = lock · 'closed' = ปิดเทอม
-  status:       'coming-soon', // เปลี่ยนเป็น 'open' เมื่อ: (1) deploy Apps Script (2) upload roster (3) มี content
+  // ─── สถานะการเปิดสอน ───
+  status:       'open', // ✅ deploy แล้ว · พร้อมรับ roster
   numClasses:   3,
-  classes:      ['ม.5/2', 'ม.5/3', 'ม.5/4'] // TODO: ปรับชื่อห้องตามจริง
+  classes:      ['ม.5/2', 'ม.5/3', 'ม.5/4'] // TODO: ปรับชื่อห้องตามจริงภายหลัง
 };
