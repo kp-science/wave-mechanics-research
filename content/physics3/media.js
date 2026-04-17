@@ -127,9 +127,9 @@ window.KP_PLAN_MEDIA = {
       { title: '🗺 แผนภาพรวม', items: [
         { cls:'info', no:'00', t:'Infographic แผน 3 (ฉบับสมบูรณ์)', file:'แผน3_Infographic.html',
           d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline', chips:[] },
-        { cls:'sim', no:'SIM', t:'phase-compare.html (Sim Spec · ยังไม่สร้าง)', file:'สื่อ06_SimSpec_phase-compare.html',
-          d:'Blueprint 3 โหมด (Single wave 2 points · Overlay 2 waves · Ribbon animation) · slider Δx/Δφ · phase dial · ซ้อนทับ',
-          chips:[['k','K2'],['p','P1'],['m','M3.3'],['m','M3.4']] }
+        { cls:'sim', no:'SIM', t:'Lab 39 — Phase Circle Wave (KP Science)', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/39.%20phase-circle-wave.html',
+          d:'Virtual Lab · ใช้ในฐาน 1+2+3 · เลื่อน Δx/Δφ · วัด v · ซ้อน 2 คลื่น · phase circle + ribbon marker',
+          chips:[['k','K2'],['p','P1'],['m','M3.2'],['m','M3.3'],['m','M3.4']] }
       ]},
       { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
         { cls:'e1', no:'01', t:'Concept Cartoon "ริบบิ้น 2 เส้นบนเชือก"', file:'สื่อ01_ConceptCartoon_ริบบิ้นบนเชือก.html',
