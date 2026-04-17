@@ -347,24 +347,14 @@ window.KP_WORKSHEETS = {
       misconception: 'M4.1 · M4.2 · M4.3 · M4.4',
       sheetPrefix:   'POE_P'
     },
-    // ใบ 4.1 · Calc Superposition
+    // ใบ 4.1 · Calc Superposition · embed mode (แสดงไฟล์ HTML เต็ม · รับเฉพาะแนบไฟล์)
     calc: {
       title:       'ใบกิจกรรม 4.1 · Calc Superposition',
-      description: 'โจทย์ 4 ข้อ ไล่ระดับ · อ่านกราฟ + time evolution + Huygens · แสดง "กำหนด ต้องหา สมการ การคำนวณ คำตอบ"',
-      banner:      'y(x, t) = y₁(x, t) + y₂(x, t)  ·  หลักการซ้อนทับเชิงเส้น',
-      problems: [
-        { no:1, level:'พื้นฐาน', misc:'K2',
-          stem:'pulse A ยอด 4 cm (+v = 2 m/s) · pulse B ยอด 2 cm (−v = 2 m/s) · ยอด A ที่ x = 6 cm · ยอด B ที่ x = 14 cm · (ก) หลังกี่วินาทีทั้งคู่พบกันยอดตรงยอด (ข) A รวม ณ ขณะพบ (ค) รูปหลังผ่านกัน 1 s' },
-        { no:2, level:'พื้นฐาน', misc:'M4.2',
-          stem:'pulse ยอด 3 cm สวนทาง pulse ท้อง 3 cm (A เท่ากัน) · (ก) ขณะพบกันรูปเชือกเป็นอย่างไร · (ข) คลื่นหายถาวรหรือไม่ · (ค) พลังงานคลื่นขณะ y = 0 อยู่ที่ใด' },
-        { no:3, level:'ประยุกต์', misc:'M4.1',
-          stem:'วาด pulse ที่ t = 1, 2, 3, 4 s · A (ยอด กว้าง 4 m) ที่ x = 6–10 m ไปขวาด้วย v = 1 m/s · B (ท้อง กว้าง 4 m) ที่ x = 24–28 m ไปซ้ายด้วย v = 1 m/s · อธิบายรูปหลังผ่านกัน' },
-        { no:4, level:'ประยุกต์', misc:'K2+M4.4',
-          stem:'Huygens: หน้าคลื่นระนาบผ่านช่องเปิด (ก) d = 3 m (ข) d = 1 m (≈ λ) · วาด envelope หลัง Δt = 1 s (v = 2 m/s) · หลักนี้ใช้ได้กับคลื่นชนิดใดบ้าง?' }
-      ],
+      description: 'โจทย์ 4 ข้อ · วาดกราฟ + time evolution + Huygens · ทำในกระดาษ ถ่ายรูปแนบส่ง',
+      viewFile:    'สื่อ04_Calc_ใบกิจกรรม4.1.html',  // embed iframe แทน form พิมพ์
       submitLabel: '📤 ส่งใบกิจกรรม 4.1',
       sheetPrefix: 'Calc_P',
-      allowUpload: true  // ใบนี้มีโจทย์วาดกราฟ/กริด · ให้นักเรียนแนบไฟล์ใบที่เขียนมือได้
+      allowUpload: true
     },
     // ใบ 4.2 · Spot the Error
     spot: {
