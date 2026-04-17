@@ -20,7 +20,8 @@
     '<script src="'+base+'/plans.js"><\/script>' +
     '<script src="'+base+'/tools.js"><\/script>' +
     '<script src="'+base+'/media.js"><\/script>' +
-    '<script src="'+base+'/questions.js"><\/script>'
+    '<script src="'+base+'/questions.js"><\/script>' +
+    '<script src="'+base+'/worksheets.js"><\/script>'
   );
 </script>
 <style>
@@ -913,9 +914,8 @@ function openTool(key){
   if (key === 'poe' && state.currentPlan === 2) return renderPOE2(body);
   if (key === 'poe')    return renderPOE(body);
   if (key === 'matrix') return renderMatrix(body);
-  if (key === 'spot')   return renderSpot(body);
-  if (key === 'calc2')  return renderCalc2(body);
-  if (key === 'spot2')  return renderSpot2(body);
+  if (key === 'spot' || key === 'spot2') return renderSpot(body);   // Phase 3a: generic
+  if (key === 'calc' || key === 'calc2') return renderCalc(body);   // Phase 3a: generic
   if (key === 'mj')     return renderMJ(body);
   if (key === 'upload') return renderUpload(body);
 
@@ -1282,82 +1282,136 @@ function renderPOE(body){
 // ═══════════════════════════════════════════════════════════
 // Matrix Table
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// Phase 3a: Generic Worksheet Renderers
+// อ่าน schema จาก KP_WORKSHEETS[planNo][type]
+// Types: matrix · spot · calc
+// ═══════════════════════════════════════════════════════════
+function getWorksheet(type){
+  const ws = (window.KP_WORKSHEETS || {})[state.currentPlan];
+  return (ws && ws[type]) || null;
+}
+
+function noWorksheetHint(body, type){
+  body.innerHTML += `<div class="info">⚠️ แผน ${state.currentPlan} ยังไม่มีใบกิจกรรม "${type}" — ครูต้องเพิ่มใน <code>content/{course}/worksheets.js</code></div>`;
+  showView('view-tool');
+}
+
+// ─── Matrix ──────────────────────────────────────────────────
 function renderMatrix(body){
-  const rows = [
-    ['ทิศการสั่นของอนุภาคตัวกลาง',''],
-    ['ทิศการเคลื่อนที่ของคลื่น',''],
-    ['ลักษณะรูปร่างของคลื่น',''],
-    ['ตัวอย่างคลื่น',''],
-    ['ต้องการตัวกลางหรือไม่',''],
-    ['เกิดส่วนอัด/ส่วนขยายหรือไม่','']
-  ];
+  const s = getWorksheet('matrix');
+  if (!s) return noWorksheetHint(body, 'matrix');
+  const [colA='คอลัมน์ 1', colB='คอลัมน์ 2'] = s.columns || [];
+  const [phA='', phB=''] = s.placeholders || [];
   let rowHtml = '';
-  rows.forEach((r,i) => {
-    rowHtml += `<tr><td><b>${i+1}. ${r[0]}</b></td>
-      <td><textarea id="mx_tv_${i}" placeholder="คลื่นตามขวาง..."></textarea></td>
-      <td><textarea id="mx_lg_${i}" placeholder="คลื่นตามยาว..."></textarea></td></tr>`;
+  s.rows.forEach((topic,i) => {
+    rowHtml += `<tr><td><b>${i+1}. ${escapeHtml(topic)}</b></td>
+      <td><textarea id="mx_a_${i}" placeholder="${escapeHtml(phA)}"></textarea></td>
+      <td><textarea id="mx_b_${i}" placeholder="${escapeHtml(phB)}"></textarea></td></tr>`;
   });
   body.innerHTML += `
-    <div class="info"><b>ใบกิจกรรม 1.1:</b> เปรียบเทียบคลื่นตามขวาง vs คลื่นตามยาว 6 ประเด็น</div>
+    <div class="info"><b>${escapeHtml(s.title)}:</b> ${escapeHtml(s.description || '')}</div>
     <table class="matrix">
-      <thead><tr><th style="width:30%">ประเด็น</th><th>คลื่นตามขวาง (Transverse)</th><th>คลื่นตามยาว (Longitudinal)</th></tr></thead>
+      <thead><tr><th style="width:30%">ประเด็น</th><th>${escapeHtml(colA)}</th><th>${escapeHtml(colB)}</th></tr></thead>
       <tbody>${rowHtml}</tbody>
     </table>
     <div class="submit-bar">
-      <button class="btn-submit" id="mxBtn">📤 ส่งใบกิจกรรม</button>
+      <button class="btn-submit" id="mxBtn">${escapeHtml(s.submitLabel || '📤 ส่ง')}</button>
       <div class="status" id="mxStat"></div>
     </div>`;
   document.getElementById('mxBtn').onclick = () => {
     const pl = {};
-    rows.forEach((r,i) => {
-      pl[`row${i+1}_topic`] = r[0];
-      pl[`row${i+1}_transverse`] = val(`mx_tv_${i}`);
-      pl[`row${i+1}_longitudinal`] = val(`mx_lg_${i}`);
+    s.rows.forEach((topic,i) => {
+      pl[`row${i+1}_topic`] = topic;
+      pl[`row${i+1}_col_a`] = val(`mx_a_${i}`);
+      pl[`row${i+1}_col_b`] = val(`mx_b_${i}`);
     });
-    submitData(`Matrix_P${state.currentPlan}`, pl,
+    submitData(`${s.sheetPrefix || 'Matrix_P'}${state.currentPlan}`, pl,
       document.getElementById('mxStat'), document.getElementById('mxBtn'));
   };
   showView('view-tool');
 }
 
-// ═══════════════════════════════════════════════════════════
-// Spot the Error
-// ═══════════════════════════════════════════════════════════
+// ─── Spot the Error (รองรับทั้ง string และ {misc, stmt}) ──────
 function renderSpot(body){
-  const items = [
-    'คลื่นในเชือกเป็นคลื่นตามยาว เพราะเชือกเคลื่อนที่ไปตามทิศคลื่น',
-    'ความถี่ของคลื่นจะเปลี่ยนเมื่อคลื่นเคลื่อนจากตัวกลางหนึ่งไปอีกตัวกลาง',
-    'คลื่นดลและคลื่นต่อเนื่องคือสิ่งเดียวกัน เพียงแต่ชื่อต่างกัน',
-    'ในคลื่นเสียง อากาศจะไหลจากผู้พูดไปยังผู้ฟัง'
-  ];
+  const s = getWorksheet('spot');
+  if (!s) return noWorksheetHint(body, 'spot');
+  // Normalize: string → { stmt }
+  const items = (s.items || []).map(it => typeof it === 'string' ? { stmt: it } : it);
   let html = '';
-  items.forEach((t,i) => {
+  items.forEach((it,i) => {
+    const miscTag = it.misc ? `<span class="mis-tag">${escapeHtml(it.misc)}</span>` : '';
     html += `
       <div class="item">
-        <div><span class="no">ข้อ ${i+1}</span></div>
-        <div class="stem" style="font-style:italic;color:#b71c1c">"${t}"</div>
-        <label>📝 สิ่งที่ผิดในข้อความนี้ คือ:</label>
-        <textarea id="sp_err_${i}" placeholder="อธิบายสิ่งที่ผิด..."></textarea>
-        <label>✅ แก้ไขให้ถูกต้อง:</label>
-        <textarea id="sp_fix_${i}" placeholder="ข้อความที่ถูกต้องคือ..."></textarea>
+        <div><span class="no">ข้อ ${i+1}</span> ${miscTag}</div>
+        <div class="stem" style="font-style:italic;color:#b71c1c;background:#fff;border:1.5px dashed #ef9a9a;border-radius:10px;padding:12px;margin:8px 0">"${escapeHtml(it.stmt)}"</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+          <div><label style="font-weight:700">📝 ผิดตรงไหน:</label>
+            <textarea id="sp_err_${i}" placeholder="อธิบายสิ่งที่ผิด..."></textarea></div>
+          <div><label style="font-weight:700">✅ ที่ถูกต้องคือ:</label>
+            <textarea id="sp_fix_${i}" placeholder="แก้ไขให้ถูกต้อง..."></textarea></div>
+        </div>
       </div>`;
   });
   body.innerHTML += `
-    <div class="info"><b>ใบกิจกรรม 1.2:</b> หาข้อผิดพลาดในข้อความ 4 ข้อ แล้วเขียนคำอธิบายที่ถูกต้อง</div>
+    <div class="info"><b>${escapeHtml(s.title)}:</b> ${escapeHtml(s.description || '')}</div>
     ${html}
     <div class="submit-bar">
-      <button class="btn-submit" id="spBtn">📤 ส่งใบกิจกรรม</button>
+      <button class="btn-submit" id="spBtn">${escapeHtml(s.submitLabel || '📤 ส่ง')}</button>
       <div class="status" id="spStat"></div>
     </div>`;
   document.getElementById('spBtn').onclick = () => {
     const pl = {};
-    items.forEach((t,i) => {
-      pl[`item${i+1}_stmt`] = t;
+    items.forEach((it,i) => {
+      pl[`item${i+1}_stmt`]  = it.stmt;
       pl[`item${i+1}_error`] = val(`sp_err_${i}`);
-      pl[`item${i+1}_fix`] = val(`sp_fix_${i}`);
+      pl[`item${i+1}_fix`]   = val(`sp_fix_${i}`);
+      if (it.misc) pl[`item${i+1}_misc`] = it.misc;
     });
-    submitData(`Spot_P${state.currentPlan}`, pl,
+    submitData(`${s.sheetPrefix || 'Spot_P'}${state.currentPlan}`, pl,
       document.getElementById('spStat'), document.getElementById('spBtn'));
+  };
+  showView('view-tool');
+}
+
+// ─── Calc (โจทย์คำนวณ) ──────────────────────────────────────
+function renderCalc(body){
+  const s = getWorksheet('calc');
+  if (!s) return noWorksheetHint(body, 'calc');
+  const banner = s.banner
+    ? `<div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:10px;text-align:center;font-weight:800;color:#0d47a1;font-size:18px;margin:10px 0">${s.banner}</div>`
+    : '';
+  let html = `<div class="info"><b>🧮 ${escapeHtml(s.title)}:</b> ${escapeHtml(s.description || '')}</div>${banner}`;
+  s.problems.forEach(p => {
+    html += `
+    <div class="item">
+      <div><span class="no">ข้อ ${p.no}</span> ${p.level ? '<b>'+escapeHtml(p.level)+'</b>' : ''} ${p.misc ? '<span class="mis-tag">'+escapeHtml(p.misc)+'</span>' : ''}</div>
+      <div class="stem">${escapeHtml(p.stem)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <div><label style="font-weight:700;color:#0d47a1">กำหนด / ต้องหา:</label>
+          <textarea id="ca_given_${p.no}" placeholder="กำหนด: ... ต้องหา: ..."></textarea></div>
+        <div><label style="font-weight:700;color:#0d47a1">การคำนวณ + คำตอบ:</label>
+          <textarea id="ca_work_${p.no}" placeholder="สมการ: ... คำนวณ: ... คำตอบ: ..." style="min-height:90px"></textarea></div>
+      </div>
+    </div>`;
+  });
+  html += `
+    <div class="submit-bar">
+      <button class="btn-submit" id="caBtn">${escapeHtml(s.submitLabel || '📤 ส่ง')}</button>
+      <div class="status" id="caStat"></div>
+    </div>`;
+  body.innerHTML += html;
+  document.getElementById('caBtn').onclick = () => {
+    const pl = {};
+    s.problems.forEach(p => {
+      pl[`q${p.no}_stem`]  = p.stem;
+      pl[`q${p.no}_given`] = val(`ca_given_${p.no}`);
+      pl[`q${p.no}_work`]  = val(`ca_work_${p.no}`);
+      if (p.misc)  pl[`q${p.no}_misc`]  = p.misc;
+      if (p.level) pl[`q${p.no}_level`] = p.level;
+    });
+    submitData(`${s.sheetPrefix || 'Calc_P'}${state.currentPlan}`, pl,
+      document.getElementById('caStat'), document.getElementById('caBtn'));
   };
   showView('view-tool');
 }
@@ -1733,100 +1787,6 @@ function renderPOE2(body){
     }
     submitData(`POE_P${state.currentPlan}`, pl,
       document.getElementById('poe2Stat'), document.getElementById('poe2Btn'));
-  };
-  showView('view-tool');
-}
-
-// ═══════════════════════════════════════════════════════════
-// ใบกิจกรรม 2.1 · โจทย์คำนวณ v=fλ=√(T/μ)
-// ═══════════════════════════════════════════════════════════
-function renderCalc2(body){
-  const problems = [
-    { no:1, level:'พื้นฐาน', misc:'K2',
-      stem:'คลื่นบนเชือกมีความถี่ 5 Hz และความยาวคลื่น 0.40 m จงหาความเร็วคลื่น' },
-    { no:2, level:'ประยุกต์', misc:'M2.1',
-      stem:'เชือกเส้นเดิม ตึงเท่าเดิม เดิมสั่นด้วย f = 2 Hz ได้ λ = 0.60 m · ถ้าเพิ่มความถี่เป็น 6 Hz ให้หา (ก) ความเร็วคลื่นใหม่ (ข) ความยาวคลื่นใหม่' },
-    { no:3, level:'ประยุกต์', misc:'M2.2',
-      stem:'เชือกยาว 2.0 m มวล 40 g ปลายหนึ่งผูกกับกำแพง อีกปลายดึงด้วยแรง 16 N · จงหาความเร็วคลื่นในเชือก' },
-    { no:4, level:'ประยุกต์', misc:'M2.4',
-      stem:'คลื่นความถี่ 200 Hz เดินทางในน้ำด้วยความเร็ว 1,500 m/s เมื่อเข้าสู่อากาศ v = 340 m/s · จงหา (ก) λ ในน้ำ (ข) λ ในอากาศ (ค) f ในอากาศ พร้อมอธิบาย' },
-    { no:5, level:'ท้าทาย', misc:'M2.2',
-      stem:'เชือก μ = 0.010 kg/m ดึงด้วย T₁ ให้ v₁ = 20 m/s · ถ้าต้องการ v₂ = 40 m/s โดยไม่เปลี่ยนเชือก ต้องเพิ่มแรงตึงเป็นกี่เท่าของ T₁?' }
-  ];
-  let html = `<div class="info"><b>🧮 ใบกิจกรรม 2.1:</b> โจทย์คำนวณ v = fλ = √(T/μ) · 5 ข้อ ไล่ระดับ · แสดง "กำหนด ต้องหา สมการ การคำนวณ คำตอบ"</div>
-    <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:10px;text-align:center;font-weight:800;color:#0d47a1;font-size:18px;margin:10px 0">v = fλ &nbsp;·&nbsp; v = √(T/μ) &nbsp;·&nbsp; μ = m / L</div>`;
-  problems.forEach(p => {
-    html += `
-    <div class="item">
-      <div><span class="no">ข้อ ${p.no}</span> <b>${p.level}</b> <span class="mis-tag">${p.misc}</span></div>
-      <div class="stem">${p.stem}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-        <div><label style="font-weight:700;color:#0d47a1">กำหนด / ต้องหา:</label>
-          <textarea id="c2_given_${p.no}" placeholder="กำหนด: ... ต้องหา: ..."></textarea></div>
-        <div><label style="font-weight:700;color:#0d47a1">การคำนวณ + คำตอบ:</label>
-          <textarea id="c2_work_${p.no}" placeholder="สมการ: ... คำนวณ: ... คำตอบ: ..." style="min-height:90px"></textarea></div>
-      </div>
-    </div>`;
-  });
-  html += `
-    <div class="submit-bar">
-      <button class="btn-submit" id="c2Btn">📤 ส่งใบกิจกรรม 2.1</button>
-      <div class="status" id="c2Stat"></div>
-    </div>`;
-  body.innerHTML += html;
-  document.getElementById('c2Btn').onclick = () => {
-    const pl = {};
-    problems.forEach(p => {
-      pl[`q${p.no}_stem`]  = p.stem;
-      pl[`q${p.no}_given`] = val(`c2_given_${p.no}`);
-      pl[`q${p.no}_work`]  = val(`c2_work_${p.no}`);
-      pl[`q${p.no}_misc`]  = p.misc;
-    });
-    submitData(`Calc_P${state.currentPlan}`, pl,
-      document.getElementById('c2Stat'), document.getElementById('c2Btn'));
-  };
-  showView('view-tool');
-}
-
-// ═══════════════════════════════════════════════════════════
-// ใบกิจกรรม 2.2 · Spot the Error (v=fλ)
-// ═══════════════════════════════════════════════════════════
-function renderSpot2(body){
-  const items = [
-    { misc:'M2.1', stmt:'เมื่อดีดกีตาร์สายเดิมด้วยแรงแรงขึ้น เสียงจะมีความถี่สูงขึ้น ทำให้คลื่นในสายวิ่งเร็วขึ้น เพราะ v = fλ และ f เพิ่ม v จึงเพิ่ม' },
-    { misc:'M2.4', stmt:'คลื่นเสียงความถี่ 500 Hz เดินทางจากอากาศ (v = 340 m/s) เข้าไปในน้ำ (v = 1,500 m/s) · เมื่อเข้าน้ำแล้วความถี่ของเสียงเปลี่ยนเป็นประมาณ 2,200 Hz เพื่อให้คลื่นเดินทางในน้ำได้เร็วขึ้น' },
-    { misc:'M2.1+M2.2', stmt:'โจทย์: เชือกมวล 20 g ยาว 2 m ดึงด้วยแรง 10 N ความถี่ 20 Hz · วิธีทำ: v = fλ = 20 × 0.5 = 10 m/s · (ใช้ v = fλ โดยสมมติ λ = 0.5 m แทนที่จะใช้ v = √(T/μ))' }
-  ];
-  let html = `<div class="info"><b>🔍 ใบกิจกรรม 2.2:</b> หาข้อผิดพลาดในข้อความ/การคำนวณ 3 ข้อ · เป้าหมาย: M2.1, M2.2, M2.4</div>`;
-  items.forEach((it,i) => {
-    html += `
-    <div class="item">
-      <div><span class="no">ข้อ ${i+1}</span> <span class="mis-tag">${it.misc}</span></div>
-      <div class="stem" style="font-style:italic;color:#b71c1c;background:#fff;border:1.5px dashed #ef9a9a;border-radius:10px;padding:12px;margin:8px 0">"${it.stmt}"</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-        <div><label style="font-weight:700">📝 ผิดตรงไหน:</label>
-          <textarea id="s2_err_${i}" placeholder="อธิบายสิ่งที่ผิด..."></textarea></div>
-        <div><label style="font-weight:700">✅ ที่ถูกต้องคือ:</label>
-          <textarea id="s2_fix_${i}" placeholder="แก้ไขให้ถูกต้อง..."></textarea></div>
-      </div>
-    </div>`;
-  });
-  html += `
-    <div class="submit-bar">
-      <button class="btn-submit" id="s2Btn">📤 ส่งใบกิจกรรม 2.2</button>
-      <div class="status" id="s2Stat"></div>
-    </div>`;
-  body.innerHTML += html;
-  document.getElementById('s2Btn').onclick = () => {
-    const pl = {};
-    items.forEach((it,i) => {
-      pl[`item${i+1}_stmt`]  = it.stmt;
-      pl[`item${i+1}_error`] = val(`s2_err_${i}`);
-      pl[`item${i+1}_fix`]   = val(`s2_fix_${i}`);
-      pl[`item${i+1}_misc`]  = it.misc;
-    });
-    submitData(`Spot_P${state.currentPlan}`, pl,
-      document.getElementById('s2Stat'), document.getElementById('s2Btn'));
   };
   showView('view-tool');
 }
