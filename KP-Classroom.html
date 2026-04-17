@@ -237,8 +237,11 @@ input[type=text],input[type=number]{padding:8px 12px;border:1.5px solid #cbd5e1;
 /* ═══════ MEDIA CARDS (Teacher resource index) ═══════ */
 .media-section-title{font-size:17px;font-weight:800;color:#0f2c5c;margin:18px 0 10px;padding-left:10px;border-left:5px solid #1565c0}
 .media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.media-card-wrap{position:relative}
 .media-card{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:14px 16px;transition:all .15s;text-decoration:none;color:inherit;display:block}
 .media-card:hover{border-color:#1565c0;box-shadow:0 4px 10px rgba(21,101,192,.15);transform:translateY(-2px)}
+.media-dl{position:absolute;top:8px;right:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:8px;color:#475569;text-decoration:none;font-size:16px;font-weight:700;z-index:2;transition:all .12s}
+.media-dl:hover{background:#1565c0;color:#fff;border-color:#1565c0;transform:scale(1.08)}
 .media-card .no{display:inline-block;background:#1565c0;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;margin-right:6px}
 .media-card .t{font-size:15.5px;font-weight:700;color:#0f2c5c;margin:4px 0}
 .media-card .d{font-size:13px;color:#555;margin-top:4px;line-height:1.45}
@@ -3242,14 +3245,24 @@ function renderMediaBody(){
         if (mg.status === 'locked') return '';
         const chips = (it.chips||[]).map(c => `<span class="chip ${c[0]}">${c[1]}</span>`).join('');
         const meta = it.meta ? `<div class="meta">${it.meta}</div>` : '';
-        const href = encodeURI(`${data.folder}/${it.file}`);
+        const isExternal = /^https?:/.test(it.file);
+        const href = isExternal ? it.file : encodeURI(`${data.folder}/${it.file}`);
+        // Clean download filename: use title + original extension · strip URL/path clutter
+        const ext = (it.file.split('.').pop()||'html').split('?')[0].split('#')[0];
+        const cleanName = `${String(it.t).replace(/[\\/:*?"<>|]/g,'_').trim()}.${ext}`;
+        // Download button only for local files (GitHub Pages same-origin · download attr works)
+        const dlBtn = isExternal ? '' :
+          `<a class="media-dl" href="${href}" download="${escapeHtml(cleanName)}" title="ดาวน์โหลด: ${escapeHtml(cleanName)}" onclick="event.stopPropagation()">⬇</a>`;
         return `
-          <a class="media-card ${it.cls}" href="${href}" target="_blank" rel="noopener">
-            <div><span class="no">${it.no}</span><b>${it.t}</b></div>
-            <div class="d">${it.d}</div>
-            ${meta}
-            ${chips ? `<div>${chips}</div>` : ''}
-          </a>`;
+          <div class="media-card-wrap" style="position:relative">
+            <a class="media-card ${it.cls}" href="${href}" target="_blank" rel="noopener">
+              <div><span class="no">${it.no}</span><b>${it.t}</b></div>
+              <div class="d">${it.d}</div>
+              ${meta}
+              ${chips ? `<div>${chips}</div>` : ''}
+            </a>
+            ${dlBtn}
+          </div>`;
       }).join('')}
     </div>
   `).join('');
