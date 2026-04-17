@@ -2149,9 +2149,14 @@ async function loadTeacherDashboard(){
   }
 
   try {
-    // ดึงรายชื่อ sheets
+    // ดึงรายชื่อ sheets · กรองออก:
+    //  - Sheet1 (default ของ Google)
+    //  - ชื่อขึ้นต้น '_' (internal: _Students, _Settings, _Feedback)
+    //  - 'Default' (ถ้า client ส่งโดยไม่ระบุ sheet = junk/test)
     const info = await fetch(API_URL + '?action=info').then(r => r.json());
-    const sheets = (info.sheets || []).filter(n => n !== 'Sheet1');
+    const sheets = (info.sheets || []).filter(n =>
+      n !== 'Sheet1' && !n.startsWith('_') && n !== 'Default'
+    );
 
     let html = `<div class="hero" style="margin-bottom:16px">
       <h2>📊 ภาพรวมงานวิจัย</h2>
