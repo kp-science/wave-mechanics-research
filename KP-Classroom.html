@@ -451,11 +451,71 @@ body.printing-tool #topBar{display:none !important}
 <script>
 // ═══════════════════════════════════════════════════════════
 // ⚙️ CONFIG — โหลดจาก content/config.js
-// แก้ config/school/teacher/API ที่นั่น ไม่ใช่ที่นี่
 // ═══════════════════════════════════════════════════════════
 const API_URL = KP_CONFIG.apiUrl;
 const SCHOOL  = KP_CONFIG.school;
 const YEAR    = KP_CONFIG.year;
+
+// ═══════════════════════════════════════════════════════════
+// 💾 DB Adapter (Phase 3c)
+// ─────────────────────────────────────────────────────────
+// Single source of truth สำหรับ backend calls
+// ปัจจุบัน: Google Apps Script + Sheets (via fetch)
+// อนาคต: swap ไป Firebase/Supabase = เขียนใหม่แค่ object นี้
+// ═══════════════════════════════════════════════════════════
+const DB = {
+  // ─── GET (CORS-safe · read response) ───
+  async _get(action, params = {}, timeoutMs = 8000){
+    if (!isApiConfigured()) return null;
+    const qs = new URLSearchParams({action, ...params, _: Date.now()});
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try {
+      const r = await fetch(`${API_URL}?${qs}`, {signal: ctrl.signal});
+      return await r.json();
+    } catch(e){
+      console.warn('DB._get('+action+') failed:', e.message);
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+
+  // ─── POST (no-cors · fire-and-forget) ───
+  async _post(action, data = {}){
+    if (!isApiConfigured()) return;
+    return fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action, ...data})
+    });
+  },
+
+  // ─── Reads ───
+  getInfo()               { return DB._get('info'); },
+  getStudents()           { return DB._get('students'); },
+  getSettings()           { return DB._get('settings'); },
+  getFeedback(studentId)  { return DB._get('feedback', studentId ? {student_id: studentId} : {}); },
+  getCourseStatus()       { return DB._get('courseStatus', {}, 3000); },
+  getPlanStats(plan)      { return DB._get('planStats', {plan}); },
+  listSheet(sheet)        { return DB._get('list', {sheet}); },
+  statsSheet(sheet)       { return DB._get('stats', {sheet}); },
+  verifyAdmin(pw)         { return DB._get('verifyAdmin', {pw}); },
+
+  // ─── Writes (ต้องมี teacher_pw) ───
+  // Student submit (payload wraps form data · Apps Script handleSubmit expects this shape)
+  submit(sheet, payload) { return DB._post('submit', {sheet, payload}); },
+  uploadStudents(rows)    { return DB._post('uploadStudents',   {teacher_pw: getTeacherPassword(), rows}); },
+  updateSetting(data)     { return DB._post('updateSetting',    {teacher_pw: getTeacherPassword(), ...data}); },
+  deleteSetting(data)     { return DB._post('deleteSetting',    {teacher_pw: getTeacherPassword(), ...data}); },
+  sendFeedback(data)      { return DB._post('sendFeedback',     {teacher_pw: getTeacherPassword(), ...data}); },
+  markFeedbackRead(id)    { return DB._post('markRead',         {feedback_id: id}); },
+  setCourseStatus(status) { return DB._post('setCourseStatus',  {teacher_pw: getTeacherPassword(), course_status: status}); },
+  uploadFile(data)        { return DB._post('uploadFile',       {teacher_pw: getTeacherPassword(), ...data}); }
+};
+// Helper for functions that might be called before TEACHER_PW_KEY exists
+// (e.g. student submit doesn't need teacher pw — submit() sends empty which server ignores)
 
 // ═══════════════════════════════════════════════════════════
 // PLAN & TOOL REGISTRY — โหลดจาก content/plans.js + tools.js
@@ -548,34 +608,21 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // โหลดรายชื่อนักเรียนจาก API
 async function loadStudents(){
-  if (!isApiConfigured()) return;
-  try {
-    const r = await fetch(API_URL + '?action=students').then(x => x.json());
-    if (r.status === 'ok') state.students = r.students || [];
-  } catch(e){ console.warn('โหลดรายชื่อไม่สำเร็จ:', e); }
+  const r = await DB.getStudents();
+  if (r && r.status === 'ok') state.students = r.students || [];
 }
 
 // โหลดสถานะแผน
 async function loadSettings(){
-  if (!isApiConfigured()) return;
-  try {
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 8000); // timeout 8 วินาที
-    const r = await fetch(API_URL + '?action=settings', {signal:ctrl.signal}).then(x => x.json());
-    clearTimeout(timer);
-    if (r.status === 'ok') state.settings = r.settings || [];
-  } catch(e){ console.warn('โหลด settings ไม่สำเร็จ:', e); }
+  const r = await DB.getSettings();
+  if (r && r.status === 'ok') state.settings = r.settings || [];
 }
 
 // โหลดฟีดแบ็กของนักเรียนคนนี้
 async function loadFeedback(){
-  if (!isApiConfigured() || !state.student) return;
-  try {
-    const sid = state.student.student_id || '';
-    const r = await fetch(API_URL + '?action=feedback&student_id=' + encodeURIComponent(sid))
-                   .then(x => x.json());
-    if (r.status === 'ok') state.feedback = r.feedback || [];
-  } catch(e){ console.warn('โหลด feedback ไม่สำเร็จ:', e); }
+  if (!state.student) return;
+  const r = await DB.getFeedback(state.student.student_id || '');
+  if (r && r.status === 'ok') state.feedback = r.feedback || [];
 }
 
 // ตั้งโหมด login ตามรายชื่อที่โหลดมา
@@ -995,8 +1042,7 @@ function renderUpload(body){
       reader.onload = async () => {
         const base64 = reader.result.split(',')[1];
         const stu = state.student||{};
-        const payload = {
-          action: 'uploadFile',
+        await DB.uploadFile({
           student_id: stu.student_id||'unknown',
           student_name: stu.name||'unknown',
           student_class: stu.class||'',
@@ -1005,11 +1051,6 @@ function renderUpload(body){
           filename: selectedFile.name,
           mimeType: selectedFile.type,
           data: base64
-        };
-        await fetch(API_URL, {
-          method:'POST', mode:'no-cors',
-          headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body: JSON.stringify(payload)
         });
         stat.className='status ok'; stat.textContent='✅ อัปโหลดสำเร็จ! ไฟล์ถูกส่งเข้า Google Drive แล้ว';
         // Mark as submitted
@@ -1083,12 +1124,7 @@ async function submitData(sheetName, payload, statusEl, btnEl){
   statusEl.textContent = '⏳ กำลังส่งข้อมูล...';
 
   try {
-    await fetch(API_URL, {
-      method:'POST',
-      mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body:JSON.stringify({ sheet:sheetName, payload:full })
-    });
+    await DB.submit(sheetName, full);
     statusEl.className = 'status success';
     statusEl.innerHTML = '✅ ส่งข้อมูลสำเร็จ! 🎉';
     btnEl.textContent = '✅ ส่งแล้ว';
@@ -1913,11 +1949,7 @@ async function showInbox(){
 
     // markRead ถ้ายังไม่อ่าน
     if (!f.read_at){
-      fetch(API_URL, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify({action:'markRead', feedback_id:f.id, student_id:state.student.student_id})
-      }).catch(()=>{});
+      DB.markFeedbackRead(f.id).catch(()=>{});
     }
   });
 
@@ -1993,13 +2025,8 @@ async function openTeacher(){
 
   // Verify ฝั่ง server
   let verified = false;
-  if (isApiConfigured()){
-    try {
-      const vr = await fetch(API_URL + '?action=verifyAdmin&pw=' + encodeURIComponent(pw))
-        .then(r => r.json()).catch(() => null);
-      if (vr && vr.verified === true) verified = true;
-    } catch(e){}
-  }
+  const vr = await DB.verifyAdmin(pw);
+  if (vr && vr.verified === true) verified = true;
   if (!verified && legacyPass && pw === legacyPass){ verified = true; }
 
   if (!verified){
@@ -2083,11 +2110,8 @@ function renderTeacherShell(){
 
 // ─── Course status toggle (Phase 5) ───
 async function refreshCourseStatusBadge(){
-  if (!isApiConfigured()) return;
-  try {
-    const r = await fetch(API_URL + '?action=courseStatus').then(x=>x.json()).catch(()=>null);
-    if (r && r.course_status) applyCourseStatusBadge(r.course_status);
-  } catch(e){}
+  const r = await DB.getCourseStatus();
+  if (r && r.course_status) applyCourseStatusBadge(r.course_status);
 }
 
 function applyCourseStatusBadge(status){
@@ -2108,15 +2132,7 @@ async function setCourseStatusUI(newStatus){
   const labels = {'open':'เปิดเรียน', 'coming-soon':'กำลังเตรียม', 'closed':'ปิดเทอม'};
   if (!confirm(`เปลี่ยนสถานะวิชาเป็น "${labels[newStatus]}"?\nนักเรียนจะเห็นผลหลัง refresh landing`)) return;
   try {
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'setCourseStatus',
-        teacher_pw: getTeacherPassword(),
-        course_status: newStatus
-      })
-    });
+    await DB.setCourseStatus(newStatus);
     applyCourseStatusBadge(newStatus);
     alert(`✅ เปลี่ยนสถานะเป็น "${labels[newStatus]}" เรียบร้อย`);
   } catch(e){
@@ -2158,8 +2174,8 @@ async function loadTeacherDashboard(){
     //  - Sheet1 (default ของ Google)
     //  - ชื่อขึ้นต้น '_' (internal: _Students, _Settings, _Feedback)
     //  - 'Default' (ถ้า client ส่งโดยไม่ระบุ sheet = junk/test)
-    const info = await fetch(API_URL + '?action=info').then(r => r.json());
-    const sheets = (info.sheets || []).filter(n =>
+    const info = await DB.getInfo();
+    const sheets = ((info && info.sheets) || []).filter(n =>
       n !== 'Sheet1' && !n.startsWith('_') && n !== 'Default'
     );
 
@@ -2180,10 +2196,8 @@ async function loadTeacherDashboard(){
     // ดึงสถิติแต่ละ sheet
     for (const s of sheets){
       const isFT = s.startsWith('F_') || s.startsWith('FT');
-      const action = isFT ? 'stats' : 'list';
       try {
-        const r = await fetch(API_URL + '?action=' + action + '&sheet=' + encodeURIComponent(s))
-                       .then(x => x.json());
+        const r = await (isFT ? DB.statsSheet(s) : DB.listSheet(s));
         const card = document.createElement('div');
         card.className = 'tool-card tc-ft';
         card.style.cursor = 'default';
@@ -2328,15 +2342,7 @@ async function doUploadStudents(){
 
   stat.textContent = '⏳ กำลังอัปโหลด...';
   try {
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'uploadStudents',
-        teacher_pw: getTeacherPassword(),
-        rows: rows
-      })
-    });
+    await DB.uploadStudents(rows);
     stat.innerHTML = `✅ อัปโหลด ${rows.length} คนสำเร็จ — กำลังรีโหลด...`;
     setTimeout(async () => {
       await loadStudents();
@@ -2476,17 +2482,7 @@ async function savePlan(planNo){
   const opens_at = document.getElementById('op_'+planNo).value;
   const note     = document.getElementById('nt_'+planNo).value;
   try {
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'updateSetting',
-        teacher_pw: getTeacherPassword(),
-        scope: 'plan', plan: planNo, item_id: '',
-        status, opens_at, note
-      })
-    });
-    // อัปเดต cache local
+    await DB.updateSetting({scope:'plan', plan:planNo, item_id:'', status, opens_at, note});
     upsertSettingCache('plan', planNo, '', {status, opens_at, closes_at:'', note});
     alert(`✅ บันทึกแผน ${planNo} เป็น "${status}" แล้ว`);
   } catch(e){
@@ -2498,17 +2494,7 @@ async function savePlan(planNo){
 async function toggleItem(planNo, scope, itemId, isOpen){
   const status = isOpen ? 'open' : 'locked';
   try {
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'updateSetting',
-        teacher_pw: getTeacherPassword(),
-        scope, plan: planNo, item_id: itemId,
-        status
-      })
-    });
-    // อัปเดต cache + rerender
+    await DB.updateSetting({scope, plan:planNo, item_id:itemId, status});
     upsertSettingCache(scope, planNo, itemId, {status, opens_at:'', closes_at:'', note:''});
     renderPlansList(); // rerender เพื่อ update badge "ปิด X tool, Y สื่อ"
     // เปิด detail กลับคืนเพราะ rerender ปิดไว้
@@ -2656,8 +2642,7 @@ async function fetchMonitor(showLoading){
   }
   if (showLoading) body.innerHTML = '⏳ กำลังโหลด...';
   try {
-    const r = await fetch(API_URL + '?action=planStats&plan=' + monitorCurrentPlan + '&_=' + Date.now())
-      .then(x => x.json()).catch(() => null);
+    const r = await DB.getPlanStats(monitorCurrentPlan);
     if (!r || r.status !== 'ok'){
       body.innerHTML = '<div style="padding:20px;text-align:center;color:#c62828">❌ โหลดข้อมูลไม่ได้ (อาจต้อง redeploy Apps Script)</div>';
       return;
@@ -2941,14 +2926,10 @@ async function doSendFeedback(){
 
   stat.textContent = `⏳ กำลังส่ง ${recipients.length} คน...`;
   for (const r of recipients){
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'sendFeedback', teacher_pw: getTeacherPassword(),
-        to_student_id: r.student_id, to_name: r.full_name,
-        plan, type:'manual', message:msg, poe_score: poe!==''?Number(poe):undefined
-      })
+    await DB.sendFeedback({
+      to_student_id: r.student_id, to_name: r.full_name,
+      plan, type:'manual', message:msg,
+      poe_score: poe!==''?Number(poe):undefined
     }).catch(()=>{});
   }
   stat.innerHTML = `✅ ส่งสำเร็จ ${recipients.length} คน`;
@@ -3075,9 +3056,7 @@ async function submitObOrGr(sheet, payload, stat, btn){
   if (!isApiConfigured()){ stat.className='status error'; stat.textContent='⚠️ ยังไม่ได้ตั้ง API_URL'; return; }
   btn.disabled = true; stat.className='status'; stat.textContent='⏳ กำลังส่ง...';
   try {
-    await fetch(API_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'},
-      body: JSON.stringify({ action:'submit', sheet, teacher_password:getTeacherPassword(),
-                              timestamp:new Date().toISOString(), ...payload })});
+    await DB.submit(sheet, {...payload, timestamp: new Date().toISOString()});
     stat.className='status ok'; stat.textContent='✅ บันทึกเรียบร้อย';
   } catch(e){ stat.className='status error'; stat.textContent='❌ '+e.message; }
   finally { btn.disabled=false; }
@@ -3635,8 +3614,8 @@ function exportPostPlanHTML(){
 async function loadRecentFeedback(){
   const el = document.getElementById('fb-recent');
   try {
-    const r = await fetch(API_URL + '?action=feedback').then(x=>x.json());
-    const list = (r.feedback || []).sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).slice(0,10);
+    const r = await DB.getFeedback();
+    const list = ((r && r.feedback) || []).sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).slice(0,10);
     if (!list.length){ el.innerHTML = '<div class="info">ยังไม่มีฟีดแบ็กที่ส่ง</div>'; return; }
     el.innerHTML = list.map(f => `
       <div class="fb-card">
