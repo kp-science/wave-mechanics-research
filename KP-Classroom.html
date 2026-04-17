@@ -1678,16 +1678,16 @@ function renderCER(body){
         <div class="cer-col-pick">${colPickHtml}</div>
       </div>
       <div class="cer-field">
-        <label><span class="cer-dot claim"></span> Claim — ข้อค้นพบ/ข้อสรุปสั้น ๆ</label>
-        <textarea id="cer_claim" placeholder="${escapeHtml(prompts.claim || 'เช่น: v ของคลื่นดลเท่ากับคลื่นต่อเนื่อง')}"></textarea>
+        <label><span class="cer-dot claim"></span> Claim — ข้อค้นพบ</label>
+        <textarea id="cer_claim" placeholder=""></textarea>
       </div>
       <div class="cer-field">
-        <label><span class="cer-dot evid"></span> Evidence — หลักฐานจากฐานไหน/ข้อมูลที่วัด</label>
-        <textarea id="cer_evid" placeholder="${escapeHtml(prompts.evidence || 'เช่น: ฐาน 1 Slinky วัด v ทั้งสองแบบได้ 4.2 m/s เท่ากัน')}"></textarea>
+        <label><span class="cer-dot evid"></span> Evidence — หลักฐานจากใบ POE-03</label>
+        <textarea id="cer_evid" placeholder=""></textarea>
       </div>
       <div class="cer-field">
-        <label><span class="cer-dot reas"></span> Reasoning — เหตุผลที่เชื่อมหลักฐานกับข้อสรุป</label>
-        <textarea id="cer_reas" placeholder="${escapeHtml(prompts.reasoning || 'เช่น: v ขึ้นกับตัวกลางเท่านั้น ไม่ขึ้นกับลักษณะการรบกวน')}"></textarea>
+        <label><span class="cer-dot reas"></span> Reasoning — เหตุผลที่โยงหลักฐานสู่ข้อสรุป</label>
+        <textarea id="cer_reas" placeholder=""></textarea>
       </div>
       ${allowImage ? `
       <div>
@@ -1736,6 +1736,18 @@ function renderCER(body){
     _cerInitCanvas();
     document.getElementById('cerFile').addEventListener('change', _cerHandleFile);
   }
+
+  // Per-column prompts — เปลี่ยน placeholder ตามคอลัมน์ที่เลือก
+  const applyColPrompts = (colId) => {
+    const col = cols.find(c => c.id === colId);
+    const p = (col && col.prompts) || prompts || {};
+    document.getElementById('cer_claim').placeholder = p.claim || '';
+    document.getElementById('cer_evid').placeholder  = p.evidence || '';
+    document.getElementById('cer_reas').placeholder  = p.reasoning || '';
+  };
+  document.querySelectorAll('input[name="cer_col"]').forEach(r =>
+    r.addEventListener('change', () => applyColPrompts(r.value)));
+  applyColPrompts(cols[0]?.id || '');
 
   document.getElementById('cerBtn').onclick = async () => {
     const btn = document.getElementById('cerBtn');
