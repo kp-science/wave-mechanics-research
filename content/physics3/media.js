@@ -187,5 +187,68 @@ window.KP_PLAN_MEDIA = {
       'MJ-01 → คำถามเด่นเป็น Hook แผน 4 (ซ้อนทับ)',
       'OB-01 → Inquiry Attitude (A1 ≥ 60%) · SRL (A2 ≥ 80%)'
     ]
+  },
+  4: {
+    folder: 'lessons/physics3/waves/แผน04_การซ้อนทับและฮอยเกนส์',
+    title: 'แผน 4 — การซ้อนทับของคลื่น + หลักของฮอยเกนส์',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 7–8 (100 นาที) · ว2.1 ม.5/3',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 4 (ฉบับสมบูรณ์)', file:'แผน4_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline · Theme ส้ม-แดง', chips:[] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e1', no:'01', t:'Concept Cartoon "สงครามริ้วคลื่น"', file:'สื่อ01_ConceptCartoon_สงครามริ้วคลื่น.html',
+          d:'3 ตัวละคร (พี่บิ๊ก/น้องนุ่น/ครูแพท) · pulse 2 ลูกชนกลางเชือก · ถกเถียงผลหลังพ้นกัน',
+          meta:'ใช้ในฉาก E1 Engage · 14 นาที',
+          chips:[['m','M4.1'],['m','M4.2'],['m','M4.3'],['','POE-P']] },
+        { cls:'e2', no:'02', t:'POE-04 ใบบันทึก P / O / E', file:'สื่อ02_POE-04_ใบบันทึกPOE.html',
+          d:'Predict 3 สถานการณ์ (ยอด+ยอด, ยอด+ท้อง, A ต่าง) · Observe 3 ฐาน (Slinky / pulse-superposition / huygens-wavefront) · Explain (checkbox ผลบวก, เสริม, หักล้างชั่วขณะ, คืนรูป) · มีเฉลยครู',
+          meta:'ใช้ตลอด E1–E3',
+          chips:[['p','P1'],['p','P2'],['m','M4.1'],['m','M4.2'],['m','M4.3'],['m','M4.4']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 4.1 · Calc Superposition', file:'สื่อ04_Calc_ใบกิจกรรม4.1.html',
+          d:'4 ข้อไล่ระดับ · grid-based drawing · (1) A รวมจากกราฟ (2) ยอด+ท้อง หักล้าง (3) time evolution 5 แถว (4) Huygens ช่องกว้าง vs แคบ · มีแนวตอบครู',
+          meta:'ใช้ในฉาก E4 Elaborate · 15 นาที',
+          chips:[['k','K2'],['p','P2'],['m','M4.1'],['m','M4.2'],['m','M4.4']] },
+        { cls:'e4', no:'05', t:'ใบกิจกรรม 4.2 · Spot the Error', file:'สื่อ05_Spot_ใบกิจกรรม4.2.html',
+          d:'3 สถานการณ์ · "ปลาใหญ่กินปลาเล็ก" (M4.3) · "หักล้าง=หายถาวร" (M4.2) · "Huygens เฉพาะน้ำ" (M4.1+M4.4) · ติ๊กจุดผิด + ระบุ MC + เขียนคำอธิบายที่ถูก',
+          meta:'ใช้ในฉาก E4 Elaborate · 12 นาที',
+          chips:[['k','K3'],['p','P2'],['m','M4.1'],['m','M4.2'],['m','M4.3'],['m','M4.4']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'06', t:'F4 Four-tier · Pre + Post', file:'สื่อ06_F4_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier (T1 คำตอบ + T2 มั่นใจ + T3 เหตุผล + T4 มั่นใจ) · M4.1 (คืนรูป) · M4.3 (A ต่าง) · M4.4 (Huygens ทุกคลื่น) · มี SVG และ Answer Key',
+          meta:'ใช้ในฉาก F4 Pre (5\') + F4 Post (7\')',
+          chips:[['k','K1'],['k','K3'],['m','M4.1'],['m','M4.3'],['m','M4.4'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-01 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Perseverance (A1) + Respect for Diverse Views (A2) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 100 นาที',
+          chips:[['a','A1'],['a','A2'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-04',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: เสริม (A+A) · หักล้าง (A−A) · A ต่างกัน · ผูก POE-04 ฐาน 2 (Sim) · นักเรียนส่ง Claim+Evidence+Reasoning + รูป · ครูเปิด CER Board tab ฉายจอ',
+          meta:'ใช้ในฉาก E3 · 8 นาที',
+          chips:[['p','P2'],['k','K3'],['a','A2'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F4 Pre/Post → % Sound · Misconception M4.1/M4.3/M4.4 · Normalized gain ของแผน 4',
+      'POE-04 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 4.1 → คะแนนเฉลี่ย ≥ 70% (เกณฑ์ K2 · P2)',
+      'Spot 4.2 → Conceptual Change · เชื่อม M4.1–4.4 กับหลักฐาน',
+      'CER Board → คลัง Claim-Evidence-Reasoning เรื่องซ้อนทับ · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-01 → คำถามเด่นเป็น Hook แผน 5 (การสะท้อน)',
+      'OB-01 → Perseverance (A1 ≥ 80%) · Respect (A2 ≥ 80%)'
+    ]
   }
 };
