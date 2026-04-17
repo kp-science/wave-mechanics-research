@@ -2066,6 +2066,7 @@ function renderTeacherShell(){
       <button class="tab-btn" data-tab="overview" onclick="switchTeacherTab('overview')">📊 ภาพรวม</button>
       <button class="tab-btn" data-tab="students" onclick="switchTeacherTab('students')">👥 นักเรียน</button>
       <button class="tab-btn" data-tab="plans" onclick="switchTeacherTab('plans')">🗓️ จัดการแผน</button>
+      <button class="tab-btn" data-tab="monitor" onclick="switchTeacherTab('monitor')">🎬 หน้าจอสอน</button>
       <button class="tab-btn" data-tab="media" onclick="switchTeacherTab('media')">📚 สื่อ/เครื่องมือ</button>
       <button class="tab-btn" data-tab="feedback" onclick="switchTeacherTab('feedback')">💬 ส่งฟีดแบ็ก</button>
       <button class="tab-btn" data-tab="observe" onclick="switchTeacherTab('observe')">🔍 สังเกต/Rubric</button>
@@ -2074,6 +2075,7 @@ function renderTeacherShell(){
     <div class="tab-panel" id="tab-overview"></div>
     <div class="tab-panel" id="tab-students"></div>
     <div class="tab-panel" id="tab-plans"></div>
+    <div class="tab-panel" id="tab-monitor"></div>
     <div class="tab-panel" id="tab-media"></div>
     <div class="tab-panel" id="tab-feedback"></div>
     <div class="tab-panel" id="tab-observe"></div>
@@ -2131,9 +2133,15 @@ function switchTeacherTab(name){
     b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab-panel').forEach(p =>
     p.classList.toggle('active', p.id === 'tab-' + name));
+  // stop monitor polling when leaving tab
+  if (name !== 'monitor' && window._monitorInterval){
+    clearInterval(window._monitorInterval);
+    window._monitorInterval = null;
+  }
   if (name === 'overview') loadTeacherDashboard();
   if (name === 'students') renderStudentsTab();
   if (name === 'plans')    renderPlansTab();
+  if (name === 'monitor')  renderMonitorTab();
   if (name === 'media')    renderMediaTab();
   if (name === 'feedback') renderFeedbackTab();
   if (name === 'observe')  renderObserveTab();
@@ -2526,6 +2534,196 @@ function upsertSettingCache(scope, planNo, itemId, fields){
 const PLAN_MEDIA = KP_PLAN_MEDIA;
 
 let mediaCurrentPlan = 1;
+
+// ═══════════════════════════════════════════════════════════
+// TAB: 🎬 หน้าจอสอน (Live Monitor · Phase 6)
+// - Mirror student view · แสดง submission count + TL color dist
+// - Auto-refresh ทุก 10 วินาที · toggle ได้
+// - Presentation mode สำหรับฉายขึ้นจอห้อง
+// ═══════════════════════════════════════════════════════════
+let monitorCurrentPlan = 1;
+let monitorAutoOn = true;
+let monitorPresentation = false;
+let monitorLastData = null;
+
+function renderMonitorTab(){
+  const el = document.getElementById('tab-monitor');
+  const planOpts = PLANS.map(p => `<option value="${p.no}" ${p.no===monitorCurrentPlan?'selected':''}>แผน ${p.no} · ${escapeHtml(p.title)}</option>`).join('');
+  el.innerHTML = `
+    <style>
+      #monitor-root{padding:4px}
+      .mon-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:#fff;padding:14px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.05);margin-bottom:14px}
+      .mon-controls select{padding:8px 12px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:14px}
+      .mon-btn{padding:9px 16px;border:none;border-radius:8px;background:#1565c0;color:#fff;font-weight:600;cursor:pointer;font-family:inherit;font-size:13px;transition:background .2s}
+      .mon-btn:hover{background:#0d47a1}
+      .mon-btn.ghost{background:#eceff1;color:#37474f}
+      .mon-btn.ghost:hover{background:#cfd8dc}
+      .mon-btn.live{background:#43a047}
+      .mon-btn.live.off{background:#78909c}
+      .mon-summary{display:flex;gap:20px;padding:14px 20px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border-radius:12px;margin-bottom:14px;flex-wrap:wrap}
+      .mon-summary .item{display:flex;flex-direction:column}
+      .mon-summary .item b{font-size:28px;line-height:1}
+      .mon-summary .item span{font-size:12px;opacity:.85;margin-top:2px}
+      .mon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+      .mon-card{background:#fff;border:2px solid transparent;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;transition:transform .15s,box-shadow .15s}
+      .mon-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.1)}
+      .mon-card.full{border-color:#43a047}
+      .mon-card.empty{opacity:.55}
+      .mon-card-head{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+      .mon-card-ico{font-size:28px}
+      .mon-card-title{font-weight:700;color:#0f2c5c;font-size:15px;line-height:1.3;flex:1}
+      .mon-count{font-size:32px;font-weight:800;color:#1565c0;line-height:1;margin:10px 0 4px}
+      .mon-count .total{font-size:18px;color:#999;font-weight:500}
+      .mon-card.full .mon-count{color:#2e7d32}
+      .mon-bar{height:8px;background:#eceff1;border-radius:4px;overflow:hidden;margin:6px 0}
+      .mon-bar .fill{height:100%;background:linear-gradient(90deg,#1976d2,#43a047);transition:width .5s}
+      .mon-dist{display:flex;gap:6px;margin-top:10px}
+      .mon-dist .d{flex:1;text-align:center;padding:8px 4px;border-radius:8px;font-weight:700}
+      .mon-dist .green{background:#e8f5e9;color:#2e7d32}
+      .mon-dist .yellow{background:#fff9c4;color:#f57f17}
+      .mon-dist .red{background:#ffebee;color:#c62828}
+      .mon-dist .d .n{font-size:22px;display:block;line-height:1}
+      .mon-dist .d .l{font-size:11px;opacity:.7}
+
+      /* Presentation mode (ฉายจอใหญ่) */
+      body.presentation .top, body.presentation .tab-nav, body.presentation #courseToggleBar{display:none !important}
+      body.presentation .view-teacher{padding:0}
+      body.presentation .tab-panel{padding:0}
+      body.presentation #tab-monitor{padding:20px}
+      body.presentation .mon-summary{padding:28px 36px;font-size:18px}
+      body.presentation .mon-summary .item b{font-size:48px}
+      body.presentation .mon-grid{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:22px}
+      body.presentation .mon-card{padding:22px}
+      body.presentation .mon-card-ico{font-size:42px}
+      body.presentation .mon-card-title{font-size:20px}
+      body.presentation .mon-count{font-size:52px}
+      body.presentation .mon-count .total{font-size:28px}
+      body.presentation .mon-dist .d .n{font-size:36px}
+      body.presentation .mon-dist .d .l{font-size:14px}
+      body.presentation .mon-exit{position:fixed;top:20px;right:20px;z-index:9999}
+    </style>
+    <div id="monitor-root">
+      <div class="mon-controls">
+        <label style="font-weight:700;color:#0f2c5c">📖 แผน:</label>
+        <select id="monPlanSel" onchange="monitorCurrentPlan=+this.value; fetchMonitor(true)">${planOpts}</select>
+        <button class="mon-btn" onclick="fetchMonitor(true)">🔄 Refresh</button>
+        <button class="mon-btn live" id="monAutoBtn" onclick="toggleMonitorAuto()">▶ Auto 10s · ON</button>
+        <span style="flex:1"></span>
+        <span id="monUpdated" style="font-size:12px;color:#666"></span>
+        <button class="mon-btn ghost ${monitorPresentation?'mon-exit':''}" onclick="togglePresentation()">${monitorPresentation?'✖ ออกจาก':'📺 '}ฉายจอ</button>
+      </div>
+      <div id="monBody">⏳ กำลังโหลด...</div>
+    </div>
+  `;
+  setTimeout(() => fetchMonitor(true), 50);
+  startMonitorPolling();
+}
+
+function startMonitorPolling(){
+  if (window._monitorInterval) clearInterval(window._monitorInterval);
+  if (!monitorAutoOn) return;
+  window._monitorInterval = setInterval(() => {
+    if (teacherCurrentTab === 'monitor') fetchMonitor(false);
+  }, 10000);
+}
+
+function toggleMonitorAuto(){
+  monitorAutoOn = !monitorAutoOn;
+  const btn = document.getElementById('monAutoBtn');
+  if (btn){
+    btn.classList.toggle('off', !monitorAutoOn);
+    btn.textContent = monitorAutoOn ? '▶ Auto 10s · ON' : '⏸ Auto 10s · OFF';
+  }
+  startMonitorPolling();
+}
+
+function togglePresentation(){
+  monitorPresentation = !monitorPresentation;
+  document.body.classList.toggle('presentation', monitorPresentation);
+  renderMonitorTab(); // rerender เพื่อเปลี่ยนข้อความปุ่ม
+  if (monitorLastData) renderMonitorBody(monitorLastData); // คง data
+}
+
+async function fetchMonitor(showLoading){
+  const body = document.getElementById('monBody');
+  if (!body) return;
+  if (!isApiConfigured()){
+    body.innerHTML = '<div class="warn-config">⚠️ ยังไม่ได้ตั้งค่า API_URL</div>';
+    return;
+  }
+  if (showLoading) body.innerHTML = '⏳ กำลังโหลด...';
+  try {
+    const r = await fetch(API_URL + '?action=planStats&plan=' + monitorCurrentPlan + '&_=' + Date.now())
+      .then(x => x.json()).catch(() => null);
+    if (!r || r.status !== 'ok'){
+      body.innerHTML = '<div style="padding:20px;text-align:center;color:#c62828">❌ โหลดข้อมูลไม่ได้ (อาจต้อง redeploy Apps Script)</div>';
+      return;
+    }
+    monitorLastData = r;
+    renderMonitorBody(r);
+    const upd = document.getElementById('monUpdated');
+    if (upd) upd.textContent = 'อัปเดต: ' + new Date().toLocaleTimeString('th-TH');
+  } catch(e){
+    body.innerHTML = '<div style="padding:20px;color:#c62828">❌ ' + e.message + '</div>';
+  }
+}
+
+function renderMonitorBody(data){
+  const body = document.getElementById('monBody');
+  if (!body) return;
+  const total = data.total_students || 0;
+  const stats = data.stats || {};
+  const toolList = PLAN_TOOLS[data.plan] || [];
+
+  // Total submissions
+  const sumCount = Object.values(stats).reduce((a,s) => a + (s.count||0), 0);
+
+  const summary = `
+    <div class="mon-summary">
+      <div class="item"><b>${total}</b><span>นักเรียนทั้งหมด</span></div>
+      <div class="item"><b>${sumCount}</b><span>งานที่ส่งแล้ว (รวม)</span></div>
+      <div class="item"><b>${toolList.length}</b><span>Tools ในแผนนี้</span></div>
+    </div>
+  `;
+
+  // Cards per tool in this plan
+  const cards = toolList.map(toolId => {
+    const def = TOOL_DEFS[toolId];
+    if (!def) return '';
+    const s = stats[toolId] || { count: 0 };
+    const count = s.count;
+    const pct = total > 0 ? Math.round(count / total * 100) : 0;
+    const full = total > 0 && count >= total;
+    const cls = !count ? 'empty' : (full ? 'full' : '');
+
+    let dist = '';
+    if (s.dist){
+      const {green=0, yellow=0, red=0} = s.dist;
+      dist = `
+        <div class="mon-dist">
+          <div class="d green"><span class="n">${green}</span><span class="l">🟢 เขียว</span></div>
+          <div class="d yellow"><span class="n">${yellow}</span><span class="l">🟡 เหลือง</span></div>
+          <div class="d red"><span class="n">${red}</span><span class="l">🔴 แดง</span></div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="mon-card ${cls}">
+        <div class="mon-card-head">
+          <div class="mon-card-ico">${def.ico}</div>
+          <div class="mon-card-title">${escapeHtml(def.name)}</div>
+        </div>
+        <div class="mon-count">${count}<span class="total"> / ${total || '?'}</span></div>
+        <div class="mon-bar"><div class="fill" style="width:${Math.min(100,pct)}%"></div></div>
+        <div style="font-size:12px;color:#666">${pct}% ส่งแล้ว</div>
+        ${dist}
+      </div>
+    `;
+  }).join('');
+
+  body.innerHTML = summary + `<div class="mon-grid">${cards || '<div style="padding:20px;text-align:center;color:#999">ไม่มี tool ในแผนนี้</div>'}</div>`;
+}
 
 function renderMediaTab(){
   const el = document.getElementById('tab-media');
