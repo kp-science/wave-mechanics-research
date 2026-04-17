@@ -3551,10 +3551,49 @@ async function renderObserveTab(){
       </div>
     </div>
 
+    <!-- 🧑‍🤝‍🧑 Group Setup · ตั้งกลุ่มเร็ว ๆ (Quick Input + Auto-random + Copy) -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px;border-left:6px solid #0d9488">
+      <h3 style="color:#0f766e;margin-bottom:6px">🧑‍🤝‍🧑 ตั้งกลุ่ม (Quick Group Setup)</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px;background:#f0fdfa;border-left-color:#0d9488">
+        💡 พิมพ์<b>เลขที่</b>นักเรียนในแต่ละกลุ่ม (คั่นด้วย , หรือช่องว่าง) · หรือกด <b>🎲 สุ่ม</b> · บันทึกแล้ว Group Rubric จะดึงกลุ่มมาใช้ต่อ
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+        <div>
+          <label style="font-weight:700">ห้อง</label>
+          <select id="gs-class" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin-top:4px">
+            <option value="">— เลือก —</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight:700">ใช้กับ</label>
+          <select id="gs-scope" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin-top:4px">
+            <option value="term">🔒 ทั้งเทอม (ทุกแผน)</option>
+            <option value="plan">📋 เฉพาะแผนนี้</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="gs-groups"></div>
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button id="gs-add" class="btn-submit" style="background:#0f766e;flex:1;min-width:120px">➕ เพิ่มกลุ่ม</button>
+        <button id="gs-rand" class="btn-submit" style="background:#7c3aed;flex:1;min-width:120px">🎲 สุ่มกลุ่ม</button>
+        <button id="gs-copy" class="btn-submit" style="background:#0369a1;flex:1;min-width:120px">📋 คัดลอกจากแผนก่อน</button>
+      </div>
+      <div class="submit-bar">
+        <button id="gs-save" class="btn-submit" style="background:#0d9488">💾 บันทึกกลุ่ม</button>
+        <div class="status" id="gs-stat"></div>
+      </div>
+    </div>
+
     <!-- Group Rubric -->
     <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
       <h3 style="color:#2e7d32;margin-bottom:10px">👥 Group Rubric (ประเมินกลุ่มย่อย)</h3>
       <div class="info" style="font-size:13px;margin-bottom:10px">ใช้กับกิจกรรมกลุ่ม (Explore/Elaborate) · ให้คะแนน 1–4 แต่ละเกณฑ์</div>
+      <label style="font-weight:700">🔍 เลือกกลุ่มที่ตั้งไว้ (auto-fill)</label>
+      <select id="gr-pick" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin:6px 0;background:#f0fdfa">
+        <option value="">— พิมพ์เองหรือเลือกกลุ่มที่ตั้งไว้ —</option>
+      </select>
       <label style="font-weight:700">กลุ่มที่</label>
       <input type="text" id="gr-name" placeholder="เช่น กลุ่ม A หรือ 1" style="width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;margin:6px 0">
       <label style="font-weight:700">สมาชิก (คั่นด้วย ,)</label>
@@ -3623,6 +3662,172 @@ async function renderObserveTab(){
     else { stat.className='status error'; stat.textContent=`⚠️ สำเร็จ ${ok} คน · ล้มเหลว ${fail} คน · ลองใหม่`; }
     btn.disabled = false;
   };
+
+  // ═════════ Group Setup (Quick Input + Random + Copy + Save) ═════════
+  let _gsGroups = [];  // [{no:1, members:[1,3,5]}, ...]
+  const gsClassSel = document.getElementById('gs-class');
+  classList.forEach(c => {
+    const opt = document.createElement('option'); opt.value = c; opt.textContent = c; gsClassSel.appendChild(opt);
+  });
+
+  const gsRender = () => {
+    const host = document.getElementById('gs-groups');
+    if (_gsGroups.length === 0){
+      host.innerHTML = `<div style="padding:12px;background:#f0fdfa;border:1.5px dashed #5eead4;border-radius:8px;text-align:center;color:#0f766e;font-size:13.5px">ยังไม่มีกลุ่ม · กด "➕ เพิ่มกลุ่ม" หรือ "🎲 สุ่มกลุ่ม"</div>`;
+      return;
+    }
+    host.innerHTML = _gsGroups.map((g,i) => `
+      <div style="display:flex;gap:8px;margin:6px 0;align-items:center;flex-wrap:wrap">
+        <div style="background:#0d9488;color:#fff;padding:6px 12px;border-radius:8px;font-weight:800;min-width:90px;text-align:center">กลุ่ม ${g.no}</div>
+        <input type="text" class="gs-mem" data-i="${i}" value="${g.members.join(', ')}" placeholder="เลขที่ (คั่นด้วย , หรือช่องว่าง)" style="flex:1;min-width:180px;padding:8px;border:1.5px solid #5eead4;border-radius:6px;background:#f0fdfa">
+        <button class="gs-del" data-i="${i}" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:700">✖</button>
+      </div>
+    `).join('');
+    host.querySelectorAll('.gs-mem').forEach(inp => {
+      inp.addEventListener('change', e => {
+        const i = Number(e.target.dataset.i);
+        _gsGroups[i].members = e.target.value.split(/[,\s]+/).map(x => x.trim()).filter(Boolean);
+      });
+    });
+    host.querySelectorAll('.gs-del').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const i = Number(e.target.dataset.i);
+        _gsGroups.splice(i,1);
+        _gsGroups.forEach((g,idx) => g.no = idx+1);
+        gsRender();
+      });
+    });
+  };
+  gsRender();
+
+  document.getElementById('gs-add').onclick = () => {
+    _gsGroups.push({no: _gsGroups.length+1, members: []});
+    gsRender();
+  };
+
+  document.getElementById('gs-rand').onclick = () => {
+    const cls = gsClassSel.value;
+    if (!cls){ alert('เลือกห้องก่อน'); return; }
+    const size = Number(prompt('จำนวนสมาชิกต่อกลุ่ม?', '4')) || 4;
+    const nums = (state.students||[]).filter(s => s.class_room === cls).map(s => String(s.number||'')).filter(Boolean);
+    if (!nums.length){ alert('ไม่มีนักเรียนในห้องนี้'); return; }
+    // Fisher-Yates shuffle
+    for (let i = nums.length-1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [nums[i],nums[j]] = [nums[j],nums[i]]; }
+    _gsGroups = [];
+    for (let i = 0; i < nums.length; i += size){
+      _gsGroups.push({ no: _gsGroups.length+1, members: nums.slice(i, i+size) });
+    }
+    gsRender();
+  };
+
+  document.getElementById('gs-copy').onclick = async () => {
+    const cls = gsClassSel.value;
+    if (!cls){ alert('เลือกห้องก่อน'); return; }
+    const fromPlan = prompt('คัดลอกจากแผนที่? (1–10, หรือ 0 = ทั้งเทอม)', '1');
+    if (fromPlan == null) return;
+    const stat = document.getElementById('gs-stat');
+    stat.className = 'status'; stat.textContent = '⏳ โหลดกลุ่ม...';
+    try {
+      const res = await DB.listSheet('_Groups', 1);
+      const rows = (res?.records || res?.data || []).filter(r =>
+        String(r.class_room||r.class||'') === cls &&
+        String(r.plan||'') === String(fromPlan)
+      );
+      if (!rows.length){ stat.className='status error'; stat.textContent='⚠️ ไม่พบกลุ่มของแผน '+fromPlan; return; }
+      _gsGroups = rows.map(r => ({
+        no: Number(r.group_no)||1,
+        members: String(r.members_numbers||'').split(/[,\s]+/).filter(Boolean)
+      })).sort((a,b) => a.no-b.no);
+      gsRender();
+      stat.className='status ok'; stat.textContent=`✅ โหลด ${_gsGroups.length} กลุ่ม · แก้ไขแล้วกด "บันทึกกลุ่ม"`;
+    } catch(e){
+      stat.className='status error'; stat.textContent='❌ '+e.message;
+    }
+  };
+
+  document.getElementById('gs-save').onclick = async () => {
+    const cls = gsClassSel.value;
+    const scope = document.getElementById('gs-scope').value;
+    const plan = Number(document.getElementById('ob-plan').value);
+    const stat = document.getElementById('gs-stat');
+    const btn = document.getElementById('gs-save');
+    if (!cls){ stat.className='status error'; stat.textContent='❌ เลือกห้อง'; return; }
+    if (!_gsGroups.length){ stat.className='status error'; stat.textContent='❌ ยังไม่มีกลุ่ม'; return; }
+    const savePlan = (scope === 'term') ? 0 : plan;
+    if (!confirm(`บันทึก ${_gsGroups.length} กลุ่มของ ${cls} (${scope==='term'?'ทั้งเทอม':'เฉพาะแผน '+plan})?`)) return;
+    btn.disabled = true; stat.className='status'; stat.textContent='⏳ บันทึก...';
+    let ok = 0, fail = 0;
+    const nameOf = n => { const s = (state.students||[]).find(x => String(x.number)===String(n) && x.class_room===cls); return s?s.name:''; };
+    for (const g of _gsGroups){
+      const names = g.members.map(nameOf).filter(Boolean).join(', ');
+      try {
+        await DB.submit('_Groups', {
+          plan: savePlan, class_room: cls, group_no: g.no,
+          members_numbers: g.members.join(','), members_names: names,
+          timestamp: new Date().toISOString()
+        });
+        ok++;
+      } catch(e){ fail++; }
+    }
+    if (fail === 0){ stat.className='status ok'; stat.textContent=`✅ บันทึก ${ok} กลุ่ม · พร้อมใช้ใน Group Rubric`; await gsLoadPicker(); }
+    else { stat.className='status error'; stat.textContent=`⚠️ สำเร็จ ${ok} · ล้มเหลว ${fail}`; }
+    btn.disabled = false;
+  };
+
+  // Auto-load existing groups when class changes
+  gsClassSel.addEventListener('change', async () => {
+    const cls = gsClassSel.value;
+    const plan = Number(document.getElementById('ob-plan').value);
+    if (!cls){ _gsGroups = []; gsRender(); return; }
+    const stat = document.getElementById('gs-stat');
+    stat.className='status'; stat.textContent='⏳ โหลดกลุ่มที่มี...';
+    try {
+      const res = await DB.listSheet('_Groups', 1);
+      const all = (res?.records || res?.data || []).filter(r => String(r.class_room||r.class||'') === cls);
+      // Prefer plan-specific · fallback to term-wide (plan=0)
+      let rows = all.filter(r => String(r.plan) === String(plan));
+      if (!rows.length) rows = all.filter(r => String(r.plan) === '0');
+      _gsGroups = rows.map(r => ({
+        no: Number(r.group_no)||1,
+        members: String(r.members_numbers||'').split(/[,\s]+/).filter(Boolean)
+      })).sort((a,b) => a.no-b.no);
+      gsRender();
+      await gsLoadPicker();
+      stat.className='status ok'; stat.textContent = _gsGroups.length ? `✅ โหลด ${_gsGroups.length} กลุ่ม` : 'ยังไม่มีกลุ่ม · เพิ่มใหม่ได้';
+    } catch(e){
+      stat.className='status error'; stat.textContent='❌ '+e.message;
+    }
+  });
+
+  // Populate Group Rubric picker from saved groups
+  async function gsLoadPicker(){
+    const picker = document.getElementById('gr-pick');
+    if (!picker) return;
+    const cls = gsClassSel.value;
+    const plan = Number(document.getElementById('ob-plan').value);
+    picker.innerHTML = '<option value="">— พิมพ์เองหรือเลือกกลุ่มที่ตั้งไว้ —</option>';
+    if (!cls) return;
+    try {
+      const res = await DB.listSheet('_Groups', 1);
+      const all = (res?.records || res?.data || []).filter(r => String(r.class_room||r.class||'') === cls);
+      let rows = all.filter(r => String(r.plan) === String(plan));
+      if (!rows.length) rows = all.filter(r => String(r.plan) === '0');
+      rows.sort((a,b) => (Number(a.group_no)||0)-(Number(b.group_no)||0)).forEach(r => {
+        const opt = document.createElement('option');
+        opt.value = r.members_names || '';
+        opt.dataset.no = r.group_no;
+        opt.textContent = `กลุ่ม ${r.group_no} · ${r.members_names || r.members_numbers} (${cls})`;
+        picker.appendChild(opt);
+      });
+    } catch(e){}
+  }
+  await gsLoadPicker();
+  const grPick = document.getElementById('gr-pick');
+  if (grPick) grPick.addEventListener('change', e => {
+    const opt = e.target.options[e.target.selectedIndex];
+    document.getElementById('gr-name').value = opt?.dataset?.no || '';
+    document.getElementById('gr-members').value = e.target.value;
+  });
 
   document.getElementById('obBtn').onclick = async () => {
     const plan = Number(document.getElementById('ob-plan').value);
