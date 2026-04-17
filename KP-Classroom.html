@@ -923,26 +923,30 @@ function renderTools(){
     <div style="color:#666;font-size:14px;margin-bottom:14px">คาบ ${plan.periods}</div>`;
   grid.appendChild(header);
 
-  // Sim/lab links — ดึงจาก PLAN_MEDIA ที่มี cls='sim' + file เป็น URL (http...)
+  // Sim/lab links — ดึงจาก PLAN_MEDIA ที่มี cls='sim' · รับทั้ง URL และ local file (relative ต่อ folder)
   const planMedia = PLAN_MEDIA[state.currentPlan];
   if (planMedia && planMedia.sections){
     const sims = [];
     planMedia.sections.forEach(sec => (sec.items||[]).forEach(it => {
-      if (it.cls === 'sim' && it.file && /^https?:/.test(it.file)) sims.push(it);
+      if (it.cls === 'sim' && it.file) sims.push(it);
     }));
     if (sims.length){
       const simBar = document.createElement('div');
       simBar.style.gridColumn = '1/-1';
       simBar.style.cssText += ';margin-bottom:14px';
-      simBar.innerHTML = sims.map(s => `
-        <a href="${escapeHtml(s.file)}" target="_blank" style="display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:12px 16px;border-radius:10px;text-decoration:none;margin-bottom:8px;box-shadow:0 2px 6px rgba(21,101,192,.25)">
+      simBar.innerHTML = sims.map(s => {
+        const url = /^https?:/.test(s.file) ? s.file
+          : (planMedia.folder ? `${planMedia.folder}/${s.file}` : s.file);
+        return `
+        <a href="${escapeHtml(url)}" target="_blank" style="display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#1565c0,#42a5f5);color:#fff;padding:12px 16px;border-radius:10px;text-decoration:none;margin-bottom:8px;box-shadow:0 2px 6px rgba(21,101,192,.25)">
           <span style="font-size:26px">💻</span>
           <div style="flex:1;min-width:0">
             <div style="font-weight:800;font-size:15px">${escapeHtml(s.t)}</div>
             <div style="font-size:12.5px;opacity:.92">${escapeHtml(s.d || '')}</div>
           </div>
           <span style="background:#fff;color:#0d47a1;padding:6px 14px;border-radius:8px;font-weight:700;white-space:nowrap;font-size:13px">🔗 เปิด Sim</span>
-        </a>`).join('');
+        </a>`;
+      }).join('');
       grid.appendChild(simBar);
     }
   }
