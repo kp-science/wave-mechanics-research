@@ -195,7 +195,15 @@ window.KP_PLAN_MEDIA = {
     sections: [
       { title: '🗺 แผนภาพรวม', items: [
         { cls:'info', no:'00', t:'Infographic แผน 4 (ฉบับสมบูรณ์)', file:'แผน4_Infographic.html',
-          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline · Theme ส้ม-แดง', chips:[] }
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline · Theme ส้ม-แดง', chips:[] },
+        { cls:'sim', no:'SIM1', t:'Lab 40 — Pulse Superposition (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/40.%20pulse-superposition.html',
+          d:'Virtual Lab · pulse 2 ลูกสวนทาง · slider A₁ A₂ · same/opposite · timeline ก่อน–ขณะ–หลัง · ใช้ใน POE-04 ฐาน 2',
+          chips:[['m','M4.1'],['m','M4.2'],['m','M4.3'],['k','K1'],['p','P1']] },
+        { cls:'sim', no:'SIM2', t:'Huygens Principle Demo (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Demo/คลื่น/huygens-principle-demo.html',
+          d:'Demo · หน้าคลื่น → wavelet วงกลม → envelope หน้าคลื่นใหม่ · ใช้ได้ทุกคลื่น (น้ำ/เสียง/แสง) · ใช้ใน POE-04 ฐาน 3',
+          chips:[['m','M4.4'],['k','K2'],['p','P1']] }
       ]},
       { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
         { cls:'e1', no:'01', t:'Concept Cartoon "สงครามริ้วคลื่น"', file:'สื่อ01_ConceptCartoon_สงครามริ้วคลื่น.html',
