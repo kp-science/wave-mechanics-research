@@ -27,6 +27,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#e0f2ff,#f0f4f8);color:#1a202c;font-size:16px;line-height:1.55;min-height:100vh}
 
+/* Preview mode indicator (ครูดูตัวอย่างผ่านแท็บ) */
+body.preview-mode::before{
+  content:'🔍 PREVIEW MODE · โหมดดูตัวอย่าง · ข้อมูลที่กรอกจะไม่ถูกส่ง';
+  display:block;background:linear-gradient(90deg,#fbbf24,#f59e0b);
+  color:#1a1a1a;font-weight:700;text-align:center;padding:6px 12px;
+  font-size:13px;letter-spacing:.3px;position:sticky;top:0;z-index:1000
+}
+body.preview-mode header.top .btn-logout{display:none}
+
 /* ═══════ APP SHELL ═══════ */
 .app{max-width:1100px;margin:0 auto;padding:0 16px}
 header.top{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,.1);position:sticky;top:0;z-index:100}
@@ -495,6 +504,21 @@ function applyBranding(){
 window.addEventListener('DOMContentLoaded', () => {
   applyBranding();
   initLoginUI();  // render UI ด้วย cache ก่อน (dropdown ว่างถ้ายังไม่มี roster)
+
+  // ═════ Preview mode (?preview=1) — ครูดูตัวอย่าง ═════
+  const isPreview = new URLSearchParams(location.search).get('preview') === '1';
+  if (isPreview){
+    state.previewMode = true;
+    state.student = {
+      student_id: '__PREVIEW__',
+      name: '👨‍🏫 โหมดดูตัวอย่าง',
+      no: 0,
+      class: 'PREVIEW'
+    };
+    document.body.classList.add('preview-mode');
+    showHome();
+    return;
+  }
 
   // Restore student session (localStorage · sync)
   const s = localStorage.getItem(LS_STU);
@@ -1013,6 +1037,12 @@ function printToolView(){
 // SUBMIT (generic)
 // ═══════════════════════════════════════════════════════════
 async function submitData(sheetName, payload, statusEl, btnEl){
+  // Preview mode (ครูดูตัวอย่าง) → ไม่ส่งจริง
+  if (state.previewMode){
+    statusEl.className = 'status ok';
+    statusEl.textContent = '🔍 Preview: ข้อมูลไม่ถูกส่ง (โหมดดูตัวอย่าง)';
+    return;
+  }
   // เช็ค gate ก่อนส่ง (กัน readonly/locked)
   const g = getGate(state.currentPlan);
   if (g.status === 'locked' || g.status === 'readonly'){
@@ -2067,6 +2097,7 @@ function renderTeacherShell(){
       <button class="tab-btn" data-tab="students" onclick="switchTeacherTab('students')">👥 นักเรียน</button>
       <button class="tab-btn" data-tab="plans" onclick="switchTeacherTab('plans')">🗓️ จัดการแผน</button>
       <button class="tab-btn" data-tab="monitor" onclick="switchTeacherTab('monitor')">🎬 หน้าจอสอน</button>
+      <button class="tab-btn" data-tab="preview" onclick="switchTeacherTab('preview')">📄 ดูหน้านักเรียน</button>
       <button class="tab-btn" data-tab="media" onclick="switchTeacherTab('media')">📚 สื่อ/เครื่องมือ</button>
       <button class="tab-btn" data-tab="feedback" onclick="switchTeacherTab('feedback')">💬 ส่งฟีดแบ็ก</button>
       <button class="tab-btn" data-tab="observe" onclick="switchTeacherTab('observe')">🔍 สังเกต/Rubric</button>
@@ -2076,6 +2107,7 @@ function renderTeacherShell(){
     <div class="tab-panel" id="tab-students"></div>
     <div class="tab-panel" id="tab-plans"></div>
     <div class="tab-panel" id="tab-monitor"></div>
+    <div class="tab-panel" id="tab-preview"></div>
     <div class="tab-panel" id="tab-media"></div>
     <div class="tab-panel" id="tab-feedback"></div>
     <div class="tab-panel" id="tab-observe"></div>
@@ -2142,6 +2174,7 @@ function switchTeacherTab(name){
   if (name === 'students') renderStudentsTab();
   if (name === 'plans')    renderPlansTab();
   if (name === 'monitor')  renderMonitorTab();
+  if (name === 'preview')  renderPreviewTab();
   if (name === 'media')    renderMediaTab();
   if (name === 'feedback') renderFeedbackTab();
   if (name === 'observe')  renderObserveTab();
@@ -2723,6 +2756,31 @@ function renderMonitorBody(data){
   }).join('');
 
   body.innerHTML = summary + `<div class="mon-grid">${cards || '<div style="padding:20px;text-align:center;color:#999">ไม่มี tool ในแผนนี้</div>'}</div>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: 📄 ดูหน้านักเรียน (Preview Student View)
+// - Iframe โหลด KP-Classroom.html?preview=1
+// - ครูลองกดใบงานได้เหมือนนักเรียน · ส่งไม่ได้จริง
+// - ใช้ตอนสอน: ฉายหน้านักเรียนให้ดู · อธิบายวิธีใช้งาน
+// ═══════════════════════════════════════════════════════════
+function renderPreviewTab(){
+  const el = document.getElementById('tab-preview');
+  const course = window.KP_COURSE || 'physics3';
+  const url = `KP-Classroom.html?course=${course}&preview=1`;
+  el.innerHTML = `
+    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:1.5px solid #f57c00;padding:14px 18px;border-radius:10px;margin-bottom:12px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px">
+        <div style="font-weight:800;color:#bf360c;margin-bottom:4px">💡 หน้านี้คือสิ่งที่นักเรียนเห็น</div>
+        <div style="font-size:13.5px;color:#5d4037">คลิก tool แล้วลองทำใบงานได้เลย · ข้อมูลจะไม่ถูกส่ง (Preview mode) · เหมาะสำหรับใช้สอน/สาธิตนักเรียน</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="mon-btn ghost" onclick="document.querySelector('#previewFrame').contentWindow.location.reload()">🔄 Reset</button>
+        <a class="mon-btn" style="text-decoration:none;display:inline-flex;align-items:center;padding:9px 16px" href="${url}" target="_blank">🔗 เปิดแท็บใหม่</a>
+      </div>
+    </div>
+    <iframe id="previewFrame" src="${url}" style="width:100%;height:calc(100vh - 260px);min-height:640px;border:1.5px solid #e0e0e0;border-radius:10px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.06)"></iframe>
+  `;
 }
 
 function renderMediaTab(){
