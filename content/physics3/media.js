@@ -118,5 +118,74 @@ window.KP_PLAN_MEDIA = {
       'MJ-01 → คำถามเด่นเป็น Hook แผน 3 · หลักฐาน Self-regulation',
       'OB-01 → คะแนนพฤติกรรม · หลักฐานวPA ด้านที่ 1 ข้อ 4, 7'
     ]
+  },
+  3: {
+    folder: 'lessons/physics3/waves/แผน03_คลื่นดลคลื่นต่อเนื่องและเฟส',
+    title: 'แผน 3 — คลื่นดล คลื่นต่อเนื่อง และเฟสของคลื่น',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 5–6 (100 นาที) · ผลการเรียนรู้ข้อ 1–2',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 3 (ฉบับสมบูรณ์)', file:'แผน3_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA ด้านที่ 1 · Timeline', chips:[] },
+        { cls:'sim', no:'SIM', t:'phase-compare.html (Sim Spec · ยังไม่สร้าง)', file:'สื่อ06_SimSpec_phase-compare.html',
+          d:'Blueprint 3 โหมด (Single wave 2 points · Overlay 2 waves · Ribbon animation) · slider Δx/Δφ · phase dial · ซ้อนทับ',
+          chips:[['k','K2'],['p','P1'],['m','M3.3'],['m','M3.4']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e1', no:'01', t:'Concept Cartoon "ริบบิ้น 2 เส้นบนเชือก"', file:'สื่อ01_ConceptCartoon_ริบบิ้นบนเชือก.html',
+          d:'3 ตัวละคร (น้องพลอย/พี่ต้น/พี่มีน) ถกเถียงว่าริบบิ้นห่างกัน λ/2 จะสั่นพร้อมกันหรือสวนทาง',
+          meta:'ใช้ในฉาก E1 Engage · 15 นาที',
+          chips:[['m','M3.2'],['m','M3.3'],['m','M3.4'],['','POE-P']] },
+        { cls:'e2', no:'02', t:'POE-03 ใบบันทึก P / O / E', file:'สื่อ02_POE-03_ใบบันทึกPOE.html',
+          d:'บันทึก Predict (2 ข้อ · ริบบิ้น + v) · Observe 3 ฐาน (Slinky/Strobe/Sim) · Explain เชื่อมสู่สูตร Δφ',
+          meta:'ใช้ตลอด E1–E3',
+          chips:[['p','P1'],['p','P2'],['m','M3.1'],['m','M3.2'],['m','M3.3'],['m','M3.4']] },
+        { cls:'e1', no:'03', t:'Video Hook Storyboard (90 วินาที)', file:'สื่อ03_VideoHook_Storyboard.html',
+          d:'5 ช็อต: ตบมือ→กลองรัว · Pulse vs Continuous · v เท่ากันไหม · Phase reveal · CTA',
+          meta:'เปิดก่อน Concept Cartoon · 90 วิ',
+          chips:[['m','M3.1'],['m','M3.2'],['m','M3.4']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 3.1 · Calc Phase (Δφ)', file:'สื่อ04_Calc_ใบกิจกรรม3.1.html',
+          d:'5 ข้อไล่ระดับ: พื้นฐาน 2 (λ/4, 3λ/2) · ประยุกต์ 2 (Δx↔Δφ) · ท้าทาย 1 (multi-step + M3.2)',
+          meta:'ใช้ในฉาก E4 Elaborate · 12 นาที',
+          chips:[['k','K2'],['m','M3.2'],['m','M3.4']] },
+        { cls:'e4', no:'05', t:'ใบกิจกรรม 3.2 · Spot the Error', file:'สื่อ05_Spot_ใบกิจกรรม3.2.html',
+          d:'3 ข้อความจาก 3 ตัวละคร (พี่เจ๋ง M3.2 · น้องฟ้า M3.4 · พี่มิ้น M3.3) หาผิด + อธิบายให้ถูก',
+          meta:'ใช้ในฉาก E4 Elaborate · 10 นาที',
+          chips:[['k','K3'],['p','P2'],['m','M3.2'],['m','M3.3'],['m','M3.4']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'07', t:'F3 Four-tier · Pre + Post', file:'สื่อ07_F3_Fourtier_PrePost.html',
+          d:'3 ข้อ · วัด M3.1 (ดล/ต่อเนื่อง) · M3.3 (เฟส=สถานะสั่น) · M3.4 (180° หักล้าง) · Tier 1+3 + มั่นใจ',
+          meta:'ใช้ในฉาก F3 Pre (5\') + F3 Post (7\')',
+          chips:[['k','K1'],['k','K2'],['k','K3'],['m','M3.1'],['m','M3.3'],['m','M3.4'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-01 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'ครูบันทึก 3 ส่วน: รายบุคคล · กลุ่ม · ข้อสังเกต (ใช้ร่วมกับแผน 1)', meta:'ใช้ตลอด 100 นาที',
+          chips:[['p','P1'],['p','P2'],['a','A1'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-03',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 Phase 7 · CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'นักเรียนส่ง Claim/Evidence/Reasoning + รูป (ถ่าย/วาด) ขึ้นบอร์ดสดใน WebApp · 3 คอลัมน์: v · เฟสตรง · เฟสตรงข้าม · ครูดู/ฉายจอใน Teacher Dashboard → CER Board tab',
+          meta:'ใช้ในฉาก E3 · 8 นาที',
+          chips:[['p','P2'],['k','K3'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F3 Pre/Post → ตาราง % Sound · Misconception M3.1, M3.3, M3.4 · Normalized gain ของแผน 3',
+      'POE-03 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 3.1 → คะแนนเฉลี่ย ≥ 70% (เกณฑ์ K2)',
+      'CER Board → คลังหลักฐาน Claim-Evidence-Reasoning · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-01 → คำถามเด่นเป็น Hook แผน 4 (ซ้อนทับ)',
+      'OB-01 → Inquiry Attitude (A1 ≥ 60%) · SRL (A2 ≥ 80%)'
+    ]
   }
 };

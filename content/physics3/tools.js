@@ -6,7 +6,7 @@
 window.KP_PLAN_TOOLS = {
   1: ['tl-pre','f1-pre','poe','matrix','spot','tl-post','f1-post','mj','upload'],
   2: ['tl-pre','f2-pre','poe','calc2','spot2','tl-post','f2-post','mj','upload'],
-  3: ['tl-pre','f3-pre','poe','tl-post','f3-post','mj','upload'],
+  3: ['tl-pre','f3-pre','poe','cer','calc','spot','tl-post','f3-post','mj','upload'],
   4: ['tl-pre','f4-pre','poe','tl-post','f4-post','mj','upload'],
   5: ['tl-pre','f5-pre','poe','tl-post','f5-post','mj','upload'],
   6: ['tl-pre','f6-pre','poe','tl-post','f6-post','mj','upload'],
@@ -43,6 +43,9 @@ window.KP_TOOL_DEFS = {
   'spot':    { ico:'🔍', name:'ใบ 1.2 · Spot the Error', desc:'หาข้อผิดพลาด 4 ข้อความ', sheet:'Spot', color:'tc-sp' },
   'calc2':   { ico:'🧮', name:'ใบ 2.1 · โจทย์คำนวณ v=fλ', desc:'โจทย์ 5 ข้อ พื้นฐาน→ท้าทาย', sheet:'Calc', color:'tc-ma' },
   'spot2':   { ico:'🔍', name:'ใบ 2.2 · Spot the Error', desc:'หาข้อผิดพลาด 3 ข้อ (M2.1, M2.4)', sheet:'Spot', color:'tc-sp' },
+  'calc':    { ico:'🧮', name:'ใบคำนวณ · Calc', desc:'โจทย์คำนวณ (schema-driven)', sheet:'Calc', color:'tc-ma' },
+  'spot':    { ico:'🔍', name:'ใบ Spot the Error', desc:'หาข้อผิดพลาด (schema-driven)', sheet:'Spot', color:'tc-sp' },
+  'cer':     { ico:'🗒', name:'CER Board · โพสต์ขึ้นกระดาน', desc:'Claim-Evidence-Reasoning + แนบรูป/วาด', sheet:'CER', color:'tc-ce' },
   'mj':      { ico:'📓', name:'MJ-01 · Journal 3-2-1', desc:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม', sheet:'MJ', color:'tc-mj' },
   'upload':  { ico:'📎', name:'อัปโหลดใบงาน', desc:'ส่งไฟล์ PDF/รูปใบงานที่เขียนมือ', sheet:'Upload', color:'tc-up' },
   'ft02':    { ico:'🏆', name:'FT-02 Post-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ', sheet:'FT02', color:'tc-ft' }

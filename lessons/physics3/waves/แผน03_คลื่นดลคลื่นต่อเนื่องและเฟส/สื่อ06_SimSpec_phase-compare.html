@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Sim Spec — phase-compare.html (แผน 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size:15px;line-height:1.6;padding:20px}
+.page{max-width:1100px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(60,40,120,.1);padding:28px 32px}
+.head{border-bottom:3px solid #6b46c1;padding-bottom:10px;margin-bottom:18px}
+.head h1{font-size:24px;color:#322659}
+.head .meta{font-size:13px;color:#555;margin-top:4px}
+.tag{display:inline-block;background:#6b46c1;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.note{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14px}
+.section{margin:22px 0;padding-top:14px;border-top:2px solid #ede7f6}
+.section h2{color:#322659;font-size:18px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.card{background:#fafbff;border:1.5px solid #e9e2f5;border-radius:10px;padding:14px}
+.card h3{color:#553c9a;font-size:15px;margin-bottom:8px}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+th{background:#ede7f6;color:#322659;padding:8px 10px;text-align:left;border:1px solid #d6bcfa}
+td{padding:8px 10px;border:1px solid #e2e8f0;vertical-align:top}
+td code{background:#fff3e0;padding:1px 6px;border-radius:4px;color:#c05621;font-size:12.5px}
+ul{padding-left:22px}
+li{margin-bottom:4px}
+.mock{background:#1a202c;border-radius:10px;padding:16px;margin:12px 0;color:#e2e8f0;font-family:monospace;font-size:13px;line-height:1.5;overflow-x:auto}
+.mock-title{color:#a5b4fc;font-weight:700;margin-bottom:8px}
+.mode-box{background:#e3f2fd;border:1.5px solid #64b5f6;border-radius:10px;padding:12px;margin:8px 0}
+.mode-box b{color:#0d47a1}
+.formula{background:#e8f5e9;border:1.5px solid #81c784;border-radius:8px;padding:8px 12px;margin:6px 0;font-family:monospace;font-size:13.5px;color:#1b5e20}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:20px;border-top:1px solid #eee;padding-top:10px}
+.canvas-mock{background:#fff;border:2px solid #6b46c1;border-radius:8px;padding:16px;margin-top:10px;font-family:monospace;font-size:12px;line-height:1.3;color:#322659;white-space:pre;overflow-x:auto}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <h1>📐 Sim Spec — <code>phase-compare.html</code></h1>
+    <div class="meta"><span class="tag">แผน 3</span><span class="tag">สื่อ 3.6</span> ข้อกำหนดสำหรับสร้าง HTML Simulation (ยังไม่ได้เขียน · ใช้ spec นี้เป็น blueprint)</div>
+  </div>
+
+  <div class="note">
+    <b>🎯 เป้าหมายการเรียนรู้ที่ Sim นี้ช่วย:</b>
+    <ul style="margin-top:6px">
+      <li>K2 · นักเรียนเห็นความสัมพันธ์ <b>Δφ = 2π(Δx/λ)</b> เป็นภาพจริง</li>
+      <li>P1 · ใช้ slider เลื่อน Δx เปรียบเทียบการสั่นของ 2 จุด (POE-O ฐาน 3)</li>
+      <li>M3.3 · ชน misconception "เฟสไม่มีความหมายกายภาพ" — เห็นว่าจุดเฟสเดียวกันสั่นพร้อมกันเสมอ</li>
+      <li>M3.4 · ชน misconception "ต่างเฟส 180° ไม่เกี่ยวข้อง" — เห็นการหักล้างเมื่อซ้อน 2 คลื่น</li>
+      <li>Hook แผน 4 · ซ้อนทับ · แผน 7 · แทรกสอด</li>
+    </ul>
+  </div>
+
+  <!-- ══ MODES ══ -->
+  <div class="section">
+    <h2>🎛 Modes · 3 โหมดการใช้งาน</h2>
+    <div class="mode-box">
+      <b>Mode 1 · Single Wave, Two Points</b> <span style="color:#1565c0;font-size:12px">(default)</span><br>
+      แสดงคลื่นต่อเนื่อง 1 ขบวน · มี marker 2 จุด (A สีแดง, B สีน้ำเงิน) · slider เลื่อนตำแหน่ง B ·
+      แสดง Δφ ของ B เทียบ A · ด้านข้างมี "phase dial" (นาฬิกา) 2 อันโชว์มุมเฟส ณ เวลาจริง
+    </div>
+    <div class="mode-box">
+      <b>Mode 2 · Overlay Two Waves</b> <span style="color:#1565c0;font-size:12px">(Elaborate challenge)</span><br>
+      แสดงคลื่น 2 ขบวน (สีส้ม + สีฟ้า) · slider ปรับ Δφ ของคลื่น 2 (0–360°) · แสดงคลื่นผลรวม (สีเขียวเข้ม) ·
+      แสดง A รวม ณ จุดกึ่งกลาง · ปุ่ม preset: <code>0°</code> <code>90°</code> <code>180°</code> <code>270°</code>
+    </div>
+    <div class="mode-box">
+      <b>Mode 3 · Ribbon Animation</b> <span style="color:#1565c0;font-size:12px">(linked to Concept Cartoon)</span><br>
+      จำลองเชือกสั่นต่อเนื่อง · ผูกริบบิ้น 3 จุด (R แดง, B น้ำเงิน, G เขียว) ให้ user เลือกตำแหน่งได้ ·
+      แสดงการสั่นขึ้น-ลงของแต่ละริบบิ้นพร้อมกับกราฟ y–t 3 เส้นเทียบ (เฟสพร้อมกัน vs เหลื่อม)
+    </div>
+  </div>
+
+  <!-- ══ CONTROLS ══ -->
+  <div class="section">
+    <h2>🎚 Controls · ปุ่มและ slider</h2>
+    <table>
+      <tr><th>Control</th><th>ช่วงค่า</th><th>Default</th><th>หน้าที่</th></tr>
+      <tr><td><b>Mode selector</b></td><td>1 · 2 · 3</td><td>1</td><td>Tab / radio · เปลี่ยนโหมด</td></tr>
+      <tr><td><b>λ (wavelength)</b></td><td>0.2 – 1.0 m</td><td>0.40 m</td><td>Slider · resize wave</td></tr>
+      <tr><td><b>A (amplitude)</b></td><td>0.1 – 1.0</td><td>0.5</td><td>Slider · ความสูงคลื่น</td></tr>
+      <tr><td><b>f (frequency)</b></td><td>0.5 – 4 Hz</td><td>1 Hz</td><td>Slider · ความเร็วการเคลื่อนไหว (animation)</td></tr>
+      <tr><td><b>Play / Pause</b></td><td>toggle</td><td>Play</td><td>หยุดภาพเฟรมเดียว (เห็น snapshot ชัด)</td></tr>
+      <tr><td><b>Δx ของ B</b> (Mode 1)</td><td>0 – 2λ</td><td>λ/2</td><td>Slider · ตำแหน่ง marker B เทียบ A</td></tr>
+      <tr><td><b>Presets Δx</b> (Mode 1)</td><td>buttons</td><td>—</td><td><code>λ/4</code> <code>λ/2</code> <code>3λ/4</code> <code>λ</code> <code>3λ/2</code> <code>2λ</code></td></tr>
+      <tr><td><b>Δφ wave 2</b> (Mode 2)</td><td>0 – 360°</td><td>0°</td><td>Slider · มุมเฟสเริ่มต้นคลื่นที่สอง</td></tr>
+      <tr><td><b>Reset</b></td><td>button</td><td>—</td><td>กลับค่า default</td></tr>
+      <tr><td><b>ซ่อน/แสดงกราฟผลรวม</b> (Mode 2)</td><td>toggle</td><td>แสดง</td><td>ให้นักเรียนทำนายก่อน แล้วค่อยเปิด</td></tr>
+    </table>
+  </div>
+
+  <!-- ══ LAYOUT ══ -->
+  <div class="section">
+    <h2>🖼 Layout · โครงหน้า</h2>
+    <div class="canvas-mock">┌────────────────────────────────────────────────────────────────────────────┐
+│ 📐 Phase Compare Simulator                            [Mode: ① ② ③] [?] │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                            │
+│                             ╭─╮           ╭─╮                              │
+│                            ╱   ╲         ╱   ╲           ← y axis          │
+│     ───────●(A)────────────╯     ╲──────╯     ╲──●(B)──────x axis─────→   │
+│                                   ╲─╯                                      │
+│                                                                            │
+│   ├──────── Δx ────────┤                                                   │
+│                                                                            │
+│   Phase dial A:  [🕐 0°  ]     Phase dial B:  [🕑 180° ]                   │
+│                                                                            │
+├────────────────────────────────────────────────────────────────────────────┤
+│  λ [━━━●━━━━━] 0.40 m     A [━━●━━━━━━] 0.5      f [━━●━━━━━━] 1 Hz        │
+│  Δx [━━━━━●━━] 0.20 m  =  λ/2                                              │
+│  Presets: [λ/4] [λ/2] [3λ/4] [λ] [3λ/2] [2λ]       [▶ Play]  [↻ Reset]    │
+├────────────────────────────────────────────────────────────────────────────┤
+│  🧮 Δφ = 2π × (0.20 / 0.40) = π rad = 180°                                 │
+│  💡 "B สั่นสวนทางกับ A · เมื่อ A อยู่ยอด · B อยู่ท้อง"                        │
+└────────────────────────────────────────────────────────────────────────────┘</div>
+  </div>
+
+  <!-- ══ Display ══ -->
+  <div class="section">
+    <h2>📊 Display Elements · สิ่งที่ต้องแสดง</h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>📈 Wave Canvas</h3>
+        <ul>
+          <li>แกน x: ระยะทาง · scale 0 – 2 m (ปรับตาม λ)</li>
+          <li>แกน y: การกระจัด · −A ถึง +A</li>
+          <li>คลื่น: เส้นโค้ง sine หนา 2.5 px · สี <code>#6b46c1</code></li>
+          <li>Markers: จุด A (แดง 8 px), B (น้ำเงิน 8 px) · มี label</li>
+          <li>เส้นแสดง Δx: dashed · label "Δx = ___ m = ___λ"</li>
+          <li>Grid: แบ่งเป็น λ/4 · label λ/4, λ/2, 3λ/4, λ, ...</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🕐 Phase Dial (2 อัน)</h3>
+        <ul>
+          <li>วงกลม radius 40 px · 12 ขีด · label 0°, 90°, 180°, 270°</li>
+          <li>เข็มชี้มุมเฟสปัจจุบัน · หมุนตาม animation</li>
+          <li>สี: A = แดง · B = น้ำเงิน</li>
+          <li>ด้านล่าง dial: ค่าตัวเลขเฟสสด <code>φ_A = 45°</code> <code>φ_B = 225°</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🧮 Readout Panel</h3>
+        <ul>
+          <li>Δφ (หน่วยองศา): แสดง 1 ตำแหน่งทศนิยม</li>
+          <li>Δφ (หน่วย rad): แสดงเป็น <code>π/4</code>, <code>π/2</code>, ... ถ้าลงตัว · ไม่งั้น 1.57 rad</li>
+          <li>Δx ในรูป fraction ของ λ (เช่น <code>λ/4</code>, <code>3λ/8</code>)</li>
+          <li>Hint box: ข้อความอธิบายอัตโนมัติตามค่า · เช่น "สั่นพร้อมกัน (in-phase)", "สวนทางกัน (anti-phase)"</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🌈 Overlay Mode (Mode 2)</h3>
+        <ul>
+          <li>คลื่น 1 (ส้ม <code>#ed8936</code>) · คลื่น 2 (ฟ้า <code>#4299e1</code>) · ผลรวม (เขียว <code>#38a169</code> · หนากว่า)</li>
+          <li>แสดง A รวม ที่ x กลางจอ · ข้อความ "ผลรวม Amax = ___"</li>
+          <li>กรณี Δφ = 180° + A เท่ากัน: แสดง "🎯 หักล้างสมบูรณ์ (Amax = 0)"</li>
+          <li>กรณี Δφ = 0° + A เท่ากัน: แสดง "🎯 เสริมสมบูรณ์ (Amax = 2A)"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Technical ══ -->
+  <div class="section">
+    <h2>⚙️ Technical Spec</h2>
+    <ul>
+      <li><b>ฟอร์แมต:</b> Standalone HTML + inline CSS + vanilla JS (ไม่ใช้ library · เปิดจาก <code>file://</code> ได้)</li>
+      <li><b>Rendering:</b> Canvas 2D API · 60 fps · auto-resize ตาม window</li>
+      <li><b>Math:</b> <code>y(x,t) = A·sin(2π·(x/λ − f·t) + φ₀)</code></li>
+      <li><b>Animation loop:</b> <code>requestAnimationFrame</code> · สูตร t ++ ·</li>
+      <li><b>Touch support:</b> slider ต้องใช้บน iPad/มือถือได้</li>
+      <li><b>Responsive:</b> desktop ≥ 900 px, tablet 600–900 px (จัด 1 คอลัมน์), mobile &lt; 600 px (ย่อ panel)</li>
+      <li><b>Font:</b> Sarabun (Thai) + system sans-serif</li>
+      <li><b>Theme:</b> Purple primary <code>#6b46c1</code> · Light background <code>#faf5ff</code> (ตรงกับธีมแผน 3)</li>
+      <li><b>File location:</b> <code>lessons/physics3/waves/แผน03_.../phase-compare.html</code></li>
+      <li><b>Register ใน media.js:</b> เพิ่ม entry ใน <code>KP_PLAN_MEDIA[3]</code> (Step 6)</li>
+    </ul>
+  </div>
+
+  <!-- ══ Assessment integration ══ -->
+  <div class="section">
+    <h2>🔗 การเชื่อมกับกิจกรรม</h2>
+    <table>
+      <tr><th>ขั้น</th><th>วิธีใช้ Sim</th><th>บันทึกลงใบงาน</th></tr>
+      <tr><td>E2 Explore · ฐาน 3</td><td>Mode 1 · เลื่อน Δx ครบ 4 preset (λ/4, λ/2, 3λ/4, λ) · อ่าน Δφ</td><td>POE-03 → Observe ฐาน 3 · เติมตาราง 4 แถว</td></tr>
+      <tr><td>E4 Elaborate · Challenge</td><td>Mode 2 · ลอง Δφ = 0°, 90°, 180°, 270° · สังเกต Amax รวม</td><td>POE-03 → Explain ข้อ 3 · โยงสู่แผน 4/7</td></tr>
+      <tr><td>E1 Engage (optional)</td><td>Mode 3 · แสดงริบบิ้น 3 เส้น · เปิดหลัง Concept Cartoon</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <!-- ══ TODO ══ -->
+  <div class="note" style="background:#e8f5e9;border-left-color:#43a047">
+    <b>📌 ยังต้องทำต่อ (session ถัดไป):</b>
+    <ul style="margin-top:6px">
+      <li>เขียนโค้ด <code>phase-compare.html</code> ตาม spec นี้ (~600–800 บรรทัด)</li>
+      <li>ทดสอบกับ iPad (touch) + laptop</li>
+      <li>Deploy ผ่าน GitHub Pages</li>
+      <li>เพิ่ม entry ใน <code>content/physics3/media.js</code> → <code>KP_PLAN_MEDIA[3]</code></li>
+    </ul>
+  </div>
+
+  <div class="foot">สื่อ 3.6 · Sim Spec · แผน 3 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+</body></html>
