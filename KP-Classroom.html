@@ -3936,6 +3936,15 @@ async function renderPostPlanTab(){
       <div id="pp-d2-block"></div>
     </div>
 
+    <!-- 📚 บันทึกรายขั้น (Phase-by-phase reflection) -->
+    <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
+      <h3 style="color:#3e2723;margin-bottom:6px">📚 บันทึกรายขั้นการสอน (9 ขั้น)</h3>
+      <div class="info" style="font-size:13px;margin-bottom:10px">
+        คลิกชื่อขั้นเพื่อขยาย · 🤖 = auto-check จากข้อมูลจริง · ครูแก้เอง + พิมพ์หัวข้ออื่น ๆ ได้
+      </div>
+      <div id="pp-phases-block"></div>
+    </div>
+
     <!-- 📊 สรุปคะแนนรวม -->
     <div style="background:linear-gradient(135deg,#1565c0,#2e7d32);color:#fff;padding:18px;border-radius:12px;margin-bottom:16px">
       <h3 style="color:#fff;margin-bottom:8px">📊 สรุปคะแนนรวม (คำนวณอัตโนมัติ)</h3>
@@ -3968,6 +3977,7 @@ async function renderPostPlanTab(){
   renderKPABlock();
   renderD1Block();
   renderD2Block();
+  renderPhaseBlock();
   updateScoreSum();
   wirePostPlanButtons();
   loadPostPlanData();
@@ -4123,6 +4133,355 @@ function updateScoreSum(){
       🏅 <b>รวม: ${totalW.toFixed(1)}/${(d1WMax+d2WMax)} คะแนน</b> (ดิบรวม ${totalRaw}/${d1Max+d2Max})
     </div>
   `;
+}
+
+// ═══════════════════════════════════════════════════════════
+// Phase-by-phase Reflection · 9 ขั้น
+// ═══════════════════════════════════════════════════════════
+// auto = rule หรือ null  · rule เป็น function(d, ctx) → boolean
+// ctx: { roster, attendance, fPreRate, fPostRate, poeRate, mjRate, obCov, ... }
+const PHASES = [
+  { id:'tlc_pre', icon:'🚦', label:'TLC ก่อนเรียน',
+    success:[
+      {id:'all_card',  label:'ยกบัตรครบทุกคน', auto:(d,x)=>x.tlPreCount >= x.roster*0.85},
+      {id:'baseline',  label:'ได้ baseline ก่อนสอน',  auto:(d,x)=>x.tlPreCount>0},
+      {id:'honest',    label:'นักเรียนกล้าแสดงระดับจริง'},
+      {id:'on_time',   label:'ทันเวลา (~3 นาที)'}
+    ],
+    problems:[
+      {id:'not_ready', label:'ยกบัตรไม่พร้อมกัน'},
+      {id:'copy',      label:'ลอกเพื่อน/ไม่ตอบตามจริง'},
+      {id:'no_time',   label:'เวลาไม่พอ'},
+      {id:'system',    label:'ระบบ/อุปกรณ์ขัดข้อง'}
+    ],
+    fixes:[
+      {id:'f_reduce',  label:'ลดเวลา'},
+      {id:'f_alt',     label:'ใช้ Google Form แทน'},
+      {id:'f_rephrase',label:'ปรับคำสั่งให้ชัด'},
+      {id:'f_seating', label:'ปรับที่นั่ง'}
+    ] },
+  { id:'f_pre', icon:'📝', label:'F Pre · Four-tier ก่อนเรียน',
+    success:[
+      {id:'submit_all', label:'ส่งครบทุกคน (≥85%)', auto:(d,x)=>x.fPreRate>=85},
+      {id:'t3_good',    label:'Tier 3 ตอบตรงประเด็น'},
+      {id:'see_misc',   label:'เห็น baseline Misconception', auto:(d,x)=>d.f_pre?.overall?.Misconception>0},
+      {id:'time_ok',    label:'ทันเวลา (~5 นาที)'}
+    ],
+    problems:[
+      {id:'not_submit', label:'ส่งไม่ครบ', auto:(d,x)=>x.fPreRate>0 && x.fPreRate<70},
+      {id:'4tier_confuse', label:'นักเรียนงงระบบ 4-tier'},
+      {id:'cert_wrong',  label:'Tier มั่นใจกรอกไม่ตรงจริง'},
+      {id:'net_slow',    label:'Internet / WebApp ล่ม'}
+    ],
+    fixes:[
+      {id:'f_demo',     label:'สาธิตข้อตัวอย่างก่อน'},
+      {id:'f_extend',   label:'ยืดเวลาทำ'},
+      {id:'f_offline',  label:'เตรียม offline สำรอง'},
+      {id:'f_instruct', label:'เพิ่มคำชี้แจง'}
+    ] },
+  { id:'engage', icon:'🟢', label:'E1 Engage (Concept Cartoon)',
+    success:[
+      {id:'cartoon_ok', label:'Cartoon กระตุ้นการถก'},
+      {id:'tps_good',   label:'Think–Pair–Share คุยกันดี'},
+      {id:'predict_all',label:'POE-P ทำนายครบ (≥70%)', auto:(d,x)=>x.poeRate>=70},
+      {id:'dare',       label:'นักเรียนกล้าเสนอเหตุผล'}
+    ],
+    problems:[
+      {id:'silent',     label:'นักเรียนเงียบ ไม่กล้าตอบ'},
+      {id:'not_excite', label:'Cartoon ไม่เร้าพอ'},
+      {id:'tps_time',   label:'เวลา TPS ไม่พอ / มากเกิน'},
+      {id:'no_reason',  label:'ทำนายมั่ว ไม่มีเหตุผล'}
+    ],
+    fixes:[
+      {id:'f_tps',      label:'เพิ่มเวลา TPS'},
+      {id:'f_change_cc',label:'เปลี่ยน Cartoon/ตัวละคร'},
+      {id:'f_prompt',   label:'เพิ่มคำถามนำ'},
+      {id:'f_warmup',   label:'ทำ warm-up ก่อน'}
+    ] },
+  { id:'explore', icon:'🟠', label:'E2 Explore (Sim/Lab 3 ฐาน)',
+    success:[
+      {id:'sim_all',    label:'ใช้ Sim/Lab ครบทุกฐาน'},
+      {id:'observe_sys',label:'บันทึก O เป็นระบบ'},
+      {id:'rotate',     label:'หมุนฐานทันเวลา'},
+      {id:'poe_o_all',  label:'POE-O บันทึกครบ (≥70%)', auto:(d,x)=>x.poeRate>=70}
+    ],
+    problems:[
+      {id:'sim_slow',   label:'Sim โหลดช้า / ขึ้นจอไม่ได้'},
+      {id:'equip_lack', label:'อุปกรณ์ไม่พอ (slinky/ripple)'},
+      {id:'stuck_1',    label:'ติดฐานเดียว ไม่หมุน'},
+      {id:'no_record',  label:'ไม่บันทึก POE-O'},
+      {id:'noisy',      label:'เสียงดัง / ควบคุมยาก'}
+    ],
+    fixes:[
+      {id:'f_cache',    label:'Cache Sim ล่วงหน้า'},
+      {id:'f_fewer',    label:'ลดจำนวนฐาน'},
+      {id:'f_timer',    label:'ตั้งเวลาฐานชัด'},
+      {id:'f_leader',   label:'ให้ประธานกลุ่มคุม'}
+    ] },
+  { id:'explain', icon:'🔴', label:'E3 Explain (CER + สูตร)',
+    success:[
+      {id:'cer_all',    label:'CER Board ครบทุกกลุ่ม', auto:(d,x)=>x.cerCount>=3},
+      {id:'conflict',   label:'ครูชี้ conflict ได้ชัด'},
+      {id:'formula',    label:'สูตร/หลักการสอนเข้าใจ'},
+      {id:'poe_e',      label:'เชื่อม P↔O↔E ได้'}
+    ],
+    problems:[
+      {id:'no_claim',   label:'กลุ่มไม่ส่ง Claim'},
+      {id:'cer_mix',    label:'Claim/Evidence/Reasoning ปะปน'},
+      {id:'teacher_dom',label:'ครูบรรยายเกิน'},
+      {id:'e_no_time',  label:'เวลาไม่พอ'}
+    ],
+    fixes:[
+      {id:'f_fewer_col',label:'ลดจำนวนคอลัมน์ CER'},
+      {id:'f_example',  label:'เพิ่มตัวอย่าง worked'},
+      {id:'f_extend_e', label:'ยืดเวลา Explain'},
+      {id:'f_ask_more', label:'ใช้คำถามแทนบรรยาย'}
+    ] },
+  { id:'elaborate', icon:'🟤', label:'E4 Elaborate (Calc + Spot)',
+    success:[
+      {id:'calc_all',   label:'Calc ทำเสร็จทุกข้อ', auto:(d,x)=>x.calcCount>=x.attendance*0.7},
+      {id:'spot_fix',   label:'Spot the Error แก้ได้', auto:(d,x)=>x.spotCount>0},
+      {id:'apply_new',  label:'ประยุกต์บริบทใหม่ได้'},
+      {id:'challenge',  label:'ทำ Challenge ได้'}
+    ],
+    problems:[
+      {id:'too_hard',   label:'โจทย์ยากเกิน'},
+      {id:'too_easy',   label:'โจทย์ง่ายเกิน'},
+      {id:'e4_no_time', label:'เวลาไม่พอ Elaborate'},
+      {id:'still_misc', label:'ยังคง misconception'}
+    ],
+    fixes:[
+      {id:'f_level',    label:'ปรับระดับโจทย์'},
+      {id:'f_fewer_q',  label:'ลดจำนวนข้อ'},
+      {id:'f_answer',   label:'เฉลยใน LMS ให้ทบทวน'},
+      {id:'f_group_dif',label:'แยกกลุ่มเก่ง/อ่อน'}
+    ] },
+  { id:'tlc_post', icon:'🚦', label:'TLC หลังเรียน',
+    success:[
+      {id:'green_up',   label:'บัตรเขียวเพิ่ม', auto:(d,x)=>x.tlGreenDiff>0},
+      {id:'target_60',  label:'บัตรเขียว ≥60%', auto:(d,x)=>x.tlPostGreenPct>=60},
+      {id:'reflect_ok', label:'นักเรียนสะท้อนได้'}
+    ],
+    problems:[
+      {id:'no_green',   label:'บัตรเขียวไม่เพิ่ม', auto:(d,x)=>x.tlGreenDiff!==null && x.tlGreenDiff<=0},
+      {id:'no_read',    label:'ครูไม่ได้อ่านผลรวม'},
+      {id:'tlp_no_time',label:'เวลาไม่พอ'}
+    ],
+    fixes:[
+      {id:'f_more_time',label:'เพิ่มเวลา'},
+      {id:'f_use_next', label:'ใช้ผลจัดกลุ่มคาบถัดไป'},
+      {id:'f_webapp',   label:'ใช้ TL WebApp ช่วย'}
+    ] },
+  { id:'f_post', icon:'📝', label:'F Post · Four-tier หลังเรียน',
+    success:[
+      {id:'submit_all',  label:'ส่งครบ (≥85%)', auto:(d,x)=>x.fPostRate>=85},
+      {id:'sound_up',    label:'Sound เพิ่ม', auto:(d,x)=>x.soundPct!==null && x.soundUp},
+      {id:'misc_drop_20',label:'Misconception ลด ≥20%', auto:(d,x)=>x.miscDrop>=20},
+      {id:'gain_3',      label:'Normalized gain ≥ 0.3', auto:(d,x)=>x.gain>=0.3}
+    ],
+    problems:[
+      {id:'no_time_fp',  label:'ไม่มีเวลาทำ F Post'},
+      {id:'vague_q',     label:'คำถามกำกวม'},
+      {id:'bored',       label:'นักเรียนเบื่อ ทำผ่าน ๆ'},
+      {id:'tired',       label:'นักเรียนล้า / หมดแรง'}
+    ],
+    fixes:[
+      {id:'f_home',      label:'ย้ายไปทำนอกคาบ'},
+      {id:'f_refine_q',  label:'ปรับคำถามให้ชัด'},
+      {id:'f_grade',     label:'ให้คะแนนเข้าเกรดกระตุ้น'},
+      {id:'f_shorter',   label:'ลดจำนวนข้อ'}
+    ] },
+  { id:'mj', icon:'📓', label:'MJ · Metacognitive 3-2-1',
+    success:[
+      {id:'mj_all',     label:'เขียน 3-2-1 ครบ (≥60%)', auto:(d,x)=>x.mjCov>=60},
+      {id:'mj_deep',    label:'มีคำถามเจาะลึก'},
+      {id:'mj_hook',    label:'ใช้เป็น Hook แผนถัดไปได้'}
+    ],
+    problems:[
+      {id:'mj_shallow', label:'เขียนผ่าน ๆ ไม่ลึก'},
+      {id:'mj_no_time', label:'เวลาไม่พอ'},
+      {id:'mj_confuse', label:'ไม่เข้าใจ metacognition'}
+    ],
+    fixes:[
+      {id:'f_example_mj',label:'ให้ตัวอย่างก่อน'},
+      {id:'f_home_mj',   label:'ย้ายไปทำนอกคาบ'},
+      {id:'f_prompts',   label:'ปรับ prompts ให้กว้างขึ้น'}
+    ] }
+];
+
+function ppPhaseKey(){
+  const plan = Number(document.getElementById('pp-plan')?.value || 1);
+  const course = (window.KP_CONFIG?.course || 'physics3');
+  return `pp_phases_${course}_p${plan}`;
+}
+function ppPhaseGet(){ try { return JSON.parse(localStorage.getItem(ppPhaseKey())||'{}'); } catch(e){ return {}; } }
+function ppPhaseSet(m){ localStorage.setItem(ppPhaseKey(), JSON.stringify(m)); }
+function ppPhaseManualKey(){ return ppPhaseKey()+'_manual'; }
+function ppPhaseManualGet(){ try { return JSON.parse(localStorage.getItem(ppPhaseManualKey())||'{}'); } catch(e){ return {}; } }
+function ppPhaseManualSet(m){ localStorage.setItem(ppPhaseManualKey(), JSON.stringify(m)); }
+
+function renderPhaseBlock(){
+  const el = document.getElementById('pp-phases-block');
+  if (!el) return;
+  el.innerHTML = PHASES.map((ph,idx) => `
+    <details id="ph-${ph.id}" style="border:1.5px solid #e2e8f0;border-radius:10px;margin-bottom:8px;background:#fafbff">
+      <summary style="cursor:pointer;padding:10px 14px;display:flex;align-items:center;gap:8px;font-weight:700;color:#1e3a8a;flex-wrap:wrap">
+        <span style="font-size:18px">${ph.icon}</span>
+        <span>${ph.label}</span>
+        <span class="ph-badge" data-ph="${ph.id}" style="font-size:11.5px;padding:2px 10px;border-radius:10px;background:#e2e8f0;color:#475569;font-weight:700;margin-left:auto">—</span>
+      </summary>
+      <div style="padding:10px 14px 14px">
+        <div style="font-weight:700;color:#059669;font-size:13.5px;margin-top:6px;margin-bottom:4px">✅ ทำได้สำเร็จ</div>
+        ${ph.success.map(it => `
+          <label style="display:block;font-size:13.5px;margin:3px 0;padding:3px 6px;border-radius:4px">
+            <input type="checkbox" data-ph="${ph.id}" data-kind="success" data-id="${it.id}" ${it.auto?'data-auto="1"':''}>
+            ${it.label} ${it.auto?'<span style="font-size:10.5px;background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:8px;margin-left:3px">🤖</span>':''}
+          </label>`).join('')}
+        <label style="display:block;font-size:13.5px;margin:6px 0 4px">
+          + หัวข้ออื่น ๆ: <input type="text" data-ph="${ph.id}" data-kind="success_custom" placeholder="ระบุ..." style="width:70%;padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px">
+        </label>
+
+        <div style="font-weight:700;color:#b91c1c;font-size:13.5px;margin-top:10px;margin-bottom:4px">⚠️ ปัญหาที่พบ</div>
+        ${ph.problems.map(it => `
+          <label style="display:block;font-size:13.5px;margin:3px 0;padding:3px 6px;border-radius:4px">
+            <input type="checkbox" data-ph="${ph.id}" data-kind="problems" data-id="${it.id}" ${it.auto?'data-auto="1"':''}>
+            ${it.label} ${it.auto?'<span style="font-size:10.5px;background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:8px;margin-left:3px">🤖</span>':''}
+          </label>`).join('')}
+        <label style="display:block;font-size:13.5px;margin:6px 0 4px">
+          + หัวข้ออื่น ๆ: <input type="text" data-ph="${ph.id}" data-kind="problems_custom" placeholder="ระบุ..." style="width:70%;padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px">
+        </label>
+
+        <div style="font-weight:700;color:#7c3aed;font-size:13.5px;margin-top:10px;margin-bottom:4px">💡 แนวทางปรับปรุง</div>
+        ${ph.fixes.map(it => `
+          <label style="display:block;font-size:13.5px;margin:3px 0;padding:3px 6px;border-radius:4px">
+            <input type="checkbox" data-ph="${ph.id}" data-kind="fixes" data-id="${it.id}">
+            ${it.label}
+          </label>`).join('')}
+        <label style="display:block;font-size:13.5px;margin:6px 0 4px">
+          + หัวข้ออื่น ๆ: <input type="text" data-ph="${ph.id}" data-kind="fixes_custom" placeholder="ระบุ..." style="width:70%;padding:3px 6px;border:1px solid #cbd5e1;border-radius:4px">
+        </label>
+
+        <label style="display:block;font-size:13.5px;margin-top:8px;color:#475569">
+          📝 หมายเหตุเพิ่มเติม:
+          <textarea data-ph="${ph.id}" data-kind="note" placeholder="เช่น ปัญหาหลัก · วิธีแก้ · ข้อเรียนรู้..." style="width:100%;min-height:50px;margin-top:4px"></textarea>
+        </label>
+      </div>
+    </details>
+  `).join('');
+
+  // Attach persistence handlers
+  el.querySelectorAll('input[type="checkbox"], input[type="text"], textarea').forEach(inp => {
+    const ev = inp.type === 'checkbox' ? 'change' : 'input';
+    inp.addEventListener(ev, () => {
+      const m = ppPhaseGet();
+      const key = `${inp.dataset.ph}__${inp.dataset.kind}__${inp.dataset.id||''}`;
+      m[key] = inp.type === 'checkbox' ? inp.checked : inp.value;
+      ppPhaseSet(m);
+      // Mark auto items as manually-toggled if user changes them
+      if (inp.type === 'checkbox' && inp.dataset.auto === '1'){
+        const mm = ppPhaseManualGet();
+        mm[`${inp.dataset.ph}__${inp.dataset.id}`] = true;
+        ppPhaseManualSet(mm);
+      }
+      ppUpdatePhaseBadge(inp.dataset.ph);
+    });
+  });
+  // Restore saved values
+  const saved = ppPhaseGet();
+  el.querySelectorAll('input[type="checkbox"], input[type="text"], textarea').forEach(inp => {
+    const key = `${inp.dataset.ph}__${inp.dataset.kind}__${inp.dataset.id||''}`;
+    if (saved[key] !== undefined){
+      if (inp.type === 'checkbox') inp.checked = !!saved[key];
+      else inp.value = saved[key];
+    }
+  });
+  PHASES.forEach(p => ppUpdatePhaseBadge(p.id));
+}
+
+function ppUpdatePhaseBadge(phaseId){
+  const badge = document.querySelector(`.ph-badge[data-ph="${phaseId}"]`);
+  if (!badge) return;
+  const boxS = document.querySelectorAll(`input[data-ph="${phaseId}"][data-kind="success"]:checked`).length;
+  const boxP = document.querySelectorAll(`input[data-ph="${phaseId}"][data-kind="problems"]:checked`).length;
+  if (boxS + boxP === 0){
+    badge.textContent = '—'; badge.style.background='#e2e8f0'; badge.style.color='#475569';
+  } else if (boxP === 0){
+    badge.textContent = `✓ ${boxS}`; badge.style.background='#d1fae5'; badge.style.color='#065f46';
+  } else if (boxS === 0){
+    badge.textContent = `⚠ ${boxP}`; badge.style.background='#fee2e2'; badge.style.color='#991b1b';
+  } else {
+    badge.textContent = `✓ ${boxS} · ⚠ ${boxP}`; badge.style.background='#fef3c7'; badge.style.color='#92400e';
+  }
+}
+
+function applyPhaseAutoCheck(d){
+  if (!d) return;
+  // Build context from data
+  const roster = Math.max((state.students||[]).length, d.attendance||0, 1);
+  const ctx = {
+    roster,
+    attendance: d.attendance || 0,
+    tlPreCount:  d.tl_pre?.data?.length || 0,
+    tlPostCount: d.tl_post?.data?.length || 0,
+    fPreCount:   d.f_pre?.count || d.f_pre?.data?.length || 0,
+    fPostCount:  d.f_post?.count || d.f_post?.data?.length || 0,
+    poeCount:    d.poe?.count || d.poe?.data?.length || 0,
+    mjCount:     d.mj?.count || d.mj?.data?.length || 0,
+    cerCount:    d.cer?.data?.length || 0,
+    calcCount:   d.calc?.data?.length || 0,
+    spotCount:   d.spot?.data?.length || 0
+  };
+  ctx.fPreRate  = roster ? ctx.fPreCount/roster*100 : 0;
+  ctx.fPostRate = roster ? ctx.fPostCount/roster*100 : 0;
+  ctx.poeRate   = ctx.attendance ? ctx.poeCount/ctx.attendance*100 : 0;
+  ctx.mjCov     = roster ? ctx.mjCount/roster*100 : 0;
+
+  // Four-tier outcome metrics
+  const fp = d.f_post?.overall;
+  const fpTotal = fp ? (fp.Sound+fp.Misconception+fp.Guessing+fp['No-K']) : 0;
+  ctx.soundPct  = fpTotal ? fp.Sound/fpTotal*100 : null;
+  const fpre = d.f_pre?.overall;
+  const fpreTotal = fpre ? (fpre.Sound+fpre.Misconception+fpre.Guessing+fpre['No-K']) : 0;
+  const soundPrePct = fpreTotal ? fpre.Sound/fpreTotal*100 : null;
+  ctx.soundUp = (ctx.soundPct!==null && soundPrePct!==null) ? ctx.soundPct>soundPrePct : false;
+  const miscPre = fpre?.Misconception||0, miscPost = fp?.Misconception||0;
+  ctx.miscDrop = miscPre>0 ? (miscPre-miscPost)/miscPre*100 : 0;
+  const gains = d.f_post?.normalized_gain ? Object.values(d.f_post.normalized_gain).map(g=>g.normalized_gain).filter(v=>v!=null) : [];
+  ctx.gain = gains.length ? gains.reduce((a,b)=>a+b,0)/gains.length : 0;
+
+  // TL green
+  const tlCalc = rec => {
+    if (!rec?.data) return null;
+    const c = {green:0,yellow:0,red:0,total:0};
+    rec.data.forEach(r=>{ if (c[r.color]!==undefined){ c[r.color]++; c.total++; } });
+    return c;
+  };
+  const tlPre = tlCalc(d.tl_pre), tlPost = tlCalc(d.tl_post);
+  ctx.tlGreenDiff = (tlPre?.total && tlPost?.total) ? (tlPost.green/tlPost.total - tlPre.green/tlPre.total)*100 : null;
+  ctx.tlPostGreenPct = tlPost?.total ? tlPost.green/tlPost.total*100 : 0;
+
+  const manual = ppPhaseManualGet();
+  const saved = ppPhaseGet();
+  PHASES.forEach(ph => {
+    ['success','problems'].forEach(kind => {
+      ph[kind].forEach(it => {
+        if (!it.auto) return;
+        const mKey = `${ph.id}__${it.id}`;
+        if (manual[mKey]) return;  // respect user override
+        try {
+          const shouldCheck = !!it.auto(d, ctx);
+          const cb = document.querySelector(`input[data-ph="${ph.id}"][data-kind="${kind}"][data-id="${it.id}"]`);
+          if (cb){
+            cb.checked = shouldCheck;
+            const key = `${ph.id}__${kind}__${it.id}`;
+            saved[key] = shouldCheck;
+          }
+        } catch(e){ console.warn('phase rule error', ph.id, it.id, e); }
+      });
+    });
+    ppUpdatePhaseBadge(ph.id);
+  });
+  ppPhaseSet(saved);
 }
 
 let currentPostPlanData = null;
@@ -4476,6 +4835,14 @@ async function loadPostPlanData(){
   data.poe = poe; data.mj = mj;
   data.ob = ob; data.gr = gr;
 
+  // Also fetch CER / Calc / Spot for phase auto-check
+  const [cer, calc, spot] = await Promise.all([
+    fetchSheet(`CER_P${plan}`, false),
+    fetchSheet(`Calc_P${plan}`, false),
+    fetchSheet(`Spot_P${plan}`, false)
+  ]);
+  data.cer = cer; data.calc = calc; data.spot = spot;
+
   currentPostPlanData = data;
   renderPostPlanAuto(data);
   // Phase B: auto-fill on load (respect manual overrides)
@@ -4487,6 +4854,8 @@ async function loadPostPlanData(){
       stat.textContent = `🤖 Auto-fill อัตโนมัติ: ${r.applied} ข้อ · manual ${r.skipped} ข้อ · ไม่มีข้อมูล ${r.nodata}`;
     }
   } catch(e){ console.error('auto-fill failed', e); }
+  // Phase-by-phase reflection auto-check
+  try { applyPhaseAutoCheck(data); } catch(e){ console.error('phase auto-check failed', e); }
   refreshAutoBadges();
   wirePostPlanButtons();
 }
