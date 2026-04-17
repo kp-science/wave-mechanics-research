@@ -910,9 +910,8 @@ function openTool(key){
   if (key === 'ft02')   return renderFTForm(body, 'post', key, true);
   if (key === 'tl-pre') return renderTL(body, 'pre');
   if (key === 'tl-post')return renderTL(body, 'post');
-  if (key === 'poe' && state.currentPlan === 1) return renderPOE1(body);
-  if (key === 'poe' && state.currentPlan === 2) return renderPOE2(body);
-  if (key === 'poe')    return renderPOE(body);
+  if (key === 'poe' && state.currentPlan === 2) return renderPOE2(body); // Lab 38 (Phase 3b special)
+  if (key === 'poe')    return renderPOE(body); // generic · schema-aware
   if (key === 'matrix') return renderMatrix(body);
   if (key === 'spot' || key === 'spot2') return renderSpot(body);   // Phase 3a: generic
   if (key === 'calc' || key === 'calc2') return renderCalc(body);   // Phase 3a: generic
@@ -1234,13 +1233,165 @@ function renderTL(body, phase){
 // ═══════════════════════════════════════════════════════════
 // POE-01
 // ═══════════════════════════════════════════════════════════
+// Phase 3b: Generic POE renderer
+// - ถ้ามี KP_WORKSHEETS[plan].poe → render rich POE (P/O/E ครบ + radio + checklist)
+// - ถ้าไม่มี → fallback 4-textarea แบบ simple
+// POE2 (Lab 38) ยังเป็น renderPOE2 พิเศษ (มี measurement tables)
 function renderPOE(body){
+  const s = getWorksheet('poe');
+  if (s) return renderPOERich(body, s);
+  return renderPOESimple(body);
+}
+
+// ── Rich POE (schema-driven) ─────────────────────────────────
+function renderPOERich(body, s){
+  const h = s.hero || {};
+  const P = s.predict || {};
+  const O = s.observe || {};
+  const E = s.explain || {};
+
+  const predictOpts = (P.options || []).map(o =>
+    `<label><input type="radio" name="poe_pred" value="${o.v}"> ${escapeHtml(o.l)}</label>`
+  ).join('');
+
+  const reasonOpts = (P.reasonOptions || []).map(o =>
+    `<label><input type="radio" name="poe_reason_opt" value="${o.v}"> ${escapeHtml(o.l)}</label>`
+  ).join('');
+
+  const scenarios = (O.scenarios || []).map((sc, i) => `
+    <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
+      <h4 style="font-size:14px;color:#c05621;margin-bottom:6px">${sc.title}</h4>
+      <label style="font-size:13px">${escapeHtml(sc.instruction || '')}</label>
+      <textarea id="poe_obs_${i}" placeholder="${escapeHtml(sc.placeholder || '')}" style="min-height:60px"></textarea>
+    </div>
+  `).join('');
+
+  const summaryFields = (O.summaryFields || []).map(f => `
+    <div>${escapeHtml(f.label)}: <input type="text" id="poe_sf_${f.id}" style="width:100%;border:none;border-bottom:1px solid #999;font-family:inherit;padding:2px 0" placeholder="${escapeHtml(f.placeholder || '')}"></div>
+  `).join('');
+
+  const finalQ = O.finalQuestion
+    ? `<div style="margin-top:8px"><b>${escapeHtml(O.finalQuestion.label)}</b>
+        ${(O.finalQuestion.options || []).map(o => `<label style="margin-left:8px"><input type="radio" name="poe_final" value="${o.v}"> ${escapeHtml(o.l)}</label>`).join('')}
+      </div>`
+    : '';
+
+  const compareOpts = (E.compareOptions || []).map(o =>
+    `<label><input type="radio" name="poe_compare" value="${o.v}"> ${escapeHtml(o.l)}</label>`
+  ).join('');
+
+  const checklist = (E.checklistItems || []).map((item,i) =>
+    `<label><input type="checkbox" id="poe_ck_${i}"> ${item}</label>`
+  ).join('');
+
+  body.innerHTML += `
+  <div class="info" style="margin-bottom:10px">
+    <b>🎯 คำถาม:</b> ${escapeHtml(h.question || '')}
+    ${h.context ? '<br>'+escapeHtml(h.context) : ''}
+  </div>
+
+  <!-- ===== P: PREDICT ===== -->
+  <div class="item" style="border-left:6px solid #1976d2;background:#e3f2fd">
+    <h3 style="color:#0d47a1">🔮 P · Predict (ทำนาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #1976d2;border-radius:12px;padding:2px 10px">ก่อนทดลอง · 3 นาที</span></h3>
+    <div style="margin:8px 0">${escapeHtml(P.question || '')}</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">${predictOpts}</div>
+
+    ${P.reasonHeader ? `<div style="margin-bottom:4px"><b>${escapeHtml(P.reasonHeader)}</b></div>` : ''}
+    ${reasonOpts ? `<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;padding-left:4px">${reasonOpts}</div>` : ''}
+    <textarea id="poe_reason" placeholder="${escapeHtml(P.reasonPlaceholder || '')}" style="min-height:50px"></textarea>
+    <div style="margin-top:6px"><b>ความมั่นใจ:</b>
+      <label><input type="radio" name="poe_conf" value="high"> มาก</label>
+      <label><input type="radio" name="poe_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="poe_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- ===== O: OBSERVE ===== -->
+  <div class="item" style="border-left:6px solid #ef6c00;background:#fff3e0">
+    <h3 style="color:#c05621">👁 O · Observe (สังเกต) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #ef6c00;border-radius:12px;padding:2px 10px">ขณะทดลอง · 15 นาที</span></h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:10px">${scenarios}</div>
+    ${summaryFields || finalQ ? `
+      <div style="background:#fff;border:1.5px solid #ef6c00;border-radius:8px;padding:10px;font-size:14px">
+        <b>สรุปจากการสังเกต:</b>
+        ${summaryFields ? `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">${summaryFields}</div>` : ''}
+        ${finalQ}
+      </div>` : ''}
+  </div>
+
+  <!-- ===== E: EXPLAIN ===== -->
+  <div class="item" style="border-left:6px solid #2e7d32;background:#e8f5e9">
+    <h3 style="color:#1b5e20">✍️ E · Explain (อธิบาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #2e7d32;border-radius:12px;padding:2px 10px">เชื่อม P↔O · 7 นาที</span></h3>
+
+    <label><b>1) ${escapeHtml(E.compareQuestion || 'คำทำนายกับผลสังเกตตรงกันหรือไม่?')}</b></label>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 6px">${compareOpts}</div>
+    <textarea id="poe_match" placeholder="${escapeHtml(E.matchPlaceholder || '')}" style="min-height:55px"></textarea>
+
+    ${checklist ? `
+    <div style="margin-top:10px"><b>2) ${escapeHtml(E.checklistHeader || '')}</b></div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding-left:4px">${checklist}</div>` : ''}
+
+    <label><b>${checklist ? '3)' : '2)'} ${escapeHtml(E.principleLabel || 'สรุปหลักการ:')}</b></label>
+    <textarea id="poe_principle" placeholder="${escapeHtml(E.principlePlaceholder || '')}" style="min-height:70px"></textarea>
+
+    <div style="margin-top:8px"><b>ความมั่นใจในคำอธิบาย:</b>
+      <label><input type="radio" name="poe_e_conf" value="high"> มาก</label>
+      <label><input type="radio" name="poe_e_conf" value="mid"> ปานกลาง</label>
+      <label><input type="radio" name="poe_e_conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  ${s.misconception ? `<div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
+    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> ${s.misconception}
+  </div>` : ''}
+
+  <div class="submit-bar">
+    <button class="btn-submit" id="poeBtn">📤 ส่งใบ POE</button>
+    <div class="status" id="poeStat"></div>
+  </div>`;
+
+  document.getElementById('poeBtn').onclick = () => {
+    const getRadio = n => (document.querySelector(`input[name="${n}"]:checked`)||{}).value || '';
+    const obs = {};
+    (O.scenarios || []).forEach((_,i) => obs['o_'+i] = val('poe_obs_'+i));
+    const summary = {};
+    (O.summaryFields || []).forEach(f => summary['s_'+f.id] = val('poe_sf_'+f.id));
+    const checks = (E.checklistItems || [])
+      .map((_,i) => document.getElementById('poe_ck_'+i).checked ? i+1 : null)
+      .filter(x => x !== null).join(',');
+
+    const pl = {
+      p_prediction: getRadio('poe_pred'),
+      p_reason_opt: getRadio('poe_reason_opt'),
+      p_reason:     val('poe_reason'),
+      p_confidence: getRadio('poe_conf'),
+      ...obs,
+      ...summary,
+      o_final:      getRadio('poe_final'),
+      e_po_compare: getRadio('poe_compare'),
+      e_match:      val('poe_match'),
+      e_checks:     checks,
+      e_principle:  val('poe_principle'),
+      e_confidence: getRadio('poe_e_conf')
+    };
+    if ((!pl.p_reason_opt && !pl.p_reason) || !pl.e_match || !pl.e_principle){
+      const st = document.getElementById('poeStat');
+      st.className='status error'; st.textContent='❌ กรอกอย่างน้อย: เหตุผล (P) · เปรียบเทียบ P↔O · สรุปหลักการ (E)';
+      return;
+    }
+    submitData(`${s.sheetPrefix || 'POE_P'}${state.currentPlan}`, pl,
+      document.getElementById('poeStat'), document.getElementById('poeBtn'));
+  };
+  showView('view-tool');
+}
+
+// ── Simple POE (fallback · 4 textareas) ──────────────────────
+function renderPOESimple(body){
   body.innerHTML += `
     <div class="info"><b>POE:</b> บันทึกสิ่งที่คุณ <b>ทำนาย (P)</b> · <b>สังเกต (O)</b> · <b>อธิบาย (E)</b> ตลอดการทดลอง</div>
     <div class="item" style="border-left:6px solid #ef6c00">
       <h3 style="color:#c05621">🔮 Predict (ทำนาย) — ก่อนทดลอง</h3>
       <label>สถานการณ์/คำถามที่ทำนาย:</label>
-      <textarea id="poe_situation" placeholder="เช่น เมื่อคลื่นเคลื่อนผ่านลูกมะพร้าวลอยน้ำ ฉันคิดว่า..."></textarea>
+      <textarea id="poe_situation" placeholder="เช่น เมื่อคลื่นเคลื่อนผ่าน..."></textarea>
       <label>เหตุผลที่ทำนาย:</label>
       <textarea id="poe_pred_reason" placeholder="เพราะ..."></textarea>
     </div>
@@ -1254,7 +1405,7 @@ function renderPOE(body){
       <label>การทำนายถูกต้องหรือไม่? (ตรง/ไม่ตรงกับที่สังเกตได้)</label>
       <textarea id="poe_match" placeholder="ทำนาย... แต่สังเกตได้... จึง..."></textarea>
       <label>อธิบายโดยเชื่อมกับหลักการทางวิทยาศาสตร์:</label>
-      <textarea id="poe_explain" placeholder="เขียนอย่างน้อย 3 ประโยค โดยอ้างหลักการ เช่น คลื่นถ่ายโอนพลังงาน..." style="min-height:100px"></textarea>
+      <textarea id="poe_explain" placeholder="เขียนอย่างน้อย 3 ประโยค โดยอ้างหลักการ..." style="min-height:100px"></textarea>
     </div>
     <div class="submit-bar">
       <button class="btn-submit" id="poeBtn">📤 ส่งใบ POE</button>
@@ -1262,11 +1413,11 @@ function renderPOE(body){
     </div>`;
   document.getElementById('poeBtn').onclick = () => {
     const pl = {
-      situation:val('poe_situation'),
-      predict_reason:val('poe_pred_reason'),
-      observe:val('poe_observe'),
-      match:val('poe_match'),
-      explain:val('poe_explain')
+      situation:      val('poe_situation'),
+      predict_reason: val('poe_pred_reason'),
+      observe:        val('poe_observe'),
+      match:          val('poe_match'),
+      explain:        val('poe_explain')
     };
     if (!pl.situation || !pl.observe || !pl.explain){
       const s = document.getElementById('poeStat');
@@ -1416,152 +1567,6 @@ function renderCalc(body){
   showView('view-tool');
 }
 
-// ═══════════════════════════════════════════════════════════
-// POE-01 · เฉพาะแผน 1 (Concept Cartoon "ของลอยในทะเล" + Slinky + wave-types Sim)
-// Misconception: M1.1 อนุภาคไปกับคลื่น · M1.2 เสียงเป็นคลื่นตามขวาง
-// ═══════════════════════════════════════════════════════════
-function renderPOE1(body){
-  body.innerHTML += `
-  <div class="info" style="margin-bottom:10px">
-    <b>🎯 คำถาม:</b> ของลอย (ลูกมะพร้าว) ในทะเลจะถูกคลื่นพาไปไกลหรือไม่ เพราะเหตุใด?
-    <br>คู่กับ Concept Cartoon "ของลอยในทะเล" + สังเกต Slinky/ริบบิ้น + Simulation wave-types
-  </div>
-
-  <!-- ===== P: PREDICT ===== -->
-  <div class="item" style="border-left:6px solid #1976d2;background:#e3f2fd">
-    <h3 style="color:#0d47a1">🔮 P · Predict (ทำนาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #1976d2;border-radius:12px;padding:2px 10px">ก่อนทดลอง · 3 นาที</span></h3>
-    <div style="margin:8px 0">ฉันคิดว่าลูกมะพร้าวในทะเลจะ:</div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px">
-      <label><input type="radio" name="p1_pred" value="go_far"> ถูกคลื่นพาไปไกล</label>
-      <label><input type="radio" name="p1_pred" value="stay"> ลอยขึ้น-ลงอยู่กับที่</label>
-      <label><input type="radio" name="p1_pred" value="go_stop"> ถูกพาไปแล้วหยุด</label>
-    </div>
-
-    <div style="margin-bottom:4px"><b>เหตุผลที่คิดเช่นนั้น:</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
-    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;padding-left:4px">
-      <label><input type="radio" name="p1_reason_opt" value="R1"> คลื่นพาน้ำ (และของที่ลอย) ไหลไปด้วย เหมือนกระแสน้ำ</label>
-      <label><input type="radio" name="p1_reason_opt" value="R2"> คลื่นส่งแรงผลักลูกมะพร้าวไปข้างหน้าเรื่อย ๆ</label>
-      <label><input type="radio" name="p1_reason_opt" value="R3"> คลื่นถ่ายโอนพลังงาน แต่อนุภาคน้ำแค่สั่นขึ้น-ลง ไม่เคลื่อนที่ตามคลื่น</label>
-      <label><input type="radio" name="p1_reason_opt" value="R4"> ลูกมะพร้าวถูกพาไปตอนแรก แต่พอพลังงานคลื่นลดลงก็หยุด</label>
-      <label><input type="radio" name="p1_reason_opt" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
-    </div>
-    <textarea id="p1_reason" placeholder="ถ้าเลือก 'อื่น ๆ' หรือต้องการอธิบายเพิ่มเติม พิมพ์ที่นี่..." style="min-height:50px"></textarea>
-    <div style="margin-top:6px"><b>ความมั่นใจ:</b>
-      <label><input type="radio" name="p1_conf" value="high"> มาก</label>
-      <label><input type="radio" name="p1_conf" value="mid"> ปานกลาง</label>
-      <label><input type="radio" name="p1_conf" value="low"> น้อย</label>
-    </div>
-  </div>
-
-  <!-- ===== O: OBSERVE ===== -->
-  <div class="item" style="border-left:6px solid #ef6c00;background:#fff3e0">
-    <h3 style="color:#c05621">👁 O · Observe (สังเกต) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #ef6c00;border-radius:12px;padding:2px 10px">Slinky + Simulation · 15 นาที · กลุ่ม</span></h3>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
-        <h4 style="font-size:14px;color:#c05621;margin-bottom:6px">🔵 รอบ 1 · Slinky + ริบบิ้น</h4>
-        <label style="font-size:13px">สิ่งที่สังเกตได้เมื่อส่งคลื่นผ่าน Slinky (ริบบิ้นเคลื่อนที่อย่างไร?):</label>
-        <textarea id="p1o_slinky" placeholder="ริบบิ้นที่ผูกไว้..." style="min-height:60px"></textarea>
-      </div>
-      <div style="background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px">
-        <h4 style="font-size:14px;color:#c05621;margin-bottom:6px">🟢 รอบ 2 · Simulation wave-types.html</h4>
-        <label style="font-size:13px">สิ่งที่สังเกตได้จาก Simulation (อนุภาคสีแดง/น้ำเงินเคลื่อนที่อย่างไร?):</label>
-        <textarea id="p1o_sim" placeholder="อนุภาคใน simulation..." style="min-height:60px"></textarea>
-      </div>
-    </div>
-
-    <div style="background:#fff;border:1.5px solid #ef6c00;border-radius:8px;padding:10px;font-size:14px">
-      <b>สรุปจากการสังเกต:</b>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-        <div>ทิศการสั่นของริบบิ้น/อนุภาค: <input type="text" id="p1o_vibdir" style="width:100%;border:none;border-bottom:1px solid #999;font-family:inherit;padding:2px 0" placeholder="เช่น ขึ้น-ลง / ซ้าย-ขวา"></div>
-        <div>ทิศการเคลื่อนที่ของคลื่น: <input type="text" id="p1o_wavedir" style="width:100%;border:none;border-bottom:1px solid #999;font-family:inherit;padding:2px 0" placeholder="เช่น ไปทางขวา"></div>
-      </div>
-      <div style="margin-top:8px"><b>ริบบิ้น/อนุภาคถูกพาไปกับคลื่นหรือไม่?</b>
-        <label style="margin-left:8px"><input type="radio" name="p1o_carried" value="yes"> ถูกพาไป</label>
-        <label><input type="radio" name="p1o_carried" value="no"> ไม่ถูกพาไป (สั่นอยู่กับที่)</label>
-        <label><input type="radio" name="p1o_carried" value="unsure"> ไม่แน่ใจ</label>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== E: EXPLAIN ===== -->
-  <div class="item" style="border-left:6px solid #2e7d32;background:#e8f5e9">
-    <h3 style="color:#1b5e20">✍️ E · Explain (อธิบาย) <span style="font-size:13px;font-weight:400;background:#fff;border:1px solid #2e7d32;border-radius:12px;padding:2px 10px">เชื่อม P↔O · 7 นาที</span></h3>
-
-    <label><b>1) เปรียบเทียบ P กับ O:</b> คำทำนายกับผลสังเกตตรงกันหรือไม่?</label>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin:4px 0 6px">
-      <label><input type="radio" name="p1e_po" value="match"> ตรงกัน</label>
-      <label><input type="radio" name="p1e_po" value="partial"> ตรงบางส่วน</label>
-      <label><input type="radio" name="p1e_po" value="diff"> ไม่ตรง</label>
-    </div>
-    <textarea id="p1e_match" placeholder="อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร..." style="min-height:55px"></textarea>
-
-    <div style="margin-top:10px"><b>2) จากผลการสังเกต ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
-    <div style="display:flex;flex-direction:column;gap:5px;margin:6px 0 8px;padding-left:4px">
-      <label><input type="checkbox" id="p1e_c1"> อนุภาคตัวกลาง (น้ำ/Slinky) สั่นอยู่กับที่ <u>ไม่</u>ถูกพาไปกับคลื่น</label>
-      <label><input type="checkbox" id="p1e_c2"> คลื่นถ่ายโอน "พลังงาน" ไม่ใช่ถ่ายโอน "สสาร/วัตถุ"</label>
-      <label><input type="checkbox" id="p1e_c3"> คลื่นตามขวาง: อนุภาคสั่นตั้งฉากกับทิศคลื่น (เช่น คลื่นในเชือก คลื่นน้ำ)</label>
-      <label><input type="checkbox" id="p1e_c4"> คลื่นตามยาว: อนุภาคสั่นในทิศเดียวกับทิศคลื่น (เช่น เสียง Slinky ผลัก-ดึง)</label>
-      <label><input type="checkbox" id="p1e_c5"> เสียงเป็นคลื่นตามยาว ไม่ใช่คลื่นตามขวาง</label>
-    </div>
-
-    <label><b>3) สรุปหลักการด้วยภาษาของนักเรียนเอง:</b> (อนุภาคเคลื่อนที่อย่างไร? พลังงานเดินทางอย่างไร?)</label>
-    <textarea id="p1e_principle" placeholder="คลื่นคือ... อนุภาคตัวกลาง... พลังงาน..." style="min-height:70px"></textarea>
-
-    <div style="margin-top:8px"><b>ความมั่นใจในคำอธิบาย:</b>
-      <label><input type="radio" name="p1e_conf" value="high"> มาก</label>
-      <label><input type="radio" name="p1e_conf" value="mid"> ปานกลาง</label>
-      <label><input type="radio" name="p1e_conf" value="low"> น้อย</label>
-    </div>
-  </div>
-
-  <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
-    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> M1.1 (อนุภาคเคลื่อนที่ไปกับคลื่น) · M1.2 (เสียงเป็นคลื่นตามขวาง)
-  </div>
-
-  <div class="submit-bar">
-    <button class="btn-submit" id="poe1Btn">📤 ส่งใบ POE</button>
-    <div class="status" id="poe1Stat"></div>
-  </div>`;
-
-  /* ====== Submit handler ====== */
-  document.getElementById('poe1Btn').onclick = () => {
-    const pred = (document.querySelector('input[name=p1_pred]:checked')||{}).value || '';
-    const rOpt = (document.querySelector('input[name=p1_reason_opt]:checked')||{}).value || '';
-    const conf = (document.querySelector('input[name=p1_conf]:checked')||{}).value || '';
-    const carried = (document.querySelector('input[name=p1o_carried]:checked')||{}).value || '';
-    const poCompare = (document.querySelector('input[name=p1e_po]:checked')||{}).value || '';
-    const eConf = (document.querySelector('input[name=p1e_conf]:checked')||{}).value || '';
-
-    const pl = {
-      p_prediction: pred,
-      p_reason_opt: rOpt,
-      p_reason: val('p1_reason'),
-      p_confidence: conf,
-      o_slinky: val('p1o_slinky'),
-      o_sim: val('p1o_sim'),
-      o_vib_direction: val('p1o_vibdir'),
-      o_wave_direction: val('p1o_wavedir'),
-      o_carried: carried,
-      e_po_compare: poCompare,
-      e_match: val('p1e_match'),
-      e_checks: ['c1','c2','c3','c4','c5'].filter(x => document.getElementById('p1e_'+x).checked).join(','),
-      e_principle: val('p1e_principle'),
-      e_confidence: eConf
-    };
-    if ((!rOpt && !pl.p_reason) || !pl.e_match || !pl.e_principle){
-      const s = document.getElementById('poe1Stat');
-      s.className='status error'; s.textContent='❌ กรอกอย่างน้อย: เหตุผล (P) · เปรียบเทียบ P↔O · สรุปหลักการ (E)';
-      return;
-    }
-    submitData('POE_P1', pl,
-      document.getElementById('poe1Stat'), document.getElementById('poe1Btn'));
-  };
-  showView('view-tool');
-}
-
-// ═══════════════════════════════════════════════════════════
-// POE-01 · เฉพาะแผน 2 (Lab 38 — 4 วิธีวัด + ทดสอบตัวแปร)
 // ═══════════════════════════════════════════════════════════
 function renderPOE2(body){
   /* ====== ส่วน CSS เพิ่มเฉพาะ POE2 (inline-style กับ class เดิม) ====== */
