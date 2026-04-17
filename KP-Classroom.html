@@ -3904,6 +3904,20 @@ async function renderPostPlanTab(){
       <div id="pp-kpa-block"></div>
     </div>
 
+    <!-- 🤖 Auto-fill panel (ครูเชี่ยวชาญ) -->
+    <div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:14px 18px;margin-bottom:16px">
+      <h3 style="color:#065f46;margin-bottom:4px">🤖 Auto-fill จากข้อมูลจริง (เกณฑ์ครูเชี่ยวชาญ)</h3>
+      <div style="font-size:13px;color:#047857;margin-bottom:10px">
+        ระบบจะคำนวณคะแนน 13 ข้อ (ด้าน 1 · 8 ข้อ + ด้าน 2 · 5 ข้อ) จาก F Pre/Post · POE · MJ · OB-01 · GR · TL · สื่อ · <b>เก็บ override ของครู</b> · กด "🚀 Auto-fill" แล้ว<u>ปรับเฉพาะที่ต่างจากจริง</u>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="pp-auto-apply" class="btn-submit" style="background:#059669;flex:1;min-width:160px">🚀 Auto-fill ทั้งหมด</button>
+        <button id="pp-auto-refresh" class="btn-submit" style="background:#0284c7;flex:1;min-width:160px">🔄 Refresh เฉพาะ auto</button>
+        <button id="pp-auto-reset" class="btn-submit" style="background:#dc2626;flex:1;min-width:160px">⚠️ Reset manual ทั้งหมด</button>
+      </div>
+      <div id="pp-auto-stat" class="status" style="margin-top:8px"></div>
+    </div>
+
     <!-- 🏆 ด้านที่ 1 (8 ข้อ) -->
     <div style="background:#fff;padding:18px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px">
       <h3 style="color:#3e2723;margin-bottom:6px">🏆 ด้านที่ 1 · ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน</h3>
@@ -3955,6 +3969,7 @@ async function renderPostPlanTab(){
   renderD1Block();
   renderD2Block();
   updateScoreSum();
+  wirePostPlanButtons();
   loadPostPlanData();
 }
 
@@ -4034,40 +4049,55 @@ function renderD1Block(){
   const el = document.getElementById('pp-d1-block');
   if (!el) return;
   el.innerHTML = D1_ITEMS.map(it=>`
-    <div style="border:1.5px solid #ffe0b2;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#fff8e1">
-      <div style="font-weight:700;color:#e65100;margin-bottom:6px">ข้อ ${it.no}. ${it.text}</div>
+    <div id="d1-box-${it.no}" data-dim="d1" data-no="${it.no}" style="border:1.5px solid #ffe0b2;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#fff8e1">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+        <div style="font-weight:700;color:#e65100">ข้อ ${it.no}. ${it.text}</div>
+        <span class="pp-badge" data-badge="d1-${it.no}" style="font-size:11px;padding:2px 10px;border-radius:10px;font-weight:700;background:#e2e8f0;color:#475569">⚪ ว่าง</span>
+      </div>
       <div style="font-size:13px;color:#555;margin-bottom:4px">✓ หลักฐานที่ทำจริงในคาบนี้ (ติ๊กได้หลายข้อ):</div>
       ${evidenceCheckboxes('d1', it.no, it.evi)}
       <label style="display:block;margin-top:4px;font-size:14px">
-        <input type="checkbox" id="d1e${it.no}_other"> อื่น ๆ (ระบุ):
-        <input type="text" id="d1o${it.no}" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
+        <input type="checkbox" id="d1e${it.no}_other" onchange="ppMarkManual('d1',${it.no})"> อื่น ๆ (ระบุ):
+        <input type="text" id="d1o${it.no}" oninput="ppMarkManual('d1',${it.no})" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
       </label>
       <div style="margin-top:6px;font-size:14px">
         <b>คะแนน:</b> ${scoreRadios('d1', it.no)}
         <span style="color:#555;font-size:12px;margin-left:8px">(×2.5)</span>
+        <span class="pp-auto-note" data-note="d1-${it.no}" style="font-size:12px;color:#047857;margin-left:10px"></span>
       </div>
     </div>
   `).join('');
+  // Attach manual flags on evidence checkbox change
+  el.querySelectorAll('input[type="checkbox"][id^="d1e"]').forEach(cb => {
+    cb.addEventListener('change', () => ppMarkManual('d1', Number(cb.id.match(/d1e(\d+)/)[1])));
+  });
 }
 
 function renderD2Block(){
   const el = document.getElementById('pp-d2-block');
   if (!el) return;
   el.innerHTML = D2_ITEMS.map(it=>`
-    <div style="border:1.5px solid #c8e6c9;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#f1f8e9">
-      <div style="font-weight:700;color:#2e7d32;margin-bottom:6px">ข้อ ${it.no}. ${it.text}</div>
+    <div id="d2-box-${it.no}" data-dim="d2" data-no="${it.no}" style="border:1.5px solid #c8e6c9;border-radius:8px;padding:10px 12px;margin-bottom:10px;background:#f1f8e9">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px">
+        <div style="font-weight:700;color:#2e7d32">ข้อ ${it.no}. ${it.text}</div>
+        <span class="pp-badge" data-badge="d2-${it.no}" style="font-size:11px;padding:2px 10px;border-radius:10px;font-weight:700;background:#e2e8f0;color:#475569">⚪ ว่าง</span>
+      </div>
       <div style="font-size:13px;color:#555;margin-bottom:4px">✓ หลักฐานที่ทำจริงในคาบนี้ (ติ๊กได้หลายข้อ):</div>
       ${evidenceCheckboxes('d2', it.no, it.evi)}
       <label style="display:block;margin-top:4px;font-size:14px">
-        <input type="checkbox" id="d2e${it.no}_other"> อื่น ๆ (ระบุ):
-        <input type="text" id="d2o${it.no}" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
+        <input type="checkbox" id="d2e${it.no}_other" onchange="ppMarkManual('d2',${it.no})"> อื่น ๆ (ระบุ):
+        <input type="text" id="d2o${it.no}" oninput="ppMarkManual('d2',${it.no})" placeholder="ระบุหลักฐานเพิ่มเติม..." style="width:60%;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font-family:inherit;margin-left:4px">
       </label>
       <div style="margin-top:6px;font-size:14px">
         <b>คะแนน:</b> ${scoreRadios('d2', it.no)}
         <span style="color:#555;font-size:12px;margin-left:8px">(×5)</span>
+        <span class="pp-auto-note" data-note="d2-${it.no}" style="font-size:12px;color:#047857;margin-left:10px"></span>
       </div>
     </div>
   `).join('');
+  el.querySelectorAll('input[type="checkbox"][id^="d2e"]').forEach(cb => {
+    cb.addEventListener('change', () => ppMarkManual('d2', Number(cb.id.match(/d2e(\d+)/)[1])));
+  });
 }
 
 function getSelectedScore(prefix, no){
@@ -4096,6 +4126,313 @@ function updateScoreSum(){
 }
 
 let currentPostPlanData = null;
+
+// ═══════════════════════════════════════════════════════════
+// Auto-fill (ครูเชี่ยวชาญ) — เปลี่ยนข้อมูลจริง → คะแนน 1–4 + หลักฐาน check
+// ═══════════════════════════════════════════════════════════
+function ppManualKey(){
+  const plan = Number(document.getElementById('pp-plan')?.value || 1);
+  const course = (window.KP_CONFIG?.course || 'physics3');
+  return `pp_manual_${course}_p${plan}`;
+}
+function ppGetManual(){
+  try { return JSON.parse(localStorage.getItem(ppManualKey()) || '{}'); } catch(e){ return {}; }
+}
+function ppSetManual(m){ localStorage.setItem(ppManualKey(), JSON.stringify(m)); }
+function ppMarkManual(dim, no){
+  const m = ppGetManual();
+  m[`${dim}-${no}`] = true;
+  ppSetManual(m);
+  ppUpdateBadge(dim, no, 'manual');
+}
+function ppUpdateBadge(dim, no, state, note){
+  const b = document.querySelector(`[data-badge="${dim}-${no}"]`);
+  if (!b) return;
+  const styles = {
+    auto:    { bg:'#d1fae5', fg:'#065f46', t:'🤖 auto' },
+    manual:  { bg:'#fef3c7', fg:'#92400e', t:'👤 manual' },
+    nodata:  { bg:'#fee2e2', fg:'#991b1b', t:'❓ ไม่มีข้อมูล' },
+    empty:   { bg:'#e2e8f0', fg:'#475569', t:'⚪ ว่าง' }
+  };
+  const s = styles[state] || styles.empty;
+  b.style.background = s.bg; b.style.color = s.fg; b.textContent = s.t;
+  if (note != null){
+    const n = document.querySelector(`[data-note="${dim}-${no}"]`);
+    if (n) n.textContent = note ? `· ${note}` : '';
+  }
+}
+
+function computeAutoPostPlan(d){
+  const roster = Math.max((state.students||[]).length, d.attendance||0, 1);
+  const attendance = d.attendance || 0;
+  const attRate = attendance / roster * 100;
+  const fPreCount = d.f_pre?.count || d.f_pre?.data?.length || 0;
+  const fPostCount = d.f_post?.count || d.f_post?.data?.length || 0;
+  const poeCount = d.poe?.count || d.poe?.data?.length || 0;
+  const mjCount = d.mj?.count || d.mj?.data?.length || 0;
+  const obCount = d.ob?.data?.length || 0;
+  const grCount = d.gr?.data?.length || 0;
+  const tlPreCount = d.tl_pre?.data?.length || 0;
+  const tlPostCount = d.tl_post?.data?.length || 0;
+
+  // Four-tier metrics
+  const fp = d.f_post?.overall;
+  const fpTotal = fp ? (fp.Sound + fp.Misconception + fp.Guessing + fp['No-K']) : 0;
+  const soundPct = fpTotal ? (fp.Sound / fpTotal * 100) : null;
+  const miscPre = d.f_pre?.overall?.Misconception || 0;
+  const miscPost = d.f_post?.overall?.Misconception || 0;
+  const miscDrop = (miscPre > 0) ? ((miscPre - miscPost) / miscPre * 100) : null;
+
+  const motStats = d.mj?.data?.length ? computeMotStats(d.mj.data) : null;
+  const obStats = d.ob?.data?.length ? computeObStats(d.ob.data) : null;
+  const grStats = d.gr?.data?.length ? computeGrStats(d.gr.data) : null;
+
+  // TL green improvement (% point)
+  const tlCalc = (rec) => {
+    if (!rec?.data) return null;
+    const c = {green:0,yellow:0,red:0,total:0};
+    rec.data.forEach(r => { if (c[r.color] !== undefined){ c[r.color]++; c.total++; } });
+    return c;
+  };
+  const tlPre = tlCalc(d.tl_pre), tlPost = tlCalc(d.tl_post);
+  const tlGreenDiff = (tlPre?.total && tlPost?.total)
+    ? (tlPost.green/tlPost.total - tlPre.green/tlPre.total) * 100 : null;
+
+  // Plan media check
+  const planMedia = PLAN_MEDIA[d.plan] || {};
+  const allItems = (planMedia.sections||[]).flatMap(s => s.items||[]);
+  const hasCartoon = allItems.some(i => (i.t||'').includes('Cartoon'));
+  const hasSim = allItems.some(i => i.cls === 'sim');
+  const hasVideo = allItems.some(i => (i.t||'').toLowerCase().includes('video'));
+
+  // Threshold scoring (เชี่ยวชาญ)
+  const by = (pct, [v4,v3,v2]) => pct>=v4?4 : pct>=v3?3 : pct>=v2?2 : (pct!=null?1:0);
+
+  const d1 = [
+    // 1 เข้าถึง/เข้าใจบทเรียน — สื่อที่ใช้ + submit rate
+    (() => {
+      const checks = [];
+      if (hasCartoon) checks.push(0);
+      if (hasSim) checks.push(1);
+      checks.push(3); // ภาษา ม.5 — เชื่อว่าใช้จริง
+      const score = attRate ? by(attRate, [85,70,55]) : 0;
+      return { checks, score, note: attendance ? `submit ${attRate.toFixed(0)}%${hasCartoon?' · Cartoon':''}${hasSim?' · Sim':''}` : 'ยังไม่มีนักเรียนส่งงาน' };
+    })(),
+    // 2 เชื่อมโยงความรู้เดิม — F_Pre + POE-P
+    (() => {
+      const checks = [];
+      if (fPreCount > 0) checks.push(0);
+      if (poeCount > 0) checks.push(2);
+      const score = (fPreCount && poeCount) ? 4 : (fPreCount || poeCount) ? 3 : 0;
+      return { checks, score, note: `F_Pre ${fPreCount} · POE ${poeCount}` };
+    })(),
+    // 3 สร้างความรู้เอง — Sim + POE-O + ใบงาน
+    (() => {
+      const checks = [];
+      if (hasSim) checks.push(0);
+      if (poeCount > 0) checks.push(1);
+      const poeRate = attendance ? poeCount/attendance*100 : 0;
+      const score = poeRate>=85 && hasSim ? 4 : poeRate>=70 ? 3 : poeCount>0 ? 2 : 0;
+      return { checks, score, note: `POE ${poeCount}/${attendance} (${poeRate.toFixed(0)}%)` };
+    })(),
+    // 4 กระตุ้น/แรงจูงใจ — Cartoon + MJ motivation
+    (() => {
+      const checks = [];
+      if (hasCartoon) checks.push(0);
+      const mot = motStats ? Number(motStats.overall) : 0;
+      if (mot >= 3.5) checks.push(1);
+      const score = mot>=4 ? 4 : mot>=3.5 ? 3 : mot>=3 ? 2 : (hasCartoon||hasSim) ? 2 : 0;
+      return { checks, score, note: motStats ? `แรงจูงใจ ${motStats.overall}/5` : (hasCartoon?'ใช้ Cartoon กระตุ้น':'ยังไม่มีข้อมูล MJ') };
+    })(),
+    // 5 พัฒนาทักษะ — POE + ชิ้นงาน
+    (() => {
+      const checks = [];
+      const poeRate = attendance ? poeCount/attendance*100 : 0;
+      if (poeRate >= 70) checks.push(1);
+      const score = poeRate>=85 ? 4 : poeRate>=70 ? 3 : poeCount>0 ? 2 : 0;
+      return { checks, score, note: `POE ${poeCount} บันทึก` };
+    })(),
+    // 6 feedback — F_Post + Feedback box
+    (() => {
+      const checks = [];
+      if (fPostCount > 0) checks.push(0);
+      const fPostRate = attendance ? fPostCount/attendance*100 : 0;
+      const score = fPostRate>=85 ? 4 : fPostRate>=70 ? 3 : fPostCount>0 ? 2 : 0;
+      return { checks, score, note: `F_Post ${fPostCount} (${fPostRate.toFixed(0)}%)` };
+    })(),
+    // 7 บรรยากาศเหมาะสม — OB + GR + TL
+    (() => {
+      const checks = [];
+      if (obCount > 0) checks.push(0);
+      if (grCount > 0) checks.push(1);
+      if (tlPreCount + tlPostCount > 0) checks.push(2);
+      const obCov = obCount/roster*100;
+      const score = obCov>=85 && grCount>0 ? 4 : obCov>=70 ? 3 : obCount>0 ? 2 : 0;
+      return { checks, score, note: `OB ${obCount}/${roster} (${obCov.toFixed(0)}%) · GR ${grCount}` };
+    })(),
+    // 8 กำกับตนเอง — MJ + TL Post
+    (() => {
+      const checks = [];
+      if (mjCount > 0) checks.push(0);
+      if (tlPostCount > 0) checks.push(1);
+      const mjCov = mjCount/roster*100;
+      const score = mjCov>=60 && tlPostCount>0 ? 4 : mjCov>=50 ? 3 : mjCount>0 ? 2 : 0;
+      return { checks, score, note: `MJ ${mjCount}/${roster} (${mjCov.toFixed(0)}%)` };
+    })()
+  ];
+
+  const d2 = [
+    // 1 ผลงาน = ผลลัพธ์ — Sound% + MiscDrop + POE
+    (() => {
+      const checks = [];
+      if (soundPct !== null && soundPct >= 80) checks.push(0);
+      if (miscDrop !== null && miscDrop >= 20) checks.push(1);
+      if (poeCount > 0) checks.push(2);
+      let score = 0;
+      if (soundPct !== null){
+        if (soundPct >= 80 && (miscDrop||0) >= 20) score = 4;
+        else if (soundPct >= 70) score = 3;
+        else if (soundPct >= 60) score = 2;
+        else score = 1;
+      }
+      const note = soundPct!==null ? `Sound ${soundPct.toFixed(0)}% · ลด Misc ${(miscDrop||0).toFixed(0)}%` : 'ยังไม่มี F_Post';
+      return { checks, score, note };
+    })(),
+    // 2 Basic Skills — participation + sim usage
+    (() => {
+      const checks = [];
+      if (attRate >= 70) checks.push(0);
+      if (hasSim) checks.push(3);
+      const score = attRate>=85 ? 4 : attRate>=70 ? 3 : attRate>0 ? 2 : 0;
+      return { checks, score, note: `attend ${attRate.toFixed(0)}%${hasSim?' · Sim':''}` };
+    })(),
+    // 3 Cognitive — Sound% + POE
+    (() => {
+      const checks = [];
+      if (soundPct !== null && soundPct >= 70) checks.push(1);
+      if (poeCount > 0) checks.push(2);
+      let score = 0;
+      if (soundPct !== null){
+        score = soundPct>=80 ? 4 : soundPct>=70 ? 3 : soundPct>=60 ? 2 : 1;
+      }
+      return { checks, score, note: soundPct!==null ? `Sound ${soundPct.toFixed(0)}%` : '' };
+    })(),
+    // 4 Cross-functional — GR + attendance
+    (() => {
+      const checks = [];
+      const gr = grStats ? Number(grStats.avg) : 0;
+      if (grCount > 0) checks.push(0);
+      if (gr >= 3) checks.push(1);
+      const score = gr>=3.5 ? 4 : gr>=3 ? 3 : gr>=2 ? 2 : gr>0 ? 1 : 0;
+      return { checks, score, note: grStats ? `GR avg ${grStats.avg}/4 (${grCount} กลุ่ม)` : 'ยังไม่มี GR' };
+    })(),
+    // 5 คุณลักษณะ — OB (curious + discipline)
+    (() => {
+      const checks = [];
+      if (obStats) checks.push(0);
+      const ob = obStats ? Number(obStats.avg) : 0;
+      const score = ob>=3.5 ? 4 : ob>=3 ? 3 : ob>=2 ? 2 : ob>0 ? 1 : 0;
+      return { checks, score, note: obStats ? `OB avg ${obStats.avg}/4 (${obCount} บันทึก)` : 'ยังไม่มี OB' };
+    })()
+  ];
+
+  return { d1, d2 };
+}
+
+function applyAutoItem(dim, no, item, force){
+  const manual = ppGetManual();
+  const key = `${dim}-${no}`;
+  if (!force && manual[key]) return 'skip';  // respect manual
+  // Uncheck all checkboxes first (for this item)
+  const prefix = dim, n = no;
+  // Evidence
+  const itemDef = (dim==='d1'?D1_ITEMS:D2_ITEMS).find(x => x.no === no);
+  (itemDef?.evi||[]).forEach((_,i) => {
+    const cb = document.getElementById(`${prefix}e${n}_${i}`);
+    if (cb) cb.checked = item.checks.includes(i);
+  });
+  // Score radio
+  const radio = document.querySelector(`input[name="${prefix}s${n}"][value="${item.score}"]`);
+  if (item.score > 0 && radio) radio.checked = true;
+  else document.querySelectorAll(`input[name="${prefix}s${n}"]`).forEach(r => r.checked = false);
+  ppUpdateBadge(dim, no, item.score>0?'auto':'nodata', item.note);
+  // Clear manual flag
+  delete manual[key]; ppSetManual(manual);
+  return 'applied';
+}
+
+function applyAutoAll(force){
+  if (!currentPostPlanData){ return { applied:0, skipped:0, nodata:0 }; }
+  const auto = computeAutoPostPlan(currentPostPlanData);
+  let applied=0, skipped=0, nodata=0;
+  auto.d1.forEach((it,i) => {
+    const r = applyAutoItem('d1', i+1, it, force);
+    if (r === 'skip') skipped++;
+    else if (it.score === 0) nodata++;
+    else applied++;
+  });
+  auto.d2.forEach((it,i) => {
+    const r = applyAutoItem('d2', i+1, it, force);
+    if (r === 'skip') skipped++;
+    else if (it.score === 0) nodata++;
+    else applied++;
+  });
+  updateScoreSum();
+  return { applied, skipped, nodata };
+}
+
+function refreshAutoBadges(){
+  const manual = ppGetManual();
+  D1_ITEMS.forEach(it => {
+    const k = `d1-${it.no}`;
+    const hasScore = document.querySelector(`input[name="d1s${it.no}"]:checked`);
+    if (manual[k]) ppUpdateBadge('d1', it.no, 'manual');
+    else if (hasScore) ppUpdateBadge('d1', it.no, 'auto');
+    else ppUpdateBadge('d1', it.no, 'empty');
+  });
+  D2_ITEMS.forEach(it => {
+    const k = `d2-${it.no}`;
+    const hasScore = document.querySelector(`input[name="d2s${it.no}"]:checked`);
+    if (manual[k]) ppUpdateBadge('d2', it.no, 'manual');
+    else if (hasScore) ppUpdateBadge('d2', it.no, 'auto');
+    else ppUpdateBadge('d2', it.no, 'empty');
+  });
+}
+
+function wirePostPlanButtons(){
+  const apply = document.getElementById('pp-auto-apply');
+  const refresh = document.getElementById('pp-auto-refresh');
+  const reset = document.getElementById('pp-auto-reset');
+  const stat = document.getElementById('pp-auto-stat');
+  if (!apply) return;
+  apply.onclick = () => {
+    if (!currentPostPlanData){ stat.className='status error'; stat.textContent='❌ โหลดข้อมูลแผนก่อน (เลือกแผน)'; return; }
+    const r = applyAutoAll(false);
+    stat.className='status ok';
+    stat.textContent = `✅ Auto-fill: ใส่ใหม่ ${r.applied} · ข้ามของ manual ${r.skipped} · ไม่มีข้อมูล ${r.nodata}`;
+  };
+  refresh.onclick = () => {
+    if (!currentPostPlanData){ stat.className='status error'; stat.textContent='❌ โหลดข้อมูลก่อน'; return; }
+    const r = applyAutoAll(false);
+    stat.className='status ok';
+    stat.textContent = `🔄 Refresh: อัปเดต ${r.applied} ข้อ (manual ${r.skipped} ข้อ ไม่แตะ)`;
+  };
+  reset.onclick = () => {
+    if (!confirm('ล้าง manual override ทั้งหมด แล้วคำนวณใหม่?\n(คำตอบที่ครูแก้เองจะหายไป)')) return;
+    localStorage.removeItem(ppManualKey());
+    if (!currentPostPlanData){ stat.className='status error'; stat.textContent='❌ โหลดข้อมูลก่อน'; return; }
+    const r = applyAutoAll(true);
+    stat.className='status ok';
+    stat.textContent = `⚠️ Reset เสร็จ · คำนวณใหม่ ${r.applied} ข้อ · ไม่มีข้อมูล ${r.nodata}`;
+  };
+  // Mark radio changes as manual
+  document.querySelectorAll('input[type="radio"][name^="d1s"], input[type="radio"][name^="d2s"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const m = r.name.match(/^(d[12])s(\d+)$/);
+      if (m) ppMarkManual(m[1], Number(m[2]));
+    });
+  });
+}
 
 async function loadPostPlanData(){
   const plan = Number(document.getElementById('pp-plan').value);
@@ -4141,6 +4478,17 @@ async function loadPostPlanData(){
 
   currentPostPlanData = data;
   renderPostPlanAuto(data);
+  // Phase B: auto-fill on load (respect manual overrides)
+  try {
+    const r = applyAutoAll(false);
+    const stat = document.getElementById('pp-auto-stat');
+    if (stat){
+      stat.className = 'status ok';
+      stat.textContent = `🤖 Auto-fill อัตโนมัติ: ${r.applied} ข้อ · manual ${r.skipped} ข้อ · ไม่มีข้อมูล ${r.nodata}`;
+    }
+  } catch(e){ console.error('auto-fill failed', e); }
+  refreshAutoBadges();
+  wirePostPlanButtons();
 }
 
 function renderPostPlanAuto(d){
