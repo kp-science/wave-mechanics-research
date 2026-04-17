@@ -1663,13 +1663,44 @@ function renderCalc(body){
       </div>
     </div>`;
   });
+  const allowUpload = s.allowUpload === true;
+  if (allowUpload){
+    html += `
+    <div class="item" style="background:#fff8e1;border:1.5px dashed #f9a825">
+      <div style="font-weight:700;color:#7c2d12;margin-bottom:6px">📎 หรือแนบไฟล์ใบงานที่เขียนมือ (ถ่าย/สแกน)</div>
+      <div style="font-size:13px;color:#555;margin-bottom:8px">ใบนี้มีโจทย์วาดกราฟ/กริด · ทำบนกระดาษแล้วถ่ายรูปส่งได้ · รับ PDF/JPG/PNG · ไฟล์เดียวพอ</div>
+      <input type="file" id="caFile" accept="image/*,application/pdf" capture="environment" style="display:block">
+      <img id="caPhotoPrev" style="display:none;max-width:100%;max-height:260px;border-radius:8px;margin-top:8px;border:1.5px solid #e2e8f0">
+      <div id="caFileName" style="font-size:12.5px;color:#7c2d12;margin-top:6px"></div>
+    </div>`;
+  }
   html += `
     <div class="submit-bar">
       <button class="btn-submit" id="caBtn">${escapeHtml(s.submitLabel || '📤 ส่ง')}</button>
       <div class="status" id="caStat"></div>
     </div>`;
   body.innerHTML += html;
-  document.getElementById('caBtn').onclick = () => {
+
+  // Preview handler + file storage
+  let _caFile = null;
+  if (allowUpload){
+    const fileInput = document.getElementById('caFile');
+    const prev = document.getElementById('caPhotoPrev');
+    const nameEl = document.getElementById('caFileName');
+    fileInput.addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) { _caFile = null; prev.style.display='none'; nameEl.textContent=''; return; }
+      _caFile = f;
+      nameEl.textContent = `✓ เลือก: ${f.name} (${(f.size/1024).toFixed(1)} KB)`;
+      if (f.type.startsWith('image/')){
+        const r = new FileReader(); r.onload = ev => { prev.src = ev.target.result; prev.style.display='block'; }; r.readAsDataURL(f);
+      } else { prev.style.display='none'; }
+    });
+  }
+
+  document.getElementById('caBtn').onclick = async () => {
+    const btn = document.getElementById('caBtn');
+    const stat = document.getElementById('caStat');
     const pl = {};
     s.problems.forEach(p => {
       pl[`q${p.no}_stem`]  = p.stem;
@@ -1678,8 +1709,33 @@ function renderCalc(body){
       if (p.misc)  pl[`q${p.no}_misc`]  = p.misc;
       if (p.level) pl[`q${p.no}_level`] = p.level;
     });
-    submitData(`${s.sheetPrefix || 'Calc_P'}${state.currentPlan}`, pl,
-      document.getElementById('caStat'), document.getElementById('caBtn'));
+    // Upload attached file → same endpoint as CER/Upload · put URL into payload.file_url
+    if (allowUpload && _caFile){
+      btn.disabled = true; stat.textContent = '⏳ อัปโหลดไฟล์...'; stat.style.color='#0d47a1';
+      try {
+        const data = await new Promise((resolve,reject)=>{
+          const r = new FileReader();
+          r.onload = () => resolve(r.result.split(',')[1]);
+          r.onerror = reject; r.readAsDataURL(_caFile);
+        });
+        const up = await DB.uploadFile({
+          student_id: state.student?.id || 'unknown',
+          student_name: state.student?.name || '',
+          student_class: state.student?.cls || '',
+          plan: state.currentPlan,
+          tool: 'calc',
+          filename: _caFile.name,
+          mimeType: _caFile.type || 'application/octet-stream',
+          data
+        });
+        pl.file_url = up?.url || '';
+        pl.file_name = _caFile.name;
+      } catch(err){
+        stat.textContent = '❌ อัปโหลดไฟล์ไม่สำเร็จ: ' + (err.message||err);
+        stat.style.color='#c62828'; btn.disabled=false; return;
+      }
+    }
+    submitData(`${s.sheetPrefix || 'Calc_P'}${state.currentPlan}`, pl, stat, btn);
   };
   showView('view-tool');
 }

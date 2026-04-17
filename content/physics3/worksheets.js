@@ -363,7 +363,8 @@ window.KP_WORKSHEETS = {
           stem:'Huygens: หน้าคลื่นระนาบผ่านช่องเปิด (ก) d = 3 m (ข) d = 1 m (≈ λ) · วาด envelope หลัง Δt = 1 s (v = 2 m/s) · หลักนี้ใช้ได้กับคลื่นชนิดใดบ้าง?' }
       ],
       submitLabel: '📤 ส่งใบกิจกรรม 4.1',
-      sheetPrefix: 'Calc_P'
+      sheetPrefix: 'Calc_P',
+      allowUpload: true  // ใบนี้มีโจทย์วาดกราฟ/กริด · ให้นักเรียนแนบไฟล์ใบที่เขียนมือได้
     },
     // ใบ 4.2 · Spot the Error
     spot: {
