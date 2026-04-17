@@ -201,7 +201,7 @@ window.KP_PLAN_MEDIA = {
           d:'Virtual Lab · pulse 2 ลูกสวนทาง · slider A₁ A₂ · same/opposite · timeline ก่อน–ขณะ–หลัง · ใช้ใน POE-04 ฐาน 2',
           chips:[['m','M4.1'],['m','M4.2'],['m','M4.3'],['k','K1'],['p','P1']] },
         { cls:'sim', no:'SIM2', t:'Huygens Principle Demo (KP Science)',
-          file:'https://kp-science.github.io/physics-simulations/Demo/คลื่น/huygens-principle-demo.html',
+          file:'https://kp-science.github.io/physics-simulations/Demo/%E0%B8%84%E0%B8%A5%E0%B8%B7%E0%B9%88%E0%B8%99/huygens-principle-demo.html',
           d:'Demo · หน้าคลื่น → wavelet วงกลม → envelope หน้าคลื่นใหม่ · ใช้ได้ทุกคลื่น (น้ำ/เสียง/แสง) · ใช้ใน POE-04 ฐาน 3',
           chips:[['m','M4.4'],['k','K2'],['p','P1']] }
       ]},
