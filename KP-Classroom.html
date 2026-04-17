@@ -1653,6 +1653,19 @@ function renderCalc(body){
     ? `<div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:10px;text-align:center;font-weight:800;color:#0d47a1;font-size:18px;margin:10px 0">${s.banner}</div>`
     : '';
   let html = `<div class="info"><b>🧮 ${escapeHtml(s.title)}:</b> ${escapeHtml(s.description || '')}</div>${banner}`;
+  // Prominent upload notice at TOP when allowUpload=true
+  if (s.allowUpload === true){
+    html += `
+    <div style="background:linear-gradient(135deg,#fff4e6,#ffe0c2);border:2px solid #f59e0b;border-radius:12px;padding:14px 18px;margin:10px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:32px">📎</span>
+      <div style="flex:1;min-width:220px">
+        <div style="font-weight:800;color:#7c2d12;font-size:15.5px">ใบนี้มีโจทย์วาดกราฟ / กริด</div>
+        <div style="font-size:13.5px;color:#78350f;margin-top:2px">ทำในกระดาษได้เลย · ถ่ายรูป/สแกนแล้ว<b>แนบไฟล์</b>ในช่องด้านล่าง · หรือจะพิมพ์ในช่องก็ได้</div>
+      </div>
+      <a href="javascript:document.getElementById('caFile')?.scrollIntoView({behavior:'smooth',block:'center'});document.getElementById('caFile')?.click();"
+         style="background:#c2410c;color:#fff;padding:8px 16px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13.5px;white-space:nowrap">⬇ เลือกไฟล์แนบ</a>
+    </div>`;
+  }
   s.problems.forEach(p => {
     html += `
     <div class="item">
