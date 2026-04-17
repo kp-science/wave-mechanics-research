@@ -3904,6 +3904,22 @@ async function renderPostPlanTab(){
       <div id="pp-kpa-block"></div>
     </div>
 
+    <!-- 📊 Semester Summary (Phase C · 10 plans · วPA portfolio) -->
+    <details style="background:linear-gradient(135deg,#f3e8ff,#ede9fe);border:2px solid #7c3aed;border-radius:12px;margin-bottom:16px">
+      <summary style="cursor:pointer;padding:14px 18px;font-weight:700;color:#5b21b6;font-size:15.5px">📊 สรุปรวมภาคเรียน (10 แผน · สำหรับพอร์ต วPA) <span style="font-size:12px;font-weight:400;color:#7c3aed;margin-left:6px">คลิกเพื่อขยาย</span></summary>
+      <div style="padding:14px 18px;border-top:1px solid #ddd6fe">
+        <div style="font-size:13px;color:#6b21a8;margin-bottom:10px">
+          ดึงข้อมูลจริงจากทุกแผน (F Pre/Post · POE · OB-01 · GR · MJ · TL · CER · Calc · Spot) + phase reflection จาก localStorage · ใช้ยื่น วPA ภาคเรียน
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <button id="sem-run" class="btn-submit" style="background:#7c3aed;flex:1;min-width:180px">🔄 คำนวณ / Refresh 10 แผน</button>
+          <button id="sem-export" class="btn-submit" style="background:#059669;flex:1;min-width:180px">📄 Export Word (วPA)</button>
+        </div>
+        <div id="sem-stat" class="status" style="margin-bottom:10px"></div>
+        <div id="sem-result"></div>
+      </div>
+    </details>
+
     <!-- 🤖 Auto-fill panel (ครูเชี่ยวชาญ) -->
     <div style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:2px solid #10b981;border-radius:12px;padding:14px 18px;margin-bottom:16px">
       <h3 style="color:#065f46;margin-bottom:4px">🤖 Auto-fill จากข้อมูลจริง (เกณฑ์ครูเชี่ยวชาญ)</h3>
@@ -4484,6 +4500,298 @@ function applyPhaseAutoCheck(d){
   ppPhaseSet(saved);
 }
 
+// ═══════════════════════════════════════════════════════════
+// Phase C · Semester Summary (10 plans aggregate)
+// ═══════════════════════════════════════════════════════════
+let semesterData = null;  // cached
+
+async function runSemesterSummary(){
+  const stat = document.getElementById('sem-stat');
+  const result = document.getElementById('sem-result');
+  const btn = document.getElementById('sem-run');
+  if (!btn) return;
+  btn.disabled = true;
+  const course = (window.KP_CONFIG?.course || 'physics3');
+  const plansList = PLANS || [];
+  const totalPlans = plansList.length;
+  const roster = Math.max((state.students||[]).length, 1);
+
+  stat.className = 'status'; stat.textContent = `⏳ ดึงข้อมูล 0/${totalPlans} แผน...`;
+  result.innerHTML = '';
+
+  const rows = [];
+  for (let i = 0; i < plansList.length; i++){
+    const planNo = plansList[i].no;
+    stat.textContent = `⏳ ดึงข้อมูล ${i+1}/${totalPlans} แผน...`;
+    const fetchOne = async (sheet, stats) => {
+      try {
+        const url = API_URL + '?action=' + (stats?'stats':'list') + '&sheet=' + encodeURIComponent(sheet);
+        return await fetch(url).then(r => r.json());
+      } catch(e){ return null; }
+    };
+    const [tlPre, tlPost, fPre, fPost, poe, mj, ob, gr, cer, calc, spot] = await Promise.all([
+      fetchOne(`TL_P${planNo}_pre`, false),
+      fetchOne(`TL_P${planNo}_post`, false),
+      fetchOne(`F_Pre_P${planNo}`, true),
+      fetchOne(`F_Post_P${planNo}`, true),
+      fetchOne(`POE_P${planNo}`, false),
+      fetchOne(`MJ_P${planNo}`, false),
+      fetchOne(`OB_P${planNo}`, false),
+      fetchOne(`GR_P${planNo}`, false),
+      fetchOne(`CER_P${planNo}`, false),
+      fetchOne(`Calc_P${planNo}`, false),
+      fetchOne(`Spot_P${planNo}`, false)
+    ]);
+    const ids = new Set();
+    [tlPre, fPre, poe].forEach(r => r?.data?.forEach(x => ids.add(String(x.student_id||x.student_name||''))));
+    const attendance = ids.size;
+    const d = { plan:planNo, attendance, tl_pre:tlPre, tl_post:tlPost, f_pre:fPre, f_post:fPost, poe, mj, ob, gr, cer, calc, spot };
+
+    // Compute scores
+    const auto = computeAutoPostPlan(d);
+    const d1Sum = auto.d1.reduce((a,x) => a + (x.score||0), 0);
+    const d2Sum = auto.d2.reduce((a,x) => a + (x.score||0), 0);
+    const d1Max = 8*4, d2Max = 5*4;
+    const weighted = d1Sum*2.5 + d2Sum*5;
+    const weightedMax = d1Max*2.5 + d2Max*5;
+
+    // Submit rate (F_Pre as reference)
+    const fPreCount = d.f_pre?.count || d.f_pre?.data?.length || 0;
+    const submitPct = roster ? Math.round(fPreCount/roster*100) : 0;
+
+    // Sound%
+    const fp = d.f_post?.overall;
+    const fpTotal = fp ? (fp.Sound+fp.Misconception+fp.Guessing+fp['No-K']) : 0;
+    const soundPct = fpTotal ? Math.round(fp.Sound/fpTotal*100) : null;
+
+    // Misc drop
+    const miscPre = d.f_pre?.overall?.Misconception || 0;
+    const miscPost = d.f_post?.overall?.Misconception || 0;
+    const miscDrop = miscPre > 0 ? Math.round((miscPre-miscPost)/miscPre*100) : null;
+
+    // Gain
+    const gains = d.f_post?.normalized_gain
+      ? Object.values(d.f_post.normalized_gain).map(g=>g.normalized_gain).filter(v=>v!=null)
+      : [];
+    const gain = gains.length ? (gains.reduce((a,b)=>a+b,0)/gains.length) : null;
+
+    rows.push({
+      no: planNo, title: plansList[i].title,
+      submitPct, soundPct, miscDrop, gain,
+      d1Sum, d2Sum, weighted, weightedMax,
+      hasData: (fPreCount > 0 || attendance > 0),
+      auto
+    });
+  }
+
+  // Aggregate phase reflections across plans (from localStorage)
+  const problemCount = {};
+  const fixCount = {};
+  plansList.forEach(p => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(`pp_phases_${course}_p${p.no}`)||'{}');
+      Object.entries(saved).forEach(([k,v]) => {
+        if (!v) return;
+        const parts = k.split('__');
+        if (parts.length < 3) return;
+        const [phaseId, kind, itemId] = parts;
+        const ph = PHASES.find(x => x.id === phaseId);
+        if (!ph) return;
+        if (kind === 'problems'){
+          const item = ph.problems.find(x => x.id === itemId);
+          if (item) problemCount[item.label] = (problemCount[item.label]||0) + 1;
+        } else if (kind === 'fixes'){
+          const item = ph.fixes.find(x => x.id === itemId);
+          if (item) fixCount[item.label] = (fixCount[item.label]||0) + 1;
+        }
+      });
+    } catch(e){}
+  });
+  const topProblems = Object.entries(problemCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const topFixes = Object.entries(fixCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // Semester averages (only plans with data)
+  const done = rows.filter(r => r.hasData);
+  const avg = (arr, key) => {
+    const vs = arr.map(r => r[key]).filter(v => v != null);
+    return vs.length ? vs.reduce((a,b)=>a+b,0)/vs.length : null;
+  };
+  const sem = {
+    completedPlans: done.length,
+    avgSubmit:  avg(done, 'submitPct'),
+    avgSound:   avg(done, 'soundPct'),
+    avgMiscDrop:avg(done, 'miscDrop'),
+    avgGain:    avg(done, 'gain'),
+    avgWeighted:avg(done, 'weighted'),
+    weightedMax: rows[0]?.weightedMax || 60
+  };
+
+  semesterData = { course, rows, sem, topProblems, topFixes, plansList };
+  renderSemesterResult();
+  stat.className='status ok';
+  stat.textContent = `✅ คำนวณเสร็จ · ${done.length}/${totalPlans} แผนมีข้อมูล`;
+  btn.disabled = false;
+}
+
+function renderSemesterResult(){
+  const result = document.getElementById('sem-result');
+  if (!semesterData) return;
+  const { rows, sem, topProblems, topFixes } = semesterData;
+  const fmt = v => v == null ? '—' : Math.round(v*10)/10;
+  const pct = v => v == null ? '—' : Math.round(v)+'%';
+  const gainFmt = v => v == null ? '—' : v.toFixed(2);
+
+  // Color pass/fail vs ครูเชี่ยวชาญ threshold
+  const cls = (v, thr) => v == null ? '#94a3b8' : v >= thr ? '#059669' : '#dc2626';
+
+  let html = `
+    <div style="background:#fff;border-radius:10px;padding:12px;margin-bottom:10px;overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px">
+        <thead>
+          <tr style="background:#ede9fe">
+            <th style="border:1px solid #c4b5fd;padding:6px 8px;text-align:left">แผน</th>
+            <th style="border:1px solid #c4b5fd;padding:6px 8px">ส่ง %</th>
+            <th style="border:1px solid #c4b5fd;padding:6px 8px">Sound %</th>
+            <th style="border:1px solid #c4b5fd;padding:6px 8px">Misc ↓ %</th>
+            <th style="border:1px solid #c4b5fd;padding:6px 8px">Gain</th>
+            <th style="border:1px solid #c4b5fd;padding:6px 8px">คะแนน วPA</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr${!r.hasData?' style="opacity:.4"':''}>
+              <td style="border:1px solid #ddd;padding:5px 8px"><b>${r.no}</b>. ${r.title.substring(0,40)}</td>
+              <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${cls(r.submitPct,85)}">${pct(r.submitPct)}</td>
+              <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${cls(r.soundPct,80)}">${pct(r.soundPct)}</td>
+              <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${cls(r.miscDrop,20)}">${pct(r.miscDrop)}</td>
+              <td style="border:1px solid #ddd;padding:5px 8px;text-align:center;color:${cls(r.gain,0.3)}">${gainFmt(r.gain)}</td>
+              <td style="border:1px solid #ddd;padding:5px 8px;text-align:center">${r.hasData?`<b>${fmt(r.weighted)}</b>/${r.weightedMax}`:'ยังไม่มีข้อมูล'}</td>
+            </tr>
+          `).join('')}
+          <tr style="background:#f3e8ff;font-weight:700">
+            <td style="border:1px solid #c4b5fd;padding:6px 8px">📊 เฉลี่ย (${sem.completedPlans} แผน)</td>
+            <td style="border:1px solid #c4b5fd;padding:6px 8px;text-align:center;color:${cls(sem.avgSubmit,85)}">${pct(sem.avgSubmit)}</td>
+            <td style="border:1px solid #c4b5fd;padding:6px 8px;text-align:center;color:${cls(sem.avgSound,80)}">${pct(sem.avgSound)}</td>
+            <td style="border:1px solid #c4b5fd;padding:6px 8px;text-align:center;color:${cls(sem.avgMiscDrop,20)}">${pct(sem.avgMiscDrop)}</td>
+            <td style="border:1px solid #c4b5fd;padding:6px 8px;text-align:center;color:${cls(sem.avgGain,0.3)}">${gainFmt(sem.avgGain)}</td>
+            <td style="border:1px solid #c4b5fd;padding:6px 8px;text-align:center">${sem.avgWeighted==null?'—':fmt(sem.avgWeighted)+'/'+sem.weightedMax}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px">
+      <h4 style="color:#5b21b6;margin-bottom:8px">🎯 สรุปภาคเรียน (ครูเชี่ยวชาญ)</h4>
+      <ul style="margin-left:20px;font-size:14px;line-height:1.9">
+        <li>Four-tier Sound เฉลี่ย <b style="color:${cls(sem.avgSound,80)}">${pct(sem.avgSound)}</b> — เกณฑ์เชี่ยวชาญ ≥80%</li>
+        <li>Misconception ลดลงเฉลี่ย <b style="color:${cls(sem.avgMiscDrop,20)}">${pct(sem.avgMiscDrop)}</b> — เกณฑ์ ≥20%</li>
+        <li>Normalized gain เฉลี่ย <b style="color:${cls(sem.avgGain,0.3)}">${gainFmt(sem.avgGain)}</b> — เกณฑ์ ≥0.3</li>
+        <li>อัตราส่งงานเฉลี่ย <b style="color:${cls(sem.avgSubmit,85)}">${pct(sem.avgSubmit)}</b> — เกณฑ์ ≥85%</li>
+        <li>คะแนน วPA เฉลี่ย <b>${sem.avgWeighted==null?'—':fmt(sem.avgWeighted)+'/'+sem.weightedMax}</b> (${sem.avgWeighted==null?'—':Math.round(sem.avgWeighted/sem.weightedMax*100)+'%'})</li>
+      </ul>
+    </div>`;
+
+  if (topProblems.length || topFixes.length){
+    html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:#fff;border-radius:10px;padding:12px">
+        <h4 style="color:#b91c1c;margin-bottom:8px">⚠️ ปัญหาที่พบบ่อย</h4>
+        <ol style="margin-left:20px;font-size:13.5px;line-height:1.7">
+          ${topProblems.map(([label, n]) => `<li>${label} <span style="color:#888">· ${n}/${PLANS.length} แผน</span></li>`).join('') || '<li style="color:#888">ยังไม่มีบันทึก Phase Reflection</li>'}
+        </ol>
+      </div>
+      <div style="background:#fff;border-radius:10px;padding:12px">
+        <h4 style="color:#5b21b6;margin-bottom:8px">💡 แนวทางปรับที่ใช้บ่อย</h4>
+        <ol style="margin-left:20px;font-size:13.5px;line-height:1.7">
+          ${topFixes.map(([label, n]) => `<li>${label} <span style="color:#888">· ${n}/${PLANS.length} แผน</span></li>`).join('') || '<li style="color:#888">ยังไม่มีบันทึก</li>'}
+        </ol>
+      </div>
+    </div>`;
+  }
+  result.innerHTML = html;
+}
+
+function exportSemesterWord(){
+  if (!semesterData){ alert('กด "🔄 คำนวณ" ก่อน'); return; }
+  const { rows, sem, topProblems, topFixes, course } = semesterData;
+  const cfg = window.KP_CONFIG || {};
+  const fmt = v => v == null ? '—' : Math.round(v*10)/10;
+  const pct = v => v == null ? '—' : Math.round(v)+'%';
+  const gainFmt = v => v == null ? '—' : v.toFixed(2);
+
+  const tbody = rows.map(r => `
+    <tr>
+      <td>${r.no}. ${r.title}</td>
+      <td align="center">${pct(r.submitPct)}</td>
+      <td align="center">${pct(r.soundPct)}</td>
+      <td align="center">${pct(r.miscDrop)}</td>
+      <td align="center">${gainFmt(r.gain)}</td>
+      <td align="center">${r.hasData?fmt(r.weighted)+'/'+r.weightedMax:'—'}</td>
+    </tr>`).join('');
+
+  const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+    <head><meta charset="UTF-8"><title>สรุปภาคเรียน วPA</title>
+    <style>
+      body { font-family: 'TH Sarabun New', 'Sarabun', sans-serif; font-size:16pt; }
+      h1 { color:#5b21b6; font-size:22pt; }
+      h2 { color:#7c3aed; font-size:18pt; margin-top:14pt; }
+      table { border-collapse:collapse; width:100%; margin:8pt 0; }
+      th, td { border:1px solid #888; padding:4pt 8pt; font-size:14pt; }
+      th { background:#ede9fe; }
+      ul, ol { margin-left:20pt; }
+    </style>
+    </head><body>
+      <h1>📊 รายงานสรุปภาคเรียน · สำหรับพอร์ต วPA</h1>
+      <p><b>ครูผู้สอน:</b> ${cfg.teacherName||'—'}<br>
+         <b>รายวิชา:</b> ${cfg.subject||cfg.course||course} · ${cfg.gradeLabel||''}<br>
+         <b>ภาคเรียน:</b> ${cfg.term||''} / ${cfg.year||''}<br>
+         <b>โรงเรียน:</b> ${cfg.school||''}
+      </p>
+
+      <h2>📋 ผลการสอนรายแผน (${rows.length} แผน)</h2>
+      <table>
+        <tr><th>แผน</th><th>ส่ง %</th><th>Sound %</th><th>Misc ↓ %</th><th>Gain</th><th>คะแนน วPA</th></tr>
+        ${tbody}
+        <tr style="background:#f3e8ff">
+          <td><b>เฉลี่ย (${sem.completedPlans} แผน)</b></td>
+          <td align="center"><b>${pct(sem.avgSubmit)}</b></td>
+          <td align="center"><b>${pct(sem.avgSound)}</b></td>
+          <td align="center"><b>${pct(sem.avgMiscDrop)}</b></td>
+          <td align="center"><b>${gainFmt(sem.avgGain)}</b></td>
+          <td align="center"><b>${sem.avgWeighted==null?'—':fmt(sem.avgWeighted)+'/'+sem.weightedMax}</b></td>
+        </tr>
+      </table>
+
+      <h2>🎯 สรุปตามเกณฑ์ครูเชี่ยวชาญ</h2>
+      <ul>
+        <li>Four-tier Sound เฉลี่ย <b>${pct(sem.avgSound)}</b> · เกณฑ์ ≥80%</li>
+        <li>Misconception ลดลงเฉลี่ย <b>${pct(sem.avgMiscDrop)}</b> · เกณฑ์ ≥20%</li>
+        <li>Normalized gain เฉลี่ย <b>${gainFmt(sem.avgGain)}</b> · เกณฑ์ ≥0.3</li>
+        <li>อัตราส่งงานเฉลี่ย <b>${pct(sem.avgSubmit)}</b> · เกณฑ์ ≥85%</li>
+        <li>คะแนน วPA เฉลี่ย <b>${sem.avgWeighted==null?'—':fmt(sem.avgWeighted)+'/'+sem.weightedMax}</b>
+          (${sem.avgWeighted==null?'—':Math.round(sem.avgWeighted/sem.weightedMax*100)+'%'})</li>
+      </ul>
+
+      ${topProblems.length ? `
+      <h2>⚠️ ปัญหาที่พบบ่อย (จาก Phase Reflection)</h2>
+      <ol>${topProblems.map(([l,n])=>`<li>${l} — พบใน ${n}/${PLANS.length} แผน</li>`).join('')}</ol>` : ''}
+
+      ${topFixes.length ? `
+      <h2>💡 แนวทางปรับที่ใช้บ่อย</h2>
+      <ol>${topFixes.map(([l,n])=>`<li>${l} — ใช้ใน ${n}/${PLANS.length} แผน</li>`).join('')}</ol>` : ''}
+
+      <p style="margin-top:20pt;color:#666;font-size:12pt">* รายงานสร้างอัตโนมัติจาก KP-Classroom · เกณฑ์ครูเชี่ยวชาญ (วPA)</p>
+    </body></html>`;
+
+  const blob = new Blob(['\ufeff'+html], { type:'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `สรุปภาคเรียน_วPA_${course}.doc`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 let currentPostPlanData = null;
 
 // ═══════════════════════════════════════════════════════════
@@ -4791,6 +5099,11 @@ function wirePostPlanButtons(){
       if (m) ppMarkManual(m[1], Number(m[2]));
     });
   });
+  // Semester summary (Phase C)
+  const semRun = document.getElementById('sem-run');
+  const semExp = document.getElementById('sem-export');
+  if (semRun) semRun.onclick = runSemesterSummary;
+  if (semExp) semExp.onclick = exportSemesterWord;
 }
 
 async function loadPostPlanData(){
