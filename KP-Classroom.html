@@ -1938,31 +1938,65 @@ function escapeHtml(s){
 
 // ═══════════════════════════════════════════════════════════
 // TEACHER DASHBOARD (Tabbed)
-// Phase 4: verify รหัสผ่านฝั่ง server (Apps Script Properties)
-// ไม่เก็บรหัสใน config.js · เก็บใน sessionStorage เท่านั้น
+// Phase 4: verify ฝั่ง server (Apps Script Properties)
+// + Remember me: localStorage 30 วัน / sessionStorage จนปิด browser
 // ═══════════════════════════════════════════════════════════
-const TEACHER_SESS   = 'teacher_ok';   // flag บอกว่า verify แล้ว
-const TEACHER_PW_KEY = 'teacher_pw';   // sessionStorage เก็บรหัส (คืนค่าตอน close tab)
+const TEACHER_SESS   = 'teacher_ok';
+const TEACHER_PW_KEY = 'teacher_pw';
+const TEACHER_EXP_KEY = 'teacher_exp'; // expiry timestamp (localStorage เท่านั้น)
+const TEACHER_REMEMBER_DAYS = 30;
 let teacherCurrentTab = 'overview';
 
+// อ่านรหัส: ตรวจ localStorage ก่อน (ถ้า remember + ยังไม่หมดอายุ) · fallback sessionStorage
 function getTeacherPassword(){
+  const lsExp = localStorage.getItem(TEACHER_EXP_KEY);
+  if (lsExp){
+    if (Date.now() < Number(lsExp)) {
+      return localStorage.getItem(TEACHER_PW_KEY) || '';
+    }
+    // หมดอายุ → ล้าง localStorage
+    localStorage.removeItem(TEACHER_SESS);
+    localStorage.removeItem(TEACHER_PW_KEY);
+    localStorage.removeItem(TEACHER_EXP_KEY);
+  }
   return sessionStorage.getItem(TEACHER_PW_KEY) || '';
 }
 
 function isTeacherAuthed(){
-  return sessionStorage.getItem(TEACHER_SESS) === '1' && !!getTeacherPassword();
+  const hasPw = !!getTeacherPassword();
+  const flag  = localStorage.getItem(TEACHER_SESS) === '1'
+             || sessionStorage.getItem(TEACHER_SESS) === '1';
+  return hasPw && flag;
+}
+
+function saveTeacherSession(password, remember){
+  // ล้างทั้งคู่ก่อน
+  sessionStorage.removeItem(TEACHER_SESS);
+  sessionStorage.removeItem(TEACHER_PW_KEY);
+  localStorage.removeItem(TEACHER_SESS);
+  localStorage.removeItem(TEACHER_PW_KEY);
+  localStorage.removeItem(TEACHER_EXP_KEY);
+
+  if (remember){
+    const exp = Date.now() + TEACHER_REMEMBER_DAYS * 86400000;
+    localStorage.setItem(TEACHER_SESS, '1');
+    localStorage.setItem(TEACHER_PW_KEY, password);
+    localStorage.setItem(TEACHER_EXP_KEY, String(exp));
+  } else {
+    sessionStorage.setItem(TEACHER_SESS, '1');
+    sessionStorage.setItem(TEACHER_PW_KEY, password);
+  }
 }
 
 async function openTeacher(){
   if (isTeacherAuthed()){ enterTeacherMode(); return; }
   const pw = prompt('🔐 รหัสผ่านครู:');
-  if (pw === null) return; // user cancelled
+  if (pw === null) return;
 
-  // Fallback สำหรับ backward compat (ถ้ายังไม่ deploy Apps Script v3)
-  // หรือ config.js มี teacherPass อยู่ — เทียบ client-side ก่อน
+  // Fallback สำหรับ backward compat
   const legacyPass = (typeof KP_CONFIG !== 'undefined' && KP_CONFIG.teacherPass) ? KP_CONFIG.teacherPass : '';
 
-  // Verify ฝั่ง server (GET · อ่าน response ได้)
+  // Verify ฝั่ง server
   let verified = false;
   if (isApiConfigured()){
     try {
@@ -1971,20 +2005,21 @@ async function openTeacher(){
       if (vr && vr.verified === true) verified = true;
     } catch(e){}
   }
-
-  // Fallback: ถ้า server verify ไม่ได้ (CORS/no backend) → ใช้ legacy client-side check
-  if (!verified && legacyPass && pw === legacyPass){
-    verified = true;
-    console.warn('Using legacy client-side password check (Phase 4 server verify failed)');
-  }
+  if (!verified && legacyPass && pw === legacyPass){ verified = true; }
 
   if (!verified){
     alert('❌ รหัสผ่านไม่ถูกต้อง หรือ server ไม่ตอบสนอง');
     return;
   }
 
-  sessionStorage.setItem(TEACHER_SESS, '1');
-  sessionStorage.setItem(TEACHER_PW_KEY, pw);
+  // ถามต่อ: จดจำบนเครื่องนี้?
+  const remember = confirm(
+    '✅ รหัสผ่านถูกต้อง!\n\n' +
+    'จดจำการ login บนเครื่องนี้ 30 วัน?\n\n' +
+    '• OK = จดจำ (ไม่ต้อง login ใหม่ทุกครั้ง)\n' +
+    '• Cancel = ไม่จดจำ (หายเมื่อปิด browser · ปลอดภัยกว่า)'
+  );
+  saveTeacherSession(pw, remember);
   enterTeacherMode();
 }
 
@@ -2001,8 +2036,12 @@ function enterTeacherMode(){
 
 function logoutTeacher(){
   if (!confirm('ออกจากโหมดครู?')) return;
+  // ล้างทั้ง sessionStorage + localStorage (Phase 4 + Remember me)
   sessionStorage.removeItem(TEACHER_SESS);
-  sessionStorage.removeItem(TEACHER_PW_KEY); // Phase 4: ล้างรหัสจาก session
+  sessionStorage.removeItem(TEACHER_PW_KEY);
+  localStorage.removeItem(TEACHER_SESS);
+  localStorage.removeItem(TEACHER_PW_KEY);
+  localStorage.removeItem(TEACHER_EXP_KEY);
   // คืนค่า topBar logout เป็นของนักเรียน
   const sBtn = document.querySelector('#topBar .btn-logout');
   if (sBtn) sBtn.setAttribute('onclick', 'logout()');
