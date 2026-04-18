@@ -13,7 +13,6 @@ window.KP_WORKSHEETS = {
     // POE-01 · Concept Cartoon "ของลอยในทะเล" + Slinky + wave-types Sim
     poe: {
       title:       'POE-01 · ใบบันทึก Predict–Observe–Explain (แผน 1)',
-      viewFile:    'สื่อ02_POE-01_ใบบันทึกPOE.html',
       submitLabel: '📤 ส่ง POE-01',
       sheetPrefix: 'POE_P',
       misconception: 'M1.1 · M1.2 · M1.3',
@@ -142,7 +141,6 @@ window.KP_WORKSHEETS = {
     // POE-03 · Concept Cartoon "ริบบิ้น 2 เส้นบนเชือก" + 3 ฐาน
     poe: {
       title:       'POE-03 · ใบบันทึก Predict–Observe–Explain (แผน 3)',
-      viewFile:    'สื่อ02_POE-03_ใบบันทึกPOE.html',
       submitLabel: '📤 ส่ง POE-03',
       sheetPrefix: 'POE_P',
       misconception: 'M3.1 · M3.3 · M3.4',
@@ -267,7 +265,6 @@ window.KP_WORKSHEETS = {
     // POE-04 · Concept Cartoon "สงครามริ้วคลื่น" + 3 ฐาน (Slinky Live + Sim Superposition + Huygens Explorer)
     poe: {
       title:       'POE-04 · ใบบันทึก Predict–Observe–Explain (แผน 4)',
-      viewFile:    'สื่อ02_POE-04_ใบบันทึกPOE.html',
       submitLabel: '📤 ส่ง POE-04',
       sheetPrefix: 'POE_P',
       misconception: 'M4.1 · M4.2 · M4.3 · M4.4',
