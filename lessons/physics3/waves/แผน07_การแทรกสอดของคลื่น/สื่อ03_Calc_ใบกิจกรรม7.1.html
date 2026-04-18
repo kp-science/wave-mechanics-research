@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 7.1 · Calc Interference (แผน 7) · Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fef3c7;color:#1a202c;font-size:15.5px;line-height:1.55;padding:16px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(202,138,4,.12);padding:24px 28px}
+.head{border-bottom:3px solid #ca8a04;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#713f12;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#ca8a04;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fef3c7;border-left:6px solid #ca8a04;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #fde68a;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#fffef7}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#ca8a04;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#713f12;font-size:16px}
+.level{font-size:11.5px;background:#fef3c7;color:#713f12;padding:2px 8px;border-radius:10px;border:1px solid #fde68a}
+.level.easy{background:#dcfce7;color:#14532d;border-color:#86efac}
+.level.mid{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+.level.hard{background:#fce4ec;color:#ad1457;border-color:#f48fb1}
+.item-body{font-size:14.5px}
+.draw-task{background:#fef3c7;border-left:4px solid #ca8a04;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:13.5px;color:#713f12}
+.draw-task b{color:#a16207}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fde68a;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#a16207;font-weight:600}
+.c-btn.active{background:#ca8a04;color:#fff;border-color:#ca8a04}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #ca8a04;box-shadow:0 0 0 2px #fff,0 0 0 4px #ca8a04}
+.scene-stack{position:relative;border:2px solid #fde68a;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fde68a;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fef3c7 28px);touch-action:none;cursor:crosshair}
+.scene-hint{font-size:12px;color:#a16207;margin-top:4px}
+textarea,input[type=text],input[type=number]{font-family:inherit;font-size:14px;padding:6px 10px;border:1.5px solid #fde68a;border-radius:6px;width:100%;resize:vertical}
+textarea:focus,input:focus{outline:2px solid #ca8a04;outline-offset:-1px}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:8px 12px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#fef3c7;border-left:6px solid #ca8a04;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+.formula-box{background:#fef3c7;border-left:4px solid #ca8a04;padding:8px 12px;border-radius:6px;font-size:14px;margin:8px 0}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key,.canvas-toolbar{display:none}.scene-stack canvas.overlay{display:none}}
+</style></head>
+<body data-ws-id="plan7-calc-7.1">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบกิจกรรม 7.1 · Calc Interference</h1>
+      <div style="font-size:13px;color:#555"><span class="tag">แผน 7</span><span class="tag">ขั้น E4</span> 4 ข้อ ไล่ระดับ · ประเมิน K7.1, K7.2, P7.1, P7.2 · Rubric 0–4 · เวลา 15 นาที</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-นามสกุล"></label>
+      <label>เลขที่ <input type="text" id="s-num" class="short"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short"></label>
+      <label>กลุ่ม <input type="text" id="s-grp" class="short"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 โจทย์ฝึก:</b> ประยุกต์<strong>เงื่อนไขการแทรกสอด</strong> · <b>ปฏิบัพ A:</b> Δr = nλ (n = 0,1,2,...) เสริม y = 2A (ถ้า A เท่า) · <b>บัพ N:</b> Δr = (n+½)λ หักล้าง y = 0 (ถ้า A เท่า) · เงื่อนไข coherent: f, λ เท่า + เฟสสัมพันธ์คงที่ (A ไม่ต้องเท่า) · แสดงวิธีทุกข้อ
+  </div>
+
+  <!-- ═══ ข้อ 1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">วาดรูปแบบการแทรกสอด 2 แหล่ง · S₁S₂ ห่างกัน 3λ</span>
+      <span class="level easy">★ ง่าย</span>
+    </div>
+    <div class="item-body">
+      แหล่งกำเนิดอาพันธ์ S₁ และ S₂ · เฟสตรงกัน · A เท่ากัน · λ = 2 cm · ระยะห่าง <b>S₁S₂ = 3λ = 6 cm</b>
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน — วาดเพิ่มบนภาพ:</b><br>
+        <span style="color:#0891b2">①</span> วาด<b>วงกลมหน้าคลื่น</b>จาก S₁ และ S₂ (ห่างกัน λ = 2 cm = 40 px ต่อวง · อย่างน้อย 4 วง)<br>
+        <span style="color:#dc2626">②</span> ระบุ<b>แนวปฏิบัพ A</b> (เส้นที่ยอดพบยอด — วงเส้นเต็ม·พบเส้นเต็ม)<br>
+        <span style="color:#000000">③</span> ระบุ<b>แนวบัพ N</b> (เส้นที่ยอดพบท้อง — เส้นเต็ม·พบเส้นประ — ใช้ภาพที่ยอด/ท้องสลับ) · ใช้สัญลักษณ์ A และ N<br>
+        <span style="color:#a16207">④</span> นับและจดจำนวน <b>แนว A กี่แนว</b> และ <b>แนว N กี่แนว</b> ระหว่าง S₁ ถึง S₂
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)" title="ดำ"></div>
+        <div class="c-color" style="background:#0891b2" onclick="setColor('canvas1','#0891b2',this)" title="ฟ้า (หน้าคลื่น)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('canvas1','#dc2626',this)" title="แดง (ปฏิบัพ A)"></div>
+        <div class="c-color" style="background:#a16207" onclick="setColor('canvas1','#a16207',this)" title="น้ำตาล"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+      </div>
+      <div class="scene-stack">
+        <svg class="bg" viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="g7a" width="40" height="40" patternUnits="userSpaceOnUse">
+              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fef3c7" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="900" height="320" fill="#fffef7"/>
+          <rect width="900" height="320" fill="url(#g7a)"/>
+          <!-- S1 and S2 sources, 6cm apart (240px scaled, 40px = 1cm = λ/2) -->
+          <circle cx="330" cy="160" r="8" fill="#ca8a04"/>
+          <text x="320" y="148" font-size="14" fill="#713f12" font-weight="800" font-family="Sarabun,sans-serif">S₁</text>
+          <circle cx="570" cy="160" r="8" fill="#ca8a04"/>
+          <text x="560" y="148" font-size="14" fill="#713f12" font-weight="800" font-family="Sarabun,sans-serif">S₂</text>
+          <!-- Distance label -->
+          <line x1="330" y1="200" x2="570" y2="200" stroke="#a16207" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="450" y="218" font-size="12" fill="#a16207" font-weight="700" font-family="Sarabun,sans-serif" text-anchor="middle">S₁S₂ = 3λ = 6 cm (240 px · λ = 80 px)</text>
+          <!-- Hint -->
+          <text x="20" y="30" font-size="13" fill="#713f12" font-weight="700" font-family="Sarabun,sans-serif">ทำได้: วาดวงกลมห่าง 80 px จากแต่ละ S · ดูตำแหน่งที่วงเสริม/หักล้าง</text>
+          <text x="20" y="305" font-size="11" fill="#64748b" font-family="Sarabun,sans-serif">กริด 40×40 px = ครึ่ง λ · วาดตามข้อ ①-④ ด้านบน</text>
+        </svg>
+        <canvas id="canvas1" class="overlay" width="900" height="320"></canvas>
+      </div>
+      <div class="scene-hint">💡 จำนวนแนวบัพ N ระหว่าง 2 แหล่ง = 2(S₁S₂/λ) = 2(3) = 6 แนว · จำนวนปฏิบัพ A = 2(S₁S₂/λ) + 1 = 7 แนว</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b></div>
+      <div style="margin-left:14px">
+        (ก) จำนวนแนว A ที่นับได้ระหว่าง S₁S₂ = ______ แนว &nbsp; (ข) จำนวนแนว N = ______ แนว &nbsp; (ค) แนวกึ่งกลาง (Δr=0) เป็น A หรือ N?
+      </div>
+      <textarea id="q1-ans" rows="3" placeholder="(ก) นับได้ ... แนว A (ข) ... แนว N (ค) แนวกึ่งกลางเป็น ... เพราะ Δr=0=0λ คือ ..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) A = <b>7 แนว</b> (n = 0, ±1, ±2, ±3) · (ข) N = <b>6 แนว</b> (n+½ = ±0.5, ±1.5, ±2.5) · (ค) แนวกึ่งกลาง <b>A</b> เพราะ Δr = 0 = 0·λ ตรงเงื่อนไข nλ พอดี (n=0 → ปฏิบัพ A) · <b>แก้ M7.1</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">คำนวณ |S₁P − S₂P| · ตัดสินจุด P เป็น A หรือ N</span>
+      <span class="level mid">★★ กลาง</span>
+    </div>
+    <div class="item-body">
+      แหล่งกำเนิด S₁ และ S₂ เฟสตรงกัน · A เท่ากัน · λ = 4 cm · จุด P วัดได้ <b>S₁P = 20 cm</b> · <b>S₂P = 14 cm</b>
+
+      <div class="formula-box">เงื่อนไข: <b>Δr = nλ → ปฏิบัพ A</b> (เสริม) · <b>Δr = (n+½)λ → บัพ N</b> (หักล้าง)</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b> (ก) คำนวณ Δr = |S₁P − S₂P| · (ข) เทียบ Δr/λ ได้เท่าใด · (ค) จุด P เป็น A หรือ N · ค่า n เป็นเท่าใด · (ง) ถ้า A₁ = A₂ = 5 cm · การกระจัดรวมที่ P เป็นเท่าใด?</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#a16207">✍️ กระดานแสดงวิธีทำ:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas2','#ca8a04',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas2','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="240"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#713f12">⌨️ พิมพ์คำตอบ (ข้อ ก–ง):</label>
+      <textarea id="q2-ans" rows="4" placeholder="(ก) Δr = |20 − 14| = ... cm (ข) Δr/λ = .../4 = ... (ค) P เป็น ... (n=...) (ง) y รวม = ..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) Δr = |20 − 14| = <b>6 cm</b> · (ข) Δr/λ = 6/4 = <b>1.5</b> = (1+½) · (ค) P เป็น<b>แนวบัพ N</b> ที่ n = 1 (ตรงเงื่อนไข Δr = (n+½)λ พอดี) · (ง) ที่บัพ A เท่ากัน → <b>y รวม = 0</b> (หักล้างสมบูรณ์ตลอดเวลา · อนุภาคยังอยู่ ไม่หาย — แก้ M7.2)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">เลื่อน source separation d → จำนวน A เพิ่ม/ลด · กราฟ</span>
+      <span class="level mid">★★ กลาง</span>
+    </div>
+    <div class="item-body">
+      ให้ λ = 2 cm คงที่ · เลื่อนระยะห่าง 2 แหล่ง <b>d = S₁S₂</b> ตามค่าในตาราง · จำนวนแนวปฏิบัพ A ระหว่าง S₁ ถึง S₂ คำนวณจาก: <b>N_A = 2⌊d/λ⌋ + 1</b>
+
+      <div class="formula-box">สูตร: ถ้า d = mλ พอดี → จำนวน A = 2m + 1 (รวมแนวกึ่งกลาง) · จำนวน N = 2m</div>
+
+      <table style="width:100%;border-collapse:collapse;margin-top:8px;font-size:14px">
+        <tr style="background:#ca8a04;color:#fff"><th style="padding:6px;border:1px solid #fde68a">d (cm)</th><th style="padding:6px;border:1px solid #fde68a">d/λ</th><th style="padding:6px;border:1px solid #fde68a">จำนวน A</th><th style="padding:6px;border:1px solid #fde68a">จำนวน N</th></tr>
+        <tr><td style="padding:6px;border:1px solid #fde68a;text-align:center">2</td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r1a" step="0.1" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r1b" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r1c" style="width:70px"></td></tr>
+        <tr><td style="padding:6px;border:1px solid #fde68a;text-align:center">4</td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r2a" step="0.1" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r2b" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r2c" style="width:70px"></td></tr>
+        <tr><td style="padding:6px;border:1px solid #fde68a;text-align:center">6</td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r3a" step="0.1" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r3b" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r3c" style="width:70px"></td></tr>
+        <tr><td style="padding:6px;border:1px solid #fde68a;text-align:center">8</td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r4a" step="0.1" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r4b" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r4c" style="width:70px"></td></tr>
+        <tr><td style="padding:6px;border:1px solid #fde68a;text-align:center">10</td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r5a" step="0.1" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r5b" style="width:70px"></td><td style="padding:6px;border:1px solid #fde68a;text-align:center"><input type="number" id="q3-r5c" style="width:70px"></td></tr>
+      </table>
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน:</b> วาดกราฟ <b>จำนวน A บนแกน y · d/λ บนแกน x</b> · ลากเส้นแนวโน้ม
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas3','#ca8a04',this)" title="จุดข้อมูล"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas3','#c53030',this)" title="เส้นแนวโน้ม"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+      </div>
+      <div class="scene-stack">
+        <svg class="bg" viewBox="0 0 900 380" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="g3grid" width="60" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 60 0 L 0 0 0 30" fill="none" stroke="#fef3c7" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="900" height="380" fill="#fff"/>
+          <rect x="80" y="20" width="780" height="310" fill="url(#g3grid)"/>
+          <line x1="80" y1="20" x2="80" y2="330" stroke="#a16207" stroke-width="2"/>
+          <line x1="80" y1="330" x2="860" y2="330" stroke="#a16207" stroke-width="2"/>
+          <g font-size="12" fill="#a16207" font-family="Sarabun,sans-serif" text-anchor="end">
+            <text x="72" y="335">0</text><text x="72" y="305">2</text><text x="72" y="275">4</text>
+            <text x="72" y="245">6</text><text x="72" y="215">8</text><text x="72" y="185">10</text>
+            <text x="72" y="155">12</text><text x="72" y="125">14</text>
+          </g>
+          <g font-size="12" fill="#a16207" font-family="Sarabun,sans-serif" text-anchor="middle">
+            <text x="80" y="350">0</text><text x="200" y="350">1</text><text x="320" y="350">2</text>
+            <text x="440" y="350">3</text><text x="560" y="350">4</text><text x="680" y="350">5</text>
+            <text x="800" y="350">6</text>
+          </g>
+          <text x="870" y="335" font-size="14" fill="#713f12" font-weight="700" font-family="Sarabun,sans-serif">d/λ</text>
+          <text x="20" y="25" font-size="14" fill="#713f12" font-weight="700" font-family="Sarabun,sans-serif">N_A</text>
+          <text x="450" y="372" font-size="12" fill="#64748b" font-weight="700" font-family="Sarabun,sans-serif" text-anchor="middle">กราฟ N_A vs d/λ · ความสัมพันธ์เป็นเชิงเส้น</text>
+        </svg>
+        <canvas id="canvas3" class="overlay" width="900" height="380"></canvas>
+      </div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b></div>
+      <div style="margin-left:14px">
+        (ก) เติมตารางให้ครบ &nbsp; (ข) ความชันของกราฟ N_A vs d/λ ≈ ______ &nbsp; (ค) เมื่อ d เพิ่ม จำนวน A เพิ่มหรือลด · ทำไม?
+      </div>
+      <textarea id="q3-ans" rows="3" placeholder="(ก) ตารางเติมแล้ว (ข) slope = ... (ค)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) d = 2,4,6,8,10 cm → d/λ = 1,2,3,4,5 → A = 3,5,7,9,11 · N = 2,4,6,8,10 · (ข) slope ≈ <b>2</b> (ทุก λ ที่เพิ่ม → A เพิ่ม 2 แนว) · (ค) <b>เพิ่ม</b> · เพราะ d ใหญ่ขึ้น → จำนวน path differences ที่ตรงเงื่อนไข nλ มากขึ้น
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 4 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">4</span>
+      <span class="item-title">Path difference Δr = 2.5λ → คำตอบ N (n=2)</span>
+      <span class="level hard">★★★ ท้าทาย</span>
+    </div>
+    <div class="item-body">
+      แหล่งกำเนิด S₁ (A₁ = 4 cm) และ S₂ (A₂ = 4 cm) · เฟสตรงกัน · f = 5 Hz · v = 20 cm/s · ที่จุด Q วัดได้ |S₁Q − S₂Q| = <b>10 cm</b>
+
+      <div class="formula-box">v = fλ → λ = v/f · เงื่อนไข A: Δr = nλ · เงื่อนไข N: Δr = (n+½)λ</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b></div>
+      <div style="margin-left:14px">
+        (ก) คำนวณ λ · (ข) คำนวณ Δr/λ · (ค) Q เป็น A หรือ N · n = ? · (ง) การกระจัดรวมที่ Q (เมื่อ A เท่ากัน) · (จ) ถ้าเปลี่ยน A₂ = 2 cm (ต่างกัน) ที่จุด Q ใหม่นี้ การกระจัดรวมเป็นเท่าใด · เกิดการแทรกสอดได้ไหม (M7.3)?
+      </div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#a16207">✍️ กระดานแสดงวิธีทำ:</span>
+        <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas4','#ca8a04',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas4','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas4" data-bg="lined" width="900" height="300"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#713f12">⌨️ พิมพ์คำตอบ (ข้อ ก–จ):</label>
+      <textarea id="q4-ans" rows="6" placeholder="(ก) λ = v/f = 20/5 = ... cm (ข) Δr/λ = 10/... = ... (ค)... (ง)... (จ)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b>
+        (ก) λ = v/f = 20/5 = <b>4 cm</b> ·
+        (ข) Δr/λ = 10/4 = <b>2.5</b> = (2+½) ·
+        (ค) Q เป็น<b>แนวบัพ N</b> ที่ <b>n = 2</b> (ตรงเงื่อนไข Δr = (n+½)λ พอดี) ·
+        (ง) A เท่ากัน (4 cm ทั้งคู่) · ที่บัพ → <b>y รวม = 0</b> (หักล้างสมบูรณ์) · อนุภาคยังอยู่ ไม่หาย (แก้ M7.2) ·
+        (จ) ถ้า A₁ = 4 · A₂ = 2 · ที่บัพ N · y₁ = +4 · y₂ = −2 → <b>y รวม = +2 cm</b> (หักล้างไม่สมบูรณ์) · <b>เกิดการแทรกสอดได้</b> · เงื่อนไข coherent ต้องการแค่ f, λ เท่ากัน + เฟสคงที่ ไม่ต้อง A เท่า (แก้ M7.3)
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–4 ต่อข้อ):</b>
+    <b>4</b> ถูกต้องสมบูรณ์ แสดงวิธีครบ อ้างหลักการ · <b>3</b> ถูกแต่ขาดหน่วย/ขั้นตอนเล็กน้อย · <b>2</b> เข้าใจหลักการ แต่ผิดบางส่วน · <b>1</b> พยายามทำ แต่ผิดสำคัญ · <b>0</b> ว่าง/ผิดทั้งหมด
+  </div>
+
+  <div class="foot">ใบกิจกรรม 7.1 · แผน 7 การแทรกสอดของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
+</div>
+
+<script src="../../../shared/worksheet-core.js"></script>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{['canvas1','canvas2','canvas3','canvas4'].forEach(initCanvas);});
+</script>
+</body></html>

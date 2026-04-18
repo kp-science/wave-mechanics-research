@@ -392,5 +392,72 @@ window.KP_PLAN_MEDIA = {
       'MJ-06 → คำถามเด่นเป็น Hook แผน 7 (การแทรกสอด — f เท่ากัน · เงื่อนไข)',
       'OB-01 → Role Responsibility (A6.1 ≥ 80%) · Scientific Attitude (A6.2 ≥ 70%)'
     ]
+  },
+  7: {
+    folder: 'lessons/physics3/waves/แผน07_การแทรกสอดของคลื่น',
+    title: 'แผน 7 — การแทรกสอดของคลื่น (2 แหล่งกำเนิดอาพันธ์)',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 13–15 (150 นาที) · ว2.1 ม.5/4-5',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 7 (ฉบับสมบูรณ์)', file:'แผน7_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA 8 ตัวชี้วัด · Timeline · Theme สี Amber (เหลืองอำพัน)', chips:[] },
+        { cls:'sim', no:'SIM1', t:'Lab 30 — Waves on Coiled Spring (Pulse Superposition)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html',
+          d:'Virtual Lab · ส่งพัลส์ 2 ปลาย · ทดสอบ ยอด+ยอด · ยอด+ท้อง A เท่า · A ต่าง · ยืนยัน A ไม่ต้องเท่าก็แทรกสอดได้ · ใช้ใน POE-07 ฐาน 1',
+          chips:[['m','M7.3'],['k','K7.1'],['p','P7.1']] },
+        { cls:'sim', no:'SIM2', t:'Lab 41 — Two-Source Wave Interference',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html',
+          d:'Virtual Lab · 2 แหล่งกำเนิด · เลื่อน P · วัด S₁P, S₂P, Δr · ระบุ A/N · เห็น hyperbolic pattern + bright/dark fringes · ใช้ใน POE-07 ฐาน 2',
+          chips:[['m','M7.1'],['m','M7.2'],['m','M7.4'],['k','K7.1'],['k','K7.2'],['p','P7.2']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e2', no:'02', t:'POE-07 Interactive · ใบบันทึก P / O / E', file:'สื่อ02_POE-07_ใบบันทึกPOE.html',
+          d:'Predict 4 ข้อ ครอบคลุม M7.1-M7.4 (Δr=2λ → A/N · บัพ=หาย? · A ต่าง → แทรกสอด? · ชื่อ A vs N) · Observe 2 ฐาน (Lab 30 + Lab 41) · canvas วาด hyperbolic pattern + bright/dark fringes · auto-calc Δr · Explain CER + Conceptual Inventory 5 ข้อ + Misconception 3 ส่วน',
+          meta:'ใช้ตลอด E1–E3 · 60 นาที',
+          chips:[['p','P7.1'],['p','P7.2'],['m','M7.1'],['m','M7.2'],['m','M7.3'],['m','M7.4']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 7.1 · Calc Interference', file:'สื่อ03_Calc_ใบกิจกรรม7.1.html',
+          d:'4 ข้อไล่ระดับ · (1) วาด wave pattern 2 sources S₁S₂=3λ · ระบุ A, N (2) คำนวณ Δr ตัดสินจุด P เป็น A หรือ N (3) เลื่อน source separation d → จำนวน A เพิ่ม/ลด · กราฟ (4) Δr=2.5λ → คำตอบ N (n=2) · scene-stack overlay + lined canvas · ใช้ worksheet-core.js',
+          meta:'ใช้ในฉาก E4 Elaborate · 15 นาที',
+          chips:[['k','K7.1'],['k','K7.2'],['p','P7.1'],['p','P7.2'],['m','M7.1'],['m','M7.2']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 7.2 · Spot the Error', file:'สื่อ04_Spot_ใบกิจกรรม7.2.html',
+          d:'3 สถานการณ์ · "Δr=nλ คือบัพ N" (M7.1) · "บัพ=น้ำหายจริง" (M7.2) · "ต้อง A เท่ากันถึงแทรกสอด" (M7.3) · claim canvas overlay + canvas อธิบายที่ถูก',
+          meta:'ใช้ในฉาก E4 Elaborate · 12 นาที',
+          chips:[['k','K7.1'],['p','P7.1'],['m','M7.1'],['m','M7.2'],['m','M7.3']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F7 Four-tier · Pre + Post', file:'สื่อ05_F7_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier (T1 คำตอบ + T2 มั่นใจ + T3 เหตุผล + T4 มั่นใจ) · M7.1 (Δr=nλ → A) · M7.2 (บัพ ≠ อนุภาคหาย) · M7.3 (A ไม่ต้องเท่า) · SVG + Answer Key + Interpretation rubric',
+          meta:'ใช้ในฉาก F7 Pre (10\') + F7 Post (10\')',
+          chips:[['k','K7.1'],['k','K7.2'],['m','M7.1'],['m','M7.2'],['m','M7.3'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A7.1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-07 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 Transfer ชีวิตจริง (noise-cancelling/holography/interferometer) · 1 คำถาม', meta:'ใช้ในฉาก MJ · 10 นาที',
+          chips:[['a','A7.2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Grit (A7.1) + Peer Tutoring (A7.2) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 150 นาที',
+          chips:[['a','A7.1'],['a','A7.2'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-07',
+          chips:[['p','P7.1'],['p','P7.2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: 🔆 ปฏิบัพ A · Δr=nλ (แก้ M7.1/M7.4) · 🌑 บัพ N · Δr=(n+½)λ (แก้ M7.2) · 📐 A ไม่ต้องเท่า + เงื่อนไข coherent (แก้ M7.3) · ผูก POE-07 ฐาน 1+2 · ทุกกลุ่มส่ง Claim+Evidence+Reasoning พร้อมกัน',
+          meta:'ใช้ในฉาก E3 · 10 นาที',
+          chips:[['p','P7.1'],['k','K7.1'],['a','A7.2'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F7 Pre/Post → % Sound · Misconception M7.1/M7.2/M7.3 · Normalized gain ของแผน 7 · เป้าหมายลด MC ของ M7.1 ≥ 50%, M7.2/M7.3 ≥ 30%',
+      'POE-07 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 7.1 → คะแนนเฉลี่ย ≥ 70% · canvas hyperbolic pattern (เกณฑ์ K7.2, P7.2)',
+      'Spot 7.2 → Conceptual Change · เชื่อม M7.1–M7.3 กับหลักฐาน',
+      'CER Board → คลัง Claim-Evidence-Reasoning เรื่องแทรกสอด · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-07 → คำถามเด่นเป็น Hook แผน 8 (การเลี้ยวเบน — "1 ช่อง 1 แหล่งจะแทรกสอดได้ไหม?")',
+      'OB-01 → Grit (A7.1 ≥ 80%) · Peer Tutoring (A7.2 ≥ 70%)'
+    ]
   }
 };

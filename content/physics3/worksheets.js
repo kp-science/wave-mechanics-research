@@ -534,5 +534,78 @@ window.KP_WORKSHEETS = {
       allowImage: true,
       sheetPrefix: 'CER_P'
     }
+  },
+
+  // ───────── แผน 7 · การแทรกสอดของคลื่น ─────────
+  7: {
+    // POE-07 · Interactive form · 2 ฐาน (Lab 30 Spring Superposition + Lab 41 Two-Source Interference)
+    poe: {
+      title:       'POE-07 · ใบบันทึก Predict–Observe–Explain (แผน 7)',
+      description: 'Interactive: palette 2-source · canvas hyperbolic pattern · 2 ฐาน (Lab 30 spring + Lab 41 ripple)',
+      viewFile:    'สื่อ02_POE-07_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-07',
+      sheetPrefix: 'POE_P',
+      misconception: 'M7.1 · M7.2 · M7.3 · M7.4',
+      allowUpload: true,
+      hero: {
+        question: 'หยดน้ำ 2 หยดตกลงในสระพร้อมกัน · บนผิวน้ำเกิดอะไรขึ้น? · มีจุดที่ผิวน้ำเรียบ (บัพ) และจุดที่กระเพื่อมแรง (ปฏิบัพ) — เพราะเหตุใด · อนุภาคน้ำที่บัพหายไปจริงหรือไม่?',
+        context:  'คู่กับ Concept Cartoon "2 หยดน้ำ" · 2 ฐาน (Lab 30 Coiled Spring superposition · Lab 41 Two-Source Wave Interference)'
+      }
+    },
+    // ใบ 7.1 · Calc Interference · scene-stack overlay + lined canvas
+    calc: {
+      title:       'ใบกิจกรรม 7.1 · Calc Interference',
+      description: '4 ข้อไล่ระดับ · (1) วาด wave pattern 2 sources S₁S₂=3λ · ระบุ A,N (2) คำนวณ Δr ตัดสินจุด P · A หรือ N (3) เลื่อน source separation d → จำนวน A เพิ่ม/ลด · กราฟ (4) Path difference Δr=2.5λ → คำตอบ N (n=2) · ใช้ worksheet-core.js',
+      viewFile:    'สื่อ03_Calc_ใบกิจกรรม7.1.html',
+      submitLabel: '📤 ส่งใบกิจกรรม 7.1',
+      sheetPrefix: 'Calc_P',
+      allowUpload: true
+    },
+    // ใบ 7.2 · Spot the Error · claim-overlay + canvas อธิบาย
+    spot: {
+      title:       'ใบกิจกรรม 7.2 · Spot the Error',
+      description: '3 สถานการณ์ · "Δr=nλ คือบัพ" (M7.1) · "บัพ=น้ำหายจริง" (M7.2) · "ต้อง A เท่ากันถึงแทรกสอด" (M7.3) · claim canvas overlay + canvas อธิบายที่ถูก',
+      viewFile:    'สื่อ04_Spot_ใบกิจกรรม7.2.html',
+      items: [
+        { misc:'M7.1', stmt:'น้องเฟิร์น: "จุด P มี Δr = 8 cm = 2λ พอดี · นี่คือเงื่อนไข Δr = nλ ที่ n = 2 · ดังนั้น P เป็นแนวบัพ N เพราะคลื่นเดินทางครบรอบพอดีทำให้หักล้างกันสมบูรณ์ · การกระจัดรวม = 0"' },
+        { misc:'M7.2', stmt:'พี่กิ๊ก: "แนวบัพ N เป็นแนวที่ผิวน้ำเรียบ · นี่แปลว่าอนุภาคน้ำที่จุดบนแนวนั้นถูกคลื่น 2 ลูกหักล้างทำลาย · น้ำที่จุดนั้นหายไปถาวร · ถ้าเอามือไปจุ่มจะไม่เจอน้ำเลย เพราะคลื่นเอาพลังงานน้ำไปหมดแล้ว"' },
+        { misc:'M7.3', stmt:'น้องตั้ม: "คลื่น 2 แหล่งนี้ A ไม่เท่ากัน (5 ≠ 3) · ดังนั้นไม่สามารถเกิดการแทรกสอดได้ · เพราะการแทรกสอดต้องการ A เท่ากันเสมอ · ถ้า A ต่างกัน คลื่นทั้งสองจะไม่อาพันธ์ · มีแต่คลื่นที่ A เท่ากันเท่านั้นที่เป็น coherent"' }
+      ],
+      submitLabel: '📤 ส่งใบกิจกรรม 7.2',
+      sheetPrefix: 'Spot_P'
+    },
+    // CER Board · E3 Explain · 3 คอลัมน์ (ปฏิบัพ A · บัพ N · A ไม่ต้องเท่า)
+    cer: {
+      id: 'cer',
+      title: 'CER Board · Phase E3',
+      description: 'ใช้ข้อมูลจาก POE-07 ทั้ง 2 ฐาน (Lab 30 + Lab 41) · ทุกกลุ่มส่ง CER พร้อมกัน · ครูฉายบนจอเพื่อเปรียบเทียบ',
+      columns: [
+        { id:'antinode', label:'🔆 ปฏิบัพ A · Δr=nλ · แก้ M7.1/M7.4', color:'#ca8a04',
+          prompts: {
+            claim:     '👉 เงื่อนไข Δr ที่ทำให้จุดเป็นปฏิบัพ A คืออะไร · A รวมที่ปฏิบัพเป็นเท่าใด?',
+            evidence:  '👉 Lab 41: P ที่ Δr = nλ พบว่า A สูงสุด = ____ · ฐาน 1 Lab 30: ยอด+ยอด → A รวม = ____',
+            reasoning: '👉 หลักซ้อนทับ y = y₁ + y₂ · ที่ปฏิบัพ ยอดพบยอด/ท้องพบท้อง · เสริมกันสูงสุด · n = 0 (กลาง) · ±1 · ±2 ...'
+          } },
+        { id:'node', label:'🌑 บัพ N · Δr=(n+½)λ · แก้ M7.2', color:'#713f12',
+          prompts: {
+            claim:     '👉 เงื่อนไข Δr ที่ทำให้จุดเป็นบัพ N คืออะไร · อนุภาคที่บัพหายหรือยังอยู่?',
+            evidence:  '👉 Lab 41: P ที่ Δr = (n+½)λ พบว่า A รวม = ____ · จุ่มมือลงไปยังเจอน้ำ · ฐาน 1: ยอด+ท้อง A เท่า → A รวม = 0',
+            reasoning: '👉 ที่บัพ y₁ = −y₂ ตลอดเวลา → y รวม = 0 ทุกขณะ · อนุภาคยังอยู่ · พลังงานถูกส่งต่อไปสะสมที่ปฏิบัพ A'
+          } },
+        { id:'amplitude', label:'📐 A ไม่ต้องเท่า + เงื่อนไข coherent · แก้ M7.3', color:'#a16207',
+          prompts: {
+            claim:     '👉 ถ้า A₁ ≠ A₂ จะเกิดการแทรกสอดได้ไหม · เงื่อนไข coherent มีอะไรบ้าง?',
+            evidence:  '👉 ฐาน 1 Lab 30: A₁=__ A₂=__ ที่บัพ y รวม = ____ (ไม่ใช่ 0) · ที่ปฏิบัพ y รวม = ____ · ยังเห็นรูปแบบ A กับ N',
+            reasoning: '👉 coherent = f, λ เท่ากัน + เฟสสัมพันธ์คงที่ (ไม่ใช่ A เท่า) · A ต่างกัน → หักล้างที่บัพไม่สมบูรณ์ (= |A₁−A₂|) แต่ยังเกิดรูปแบบได้'
+          } }
+      ],
+      prompts: {
+        claim:     'ข้อค้นพบสั้น ๆ...',
+        evidence:  'ข้อมูลที่วัดได้จากฐาน...',
+        reasoning: 'เหตุผลที่เชื่อมหลักฐานกับข้อสรุป...'
+      },
+      allowImage: true,
+      sheetPrefix: 'CER_P'
+    }
   }
 };

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบกิจกรรม 7.2 · Spot the Error (แผน 7)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fef3c7;color:#1a202c;font-size:15.5px;line-height:1.55;padding:20px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(202,138,4,.12);padding:28px 32px}
+.head{border-bottom:3px solid #ca8a04;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap}
+.head h1{font-size:22px;color:#713f12}
+.head .meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ca8a04;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fef3c7;border-left:6px solid #ca8a04;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #fde68a;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#fffef7}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#ca8a04;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#713f12;font-size:16px}
+.mc-tag{font-size:11.5px;background:#fef3c7;color:#713f12;border:1px solid #fde68a;padding:2px 8px;border-radius:10px}
+.grid-wrap{background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px;margin-top:8px;overflow-x:auto}
+.grid-wrap svg{display:block;max-width:100%;height:auto}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.ak-label{background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#fef3c7;border-left:6px solid #ca8a04;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fde68a;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fef3c7 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fde68a;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#713f12;font-weight:600}
+.c-btn.active{background:#ca8a04;color:#fff;border-color:#ca8a04}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #ca8a04;box-shadow:0 0 0 2px #fff,0 0 0 4px #ca8a04}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#713f12;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
+</style></head>
+<body data-ws-id="plan7-spot-7.2">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔍 ใบกิจกรรม 7.2 · Spot the Error</h1>
+      <div class="meta"><span class="tag">แผน 7</span><span class="tag">ขั้น E4</span> 3 สถานการณ์ · ชน M7.1 · M7.2 · M7.3 · เวลา 12 นาที</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 คำสั่ง:</b> แต่ละข้อมีข้อความที่<strong>ผิดหลักการ</strong> · (ก) วงกลม/ขีดทับ<u>จุดผิด</u>บนข้อความของเพื่อน (ข) เขียน<u>คำอธิบายที่ถูก</u>โดยอ้างหลักการแทรกสอด (Δr=nλ → A · Δr=(n+½)λ → N · หลักซ้อนทับ y=y₁+y₂ · เงื่อนไข coherent)
+  </div>
+
+  <!-- ═══ ข้อ 1 · M7.1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">"Δr = nλ คือแนวบัพ N"</span>
+      <span class="mc-tag">M7.1</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนวิเคราะห์รูปแบบการแทรกสอดจาก 2 แหล่งกำเนิด · S₁ และ S₂ เฟสตรงกัน λ = 4 cm · ที่จุด P วัด |S₁P − S₂P| = 8 cm
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fffbeb"/>
+          <circle cx="180" cy="120" r="6" fill="#ca8a04"/><text x="170" y="108" font-size="12" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="500" cy="120" r="6" fill="#ca8a04"/><text x="490" y="108" font-size="12" fill="#713f12" font-weight="700">S₂</text>
+          <g stroke="#ca8a04" stroke-width="1" fill="none" opacity="0.45">
+            <circle cx="180" cy="120" r="40"/><circle cx="180" cy="120" r="80"/><circle cx="180" cy="120" r="120"/><circle cx="180" cy="120" r="160"/>
+            <circle cx="500" cy="120" r="40"/><circle cx="500" cy="120" r="80"/><circle cx="500" cy="120" r="120"/><circle cx="500" cy="120" r="160"/>
+          </g>
+          <circle cx="380" cy="60" r="6" fill="#dc2626"/>
+          <text x="390" y="56" font-size="13" fill="#dc2626" font-weight="700">P</text>
+          <text x="390" y="74" font-size="11" fill="#a16207">Δr = 8 cm = 2λ</text>
+          <line x1="180" y1="120" x2="380" y2="60" stroke="#713f12" stroke-width="1" stroke-dasharray="3,3"/>
+          <line x1="500" y1="120" x2="380" y2="60" stroke="#713f12" stroke-width="1" stroke-dasharray="3,3"/>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องเฟิร์น:</div>
+          <div class="say">"จุด P มี Δr = 8 cm = 2λ พอดี · นี่คือเงื่อนไข <b>Δr = nλ</b> ที่ n = 2 · ดังนั้น P เป็น<b>แนวบัพ N (Node)</b> เพราะคลื่นเดินทางครบรอบพอดีทำให้<b>หักล้างกันสมบูรณ์</b> · การกระจัดรวม = 0"</div>
+        </div>
+        <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="180"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (Δr = nλ คือแนวอะไร · เพราะอะไร)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas1','#ca8a04',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas1','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas1" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q1-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fde68a;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"แนวบัพ N"</b> และ<b>"หักล้างกันสมบูรณ์"</b> และ<b>"การกระจัดรวม = 0"</b> · (ข) <b>M7.1</b> (สลับ A กับ N) ·
+        (ค) <b>Δr = nλ คือแนวปฏิบัพ A (Antinode)</b> · ยอดพบยอด/ท้องพบท้องพอดี · เสริมกันสูงสุด · A รวม = A₁ + A₂ = <b>2A</b> (ถ้า A เท่ากัน) · <b>แนวบัพ N</b> ต้องใช้เงื่อนไข <b>Δr = (n+½)λ</b> เช่น 0.5λ, 1.5λ, 2.5λ · ที่บัพยอดพบท้อง → หักล้าง y รวม = 0
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 · M7.2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">"แนวบัพ = น้ำหายจริง ไม่มีอนุภาค"</span>
+      <span class="mc-tag">M7.2</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนสังเกตการแทรกสอดในถาดน้ำ · เห็นแนวบัพ N เป็นแนวที่ผิวน้ำดู "เรียบ" ไม่กระเพื่อม · เขียนรายงาน
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fef3c7"/>
+          <circle cx="120" cy="100" r="6" fill="#ca8a04"/><text x="108" y="88" font-size="12" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="560" cy="100" r="6" fill="#ca8a04"/><text x="548" y="88" font-size="12" fill="#713f12" font-weight="700">S₂</text>
+          <!-- Antinodal lines (A) -->
+          <path d="M 340,20 Q 340,100 340,180" stroke="#0891b2" stroke-width="2.5" fill="none"/>
+          <text x="345" y="30" font-size="11" fill="#0891b2" font-weight="700">A (n=0)</text>
+          <path d="M 230,20 Q 270,100 230,180" stroke="#0891b2" stroke-width="2.5" fill="none"/>
+          <text x="180" y="30" font-size="11" fill="#0891b2" font-weight="700">A</text>
+          <path d="M 450,20 Q 410,100 450,180" stroke="#0891b2" stroke-width="2.5" fill="none"/>
+          <text x="455" y="30" font-size="11" fill="#0891b2" font-weight="700">A</text>
+          <!-- Nodal lines (N) -->
+          <path d="M 285,20 Q 305,100 285,180" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3" fill="none"/>
+          <text x="263" y="195" font-size="11" fill="#dc2626" font-weight="700">N</text>
+          <path d="M 395,20 Q 375,100 395,180" stroke="#dc2626" stroke-width="2" stroke-dasharray="6,3" fill="none"/>
+          <text x="378" y="195" font-size="11" fill="#dc2626" font-weight="700">N</text>
+          <text x="20" y="30" font-size="11" fill="#713f12">A = ปฏิบัพ (เสริม) · N = บัพ (หักล้าง)</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 พี่กิ๊ก:</div>
+          <div class="say">"แนวบัพ N เป็นแนวที่ผิวน้ำเรียบ · นี่แปลว่า<b>อนุภาคน้ำที่จุดบนแนวนั้นถูกคลื่น 2 ลูกหักล้างทำลาย</b> · น้ำที่จุดนั้น<b>หายไปถาวร</b> · ถ้าเอามือไปจุ่มจะไม่เจอน้ำเลย เพราะคลื่นเอาพลังงานน้ำไปหมดแล้ว"</div>
+        </div>
+        <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="180"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (อนุภาคที่บัพเป็นอย่างไร · พลังงานไปไหน)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas2','#ca8a04',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas2','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q2-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fde68a;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"ทำลาย"</b> และ<b>"หายไปถาวร"</b> และ<b>"เอาพลังงานน้ำไปหมด"</b> · (ข) <b>M7.2</b> (บัพ ≠ อนุภาคหาย) ·
+        (ค) อนุภาคน้ำ<b>ยังอยู่</b> · ที่บัพ N · ยอดของคลื่น 1 มาพบท้องของคลื่น 2 พอดีตลอดเวลา (ต่างเฟส 180°) · y₁ = +A · y₂ = −A → y รวม = <b>0 ตลอดเวลา</b> · จึง "เรียบ" ทางตา · พลังงานไม่ได้หายไปไหน · ถูกส่งต่อ<b>ไปสะสมที่แนวปฏิบัพ A</b> ที่อยู่ข้าง ๆ (ที่นั่น A รวม = 2A · พลังงานเป็น 4 เท่า) · เป็นการ<b>กระจายพลังงานใหม่</b>เชิงปริภูมิ
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 · M7.3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">"ต้องใช้ A เท่ากันเท่านั้นถึงจะแทรกสอดได้"</span>
+      <span class="mc-tag">M7.3</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนทดลองแทรกสอด · ใช้ S₁ A₁ = 5 cm · S₂ A₂ = 3 cm · เฟสตรงกัน · f และ λ เท่ากัน · เขียนรายงาน
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fffbeb"/>
+          <text x="40" y="40" font-size="13" fill="#a16207" font-weight="700">S₁ : A₁ = 5 cm (สีส้ม)</text>
+          <path d="M 40,80 Q 80,40 120,80 T 200,80 T 280,80 T 360,80 T 440,80 T 520,80 T 600,80" fill="none" stroke="#ea580c" stroke-width="3"/>
+          <text x="40" y="130" font-size="13" fill="#7c2d12" font-weight="700">S₂ : A₂ = 3 cm (สีน้ำตาล · เฟสตรงกับ S₁)</text>
+          <path d="M 40,160 Q 80,140 120,160 T 200,160 T 280,160 T 360,160 T 440,160 T 520,160 T 600,160" fill="none" stroke="#92400e" stroke-width="3"/>
+          <text x="40" y="195" font-size="11" fill="#713f12">f, λ เท่ากัน · เฟสคงที่ ⇒ coherent</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องตั้ม:</div>
+          <div class="say">"คลื่น 2 แหล่งนี้ A ไม่เท่ากัน (5 ≠ 3) · ดังนั้น<b>ไม่สามารถเกิดการแทรกสอดได้</b> · เพราะการแทรกสอดต้องการ A เท่ากันเสมอ · ถ้า A ต่างกัน คลื่นทั้งสองจะ<b>ไม่อาพันธ์</b> · มีแต่คลื่นที่ A เท่ากันเท่านั้นที่เป็น coherent"</div>
+        </div>
+        <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="200"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (เงื่อนไข coherent คืออะไร · ที่ A และ N การกระจัดรวมเป็นเท่าใด)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#713f12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas3','#ca8a04',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas3','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas3" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q3-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fde68a;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"ไม่สามารถเกิดการแทรกสอดได้"</b> และ<b>"ต้องการ A เท่ากันเสมอ"</b> และ<b>"ไม่อาพันธ์"</b> · (ข) <b>M7.3</b> (ต้องใช้ A เท่ากัน) ·
+        (ค) <b>เกิดการแทรกสอดได้</b> · เงื่อนไข <b>coherent</b> = f เท่ากัน + λ เท่ากัน + เฟสสัมพันธ์คงที่ (ไม่จำเป็นต้อง A เท่า) · ที่ปฏิบัพ A: y รวม = +A₁ + A₂ = <b>5 + 3 = 8 cm</b> (เสริมกัน) · ที่บัพ N: y รวม = +A₁ + (−A₂) = <b>5 − 3 = 2 cm</b> (หักล้างไม่สมบูรณ์ · ไม่ได้เป็น 0) · เกิดรูปแบบ A กับ N ได้ปกติ เพียงแต่ contrast ไม่สมบูรณ์
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–3 ต่อข้อ):</b><br>
+    <b>3</b> — ระบุจุดผิดถูก + MC ถูก + อธิบายถูกต้องโดยอ้างหลักการ<br>
+    <b>2</b> — จุดผิดถูก + อธิบายได้บางส่วน แต่ขาดการอ้างหลักการ<br>
+    <b>1</b> — ระบุได้บางส่วน หรืออธิบายผิด<br>
+    <b>0</b> — ว่างหรือผิดทั้งหมด
+  </div>
+
+  <div class="foot">ใบกิจกรรม 7.2 · แผน 7 การแทรกสอดของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
+
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

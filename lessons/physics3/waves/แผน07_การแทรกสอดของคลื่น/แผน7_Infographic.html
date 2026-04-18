@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 7 — การแทรกสอดของคลื่น (2 แหล่งกำเนิดอาพันธ์)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun',sans-serif;background:#fef3c7;color:#1a202c;font-size:15px;line-height:1.6}
+  .hero{background:linear-gradient(135deg,#713f12 0%,#a16207 50%,#ca8a04 100%);color:white;padding:36px 40px 28px;position:relative;overflow:hidden}
+  .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,255,255,0.07) 0%,transparent 70%);border-radius:50%}
+  .hero-wave{position:absolute;bottom:0;left:0;right:0;height:40px;overflow:hidden}
+  .hero-wave svg{display:block}
+  .hero-top{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .hero-badge{background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);border-radius:16px;padding:10px 20px;text-align:center;min-width:110px;backdrop-filter:blur(4px)}
+  .hero-badge .plan-num{font-size:36px;font-weight:800;line-height:1}
+  .hero-badge .plan-label{font-size:12px;opacity:0.85;margin-top:2px}
+  .hero-info{flex:1}
+  .hero-info h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .hero-info .subtitle{font-size:16px;opacity:0.9;margin-bottom:12px}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .tag{background:rgba(255,255,255,0.18);border-radius:20px;padding:3px 12px;font-size:13px;white-space:nowrap}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.2)}
+  .meta-item{display:flex;align-items:center;gap:6px;font-size:14px;opacity:0.92}
+  .meta-icon{font-size:18px}
+
+  .container{max-width:1100px;margin:0 auto;padding:28px 20px 40px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  @media(max-width:760px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+  .card{background:white;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.07)}
+  .card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+  .card-icon{font-size:22px}
+  .card-title{font-size:17px;font-weight:700;color:#1a202c}
+  .section-label{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#718096;margin-bottom:4px}
+
+  .concept-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:5px solid #ca8a04;border-radius:12px;padding:16px 18px;margin-bottom:20px;font-size:15px;line-height:1.75}
+
+  .refr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+  .refr-card{border-radius:12px;padding:16px;position:relative;overflow:hidden}
+  .refr-card.freq{background:#fef3c7;border-left:4px solid #ca8a04}
+  .refr-card.speed{background:#fffbeb;border-left:4px solid #d97706}
+  .refr-card.snell{background:#fde68a;border-left:4px solid #713f12}
+  .refr-card-title{font-weight:700;font-size:15px;margin-bottom:6px}
+  .refr-card-sub{font-size:13px;color:#4a5568}
+  .refr-card-note{font-size:12.5px;color:#718096;margin-top:6px}
+  .refr-svg-box{background:white;border-radius:10px;padding:10px;margin-top:10px;text-align:center}
+
+  .timeline-wrap{margin-top:6px}
+  .phase{display:flex;gap:14px;margin-bottom:16px;position:relative}
+  .phase::before{content:'';position:absolute;left:24px;top:52px;bottom:-16px;width:2px;background:#e2e8f0}
+  .phase:last-child::before{display:none}
+  .phase-dot{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:white;z-index:1}
+  .phase-dot.tlc{background:#7e57c2}
+  .phase-dot.ft{background:#ca8a04}
+  .phase-dot.engage{background:#2e7d32}
+  .phase-dot.explore{background:#ef6c00}
+  .phase-dot.explain{background:#c62828}
+  .phase-dot.elaborate{background:#8d6e63}
+  .phase-dot.mj{background:#4e342e}
+  .phase-body{flex:1}
+  .phase-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .phase-name{font-size:17px;font-weight:700}
+  .phase-name.tlc{color:#5e35b1}
+  .phase-name.ft{color:#a16207}
+  .phase-name.engage{color:#1b5e20}
+  .phase-name.explore{color:#c05621}
+  .phase-name.explain{color:#b71c1c}
+  .phase-name.elaborate{color:#5d4037}
+  .phase-name.mj{color:#3e2723}
+  .phase-time{background:#edf2f7;border-radius:20px;padding:2px 10px;font-size:12.5px;color:#4a5568;font-weight:600}
+  .vpa-badge{background:#fef3c7;border-radius:20px;padding:2px 10px;font-size:12px;color:#a16207;font-weight:600}
+  .obj-badge{background:#fff4cc;border-radius:20px;padding:2px 10px;font-size:12px;color:#8a6d00;font-weight:700}
+  .misc-badge{background:#ffe4d6;border-radius:20px;padding:2px 10px;font-size:12px;color:#b53c00;font-weight:700}
+  .phase-activities{list-style:none}
+  .phase-activities li{display:grid;grid-template-columns:140px 1fr;gap:12px;align-items:start;padding:6px 0;border-bottom:1px dashed #edf2f7;font-size:14px;color:#2d3748}
+  .phase-activities li:last-child{border-bottom:none}
+  .li-tool{justify-self:end;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  .li-text{position:relative;padding-left:18px}
+  .li-text::before{content:'▸';position:absolute;left:0;color:#a0aec0}
+  .poe-tag{display:inline-block;background:#fef3c7;color:#92400e;border-radius:6px;padding:0 6px;font-size:11.5px;font-weight:700;margin-left:4px;vertical-align:middle}
+
+  .tool-chip{display:inline-flex;align-items:center;gap:3px;background:#fff;border:1.5px solid #fde68a;color:#a16207;border-radius:8px;padding:2px 8px;font-size:11.5px;font-weight:700;white-space:nowrap}
+  .tool-chip.video{border-color:#fc8181;color:#c53030;background:#fff5f5}
+  .tool-chip.sim{border-color:#9f7aea;color:#553c9a;background:#faf5ff}
+  .tool-chip.spring{border-color:#ed8936;color:#9c4221;background:#fff5f7}
+  .tool-chip.poe{border-color:#38a169;color:#276749;background:#f0fff4}
+  .tool-chip.tl{border-color:#805ad5;color:#553c9a;background:#faf5ff}
+  .tool-chip.mj{border-color:#8b5a2b;color:#744210;background:#fffbeb}
+  .tool-chip.ft{border-color:#ca8a04;color:#a16207;background:#fef3c7}
+  .tool-chip.work{border-color:#48bb78;color:#276749;background:#f0fff4}
+  .tool-chip.ripple{border-color:#713f12;color:#713f12;background:#fde68a}
+
+  .comp-badge{display:inline-flex;align-items:center;gap:3px;background:#fef3c7;color:#713f12;border:1px solid #fde68a;border-radius:20px;padding:2px 8px;font-size:11.5px;font-weight:600}
+  .char-badge{display:inline-flex;align-items:center;gap:3px;background:#fefcbf;color:#744210;border:1px solid #ecc94b;border-radius:20px;padding:2px 8px;font-size:11.5px;font-weight:600}
+  .poe-chip{display:inline-flex;align-items:center;gap:3px;border-radius:8px;padding:2px 10px;font-size:12.5px;font-weight:800;color:#fff;letter-spacing:0.3px}
+  .poe-chip.p{background:#5a67d8}
+  .poe-chip.o{background:#dd6b20}
+  .poe-chip.e{background:#ca8a04}
+
+  .misc-box{background:#fff5f5;border:1.5px solid #fc8181;border-radius:12px;padding:14px;margin-top:14px}
+  .misc-title{font-weight:700;color:#c53030;font-size:14px;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+  .misc-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+  .misc-id{background:#c53030;color:white;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0}
+  .misc-id.star{background:#9c4221}
+  .misc-text{font-size:13.5px;color:#2d3748}
+  .misc-correct{font-size:13px;color:#276749;font-weight:600;margin-top:3px;display:flex;align-items:flex-start;gap:4px}
+
+  .assess-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  .assess-table th{background:#ca8a04;color:white;padding:8px 10px;text-align:left;font-weight:600}
+  .assess-table td{padding:8px 10px;border-bottom:1px solid #e2e8f0;vertical-align:top}
+  .assess-table tr:nth-child(even) td{background:#fffbeb}
+  .assess-table tr:hover td{background:#fef3c7}
+
+  .vpa-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  .vpa-table th{background:#a16207;color:white;padding:8px 10px;text-align:left;font-weight:600}
+  .vpa-table td{padding:8px 10px;border-bottom:1px solid #fde68a;vertical-align:top}
+  .vpa-table tr:nth-child(even) td{background:#fffbeb}
+  .vpa-num{background:#ca8a04;color:white;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .e5-tag{display:inline-block;border-radius:6px;padding:1px 8px;font-size:11.5px;font-weight:600;color:white}
+  .e5-tlc{background:#7e57c2}
+  .e5-ft{background:#ca8a04}
+  .e5-engage{background:#2e7d32}
+  .e5-explore{background:#ef6c00}
+  .e5-explain{background:#c62828}
+  .e5-elaborate{background:#8d6e63}
+  .e5-mj{background:#4e342e}
+  .e5-all{background:#718096}
+
+  .tool-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8;font-size:14px}
+  .tool-item:last-child{border-bottom:none}
+  .tool-num{background:#edf2f7;color:#4a5568;border-radius:50%;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+
+  .obj-group{margin-bottom:14px}
+  .obj-group:last-child{margin-bottom:0}
+  .obj-type{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+  .obj-type.k{background:#bee3f8;color:#1a365d}
+  .obj-type.p{background:#c6f6d5;color:#1c4532}
+  .obj-type.a{background:#feebc8;color:#652b19}
+  .obj-list{list-style:none}
+  .obj-list li{padding:4px 0 4px 26px;position:relative;font-size:14px;color:#2d3748}
+  .obj-list li::before{content:'✓';position:absolute;left:0;color:#38a169;font-weight:700}
+  .obj-code{display:inline-block;background:#1a365d;color:#fff;border-radius:4px;font-size:11px;padding:1px 6px;margin-right:4px;font-weight:700}
+  .obj-code.p{background:#1c4532}
+  .obj-code.a{background:#652b19}
+
+  .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .comp-item{background:#fffbeb;border-radius:10px;padding:10px 12px;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .comp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+  .rubric-strip{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .rubric-score{flex:1;min-width:80px;border-radius:10px;padding:10px;text-align:center;border:2px solid transparent}
+  .rubric-score .score-num{font-size:26px;font-weight:800;line-height:1}
+  .rubric-score .score-desc{font-size:12px;margin-top:4px}
+  .rubric-score:nth-child(1){background:#fff5f5;border-color:#fc8181;color:#c53030}
+  .rubric-score:nth-child(2){background:#fffaf0;border-color:#f6ad55;color:#c05621}
+  .rubric-score:nth-child(3){background:#f0fff4;border-color:#9ae6b4;color:#276749}
+  .rubric-score:nth-child(4){background:#fef3c7;border-color:#fde68a;color:#a16207}
+
+  .footer{text-align:center;padding:20px;color:#a0aec0;font-size:13px;border-top:1px solid #e2e8f0;margin-top:10px}
+
+  .section-heading{font-size:20px;font-weight:800;color:#1a202c;margin:28px 0 14px;padding-left:14px;border-left:5px solid #ca8a04}
+
+  .poe-chain{display:flex;align-items:center;gap:0;margin:14px 0;flex-wrap:wrap}
+  .poe-step{flex:1;min-width:100px;padding:12px 10px;text-align:center;font-weight:700;font-size:15px;color:white;position:relative}
+  .poe-sub{font-size:12px;font-weight:400;margin-top:2px;opacity:0.9}
+
+  .sim-banner{background:linear-gradient(90deg,#713f12,#a16207);border-radius:12px;padding:14px 18px;margin:14px 0;color:white;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .sim-banner-icon{font-size:28px}
+  .sim-banner-title{font-weight:700;font-size:15px}
+  .sim-banner-sub{font-size:13px;opacity:0.9;margin-top:2px}
+  .sim-badge{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.4);border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">7</div>
+      <div class="plan-label">แผนการสอน</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px; opacity:0.75; margin-bottom:4px; font-weight:600; letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 9 คลื่นกล · ม.5</p>
+      <h1>การแทรกสอดของคลื่น (2 แหล่งกำเนิดอาพันธ์)</h1>
+      <div class="subtitle">หน่วยคลื่นกล · แผน 7/10 · คาบที่ 13–15</div>
+      <div class="hero-tags">
+        <span class="tag">🎯 5E Inquiry</span>
+        <span class="tag">🔬 POE</span>
+        <span class="tag">🧠 วPA ด้านที่ 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ Misconception M7.1–M7.4</span>
+        <span class="tag">💧 Concept Cartoon "2 หยดน้ำ"</span>
+        <span class="tag">💻 Lab 30 + Lab 41</span>
+        <span class="tag">📝 Four-tier F7</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-icon">⏱</span> <strong>คาบ 13–15 · 150 นาที</strong></div>
+    <div class="meta-item"><span class="meta-icon">👨‍🏫</span> นายโกเมน ปาปะโถ</div>
+    <div class="meta-item"><span class="meta-icon">📚</span> สสวท. ฟิสิกส์ เล่ม 3 · 9.1.8</div>
+    <div class="meta-item"><span class="meta-icon">🎯</span> ตัวชี้วัด ว2.1 ม.5/4-5</div>
+    <div class="meta-item"><span class="meta-icon">🏫</span> โรงเรียนสตรีวิทยา</div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,20 C200,0 400,40 600,20 C800,0 1000,40 1200,20 L1200,40 L0,40 Z" fill="#fef3c7"/>
+    </svg>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    เมื่อคลื่นจาก<strong>แหล่งกำเนิดอาพันธ์ (coherent) 2 แหล่ง</strong> มาพบกัน · เกิดการ<strong>แทรกสอด (Interference)</strong> · ตามหลักการซ้อนทับ y = y₁ + y₂<br>
+    • <strong>เงื่อนไขปฏิบัพ A:</strong> Δr = nλ (n = 0, 1, 2,...) · ยอดพบยอด · เสริมกัน · y รวม สูงสุด = A₁ + A₂ (= 2A ถ้า A เท่า)<br>
+    • <strong>เงื่อนไขบัพ N:</strong> Δr = (n+½)λ · ยอดพบท้อง · หักล้าง · y รวม = |A₁ − A₂| (= 0 ถ้า A เท่า) (แก้ M7.1, M7.4)<br>
+    • <strong>บัพ N · อนุภาคยังอยู่</strong> · การกระจัด = 0 ตลอดเวลาเพราะหักล้างชั่วขณะต่อเนื่อง · พลังงานถูกส่งต่อไปสะสมที่ปฏิบัพ A (แก้ M7.2)<br>
+    • <strong>เงื่อนไข coherent:</strong> f, λ เท่ากัน + เฟสสัมพันธ์คงที่ · <strong>A ไม่ต้องเท่ากัน</strong> · ถ้า A ต่างกันยังเกิดการแทรกสอดได้แต่หักล้างไม่สมบูรณ์ (แก้ M7.3)
+  </div>
+
+  <div class="refr-grid">
+    <div class="refr-card freq">
+      <div class="refr-card-title">🔆 ปฏิบัพ A · เสริม</div>
+      <div class="refr-card-sub">Δr = nλ → A รวม สูงสุด</div>
+      <div class="refr-svg-box">
+        <svg viewBox="0 0 220 80" width="200" height="80">
+          <circle cx="40" cy="40" r="6" fill="#ca8a04"/><text x="30" y="30" font-size="10" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="180" cy="40" r="6" fill="#ca8a04"/><text x="170" y="30" font-size="10" fill="#713f12" font-weight="700">S₂</text>
+          <path d="M 40,40 Q 70,15 100,40 T 160,40 T 220,40" fill="none" stroke="#ea580c" stroke-width="2"/>
+          <path d="M 180,40 Q 150,15 120,40 T 60,40 T 0,40" fill="none" stroke="#92400e" stroke-width="2" opacity="0.6"/>
+          <text x="110" y="20" font-size="11" fill="#dc2626" font-weight="800" text-anchor="middle">A · 2A</text>
+        </svg>
+      </div>
+      <div class="refr-card-note">ยอดพบยอด · เสริมกัน · <strong>แก้ M7.1 + M7.4</strong></div>
+    </div>
+    <div class="refr-card speed">
+      <div class="refr-card-title">🌑 บัพ N · หักล้าง</div>
+      <div class="refr-card-sub">Δr = (n+½)λ → y รวม = 0</div>
+      <div class="refr-svg-box">
+        <svg viewBox="0 0 220 80" width="200" height="80">
+          <circle cx="40" cy="40" r="6" fill="#ca8a04"/><text x="30" y="30" font-size="10" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="180" cy="40" r="6" fill="#ca8a04"/><text x="170" y="30" font-size="10" fill="#713f12" font-weight="700">S₂</text>
+          <path d="M 40,40 Q 70,15 100,40 T 160,40 T 220,40" fill="none" stroke="#ea580c" stroke-width="2"/>
+          <path d="M 180,40 Q 150,65 120,40 T 60,40 T 0,40" fill="none" stroke="#92400e" stroke-width="2" opacity="0.6"/>
+          <text x="110" y="72" font-size="11" fill="#000" font-weight="800" text-anchor="middle">N · y=0</text>
+        </svg>
+      </div>
+      <div class="refr-card-note">ยอดพบท้อง · หักล้าง · อนุภาคยัง<strong>อยู่ ไม่หาย</strong> · <strong>แก้ M7.2</strong></div>
+    </div>
+    <div class="refr-card snell">
+      <div class="refr-card-title">📐 รูปแบบไฮเพอร์โบล่า</div>
+      <div class="refr-card-sub">แนว A และ N สลับกัน · ขึ้นกับ Δr</div>
+      <div class="refr-svg-box">
+        <svg viewBox="0 0 220 130" width="210" height="125">
+          <circle cx="60" cy="65" r="7" fill="#ca8a04"/><text x="48" y="55" font-size="11" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="160" cy="65" r="7" fill="#ca8a04"/><text x="148" y="55" font-size="11" fill="#713f12" font-weight="700">S₂</text>
+          <!-- A lines (red, hyperbolic) -->
+          <path d="M 110,5 Q 110,65 110,125" stroke="#dc2626" stroke-width="2" fill="none"/>
+          <text x="113" y="14" font-size="9" fill="#dc2626" font-weight="700">A</text>
+          <path d="M 80,5 Q 95,65 80,125" stroke="#dc2626" stroke-width="2" fill="none"/>
+          <text x="65" y="14" font-size="9" fill="#dc2626" font-weight="700">A</text>
+          <path d="M 140,5 Q 125,65 140,125" stroke="#dc2626" stroke-width="2" fill="none"/>
+          <text x="143" y="14" font-size="9" fill="#dc2626" font-weight="700">A</text>
+          <!-- N lines (black dashed) -->
+          <path d="M 95,5 Q 102,65 95,125" stroke="#000" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+          <text x="83" y="125" font-size="9" fill="#000" font-weight="700">N</text>
+          <path d="M 125,5 Q 118,65 125,125" stroke="#000" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+          <text x="128" y="125" font-size="9" fill="#000" font-weight="700">N</text>
+        </svg>
+      </div>
+      <div class="refr-card-note">รูปแบบ<strong>คงที่</strong> · A ไม่ต้องเท่ากัน · เงื่อนไข coherent · <strong>แก้ M7.3</strong></div>
+    </div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 7</div>
+    <div class="misc-item">
+      <span class="misc-id star">M7.1 ★</span>
+      <div>
+        <div class="misc-text">❌ <em>"Δr = nλ คือแนวบัพ N"</em> <span style="font-size:11px;color:#718096;">[★ ฝังลึกที่สุด]</span></div>
+        <div class="misc-correct">✅ Δr = nλ คือ<strong>แนวปฏิบัพ A (เสริม)</strong> · แนวบัพ N ใช้เงื่อนไข Δr = (n+½)λ</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M7.2</span>
+      <div>
+        <div class="misc-text">❌ <em>"บัพ = อนุภาคหายถาวร · น้ำหายไป"</em></div>
+        <div class="misc-correct">✅ บัพคือจุดที่<strong>การกระจัด = 0 ตลอดเวลา</strong>เพราะหักล้างกันชั่วขณะต่อเนื่อง · อนุภาค<strong>ยังอยู่</strong> · พลังงานส่งต่อไปสะสมที่ปฏิบัพ</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M7.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"ต้องใช้ A เท่ากันเท่านั้นถึงจะแทรกสอดได้"</em></div>
+        <div class="misc-correct">✅ ใช้ A ต่างกัน<strong>ก็แทรกสอดได้</strong> · เงื่อนไข coherent ต้องการ f, λ เท่ากัน + เฟสสัมพันธ์คงที่ · เพียงแต่หักล้างที่บัพ<strong>ไม่สมบูรณ์</strong></div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M7.4</span>
+      <div>
+        <div class="misc-text">❌ <em>"สับสน A กับ N บนรูป"</em></div>
+        <div class="misc-correct">✅ <strong>A = Antinode</strong> (ปฏิบัพ · A สูงสุด) · <strong>N = Node</strong> (บัพ · A ศูนย์) · เป็นชื่อตรงข้ามกัน · จดจำผ่านสีและสัญลักษณ์ในรูป</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📋</span>
+        <span class="card-title">ด้านความรู้ ทักษะ และเจตคติ (KPA)</span>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K7.1</span>อธิบายเงื่อนไขปฏิบัพ A: Δr=nλ และบัพ N: Δr=(n+½)λ พร้อมเหตุผล (M7.1, M7.4) · F7 Sound ≥ 80%</li>
+          <li><span class="obj-code">K7.2</span>แก้โจทย์การแทรกสอด · คำนวณ Δr ตัดสิน A/N · y รวม (รวม A ต่างกัน · M7.3) · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P7.1</span>ใช้ Lab 41 ripple 2 source · วัด S₁P, S₂P · คำนวณ Δr · ระบุ A/N · POE Rubric ≥ 2.0/3.0</li>
+          <li><span class="obj-code p">P7.2</span>วาดรูปแบบ hyperbolic pattern · แนว A, N รอบ 2 แหล่ง · scene-stack canvas · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A7.1</span>Grit · ความอดทนแก้โจทย์การแทรกสอดที่ซับซ้อน · OB-01 ≥ 80%</li>
+          <li><span class="obj-code a">A7.2</span>Peer tutoring · สอนเพื่อนแยก A กับ N (M7.4) · OB peer ≥ 70%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">💪</span>
+        <span class="card-title">สมรรถนะ & คุณลักษณะ</span>
+      </div>
+      <div class="comp-grid">
+        <div class="comp-item"><span class="comp-dot" style="background:#3182ce"></span>การสื่อสาร</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#805ad5"></span>การคิด</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#e53e3e"></span>การแก้ปัญหา</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#dd6b20"></span>ทักษะชีวิต</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#ca8a04"></span>การใช้เทคโนโลยี</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#1e88e5"></span>การรวมพลัง/ทำงานเป็นทีม</div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-label">คุณลักษณะอันพึงประสงค์</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+          <span style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:20px; padding:4px 14px; font-size:13.5px;">🏆 มีวินัย</span>
+          <span style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:20px; padding:4px 14px; font-size:13.5px;">📖 ใฝ่เรียนรู้</span>
+          <span style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:20px; padding:4px 14px; font-size:13.5px;">💪 Grit</span>
+          <span style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:20px; padding:4px 14px; font-size:13.5px;">🤝 Peer tutoring</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div class="section-label">กระบวนการ POE</div>
+        <div class="poe-chain" style="margin-top:8px;">
+          <div class="poe-step" style="background:#3182ce; border-radius:8px 0 0 8px;">
+            <span>🔮 P<div class="poe-sub">Predict</div></span>
+          </div>
+          <div class="poe-step" style="background:#dd6b20;">
+            <span>👁 O<div class="poe-sub">Observe</div></span>
+          </div>
+          <div class="poe-step" style="background:#ca8a04; border-radius:0 8px 8px 0;">
+            <span>✍️ E<div class="poe-sub">Explain</div></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + POE · 9 ขั้น)</h2>
+  <div class="card">
+    <div class="timeline-wrap">
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name tlc">TLC ก่อนเรียน — Traffic Light Check</span>
+            <span class="phase-time">⏱ 0–5 นาที</span>
+            <span class="obj-badge">A7.1</span>
+            <span class="vpa-badge">วPA 4, 7</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">นักเรียนยกบัตร 🟢🟡🔴 — ครูถาม "เมื่อหยดน้ำ 2 หยดตกลงในสระพร้อมกัน · บนผิวน้ำเกิดอะไรขึ้น?"</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🎯 ตั้งเป้าหมายคาบ: เข้าใจเงื่อนไข A/N + บัพ ≠ อนุภาคหาย + A ไม่ต้องเท่า</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F7</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name ft">Formative Pre-test — Four-tier F7</span>
+            <span class="phase-time">⏱ 5–15 นาที</span>
+            <span class="obj-badge">K7.1, K7.2</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3</span>
+            <span class="vpa-badge">วPA 2, 6</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 F7-Pre</span></span><span class="li-text">นักเรียนทำ Four-tier 3 ข้อ — เน้น M7.1 "Δr = nλ คือ A หรือ N?"</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🔍 ครูเก็บ baseline Sound / Misconception → เปรียบเทียบกับ Post · เป้าหมายลด M7.1 ≥ 50%</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot engage">E1</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name engage">Engage — 💧 Concept Cartoon "2 หยดน้ำ"</span>
+            <span class="phase-time">⏱ 15–35 นาที</span>
+            <span class="obj-badge">P7.1, A7.2</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3, M7.4</span>
+            <span class="vpa-badge">วPA 1, 4</span>
+            <span class="poe-chip p">P · Predict</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">💧 <strong>Concept Cartoon "2 หยดน้ำ"</strong> นักเรียน A, B, C เถียง · A: <em>"ที่บัพน้ำหายจริง"</em> · B: <em>"ต้อง A เท่ากันถึงเกิดได้"</em> · C: <em>"Δr=nλ คือบัพ"</em></span></li>
+            <li><span class="li-tool"><span class="tool-chip poe">📋 POE-07</span></span><span class="li-text">✍️ นักเรียนเขียน <strong>P (Predict)</strong> 4 ข้อ ครอบคลุม M7.1-M7.4 <span class="poe-tag">POE-P</span></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot explore">E2</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name explore">Explore — สำรวจและทดลอง</span>
+            <span class="phase-time">⏱ 35–75 นาที</span>
+            <span class="obj-badge">P7.1, P7.2, A7.1</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3</span>
+            <span class="vpa-badge">วPA 3, 4, 7</span>
+            <span class="poe-chip o">O · Observe</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip spring">🌀 Lab 30</span></span><span class="li-text">⚡ <strong>ฐาน 1 — Coiled Spring Superposition (15')</strong> · ส่งพัลส์ 2 ปลาย · ทดสอบ ยอด+ยอด · ยอด+ท้อง A เท่า · A ต่าง · บันทึก A รวม <span class="poe-tag">POE-O</span> · <strong>แก้ M7.3</strong></span></li>
+            <li><span class="li-tool"><span class="tool-chip ripple">🌊 Lab 41</span></span><span class="li-text">🌊 <strong>ฐาน 2 — Two-Source Wave Interference (25')</strong> · เลื่อน P 3 จุด · วัด S₁P, S₂P, Δr · ระบุ A/N · วาด<strong>หน้าคลื่น hyperbolic pattern</strong> · bright/dark fringes <span class="poe-tag">POE-O</span> · <strong>แก้ M7.1</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot explain">E3</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name explain">Explain — อภิปรายและสรุป</span>
+            <span class="phase-time">⏱ 75–95 นาที</span>
+            <span class="obj-badge">K7.1, K7.2, P7.1</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3</span>
+            <span class="vpa-badge">วPA 3, 5, 6</span>
+            <span class="poe-chip e">E · Explain</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip" style="border-color:#ca8a04;color:#a16207;background:#fef3c7;">📡 CER Live Board</span></span><span class="li-text">📡 ทุกกลุ่มส่ง <strong>C + E + R</strong> ขึ้น 3 คอลัมน์: ปฏิบัพ A · บัพ N · A ไม่ต้องเท่า</span></li>
+            <li><span class="li-tool"><span class="tool-chip poe">📋 POE-07</span></span><span class="li-text">✍️ เขียน <strong>E (Explain)</strong> + Conceptual Inventory 5 ข้อ + Misconception Correction 3 ส่วน <span class="poe-tag">POE-E</span></span></li>
+            <li><span class="li-tool"></span><span class="li-text">🏆 ครูสรุปกฎ: (1) Δr=nλ → A · (2) Δr=(n+½)λ → N · (3) อนุภาคที่บัพยังอยู่ · (4) coherent ต้องการ f, λ, เฟสสัมพันธ์ ไม่ใช่ A</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot elaborate">E4</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name elaborate">Elaborate — ขยายและประยุกต์</span>
+            <span class="phase-time">⏱ 95–125 นาที</span>
+            <span class="obj-badge">K7.2, P7.2</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3</span>
+            <span class="vpa-badge">วPA 5, 6</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip work">📄 ใบงาน 7.1</span></span><span class="li-text">📐 <strong>Calc-7.1</strong> · 4 ข้อไล่ระดับ: (1) วาด pattern S₁S₂=3λ · ระบุ A,N (2) คำนวณ Δr ตัดสินจุด P (3) เลื่อน d เพิ่มจำนวน A · กราฟ (4) Δr=2.5λ → N (n=2)</span></li>
+            <li><span class="li-tool"><span class="tool-chip work">📄 ใบงาน 7.2</span></span><span class="li-text">🔍 <strong>Spot-7.2</strong> · 3 สถานการณ์ผิด: ① Δr=nλ คือ N (M7.1) ② บัพ=น้ำหายจริง (M7.2) ③ ต้อง A เท่า (M7.3)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">✅ เฉลยรวม · เชื่อมสู่แผน 8 การเลี้ยวเบน (1 ช่อง · ไม่ต้องการ 2 แหล่ง) 🌱</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name tlc">TLC หลังเรียน</span>
+            <span class="phase-time">⏱ 125–130 นาที</span>
+            <span class="obj-badge">A7.1</span>
+            <span class="vpa-badge">วPA 6, 7</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">นักเรียนยกบัตร 🟢🟡🔴 ครั้งที่ 2 (เป้าหมาย บัตรเขียว ≥ 60%)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F7</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name ft">Formative Post-test — Four-tier F7</span>
+            <span class="phase-time">⏱ 130–140 นาที</span>
+            <span class="obj-badge">K7.1, K7.2</span>
+            <span class="misc-badge">M7.1, M7.2, M7.3</span>
+            <span class="vpa-badge">วPA 5, 6</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 F7-Post</span></span><span class="li-text">นักเรียนทำ Four-tier 3 ข้อซ้ำ — ครูเปรียบเทียบ Sound % ก่อน/หลัง</span></li>
+            <li><span class="li-tool"></span><span class="li-text">📈 เป้าหมาย: % Sound ≥ 80% · M7.1 ลด ≥ 50% · M7.2/M7.3 ลด ≥ 30%</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot mj">MJ</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name mj">Metacognitive Journal 3-2-1</span>
+            <span class="phase-time">⏱ 140–150 นาที</span>
+            <span class="obj-badge">A7.2</span>
+            <span class="vpa-badge">วPA 6, 8</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip mj">📓 MJ-07</span></span><span class="li-text">นักเรียนเขียน <strong>3</strong> สิ่งเข้าใจ · <strong>2</strong> ปรากฏการณ์ในชีวิตจริง <em>(noise-cancelling headphone · holography · hologram · interferometer)</em> · <strong>1</strong> คำถามค้างใจ</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🔗 ครูใช้คำถามเด่นเป็น Hook แผน 8 (เลี้ยวเบน — "ถ้าใช้ 1 ช่อง 1 แหล่งจะแทรกสอดได้ไหม?") 🌱</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อและแหล่งการเรียนรู้</h2>
+
+  <div class="sim-banner">
+    <div class="sim-banner-icon">🚀</div>
+    <div style="flex:1;">
+      <div class="sim-banner-title">Simulation ที่ใช้ในแผน 7 — ฝังในระบบ KP-Classroom</div>
+      <div class="sim-banner-sub">นักเรียนเปิดได้จาก Preview tab · ครูเปิด Sim launcher ในหน้า POE</div>
+    </div>
+    <span class="sim-badge">Lab 30 · Coiled Spring (Superposition)</span>
+    <span class="sim-badge">Lab 41 · Two-Source Interference</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">📦</span>
+        <span class="card-title">สื่อที่ใช้ในแผน</span>
+      </div>
+      <div class="tool-item"><span class="tool-num">1</span>💧 Concept Cartoon "2 หยดน้ำ" — Engage</div>
+      <div class="tool-item"><span class="tool-num">2</span>🌀 <em>Lab 30 Waves on Coiled Spring</em> — pulse superposition · A เท่า/ต่าง</div>
+      <div class="tool-item"><span class="tool-num">3</span>🌊 <em>Lab 41 Two-Source Wave Interference</em> — วัด Δr · ระบุ A/N · hyperbolic pattern</div>
+      <div class="tool-item"><span class="tool-num">4</span>📋 ใบบันทึก POE-07 (Predict 4 ข้อ · Observe 2 ฐาน · Explain CER)</div>
+      <div class="tool-item"><span class="tool-num">5</span>📐 ใบงาน 7.1 — Calc Interference 4 ข้อ + canvas overlay</div>
+      <div class="tool-item"><span class="tool-num">6</span>🔍 ใบงาน 7.2 — Spot the Error 3 สถานการณ์ (M7.1, M7.2, M7.3)</div>
+      <div class="tool-item"><span class="tool-num">7</span>📝 Four-tier F7 Pre/Post (3 ข้อ)</div>
+      <div class="tool-item"><span class="tool-num">8</span>🚦 Traffic Light Card TL-01</div>
+      <div class="tool-item"><span class="tool-num">9</span>📓 Metacognitive Journal MJ-07 (3-2-1)</div>
+      <div class="tool-item"><span class="tool-num">10</span>👁 แบบสังเกตพฤติกรรม OB-01</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-icon">⭐</span>
+        <span class="card-title">เนื้อหาขยาย (Enrichment)</span>
+      </div>
+      <div style="background:#fef3c7; border:1.5px solid #fde68a; border-radius:10px; padding:14px; margin-bottom:14px;">
+        <div style="font-weight:700; color:#a16207; font-size:14px; margin-bottom:8px;">🌍 การแทรกสอดในชีวิตจริง</div>
+        <div style="display:grid; gap:8px;">
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #ca8a04;">
+            <div style="font-weight:700; color:#a16207; font-size:13px;">🎧 Noise-Cancelling Headphone</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">ส่งคลื่นเสียงต่างเฟส 180° → หักล้างเสียงรบกวน · ใช้หลัก destructive interference</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #d97706;">
+            <div style="font-weight:700; color:#92400e; font-size:13px;">🌈 Thin Film · ฟิล์มสบู่</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">แสงสะท้อน 2 ผิว · ตามความหนาฟิล์ม → A หรือ N สำหรับสีต่าง ๆ → เห็นสีรุ้ง</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #713f12;">
+            <div style="font-weight:700; color:#713f12; font-size:13px;">🔬 Holography / Interferometer</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">บันทึกแบบรูปการแทรกสอดของแสงเลเซอร์ · วัดระยะเล็กระดับ λ ได้</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fef3c7; border:1.5px solid #fde68a; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#713f12; font-size:14px; margin-bottom:6px;">🔗 เชื่อมสู่แผนถัดไป</div>
+        <div style="font-size:13px; color:#2d3748;">
+          • <strong>แผน 8:</strong> การเลี้ยวเบน (1 ช่อง) — ทุกจุดในช่องเป็นแหล่งกำเนิด → แทรกสอดในตัวเอง<br>
+          • <strong>แผน 9:</strong> คลื่นนิ่ง — ใช้แทรกสอดของคลื่น 2 ขบวน เคลื่อนสวนทาง → ตำแหน่ง N, A คงที่
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📏 การวัดและประเมินผล</h2>
+  <div class="card">
+    <table class="assess-table">
+      <thead>
+        <tr>
+          <th>ด้าน / วัตถุประสงค์</th>
+          <th>ตัวแปรที่วัด</th>
+          <th>เครื่องมือ / กิจกรรมที่วัด</th>
+          <th>เกณฑ์ผ่าน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>K7.1 · K7.2</strong><br><small>ด้านความรู้</small></td>
+          <td>มโนทัศน์ A/N · เงื่อนไข Δr · A ต่างกัน</td>
+          <td>F7 Four-tier (Pre+Post) ข้อ 1–3 · FT-02 ภาพรวม</td>
+          <td>% Sound ≥ 80% · M7.1 ลด ≥ 50%</td>
+        </tr>
+        <tr>
+          <td><strong>P7.1 · P7.2</strong><br><small>ด้านทักษะกระบวนการ</small></td>
+          <td>วัด Δr · วาด hyperbolic pattern · ระบุ A/N</td>
+          <td>POE Rubric 0–3 · ใบ POE-07 · Calc 7.1 canvas</td>
+          <td>POE ≥ 2.0/3.0</td>
+        </tr>
+        <tr>
+          <td><strong>A7.1</strong><br><small>Grit</small></td>
+          <td>ความอดทนแก้โจทย์ที่ซับซ้อน</td>
+          <td>OB-01 · ติดตามการพยายามแก้ Calc 7.1</td>
+          <td>≥ 80% ระดับ "ดี"</td>
+        </tr>
+        <tr>
+          <td><strong>A7.2</strong><br><small>Peer tutoring</small></td>
+          <td>การสอนเพื่อนแยก A กับ N (M7.4)</td>
+          <td>OB peer · MJ-07 ข้อ 2</td>
+          <td>≥ 70% บันทึกการช่วยเพื่อน</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px;">
+      <div class="section-label">เกณฑ์ POE Rubric (0–3)</div>
+      <div class="rubric-strip">
+        <div class="rubric-score"><div class="score-num">0</div><div class="score-desc">ไม่ตอบ / ไม่เกี่ยวข้อง</div></div>
+        <div class="rubric-score"><div class="score-num">1</div><div class="score-desc">อธิบายบางส่วน ขาดการเชื่อมหลักการ</div></div>
+        <div class="rubric-score"><div class="score-num">2</div><div class="score-desc">ทำนายผิด แต่ Explain ถูกตามหลักการ</div></div>
+        <div class="rubric-score"><div class="score-num">3</div><div class="score-desc">P↔O↔E สมบูรณ์ ≥ 3 ประโยค</div></div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🔗 การเชื่อมโยงกับ วPA ด้านที่ 1 · ทักษะการจัดการเรียนรู้ฯ (8 ตัวชี้วัด)</h2>
+  <div class="card">
+    <table class="vpa-table">
+      <thead>
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>ตัวชี้วัด วPA ด้านที่ 1</th>
+          <th>หลักฐาน/กิจกรรมในคาบนี้</th>
+          <th style="width:130px;">ขั้นของแผน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="vpa-num">1</span></td>
+          <td><strong>ผู้เรียนสามารถเข้าถึงสิ่งที่เรียนและเข้าใจบทเรียน</strong></td>
+          <td>Concept Cartoon "2 หยดน้ำ" · Lab 30 + Lab 41 · ภาษาเหมาะ ม.5</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-explore">E2</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">2</span></td>
+          <td><strong>ผู้เรียนสามารถเชื่อมโยงความรู้/ประสบการณ์เดิมกับการเรียนรู้ใหม่</strong></td>
+          <td>F7 Pre · เชื่อมการซ้อนทับ (แผน 4) + เฟส (แผน 3) + f คงที่ (แผน 6)</td>
+          <td><span class="e5-tag e5-ft">F7</span> <span class="e5-tag e5-engage">E1</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">3</span></td>
+          <td><strong>ผู้เรียนได้สร้างความรู้เอง / ประสบการณ์ใหม่จากการเรียนรู้</strong></td>
+          <td>POE · Lab 30/41 · วัด Δr · ระบุ A/N · CER Live Board</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-explore">E2</span> <span class="e5-tag e5-explain">E3</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">4</span></td>
+          <td><strong>ผู้เรียนได้รับการกระตุ้นและเกิดแรงจูงใจ</strong></td>
+          <td>Concept Cartoon ขัดแย้งมโนทัศน์ · ปรากฏการณ์หูฟัง noise-cancelling</td>
+          <td><span class="e5-tag e5-engage">E1</span> <span class="e5-tag e5-mj">MJ</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">5</span></td>
+          <td><strong>ผู้เรียนได้รับการพัฒนาทักษะการเรียนรู้และนวัตกรรม</strong></td>
+          <td>Calc 7.1 ไล่ระดับ · Spot 7.2 วิเคราะห์ข้อผิด · วาด hyperbolic pattern</td>
+          <td><span class="e5-tag e5-explore">E2</span> <span class="e5-tag e5-elaborate">E4</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">6</span></td>
+          <td><strong>ผู้เรียนได้รับข้อมูลป้อนกลับเพื่อปรับปรุงการเรียนรู้</strong></td>
+          <td>F7 Post เทียบ Pre · TL-01 ครั้งที่ 2 · ครูสรุปแก้ M7.1</td>
+          <td><span class="e5-tag e5-explain">E3</span> <span class="e5-tag e5-ft">F7</span> <span class="e5-tag e5-tlc">TLC</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">7</span></td>
+          <td><strong>ผู้เรียนสามารถจัดการตนเองในการเรียนรู้ (SRL)</strong></td>
+          <td>TL-01 ก่อน-หลัง · ฐานทดลองกลุ่มจัดการขั้นตอน · OB-01 ด้าน Grit</td>
+          <td><span class="e5-tag e5-tlc">TLC</span> <span class="e5-tag e5-explore">E2</span></td>
+        </tr>
+        <tr>
+          <td><span class="vpa-num">8</span></td>
+          <td><strong>ผู้เรียนสามารถนำความรู้ไปต่อยอด / ประยุกต์ใช้</strong></td>
+          <td>MJ-07 ข้อ 2 (noise-cancelling/holography) · Calc 7.1 โจทย์ประยุกต์</td>
+          <td><span class="e5-tag e5-elaborate">E4</span> <span class="e5-tag e5-mj">MJ</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    แผน 7/10 · การแทรกสอดของคลื่น · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569<br>
+    <span style="color:#ca8a04; font-weight:700;">Theme: Amber (เหลืองอำพัน)</span> · สร้างด้วย KP-Classroom Pipeline · ต่อเนื่องจากแผน 6 (การหักเหของคลื่น)
+  </div>
+
+</div>
+</body>
+</html>

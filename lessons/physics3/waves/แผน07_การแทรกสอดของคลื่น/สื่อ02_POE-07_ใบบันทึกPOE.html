@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POE-07 · การแทรกสอดของคลื่น (Interactive)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fef3c7;color:#1a202c;font-size:15px;line-height:1.6;padding:16px}
+.page{max-width:960px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 16px rgba(202,138,4,.12);padding:24px 28px}
+.head{border-bottom:3px solid #ca8a04;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#713f12;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #fde68a;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#ca8a04;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:4px}
+
+.sim-bar{background:linear-gradient(135deg,#713f12,#ca8a04);border-radius:10px;padding:10px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sim-bar span{color:#fff;font-weight:700;font-size:14px;flex:1;min-width:160px}
+.sim-btn{display:inline-block;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;transition:opacity .2s}
+.sim-btn:hover{opacity:.85}
+
+.sec{margin:16px 0;border-radius:12px;padding:16px 18px}
+.sec.p{background:#e3f2fd;border-left:6px solid #1976d2}
+.sec.o{background:#fff8f0;border-left:6px solid #ef6c00}
+.sec.e{background:#fef3c7;border-left:6px solid #ca8a04}
+.sec-title{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sec.p .sec-title{color:#0d47a1}
+.sec.o .sec-title{color:#c05621}
+.sec.e .sec-title{color:#713f12}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:10px;background:#fff;border:1.5px solid currentColor;font-weight:600}
+
+.qblock{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1.5px solid #e2e8f0}
+.qblock:last-child{margin-bottom:0}
+.qlabel{font-weight:700;color:#1a202c;margin-bottom:10px;font-size:15px}
+.qsub{font-size:13.5px;color:#4a5568;margin-top:4px}
+
+.scenario-wrap{display:flex;align-items:center;gap:0;margin:10px 0;background:#fffbeb;border-radius:8px;padding:8px 12px;overflow-x:auto}
+
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.shape-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:10px;border:2.5px solid #e2e8f0;background:#fffbeb;cursor:pointer;transition:all .18s;min-width:90px;user-select:none}
+.shape-btn:hover{border-color:#ca8a04;background:#fef3c7}
+.shape-btn.active{border-color:#ca8a04;background:#fde68a;box-shadow:0 0 0 3px rgba(202,138,4,.25)}
+.shape-btn svg{display:block}
+.shape-btn .slabel{font-size:11.5px;font-weight:700;text-align:center}
+
+.drop-row{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap}
+.drop-zone{min-width:140px;height:64px;border:2.5px dashed #fde68a;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;padding:6px 12px;position:relative;flex:1}
+.drop-zone:hover{border-color:#ca8a04;background:#fde68a}
+.drop-zone.filled{border-style:solid;border-color:#ca8a04;background:#fef3c7}
+.drop-zone .placeholder{font-size:12.5px;color:#a0aec0;text-align:center;pointer-events:none}
+.drop-zone .placed{display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
+.drop-zone .placed .pname{font-size:11.5px;font-weight:700}
+.drop-label{font-size:13px;color:#4a5568;font-weight:600;white-space:nowrap}
+.drop-clear{font-size:11px;background:#fee2e2;color:#c53030;border:none;border-radius:6px;padding:2px 6px;cursor:pointer;position:absolute;top:4px;right:4px;font-family:inherit;display:none}
+.drop-zone.filled .drop-clear{display:block}
+
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#fffbeb;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+.radio-opt:hover{border-color:#ca8a04;background:#fef3c7}
+.radio-opt.selected{border-color:#ca8a04;background:#fde68a;font-weight:700}
+.radio-opt input{display:none}
+.check-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14.5px;cursor:pointer}
+.check-opt input[type=checkbox]{width:18px;height:18px;accent-color:#ca8a04;flex-shrink:0;margin-top:2px}
+
+textarea{width:100%;border:1.5px solid #fde68a;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;resize:vertical;background:#fffbeb;color:#1a202c;margin-top:6px;min-height:56px}
+textarea:focus{outline:none;border-color:#ca8a04;box-shadow:0 0 0 3px rgba(202,138,4,.15)}
+input[type=number],input[type=text]{border:1.5px solid #fde68a;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#fffbeb;width:80px;text-align:center}
+input[type=number]:focus,input[type=text]:focus{outline:none;border-color:#ca8a04}
+
+.mini-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.mini-table th{background:#fef3c7;color:#713f12;padding:7px 8px;text-align:center;border:1px solid #fde68a;font-weight:700}
+.mini-table td{padding:6px 8px;border:1px solid #e2e8f0;text-align:center;vertical-align:middle}
+.mini-table td.left{text-align:left}
+.mini-table tr:nth-child(even) td{background:#fffbeb}
+.pct-cell{font-size:12px;color:#718096}
+
+.canvas-wrap{margin-top:10px}
+.canvas-toolbar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
+.c-btn{padding:4px 10px;border-radius:7px;border:1.5px solid #fde68a;background:#fffbeb;font-family:inherit;font-size:12.5px;cursor:pointer;font-weight:600;transition:all .15s}
+.c-btn:hover{background:#fef3c7;border-color:#ca8a04}
+.c-btn.active{background:#ca8a04;color:#fff;border-color:#ca8a04}
+.c-color{width:24px;height:24px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s}
+.c-color.active{border-color:#ca8a04;box-shadow:0 0 0 2px rgba(202,138,4,.4)}
+canvas{display:block;width:100%;border:2px solid #fde68a;border-radius:8px;background:#fff;touch-action:none;cursor:crosshair}
+.scene-stack{position:relative;border:2px solid #fde68a;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:0;background:transparent;z-index:2}
+.scene-hint{font-size:12px;color:#713f12;margin-top:4px}
+
+.station{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.station-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.station-title{font-weight:800;color:#7c2d12;font-size:15px}
+.station-badge{background:#fff7ed;color:#9a3412;border:1.5px solid #fed7aa;border-radius:8px;font-size:12px;padding:2px 8px;font-weight:700}
+.station-sim{font-size:12.5px;padding:5px 10px}
+
+.cer-block{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.cer-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;margin-top:4px}
+.cer-c{background:#ca8a04}
+.cer-e{background:#ef6c00}
+.cer-r{background:#5a67d8}
+.cer-content{flex:1}
+.cer-content label{font-weight:700;font-size:14px;display:block;margin-bottom:2px}
+
+.misc-correct{background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;padding:12px 14px;margin-top:12px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:4px}
+.misc-correct .hint{font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px}
+.mc-header .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-header .mc-wrong{color:#991b1b;font-weight:700}
+.mc-header .mc-wrong em{font-style:italic;color:#2d3748;font-weight:400}
+.mc-row{margin:8px 0}
+.mc-row>label{font-size:13px;font-weight:700;color:#713f12;display:block;margin-bottom:4px}
+.mc-row .radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.mc-row .radio-col{display:flex;flex-direction:column;gap:4px}
+.mc-row .radio-opt{background:#fffbeb;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px}
+.mc-row .radio-opt:hover{border-color:#ca8a04;background:#fef3c7}
+.mc-row .radio-opt.selected{border-color:#ca8a04;background:#fde68a;font-weight:700}
+.mc-row .radio-opt input{display:none}
+.mc-row textarea{min-height:44px;font-size:13.5px}
+
+.submit-bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.btn-submit{padding:10px 28px;border-radius:10px;background:#ca8a04;color:#fff;font-family:inherit;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .18s}
+.btn-submit:hover{background:#a16207}
+.btn-reset{padding:10px 18px;border-radius:10px;background:#fffbeb;color:#4a5568;font-family:inherit;font-size:14px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer}
+.result-box{margin-top:12px;background:#fef3c7;border:2px solid #ca8a04;border-radius:10px;padding:14px;display:none;font-size:13.5px}
+.result-box h4{color:#713f12;margin-bottom:8px;font-size:15px}
+
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #e2e8f0;padding-top:10px}
+@media (max-width:640px){.drop-row{flex-direction:column}.scenario-wrap svg{max-width:100%}}
+</style>
+</head>
+<body data-ws-id="plan7-poe">
+
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <div class="head">
+    <div>
+      <h1>🌊 POE-07 · การแทรกสอดของคลื่น</h1>
+      <div><span class="tag">แผน 7</span><span class="tag">Interactive</span> คู่กับ 💧 Concept Cartoon "2 หยดน้ำ"</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-สกุล" style="width:150px"></label>
+      <label>เลขที่ <input type="number" id="s-num" class="short" min="1" max="50"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+      <label>กลุ่ม <input type="number" id="s-grp" class="short" min="1" max="10"></label>
+    </div>
+  </div>
+
+  <!-- ══ SIM LAUNCHER ══ -->
+  <div class="sim-bar">
+    <span>🚀 Simulation ที่ใช้ในคาบ · กดเพื่อเปิด</span>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html" target="_blank" rel="noopener" class="sim-btn" style="background:#a16207">🌀 Lab 30 · Coiled Spring (ซ้อนทับ)</a>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn" style="background:#713f12">🌊 Lab 41 · Two-Source Interference</a>
+  </div>
+
+  <!-- ══ P · PREDICT ══ -->
+  <div class="sec p">
+    <div class="sec-title">🔮 P · Predict <span class="badge">ก่อนทดลอง · 5 นาที</span></div>
+
+    <!-- Q1: A or N at Δr=2λ (M7.1) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 1 · จุด P ที่ Δr = 2λ เป็นแนวใด? (M7.1)</div>
+      <div class="qsub">2 แหล่งกำเนิดอาพันธ์ S₁ และ S₂ (เฟสตรงกัน · A เท่ากัน) · ที่จุด P วัดได้ผลต่างทางเดิน |S₁P − S₂P| = <strong>2λ</strong></div>
+      <div class="scenario-wrap">
+        <svg width="320" height="80" viewBox="0 0 320 80">
+          <circle cx="60" cy="40" r="5" fill="#ca8a04"/><text x="50" y="30" font-size="10" fill="#713f12" font-weight="700">S₁</text>
+          <circle cx="260" cy="40" r="5" fill="#ca8a04"/><text x="250" y="30" font-size="10" fill="#713f12" font-weight="700">S₂</text>
+          <g stroke="#ca8a04" stroke-width="0.8" fill="none" opacity="0.5">
+            <circle cx="60" cy="40" r="20"/><circle cx="60" cy="40" r="40"/><circle cx="60" cy="40" r="60"/>
+            <circle cx="260" cy="40" r="20"/><circle cx="260" cy="40" r="40"/><circle cx="260" cy="40" r="60"/>
+          </g>
+          <circle cx="200" cy="15" r="4" fill="#dc2626"/><text x="208" y="14" font-size="11" fill="#dc2626" font-weight="700">P</text>
+          <text x="208" y="28" font-size="9" fill="#a16207">Δr = 2λ</text>
+        </svg>
+      </div>
+      <div class="radio-row" id="p1">
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="A"> ปฏิบัพ A (เสริม)</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="N"> บัพ N (หักล้าง)</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="mid"> ค่ากลาง ๆ ระหว่าง A กับ N</label>
+      </div>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:6px">เหตุผล (พิมพ์ได้):</label>
+      <textarea id="p1-reason" rows="2" placeholder="เพราะ Δr = 2λ ตรงเงื่อนไข ..."></textarea>
+    </div>
+
+    <!-- Q2: Particle at node (M7.2) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 2 · อนุภาคน้ำที่แนวบัพ N เป็นอย่างไร? (M7.2)</div>
+      <div class="qsub">ผิวน้ำที่แนวบัพ "ดูเรียบ" ไม่กระเพื่อม · อนุภาคน้ำที่จุดบนแนวนั้นเป็นอย่างไร?</div>
+      <div class="radio-row" id="p2">
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="gone"> หายไปถาวร · ไม่มีน้ำ</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="zero"> ยังอยู่ · กระจัด = 0 ตลอดเวลา</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="absorb"> ถูกดูดซับพลังงาน · นิ่ง</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="invisible"> สั่นเร็วจนตามองไม่เห็น</label>
+      </div>
+    </div>
+
+    <!-- Q3: A different (M7.3) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 3 · S₁ A₁ = 5 cm · S₂ A₂ = 3 cm · เกิดการแทรกสอดได้ไหม? (M7.3)</div>
+      <div class="qsub">เฟสตรงกัน · f และ λ เท่ากัน · แต่ A ต่างกัน · จะเกิดรูปแบบ A และ N หรือไม่?</div>
+      <div class="radio-row" id="p3">
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="yes"> ได้ · แต่หักล้างไม่สมบูรณ์ที่ N</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="no-A"> ไม่ได้ · A ต้องเท่ากัน</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="no-coh"> ไม่ได้ · A ต่างถือว่าไม่อาพันธ์</label>
+      </div>
+    </div>
+
+    <!-- Q4: Confuse A vs N labels (M7.4) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 4 · บนรูปแทรกสอด · จุดที่ A รวมสูงสุด (2A) เรียกว่า? (M7.4)</div>
+      <div class="qsub">เลือกชื่อที่ถูกต้องของจุดที่คลื่น 2 ลูกเสริมกันได้ A สูงสุด</div>
+      <div class="radio-row" id="p4">
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="A"> A · ปฏิบัพ (Antinode)</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="N"> N · บัพ (Node)</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="other"> ไม่มีชื่อเฉพาะ</label>
+      </div>
+    </div>
+
+    <!-- Confidence -->
+    <div class="qblock" style="padding:10px 14px">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจรวมก่อนทดลอง:</span>
+      <div class="radio-row" id="p-conf" style="margin-top:6px">
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="low">😕 น้อย</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ O · OBSERVE ══ -->
+  <div class="sec o">
+    <div class="sec-title">👁 O · Observe <span class="badge">2 ฐาน · 25 นาที</span></div>
+
+    <!-- ฐาน 1: Lab 30 Spring Superposition -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🌀 ฐาน 1 · Lab 30 — Coiled Spring (Pulse Superposition)</span>
+        <span class="station-badge">10 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#a16207">🚀 เปิด Lab 30 →</a>
+      </div>
+      <div style="font-size:13.5px;color:#555;margin-bottom:10px">โหมด "ส่งพัลส์ 2 ปลาย" · สังเกตเมื่อยอดพบยอด · ยอดพบท้อง · ลอง A เท่า/ไม่เท่า · บันทึก A รวมขณะพบ</div>
+
+      <table class="mini-table">
+        <tr>
+          <th style="width:120px">กรณี</th>
+          <th>A₁</th>
+          <th>A₂</th>
+          <th>A รวม (ขณะพบ)</th>
+          <th>ตรงเงื่อนไข?</th>
+        </tr>
+        <tr>
+          <td class="left"><b>ยอด+ยอด (เสริม)</b></td>
+          <td><input type="number" id="o1-c1a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-c1b" step="0.1" min="0" oninput="checkSum(1)"></td>
+          <td id="o1-sum1" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-chk1" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-chk1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk1" value="A">≈ปฏิบัพ A</label>
+              <label class="radio-opt" onclick="selectRadio('o1-chk1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk1" value="N">≈บัพ N</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left"><b>ยอด+ท้อง · A เท่า</b></td>
+          <td><input type="number" id="o1-c2a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-c2b" step="0.1" oninput="checkSum(2)"></td>
+          <td id="o1-sum2" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-chk2" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-chk2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk2" value="A">≈ปฏิบัพ A</label>
+              <label class="radio-opt" onclick="selectRadio('o1-chk2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk2" value="N">≈บัพ N</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left"><b>ยอด+ท้อง · A ต่าง</b></td>
+          <td><input type="number" id="o1-c3a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-c3b" step="0.1" oninput="checkSum(3)"></td>
+          <td id="o1-sum3" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-chk3" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-chk3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk3" value="A">≈ปฏิบัพ A</label>
+              <label class="radio-opt" onclick="selectRadio('o1-chk3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-chk3" value="N">≈บัพ N</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:10px">สรุป A เท่า vs ไม่เท่า · หักล้างสมบูรณ์ได้เมื่อใด? (แก้ M7.3)</label>
+      <textarea id="o1-note" rows="2" placeholder="A เท่า → หักล้างสมบูรณ์ที่ N (= 0) · A ไม่เท่า → หักล้างไม่สมบูรณ์ (= |A₁−A₂|) แต่ยังเกิดการแทรกสอด ..."></textarea>
+    </div>
+
+    <!-- ฐาน 2: Lab 41 Two-Source Interference -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🌊 ฐาน 2 · Lab 41 — Two-Source Wave Interference</span>
+        <span class="station-badge">15 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#713f12">🚀 เปิด Lab 41 →</a>
+      </div>
+      <div style="font-size:13.5px;color:#555;margin-bottom:10px">ตั้ง λ = 4 cm · เลื่อนจุดทดสอบ P · วัด S₁P, S₂P, Δr · บันทึก 3 จุด · ระบุเป็น A หรือ N</div>
+
+      <table class="mini-table">
+        <tr>
+          <th>จุด</th>
+          <th>S₁P (cm)</th>
+          <th>S₂P (cm)</th>
+          <th>Δr = |S₁P−S₂P| (cm)</th>
+          <th>Δr/λ</th>
+          <th>เป็น A หรือ N?</th>
+        </tr>
+        <tr>
+          <td>P₁</td>
+          <td><input type="number" id="o2-r1a" min="0" step="0.1" oninput="calcDr(1)"></td>
+          <td><input type="number" id="o2-r1b" min="0" step="0.1" oninput="calcDr(1)"></td>
+          <td id="o2-dr1" class="pct-cell">—</td>
+          <td id="o2-dl1" class="pct-cell">—</td>
+          <td>
+            <div class="radio-row" id="o2-an1" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o2-an1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an1" value="A">A</label>
+              <label class="radio-opt" onclick="selectRadio('o2-an1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an1" value="N">N</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>P₂</td>
+          <td><input type="number" id="o2-r2a" min="0" step="0.1" oninput="calcDr(2)"></td>
+          <td><input type="number" id="o2-r2b" min="0" step="0.1" oninput="calcDr(2)"></td>
+          <td id="o2-dr2" class="pct-cell">—</td>
+          <td id="o2-dl2" class="pct-cell">—</td>
+          <td>
+            <div class="radio-row" id="o2-an2" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o2-an2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an2" value="A">A</label>
+              <label class="radio-opt" onclick="selectRadio('o2-an2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an2" value="N">N</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>P₃</td>
+          <td><input type="number" id="o2-r3a" min="0" step="0.1" oninput="calcDr(3)"></td>
+          <td><input type="number" id="o2-r3b" min="0" step="0.1" oninput="calcDr(3)"></td>
+          <td id="o2-dr3" class="pct-cell">—</td>
+          <td id="o2-dl3" class="pct-cell">—</td>
+          <td>
+            <div class="radio-row" id="o2-an3" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o2-an3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an3" value="A">A</label>
+              <label class="radio-opt" onclick="selectRadio('o2-an3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-an3" value="N">N</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:10px">สรุปเงื่อนไข Δr ที่ทำให้เป็น A vs N (แก้ M7.1):</label>
+      <textarea id="o2-conc" rows="2" placeholder="Δr = nλ → ... · Δr = (n+½)λ → ..."></textarea>
+
+      <!-- Canvas: hyperbolic pattern -->
+      <div style="font-weight:700;font-size:13.5px;color:#7c2d12;margin:14px 0 4px">✏️ จากภาพ <b>2 แหล่งกำเนิด S₁ S₂</b> ให้นักเรียนวาดเพิ่ม:</div>
+      <div style="font-size:13px;color:#4a5568;margin-bottom:6px;padding-left:8px;line-height:1.7">
+        <span style="color:#dc2626">①</span> <b>วาดแนวปฏิบัพ A</b> (เส้นไฮเพอร์โบล่าผ่านตำแหน่ง Δr = 0, ±λ, ±2λ) ระบุ A พร้อม n ·
+        <span style="color:#000">②</span> <b>วาดแนวบัพ N</b> (เส้นประผ่านตำแหน่ง Δr = ±λ/2, ±3λ/2) ระบุ N ·
+        <span style="color:#0891b2">③</span> ทำเครื่องหมายจุดทดลอง P₁ P₂ P₃ ที่วัดได้
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas-o2','pencil',this)">✏️ ดินสอ</button>
+          <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas-o2','eraser',this)">⬜ ยางลบ</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas-o2','#1a202c',this)" title="ดำ"></div>
+          <div class="c-color" style="background:#dc2626" onclick="setColor('canvas-o2','#dc2626',this)" title="แดง (ปฏิบัพ A)"></div>
+          <div class="c-color" style="background:#0891b2" onclick="setColor('canvas-o2','#0891b2',this)" title="ฟ้า (จุดทดลอง)"></div>
+          <div class="c-color" style="background:#ca8a04" onclick="setColor('canvas-o2','#ca8a04',this)" title="ทอง"></div>
+          <button class="c-btn" onclick="clearCanvas('canvas-o2')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+        </div>
+        <div class="scene-stack">
+          <svg class="bg" viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid7" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fef3c7" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="900" height="320" fill="#fffef7"/>
+            <rect width="900" height="320" fill="url(#grid7)"/>
+            <!-- Two sources -->
+            <circle cx="330" cy="160" r="8" fill="#ca8a04"/>
+            <text x="320" y="148" font-size="14" fill="#713f12" font-weight="800" font-family="Sarabun,sans-serif">S₁</text>
+            <circle cx="570" cy="160" r="8" fill="#ca8a04"/>
+            <text x="560" y="148" font-size="14" fill="#713f12" font-weight="800" font-family="Sarabun,sans-serif">S₂</text>
+            <!-- Wavefronts (dim, for reference) -->
+            <g stroke="#ca8a04" stroke-width="1" fill="none" opacity="0.3">
+              <circle cx="330" cy="160" r="40"/><circle cx="330" cy="160" r="80"/><circle cx="330" cy="160" r="120"/><circle cx="330" cy="160" r="160"/>
+              <circle cx="570" cy="160" r="40"/><circle cx="570" cy="160" r="80"/><circle cx="570" cy="160" r="120"/><circle cx="570" cy="160" r="160"/>
+            </g>
+            <!-- Distance label -->
+            <line x1="330" y1="195" x2="570" y2="195" stroke="#a16207" stroke-width="1.5" stroke-dasharray="4,3"/>
+            <text x="450" y="215" font-size="12" fill="#a16207" font-weight="700" font-family="Sarabun,sans-serif" text-anchor="middle">S₁S₂ = 6λ (240 px · λ = 40 px)</text>
+            <text x="20" y="30" font-size="13" fill="#713f12" font-weight="700" font-family="Sarabun,sans-serif">วาดแนว A (แดง) และ N (ดำเส้นประ) ตามเงื่อนไข Δr</text>
+            <text x="20" y="305" font-size="11" fill="#64748b" font-family="Sarabun,sans-serif">กริด 40×40 px = λ · วาดตามข้อ ①-③ ด้านบน</text>
+          </svg>
+          <canvas id="canvas-o2" class="overlay" width="900" height="320"></canvas>
+        </div>
+        <div class="scene-hint">💡 <b>คำใบ้:</b> แนว A และ N ในการแทรกสอดเป็นเส้น<b>ไฮเพอร์โบล่า</b> (hyperbolic) · จุดเดียวกันที่ห่างจาก S₁ และ S₂ ต่างกันคงที่ → เส้นเดียวกัน · แนวกลาง (Δr=0) เป็น A เสมอ</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ E · EXPLAIN / CER ══ -->
+  <div class="sec e">
+    <div class="sec-title">✍️ E · Explain — CER <span class="badge">ส่ง CER Live Board · 8 นาที</span></div>
+    <div style="background:#fef3c7;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:13.5px;color:#713f12">
+      📡 <b>วิธีส่ง:</b> กรอก C + E + R ด้านล่าง → กด "ส่ง CER" → ระบบฉายขึ้นจอ · ทุกกลุ่มเห็นพร้อมกัน
+    </div>
+
+    <div class="cer-block">
+      <div class="cer-icon cer-c">C</div>
+      <div class="cer-content">
+        <label>Claim — ข้อกล่าวอ้าง: <span style="font-weight:400;font-size:13px;color:#555">สรุปเงื่อนไข A และ N · บัพ ≠ อนุภาคหาย · A ไม่ต้องเท่ากัน</span></label>
+        <textarea id="cer-c" rows="3" placeholder="A: Δr = nλ ... / N: Δr = (n+½)λ ... / บัพ: ... / coherent: ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-e">E</div>
+      <div class="cer-content">
+        <label>Evidence — หลักฐาน: <span style="font-weight:400;font-size:13px;color:#555">อ้างอิงจากฐาน 1 (Lab 30) และฐาน 2 (Lab 41)</span></label>
+        <textarea id="cer-e" rows="3" placeholder="ฐาน 1: ยอด+ยอด → A=.. / ยอด+ท้อง A เท่า → A=.. / A ต่าง → A=.. ฐาน 2: P₁ Δr=.. → A/N · ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-r">R</div>
+      <div class="cer-content">
+        <label>Reasoning — เหตุผลเชิงหลักการ: <span style="font-weight:400;font-size:13px;color:#555">ทำไม E สนับสนุน C? (หลักซ้อนทับ y = y₁ + y₂)</span></label>
+        <textarea id="cer-r" rows="3" placeholder="หลักซ้อนทับ y = y₁ + y₂ ... / ที่ A ยอดพบยอด ... / ที่ N ยอดพบท้อง y รวม = 0 ตลอดเวลา (อนุภาคยังอยู่) ... / coherent ต้องการ f, λ เท่า + เฟสคงที่ ไม่ใช่ A เท่า ..."></textarea>
+      </div>
+    </div>
+
+    <!-- 🟢🔴 Conceptual Inventory (5 correct statements matched to M7.1-M7.4) -->
+    <div style="background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px 16px;margin-top:6px">
+      <div style="font-weight:700;color:#713f12;margin-bottom:8px;font-size:14.5px">🟢🔴 Conceptual Inventory · ติ๊กทุกข้อที่ตรงกับหลักฐานกลุ่มของคุณ:</div>
+      <label class="check-opt"><input type="checkbox" id="chk1"> 🟢 <b>Δr = nλ → ปฏิบัพ A</b> (เสริม) · ยอดพบยอด · A รวม = 2A <span style="color:#888;font-size:12.5px">— แก้ M7.1</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk2"> 🟢 <b>Δr = (n+½)λ → บัพ N</b> (หักล้าง) · ยอดพบท้อง · A รวม = 0 (ถ้า A เท่า)</label>
+      <label class="check-opt"><input type="checkbox" id="chk3"> 🟢 <b>ที่บัพ N · อนุภาคยังอยู่</b> · y รวม = 0 ตลอดเวลา · ไม่ใช่อนุภาคหายถาวร <span style="color:#888;font-size:12.5px">— แก้ M7.2</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk4"> 🟢 <b>A ไม่ต้องเท่ากันก็แทรกสอดได้</b> · เงื่อนไข coherent = f, λ เท่า + เฟสคงที่ · A ต่าง → หักล้างไม่สมบูรณ์ <span style="color:#888;font-size:12.5px">— แก้ M7.3</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk5"> 🟢 <b>A = ปฏิบัพ (Antinode · A สูงสุด) · N = บัพ (Node · A ศูนย์)</b> — แยกชื่อให้ถูก <span style="color:#888;font-size:12.5px">— แก้ M7.4</span></label>
+    </div>
+
+    <!-- Misconception correction · 3 ส่วน per M -->
+    <div class="misc-correct">
+      <h4>🧠 สรุปแก้ Misconception</h4>
+      <div class="hint">ทำ 3 ขั้น · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M7.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M7.1</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"Δr = nλ คือแนวบัพ N"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc1-held">
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc1-correct">
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="a"> Δr = nλ คือแนวปฏิบัพ A · บัพ N ใช้ Δr = (n+½)λ</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="b"> Δr = nλ คือแนวบัพ เพราะคลื่นเดินทางครบรอบหักล้าง</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="c"> Δr ไม่เกี่ยวกับ A หรือ N</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc1-evidence" rows="2" placeholder="จาก Lab 41 · จุดที่ Δr = nλ พอดี · A สูงสุด ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M7.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M7.2</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"บัพ = อนุภาคหายถาวร"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc2-held">
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc2-correct">
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="a"> อนุภาคยังอยู่ · กระจัด = 0 ตลอดเวลาเพราะหักล้างกันชั่วขณะต่อเนื่อง</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="b"> อนุภาคถูกทำลาย · น้ำหายไป</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="c"> อนุภาคถูกดูดซับพลังงานเป็นความร้อน</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc2-evidence" rows="2" placeholder="จาก Lab 41 · จุ่มมือลงน้ำที่บัพ · ยังเจอน้ำ ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M7.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M7.3</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"ต้องใช้ A เท่ากันถึงจะแทรกสอด"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc3-held">
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc3-correct">
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="a"> A ไม่ต้องเท่า · เงื่อนไข coherent ต้องการ f, λ เท่า + เฟสคงที่ · A ต่าง → หักล้างไม่สมบูรณ์</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="b"> A ต้องเท่ากันเสมอ มิเช่นนั้นไม่อาพันธ์</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="c"> A ต้องเท่าและเฟสตรงกันเท่านั้น</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc3-evidence" rows="2" placeholder="จาก Lab 30 · A₁=4 A₂=2 ที่บัพ y รวม = 2 (ไม่เป็น 0) · แต่ยังเห็นรูปแบบ A กับ N ..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post confidence -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจหลังเรียน:</span>
+      <div class="radio-row" id="e-conf" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="low">😕 น้อย</label>
+      </div>
+      <div class="radio-row" id="e-change" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="up">↑ เพิ่มขึ้น</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="same">= เท่าเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="down">↓ ลดลง</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUBMIT ══ -->
+  <div class="submit-bar">
+    <button class="btn-submit" onclick="submitPOE()">📡 ส่ง POE-07</button>
+    <button class="btn-reset" onclick="if(confirm('ล้างข้อมูลทั้งหมด?'))location.reload()">🔄 เริ่มใหม่</button>
+    <span id="submit-status" style="font-size:13.5px;color:#713f12"></span>
+  </div>
+  <div class="result-box" id="result-box">
+    <h4>✅ สรุปคำตอบที่ส่ง</h4>
+    <pre id="result-pre" style="font-size:12.5px;white-space:pre-wrap;color:#1a202c"></pre>
+  </div>
+
+  <div class="foot">POE-07 Interactive · แผน 7 การแทรกสอดของคลื่น · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+function selectRadio(groupId, labelEl) {
+  document.querySelectorAll(`#${groupId} .radio-opt`).forEach(l => l.classList.remove('selected'));
+  labelEl.classList.add('selected');
+  const input = labelEl.querySelector('input');
+  if (input) input.checked = true;
+}
+
+function checkSum(row){
+  const a = parseFloat(document.getElementById(`o1-c${row}a`)?.value);
+  const b = parseFloat(document.getElementById(`o1-c${row}b`)?.value);
+  const cell = document.getElementById(`o1-sum${row}`);
+  if(!cell) return;
+  if(isNaN(a)||isNaN(b)){cell.textContent='—';return;}
+  const sum = a + b;
+  cell.textContent = sum.toFixed(2);
+  if(Math.abs(sum) < 0.05){cell.style.color='#dc2626';cell.innerHTML += ' (≈ 0 · บัพ)';}
+  else if(sum > Math.max(Math.abs(a),Math.abs(b))){cell.style.color='#0891b2';cell.innerHTML += ' (เสริม)';}
+  else{cell.style.color='#a16207';cell.innerHTML += ' (หักล้างบางส่วน)';}
+}
+
+function calcDr(row){
+  const r1 = parseFloat(document.getElementById(`o2-r${row}a`)?.value);
+  const r2 = parseFloat(document.getElementById(`o2-r${row}b`)?.value);
+  const drCell = document.getElementById(`o2-dr${row}`);
+  const dlCell = document.getElementById(`o2-dl${row}`);
+  if(!isNaN(r1) && !isNaN(r2)){
+    const dr = Math.abs(r1 - r2);
+    drCell.textContent = dr.toFixed(2);
+    drCell.style.color = '#a16207';
+    const ratio = dr / 4; // assume λ = 4 cm
+    dlCell.textContent = ratio.toFixed(2);
+    if(Math.abs(ratio - Math.round(ratio)) < 0.1){dlCell.style.color='#0891b2';dlCell.innerHTML += ' (≈ A)';}
+    else if(Math.abs(ratio - Math.round(ratio - 0.5) - 0.5) < 0.1){dlCell.style.color='#dc2626';dlCell.innerHTML += ' (≈ N)';}
+    else{dlCell.style.color='#a16207';}
+  } else {drCell.textContent='—';dlCell.textContent='—';}
+}
+
+const canvasState = {};
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay');
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  if (!transparent) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function start(e){e.preventDefault();const st=canvasState[id];st.drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+  function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function end(e){e.preventDefault();canvasState[id].drawing=false;}
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+
+function submitPOE() {
+  const data = {
+    student: {
+      name: document.getElementById('s-name').value,
+      num: document.getElementById('s-num').value,
+      room: document.getElementById('s-room').value,
+      group: document.getElementById('s-grp').value
+    },
+    P: {
+      p1: document.querySelector('input[name="p1"]:checked')?.value || '—',
+      p1_reason: document.getElementById('p1-reason').value,
+      p2: document.querySelector('input[name="p2"]:checked')?.value || '—',
+      p3: document.querySelector('input[name="p3"]:checked')?.value || '—',
+      p4: document.querySelector('input[name="p4"]:checked')?.value || '—',
+      confidence: document.querySelector('input[name="p-conf"]:checked')?.value || '—'
+    },
+    O: {
+      lab30: [1,2,3].map(i => ({
+        case: ['ยอด+ยอด','ยอด+ท้อง A เท่า','ยอด+ท้อง A ต่าง'][i-1],
+        a1: document.getElementById(`o1-c${i}a`)?.value,
+        a2: document.getElementById(`o1-c${i}b`)?.value,
+        chk: document.querySelector(`input[name="o1-chk${i}"]:checked`)?.value || '—'
+      })),
+      lab30_note: document.getElementById('o1-note').value,
+      lab41: [1,2,3].map(i => ({
+        s1p: document.getElementById(`o2-r${i}a`)?.value,
+        s2p: document.getElementById(`o2-r${i}b`)?.value,
+        an: document.querySelector(`input[name="o2-an${i}"]:checked`)?.value || '—'
+      })),
+      lab41_conc: document.getElementById('o2-conc').value
+    },
+    E: {
+      claim: document.getElementById('cer-c').value,
+      evidence: document.getElementById('cer-e').value,
+      reasoning: document.getElementById('cer-r').value,
+      checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
+      mc1_held: document.querySelector('input[name="mc1-held"]:checked')?.value || '—',
+      mc1_correct: document.querySelector('input[name="mc1-correct"]:checked')?.value || '—',
+      mc1_evidence: document.getElementById('mc1-evidence')?.value || '',
+      mc2_held: document.querySelector('input[name="mc2-held"]:checked')?.value || '—',
+      mc2_correct: document.querySelector('input[name="mc2-correct"]:checked')?.value || '—',
+      mc2_evidence: document.getElementById('mc2-evidence')?.value || '',
+      mc3_held: document.querySelector('input[name="mc3-held"]:checked')?.value || '—',
+      mc3_correct: document.querySelector('input[name="mc3-correct"]:checked')?.value || '—',
+      mc3_evidence: document.getElementById('mc3-evidence')?.value || '',
+      conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
+      conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
+    },
+    canvas_o2: document.getElementById('canvas-o2')?.toDataURL('image/png')
+  };
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'POE_SUBMIT', plan: 7, data }, '*');
+  }
+
+  const box = document.getElementById('result-box');
+  const pre = document.getElementById('result-pre');
+  const summary = [
+    `📋 นักเรียน: ${data.student.name||'—'} เลขที่ ${data.student.num} ห้อง ${data.student.room} กลุ่ม ${data.student.group}`,
+    `\n🔮 P — ทำนาย:`,
+    `  · Δr=2λ → ${data.P.p1}  |  บัพ → ${data.P.p2}`,
+    `  · A ต่าง → ${data.P.p3}  |  A สูงสุด ชื่อ → ${data.P.p4}`,
+    `  · ความมั่นใจก่อน: ${data.P.confidence}`,
+    `\n👁 O — สังเกต:`,
+    `  · Lab 30: ${data.O.lab30.map(r => `[${r.case}: A₁=${r.a1||'—'} A₂=${r.a2||'—'} → ${r.chk}]`).join(' ')}`,
+    `  · Lab 41: ${data.O.lab41.map((r,i) => `[P${i+1}: r₁=${r.s1p||'—'} r₂=${r.s2p||'—'} ${r.an}]`).join(' ')}`,
+    `  · สรุป Lab 41: ${data.O.lab41_conc.slice(0,80)}${data.O.lab41_conc.length>80?'…':''}`,
+    `\n✍️ E — CER:`,
+    `  · Claim: ${data.E.claim.slice(0,80)}${data.E.claim.length>80?'…':''}`,
+    `  · Evidence: ${data.E.evidence.slice(0,80)}${data.E.evidence.length>80?'…':''}`,
+    `  · Reasoning: ${data.E.reasoning.slice(0,80)}${data.E.reasoning.length>80?'…':''}`,
+    `  · Checklist ติ๊ก: ${data.E.checks || 'ยังไม่ได้ติ๊ก'}`,
+    `  · ความมั่นใจหลัง: ${data.E.conf_post} (${data.E.conf_change})`
+  ].join('\n');
+
+  pre.textContent = summary;
+  box.style.display = 'block';
+  document.getElementById('submit-status').textContent = '✅ ส่งแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas('canvas-o2');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body>
+</html>
