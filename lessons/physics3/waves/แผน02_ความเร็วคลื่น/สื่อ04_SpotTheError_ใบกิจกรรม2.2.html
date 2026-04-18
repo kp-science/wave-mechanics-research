@@ -13,13 +13,21 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 .item{border:2px solid #e0e0e0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
 .item .num{display:inline-block;background:#c62828;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
 .item .statement{background:#fff;border:1.5px dashed #ef9a9a;border-radius:10px;padding:12px;font-size:16px;margin:8px 0}
-.item .fix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.item .cell{background:#fff;border:1.5px solid #cfd8e3;border-radius:8px;padding:10px}
-.item .cell b{color:#0d47a1}
-.line{border-bottom:1.5px dashed #aaa;height:24px;margin:4px 0}
 .mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #a5d6a7;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#c8e6c9 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #a5d6a7;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#1b5e20;font-weight:600}
+.c-btn.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #2e7d32;box-shadow:0 0 0 2px #fff,0 0 0 4px #2e7d32}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#1b5e20;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
 </style></head>
 <body>
 <div class="page">
@@ -36,38 +44,102 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
   <!-- ข้อ 1 M2.1 -->
   <div class="item">
     <div><span class="num">1</span><b>ข้อความ</b> <span class="mis-tag">M2.1</span></div>
-    <div class="statement">"เมื่อดีดกีตาร์สายเดิมด้วยแรงแรงขึ้น เสียงจะมีความถี่สูงขึ้น ทำให้<u>คลื่นในสายวิ่งเร็วขึ้น</u> เพราะ v = fλ และ f เพิ่ม v จึงเพิ่ม"</div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div class="say">"เมื่อดีดกีตาร์สายเดิมด้วยแรงแรงขึ้น เสียงจะมีความถี่สูงขึ้น ทำให้<u>คลื่นในสายวิ่งเร็วขึ้น</u> เพราะ v = fλ และ f เพิ่ม v จึงเพิ่ม"</div>
+      </div>
+      <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="160"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas1" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q1-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 2 M2.4 -->
   <div class="item">
     <div><span class="num">2</span><b>ข้อความ</b> <span class="mis-tag">M2.4</span></div>
-    <div class="statement">"คลื่นเสียงความถี่ 500 Hz เดินทางจากอากาศ (v = 340 m/s) เข้าไปในน้ำ (v = 1,500 m/s) · เมื่อเข้าน้ำแล้ว<u>ความถี่ของเสียงเปลี่ยนเป็นประมาณ 2,200 Hz</u> เพื่อให้ว่าคลื่นเดินทางในน้ำได้เร็วขึ้น"</div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div class="say">"คลื่นเสียงความถี่ 500 Hz เดินทางจากอากาศ (v = 340 m/s) เข้าไปในน้ำ (v = 1,500 m/s) · เมื่อเข้าน้ำแล้ว<u>ความถี่ของเสียงเปลี่ยนเป็นประมาณ 2,200 Hz</u> เพื่อให้ว่าคลื่นเดินทางในน้ำได้เร็วขึ้น"</div>
+      </div>
+      <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="180"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas2" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q2-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 3 การคำนวณ M2.1 + M2.2 (ภาพ + คำนวณ) -->
   <div class="item">
     <div><span class="num">3</span><b>การคำนวณ</b> <span class="mis-tag">M2.1 + M2.2</span></div>
-    <div class="statement">
-      <div style="margin-bottom:6px">โจทย์: เชือกมวล 20 g ยาว 2 m ถูกดึงด้วยแรงตึง 10 N · ความถี่ของแหล่งกำเนิด 20 Hz · จงหา v</div>
-      <div style="background:#ffebee;border:1.5px dashed #c62828;border-radius:6px;padding:8px;font-family:'Cambria Math',Georgia,serif;font-size:15px">
-        วิธีทำ (ที่ผิด): μ = 20/2 = 10 kg/m<br>
-        v = √(T/μ) = √(10/10) = <u>1 m/s</u><br>
-        λ = v/f = 1/20 = 0.05 m ✓
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนการคำนวณด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div style="margin-bottom:6px">โจทย์: เชือกมวล 20 g ยาว 2 m ถูกดึงด้วยแรงตึง 10 N · ความถี่ของแหล่งกำเนิด 20 Hz · จงหา v</div>
+        <div style="background:#ffebee;border:1.5px dashed #c62828;border-radius:6px;padding:8px;font-family:'Cambria Math',Georgia,serif;font-size:15px">
+          วิธีทำ (ที่ผิด): μ = 20/2 = 10 kg/m<br>
+          v = √(T/μ) = √(10/10) = <u>1 m/s</u><br>
+          λ = v/f = 1/20 = 0.05 m ✓
+        </div>
       </div>
+      <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="220"></canvas>
     </div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b> (แสดงการคำนวณใหม่)<div class="line"></div><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด (แสดงการคำนวณใหม่)</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas3','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
+    <canvas id="canvas3" data-bg="lined" width="900" height="180"></canvas>
+    <textarea id="q3-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div style="background:#e8f5e9;border-left:6px solid #2e7d32;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px">
@@ -76,4 +148,17 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 
   <div class="foot">ใบกิจกรรม 2.2 · แผน 2 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>

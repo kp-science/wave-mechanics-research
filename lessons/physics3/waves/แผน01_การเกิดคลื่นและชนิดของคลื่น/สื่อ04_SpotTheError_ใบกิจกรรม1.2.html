@@ -13,13 +13,21 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 .item{border:2px solid #e0e0e0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
 .item .num{display:inline-block;background:#c62828;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
 .item .statement{background:#fff;border:1.5px dashed #ef9a9a;border-radius:10px;padding:12px;font-size:16px;margin:8px 0}
-.item .fix{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
-.item .cell{background:#fff;border:1.5px solid #cfd8e3;border-radius:8px;padding:10px}
-.item .cell b{color:#0d47a1}
-.line{border-bottom:1.5px dashed #aaa;height:24px;margin:4px 0}
 .mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #90caf9;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e3f2fd 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #90caf9;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#0d47a1;font-weight:600}
+.c-btn.active{background:#1976d2;color:#fff;border-color:#1976d2}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #1976d2;box-shadow:0 0 0 2px #fff,0 0 0 4px #1976d2}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#0d47a1;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
 </style></head>
 <body>
 <div class="page">
@@ -35,49 +43,135 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 
   <div class="item">
     <div><span class="num">1</span><b>ข้อความ</b> <span class="mis-tag">M1.3</span></div>
-    <div class="statement">"เมื่อโยนก้อนหินลงน้ำ คลื่นน้ำจะเคลื่อนที่เป็น<u>เส้นตรง</u>ออกไปจากจุดที่หินตกเท่านั้น"</div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div class="say">"เมื่อโยนก้อนหินลงน้ำ คลื่นน้ำจะเคลื่อนที่เป็น<u>เส้นตรง</u>ออกไปจากจุดที่หินตกเท่านั้น"</div>
+      </div>
+      <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="160"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas1" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q1-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #90caf9;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div class="item">
     <div><span class="num">2</span><b>ข้อความ</b> <span class="mis-tag">M1.4</span></div>
-    <div class="statement">"คาบ (T) ของคลื่นคือ<u>ระยะทาง</u>ระหว่างยอดคลื่นถึงยอดคลื่นถัดไป มีหน่วยเป็นเมตร"</div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div class="say">"คาบ (T) ของคลื่นคือ<u>ระยะทาง</u>ระหว่างยอดคลื่นถึงยอดคลื่นถัดไป มีหน่วยเป็นเมตร"</div>
+      </div>
+      <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="160"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas2" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q2-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #90caf9;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div class="item">
     <div><span class="num">3</span><b>ภาพกราฟ</b> <span class="mis-tag">M1.4</span></div>
-    <div class="statement" style="text-align:center">
-      <svg width="400" height="120" viewBox="0 0 400 120">
-        <line x1="20" y1="60" x2="380" y2="60" stroke="#666" stroke-width="1"/>
-        <line x1="20" y1="10" x2="20" y2="110" stroke="#666" stroke-width="1"/>
-        <path d="M20,60 C60,20 100,100 140,60 C180,20 220,100 260,60 C300,20 340,100 380,60" fill="none" stroke="#1565c0" stroke-width="2.5"/>
-        <text x="200" y="115" text-anchor="middle" font-size="13" fill="#c62828">แกน x: เวลา (s)</text>
-        <text x="60" y="40" font-size="13" fill="#c62828">λ</text>
-        <line x1="60" y1="55" x2="140" y2="55" stroke="#c62828" stroke-width="1.5" marker-end="url(#ar)"/>
-        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c62828"/></marker></defs>
-      </svg>
-      <div style="font-size:14px;color:#666">กราฟนี้บอกว่า λ คือระยะตามแกนเวลา</div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนภาพ/ข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="claim-stack">
+      <div class="claim-content" style="text-align:center">
+        <svg width="400" height="120" viewBox="0 0 400 120">
+          <line x1="20" y1="60" x2="380" y2="60" stroke="#666" stroke-width="1"/>
+          <line x1="20" y1="10" x2="20" y2="110" stroke="#666" stroke-width="1"/>
+          <path d="M20,60 C60,20 100,100 140,60 C180,20 220,100 260,60 C300,20 340,100 380,60" fill="none" stroke="#1565c0" stroke-width="2.5"/>
+          <text x="200" y="115" text-anchor="middle" font-size="13" fill="#c62828">แกน x: เวลา (s)</text>
+          <text x="60" y="40" font-size="13" fill="#c62828">λ</text>
+          <line x1="60" y1="55" x2="140" y2="55" stroke="#c62828" stroke-width="1.5" marker-end="url(#ar)"/>
+          <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c62828"/></marker></defs>
+        </svg>
+        <div style="font-size:14px;color:#666">กราฟนี้บอกว่า λ คือระยะตามแกนเวลา</div>
+      </div>
+      <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="220"></canvas>
     </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas3','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas3" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q3-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #90caf9;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div class="item">
     <div><span class="num">4</span><b>ข้อความ</b> <span class="mis-tag">M1.3</span></div>
-    <div class="statement">"คลื่นเสียงจากลำโพงตัวเดียวในห้อง จะเดินทางเฉพาะ<u>ทิศที่ลำโพงหันไป</u> เท่านั้น คนที่อยู่ด้านข้างจึงไม่ได้ยิน"</div>
-    <div class="fix">
-      <div class="cell"><b>ผิดตรงไหน:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>ที่ถูกต้องคือ:</b><div class="line"></div><div class="line"></div></div>
+    <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ มาร์คจุดผิด:</span>
+      <button class="c-btn active" id="tbc4-pencil" onclick="setTool('canvas-claim-4','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbc4-eraser" onclick="setTool('canvas-claim-4','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-4','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-4','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas-claim-4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
     </div>
+    <div class="claim-stack">
+      <div class="claim-content">
+        <div class="say">"คลื่นเสียงจากลำโพงตัวเดียวในห้อง จะเดินทางเฉพาะ<u>ทิศที่ลำโพงหันไป</u> เท่านั้น คนที่อยู่ด้านข้างจึงไม่ได้ยิน"</div>
+      </div>
+      <canvas id="canvas-claim-4" class="claim-overlay overlay" width="900" height="160"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ อธิบาย:</span>
+      <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas4','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas4','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvas4" data-bg="lined" width="900" height="160"></canvas>
+    <textarea id="q4-ans" rows="2" placeholder="พิมพ์คำอธิบาย..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #90caf9;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div style="background:#e8f5e9;border-left:6px solid #2e7d32;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px">
@@ -86,4 +180,17 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 
   <div class="foot">ใบกิจกรรม 1.2 · แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>

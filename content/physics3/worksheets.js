@@ -401,5 +401,76 @@ window.KP_WORKSHEETS = {
       allowImage: true,
       sheetPrefix: 'CER_P'
     }
+  },
+
+  // ───────── แผน 5 · การสะท้อนของคลื่น ─────────
+  5: {
+    // POE-05 · Interactive form · 3 ฐาน (Slinky + Lab 38 + Lab 32)
+    poe: {
+      hero: {
+        question: 'pulse ยอดขึ้นบนเส้นเชือกวิ่งชนปลายตรึง vs ปลายอิสระ · คลื่นสะท้อนกลับมาเหมือนเดิมหรือเปลี่ยนไปอย่างไร?',
+        context:  'คู่กับ POE-05 Interactive (palette ลากวางรูปคลื่น + canvas วาด) · 3 ฐาน (Slinky Live · Lab 38 wave-speed-on-string · Lab 32 wave-reflection)'
+      },
+      viewFile:    'สื่อ02_POE-05_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-05',
+      sheetPrefix: 'POE_P',
+      misconception: 'M5.1 · M5.2 · M5.3',
+      allowUpload: true
+    },
+    // ใบ 5.1 · Calc Reflection · scene-stack overlay + lined canvas
+    calc: {
+      title:       'ใบกิจกรรม 5.1 · Calc Reflection',
+      description: '4 ข้อไล่ระดับ · (1) วาดหน้าคลื่นสะท้อนผิวราบ θ=40° (2) คำนวณ v ก่อน/หลังสะท้อน (3) วาดหน้าคลื่นสะท้อนผิวโค้งเว้า → ค้นพบจุดโฟกัส (4) Echolocation ค้างคาว · ใช้ canvas + textarea ในทุกข้อ',
+      viewFile:    'สื่อ03_Calc_ใบกิจกรรม5.1.html',
+      submitLabel: '📤 ส่งใบกิจกรรม 5.1',
+      sheetPrefix: 'Calc_P',
+      allowUpload: true
+    },
+    // ใบ 5.2 · Spot the Error · claim-overlay + canvas อธิบาย
+    spot: {
+      title:       'ใบกิจกรรม 5.2 · Spot the Error',
+      description: '3 สถานการณ์ · วงกลม/ขีดทับจุดผิดบนข้อความ + canvas อธิบายที่ถูก · ชน M5.1 · M5.2 · M5.3',
+      viewFile:    'สื่อ04_Spot_ใบกิจกรรม5.2.html',
+      items: [
+        { misc:'M5.1', stmt:'น้องมิ้นท์: "คลื่นสะท้อนจากปลายตรึงจะกลับมาหน้าตาเดิม เพราะกำแพงแค่เปลี่ยนทิศทาง ไม่ได้เปลี่ยนรูปร่างคลื่น — pulse ยอดขึ้นก็จะกลับมาเป็นยอดขึ้นเหมือนเดิม"' },
+        { misc:'M5.2', stmt:'พี่โอม: "คลื่นน้ำวิ่งด้วย v = 30 cm/s · หลังสะท้อนจากผนัง คลื่นต้องช้าลงเพราะเสียพลังงานให้ผนัง · ดังนั้น v สะท้อน < 30 cm/s อย่างแน่นอน · ถ้าชนแรง ๆ ก็ยิ่งช้า"' },
+        { misc:'M5.3', stmt:'น้องต้น: "A\' ต้องเท่ากับ A เสมอ เพราะกฎการสะท้อน θᵢ = θᵣ บอกว่าทุกอย่างเหมือนเดิม รวมถึง amplitude ด้วย"' }
+      ],
+      submitLabel: '📤 ส่งใบกิจกรรม 5.2',
+      sheetPrefix: 'Spot_P'
+    },
+    // CER Board · E3 Explain · 3 คอลัมน์ (ปลายตรึง / ปลายอิสระ / ผิวโค้งเว้า)
+    cer: {
+      id: 'cer',
+      title: 'CER Board · Phase E3',
+      description: 'ใช้ข้อมูลจาก POE-05 ทั้ง 3 ฐาน · ทุกกลุ่มส่ง CER พร้อมกัน · ครูฉายบนจอเพื่อเปรียบเทียบ',
+      columns: [
+        { id:'fixed_end', label:'🔒 ปลายตรึง · พลิกเฟส', color:'#0d9488',
+          prompts: {
+            claim:     '👉 คลื่นสะท้อนจากปลายตรึงมีรูปร่างอย่างไรเทียบคลื่นตกกระทบ?',
+            evidence:  '👉 ฐาน 1 Slinky: ________ · ฐาน 2 Lab 38 ปลายตรึง: pulse ยอดขึ้น → สะท้อน = ________',
+            reasoning: '👉 ทำไมปลายตรึงจึงพลิกเฟส 180° (อ้าง Newton 3rd · แรงกดย้อนกลับ)?'
+          } },
+        { id:'free_end', label:'🔓 ปลายอิสระ · ไม่พลิกเฟส', color:'#14b8a6',
+          prompts: {
+            claim:     '👉 คลื่นสะท้อนจากปลายอิสระต่างจากปลายตรึงอย่างไร?',
+            evidence:  '👉 ฐาน 1 Slinky: ________ · ฐาน 2 Lab 38 ปลายอิสระ: pulse ยอดขึ้น → สะท้อน = ________',
+            reasoning: '👉 ปลายอิสระขยับได้ไม่มีแรงกดย้อนกลับ · เฟสจึงคงเดิม · เทียบกับปลายตรึงอย่างไร?'
+          } },
+        { id:'angle_reflection', label:'📐 ผิวราบ · θᵢ = θᵣ', color:'#0c4a40',
+          prompts: {
+            claim:     '👉 ความสัมพันธ์ระหว่างมุมตกกระทบกับมุมสะท้อนคืออะไร · v เปลี่ยนหรือไม่?',
+            evidence:  '👉 ฐาน 3 Lab 32: θᵢ₁=___ θᵣ₁=___ · θᵢ₂=___ θᵣ₂=___ · θᵢ₃=___ θᵣ₃=___',
+            reasoning: '👉 ทำไม θᵣ = θᵢ เสมอ (เส้นปกติ + สมมาตร) · ทำไม v ไม่เปลี่ยน (ตัวกลางเดิม)?'
+          } }
+      ],
+      prompts: {
+        claim:     'ข้อค้นพบสั้น ๆ...',
+        evidence:  'ข้อมูลที่วัดได้จากฐาน...',
+        reasoning: 'เหตุผลที่เชื่อมหลักฐานกับข้อสรุป...'
+      },
+      allowImage: true,
+      sheetPrefix: 'CER_P'
+    }
   }
 };

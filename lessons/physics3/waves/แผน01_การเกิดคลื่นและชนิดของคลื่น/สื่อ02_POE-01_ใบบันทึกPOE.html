@@ -24,7 +24,14 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 .cell{background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px}
 .q{background:#fff8e1;border-left:6px solid #f9a825;padding:10px 14px;border-radius:8px;margin-bottom:10px;font-size:15px}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #bbdefb;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e3f2fd 28px);touch-action:none;cursor:crosshair;margin-top:8px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #1976d2;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#0d47a1;font-weight:600}
+.c-btn.active{background:#1976d2;color:#fff;border-color:#1976d2}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #1976d2;box-shadow:0 0 0 2px #fff,0 0 0 4px #1976d2}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #bbdefb;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
 </style></head>
 <body>
 
@@ -44,7 +51,17 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <h2>🔮 P · Predict (ทำนาย) <span class="badge">ก่อนทดลอง</span></h2>
     <div>ฉันคิดว่าลูกมะพร้าวจะ ☐ ถูกพาไปไกล &nbsp; ☐ ลอยขึ้น-ลงอยู่กับที่ &nbsp; ☐ ถูกพาไปแล้วหยุด</div>
     <div style="margin-top:6px"><b>เพราะเหตุใด:</b></div>
-    <div class="line"></div><div class="line"></div><div class="line"></div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ กระดานเขียน/วาดอธิบาย:</span>
+      <button class="c-btn active" id="tbp1-pencil" onclick="setTool('canvasP1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbp1-eraser" onclick="setTool('canvasP1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasP1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasP1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasP1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasP1" data-bg="lined" width="900" height="140"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
     <div class="conf"><b>ความมั่นใจ:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
   </div>
 
@@ -52,21 +69,55 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <h2>👁 O · Observe (สังเกต) <span class="badge">จาก Slinky + Simulation</span></h2>
     <div class="box2">
       <div class="cell"><b>รอบ 1 · Slinky + ริบบิ้น</b>
-        <div class="line"></div><div class="line"></div><div class="line"></div>
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tbo1-pencil" onclick="setTool('canvasO1','pencil',this)">✏️</button>
+          <button class="c-btn" id="tbo1-eraser" onclick="setTool('canvasO1','eraser',this)">⬜</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO1','#1a202c',this)"></div>
+          <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO1','#3182ce',this)"></div>
+          <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
+        </div>
+        <canvas id="canvasO1" data-bg="lined" width="420" height="130"></canvas>
+        <textarea class="ans-ta" rows="2" placeholder="บันทึกสิ่งที่สังเกต..." style="margin-top:4px"></textarea>
       </div>
       <div class="cell"><b>รอบ 2 · Sim wave-types.html</b>
-        <div class="line"></div><div class="line"></div><div class="line"></div>
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tbo2-pencil" onclick="setTool('canvasO2','pencil',this)">✏️</button>
+          <button class="c-btn" id="tbo2-eraser" onclick="setTool('canvasO2','eraser',this)">⬜</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO2','#1a202c',this)"></div>
+          <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO2','#3182ce',this)"></div>
+          <button class="c-btn" onclick="clearCanvas('canvasO2')" style="margin-left:auto;color:#c53030">🗑️</button>
+        </div>
+        <canvas id="canvasO2" data-bg="lined" width="420" height="130"></canvas>
+        <textarea class="ans-ta" rows="2" placeholder="บันทึกสิ่งที่สังเกต..." style="margin-top:4px"></textarea>
       </div>
     </div>
-    <div style="margin-top:8px">ทิศการสั่นของริบบิ้น/อนุภาค ............................. &nbsp; ทิศการเคลื่อนที่ของคลื่น .............................</div>
+    <div style="margin-top:8px">ทิศการสั่นของริบบิ้น/อนุภาค <input type="text" style="border:none;border-bottom:1.5px solid #999;padding:2px 4px;width:180px;font-family:inherit"> &nbsp; ทิศการเคลื่อนที่ของคลื่น <input type="text" style="border:none;border-bottom:1.5px solid #999;padding:2px 4px;width:180px;font-family:inherit"></div>
   </div>
 
   <div class="sec e">
     <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P↔O</span></h2>
-    <div>เปรียบเทียบ P กับ O: ตรงกันหรือไม่ เพราะอะไร?</div>
-    <div class="line"></div><div class="line"></div>
-    <div style="margin-top:4px"><b>สรุปหลักการ:</b> (อนุภาคเคลื่อนที่อย่างไร? พลังงานเดินทางอย่างไร?)</div>
-    <div class="line"></div><div class="line"></div><div class="line"></div>
+    <div><b>เปรียบเทียบ P กับ O:</b> ตรงกันหรือไม่ เพราะอะไร?</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe1-pencil" onclick="setTool('canvasE1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbe1-eraser" onclick="setTool('canvasE1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasE1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE1" data-bg="lined" width="900" height="120"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+    <div style="margin-top:8px"><b>สรุปหลักการ:</b> (อนุภาคเคลื่อนที่อย่างไร? พลังงานเดินทางอย่างไร?)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe2-pencil" onclick="setTool('canvasE2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbe2-eraser" onclick="setTool('canvasE2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasE2','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE2" data-bg="lined" width="900" height="140"></canvas>
+    <textarea class="ans-ta" rows="3" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
     <div class="conf"><b>ความมั่นใจในคำอธิบาย:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
   </div>
 
@@ -77,4 +128,17 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
   <div class="foot">POE-01 ชุด A · แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
 
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>

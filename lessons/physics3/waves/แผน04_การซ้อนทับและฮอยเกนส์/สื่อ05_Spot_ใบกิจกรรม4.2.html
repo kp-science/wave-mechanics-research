@@ -23,6 +23,12 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
 .check-row{display:flex;gap:20px;margin-top:8px;font-size:14.5px}
 .work-box{background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fde3cf 28px);border:1.5px dashed #fbbf24;border-radius:8px;padding:10px 12px;margin-top:8px;min-height:180px}
 .work-box-label{font-size:13px;color:#a0522d;font-weight:700;margin-bottom:6px;background:#fff;display:inline-block;padding:2px 8px;border-radius:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#ffedd5 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fed7aa;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#7c2d12;font-weight:600}
+.c-btn.active{background:#c2410c;color:#fff;border-color:#c2410c}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #c2410c;box-shadow:0 0 0 2px #fff,0 0 0 4px #c2410c}
 .subq{background:#fff;border:1px solid #fde3cf;border-radius:8px;padding:10px 12px;margin-top:8px;font-size:14.5px}
 .subq b{color:#7c2d12}
 .ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#064e3b}
@@ -30,7 +36,13 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
 .ak-label{background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
 .rubric{background:#fef3c7;border-left:6px solid #c2410c;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#7c2d12;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
 </style></head>
 <body>
 
@@ -73,18 +85,36 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
         </svg>
       </div>
 
-      <div class="claim">
-        <div class="who">💬 พี่บิ๊ก:</div>
-        <div class="say">"ลูก A แอมพลิจูดใหญ่กว่า พอชนกับ B · <b>A จะกลืน B หายไป</b> · หลังชน จะเหลือแค่คลื่น A วิ่งต่อไปขวา ส่วน B หายไปตลอดกาลเพราะพลังงานน้อยกว่า"</div>
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 พี่บิ๊ก:</div>
+          <div class="say">"ลูก A แอมพลิจูดใหญ่กว่า พอชนกับ B · <b>A จะกลืน B หายไป</b> · หลังชน จะเหลือแค่คลื่น A วิ่งต่อไปขวา ส่วน B หายไปตลอดกาลเพราะพลังงานน้อยกว่า"</div>
+        </div>
+        <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="160"></canvas>
       </div>
 
-      <div class="subq">
-        <b>(ก) จุดที่ผิด:</b><br>
-        ☐ ผิดที่เหตุผล A ใหญ่กว่าเลยชนะ &nbsp; ☐ ผิดที่บอก B หายไปตลอดกาล &nbsp; ☐ ผิดทั้งสองจุด &nbsp; ☐ ไม่ผิด<br>
-        <b>(ข) Misconception ที่เกี่ยวข้อง:</b> ☐ M4.1 ☐ M4.2 ☐ M4.3 ☐ M4.4
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
       </div>
-
-      <div class="work-box"><div class="work-box-label">✏️ (ค) เขียนคำอธิบายที่ถูกต้อง (อ้างหลักซ้อนทับ + สิ่งที่เกิดหลังพ้นกัน):</div></div>
+      <canvas id="canvas1" data-bg="lined" width="900" height="200"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#7c2d12">⌨️ พิมพ์คำอธิบาย (ค):</label>
+      <textarea id="q1-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;padding:6px 10px;border:1.5px solid #fed7aa;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
 
       <div class="ans-key">
         <span class="ak-label">เฉลย</span>(ก) <b>ผิดทั้งสองจุด</b> · (ข) <b>M4.3</b> (A ใหญ่ไม่ "กลืน" A เล็ก) + แฝง M4.1 (รูปเปลี่ยนถาวร) · (ค) ขณะพบ: ยอดซ้อนยอด A รวม = 5 + 2 = <b>7 ซม.</b> (เสริมชั่วขณะ) · หลังพ้น: <b>ทั้งสองลูกคงสภาพ</b> — A ยังยอด 5 ซม. ไปขวา · B ยังยอด 2 ซม. ไปซ้าย · ไม่มีใคร "กิน" ใคร (หลักซ้อนทับ y = y₁ + y₂)
@@ -120,18 +150,36 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
         </svg>
       </div>
 
-      <div class="claim">
-        <div class="who">💬 น้องนุ่น:</div>
-        <div class="say">"ขณะที่เชือกแบน · ยอดกับท้อง<b>หักล้างกันหมด</b> · พลังงานของคลื่นทั้งสอง<b>หายไปถาวรกลายเป็นศูนย์</b> · หลังพ้นจุดนั้นก็ไม่มีคลื่นอีกเลย เพราะถูกลบไปแล้ว"</div>
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องนุ่น:</div>
+          <div class="say">"ขณะที่เชือกแบน · ยอดกับท้อง<b>หักล้างกันหมด</b> · พลังงานของคลื่นทั้งสอง<b>หายไปถาวรกลายเป็นศูนย์</b> · หลังพ้นจุดนั้นก็ไม่มีคลื่นอีกเลย เพราะถูกลบไปแล้ว"</div>
+        </div>
+        <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="160"></canvas>
       </div>
 
-      <div class="subq">
-        <b>(ก) จุดที่ผิด:</b><br>
-        ☐ ผิดที่บอกเชือกแบน &nbsp; ☐ ผิดที่บอกพลังงานหายถาวร &nbsp; ☐ ผิดที่บอกไม่มีคลื่นหลังพ้น &nbsp; ☐ ถูกทั้งหมด<br>
-        <b>(ข) Misconception ที่เกี่ยวข้อง:</b> ☐ M4.1 ☐ M4.2 ☐ M4.3 ☐ M4.4
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
       </div>
-
-      <div class="work-box"><div class="work-box-label">✏️ (ค) อธิบาย: ขณะเชือกแบน พลังงานคลื่นอยู่ที่ไหน? · หลังพ้นกันเกิดอะไรขึ้น?</div></div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="200"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#7c2d12">⌨️ พิมพ์คำอธิบาย (ค):</label>
+      <textarea id="q2-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;padding:6px 10px;border:1.5px solid #fed7aa;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
 
       <div class="ans-key">
         <span class="ak-label">เฉลย</span>(ก) <b>ผิดที่บอกพลังงานหายถาวร + ผิดที่บอกไม่มีคลื่นหลังพ้น</b> · (ข) <b>M4.2</b> + แฝง M4.1 · (ค) ขณะเชือกแบน <b>y = 0 แต่ ∂y/∂t ≠ 0</b> — พลังงานศักย์แปลงเป็นพลังงานจลน์ของอนุภาคตัวกลาง (อนุภาคเคลื่อนที่ด้วยความเร็วสูงสุด) · หักล้าง<b>ชั่วขณะ</b>เท่านั้น · หลังพ้นกัน pulse ทั้งสอง<b>กลับคืนรูปเดิม</b> A เดินทางไปขวา ลง 3 ซม., B เดินทางไปซ้าย ขึ้น 3 ซม. — คลื่นไม่เคยหาย
@@ -175,14 +223,36 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
         </svg>
       </div>
 
-      <div class="subq">
-        <b>(ก) จุดที่ผิด (ติ๊กทุกข้อ):</b><br>
-        ☐ ข้อสรุปว่า "หน้าคลื่นยังเป็นระนาบตรง" ผิด &nbsp; ☐ ข้อสรุปว่า "ฮอยเกนส์ใช้ได้เฉพาะคลื่นน้ำ" ผิด<br>
-        ☐ การวาด wavelet วงกลมผิด &nbsp; ☐ ถูกทั้งหมด<br>
-        <b>(ข) Misconception ที่เกี่ยวข้อง:</b> ☐ M4.1 ☐ M4.2 ☐ M4.3 ☐ M4.4
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนภาพ/ข้อสรุปด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 ข้อสรุปในใบงาน:</div>
+          <div class="say">"หลังผ่านช่อง · หน้าคลื่นยัง<b>เป็นระนาบตรงเหมือนเดิม</b> เพราะฮอยเกนส์ใช้ได้<b>เฉพาะคลื่นน้ำ</b> ไม่ใช่คลื่นเสียง"</div>
+        </div>
+        <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="120"></canvas>
       </div>
 
-      <div class="work-box"><div class="work-box-label">✏️ (ค) รูปหน้าคลื่นหลังผ่านช่องแคบควรเป็นอย่างไร? + ฮอยเกนส์ใช้ได้กับคลื่นชนิดใดบ้าง? พร้อมตัวอย่าง</div></div>
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#7c2d12">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas3','#3182ce',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas3" data-bg="lined" width="900" height="200"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#7c2d12">⌨️ พิมพ์คำอธิบาย (ค):</label>
+      <textarea id="q3-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;padding:6px 10px;border:1.5px solid #fed7aa;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
 
       <div class="ans-key">
         <span class="ak-label">เฉลย</span>(ก) <b>ข้อ 1 และ 2 ผิด</b> (การวาด wavelet ถูกแล้ว) · (ข) <b>M4.4</b> (ฮอยเกนส์ใช้ได้ทุกคลื่น) + M4.1 (รูปไม่เปลี่ยน/ไม่เลี้ยวเบน) · (ค) ช่องแคบ d ≈ λ · หน้าคลื่นใหม่<b>โค้งเป็นวงกลม</b> (เลี้ยวเบนชัดเจน) · ฮอยเกนส์ใช้ได้กับ<b>คลื่นทุกชนิด</b> — น้ำ (ripple tank), เสียง (ได้ยินรอบมุมตึก), แสง (ผ่าน slit ในทัศนศาสตร์), คลื่นแผ่นดินไหว (P, S waves)
@@ -198,5 +268,18 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
   <div class="foot">ใบกิจกรรม 4.2 · Spot the Error · แผน 4 · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
 </div>
 
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
 </body>
 </html>

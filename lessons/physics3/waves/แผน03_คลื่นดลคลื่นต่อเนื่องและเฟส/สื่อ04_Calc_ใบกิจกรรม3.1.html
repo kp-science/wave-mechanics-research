@@ -27,7 +27,13 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
 .line{border-bottom:1.5px solid #aaa;height:26px;margin:4px 0}
 .formula{background:#e8f5e9;border:1.5px solid #81c784;border-radius:8px;padding:8px 12px;margin:8px 0;font-size:14px;text-align:center}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:10px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f3e8ff 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #d8b4fe;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600}
+.c-btn.active{background:#6b21a8;color:#fff;border-color:#6b21a8}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #6b21a8;box-shadow:0 0 0 2px #fff,0 0 0 4px #6b21a8}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
 </style></head>
 <body>
 <div class="page">
@@ -56,8 +62,19 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
     <div class="stem">คลื่นต่อเนื่องบนเชือกเส้นหนึ่งมีความยาวคลื่น λ = 0.40 m · จุด A และจุด B ห่างกัน <b>Δx = 0.10 m</b> (เท่ากับ λ/4) · จงหา <b>ความต่างเฟส Δφ</b> ทั้งในหน่วย <u>องศา</u> และ <u>เรเดียน</u></div>
     <div class="work">
       <div class="cell"><label>กำหนด / ต้องหา:</label><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><label>สมการ + คำนวณ + คำตอบ:</label><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#4c1d95">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas1" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#4c1d95">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q1-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 2 -->
@@ -69,8 +86,19 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
     <i>(Hint: ถ้าได้มากกว่า 360° ให้ลบ 360° จนเหลือ 0° ≤ Δφ &lt; 360°)</i></div>
     <div class="work">
       <div class="cell"><label>กำหนด / ต้องหา:</label><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><label>สมการ + คำนวณ + คำตอบ:</label><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#4c1d95">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas2" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#4c1d95">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q2-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
     <div style="margin-top:6px;font-size:13px;color:#4a5568">💭 <b>สรุปเพิ่ม:</b> ณ ขณะหนึ่ง ถ้าจุด C อยู่ที่ "ยอด" · จุด D จะอยู่ที่ __________</div>
   </div>
 
@@ -82,8 +110,19 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
     <div class="stem">คลื่นน้ำความยาวคลื่น λ = 25 cm · จุดสองจุดบนคลื่นห่างกัน <b>Δx = 30 cm</b> · จงหา Δφ ทั้งในหน่วยองศาและเรเดียน (ตอบให้อยู่ในช่วง 0° – 360°)</div>
     <div class="work">
       <div class="cell"><label>กำหนด / ต้องหา:</label><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><label>สมการ + คำนวณ + คำตอบ:</label><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#4c1d95">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas3','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas3" data-bg="lined" width="900" height="240"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#4c1d95">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q3-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 4 -->
@@ -94,8 +133,19 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
     <div class="stem">ต้องการให้จุด 2 จุดบนคลื่นต่างเฟสกัน <b>Δφ = 120°</b> · ถ้าคลื่นมีความยาวคลื่น λ = 60 cm · จุดทั้งสองต้องห่างกันเท่าใด? (ตอบในหน่วย cm)</div>
     <div class="work">
       <div class="cell"><label>กำหนด / ต้องหา:</label><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><label>สมการ + คำนวณ + คำตอบ:</label><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#4c1d95">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas4','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas4','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas4" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#4c1d95">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q4-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 5 -->
@@ -110,9 +160,18 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
         <li>ถ้าครู "สะบัด 1 ครั้ง" (คลื่นดล) บนเชือกเส้นเดิม ความเร็วของคลื่นดล<u>จะเท่ากับ</u> หรือ <u>ต่างจาก</u> 4 m/s? อธิบายเหตุผล</li>
       </ol>
     </div>
-    <div class="cell" style="margin-top:6px"><label>(1) λ = </label><div class="line"></div></div>
-    <div class="cell" style="margin-top:6px"><label>(2) Δφ = </label><div class="line"></div><div class="line"></div></div>
-    <div class="cell" style="margin-top:6px"><label>(3) คำตอบ + เหตุผล:</label><div class="line"></div><div class="line"></div><div class="line"></div></div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#4c1d95">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb5-pencil" onclick="setTool('canvas5','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb5-eraser" onclick="setTool('canvas5','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas5','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas5','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas5','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas5')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas5" data-bg="lined" width="900" height="280"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#4c1d95">⌨️ พิมพ์คำตอบ (1) (2) (3):</label>
+    <textarea id="q5-ans" rows="4" placeholder="(1) λ = ... (2) Δφ = ... (3) ..." style="width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div class="formula">
@@ -121,4 +180,17 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
 
   <div class="foot">ใบกิจกรรม 3.1 · แผน 3 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
+<script>
+const canvasState = {};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>

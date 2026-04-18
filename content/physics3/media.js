@@ -258,5 +258,72 @@ window.KP_PLAN_MEDIA = {
       'MJ-01 → คำถามเด่นเป็น Hook แผน 5 (การสะท้อน)',
       'OB-01 → Perseverance (A1 ≥ 80%) · Respect (A2 ≥ 80%)'
     ]
+  },
+  5: {
+    folder: 'lessons/physics3/waves/แผน05_การสะท้อนของคลื่น',
+    title: 'แผน 5 — การสะท้อนของคลื่น',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 9–10 (100 นาที) · ว2.1 ม.5/3',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 5 (ฉบับสมบูรณ์)', file:'แผน5_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA 8 ตัวชี้วัด · Timeline · Theme สีเขียวมิ้นท์ (teal)', chips:[] },
+        { cls:'sim', no:'SIM1', t:'Lab 38 — Wave Speed on String (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/38.%20wave-speed-on-string.html',
+          d:'Virtual Lab · toggle ปลายตรึง/ปลายอิสระ · ส่ง pulse · วัด v ก่อน/หลังสะท้อน · สังเกตการพลิกเฟส · ใช้ใน POE-05 ฐาน 2',
+          chips:[['m','M5.1'],['m','M5.2'],['k','K1'],['p','P1']] },
+        { cls:'sim', no:'SIM2', t:'Lab 32 — Wave Reflection (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/32.%20wave-reflection.html',
+          d:'Virtual Lab · คลื่นผิวน้ำตกกระทบผนัง · วัด θᵢ/θᵣ · เปลี่ยน A / θ ได้ · ยืนยัน θᵣ = θᵢ และ A\' vs A · ใช้ใน POE-05 ฐาน 3',
+          chips:[['m','M5.3'],['k','K1'],['k','K2'],['p','P1']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e2', no:'02', t:'POE-05 Interactive · ใบบันทึก P / O / E', file:'สื่อ02_POE-05_ใบบันทึกPOE.html',
+          d:'Predict 4 ข้อ (เฟสปลายตรึง/ปลายอิสระ · v · A\') ใช้ palette ลากรูปคลื่น ∧ ∨ ── A↑ A↓ · Observe 3 ฐาน (Slinky + Lab 38 + Lab 32) · canvas วาดได้ · Explain CER + checklist · auto-check θ diff + v diff',
+          meta:'ใช้ตลอด E1–E3 · 35 นาที',
+          chips:[['p','P1'],['p','P2'],['m','M5.1'],['m','M5.2'],['m','M5.3']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 5.1 · Calc Reflection', file:'สื่อ03_Calc_ใบกิจกรรม5.1.html',
+          d:'4 ข้อไล่ระดับ · (1) วาดหน้าคลื่นสะท้อนผิวราบ θ=40° scene-stack overlay (2) คำนวณ v ก่อน/หลัง (3) ผิวโค้งเว้า → ค้นพบ F (4) Echolocation ค้างคาว · ทุกข้อมี canvas + text input · ใช้ worksheet-core.js',
+          meta:'ใช้ในฉาก E4 Elaborate · 15 นาที',
+          chips:[['k','K1'],['k','K2'],['p','P1'],['p','P2'],['m','M5.1'],['m','M5.2']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 5.2 · Spot the Error', file:'สื่อ04_Spot_ใบกิจกรรม5.2.html',
+          d:'3 สถานการณ์ · "ปลายตรึงกลับมาเดิม" (M5.1) · "สะท้อนแล้วช้าลง" (M5.2) · "A\' = A เสมอ" (M5.3) · claim canvas overlay + canvas อธิบายที่ถูก',
+          meta:'ใช้ในฉาก E4 Elaborate · 12 นาที',
+          chips:[['k','K3'],['p','P2'],['m','M5.1'],['m','M5.2'],['m','M5.3']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F5 Four-tier · Pre + Post', file:'สื่อ05_F5_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier (T1 คำตอบ + T2 มั่นใจ + T3 เหตุผล + T4 มั่นใจ) · M5.1 (ปลายตรึงพลิกเฟส) · M5.2 (v คงที่) · M5.3 (A\' ≤ A) · SVG + Answer Key + Interpretation rubric',
+          meta:'ใช้ในฉาก F5 Pre (5\') + F5 Post (7\')',
+          chips:[['k','K1'],['k','K3'],['m','M5.1'],['m','M5.2'],['m','M5.3'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-01 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Perseverance (A1) + Respect (A2) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 100 นาที',
+          chips:[['a','A1'],['a','A2'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-05',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: 🔒 ปลายตรึง (พลิกเฟส) · 🔓 ปลายอิสระ (ไม่พลิก) · 📐 ผิวราบ θᵢ=θᵣ · ทุกกลุ่มส่ง Claim+Evidence+Reasoning พร้อมกัน · ครูฉายจอเปรียบเทียบ real-time',
+          meta:'ใช้ในฉาก E3 · 8 นาที',
+          chips:[['p','P2'],['k','K3'],['a','A2'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F5 Pre/Post → % Sound · Misconception M5.1/M5.2/M5.3 · Normalized gain ของแผน 5 · เป้าหมายลด MC ของ M5.1 ≥ 50%, M5.2/M5.3 ≥ 30%',
+      'POE-05 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 5.1 → คะแนนเฉลี่ย ≥ 70% (เกณฑ์ K1, K2, P1)',
+      'Spot 5.2 → Conceptual Change · เชื่อม M5.1–5.3 กับหลักฐาน',
+      'CER Board → คลัง Claim-Evidence-Reasoning เรื่องสะท้อน · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-01 → คำถามเด่นเป็น Hook แผน 6 (การหักเห)',
+      'OB-01 → Perseverance (A1 ≥ 80%) · Respect (A2 ≥ 80%)'
+    ]
   }
 };

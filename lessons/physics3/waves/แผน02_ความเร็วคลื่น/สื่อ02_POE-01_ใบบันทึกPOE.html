@@ -37,7 +37,14 @@ table.data th{background:#e3f2fd;color:#0d47a1;font-size:12px}
 .change-var .pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
 .change-var .vbox{background:#fff;border:1.5px solid #ffcdd2;border-radius:8px;padding:8px;font-size:13px}
 .change-var .vbox b{color:#c62828}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #a5d6a7;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#c8e6c9 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #a5d6a7;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#1b5e20;font-weight:600}
+.c-btn.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #2e7d32;box-shadow:0 0 0 2px #fff,0 0 0 4px #2e7d32}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
 </style></head>
 <body>
 
@@ -63,7 +70,17 @@ table.data th{background:#e3f2fd;color:#0d47a1;font-size:12px}
       ☐ ความถี่ f &nbsp; ☐ แรงตึง T &nbsp; ☐ แอมพลิจูด A &nbsp; ☐ มวลต่อความยาว μ
     </div>
     <div style="margin-top:6px"><b>เพราะเหตุใด:</b></div>
-    <div class="line"></div><div class="line"></div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานเขียน/วาดอธิบาย:</span>
+      <button class="c-btn active" id="tbp1-pencil" onclick="setTool('canvasP1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbp1-eraser" onclick="setTool('canvasP1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasP1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#2e7d32" onclick="setColor('canvasP1','#2e7d32',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasP1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasP1" data-bg="lined" width="900" height="120"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
     <div class="conf"><b>ความมั่นใจ:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
   </div>
 
@@ -183,11 +200,40 @@ table.data th{background:#e3f2fd;color:#0d47a1;font-size:12px}
   <div class="sec e">
     <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P↔O · 7 นาที</span></h2>
     <div><b>เปรียบเทียบ P กับ O:</b> คำทำนายกับผลการวัดตรงกันหรือไม่ ข้อใดต่างกัน เพราะอะไร?</div>
-    <div class="line"></div><div class="line"></div>
-    <div style="margin-top:6px"><b>สรุปหลักการ v = fλ = √(T/μ):</b> (อธิบายว่าทำไม v ไม่ขึ้นกับ f หรือ A และขึ้นกับ T, μ อย่างไร)</div>
-    <div class="line"></div><div class="line"></div><div class="line"></div>
-    <div style="margin-top:6px"><b>การวัด 4 วิธีให้ค่า v ใกล้เคียงกัน สะท้อนอะไร?</b></div>
-    <div class="line"></div><div class="line"></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe1-pencil" onclick="setTool('canvasE1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbe1-eraser" onclick="setTool('canvasE1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#2e7d32" onclick="setColor('canvasE1','#2e7d32',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE1" data-bg="lined" width="900" height="120"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="พิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>สรุปหลักการ v = fλ = √(T/μ):</b> (อธิบายว่าทำไม v ไม่ขึ้นกับ f หรือ A และขึ้นกับ T, μ อย่างไร)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe2-pencil" onclick="setTool('canvasE2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbe2-eraser" onclick="setTool('canvasE2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#2e7d32" onclick="setColor('canvasE2','#2e7d32',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE2" data-bg="lined" width="900" height="140"></canvas>
+    <textarea class="ans-ta" rows="3" placeholder="พิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>การวัด 4 วิธีให้ค่า v ใกล้เคียงกัน สะท้อนอะไร?</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe3-pencil" onclick="setTool('canvasE3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tbe3-eraser" onclick="setTool('canvasE3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#2e7d32" onclick="setColor('canvasE3','#2e7d32',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE3" data-bg="lined" width="900" height="120"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="พิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
     <div class="conf"><b>ความมั่นใจในคำอธิบาย:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
   </div>
 
@@ -198,4 +244,17 @@ table.data th{background:#e3f2fd;color:#0d47a1;font-size:12px}
   <div class="foot">POE-01 · แผน 2 · Lab 38 Wave Speed on a String · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
 
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>

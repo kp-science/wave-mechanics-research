@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 5.1 · Calc Reflection (แผน 5) · Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0fdfa;color:#1a202c;font-size:15.5px;line-height:1.55;padding:16px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(13,148,136,.12);padding:24px 28px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#0c4a40;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #99f6e4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#f0fdfa;border-left:6px solid #14b8a6;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #99f6e4;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#f9fffe}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#0d9488;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#0c4a40;font-size:16px}
+.level{font-size:11.5px;background:#f0fdfa;color:#0c4a40;padding:2px 8px;border-radius:10px;border:1px solid #99f6e4}
+.level.easy{background:#dcfce7;color:#14532d;border-color:#86efac}
+.level.mid{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+.level.hard{background:#fce4ec;color:#ad1457;border-color:#f48fb1}
+.item-body{font-size:14.5px}
+.draw-task{background:#ecfeff;border-left:4px solid #0d9488;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:13.5px;color:#0c4a40}
+.draw-task b{color:#0f766e}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #99f6e4;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#0f766e;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff;border-color:#0d9488}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #0d9488;box-shadow:0 0 0 2px #fff,0 0 0 4px #0d9488}
+.scene-stack{position:relative;border:2px solid #99f6e4;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #99f6e4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#b2f5ea 28px);touch-action:none;cursor:crosshair}
+.scene-hint{font-size:12px;color:#0f766e;margin-top:4px}
+textarea,input[type=text],input[type=number]{font-family:inherit;font-size:14px;padding:6px 10px;border:1.5px solid #99f6e4;border-radius:6px;width:100%;resize:vertical}
+textarea:focus,input:focus{outline:2px solid #0d9488;outline-offset:-1px}
+.work-box{background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#b2f5ea 28px);border:1.5px dashed #14b8a6;border-radius:8px;padding:10px 12px;margin-top:8px;min-height:160px}
+.work-box.xl{min-height:200px}
+.work-box-label{font-size:13px;color:#0f766e;font-weight:700;margin-bottom:6px;background:#fff;display:inline-block;padding:2px 8px;border-radius:6px}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:8px 12px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#f0fdfa;border-left:6px solid #0d9488;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+table.data{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+table.data th{background:#0d9488;color:#fff;padding:6px 10px;text-align:center;font-weight:700}
+table.data td{border:1px solid #99f6e4;padding:6px 10px;text-align:center}
+table.data tr:nth-child(even){background:#f0fdfa}
+.formula-box{background:#e0f2f1;border-left:4px solid #0d9488;padding:8px 12px;border-radius:6px;font-size:14px;margin:8px 0}
+.submit-bar{position:sticky;bottom:10px;background:#0c4a40;border-radius:10px;padding:10px 16px;margin-top:18px;display:flex;gap:10px;align-items:center;z-index:10;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.submit-btn{background:#10b981;color:#fff;border:none;padding:10px 22px;border-radius:8px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.submit-btn:hover{background:#059669}
+.submit-status{color:#ccfbf1;font-size:13px;flex:1}
+.result-box{background:#f0fdfa;border:2px solid #0d9488;border-radius:10px;padding:12px 16px;margin-top:14px;display:none}
+.result-box pre{white-space:pre-wrap;font-family:inherit;font-size:13px;color:#0c4a40;margin:0}
+@media print{
+  body{background:#fff;padding:0}
+  .page{box-shadow:none;border-radius:0}
+  .ans-key,.submit-bar,.canvas-toolbar{display:none}
+  .scene-stack canvas.overlay{display:none}
+}
+</style></head>
+<body data-ws-id="plan5-calc-5.1">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบกิจกรรม 5.1 · Calc Reflection</h1>
+      <div style="font-size:13px;color:#555"><span class="tag">แผน 5</span><span class="tag">ขั้น E4</span> 4 ข้อ ไล่ระดับ · ประเมิน K5.1, K5.2, P5.1 · Rubric 0–4 · เวลา 15 นาที</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-นามสกุล"></label>
+      <label>เลขที่ <input type="text" id="s-num" class="short"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short"></label>
+      <label>กลุ่ม <input type="text" id="s-grp" class="short"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 โจทย์ฝึก:</b> ประยุกต์<strong>กฎการสะท้อนของคลื่น</strong> θᵢ = θᵣ (วัดจากเส้น Normal) · แนวคิด: (1) หน้าคลื่น (wave front) คือแนวจุดเฟสเดียวกัน · <b>ทิศการเคลื่อนที่</b> ของคลื่นตั้งฉากกับหน้าคลื่นเสมอ · (2) ที่ผิวสะท้อน ทิศเคลื่อนที่สะท้อนจะทำมุม θᵣ = θᵢ กับ Normal · แสดงวิธีทุกข้อ
+  </div>
+
+  <!-- ═══ ข้อ 1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">วาดหน้าคลื่นสะท้อน + ทิศการเคลื่อนที่ (ผิวราบ)</span>
+      <span class="level easy">★ ง่าย</span>
+    </div>
+    <div class="item-body">
+      จากภาพ <b>หน้าคลื่นตกกระทบ (เส้นส้ม)</b> วิ่งเข้าชนผิวสะท้อนแนวนอน · ทำมุม θᵢ = 40° กับ Normal (วัดจาก Normal ถึงทิศการเคลื่อนที่ของคลื่นตกกระทบ)
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน — วาดเพิ่มบนภาพ 3 สิ่ง:</b><br>
+        <span style="color:#3182ce">①</span> <b>ทิศการเคลื่อนที่ของคลื่นตกกระทบ</b> (ลูกศร ⟂ หน้าคลื่นส้ม) พร้อมระบุ θᵢ<br>
+        <span style="color:#e53e3e">②</span> <b>หน้าคลื่นสะท้อน</b> (เส้นคู่ขนาน) + <b>ทิศการเคลื่อนที่สะท้อน</b> พร้อมระบุ θᵣ<br>
+        <span style="color:#718096">③</span> <b>เส้น Normal</b> ที่จุดกระทบ (ถ้ายังไม่ชัด)
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)" title="ดำ"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)" title="น้ำเงิน (ตกกระทบ)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)" title="แดง (สะท้อน)"></div>
+        <div class="c-color" style="background:#718096" onclick="setColor('canvas1','#718096',this)" title="เทา (Normal)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+      </div>
+      <div class="scene-stack">
+        <svg class="bg" viewBox="0 0 900 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="g1" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e0fdf4" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="900" height="260" fill="url(#g1)"/>
+          <!-- Reflecting surface: horizontal line at y=200 -->
+          <line x1="60" y1="200" x2="840" y2="200" stroke="#c2410c" stroke-width="4"/>
+          <!-- hatch marks below surface -->
+          <g stroke="#9ca3af" stroke-width="1.5">
+            <line x1="90" y1="200" x2="75" y2="218"/><line x1="140" y1="200" x2="125" y2="218"/>
+            <line x1="190" y1="200" x2="175" y2="218"/><line x1="240" y1="200" x2="225" y2="218"/>
+            <line x1="290" y1="200" x2="275" y2="218"/><line x1="340" y1="200" x2="325" y2="218"/>
+            <line x1="390" y1="200" x2="375" y2="218"/><line x1="440" y1="200" x2="425" y2="218"/>
+            <line x1="490" y1="200" x2="475" y2="218"/><line x1="540" y1="200" x2="525" y2="218"/>
+            <line x1="590" y1="200" x2="575" y2="218"/><line x1="640" y1="200" x2="625" y2="218"/>
+            <line x1="690" y1="200" x2="675" y2="218"/><line x1="740" y1="200" x2="725" y2="218"/>
+            <line x1="790" y1="200" x2="775" y2="218"/>
+          </g>
+          <text x="750" y="240" font-size="13" fill="#c2410c" font-weight="700" font-family="Sarabun,sans-serif">ผิวสะท้อน</text>
+          <!-- Impact point at (450, 200) -->
+          <circle cx="450" cy="200" r="5" fill="#c2410c"/>
+          <text x="460" y="220" font-size="12" fill="#c2410c" font-weight="700" font-family="Sarabun,sans-serif">จุดกระทบ</text>
+          <!-- Pre-drawn Normal (dashed gray) as guide -->
+          <line x1="450" y1="40" x2="450" y2="200" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="6,4"/>
+          <text x="456" y="50" font-size="12" fill="#9ca3af" font-family="Sarabun,sans-serif">Normal</text>
+          <!-- Incident wave fronts: 4 parallel orange lines tilted, coming from upper-left
+               Motion dir makes 40° with Normal (vertical). Motion unit = (sin40, cos40) ≈ (0.643, 0.766)
+               Wave front perpendicular = (-cos40, sin40) ≈ (-0.766, 0.643) → slope = 0.643/(-0.766)
+               Each front passes through impact - k*40*(0.643,0.766) for k=1..4 -->
+          <!-- Front k=1: center (424.3, 169.4), direction (-0.766, 0.643) × ±80 -->
+          <line x1="485" y1="118" x2="363" y2="221" stroke="#ea8033" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- k=2: center (398.6, 138.7) -->
+          <line x1="460" y1="87" x2="337" y2="190" stroke="#ea8033" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- k=3: center (372.9, 108.1) -->
+          <line x1="434" y1="57" x2="311" y2="159" stroke="#ea8033" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- k=4: center (347.2, 77.4) -->
+          <line x1="408" y1="26" x2="286" y2="129" stroke="#ea8033" stroke-width="3.5" stroke-linecap="round"/>
+          <!-- angle marker θᵢ reference arc (faint) -->
+          <path d="M 430 160 A 40 40 0 0 0 450 160" fill="none" stroke="#d1d5db" stroke-width="1" stroke-dasharray="2,2"/>
+          <text x="60" y="30" font-size="14" fill="#c2410c" font-weight="700" font-family="Sarabun,sans-serif">หน้าคลื่นตกกระทบ (Wave fronts) — θᵢ = 40°</text>
+          <text x="60" y="50" font-size="12" fill="#6b7280" font-family="Sarabun,sans-serif">ทิศการเคลื่อนที่ ⟂ หน้าคลื่น · วัดมุมจาก Normal</text>
+        </svg>
+        <canvas id="canvas1" class="overlay" width="900" height="260"></canvas>
+      </div>
+      <div class="scene-hint">💡 กริด 30×30 px · เส้นส้ม = หน้าคลื่น · ลูกศรทิศเคลื่อนที่ตั้งฉากกับหน้าคลื่น</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b></div>
+      <div style="margin-left:14px">
+        (ก) θᵣ = ______° &nbsp; (ข) ถ้า θᵢ เพิ่มเป็น 60° θᵣ = ______° และหน้าคลื่นสะท้อนเอียงต่างจากเดิมอย่างไร?
+      </div>
+      <textarea id="q1-ans" rows="2" placeholder="(ก)... (ข)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) θᵣ = <b>40°</b> · ทิศเคลื่อนที่สะท้อนทำมุม 40° กับ Normal อยู่ฝั่งตรงข้าม · หน้าคลื่นสะท้อนตั้งฉากกับทิศใหม่ เอียงสะท้อนกระจกกับหน้าคลื่นตกกระทบ · (ข) θᵣ = <b>60°</b> · หน้าคลื่นสะท้อนเอียงมากขึ้น (ชันจากแนวนอนน้อยลง — ใกล้ขนานกับผิวสะท้อนมากขึ้น)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">คำนวณ v คลื่นก่อนและหลังสะท้อน</span>
+      <span class="level mid">★★ กลาง</span>
+    </div>
+    <div class="item-body">
+      คลื่นน้ำแผ่ผ่านผิวน้ำด้วย <b>f = 5 Hz</b> · ก่อนสะท้อนวัด λ₁ = 8 cm · หลังสะท้อนวัด λ₂ = 8 cm
+
+      <div class="formula-box">สูตร: <b>v = f × λ</b> &nbsp;·&nbsp; ความถี่ f คงที่ตลอดการสะท้อน</div>
+
+      <table class="data">
+        <tr><th>ปริมาณ</th><th>ก่อนสะท้อน</th><th>หลังสะท้อน</th></tr>
+        <tr><td><b>f</b> (Hz)</td><td>5</td><td>5</td></tr>
+        <tr><td><b>λ</b> (cm)</td><td>8</td><td>8</td></tr>
+        <tr><td><b>v</b> (cm/s)</td>
+          <td><input type="number" id="q2-v1" step="0.1" placeholder="คำนวณ"></td>
+          <td><input type="number" id="q2-v2" step="0.1" placeholder="คำนวณ"></td>
+        </tr>
+      </table>
+
+      <div style="margin-top:10px"><b>คำถาม:</b> (ก) คำนวณ v ก่อน/หลังสะท้อน &nbsp; (ข) v เปลี่ยนหรือไม่ เพราะเหตุใด? &nbsp; (ค) ถ้า λ₂ &gt; λ₁ แปลว่าเกิดอะไร</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#0f766e">✍️ กระดานแสดงวิธีทำ:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="240"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#0c4a40">⌨️ พิมพ์คำตอบ (ข้อ ก ข ค):</label>
+      <textarea id="q2-ans" rows="3" placeholder="(ก) v₁ = ... v₂ = ... (ข)... (ค)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) v₁ = v₂ = <b>40 cm/s</b> · (ข) <b>ไม่เปลี่ยน</b> เพราะคลื่นกลับในตัวกลางเดิม · v ขึ้นกับคุณสมบัติตัวกลาง ไม่ใช่ทิศ · (ค) ถ้า λ₂ &gt; λ₁ แสดงว่าคลื่น<b>ส่งผ่าน</b>ไปตัวกลางต่างชนิด (ไม่ใช่การสะท้อน)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">วาดทิศการเคลื่อนที่สะท้อนจากผิวโค้งเว้า</span>
+      <span class="level mid">★★ กลาง</span>
+    </div>
+    <div class="item-body">
+      ภาพแสดง<b>หน้าคลื่นระนาบ (เส้นส้ม)</b> เคลื่อนที่ขนานกับแกนหลัก เข้าชนผิวสะท้อนโค้งเว้า
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน — วาดบนภาพ:</b><br>
+        <span style="color:#e53e3e">①</span> <b>หน้าคลื่นสะท้อน</b> (เส้นโค้งที่บรรจบกัน) ทับลงบนภาพ<br>
+        <span style="color:#0d9488">②</span> ทำเครื่องหมายจุดที่หน้าคลื่นสะท้อนทุกเส้น<b>บรรจบกัน</b> และตั้งชื่อให้<br>
+        <span style="color:#1a202c">③</span> เลือกจุดบนผิวโค้งใดจุดหนึ่ง วาดเส้น Normal + วัดมุม θᵢ, θᵣ เพื่อยืนยันกฎการสะท้อน
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)" title="ดำ"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)" title="แดง (หน้าคลื่นสะท้อน)"></div>
+        <div class="c-color" style="background:#0d9488" onclick="setColor('canvas3','#0d9488',this)" title="เขียว (โฟกัส/Normal)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+      </div>
+      <div class="scene-stack">
+        <svg class="bg" viewBox="0 0 900 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="g3" width="30" height="30" patternUnits="userSpaceOnUse">
+              <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e0fdf4" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="900" height="320" fill="url(#g3)"/>
+          <!-- Concave reflector: opens LEFT (toward incident waves) · ) shape bulging right
+               reflective surface on left (inner/concave side), back/convex on right -->
+          <path d="M 710,30 Q 770,160 710,290" fill="none" stroke="#c2410c" stroke-width="4"/>
+          <!-- hatching on convex (right/back) side — outside the curve -->
+          <g stroke="#9ca3af" stroke-width="1.5">
+            <line x1="717" y1="40" x2="742" y2="32"/><line x1="740" y1="90" x2="765" y2="84"/>
+            <line x1="755" y1="135" x2="780" y2="132"/><line x1="770" y1="160" x2="795" y2="160"/>
+            <line x1="755" y1="185" x2="780" y2="188"/><line x1="740" y1="230" x2="765" y2="236"/>
+            <line x1="717" y1="280" x2="742" y2="288"/>
+          </g>
+          <!-- principal axis (faint reference only) -->
+          <line x1="60" y1="160" x2="760" y2="160" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4,4"/>
+          <text x="65" y="152" font-size="11" fill="#9ca3af" font-family="Sarabun,sans-serif">แกนหลัก</text>
+          <!-- Incident wave fronts: 5 vertical lines (plane wave perpendicular to horizontal motion) -->
+          <g stroke="#ea8033" stroke-width="3.5" stroke-linecap="round">
+            <line x1="120" y1="50" x2="120" y2="270"/>
+            <line x1="210" y1="50" x2="210" y2="270"/>
+            <line x1="300" y1="50" x2="300" y2="270"/>
+            <line x1="390" y1="50" x2="390" y2="270"/>
+          </g>
+          <text x="120" y="40" font-size="14" fill="#c2410c" font-weight="700" font-family="Sarabun,sans-serif">หน้าคลื่นตกกระทบ (ระนาบ)</text>
+          <text x="60" y="300" font-size="12" fill="#6b7280" font-family="Sarabun,sans-serif">ทิศการเคลื่อนที่: ขนานแกนหลัก ← → ⟂ หน้าคลื่น</text>
+        </svg>
+        <canvas id="canvas3" class="overlay" width="900" height="320"></canvas>
+      </div>
+      <div class="scene-hint">💡 หน้าคลื่นสะท้อนจากผิวโค้งเว้าจะเป็นเส้นโค้ง<b>บรรจบเข้าสู่จุดเดียว</b> · ทดลองวาดและระบุจุดบรรจบนั้น</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b> (ก) หน้าคลื่นสะท้อนมีรูปร่างอย่างไร พบกันที่จุดใด เรียกว่าอะไร · (ข) ปรากฏการณ์นี้ใช้ในอุปกรณ์ใด (2 ตัวอย่าง)</div>
+      <textarea id="q3-ans" rows="3" placeholder="(ก)... (ข)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b> (ก) ทิศสะท้อนทั้งสามมาพบกันที่ <b>จุดโฟกัส F</b> (ห่างจาก C ไปทางผิวสะท้อนครึ่งหนึ่งของรัศมี) · หน้าคลื่นสะท้อนจะกลายเป็น<b>หน้าคลื่นวงกลมบรรจบที่ F</b> · (ข) <b>จานดาวเทียม</b>, <b>กล้องโทรทรรศน์ชนิดกระจก</b>, ไฟหน้ารถยนต์ (ใช้กลับกัน)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 4 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">4</span>
+      <span class="item-title">การสะท้อนของคลื่นเสียง — Echolocation</span>
+      <span class="level hard">★★★ ท้าทาย</span>
+    </div>
+    <div class="item-body">
+      ค้างคาวปล่อยคลื่นเสียง <b>f = 40,000 Hz</b> · v เสียงในอากาศ <b>340 m/s</b> · รับสัญญาณสะท้อนหลัง <b>t = 0.012 s</b>
+
+      <div class="formula-box">ระยะทาง = v × t · ระยะห่างจากเป้าหมาย = ระยะทางรวม ÷ 2 (ไป-กลับ)</div>
+
+      <div style="margin-top:10px"><b>คำถาม:</b></div>
+      <div style="margin-left:14px">
+        (ก) λ ของเสียงที่ปล่อยออกมา · (ข) ระยะห่างค้างคาวกับเป้าหมาย · (ค) หลังสะท้อน f และ v เปลี่ยนหรือไม่? · (ง) ถ้าค้างคาวบินเข้าหาเป้าหมาย t สั้นลงหรือยาวขึ้น เพราะอะไร?
+      </div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#0f766e">✍️ กระดานแสดงวิธีทำ:</span>
+        <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+        <div class="c-color" style="background:#3182ce" onclick="setColor('canvas4','#3182ce',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas4','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas4" data-bg="lined" width="900" height="300"></canvas>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#0c4a40">⌨️ พิมพ์คำตอบ (ข้อ ก–ง):</label>
+      <textarea id="q4-ans" rows="6" placeholder="(ก) λ = v/f = ... (ข)... (ค)... (ง)..."></textarea>
+      <div class="ans-key">
+        <b>🔑 แนวตอบ:</b>
+        (ก) λ = v/f = 340/40000 = <b>0.0085 m = 8.5 mm</b> ·
+        (ข) ระยะทางรวม = 340 × 0.012 = 4.08 m · ระยะห่าง = <b>2.04 m</b> ·
+        (ค) <b>ไม่เปลี่ยน</b> — f คงที่โดยแหล่งกำเนิด · v คงที่เพราะอากาศตัวกลางเดิม · λ จึงคงที่ (ขัดแย้ง M5.2) ·
+        (ง) t <b>สั้นลง</b> เพราะระยะทางลดลง
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–4 ต่อข้อ):</b>
+    <b>4</b> ถูกต้องสมบูรณ์ แสดงวิธีครบ อ้างหลักการ · <b>3</b> ถูกแต่ขาดหน่วย/ขั้นตอนเล็กน้อย · <b>2</b> เข้าใจหลักการ แต่ผิดบางส่วน · <b>1</b> พยายามทำ แต่ผิดสำคัญ · <b>0</b> ว่าง/ผิดทั้งหมด
+  </div>
+
+  <!-- Submit bar replaced by worksheet-core.js toolbar (auto-save, export JSON, print, submit) -->
+
+  <div class="result-box" id="result-box">
+    <b style="color:#0c4a40">📋 สรุปที่ส่ง:</b>
+    <pre id="result-pre"></pre>
+  </div>
+
+  <div class="foot">ใบกิจกรรม 5.1 · แผน 5 การสะท้อนของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
+</div>
+
+<script src="../../../shared/worksheet-core.js"></script>
+
+<script>
+/* ─── Canvas (scene-stack overlay pattern) ─── */
+const canvasState = {};
+
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay') || canvas.dataset.bg === 'lined';
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  // transparent=true means canvas has no internal background fill (CSS handles bg for lined paper, SVG handles bg for overlay)
+  if (!transparent) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+  }
+  function start(e) {
+    e.preventDefault();
+    canvasState[id].drawing = true;
+    ctx.beginPath();
+    const p = getPos(e);
+    ctx.moveTo(p.x, p.y);
+  }
+  function move(e) {
+    e.preventDefault();
+    const st = canvasState[id];
+    if (!st.drawing) return;
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    if (st.tool === 'eraser') {
+      ctx.globalCompositeOperation = st.transparent ? 'destination-out' : 'source-over';
+      ctx.strokeStyle = st.transparent ? 'rgba(0,0,0,1)' : '#fff';
+      ctx.lineWidth = 24;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = st.color;
+      ctx.lineWidth = st.lw;
+    }
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+  function end(e) { e.preventDefault(); canvasState[id].drawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseleave', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end, { passive: false });
+}
+
+function setTool(id, tool, btn) {
+  canvasState[id].tool = tool;
+  btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setColor(id, color, el) {
+  canvasState[id].color = color;
+  canvasState[id].tool = 'pencil';
+  el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b => {
+    b.classList.toggle('active', b.id && b.id.includes('pencil'));
+  });
+}
+
+function clearCanvas(id) {
+  const st = canvasState[id];
+  const canvas = document.getElementById(id);
+  st.ctx.globalCompositeOperation = 'source-over';
+  st.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!st.transparent) {
+    st.ctx.fillStyle = '#fff';
+    st.ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
+/* ─── Submit ─── */
+function submitWS() {
+  const data = {
+    student: {
+      name: document.getElementById('s-name').value,
+      num: document.getElementById('s-num').value,
+      room: document.getElementById('s-room').value,
+      group: document.getElementById('s-grp').value
+    },
+    q1: { ans: document.getElementById('q1-ans').value, canvas: document.getElementById('canvas1').toDataURL('image/png') },
+    q2: { v1: document.getElementById('q2-v1').value, v2: document.getElementById('q2-v2').value, ans: document.getElementById('q2-ans').value, canvas: document.getElementById('canvas2').toDataURL('image/png') },
+    q3: { ans: document.getElementById('q3-ans').value, canvas: document.getElementById('canvas3').toDataURL('image/png') },
+    q4: { ans: document.getElementById('q4-ans').value, canvas: document.getElementById('canvas4').toDataURL('image/png') }
+  };
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'WS_SUBMIT', plan: 5, ws: '5.1', data }, '*');
+  }
+
+  const box = document.getElementById('result-box');
+  const pre = document.getElementById('result-pre');
+  pre.textContent = [
+    `📋 นักเรียน: ${data.student.name || '—'} เลขที่ ${data.student.num} ห้อง ${data.student.room} กลุ่ม ${data.student.group}`,
+    `\nข้อ 1 (วาดหน้าคลื่นสะท้อน): ${data.q1.ans.slice(0,80)}${data.q1.ans.length>80?'…':''}  [canvas ✓]`,
+    `\nข้อ 2 (v): v₁=${data.q2.v1} · v₂=${data.q2.v2} cm/s · ${data.q2.ans.slice(0,80)}${data.q2.ans.length>80?'…':''}`,
+    `\nข้อ 3 (ผิวโค้งเว้า): ${data.q3.ans.slice(0,80)}${data.q3.ans.length>80?'…':''}  [canvas ✓]`,
+    `\nข้อ 4 (Echolocation): ${data.q4.ans.slice(0,120)}${data.q4.ans.length>120?'…':''}`
+  ].join('\n');
+  box.style.display = 'block';
+  document.getElementById('submit-status').textContent = '✅ ส่งแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas('canvas1');
+  initCanvas('canvas2');
+  initCanvas('canvas3');
+  initCanvas('canvas4');
+});
+</script>
+</body></html>

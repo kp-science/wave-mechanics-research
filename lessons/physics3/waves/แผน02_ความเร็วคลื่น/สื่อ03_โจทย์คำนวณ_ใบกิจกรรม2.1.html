@@ -22,7 +22,13 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 .line{border-bottom:1.5px dashed #aaa;height:24px;margin:4px 0}
 .mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #a5d6a7;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#c8e6c9 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #a5d6a7;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#1b5e20;font-weight:600}
+.c-btn.active{background:#2e7d32;color:#fff;border-color:#2e7d32}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #2e7d32;box-shadow:0 0 0 2px #fff,0 0 0 4px #2e7d32}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
 </style></head>
 <body>
 <div class="page">
@@ -44,8 +50,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <div class="prompt">คลื่นบนเชือกมีความถี่ 5 Hz และความยาวคลื่น 0.40 m จงหาความเร็วคลื่น</div>
     <div class="work">
       <div class="cell"><b>กำหนด / ต้องหา:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>การคำนวณ + คำตอบ:</b><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas1','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas1" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#1b5e20">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q1-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 2 ประยุกต์ M2.1 -->
@@ -54,8 +71,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <div class="prompt">เชือกเส้นเดิม ตึงเท่าเดิม เดิมสั่นด้วย f = 2 Hz ได้ λ = 0.60 m · ถ้าเพิ่มความถี่เป็น 6 Hz ให้หา (ก) ความเร็วคลื่นใหม่ และ (ข) ความยาวคลื่นใหม่</div>
     <div class="work">
       <div class="cell"><b>กำหนด / ต้องหา:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>การคำนวณ + คำตอบ:</b><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas2','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas2','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas2" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#1b5e20">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q2-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 3 v = √(T/μ) -->
@@ -64,8 +92,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <div class="prompt">เชือกยาว 2.0 m มวล 40 g ปลายหนึ่งผูกกับกำแพง อีกปลายดึงด้วยแรง 16 N · จงหาความเร็วคลื่นในเชือก</div>
     <div class="work">
       <div class="cell"><b>กำหนด / ต้องหา:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>การคำนวณ + คำตอบ:</b><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas3','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas3" data-bg="lined" width="900" height="220"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#1b5e20">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q3-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 4 ผสม M2.4 -->
@@ -74,8 +113,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <div class="prompt">คลื่นความถี่ 200 Hz เดินทางในน้ำด้วยความเร็ว 1,500 m/s เมื่อเข้าสู่อากาศด้วยความเร็ว 340 m/s · จงหา (ก) λ ในน้ำ (ข) λ ในอากาศ (ค) f ในอากาศ พร้อมอธิบายว่าทำไม f ถึงเป็นค่านั้น</div>
     <div class="work">
       <div class="cell"><b>กำหนด / ต้องหา:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>การคำนวณ + คำตอบ + เหตุผล:</b><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas4','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas4','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas4" data-bg="lined" width="900" height="240"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#1b5e20">⌨️ พิมพ์คำตอบ + เหตุผล:</label>
+    <textarea id="q4-ans" rows="3" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <!-- ข้อ 5 ท้าทาย -->
@@ -84,8 +134,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
     <div class="prompt">เชือกมวลต่อความยาว μ = 0.010 kg/m ถูกดึงด้วยแรงตึง T₁ ทำให้คลื่นเดินทางด้วย v₁ = 20 m/s · ถ้าต้องการให้คลื่นเดินทางเร็ว 2 เท่า (v₂ = 40 m/s) โดยไม่เปลี่ยนเชือก จะต้องเพิ่มแรงตึงเป็นกี่เท่าของ T₁?</div>
     <div class="work">
       <div class="cell"><b>กำหนด / ต้องหา:</b><div class="line"></div><div class="line"></div></div>
-      <div class="cell"><b>การคำนวณ + คำตอบ:</b><div class="line"></div><div class="line"></div><div class="line"></div></div>
     </div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#1b5e20">✍️ กระดานแสดงวิธีทำ:</span>
+      <button class="c-btn active" id="tb5-pencil" onclick="setTool('canvas5','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb5-eraser" onclick="setTool('canvas5','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas5','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvas5','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvas5','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvas5')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="canvas5" data-bg="lined" width="900" height="240"></canvas>
+    <label style="font-size:13.5px;font-weight:700;display:block;margin-top:8px;color:#1b5e20">⌨️ พิมพ์คำตอบ:</label>
+    <textarea id="q5-ans" rows="2" placeholder="คำตอบ..." style="width:100%;padding:6px 10px;border:1.5px solid #a5d6a7;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
   </div>
 
   <div style="background:#e8f5e9;border-left:6px solid #2e7d32;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px">
@@ -94,4 +155,17 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size
 
   <div class="foot">ใบกิจกรรม 2.1 · แผน 2 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
+<script>
+const canvasState = {};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));});
+</script>
 </body></html>
