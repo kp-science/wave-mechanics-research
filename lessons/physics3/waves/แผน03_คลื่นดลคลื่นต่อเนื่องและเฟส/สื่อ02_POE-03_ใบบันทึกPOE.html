@@ -27,7 +27,9 @@ body{font-family:'Sarabun',sans-serif;background:#f4f1fa;color:#1a202c;font-size
 .q{background:#fff8e1;border-left:6px solid #f9a825;padding:10px 14px;border-radius:8px;margin-bottom:10px;font-size:15px}
 .mini-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
 .mini-table th{background:#ede7f6;color:#322659;padding:6px 8px;text-align:left;border:1px solid #d6bcfa}
-.mini-table td{padding:6px 8px;border:1px solid #e2e8f0;height:30px}
+.mini-table td{padding:4px 6px;border:1px solid #d6bcfa;height:30px}
+.mini-table td input{width:100%;border:none;background:#fafafa;padding:4px 6px;font-family:inherit;font-size:13.5px;border-radius:4px}
+.mini-table td input:focus{outline:2px solid #6b21a8;outline-offset:-1px;background:#fff}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
 canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f3e8ff 28px);touch-action:none;cursor:crosshair;margin-top:4px}
 .canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
@@ -89,7 +91,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP1','#e53e3e',this)"></div>
       <button class="c-btn" onclick="clearCanvas('canvasP1')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
-    <canvas id="canvasP1" data-bg="lined" width="900" height="110"></canvas>
+    <canvas id="canvasP1" data-bg="lined" width="900" height="160"></canvas>
     <textarea id="p-reason-text" class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลเพิ่มเติมที่นี่..." style="margin-top:6px"></textarea>
 
     <div style="margin-top:10px"><b>ข้อ 2.</b> คลื่นดล (สะบัด 1 ครั้ง) กับคลื่นต่อเนื่อง (สั่นซ้ำ) ในเชือกเดียวกัน · <u>ความเร็วคลื่น</u>:</div>
@@ -107,7 +109,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP2','#e53e3e',this)"></div>
       <button class="c-btn" onclick="clearCanvas('canvasP2')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
-    <canvas id="canvasP2" data-bg="lined" width="900" height="110"></canvas>
+    <canvas id="canvasP2" data-bg="lined" width="900" height="160"></canvas>
     <textarea id="p-reason-v-text" class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลที่นี่..." style="margin-top:6px"></textarea>
 
     <div class="conf"><b>ความมั่นใจรวม:</b>
@@ -127,8 +129,8 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
         <div style="font-size:13px;color:#555;margin-bottom:4px">วัด v ทั้ง 2 แบบ:</div>
         <table class="mini-table">
           <tr><th>แบบ</th><th>ระยะ (m)</th><th>เวลา (s)</th><th>v (m/s)</th></tr>
-          <tr><td>ดล</td><td></td><td></td><td></td></tr>
-          <tr><td>ต่อเนื่อง</td><td></td><td></td><td></td></tr>
+          <tr><td><b>ดล</b></td><td><input type="number" step="0.01" id="o1-pulse-d" placeholder="0.00"></td><td><input type="number" step="0.01" id="o1-pulse-t" placeholder="0.00"></td><td><input type="number" step="0.01" id="o1-pulse-v" placeholder="คำนวณ"></td></tr>
+          <tr><td><b>ต่อเนื่อง</b></td><td><input type="number" step="0.01" id="o1-cont-d" placeholder="0.00"></td><td><input type="number" step="0.01" id="o1-cont-t" placeholder="0.00"></td><td><input type="number" step="0.01" id="o1-cont-v" placeholder="คำนวณ"></td></tr>
         </table>
         <div style="margin-top:4px;font-size:13px">สรุปเปรียบเทียบ v + วาดรูป pulse / continuous:</div>
         <div class="canvas-toolbar">
@@ -139,7 +141,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasO1','#e53e3e',this)"></div>
           <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
-        <canvas id="canvasO1" data-bg="lined" width="900" height="140"></canvas>
+        <canvas id="canvasO1" data-bg="lined" width="900" height="200"></canvas>
         <textarea id="o-obs-1" class="ans-ta" rows="2" placeholder="สรุปการเปรียบเทียบ v..." style="margin-top:6px"></textarea>
       </div>
 
@@ -148,9 +150,30 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
         <div style="font-size:13px;color:#555;margin-bottom:4px">ผูกริบบิ้น 3 จุด (ห่าง λ/4, λ/2, λ):</div>
         <table class="mini-table">
           <tr><th>Δx</th><th>สั่นสัมพันธ์กับต้น (R)</th></tr>
-          <tr><td>λ/4</td><td></td></tr>
-          <tr><td>λ/2</td><td></td></tr>
-          <tr><td>λ</td><td></td></tr>
+          <tr><td><b>λ/4</b></td><td>
+            <select id="o2-q" style="width:100%;border:none;background:#fafafa;padding:4px 6px;font-family:inherit;font-size:13.5px">
+              <option value="">-- เลือก --</option>
+              <option value="together">พร้อมกัน</option>
+              <option value="opposite">สวนทางกัน</option>
+              <option value="ahead">ล้ำหน้า 90°</option>
+              <option value="behind">ล้าหลัง 90°</option>
+            </select></td></tr>
+          <tr><td><b>λ/2</b></td><td>
+            <select id="o2-h" style="width:100%;border:none;background:#fafafa;padding:4px 6px;font-family:inherit;font-size:13.5px">
+              <option value="">-- เลือก --</option>
+              <option value="together">พร้อมกัน</option>
+              <option value="opposite">สวนทางกัน</option>
+              <option value="ahead">ล้ำหน้า 90°</option>
+              <option value="behind">ล้าหลัง 90°</option>
+            </select></td></tr>
+          <tr><td><b>λ</b></td><td>
+            <select id="o2-f" style="width:100%;border:none;background:#fafafa;padding:4px 6px;font-family:inherit;font-size:13.5px">
+              <option value="">-- เลือก --</option>
+              <option value="together">พร้อมกัน</option>
+              <option value="opposite">สวนทางกัน</option>
+              <option value="ahead">ล้ำหน้า 90°</option>
+              <option value="behind">ล้าหลัง 90°</option>
+            </select></td></tr>
         </table>
         <div style="margin-top:4px;font-size:13px">จุดไหนสั่นพร้อมต้น? สวนทาง? (วาด/เขียน):</div>
         <div class="canvas-toolbar">
@@ -161,7 +184,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasO2','#e53e3e',this)"></div>
           <button class="c-btn" onclick="clearCanvas('canvasO2')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
-        <canvas id="canvasO2" data-bg="lined" width="900" height="140"></canvas>
+        <canvas id="canvasO2" data-bg="lined" width="900" height="200"></canvas>
         <textarea id="o-obs-2" class="ans-ta" rows="2" placeholder="สรุปเฟสริบบิ้น..." style="margin-top:6px"></textarea>
       </div>
 
@@ -170,10 +193,10 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
         <div style="font-size:13px;color:#555;margin-bottom:4px">เลื่อน Δx · อ่าน Δφ:</div>
         <table class="mini-table">
           <tr><th>Δx</th><th>Δφ (องศา)</th><th>Δφ (rad)</th></tr>
-          <tr><td>λ/4</td><td></td><td></td></tr>
-          <tr><td>λ/2</td><td></td><td></td></tr>
-          <tr><td>3λ/4</td><td></td><td></td></tr>
-          <tr><td>λ</td><td></td><td></td></tr>
+          <tr><td><b>λ/4</b></td><td><input type="number" step="1" id="o3-q-deg" placeholder="เช่น 90"></td><td><input type="text" id="o3-q-rad" placeholder="เช่น π/2"></td></tr>
+          <tr><td><b>λ/2</b></td><td><input type="number" step="1" id="o3-h-deg" placeholder="เช่น 180"></td><td><input type="text" id="o3-h-rad" placeholder="เช่น π"></td></tr>
+          <tr><td><b>3λ/4</b></td><td><input type="number" step="1" id="o3-3q-deg" placeholder="เช่น 270"></td><td><input type="text" id="o3-3q-rad" placeholder="เช่น 3π/2"></td></tr>
+          <tr><td><b>λ</b></td><td><input type="number" step="1" id="o3-f-deg" placeholder="เช่น 360"></td><td><input type="text" id="o3-f-rad" placeholder="เช่น 2π"></td></tr>
         </table>
         <div style="margin-top:4px;font-size:13px">ซ้อน 2 คลื่น · Δφ = 180° · แอมพลิจูดรวม = ? (วาด/เขียน):</div>
         <div class="canvas-toolbar">
@@ -184,7 +207,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasO3','#e53e3e',this)"></div>
           <button class="c-btn" onclick="clearCanvas('canvasO3')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
-        <canvas id="canvasO3" data-bg="lined" width="900" height="140"></canvas>
+        <canvas id="canvasO3" data-bg="lined" width="900" height="200"></canvas>
         <textarea id="o-obs-3" class="ans-ta" rows="2" placeholder="สรุปแอมพลิจูดรวม..." style="margin-top:6px"></textarea>
       </div>
     </div>
@@ -201,14 +224,38 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
   <div class="sec e">
     <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P↔O · 8 นาที</span></h2>
 
-    <div><b>เปรียบเทียบ P กับ O:</b> คำทำนายกับผลสังเกตตรงกันหรือไม่?</div>
+    <div><b>🔁 เปรียบเทียบ P กับ O ทั้งสองคำถาม:</b> คำทำนายตรงกับผลสังเกตหรือไม่?</div>
     <div class="opt-row">
-      <label class="opt"><input type="radio" name="e-compare" value="match"> ตรงกัน</label>
+      <label class="opt"><input type="radio" name="e-compare" value="match"> ตรงกันทั้งคู่</label>
       <label class="opt"><input type="radio" name="e-compare" value="partial"> ตรงบางส่วน</label>
-      <label class="opt"><input type="radio" name="e-compare" value="diff"> ไม่ตรง</label>
+      <label class="opt"><input type="radio" name="e-compare" value="diff"> ไม่ตรง · ต้องปรับความเข้าใจใหม่</label>
     </div>
 
-    <div style="margin-top:10px"><b>1.</b> เปรียบเทียบ P กับ O ข้อ 1 (R กับ B): ตรงกันหรือไม่? ถ้าไม่ตรง · <u>สิ่งที่เข้าใจใหม่</u> คือ:</div>
+    <!-- ✅ Understanding check: what I was right/wrong about -->
+    <div style="margin-top:14px;background:#fff;border:2px solid #b794f4;border-radius:10px;padding:12px 14px">
+      <b style="color:#4c1d95;font-size:15px">✅ Conceptual Inventory · สำรวจความเข้าใจ</b>
+      <div style="font-size:13px;color:#555;margin:4px 0 8px">ติ๊กตาม<u>ความเข้าใจปัจจุบัน</u>ของตนเอง · สีเขียว = ถูกต้องตามหลักฟิสิกส์ · สีแดง = misconception (ห้ามติ๊กถ้าไม่เชื่อแล้ว)</div>
+
+      <div style="background:#ecfdf5;border-left:4px solid #10b981;border-radius:6px;padding:8px 12px;margin-bottom:8px">
+        <div style="font-weight:700;color:#065f46;font-size:13px;margin-bottom:4px">🟢 สิ่งที่เข้าใจถูกต้อง — ติ๊กถ้าเห็นด้วย</div>
+        <label class="opt"><input type="checkbox" id="e-right-1"> คลื่นดล และ คลื่นต่อเนื่อง ในเชือกเส้นเดียว <u>มี v เท่ากัน</u> เพราะ v ขึ้นกับตัวกลาง (ความตึง/μ)</label>
+        <label class="opt"><input type="checkbox" id="e-right-2"> จุดบนคลื่นต่อเนื่องที่ห่าง <u>λ/2 จะสั่นสวนทางกัน</u> (เฟสต่าง 180°)</label>
+        <label class="opt"><input type="checkbox" id="e-right-3"> จุดบนคลื่นต่อเนื่องที่ห่าง <u>λ จะสั่นพร้อมกัน</u> (เฟสต่าง 360° = 0°)</label>
+        <label class="opt"><input type="checkbox" id="e-right-4"> <u>เฟสคือสถานะการสั่น</u>ของจุด ณ เวลานั้น · Δφ = 2π(Δx/λ) แปลความได้ว่าจุด 2 จุดต่างกันแค่ไหน</label>
+        <label class="opt"><input type="checkbox" id="e-right-5"> คลื่น 2 ขบวน เฟสตรงข้าม 180° + A เท่ากัน → ซ้อนทับแล้ว A รวม = 0 (<u>หักล้างชั่วขณะ</u>)</label>
+      </div>
+
+      <div style="background:#fff1f2;border-left:4px solid #dc2626;border-radius:6px;padding:8px 12px">
+        <div style="font-weight:700;color:#991b1b;font-size:13px;margin-bottom:4px">🔴 Misconception — ติ๊กเฉพาะถ้า<u>ยังเชื่อแบบนี้อยู่</u> (เพื่อให้ครูช่วยแก้ไข)</div>
+        <label class="opt"><input type="checkbox" id="e-wrong-1" data-mc="M3.1"> <b>M3.1</b> · คลื่นดล = คลื่นต่อเนื่อง (แค่ชื่อต่างกัน)</label>
+        <label class="opt"><input type="checkbox" id="e-wrong-2" data-mc="M3.2"> <b>M3.2</b> · คลื่นดลกับคลื่นต่อเนื่องในเชือกเดียวกัน <u>v ต่างกัน</u> (ดลเร็วกว่า / ต่อเนื่องช้ากว่า)</label>
+        <label class="opt"><input type="checkbox" id="e-wrong-3" data-mc="M3.3"> <b>M3.3</b> · เฟสเป็นแค่ <u>มุมคณิต</u> ไม่มีความหมายทางกายภาพจริง ๆ</label>
+        <label class="opt"><input type="checkbox" id="e-wrong-4" data-mc="M3.4"> <b>M3.4</b> · 2 คลื่นเฟสต่าง 180° หมายถึง <u>ไม่เกี่ยวกัน / อยู่คนละที่</u> (ไม่ใช่สวนทางกัน)</label>
+      </div>
+    </div>
+
+    <!-- Q1: specific question about R vs B -->
+    <div style="margin-top:14px"><b>❓ คำถามเจาะจง 1:</b> ที่ฐาน 2/3 พบว่าริบบิ้น R กับ B (ห่าง λ/2) สั่น<u>สวนทางกัน</u> · อธิบายว่า<b>ทำไมระยะ λ/2 จึงทำให้ 2 จุดสั่นสวนทาง</b> (ใช้สูตร Δφ)</div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbe1-pencil" onclick="setTool('canvasE1','pencil',this)">✏️</button>
       <button class="c-btn" id="tbe1-eraser" onclick="setTool('canvasE1','eraser',this)">⬜</button>
@@ -217,10 +264,11 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE1','#e53e3e',this)"></div>
       <button class="c-btn" onclick="clearCanvas('canvasE1')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
-    <canvas id="canvasE1" data-bg="lined" width="900" height="110"></canvas>
-    <textarea class="ans-ta" rows="2" placeholder="พิมพ์คำอธิบายที่นี่..." style="margin-top:6px"></textarea>
+    <canvas id="canvasE1" data-bg="lined" width="900" height="180"></canvas>
+    <textarea id="e-q1-ans" class="ans-ta" rows="2" placeholder="Δφ = 2π × (λ/2)/λ = π = 180° · 180° = สวนทาง · เพราะ..." style="margin-top:6px"></textarea>
 
-    <div style="margin-top:10px"><b>2.</b> เปรียบเทียบ P กับ O ข้อ 2 (v ดล/ต่อเนื่อง): ตรงกันหรือไม่? <u>สิ่งที่เข้าใจใหม่</u> คือ:</div>
+    <!-- Q2: specific v comparison -->
+    <div style="margin-top:14px"><b>❓ คำถามเจาะจง 2:</b> ที่ฐาน 1 พบว่าคลื่นดลและคลื่นต่อเนื่องในเชือกเดียวกัน <u>v เท่ากัน</u> · อธิบายว่า<b>ทำไม v ถึงไม่ขึ้นกับรูปแบบการสั่น</b> (ใช้สูตร v = √(T/μ) จากแผน 2)</div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbe2-pencil" onclick="setTool('canvasE2','pencil',this)">✏️</button>
       <button class="c-btn" id="tbe2-eraser" onclick="setTool('canvasE2','eraser',this)">⬜</button>
@@ -229,10 +277,16 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE2','#e53e3e',this)"></div>
       <button class="c-btn" onclick="clearCanvas('canvasE2')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
-    <canvas id="canvasE2" data-bg="lined" width="900" height="110"></canvas>
-    <textarea class="ans-ta" rows="2" placeholder="พิมพ์คำอธิบายที่นี่..." style="margin-top:6px"></textarea>
+    <canvas id="canvasE2" data-bg="lined" width="900" height="180"></canvas>
+    <textarea id="e-q2-ans" class="ans-ta" rows="2" placeholder="v = √(T/μ) ขึ้นกับ... ไม่ขึ้นกับ... เพราะ..." style="margin-top:6px"></textarea>
 
-    <div style="margin-top:10px"><b>3. สรุปหลักการเฟส:</b> (เฟสคืออะไร? · Δφ หาอย่างไร? · ต่างเฟส 180° หมายถึง?)</div>
+    <!-- Q3: phase principle -->
+    <div style="margin-top:14px"><b>❓ คำถามเจาะจง 3 · สรุปหลักการเฟส:</b> ตอบ 3 ข้อย่อย:</div>
+    <div style="margin-left:14px;font-size:14px;color:#4c1d95">
+      (ก) เฟสคืออะไร (ในภาษาของตนเอง)?<br>
+      (ข) Δφ หาอย่างไร (เขียนสูตร + หน่วย)?<br>
+      (ค) ถ้า Δφ = 90° แปลว่า 2 จุดนั้นสัมพันธ์กันอย่างไร?
+    </div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbe3-pencil" onclick="setTool('canvasE3','pencil',this)">✏️ ดินสอ</button>
       <button class="c-btn" id="tbe3-eraser" onclick="setTool('canvasE3','eraser',this)">⬜ ยางลบ</button>
@@ -241,17 +295,8 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE3','#e53e3e',this)"></div>
       <button class="c-btn" onclick="clearCanvas('canvasE3')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
-    <canvas id="canvasE3" data-bg="lined" width="900" height="140"></canvas>
-    <textarea id="e-principle" class="ans-ta" rows="3" placeholder="เฟสคือ... · Δφ = ... · ต่างเฟส 180° หมายถึง..." style="margin-top:6px"></textarea>
-
-    <div style="margin-top:10px"><b>จากผลการสังเกต ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
-    <div class="checklist">
-      <label class="opt"><input type="checkbox" id="e-check-1"> คลื่นดลและคลื่นต่อเนื่องในเชือกเดียวกันมี v <u>เท่ากัน</u> เพราะขึ้นกับตัวกลาง</label>
-      <label class="opt"><input type="checkbox" id="e-check-2"> จุด 2 จุดบน "คลื่นต่อเนื่อง" ที่ห่างกัน λ/2 จะสั่น<u>สวนทางกัน</u></label>
-      <label class="opt"><input type="checkbox" id="e-check-3"> จุด 2 จุดที่ห่างกัน λ (ครบ 1 ลูกคลื่น) จะสั่น<u>พร้อมกัน</u>เสมอ</label>
-      <label class="opt"><input type="checkbox" id="e-check-4"> เฟสเป็น<u>สถานะการสั่น</u>ของจุด ณ เวลานั้น (ไม่ใช่แค่มุมคณิต)</label>
-      <label class="opt"><input type="checkbox" id="e-check-5"> คลื่น 2 ขบวน เฟสตรงข้าม 180° + A เท่ากัน → ซ้อนทับแล้ว<u>หักล้าง</u></label>
-    </div>
+    <canvas id="canvasE3" data-bg="lined" width="900" height="200"></canvas>
+    <textarea id="e-principle" class="ans-ta" rows="3" placeholder="(ก) เฟสคือ... · (ข) Δφ = ... · (ค) ถ้า Δφ = 90°..." style="margin-top:6px"></textarea>
 
     <div style="margin-top:8px;background:#fff;border:1.5px solid #b794f4;border-radius:8px;padding:8px 12px;font-size:14px">
       <b style="color:#322659">🧮 สูตรที่ได้:</b> &nbsp; Δφ = 2π × (Δx / λ) = 360° × (Δx / λ)
