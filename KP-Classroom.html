@@ -3371,6 +3371,18 @@ function renderMediaBody(){
         if (mg.status === 'locked') return '';
         const chips = (it.chips||[]).map(c => `<span class="chip ${c[0]}">${c[1]}</span>`).join('');
         const meta = it.meta ? `<div class="meta">${it.meta}</div>` : '';
+        // Info-only card (ไม่มี file — เช่น CER Board entry) → render เป็น div แทน <a>
+        if (!it.file){
+          return `
+            <div class="media-card-wrap" style="position:relative">
+              <div class="media-card ${it.cls}" style="cursor:default">
+                <div><span class="no">${it.no}</span><b>${it.t}</b></div>
+                <div class="d">${it.d}</div>
+                ${meta}
+                ${chips ? `<div>${chips}</div>` : ''}
+              </div>
+            </div>`;
+        }
         const isExternal = /^https?:/.test(it.file);
         const href = isExternal ? it.file : encodeURI(`${data.folder}/${it.file}`);
         // Clean download filename: use title + original extension · strip URL/path clutter
