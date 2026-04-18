@@ -36,6 +36,13 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
 .c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
 .c-color.active{border:3px solid #6b21a8;box-shadow:0 0 0 2px #fff,0 0 0 4px #6b21a8}
 .ans-ta{width:100%;padding:6px 10px;border:1.5px solid #d8b4fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:4px 8px;border-radius:6px}
+.opt:hover{background:rgba(107,33,168,0.08)}
+.opt input{margin-top:4px;flex-shrink:0}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px}
+.opt-row .opt{flex:1 1 auto}
+.checklist{background:#fff;border:1px solid #d8b4fe;border-radius:8px;padding:8px 12px;margin-top:6px}
+.checklist .opt{font-size:14px;line-height:1.6}
 @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
 </style></head>
 <body data-ws-id="plan3-poe">
@@ -60,10 +67,20 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
   <div class="sec p">
     <h2>🔮 P · Predict (ทำนาย) <span class="badge">ก่อนทดลอง · 3 นาที</span></h2>
 
-    <div><b>ข้อ 1.</b> ริบบิ้น R กับ B จะ:
-      &nbsp;☐ สั่นพร้อมกัน &nbsp; ☐ สวนทางกัน &nbsp; ☐ ขยับไม่สัมพันธ์กัน
+    <div><b>ข้อ 1.</b> ริบบิ้น R กับ B (ห่างกัน λ/2) จะ:</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="p-predict" value="together"> สั่นพร้อมกัน (ขึ้น-ลงเหมือนกัน)</label>
+      <label class="opt"><input type="radio" name="p-predict" value="opposite"> สวนทางกัน (R ขึ้น–B ลง พร้อมกัน)</label>
+      <label class="opt"><input type="radio" name="p-predict" value="unrelated"> ขยับไม่สัมพันธ์กัน</label>
     </div>
-    <div style="margin-top:4px">เหตุผล:</div>
+    <div style="margin-top:4px"><b>เหตุผล:</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
+    <div>
+      <label class="opt"><input type="radio" name="p-reason" value="R1"> อยู่บนเชือกเดียวกันเลยต้องสั่นพร้อมกัน</label>
+      <label class="opt"><input type="radio" name="p-reason" value="R2"> คลื่นวิ่งไปถึง B ช้ากว่า R เลยขยับช้ากว่า</label>
+      <label class="opt"><input type="radio" name="p-reason" value="R3"> ระยะ λ/2 = ครึ่งลูกคลื่น → สวนทางกัน</label>
+      <label class="opt"><input type="radio" name="p-reason" value="R4"> แต่ละจุดสั่นเป็นอิสระ ไม่เกี่ยวข้องกัน</label>
+      <label class="opt"><input type="radio" name="p-reason" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
+    </div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbp1-pencil" onclick="setTool('canvasP1','pencil',this)">✏️</button>
       <button class="c-btn" id="tbp1-eraser" onclick="setTool('canvasP1','eraser',this)">⬜</button>
@@ -73,12 +90,15 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <button class="c-btn" onclick="clearCanvas('canvasP1')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
     <canvas id="canvasP1" data-bg="lined" width="900" height="110"></canvas>
-    <textarea class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลที่นี่..." style="margin-top:6px"></textarea>
+    <textarea id="p-reason-text" class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลเพิ่มเติมที่นี่..." style="margin-top:6px"></textarea>
 
-    <div style="margin-top:10px"><b>ข้อ 2.</b> คลื่นดล (สะบัด 1 ครั้ง) กับคลื่นต่อเนื่อง (สั่นซ้ำ) ในเชือกเดียวกัน · <u>ความเร็วคลื่น</u>:
-      &nbsp;☐ เท่ากัน &nbsp; ☐ ดลเร็วกว่า &nbsp; ☐ ต่อเนื่องเร็วกว่า
+    <div style="margin-top:10px"><b>ข้อ 2.</b> คลื่นดล (สะบัด 1 ครั้ง) กับคลื่นต่อเนื่อง (สั่นซ้ำ) ในเชือกเดียวกัน · <u>ความเร็วคลื่น</u>:</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="p-predict-v" value="same"> เท่ากัน</label>
+      <label class="opt"><input type="radio" name="p-predict-v" value="pulse_faster"> ดลเร็วกว่า</label>
+      <label class="opt"><input type="radio" name="p-predict-v" value="cont_faster"> ต่อเนื่องเร็วกว่า</label>
     </div>
-    <div style="margin-top:4px">เหตุผล:</div>
+    <div style="margin-top:4px"><b>เหตุผล:</b></div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbp2-pencil" onclick="setTool('canvasP2','pencil',this)">✏️</button>
       <button class="c-btn" id="tbp2-eraser" onclick="setTool('canvasP2','eraser',this)">⬜</button>
@@ -88,9 +108,13 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <button class="c-btn" onclick="clearCanvas('canvasP2')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
     <canvas id="canvasP2" data-bg="lined" width="900" height="110"></canvas>
-    <textarea class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลที่นี่..." style="margin-top:6px"></textarea>
+    <textarea id="p-reason-v-text" class="ans-ta" rows="2" placeholder="พิมพ์เหตุผลที่นี่..." style="margin-top:6px"></textarea>
 
-    <div class="conf"><b>ความมั่นใจรวม:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
+    <div class="conf"><b>ความมั่นใจรวม:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="low"> น้อย</label>
+    </div>
   </div>
 
   <!-- ══ O · OBSERVE ══ -->
@@ -116,7 +140,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
         <canvas id="canvasO1" data-bg="lined" width="900" height="140"></canvas>
-        <textarea id="o1-ans" class="ans-ta" rows="2" placeholder="สรุปการเปรียบเทียบ v..." style="margin-top:6px"></textarea>
+        <textarea id="o-obs-1" class="ans-ta" rows="2" placeholder="สรุปการเปรียบเทียบ v..." style="margin-top:6px"></textarea>
       </div>
 
       <div class="cell">
@@ -138,7 +162,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <button class="c-btn" onclick="clearCanvas('canvasO2')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
         <canvas id="canvasO2" data-bg="lined" width="900" height="140"></canvas>
-        <textarea id="o2-ans" class="ans-ta" rows="2" placeholder="สรุปเฟสริบบิ้น..." style="margin-top:6px"></textarea>
+        <textarea id="o-obs-2" class="ans-ta" rows="2" placeholder="สรุปเฟสริบบิ้น..." style="margin-top:6px"></textarea>
       </div>
 
       <div class="cell">
@@ -161,8 +185,15 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
           <button class="c-btn" onclick="clearCanvas('canvasO3')" style="margin-left:auto;color:#c53030">🗑️</button>
         </div>
         <canvas id="canvasO3" data-bg="lined" width="900" height="140"></canvas>
-        <textarea id="o3-ans" class="ans-ta" rows="2" placeholder="สรุปแอมพลิจูดรวม..." style="margin-top:6px"></textarea>
+        <textarea id="o-obs-3" class="ans-ta" rows="2" placeholder="สรุปแอมพลิจูดรวม..." style="margin-top:6px"></textarea>
       </div>
+    </div>
+
+    <div style="margin-top:12px"><b>สรุปคำถามท้าย O:</b> ริบบิ้น R กับ B (ห่าง λ/2) ในห้องทดลองสั่นแบบใด?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="o-final" value="together"> พร้อมกัน</label>
+      <label class="opt"><input type="radio" name="o-final" value="opposite"> สวนทางกัน</label>
+      <label class="opt"><input type="radio" name="o-final" value="unsure"> ยังไม่ชัดเจน</label>
     </div>
   </div>
 
@@ -170,7 +201,14 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
   <div class="sec e">
     <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P↔O · 8 นาที</span></h2>
 
-    <div><b>1.</b> เปรียบเทียบ P กับ O ข้อ 1 (R กับ B): ตรงกันหรือไม่? ถ้าไม่ตรง · <u>สิ่งที่เข้าใจใหม่</u> คือ:</div>
+    <div><b>เปรียบเทียบ P กับ O:</b> คำทำนายกับผลสังเกตตรงกันหรือไม่?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="e-compare" value="match"> ตรงกัน</label>
+      <label class="opt"><input type="radio" name="e-compare" value="partial"> ตรงบางส่วน</label>
+      <label class="opt"><input type="radio" name="e-compare" value="diff"> ไม่ตรง</label>
+    </div>
+
+    <div style="margin-top:10px"><b>1.</b> เปรียบเทียบ P กับ O ข้อ 1 (R กับ B): ตรงกันหรือไม่? ถ้าไม่ตรง · <u>สิ่งที่เข้าใจใหม่</u> คือ:</div>
     <div class="canvas-toolbar">
       <button class="c-btn active" id="tbe1-pencil" onclick="setTool('canvasE1','pencil',this)">✏️</button>
       <button class="c-btn" id="tbe1-eraser" onclick="setTool('canvasE1','eraser',this)">⬜</button>
@@ -204,13 +242,26 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #d8b4fe;border
       <button class="c-btn" onclick="clearCanvas('canvasE3')" style="margin-left:auto;color:#c53030">🗑️</button>
     </div>
     <canvas id="canvasE3" data-bg="lined" width="900" height="140"></canvas>
-    <textarea class="ans-ta" rows="3" placeholder="พิมพ์คำอธิบายที่นี่..." style="margin-top:6px"></textarea>
+    <textarea id="e-principle" class="ans-ta" rows="3" placeholder="เฟสคือ... · Δφ = ... · ต่างเฟส 180° หมายถึง..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>จากผลการสังเกต ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรงกับหลักฐาน)</div>
+    <div class="checklist">
+      <label class="opt"><input type="checkbox" id="e-check-1"> คลื่นดลและคลื่นต่อเนื่องในเชือกเดียวกันมี v <u>เท่ากัน</u> เพราะขึ้นกับตัวกลาง</label>
+      <label class="opt"><input type="checkbox" id="e-check-2"> จุด 2 จุดบน "คลื่นต่อเนื่อง" ที่ห่างกัน λ/2 จะสั่น<u>สวนทางกัน</u></label>
+      <label class="opt"><input type="checkbox" id="e-check-3"> จุด 2 จุดที่ห่างกัน λ (ครบ 1 ลูกคลื่น) จะสั่น<u>พร้อมกัน</u>เสมอ</label>
+      <label class="opt"><input type="checkbox" id="e-check-4"> เฟสเป็น<u>สถานะการสั่น</u>ของจุด ณ เวลานั้น (ไม่ใช่แค่มุมคณิต)</label>
+      <label class="opt"><input type="checkbox" id="e-check-5"> คลื่น 2 ขบวน เฟสตรงข้าม 180° + A เท่ากัน → ซ้อนทับแล้ว<u>หักล้าง</u></label>
+    </div>
 
     <div style="margin-top:8px;background:#fff;border:1.5px solid #b794f4;border-radius:8px;padding:8px 12px;font-size:14px">
       <b style="color:#322659">🧮 สูตรที่ได้:</b> &nbsp; Δφ = 2π × (Δx / λ) = 360° × (Δx / λ)
     </div>
 
-    <div class="conf"><b>ความมั่นใจในคำอธิบาย:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
+    <div class="conf"><b>ความมั่นใจในคำอธิบาย:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="low"> น้อย</label>
+    </div>
   </div>
 
   <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px">

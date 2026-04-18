@@ -38,6 +38,12 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
 .c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
 .c-color.active{border:3px solid #c2410c;box-shadow:0 0 0 2px #fff,0 0 0 4px #c2410c}
 .ans-ta{width:100%;padding:6px 10px;border:1.5px solid #fed7aa;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:4px 8px;border-radius:6px}
+.opt:hover{background:rgba(194,65,12,0.08)}
+.opt input{margin-top:4px;flex-shrink:0}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px}
+.opt-row .opt{flex:1 1 auto}
+.checklist{background:#fff;border:1px solid #c6f6d5;border-radius:8px;padding:10px 14px;margin-top:6px;font-size:14.5px;line-height:1.9}
 .pred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
 @media (max-width:760px){.pred-grid{grid-template-columns:1fr}}
 .pred-cell{background:#fff;border:1.5px solid #bbdefb;border-radius:10px;padding:10px}
@@ -83,27 +89,45 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
   <div class="sec p">
     <h2>🔮 P · Predict (ทำนาย) <span class="badge">ก่อนทดลอง · 4 นาที</span></h2>
 
-    <div><b>ข้อ 1. สถานการณ์: ยอด + ยอด (A เท่า)</b> — pulse 2 ลูกขนาด A เท่ากัน ยอดพุ่งขึ้นทั้งคู่ สวนทางมาชนกัน · <u>ตอนพบกันพอดี</u> แอมพลิจูดรวมที่จุดชนเท่าไร?
-      <div style="margin-top:4px">&nbsp;☐ 0 &nbsp; ☐ A &nbsp; ☐ 2A &nbsp; ☐ A/2</div>
+    <div><b>ข้อ 1. สถานการณ์: ยอด + ยอด (A เท่า)</b> — pulse 2 ลูกขนาด A เท่ากัน ยอดพุ่งขึ้นทั้งคู่ สวนทางมาชนกัน · <u>ตอนพบกันพอดี</u> แอมพลิจูดรวมที่จุดชนเท่าไร?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="p-predict-1" value="0"> 0</label>
+      <label class="opt"><input type="radio" name="p-predict-1" value="A"> A</label>
+      <label class="opt"><input type="radio" name="p-predict-1" value="2A"> 2A</label>
+      <label class="opt"><input type="radio" name="p-predict-1" value="A_half"> A/2</label>
     </div>
-    <div style="margin-top:4px">เหตุผล:</div>
-    <div class="line"></div>
+    <div style="margin-top:4px"><b>เหตุผล:</b></div>
+    <textarea id="p-reason-1" class="ans-ta" rows="2" placeholder="เหตุผลของการทำนายข้อ 1..."></textarea>
 
-    <div style="margin-top:10px"><b>ข้อ 2. สถานการณ์: ยอด + ท้อง (A เท่า)</b> — ลูกหนึ่งยอดขึ้น อีกลูกท้องลง ขนาด A เท่ากัน · <u>ตอนพบกันพอดี</u> รูปเชือกที่จุดชนเป็นอย่างไร?
-      <div style="margin-top:4px">&nbsp;☐ แบนเป็นเส้นตรง (A = 0) &nbsp; ☐ ยอดสูง 2A &nbsp; ☐ ท้องลึก 2A</div>
+    <div style="margin-top:10px"><b>ข้อ 2. สถานการณ์: ยอด + ท้อง (A เท่า)</b> — ลูกหนึ่งยอดขึ้น อีกลูกท้องลง ขนาด A เท่ากัน · <u>ตอนพบกันพอดี</u> รูปเชือกที่จุดชนเป็นอย่างไร?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="p-predict-2a" value="flat"> แบนเป็นเส้นตรง (A = 0)</label>
+      <label class="opt"><input type="radio" name="p-predict-2a" value="crest2a"> ยอดสูง 2A</label>
+      <label class="opt"><input type="radio" name="p-predict-2a" value="trough2a"> ท้องลึก 2A</label>
     </div>
     <div style="margin-top:4px">แล้ว<u>หลัง</u>พ้นกัน คลื่นแต่ละลูกจะ:</div>
-    <div style="margin-top:4px">&nbsp;☐ หายไปทั้งคู่ &nbsp; ☐ คงรูปเดิม เดินต่อเหมือนเดิม &nbsp; ☐ เปลี่ยนรูปถาวร</div>
-    <div style="margin-top:4px">เหตุผล:</div>
-    <div class="line"></div>
-
-    <div style="margin-top:10px"><b>ข้อ 3. สถานการณ์: A ต่างกัน</b> — ลูกส้ม A = 5 ซม. · ลูกฟ้า A = 2 ซม. ยอดทั้งคู่ · หลังพ้นกัน คลื่นแต่ละลูก:
-      <div style="margin-top:4px">&nbsp;☐ ลูกส้ม "กิน" ลูกฟ้าหายไป &nbsp; ☐ กลายเป็นลูกเดียวขนาด 7 &nbsp; ☐ แยกคืนรูปเดิมทั้งคู่ (5 กับ 2)</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="p-predict-2b" value="vanish"> หายไปทั้งคู่</label>
+      <label class="opt"><input type="radio" name="p-predict-2b" value="restore"> คงรูปเดิม เดินต่อเหมือนเดิม</label>
+      <label class="opt"><input type="radio" name="p-predict-2b" value="changed"> เปลี่ยนรูปถาวร</label>
     </div>
-    <div style="margin-top:4px">เหตุผล:</div>
-    <div class="line"></div>
+    <div style="margin-top:4px"><b>เหตุผล:</b></div>
+    <textarea id="p-reason-2" class="ans-ta" rows="2" placeholder="เหตุผลของการทำนายข้อ 2..."></textarea>
 
-    <div class="conf"><b>ความมั่นใจรวม:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย</div>
+    <div style="margin-top:10px"><b>ข้อ 3. สถานการณ์: A ต่างกัน</b> — ลูกส้ม A = 5 ซม. · ลูกฟ้า A = 2 ซม. ยอดทั้งคู่ · หลังพ้นกัน คลื่นแต่ละลูก:</div>
+    <div>
+      <label class="opt"><input type="radio" name="p-predict-3" value="winlose"> ลูกส้ม "กิน" ลูกฟ้าหายไป</label>
+      <label class="opt"><input type="radio" name="p-predict-3" value="merge7"> กลายเป็นลูกเดียวขนาด 7</label>
+      <label class="opt"><input type="radio" name="p-predict-3" value="restore"> แยกคืนรูปเดิมทั้งคู่ (5 กับ 2)</label>
+    </div>
+    <div style="margin-top:4px"><b>เหตุผล:</b></div>
+    <textarea id="p-reason-3" class="ans-ta" rows="2" placeholder="เหตุผลของการทำนายข้อ 3..."></textarea>
+
+    <div class="conf"><b>ความมั่นใจรวม:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="low"> น้อย</label>
+    </div>
   </div>
 
   <!-- ══ O · OBSERVE ══ -->
@@ -140,6 +164,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
               <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
             </div>
             <canvas id="canvasO1" data-bg="lined" width="900" height="200"></canvas>
+            <textarea id="o-obs-1" class="ans-ta" rows="2" placeholder="ก่อน: ... · ขณะพบ: ... · หลังพ้น: ... · pulse คืนรูปเดิมหรือไม่?"></textarea>
           </div>
         </div>
       </div>
@@ -175,6 +200,7 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
               <button class="c-btn" onclick="clearCanvas('canvasO2')" style="margin-left:auto;color:#c53030">🗑️</button>
             </div>
             <canvas id="canvasO2" data-bg="lined" width="900" height="200"></canvas>
+            <textarea id="o-obs-2" class="ans-ta" rows="2" placeholder="ยอด+ยอด: A รวม = ... · ยอด+ท้อง: A รวม = ... · A ต่าง (5+2): A รวม = ..."></textarea>
           </div>
         </div>
       </div>
@@ -210,9 +236,17 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
               <button class="c-btn" onclick="clearCanvas('canvasO3')" style="margin-left:auto;color:#c53030">🗑️</button>
             </div>
             <canvas id="canvasO3" data-bg="lined" width="900" height="200"></canvas>
+            <textarea id="o-obs-3" class="ans-ta" rows="2" placeholder="ระนาบ: ... · วงกลม: ... · ผ่านช่องแคบ: ... · ใช้กับคลื่นชนิดใดบ้าง?"></textarea>
           </div>
         </div>
       </div>
+    </div>
+
+    <div style="margin-top:12px"><b>สรุปคำถามท้าย O:</b> หลังคลื่น 2 ลูก (A เท่า, ยอดทั้งคู่) ผ่านกันแล้ว · รูปร่างของคลื่นแต่ละลูกเป็นอย่างไร?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="o-final" value="restore"> กลับคืนรูปเดิมทั้งคู่</label>
+      <label class="opt"><input type="radio" name="o-final" value="merged"> รวมเป็นลูกเดียว</label>
+      <label class="opt"><input type="radio" name="o-final" value="destroyed"> หายไปถาวร</label>
     </div>
   </div>
 
@@ -221,52 +255,63 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
     <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P ↔ O · 8 นาที</span></h2>
 
     <div><b>ข้อ 1.</b> ผลจริงตรงกับที่คุณทำนายไหม? (P กับ O)</div>
-    <div style="margin-top:4px">&nbsp;☐ ตรง &nbsp; ☐ ตรงบางส่วน &nbsp; ☐ ไม่ตรง</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="e-compare" value="match"> ตรง</label>
+      <label class="opt"><input type="radio" name="e-compare" value="partial"> ตรงบางส่วน</label>
+      <label class="opt"><input type="radio" name="e-compare" value="diff"> ไม่ตรง</label>
+    </div>
     <div style="margin-top:4px">จุดที่ต่าง (เขียนสั้น):</div>
-    <div class="line"></div>
+    <textarea id="e-compare-text" class="ans-ta" rows="2" placeholder="อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร..."></textarea>
 
     <div style="margin-top:10px"><b>ข้อ 2.</b> อธิบายเหตุการณ์ที่พบโดยใช้<strong>หลักการซ้อนทับ</strong> (y = y₁ + y₂) — <span style="font-size:13px;color:#1b5e20">ติ๊กทุกข้อที่ถูกและตรงกับหลักฐานของคุณ</span></div>
-    <div style="background:#fff;border:1px solid #c6f6d5;border-radius:8px;padding:10px 14px;margin-top:6px;font-size:14.5px;line-height:1.9">
-      <div>☐ การกระจัด ณ จุดเดียวกันคือ<strong>ผลบวกเชิงพีชคณิต</strong>ของ y₁ กับ y₂</div>
-      <div>☐ ยอด + ยอด → เสริมกัน A รวม = <strong>A₁ + A₂</strong> (ใหญ่ขึ้นชั่วขณะ)</div>
-      <div>☐ ยอด + ท้อง (A เท่า) → หักล้าง A รวม = <strong>0</strong> ขณะพบ (แบนราบ)</div>
-      <div>☐ การหักล้าง = หาย<strong>ชั่วขณะเท่านั้น</strong> ไม่ใช่หายถาวร (แก้ M4.2)</div>
-      <div>☐ หลังพ้นกัน คลื่นแต่ละลูก<strong>กลับคืนรูปเดิม</strong> (แก้ M4.1)</div>
-      <div>☐ A ใหญ่ไม่ "กิน" A เล็ก · ทั้งคู่ผ่านกัน<strong>คงสภาพ</strong> (แก้ M4.3)</div>
-      <div>☐ อื่น ๆ:
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:70%;height:22px"></span>
-      </div>
+    <div class="checklist">
+      <label class="opt"><input type="checkbox" id="e-check-1"> การกระจัด ณ จุดเดียวกันคือ<strong>ผลบวกเชิงพีชคณิต</strong>ของ y₁ กับ y₂</label>
+      <label class="opt"><input type="checkbox" id="e-check-2"> ยอด + ยอด → เสริมกัน A รวม = <strong>A₁ + A₂</strong> (ใหญ่ขึ้นชั่วขณะ)</label>
+      <label class="opt"><input type="checkbox" id="e-check-3"> ยอด + ท้อง (A เท่า) → หักล้าง A รวม = <strong>0</strong> ขณะพบ (แบนราบ)</label>
+      <label class="opt"><input type="checkbox" id="e-check-4"> การหักล้าง = หาย<strong>ชั่วขณะเท่านั้น</strong> ไม่ใช่หายถาวร (แก้ M4.2)</label>
+      <label class="opt"><input type="checkbox" id="e-check-5"> หลังพ้นกัน คลื่นแต่ละลูก<strong>กลับคืนรูปเดิม</strong> (แก้ M4.1)</label>
+      <label class="opt"><input type="checkbox" id="e-check-6"> A ใหญ่ไม่ "กิน" A เล็ก · ทั้งคู่ผ่านกัน<strong>คงสภาพ</strong> (แก้ M4.3)</label>
+      <label class="opt" style="align-items:center"><input type="checkbox" id="e-check-7"> อื่น ๆ: <input type="text" id="e-check-7-text" style="flex:1;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px;margin-left:6px"></label>
     </div>
 
     <div style="margin-top:12px"><b>ข้อ 3.</b> หน้าคลื่นใหม่ที่เห็นในฐาน 3 สร้างจาก<strong>หลักของฮอยเกนส์</strong>อย่างไร — <span style="font-size:13px;color:#1b5e20">ติ๊กทุกข้อที่ถูก</span></div>
-    <div style="background:#fff;border:1px solid #c6f6d5;border-radius:8px;padding:10px 14px;margin-top:6px;font-size:14.5px;line-height:1.9">
-      <div>☐ ทุกจุดบนหน้าคลื่นเดิม = <strong>แหล่งกำเนิด wavelet วงกลม</strong>ทุติยภูมิ</div>
-      <div>☐ หน้าคลื่นใหม่ = <strong>envelope (เส้นสัมผัสร่วม)</strong> ของ wavelet ทั้งหมด</div>
-      <div>☐ หน้าคลื่นเคลื่อนที่ด้วยระยะ <strong>v · Δt</strong> ในเวลา Δt</div>
-      <div>☐ ใช้ได้กับคลื่น<strong>น้ำ เสียง แสง</strong> — ไม่ได้จำกัดเฉพาะคลื่นน้ำ (แก้ M4.4)</div>
-      <div>☐ อธิบายการเลี้ยวเบนที่ช่องเปิดแคบ (เตรียมสู่แผน 8) และการสะท้อน/หักเห (แผน 5–6)</div>
-      <div>☐ อื่น ๆ:
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:70%;height:22px"></span>
-      </div>
+    <div class="checklist">
+      <label class="opt"><input type="checkbox" id="e-check-h1"> ทุกจุดบนหน้าคลื่นเดิม = <strong>แหล่งกำเนิด wavelet วงกลม</strong>ทุติยภูมิ</label>
+      <label class="opt"><input type="checkbox" id="e-check-h2"> หน้าคลื่นใหม่ = <strong>envelope (เส้นสัมผัสร่วม)</strong> ของ wavelet ทั้งหมด</label>
+      <label class="opt"><input type="checkbox" id="e-check-h3"> หน้าคลื่นเคลื่อนที่ด้วยระยะ <strong>v · Δt</strong> ในเวลา Δt</label>
+      <label class="opt"><input type="checkbox" id="e-check-h4"> ใช้ได้กับคลื่น<strong>น้ำ เสียง แสง</strong> — ไม่ได้จำกัดเฉพาะคลื่นน้ำ (แก้ M4.4)</label>
+      <label class="opt"><input type="checkbox" id="e-check-h5"> อธิบายการเลี้ยวเบนที่ช่องเปิดแคบ (เตรียมสู่แผน 8) และการสะท้อน/หักเห (แผน 5–6)</label>
+      <label class="opt" style="align-items:center"><input type="checkbox" id="e-check-h6"> อื่น ๆ: <input type="text" id="e-check-h6-text" style="flex:1;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px;margin-left:6px"></label>
     </div>
 
     <div style="margin-top:10px;background:#fff8e1;border-left:4px solid #f9a825;padding:10px 12px;border-radius:8px">
       <b>🧠 สรุปแก้ Misconception (เขียนด้วยคำของตัวเอง):</b>
       <div style="margin-top:6px">• M4.1 รูปคลื่นเปลี่ยนถาวรหลังซ้อน? →
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:60%;height:22px"></span>
+        <input type="text" id="e-m41" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
       </div>
       <div style="margin-top:4px">• M4.2 หักล้าง = หายถาวร? →
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:60%;height:22px"></span>
+        <input type="text" id="e-m42" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
       </div>
       <div style="margin-top:4px">• M4.3 A ใหญ่กลืน A เล็ก? →
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:60%;height:22px"></span>
+        <input type="text" id="e-m43" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
       </div>
       <div style="margin-top:4px">• M4.4 Huygens ใช้ได้เฉพาะคลื่นน้ำ? →
-        <span style="display:inline-block;border-bottom:1.5px solid #999;min-width:60%;height:22px"></span>
+        <input type="text" id="e-m44" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
       </div>
     </div>
 
-    <div class="conf" style="margin-top:10px"><b>ความมั่นใจหลังเรียน:</b> ☐ มาก ☐ ปานกลาง ☐ น้อย · เพิ่มขึ้น/ลดลงจากก่อนเรียน: ☐ เพิ่ม ☐ เท่าเดิม ☐ ลด</div>
+    <div style="margin-top:10px"><b>สรุปหลักการด้วยภาษาของนักเรียนเอง:</b> (หลักซ้อนทับคือ? · หักล้างชั่วขณะ = อะไร? · Huygens ทำงานอย่างไร?)</div>
+    <textarea id="e-principle" class="ans-ta" rows="3" placeholder="หลักซ้อนทับคือ... · หักล้างชั่วขณะหมายถึง... · Huygens บอกว่า..."></textarea>
+
+    <div class="conf" style="margin-top:10px"><b>ความมั่นใจหลังเรียน:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf" value="low"> น้อย</label>
+      &nbsp;·&nbsp; เพิ่มขึ้น/ลดลงจากก่อนเรียน:
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf-delta" value="up"> เพิ่ม</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf-delta" value="same"> เท่าเดิม</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf-delta" value="down"> ลด</label>
+    </div>
   </div>
 
   <!-- ══ ANSWER KEY (ครู · ซ่อนตอนพิมพ์) ══ -->
