@@ -1613,9 +1613,39 @@ function noWorksheetHint(body, type){
 }
 
 // ─── Matrix ──────────────────────────────────────────────────
+// ── Shared embed renderer · ใช้กับ matrix/spot/calc ที่มี viewFile ───
+function renderEmbedWorksheet(body, s, typeLabel){
+  const folder = (PLAN_MEDIA[state.currentPlan] && PLAN_MEDIA[state.currentPlan].folder) || '';
+  const viewUrl = encodeURI(`${folder}/${s.viewFile}`);
+  const cleanDl = `${String(s.title || typeLabel).replace(/[\\/:*?"<>|]/g,'_').trim()}.html`;
+  const icon = typeLabel === 'Matrix' ? '📊' : (typeLabel === 'Spot' ? '🔍' : '🧮');
+  body.innerHTML += `
+    <div class="info"><b>${icon} ${escapeHtml(s.title || '')}:</b> ${escapeHtml(s.description || '')}</div>
+    <div style="background:linear-gradient(135deg,#fff4e6,#ffe0c2);border:2px solid #f59e0b;border-radius:12px;padding:14px 18px;margin:10px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:32px">📋</span>
+      <div style="flex:1;min-width:220px">
+        <div style="font-weight:800;color:#7c2d12;font-size:15.5px">ใบกิจกรรมพร้อมใช้งาน</div>
+        <div style="font-size:13.5px;color:#78350f;margin-top:2px">เปิดใบในแท็บใหม่ / ทำในหน้านี้ / ปริ้นต์ได้</div>
+      </div>
+      <a href="${viewUrl}" target="_blank" rel="noopener"
+         style="background:#1565c0;color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13.5px;white-space:nowrap">🔗 เปิดแท็บใหม่</a>
+      <a href="${viewUrl}" download="${escapeHtml(cleanDl)}"
+         style="background:#c2410c;color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13.5px;white-space:nowrap">⬇ ดาวน์โหลด</a>
+    </div>
+    <iframe src="${viewUrl}" style="width:100%;height:1200px;border:1.5px solid #cbd5e1;border-radius:10px;background:#fff;margin:8px 0"></iframe>`;
+  if (s.allowUpload === true && typeof renderUpload === 'function'){
+    const uploadDiv = document.createElement('div');
+    uploadDiv.style.marginTop = '12px';
+    body.appendChild(uploadDiv);
+    renderUpload(uploadDiv);
+  }
+  showView('view-tool');
+}
+
 function renderMatrix(body){
   const s = getWorksheet('matrix');
   if (!s) return noWorksheetHint(body, 'matrix');
+  if (s.viewFile) return renderEmbedWorksheet(body, s, 'Matrix');
   const [colA='คอลัมน์ 1', colB='คอลัมน์ 2'] = s.columns || [];
   const [phA='', phB=''] = s.placeholders || [];
   let rowHtml = '';
@@ -1651,6 +1681,7 @@ function renderMatrix(body){
 function renderSpot(body){
   const s = getWorksheet('spot');
   if (!s) return noWorksheetHint(body, 'spot');
+  if (s.viewFile) return renderEmbedWorksheet(body, s, 'Spot');
   // Normalize: string → { stmt }
   const items = (s.items || []).map(it => typeof it === 'string' ? { stmt: it } : it);
   let html = '';
