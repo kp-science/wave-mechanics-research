@@ -18,13 +18,37 @@ Engage: [ชื่อ Concept Cartoon / Hook]
 K/P/A: [copy จาก PLAN_BRIEFS.md บรรทัดเดียว]
 
 ใช้ pattern เดียวกับแผน 6 (POE-06, Calc-6.1, Spot-6.2, F6, Infographic, content pack)
-ทำ Step 2-7 รวด · commit ท้าย · อย่าถามระหว่างทาง · ข้ามการอ่าน gold standard
+ทำครบ 2 ส่วน: (A) สร้าง HTML 5 ไฟล์ (B) นำเข้าระบบเว็บ (content pack 5 ไฟล์)
+commit ท้าย · อย่าถามระหว่างทาง · ข้ามการอ่าน gold standard
 
-ข้อบังคับ:
-- data-ws-id="plan[N]-[type]" · script ../../../shared/worksheet-core.js
+━━━ ส่วน A · HTML 5 ไฟล์ ━━━
+ใน lessons/physics3/waves/แผน[NN]_[ชื่อ]/ :
+- แผน[N]_Infographic.html
+- สื่อ02_POE-[N]_ใบบันทึกPOE.html
+- สื่อ03_Calc_ใบกิจกรรม[N].1.html
+- สื่อ04_Spot_ใบกิจกรรม[N].2.html
+- สื่อ05_F[N]_Fourtier_PrePost.html
+
+━━━ ส่วน B · นำเข้าระบบเว็บ (⚠️ บังคับ · ไม่ทำ = หน้าเว็บไม่เห็น) ━━━
+แก้ content/physics3/ ทั้ง 5 ไฟล์:
+1. tools.js      → window.KP_PLAN_TOOLS[N] = ['tl-pre','f[N]-pre','poe','cer','calc','spot','tl-post','f[N]-post','mj','upload']
+                   (ถ้า f[N]-pre/post ยังไม่มีใน KP_TOOL_DEFS ให้เพิ่มด้วย)
+2. worksheets.js → window.KP_WORKSHEETS[N] = { poe:{...}, calc:{...}, spot:{...}, cer:{...} }
+                   (ทุก schema ต้องมี title, viewFile, submitLabel, sheetPrefix, allowUpload)
+3. questions.js  → window.KP_FT_BANK[N] = [3 ข้อ Four-tier] (stem/opts/reasons/key)
+4. media.js      → window.KP_PLAN_MEDIA[N] = { folder, title, meta, sections:[...], linkOut:[...] }
+                   ⚠️ CER info-card ไม่ใส่ field 'file:'
+5. plans.js      → verify window.KP_PLANS มี entry { no:[N], title, periods } (ถ้ายังไม่มีเพิ่ม)
+
+━━━ ข้อบังคับ HTML ━━━
+- data-ws-id="plan[N]-[type]" · script src="../../../shared/worksheet-core.js"
 - MC Reflection 3-part (เคย/ไม่เคย · 3 choices · textarea หลักฐาน)
 - Canvas ≥ 180px · real form controls · theme color ตามที่ระบุ
-- Plan [N] tools array ครบ 10 + schema worksheets/questions/media
+
+━━━ Verify หลัง commit ━━━
+- python3 bracket balance ทั้ง 5 ไฟล์ content pack
+- Grep "แผน [N]" ใน content/physics3/ ควรพบ ≥ 4 จุด
+- Hard refresh browser → เปิดหน้าเว็บ · เลือกแผน [N] · ต้องเห็นการ์ด 10 ใบ
 ```
 
 **ประหยัด:** ~75,000 tok (ข้ามอ่าน AI_START_HERE + 3 ไฟล์ gold standard)
@@ -98,6 +122,53 @@ Context: โปรเจกต์ KP-Classroom ที่ /Users/komanepapato/Doc
 ```
 
 **จากนั้น paste template ที่ต้องการ (T1-T5)**
+
+---
+
+## 🔌 T6 · สั่ง "นำเข้าระบบเว็บ" อย่างเดียว (ถ้า HTML มีอยู่แล้ว)
+
+ใช้เมื่อ AI ทำ HTML ให้แล้ว แต่ไม่ได้อัปเดต content pack · หรือเมื่อไฟล์ HTML สร้างด้วยมือ
+
+```
+นำเข้าระบบเว็บ · แผน [N]
+
+ไฟล์ HTML ที่มีอยู่ใน lessons/physics3/waves/แผน[NN]_[ชื่อ]/ :
+- แผน[N]_Infographic.html
+- สื่อ02_POE-[N]_ใบบันทึกPOE.html
+- สื่อ03_Calc_ใบกิจกรรม[N].1.html
+- สื่อ04_Spot_ใบกิจกรรม[N].2.html
+- สื่อ05_F[N]_Fourtier_PrePost.html
+
+Misconceptions: M[N].1, M[N].2, M[N].3
+Theme: [#xxx]
+Sim URL: [URL]
+
+อัปเดต content/physics3/ ทั้ง 5 ไฟล์ให้ครบ (tools/worksheets/questions/media/plans)
+ใช้ pattern เดียวกับแผน 6
+commit + push ท้ายสุด · อย่าถามระหว่างทาง
+```
+
+**ประหยัด:** ~50,000 tok (ไม่ต้องสร้าง HTML ซ้ำ)
+
+---
+
+## 🔍 T7 · Verify Registration ครบไหม
+
+หลัง AI commit แล้ว · อยากเช็คว่านำเข้าระบบครบหรือไม่:
+
+```
+ตรวจว่าแผน [N] นำเข้าระบบเว็บครบไหม · ถ้าไม่ครบ บอกว่าขาดอะไรและแก้ให้ · commit ถ้าแก้
+
+เช็ค:
+1. tools.js    · KP_PLAN_TOOLS[N] มีครบ 10 tool
+2. worksheets  · KP_WORKSHEETS[N] มี poe/calc/spot/cer
+3. questions   · KP_FT_BANK[N] มี 3 ข้อ
+4. media       · KP_PLAN_MEDIA[N] มี folder/sections/linkOut
+5. plans       · KP_PLANS มี entry [N]
+6. HTML 5 ไฟล์ตรงตามที่ schema อ้างถึง (viewFile)
+```
+
+**ประหยัด:** ~10,000 tok (ตรวจเจาะจง ไม่ต้องรื้อทั้งโปรเจกต์)
 
 ---
 
