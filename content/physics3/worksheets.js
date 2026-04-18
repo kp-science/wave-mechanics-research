@@ -394,15 +394,17 @@ window.KP_WORKSHEETS = {
   5: {
     // POE-05 · Interactive form · 3 ฐาน (Slinky + Lab 38 + Lab 32)
     poe: {
-      hero: {
-        question: 'pulse ยอดขึ้นบนเส้นเชือกวิ่งชนปลายตรึง vs ปลายอิสระ · คลื่นสะท้อนกลับมาเหมือนเดิมหรือเปลี่ยนไปอย่างไร?',
-        context:  'คู่กับ POE-05 Interactive (palette ลากวางรูปคลื่น + canvas วาด) · 3 ฐาน (Slinky Live · Lab 38 wave-speed-on-string · Lab 32 wave-reflection)'
-      },
+      title:       'POE-05 · ใบบันทึก Predict–Observe–Explain (แผน 5)',
+      description: 'Interactive: palette ลากวางรูปคลื่น + canvas วาด · 3 ฐาน (Slinky · Lab 38 · Lab 32)',
       viewFile:    'สื่อ02_POE-05_ใบบันทึกPOE.html',
       submitLabel: '📤 ส่ง POE-05',
       sheetPrefix: 'POE_P',
       misconception: 'M5.1 · M5.2 · M5.3',
-      allowUpload: true
+      allowUpload: true,
+      hero: {
+        question: 'pulse ยอดขึ้นบนเส้นเชือกวิ่งชนปลายตรึง vs ปลายอิสระ · คลื่นสะท้อนกลับมาเหมือนเดิมหรือเปลี่ยนไปอย่างไร?',
+        context:  'คู่กับ POE-05 Interactive (palette ลากวางรูปคลื่น + canvas วาด) · 3 ฐาน (Slinky Live · Lab 38 wave-speed-on-string · Lab 32 wave-reflection)'
+      }
     },
     // ใบ 5.1 · Calc Reflection · scene-stack overlay + lined canvas
     calc: {
