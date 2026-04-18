@@ -118,7 +118,23 @@ canvas{display:block;width:100%;border:2px solid #99f6e4;border-radius:8px;backg
 
 /* Misconception correction */
 .misc-correct{background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;padding:12px 14px;margin-top:12px}
-.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:8px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:4px}
+.misc-correct .hint{font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px}
+.mc-header .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-header .mc-wrong{color:#991b1b;font-weight:700}
+.mc-header .mc-wrong em{font-style:italic;color:#2d3748;font-weight:400}
+.mc-row{margin:8px 0}
+.mc-row>label{font-size:13px;font-weight:700;color:#0f766e;display:block;margin-bottom:4px}
+.mc-row .radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.mc-row .radio-col{display:flex;flex-direction:column;gap:4px}
+.mc-row .radio-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px}
+.mc-row .radio-opt:hover{border-color:#0d9488;background:#e6fffa}
+.mc-row .radio-opt.selected{border-color:#0d9488;background:#ccfbf1;font-weight:700}
+.mc-row .radio-opt input{display:none}
+.mc-row textarea{min-height:44px;font-size:13.5px}
 .misc-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:14px}
 .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
 
@@ -621,10 +637,83 @@ canvas{display:block;width:100%;border:2px solid #99f6e4;border-radius:8px;backg
 
     <!-- Misconception correction -->
     <div class="misc-correct">
-      <h4>🧠 สรุปแก้ Misconception (เขียนด้วยคำของตัวเอง):</h4>
-      <div class="misc-row"><span class="misc-code">M5.1</span><div style="flex:1">ปลายตรึงไม่กลับเฟส? → <textarea id="mc1" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
-      <div class="misc-row"><span class="misc-code">M5.2</span><div style="flex:1">สะท้อนแล้ว v เปลี่ยน? → <textarea id="mc2" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
-      <div class="misc-row"><span class="misc-code">M5.3</span><div style="flex:1">A' = A เสมอ? → <textarea id="mc3" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
+      <h4>🧠 สรุปแก้ Misconception</h4>
+      <div class="hint">ทำ 3 ขั้น · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M5.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M5.1</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"ปลายตรึงสะท้อนคลื่นโดยไม่กลับเฟส"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc1-held">
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc1-correct">
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="a"> ปลายตรึง → กลับเฟส 180° (ยอด→ท้อง) · ปลายอิสระ → ไม่กลับเฟส</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="b"> ทั้งปลายตรึงและปลายอิสระไม่กลับเฟส · กำแพงแค่เปลี่ยนทิศ</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="c"> ปลายตรึงไม่มีการสะท้อน · ถูกดูดซับหมด</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc1-evidence" rows="2" placeholder="จาก Slinky / Lab 38 พบว่าปลายตรึง..."></textarea>
+        </div>
+      </div>
+
+      <!-- M5.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M5.2</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"สะท้อนแล้ว v เปลี่ยน (ช้าลง)"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc2-held">
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc2-correct">
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="a"> v คงที่เพราะอยู่ในตัวกลางเดิม · v ขึ้นกับตัวกลาง (v=√(T/μ)) ไม่ใช่ทิศ</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="b"> v ลดลงเพราะเสียพลังงานที่ผนัง</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="c"> v หยุดชั่วขณะแล้วค่อยดีดกลับเท่าเดิม</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc2-evidence" rows="2" placeholder="จาก Lab 38 · v ก่อน/หลังสะท้อน..."></textarea>
+        </div>
+      </div>
+
+      <!-- M5.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M5.3</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"A' = A เสมอ (กฎ θᵢ=θᵣ บอกว่าทุกอย่างเหมือนเดิม)"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc3-held">
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc3-correct">
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="a"> θᵢ=θᵣ ควบคุมเฉพาะทิศ · A' ขึ้นกับการดูดซับพลังงาน · มักน้อยกว่า A</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="b"> A' = A เสมอเพราะพลังงานรักษา</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="c"> A' = 0 เพราะพลังงานเปลี่ยนเป็นความร้อนหมด</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc3-evidence" rows="2" placeholder="จาก Lab 32 · วัด A ก่อน/หลังสะท้อน..."></textarea>
+        </div>
+      </div>
     </div>
 
     <!-- Post confidence -->
@@ -892,9 +981,15 @@ function submitPOE() {
       evidence: document.getElementById('cer-e').value,
       reasoning: document.getElementById('cer-r').value,
       checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
-      mc1: document.getElementById('mc1').value,
-      mc2: document.getElementById('mc2').value,
-      mc3: document.getElementById('mc3').value,
+      mc1_held:     document.querySelector('input[name="mc1-held"]:checked')?.value || '—',
+      mc1_correct:  document.querySelector('input[name="mc1-correct"]:checked')?.value || '—',
+      mc1_evidence: document.getElementById('mc1-evidence')?.value || '',
+      mc2_held:     document.querySelector('input[name="mc2-held"]:checked')?.value || '—',
+      mc2_correct:  document.querySelector('input[name="mc2-correct"]:checked')?.value || '—',
+      mc2_evidence: document.getElementById('mc2-evidence')?.value || '',
+      mc3_held:     document.querySelector('input[name="mc3-held"]:checked')?.value || '—',
+      mc3_correct:  document.querySelector('input[name="mc3-correct"]:checked')?.value || '—',
+      mc3_evidence: document.getElementById('mc3-evidence')?.value || '',
       conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
       conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
     },

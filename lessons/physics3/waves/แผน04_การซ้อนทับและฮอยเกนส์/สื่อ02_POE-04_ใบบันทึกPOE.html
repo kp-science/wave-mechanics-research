@@ -54,6 +54,24 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
 .answer-key .ak-row{background:#fff;border-left:4px solid #059669;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:14px}
 .answer-key .ak-row b{color:#047857}
 .answer-key .ak-tag{display:inline-block;background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;margin-right:6px;font-weight:700}
+/* Misconception reflection · 3-part (Posner Conceptual Change) */
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:12px 14px;margin-top:12px}
+.mc-reflect h4{font-size:14.5px;font-weight:800;color:#92400e;margin-bottom:4px}
+.mc-reflect .hint{font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-wrong-label{color:#991b1b;font-weight:700}
+.mc-wrong-text{font-style:italic;color:#2d3748}
+.mc-row{margin:7px 0}
+.mc-q{font-size:13px;font-weight:700;color:#7c2d12;display:block;margin-bottom:4px}
+.mc-choices{display:flex;flex-wrap:wrap;gap:6px}
+.mc-choices.col{flex-direction:column}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:flex-start;gap:6px}
+.mc-opt:hover{border-color:#c2410c;background:#ffedd5}
+.mc-opt input{margin-top:3px;flex-shrink:0}
+.mc-row textarea{width:100%;min-height:44px;font-size:13.5px;border:1.5px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-family:inherit;resize:vertical}
 @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.answer-key{display:none}.canvas-toolbar{display:none}}
 </style></head>
 <body data-ws-id="plan4-poe">
@@ -284,19 +302,85 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border
       <label class="opt" style="align-items:center"><input type="checkbox" id="e-check-h6"> อื่น ๆ: <input type="text" id="e-check-h6-text" style="flex:1;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px;margin-left:6px"></label>
     </div>
 
-    <div style="margin-top:10px;background:#fff8e1;border-left:4px solid #f9a825;padding:10px 12px;border-radius:8px">
-      <b>🧠 สรุปแก้ Misconception (เขียนด้วยคำของตัวเอง):</b>
-      <div style="margin-top:6px">• M4.1 รูปคลื่นเปลี่ยนถาวรหลังซ้อน? →
-        <input type="text" id="e-m41" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
+    <!-- Misconception Reflection · 3-part (Posner Conceptual Change) -->
+    <div class="mc-reflect">
+      <h4>🧠 สรุปแก้ Misconception</h4>
+      <div class="hint">ทำ 3 ขั้นต่อข้อ · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M4.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="mc-code">M4.1</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"รูปคลื่นเปลี่ยนถาวรหลังซ้อน"</span></div>
+        <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="mc-choices">
+            <label class="mc-opt"><input type="radio" name="mc41-held" value="yes"> เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc41-held" value="no"> ไม่เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc41-held" value="unsure"> ไม่แน่ใจ</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="mc-choices col">
+            <label class="mc-opt"><input type="radio" name="mc41-correct" value="a"> หลังผ่านกัน คลื่นแต่ละลูกคืนรูปเดิม · หลักซ้อนทับเชิงเส้น y = y₁+y₂</label>
+            <label class="mc-opt"><input type="radio" name="mc41-correct" value="b"> คลื่น 2 ลูกรวมเป็นลูกเดียวตลอดกาล ไม่แยกอีก</label>
+            <label class="mc-opt"><input type="radio" name="mc41-correct" value="c"> ทั้งคู่มีแอมพลิจูดลดลงถาวรเพราะเสียพลังงานตอนชนกัน</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc41-evidence" placeholder="จาก Slinky Live / Sim pulse-superposition · หลังพ้นกัน..."></textarea></div>
       </div>
-      <div style="margin-top:4px">• M4.2 หักล้าง = หายถาวร? →
-        <input type="text" id="e-m42" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
+
+      <!-- M4.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="mc-code">M4.2</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"Destructive = หายถาวร"</span></div>
+        <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="mc-choices">
+            <label class="mc-opt"><input type="radio" name="mc42-held" value="yes"> เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc42-held" value="no"> ไม่เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc42-held" value="unsure"> ไม่แน่ใจ</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="mc-choices col">
+            <label class="mc-opt"><input type="radio" name="mc42-correct" value="a"> หักล้างเฉพาะ<b>ชั่วขณะ</b> (A = 0 ขณะพบกัน) · คลื่นยังเดินทางต่อ คืนรูปเดิม</label>
+            <label class="mc-opt"><input type="radio" name="mc42-correct" value="b"> หักล้างทำให้พลังงานเปลี่ยนเป็นความร้อนหมด</label>
+            <label class="mc-opt"><input type="radio" name="mc42-correct" value="c"> หักล้าง = คลื่นหายจริง ๆ ตลอดกาล · ไม่มีอะไรเหลือ</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc42-evidence" placeholder="จาก Sim pulse-superposition · ยอด+ท้อง (A เท่ากัน)..."></textarea></div>
       </div>
-      <div style="margin-top:4px">• M4.3 A ใหญ่กลืน A เล็ก? →
-        <input type="text" id="e-m43" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
+
+      <!-- M4.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="mc-code">M4.3</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"คลื่น A ใหญ่ชนะ/กลืน A เล็ก"</span></div>
+        <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="mc-choices">
+            <label class="mc-opt"><input type="radio" name="mc43-held" value="yes"> เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc43-held" value="no"> ไม่เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc43-held" value="unsure"> ไม่แน่ใจ</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="mc-choices col">
+            <label class="mc-opt"><input type="radio" name="mc43-correct" value="a"> y รวม = y₁+y₂ ขณะพบ · หลังพ้นกันทั้งคู่คงสภาพเดิม · ไม่มีใครกินใคร</label>
+            <label class="mc-opt"><input type="radio" name="mc43-correct" value="b"> คลื่นใหญ่พลังงานมากกว่าจึงกลืนลูกเล็ก · เหลือลูกเดียว</label>
+            <label class="mc-opt"><input type="radio" name="mc43-correct" value="c"> คลื่นใหญ่และเล็กรวมกันเป็นลูกใหม่ A = A₁+A₂ ตลอดกาล</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc43-evidence" placeholder="Sim · A₁=5, A₂=2 ยอดทั้งคู่ → A รวม = 7 ขณะพบ · หลังพ้น..."></textarea></div>
       </div>
-      <div style="margin-top:4px">• M4.4 Huygens ใช้ได้เฉพาะคลื่นน้ำ? →
-        <input type="text" id="e-m44" style="width:60%;border:none;border-bottom:1.5px solid #999;padding:2px 4px;font-family:inherit;font-size:14px">
+
+      <!-- M4.4 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="mc-code">M4.4</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"หลักฮอยเกนส์ใช้ได้เฉพาะคลื่นน้ำ"</span></div>
+        <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="mc-choices">
+            <label class="mc-opt"><input type="radio" name="mc44-held" value="yes"> เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc44-held" value="no"> ไม่เคย</label>
+            <label class="mc-opt"><input type="radio" name="mc44-held" value="unsure"> ไม่แน่ใจ</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="mc-choices col">
+            <label class="mc-opt"><input type="radio" name="mc44-correct" value="a"> ใช้ได้กับคลื่น<b>ทุกชนิด</b> · น้ำ เสียง แสง คลื่นแผ่นดินไหว — หลักการทั่วไปของหน้าคลื่น</label>
+            <label class="mc-opt"><input type="radio" name="mc44-correct" value="b"> ใช้ได้เฉพาะคลื่นน้ำเพราะทดลองได้ชัดในถาดคลื่นเท่านั้น</label>
+            <label class="mc-opt"><input type="radio" name="mc44-correct" value="c"> ใช้ได้กับคลื่นกล (น้ำ+เสียง) แต่ไม่ใช้กับแสงเพราะแสงเป็นอนุภาค</label>
+          </div></div>
+        <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc44-evidence" placeholder="จาก Sim huygens-wavefront · envelope ของ wavelet ใช้กับ..."></textarea></div>
       </div>
     </div>
 

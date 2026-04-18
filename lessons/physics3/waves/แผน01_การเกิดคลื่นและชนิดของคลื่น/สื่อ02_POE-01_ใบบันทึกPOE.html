@@ -38,6 +38,24 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #bbdefb;border
 .opt-row .opt{flex:1 1 auto}
 .checklist{background:#fff;border:1px solid #bbdefb;border-radius:8px;padding:8px 12px;margin-top:6px}
 .checklist .opt{font-size:14px;line-height:1.6}
+/* Misconception reflection · 3-part (Posner Conceptual Change) */
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:12px 14px;margin-top:12px}
+.mc-reflect h4{font-size:14.5px;font-weight:800;color:#92400e;margin-bottom:4px}
+.mc-reflect .hint{font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 14px;margin-bottom:8px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-wrong-label{color:#991b1b;font-weight:700}
+.mc-wrong-text{font-style:italic;color:#2d3748}
+.mc-row{margin:7px 0}
+.mc-q{font-size:13px;font-weight:700;color:#0d47a1;display:block;margin-bottom:4px}
+.mc-choices{display:flex;flex-wrap:wrap;gap:6px}
+.mc-choices.col{flex-direction:column}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:flex-start;gap:6px}
+.mc-opt:hover{border-color:#1976d2;background:#e3f2fd}
+.mc-opt input{margin-top:3px;flex-shrink:0}
+.mc-row textarea{width:100%;min-height:44px;font-size:13.5px;border:1.5px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-family:inherit;resize:vertical}
 @media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
 </style></head>
 <body data-ws-id="plan1-poe">
@@ -175,8 +193,86 @@ canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #bbdefb;border
     </div>
   </div>
 
-  <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px">
-    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> M1.1 (อนุภาคไปกับคลื่น) · M1.2 (เสียงเป็นคลื่นตามขวาง)
+  <!-- Misconception Reflection · 3-part (Posner Conceptual Change) -->
+  <div class="mc-reflect">
+    <h4>🧠 สรุปแก้ Misconception</h4>
+    <div class="hint">ทำ 3 ขั้นต่อข้อ · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+    <!-- M1.1 -->
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M1.1</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"อนุภาคตัวกลางเคลื่อนที่ตามคลื่นไปด้วย"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <div class="mc-choices">
+          <label class="mc-opt"><input type="radio" name="mc1-held" value="yes"> เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div class="mc-choices col">
+          <label class="mc-opt"><input type="radio" name="mc1-correct" value="a"> อนุภาคสั่นรอบจุดสมดุล · คลื่นพาพลังงานไม่พาสสาร (ลูกมะพร้าวลอยขึ้น-ลงอยู่กับที่)</label>
+          <label class="mc-opt"><input type="radio" name="mc1-correct" value="b"> อนุภาคไหลตามคลื่นแต่ช้ากว่าคลื่นเล็กน้อย</label>
+          <label class="mc-opt"><input type="radio" name="mc1-correct" value="c"> อนุภาคหยุดนิ่ง · คลื่นพาวัตถุไปได้เอง</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+        <textarea id="mc1-evidence" placeholder="จาก Slinky/wave-types sim · ริบบิ้นที่ผูกไว้..."></textarea></div>
+    </div>
+
+    <!-- M1.2 -->
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M1.2</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"เสียงเป็นคลื่นตามขวาง"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <div class="mc-choices">
+          <label class="mc-opt"><input type="radio" name="mc2-held" value="yes"> เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div class="mc-choices col">
+          <label class="mc-opt"><input type="radio" name="mc2-correct" value="a"> เสียงเป็นคลื่นตามยาว · โมเลกุลสั่นในทิศเดียวกับทิศที่เสียงเดิน (ส่วนอัด-ส่วนขยาย)</label>
+          <label class="mc-opt"><input type="radio" name="mc2-correct" value="b"> เสียงเป็นคลื่นแม่เหล็กไฟฟ้า ไม่ต้องการตัวกลาง</label>
+          <label class="mc-opt"><input type="radio" name="mc2-correct" value="c"> เสียงเป็นคลื่นตามขวาง · โมเลกุลสั่นตั้งฉากทิศเสียง</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+        <textarea id="mc2-evidence" placeholder="จาก Slinky ผลัก-ดึง / wave-types sim (longitudinal)..."></textarea></div>
+    </div>
+
+    <!-- M1.3 -->
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M1.3</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"คลื่นเดินเส้นตรงเท่านั้น"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <div class="mc-choices">
+          <label class="mc-opt"><input type="radio" name="mc3-held" value="yes"> เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div class="mc-choices col">
+          <label class="mc-opt"><input type="radio" name="mc3-correct" value="a"> คลื่นกระจายเป็นหน้าคลื่นรอบแหล่งกำเนิด · เลี้ยวเบน/แผ่ได้</label>
+          <label class="mc-opt"><input type="radio" name="mc3-correct" value="b"> คลื่นเดินเส้นตรงเพราะพลังงานต้องไปข้างหน้าอย่างเดียว</label>
+          <label class="mc-opt"><input type="radio" name="mc3-correct" value="c"> คลื่นหยุดทันทีที่เจอสิ่งกีดขวาง</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+        <textarea id="mc3-evidence" placeholder="คลื่นน้ำจากจุดตกกระทบกระจายเป็นวงกลม · เสียงได้ยินจากหลายทิศ..."></textarea></div>
+    </div>
+
+    <!-- M1.4 -->
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M1.4</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"สับสน T (คาบ) กับ λ (ความยาวคลื่น)"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยสับสนไหม?</label>
+        <div class="mc-choices">
+          <label class="mc-opt"><input type="radio" name="mc4-held" value="yes"> เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc4-held" value="no"> ไม่เคย</label>
+          <label class="mc-opt"><input type="radio" name="mc4-held" value="unsure"> ไม่แน่ใจ</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div class="mc-choices col">
+          <label class="mc-opt"><input type="radio" name="mc4-correct" value="a"> T = เวลา (s) ต่อ 1 รอบการสั่น · λ = ระยะ (m) ต่อ 1 ลูกคลื่น · คนละหน่วยกัน</label>
+          <label class="mc-opt"><input type="radio" name="mc4-correct" value="b"> T และ λ เหมือนกัน · ทั้งคู่บอกขนาดของคลื่น</label>
+          <label class="mc-opt"><input type="radio" name="mc4-correct" value="c"> T = ความสูงคลื่น · λ = จำนวนรอบต่อวินาที</label>
+        </div></div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+        <textarea id="mc4-evidence" placeholder="จากกราฟ y-t อ่าน T ได้หน่วย s · จากกราฟ y-x อ่าน λ ได้หน่วย m..."></textarea></div>
+    </div>
   </div>
 
   <div class="foot">POE-01 ชุด A · แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>

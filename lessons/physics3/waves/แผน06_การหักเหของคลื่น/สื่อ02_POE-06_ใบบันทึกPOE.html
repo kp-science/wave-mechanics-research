@@ -116,11 +116,25 @@ canvas{display:block;width:100%;border:2px solid #a5f3fc;border-radius:8px;backg
 .cer-content{flex:1}
 .cer-content label{font-weight:700;font-size:14px;display:block;margin-bottom:2px}
 
-/* Misconception correction */
+/* Misconception correction · 3-part Conceptual Change (Posner et al.) */
 .misc-correct{background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;padding:12px 14px;margin-top:12px}
-.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:8px}
-.misc-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:14px}
-.misc-code{background:#c53030;color:#fff;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:4px}
+.misc-correct .hint{font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px}
+.mc-header .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-header .mc-wrong{color:#991b1b;font-weight:700}
+.mc-header .mc-wrong em{font-style:italic;color:#2d3748;font-weight:400}
+.mc-row{margin:8px 0}
+.mc-row>label{font-size:13px;font-weight:700;color:#164e63;display:block;margin-bottom:4px}
+.mc-row .radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.mc-row .radio-col{display:flex;flex-direction:column;gap:4px}
+.mc-row .radio-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px}
+.mc-row .radio-opt:hover{border-color:#0891b2;background:#ecfeff}
+.mc-row .radio-opt.selected{border-color:#0891b2;background:#cffafe;font-weight:700}
+.mc-row .radio-opt input{display:none}
+.mc-row textarea{min-height:44px;font-size:13.5px}
 
 /* Submit */
 .submit-bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
@@ -504,12 +518,85 @@ canvas{display:block;width:100%;border:2px solid #a5f3fc;border-radius:8px;backg
       <label class="check-opt"><input type="checkbox" id="chk5"> 🟢 <b>เชือก μ ต่างกัน f ยังคงที่ตามแหล่งกำเนิด</b> (v=√(T/μ) เปลี่ยน · λ เปลี่ยน · f คงที่) <span style="color:#888;font-size:12.5px">— แก้ M6.3</span></label>
     </div>
 
-    <!-- Misconception correction -->
+    <!-- Misconception correction · 3 ส่วนต่อ M (Posner Conceptual Change) -->
     <div class="misc-correct">
-      <h4>🧠 สรุปแก้ Misconception (เขียนด้วยคำของตัวเอง):</h4>
-      <div class="misc-row"><span class="misc-code">M6.1</span><div style="flex:1">หักเห → f เปลี่ยน? → <textarea id="mc1" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
-      <div class="misc-row"><span class="misc-code">M6.2</span><div style="flex:1">หักเห → เปลี่ยนชนิดคลื่น? → <textarea id="mc2" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
-      <div class="misc-row"><span class="misc-code">M6.3</span><div style="flex:1">เชือก μ ต่าง → f ต่าง? → <textarea id="mc3" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
+      <h4>🧠 สรุปแก้ Misconception</h4>
+      <div class="hint">ทำ 3 ขั้น · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M6.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M6.1</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"หักเหแล้ว f เปลี่ยน"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc1-held">
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc1-correct">
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="a"> f คงที่ตามแหล่งกำเนิด · เฉพาะ v และ λ เปลี่ยนตามตัวกลาง</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="b"> f เปลี่ยนเพราะตัวกลางเปลี่ยน (v เปลี่ยน → f เปลี่ยน)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="c"> f เปลี่ยนตามสัดส่วนของ λ (λ เล็กลง → f เพิ่ม)</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc1-evidence" rows="2" placeholder="จาก Lab 33 / Lab 30 พบว่า..."></textarea>
+        </div>
+      </div>
+
+      <!-- M6.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M6.2</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"หักเหแล้วเปลี่ยนชนิดคลื่น"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc2-held">
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc2-correct">
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="a"> ชนิดคลื่นไม่เปลี่ยน · เฉพาะ v, λ, ทิศการเคลื่อนที่ที่เปลี่ยน</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="b"> คลื่นตามขวางเปลี่ยนเป็นตามยาวเมื่อ v ลด</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="c"> คลื่นจะเปลี่ยนเป็นคลื่นนิ่งถ้ามุมตกกระทบมาก</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc2-evidence" rows="2" placeholder="จาก Lab 30 อนุภาคยังสั่น ↕ เหมือนเดิม..."></textarea>
+        </div>
+      </div>
+
+      <!-- M6.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M6.3</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"เชือก μ ต่าง → f ต่างกัน"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc3-held">
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc3-correct">
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="a"> f คงที่ตามแหล่งกำเนิด · รอยต่อเชือกต้องสั่นพร้อมกัน · v, λ เปลี่ยนตาม μ</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="b"> เชือกหนา μ มาก → f น้อยลงตามสัดส่วน v</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="c"> เชือกบาง f มาก · เชือกหนา f น้อย (ขึ้นกับ μ)</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากการทดลอง (1-2 ประโยค):</label>
+          <textarea id="mc3-evidence" rows="2" placeholder="จาก Lab 30 · เปลี่ยน μ₂/μ₁ แล้ว f ยังเท่ากัน..."></textarea>
+        </div>
+      </div>
     </div>
 
     <!-- Post confidence -->
@@ -752,9 +839,15 @@ function submitPOE() {
       evidence: document.getElementById('cer-e').value,
       reasoning: document.getElementById('cer-r').value,
       checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
-      mc1: document.getElementById('mc1').value,
-      mc2: document.getElementById('mc2').value,
-      mc3: document.getElementById('mc3').value,
+      mc1_held:     document.querySelector('input[name="mc1-held"]:checked')?.value || '—',
+      mc1_correct:  document.querySelector('input[name="mc1-correct"]:checked')?.value || '—',
+      mc1_evidence: document.getElementById('mc1-evidence')?.value || '',
+      mc2_held:     document.querySelector('input[name="mc2-held"]:checked')?.value || '—',
+      mc2_correct:  document.querySelector('input[name="mc2-correct"]:checked')?.value || '—',
+      mc2_evidence: document.getElementById('mc2-evidence')?.value || '',
+      mc3_held:     document.querySelector('input[name="mc3-held"]:checked')?.value || '—',
+      mc3_correct:  document.querySelector('input[name="mc3-correct"]:checked')?.value || '—',
+      mc3_evidence: document.getElementById('mc3-evidence')?.value || '',
       conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
       conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
     },
