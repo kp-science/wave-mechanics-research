@@ -459,5 +459,69 @@ window.KP_PLAN_MEDIA = {
       'MJ-07 → คำถามเด่นเป็น Hook แผน 8 (การเลี้ยวเบน — "1 ช่อง 1 แหล่งจะแทรกสอดได้ไหม?")',
       'OB-01 → Grit (A7.1 ≥ 80%) · Peer Tutoring (A7.2 ≥ 70%)'
     ]
+  },
+  8: {
+    folder: 'lessons/physics3/waves/แผน08_การเลี้ยวเบนของคลื่น',
+    title: 'แผน 8 — การเลี้ยวเบนของคลื่น (Diffraction)',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 16 (50 นาที) · Theme Rose',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 8 (ฉบับสมบูรณ์)', file:'แผน8_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE · สื่อ · การวัด · วPA · Timeline · Theme Rose', chips:[] },
+        { cls:'sim', no:'SIM', t:'Lab 41 — Two-Source Wave Interference (โหมดช่องแคบเดียว)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html',
+          d:'Virtual Lab · โหมด "ช่องแคบเดียว" · ปรับกว้างช่อง a · ทดสอบ d < λ, d ≈ λ, d > λ · สังเกต central max/minima · ใช้ใน POE-08 ทั้ง 3 ฐาน',
+          chips:[['m','M8.1'],['m','M8.2'],['m','M8.3'],['k','K8.1'],['k','K8.2'],['p','P8.1']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e2', no:'02', t:'POE-08 Interactive · ใบบันทึก P / O / E', file:'สื่อ02_POE-08_ใบบันทึกPOE.html',
+          d:'Predict 4 ข้อ ครอบคลุม M8.1-M8.3 · Observe 3 ฐาน (ช่อง 1/3/10 cm) + canvas วาดเปรียบเทียบ · Explain checklist + Misconception Reflection 3 ส่วน',
+          meta:'ใช้ตลอด E1–E3 · 25 นาที',
+          chips:[['p','P8.1'],['p','P8.2'],['m','M8.1'],['m','M8.2'],['m','M8.3']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 8.1 · Calc Diffraction', file:'สื่อ03_Calc_ใบกิจกรรม8.1.html',
+          d:'4 ข้อไล่ระดับ · (1) เงื่อนไข d/λ (2) คำนวณมุมแนวมืด a sinθ = nλ (3) วาดเปรียบเทียบ 3 ขนาดช่อง · canvas (4) เสียงรอบมุมตึก λ = v/f เชื่อมชีวิตจริง · ใช้ worksheet-core.js',
+          meta:'ใช้ในฉาก E4 Elaborate · 8 นาที',
+          chips:[['k','K8.1'],['k','K8.2'],['p','P8.1'],['p','P8.2'],['m','M8.1']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 8.2 · Spot the Error', file:'สื่อ04_Spot_ใบกิจกรรม8.2.html',
+          d:'3 สถานการณ์ · "ช่องแคบ<λ ผ่านไม่ได้" (M8.1) · "ช่องกว้าง=เลี้ยวเบนมาก" (M8.2) · "เลี้ยวเบนเปลี่ยน f" (M8.3) · claim canvas overlay + canvas อธิบาย',
+          meta:'ใช้ในฉาก E4 Elaborate · 5 นาที',
+          chips:[['k','K8.1'],['p','P8.2'],['m','M8.1'],['m','M8.2'],['m','M8.3']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F8 Four-tier · Pre + Post', file:'สื่อ05_F8_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier (T1+T2+T3+T4) · M8.1 (ช่องแคบผ่านได้) · M8.2 (ช่องกว้างเลี้ยวเบนน้อย) · M8.3 (f คงที่) · SVG + Answer Key + Interpretation rubric',
+          meta:'ใช้ในฉาก F8 Pre (7\') + F8 Post (5\')',
+          chips:[['k','K8.1'],['k','K8.2'],['m','M8.1'],['m','M8.2'],['m','M8.3'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A8.1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-08 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 Transfer ชีวิตจริง (เสียงรอบมุม/วิทยุ/สัญญาณ WiFi) · 1 คำถาม',
+          meta:'ใช้ในฉาก MJ · 2 นาที',
+          chips:[['a','A8.1'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Inquiry Engagement (A8.1) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 50 นาที',
+          chips:[['a','A8.1'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-08',
+          chips:[['p','P8.1'],['p','P8.2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: 🔸 ช่องแคบ d ≤ λ (แก้ M8.1) · 🔹 ช่องกว้าง d ≫ λ (แก้ M8.2) · 🔁 f ไม่เปลี่ยน (แก้ M8.3) · ผูก POE-08 ทั้ง 3 ฐาน',
+          meta:'ใช้ในฉาก E3 · 8 นาที',
+          chips:[['p','P8.2'],['k','K8.1'],['a','A8.1'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F8 Pre/Post → % Sound · Misconception M8.1/M8.2/M8.3 · Normalized gain · เป้าหมายลด MC M8.1 ≥ 50%, M8.2/M8.3 ≥ 30%',
+      'POE-08 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 8.1 → คะแนนเฉลี่ย ≥ 70% · canvas 3 ช่อง + โจทย์ชีวิตจริงเสียง',
+      'Spot 8.2 → Conceptual Change · เชื่อม M8.1–M8.3 กับหลักฐาน',
+      'CER Board → คลัง Claim-Evidence-Reasoning เรื่องเลี้ยวเบน · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-08 → คำถามเด่นเป็น Hook แผน 9 (คลื่นนิ่ง)',
+      'OB-01 → Inquiry Engagement (A8.1 ≥ 80%)'
+    ]
   }
 };

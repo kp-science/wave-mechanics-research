@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 8.2 · Spot the Error</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.14);padding:26px 30px}
+.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:14px}
+.head h1{font-size:22px;color:#831843}
+.meta{color:#9d174d;font-size:13px;margin-top:4px}
+.id-box{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;font-size:13.5px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:8px;padding:10px}
+.id-box label{display:flex;align-items:center;gap:6px;color:#831843;font-weight:600}
+.id-box input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
+.name-input{width:220px}.short-input{width:70px}
+.item{border:1.5px solid #fbcfe8;border-radius:12px;padding:14px 16px;margin:14px 0;background:#fff}
+.item h2{color:#831843;font-size:17px;margin-bottom:6px}
+.mis-tag{background:#db2777;color:#fff;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px}
+.stmt{background:#fff7fb;border-left:6px solid #db2777;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:14.5px;font-style:italic;color:#831843}
+.canvas-wrap{border:1.5px solid #fbcfe8;border-radius:10px;padding:6px;background:#fff;margin:6px 0}
+.canvas-wrap.overlay canvas{background:#fff7fb;cursor:crosshair}
+.canvas-wrap.explain canvas{background:#fff;cursor:crosshair}
+canvas{display:block;width:100%;height:190px;border-radius:6px}
+textarea{border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;font-family:inherit;font-size:14px;width:100%;resize:vertical;min-height:70px}
+.label{color:#9d174d;font-weight:700;margin:6px 0 4px}
+.btn{background:#db2777;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{background:#9d174d}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+</style></head>
+<body data-ws-id="plan8-spot">
+
+<div class="page">
+  <div class="head">
+    <h1>🔍 ใบกิจกรรม 8.2 · Spot the Error</h1>
+    <div class="meta">3 สถานการณ์ · วงกลม/ขีดทับจุดผิดบน claim canvas + canvas อธิบายที่ถูก · ชน M8.1 · M8.2 · M8.3</div>
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ–สกุล <input type="text" id="s-name" class="name-input"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
+    <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
+  </div>
+
+  <!-- ═════ ข้อ 1 · M8.1 ═════ -->
+  <div class="item">
+    <h2><span class="mis-tag">M8.1</span>ข้อ 1 · ช่องแคบกว่า λ คลื่นผ่านไม่ได้</h2>
+    <div class="stmt">น้องพลอย: "ถ้าช่องเปิดในกำแพงกว้างแค่ 1 cm แต่ความยาวคลื่นน้ำ λ = 3 cm · แปลว่าช่องแคบกว่าคลื่น คลื่นจึงไม่สามารถผ่านช่องได้เลย · จะถูกกำแพงกั้นหมด เห็นเป็นเงาเงียบด้านหลัง"</div>
+    <p class="label">✏ วงกลม/ขีดทับจุดผิดใน claim (วาดทับข้อความข้างบน):</p>
+    <div class="canvas-wrap overlay"><canvas id="q1-claim" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q1-claim')">ล้าง</button>
+
+    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
+    <textarea id="q1-text" placeholder="จุดผิด: ... · ที่ถูก: คลื่นผ่านได้และเลี้ยวเบนเป็นวงกลมแรงที่สุดเมื่อ d ≤ λ..."></textarea>
+
+    <p class="label">🎨 วาดอธิบายที่ถูก (หน้าคลื่นหลังช่อง):</p>
+    <div class="canvas-wrap explain"><canvas id="q1-exp" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q1-exp')">ล้าง</button>
+  </div>
+
+  <!-- ═════ ข้อ 2 · M8.2 ═════ -->
+  <div class="item">
+    <h2><span class="mis-tag">M8.2</span>ข้อ 2 · ช่องกว้าง → เลี้ยวเบนมาก</h2>
+    <div class="stmt">พี่เจมส์: "ยิ่งช่องเปิดกว้างมาก คลื่นยิ่งมีที่ให้แผ่ออกไป เพราะฉะนั้นช่องที่กว้าง 10 cm จะเลี้ยวเบนมากกว่าช่อง 1 cm อย่างแน่นอน · ถ้าอยากให้เลี้ยวเบนน้อย ต้องทำให้ช่องแคบ"</div>
+    <p class="label">✏ วงกลม/ขีดทับจุดผิด:</p>
+    <div class="canvas-wrap overlay"><canvas id="q2-claim" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q2-claim')">ล้าง</button>
+
+    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
+    <textarea id="q2-text" placeholder="จุดผิด: สลับตรงข้าม · ที่ถูก: ช่องกว้าง (d ≫ λ) เลี้ยวเบนน้อย เดินตรงเกือบเต็ม · ช่องแคบ (d ≤ λ) ต่างหากที่เลี้ยวเบนมากสุด"></textarea>
+
+    <p class="label">🎨 วาดอธิบายที่ถูก (เปรียบเทียบ 2 ช่อง):</p>
+    <div class="canvas-wrap explain"><canvas id="q2-exp" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q2-exp')">ล้าง</button>
+  </div>
+
+  <!-- ═════ ข้อ 3 · M8.3 ═════ -->
+  <div class="item">
+    <h2><span class="mis-tag">M8.3</span>ข้อ 3 · เลี้ยวเบนทำให้ f เปลี่ยน</h2>
+    <div class="stmt">น้องโบ: "คลื่นน้ำ f = 10 Hz ผ่านช่องแคบแล้วเลี้ยวเบน · หน้าคลื่นหลังช่องโค้งออก ทำให้ระยะห่างของหน้าคลื่นถี่ขึ้น · ดังนั้น f หลังช่องต้องเพิ่มเป็น ~15 Hz เพราะการเลี้ยวเบนบีบให้คลื่นถี่ขึ้น"</div>
+    <p class="label">✏ วงกลม/ขีดทับจุดผิด:</p>
+    <div class="canvas-wrap overlay"><canvas id="q3-claim" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q3-claim')">ล้าง</button>
+
+    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
+    <textarea id="q3-text" placeholder="จุดผิด: สรุปว่า f เปลี่ยน · ที่ถูก: เลี้ยวเบนเปลี่ยนเฉพาะทิศหน้าคลื่น · f ถูกแหล่งกำเนิดกำหนด · v และ λ เดิมเพราะตัวกลางเดิม"></textarea>
+
+    <p class="label">🎨 วาดอธิบายที่ถูก:</p>
+    <div class="canvas-wrap explain"><canvas id="q3-exp" width="960" height="190"></canvas></div>
+    <button class="btn" type="button" onclick="clr('q3-exp')">ล้าง</button>
+  </div>
+
+  <div class="foot">ใบกิจกรรม 8.2 · Spot the Error · แผน 8 · KP-Classroom</div>
+</div>
+
+<script>
+function attach(id,color){
+  const c=document.getElementById(id); const ctx=c.getContext('2d');
+  ctx.strokeStyle=color; ctx.lineWidth=2; let d=false;
+  function xy(e){ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; }
+  c.addEventListener('mousedown',e=>{d=true;const[x,y]=xy(e);ctx.beginPath();ctx.moveTo(x,y);});
+  c.addEventListener('mousemove',e=>{if(!d)return;const[x,y]=xy(e);ctx.lineTo(x,y);ctx.stroke();});
+  c.addEventListener('mouseup',()=>d=false); c.addEventListener('mouseleave',()=>d=false);
+}
+function clr(id){ const c=document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
+['q1-claim','q2-claim','q3-claim'].forEach(id=>attach(id,'#dc2626'));
+['q1-exp','q2-exp','q3-exp'].forEach(id=>attach(id,'#db2777'));
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 8.1 · Calc Diffraction</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.14);padding:26px 30px}
+.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:14px}
+.head h1{font-size:22px;color:#831843}
+.meta{color:#9d174d;font-size:13px;margin-top:4px}
+.id-box{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;font-size:13.5px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:8px;padding:10px}
+.id-box label{display:flex;align-items:center;gap:6px;color:#831843;font-weight:600}
+.id-box input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
+.name-input{width:220px}.short-input{width:70px}
+.q{border:1.5px solid #fbcfe8;border-radius:12px;padding:14px 16px;margin:14px 0;background:#fff}
+.q h2{color:#831843;font-size:17px;margin-bottom:6px}
+.q .tag{background:#db2777;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;margin-right:6px}
+.given{background:#fff7fb;border-left:6px solid #db2777;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:14.5px}
+textarea,input[type=text]{border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;font-family:inherit;font-size:14px;width:100%;resize:vertical}
+textarea{min-height:80px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.canvas-wrap{border:1.5px solid #fbcfe8;border-radius:10px;padding:6px;background:#fff;margin:6px 0}
+canvas{display:block;width:100%;height:200px;background:#fff7fb;border-radius:6px;cursor:crosshair}
+.btn{background:#db2777;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+.btn:hover{background:#9d174d}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+</style></head>
+<body data-ws-id="plan8-calc">
+
+<div class="page">
+  <div class="head">
+    <h1>🧮 ใบกิจกรรม 8.1 · Calc Diffraction</h1>
+    <div class="meta">4 ข้อไล่ระดับ · เงื่อนไข d/λ · แนวมืด a sinθ = nλ · เชื่อมชีวิตจริง · ใช้ worksheet-core.js</div>
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ–สกุล <input type="text" id="s-name" class="name-input"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
+    <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
+  </div>
+
+  <!-- ข้อ 1 -->
+  <div class="q">
+    <h2><span class="tag">ข้อ 1</span>เงื่อนไขเลี้ยวเบนชัด (K8.1)</h2>
+    <div class="given"><b>กำหนด:</b> คลื่นน้ำ λ = 3 cm · ช่องเปิด 3 ขนาด · a₁ = 1 cm · a₂ = 3 cm · a₃ = 10 cm</div>
+    <p>ช่องใดทำให้เลี้ยวเบน <b>ชัดที่สุด</b> และช่องใด<b>น้อยที่สุด</b>? เพราะเหตุใด? (เขียนเงื่อนไข d/λ)</p>
+    <textarea id="q1-ans" placeholder="เช่น a₁ < λ → เลี้ยวเบนชัด · a₃ ≫ λ → เดินตรง..."></textarea>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="q">
+    <h2><span class="tag">ข้อ 2</span>คำนวณมุมแนวมืดแรก · a sinθ = nλ</h2>
+    <div class="given"><b>กำหนด:</b> ช่องแคบเดียว · a = 4 cm · λ = 2 cm · หาแนวมืดลำดับ n = 1 ที่มุม θ เท่าใด?</div>
+    <div class="row">
+      <div>
+        <p><b>สมการ:</b></p>
+        <input type="text" id="q2-eq" value="a sinθ = nλ">
+      </div>
+      <div>
+        <p><b>คำตอบ θ =</b></p>
+        <input type="text" id="q2-ans" placeholder="เช่น sinθ = 2/4 = 0.5 → θ = 30°">
+      </div>
+    </div>
+    <p><b>แสดงการคำนวณ:</b></p>
+    <textarea id="q2-work" placeholder="sinθ = nλ/a = (1)(2)/4 = 0.5 · θ = arcsin(0.5) = 30°"></textarea>
+  </div>
+
+  <!-- ข้อ 3 -->
+  <div class="q">
+    <h2><span class="tag">ข้อ 3</span>กราฟเปรียบเทียบ 3 ขนาดช่อง (P8.1) · วาด pattern</h2>
+    <div class="given"><b>กำหนด:</b> λ = 2 cm · วาดหน้าคลื่นหลังช่อง 3 ขนาด (a = 1, 2, 5 cm) ด้านล่าง ·
+    ใช้สัญลักษณ์ลูกศร <b>→</b> แสดงทิศการเคลื่อนที่ของหน้าคลื่น</div>
+    <div class="canvas-wrap">
+      <canvas id="q3-canvas" width="960" height="200"></canvas>
+    </div>
+    <button class="btn" type="button" onclick="(function(){var c=document.getElementById('q3-canvas');c.getContext('2d').clearRect(0,0,c.width,c.height);})()">ล้างภาพวาด</button>
+    <p style="margin-top:8px"><b>สรุปจากภาพ:</b></p>
+    <textarea id="q3-sum" placeholder="เช่น ช่อง 1 cm → วงกลมกว้าง · 2 cm → ครึ่งวงกลม · 5 cm → เดินตรงเกือบเต็ม..."></textarea>
+  </div>
+
+  <!-- ข้อ 4 -->
+  <div class="q">
+    <h2><span class="tag">ข้อ 4</span>เชื่อมชีวิตจริง (P8.2) · เสียงรอบมุมตึก</h2>
+    <div class="given"><b>สถานการณ์:</b> เสียงพูด f = 500 Hz · v = 340 m/s ในอากาศ · มุมตึกเปิดกว้าง 1.5 m ·
+    หา λ ของเสียง · แล้วอธิบายว่าเสียงเลี้ยวเบนรอบมุมตึกได้ไหม เพราะเหตุใด?</div>
+    <div class="row">
+      <div>
+        <p><b>λ = v/f =</b></p>
+        <input type="text" id="q4-lam" placeholder="340/500 = 0.68 m">
+      </div>
+      <div>
+        <p><b>d/λ =</b></p>
+        <input type="text" id="q4-dl" placeholder="1.5/0.68 ≈ 2.2">
+      </div>
+    </div>
+    <p><b>อธิบาย:</b></p>
+    <textarea id="q4-exp" placeholder="เช่น d ≈ 2λ ถือว่าใกล้เคียง λ จึงเลี้ยวเบนได้พอประมาณ · เสียงจึงเดินโอบรอบมุมได้..."></textarea>
+  </div>
+
+  <div class="foot">ใบกิจกรรม 8.1 · Calc Diffraction · แผน 8 · KP-Classroom</div>
+</div>
+
+<script>
+(function(){
+  const c=document.getElementById('q3-canvas'); const ctx=c.getContext('2d');
+  let d=false; ctx.strokeStyle='#db2777'; ctx.lineWidth=2;
+  function xy(e){ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; }
+  c.addEventListener('mousedown',e=>{d=true;const[x,y]=xy(e);ctx.beginPath();ctx.moveTo(x,y);});
+  c.addEventListener('mousemove',e=>{if(!d)return;const[x,y]=xy(e);ctx.lineTo(x,y);ctx.stroke();});
+  c.addEventListener('mouseup',()=>d=false); c.addEventListener('mouseleave',()=>d=false);
+})();
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>
