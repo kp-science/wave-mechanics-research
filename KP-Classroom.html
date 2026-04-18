@@ -1363,9 +1363,53 @@ function renderPOE(body){
   return renderPOESimple(body);
 }
 
-// ── Rich POE (schema-driven) ─────────────────────────────────
+// ── Rich POE (schema-driven · รองรับ embed mode) ─────────────
 function renderPOERich(body, s){
   const h = s.hero || {};
+
+  // Embed mode · schema มี viewFile → แสดงไฟล์ HTML POE-XX เต็ม · ไม่มี form สร้างเอง
+  if (s.viewFile){
+    const folder = (PLAN_MEDIA[state.currentPlan] && PLAN_MEDIA[state.currentPlan].folder) || '';
+    const viewUrl = encodeURI(`${folder}/${s.viewFile}`);
+    const cleanDl = `${String(s.title || 'POE').replace(/[\\/:*?"<>|]/g,'_').trim()}.html`;
+    body.innerHTML = `
+      <div class="info" style="margin-bottom:10px">
+        <b>🎯 คำถาม:</b> ${escapeHtml(h.question || '')}
+        ${h.context ? '<br>'+escapeHtml(h.context) : ''}
+      </div>
+      <div style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);border:2px solid #1565c0;border-radius:12px;padding:14px 18px;margin:10px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:32px">📝</span>
+        <div style="flex:1;min-width:220px">
+          <div style="font-weight:800;color:#0d47a1;font-size:15.5px">POE Interactive พร้อมใช้งาน</div>
+          <div style="font-size:13.5px;color:#1e40af;margin-top:2px">เปิดใบในแท็บใหม่เพื่อทำ P / O / E · หรือทำในหน้านี้ได้เลย</div>
+        </div>
+        <a href="${viewUrl}" target="_blank" rel="noopener"
+           style="background:#1565c0;color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13.5px;white-space:nowrap">🔗 เปิดแท็บใหม่</a>
+        <a href="${viewUrl}" download="${escapeHtml(cleanDl)}"
+           style="background:#c2410c;color:#fff;padding:8px 14px;border-radius:10px;text-decoration:none;font-weight:700;font-size:13.5px;white-space:nowrap">⬇ ดาวน์โหลด</a>
+      </div>
+      <iframe src="${viewUrl}" style="width:100%;height:1400px;border:1.5px solid #cbd5e1;border-radius:10px;background:#fff;margin:8px 0"></iframe>
+      ${s.allowUpload === true ? `
+      <div style="background:linear-gradient(135deg,#fff4e6,#ffe0c2);border:2px solid #f59e0b;border-radius:12px;padding:14px 18px;margin:14px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <span style="font-size:32px">📎</span>
+        <div style="flex:1;min-width:220px">
+          <div style="font-weight:800;color:#7c2d12;font-size:15.5px">แนบไฟล์ส่ง (ถ้าทำในกระดาษ)</div>
+          <div style="font-size:13.5px;color:#78350f;margin-top:2px">ถ่ายรูปใบงาน / export .json จาก toolbar ด้านล่าง · แล้วแนบส่งที่ช่องด้านล่าง</div>
+        </div>
+      </div>` : ''}
+      ${s.misconception ? `<div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
+        <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> ${s.misconception}
+      </div>` : ''}`;
+    // File upload (ถ้า allowUpload)
+    if (s.allowUpload === true && typeof renderUpload === 'function'){
+      const uploadDiv = document.createElement('div');
+      uploadDiv.style.marginTop = '12px';
+      body.appendChild(uploadDiv);
+      renderUpload(uploadDiv);
+    }
+    return;
+  }
+
   const P = s.predict || {};
   const O = s.observe || {};
   const E = s.explain || {};

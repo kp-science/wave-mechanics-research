@@ -12,6 +12,12 @@ window.KP_WORKSHEETS = {
   1: {
     // POE-01 · Concept Cartoon "ของลอยในทะเล" + Slinky + wave-types Sim
     poe: {
+      title:       'POE-01 · ใบบันทึก Predict–Observe–Explain (แผน 1)',
+      viewFile:    'สื่อ02_POE-01_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-01',
+      sheetPrefix: 'POE_P',
+      misconception: 'M1.1 · M1.2 · M1.3',
+      allowUpload: true,
       hero: {
         question: 'ของลอย (ลูกมะพร้าว) ในทะเลจะถูกคลื่นพาไปไกลหรือไม่ เพราะเหตุใด?',
         context:  'คู่กับ Concept Cartoon "ของลอยในทะเล" + สังเกต Slinky/ริบบิ้น + Simulation wave-types'
@@ -113,6 +119,18 @@ window.KP_WORKSHEETS = {
 
   // ───────── แผน 2 · ความเร็วคลื่น v = fλ = √(T/μ) ─────────
   2: {
+    poe: {
+      title:       'POE-02 · ใบบันทึก Predict–Observe–Explain (แผน 2)',
+      viewFile:    'สื่อ02_POE-01_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-02',
+      sheetPrefix: 'POE_P',
+      misconception: 'M2.1 · M2.2 · M2.3 · M2.4',
+      allowUpload: true,
+      hero: {
+        question: 'เชือกเส้นเดิม · ดึงตึงเท่าเดิม · ถ้าสะบัดแรงขึ้น / ถี่ขึ้น / ดึงตึงขึ้น · v คลื่นเปลี่ยนไปอย่างไร?',
+        context:  'คู่กับ Lab 38 Wave Speed on a String · 3 ฐานทดลอง'
+      }
+    },
     calc: {
       title:       'ใบกิจกรรม 2.1',
       description: 'โจทย์คำนวณ v = fλ = √(T/μ) · 5 ข้อ ไล่ระดับ · แสดง "กำหนด ต้องหา สมการ การคำนวณ คำตอบ"',
@@ -149,6 +167,12 @@ window.KP_WORKSHEETS = {
   3: {
     // POE-03 · Concept Cartoon "ริบบิ้น 2 เส้นบนเชือก" + 3 ฐาน
     poe: {
+      title:       'POE-03 · ใบบันทึก Predict–Observe–Explain (แผน 3)',
+      viewFile:    'สื่อ02_POE-03_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-03',
+      sheetPrefix: 'POE_P',
+      misconception: 'M3.1 · M3.3 · M3.4',
+      allowUpload: true,
       hero: {
         question: 'ริบบิ้นแดง (R) กับน้ำเงิน (B) ห่างกัน λ/2 บนเชือกที่สั่นต่อเนื่อง · จะสั่นพร้อมกันหรือสวนทางกัน? · และคลื่นดลกับคลื่นต่อเนื่องในเชือกเดียวกัน v ต่างกันไหม?',
         context:  'คู่กับ Concept Cartoon "ริบบิ้น 2 เส้นบนเชือก" + 3 ฐาน (Slinky · Strobe · Sim phase-compare)'
@@ -282,6 +306,12 @@ window.KP_WORKSHEETS = {
   4: {
     // POE-04 · Concept Cartoon "สงครามริ้วคลื่น" + 3 ฐาน (Slinky Live + Sim Superposition + Huygens Explorer)
     poe: {
+      title:       'POE-04 · ใบบันทึก Predict–Observe–Explain (แผน 4)',
+      viewFile:    'สื่อ02_POE-04_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-04',
+      sheetPrefix: 'POE_P',
+      misconception: 'M4.1 · M4.2 · M4.3 · M4.4',
+      allowUpload: true,
       hero: {
         question: 'pulse 2 ลูกเคลื่อนที่สวนทางในเชือก · ขณะพบกันจะเกิดอะไรขึ้น? · หลังพ้นกัน คลื่นแต่ละลูกยังคงรูปเดิมหรือเปลี่ยนไปตลอดกาล?',
         context:  'คู่กับ Concept Cartoon "สงครามริ้วคลื่น" (3 ตัวละคร) + 3 ฐาน (Slinky Live · pulse-superposition · huygens-wavefront)'
