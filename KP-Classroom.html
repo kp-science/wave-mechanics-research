@@ -2247,8 +2247,67 @@ function renderPOE2(body){
     </div>
   </div>
 
-  <div style="background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:10px 14px;font-size:14px;margin-top:4px">
-    <b style="color:#c53030">⚠️ Misconception ที่ตรวจสอบ:</b> M2.1 (v ขึ้นกับ f) · M2.2 (ตึงมาก v ช้า) · M2.3 (A มาก v เร็ว) · M2.4 (f เปลี่ยนตามตัวกลาง)
+  <!-- ═══ Misconception Reflection · 3-part (Posner Conceptual Change) ═══ -->
+  <div style="background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:12px 14px;margin-top:12px">
+    <div style="font-size:14.5px;font-weight:800;color:#92400e;margin-bottom:4px">🧠 สรุปแก้ Misconception</div>
+    <div style="font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85">ทำ 3 ขั้นต่อข้อ · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+    ${[
+      { id:'m21', code:'M2.1', wrong:'v ของคลื่นขึ้นกับ f (f มาก → v เร็วขึ้น)',
+        correct:[
+          { v:'a', t:'v ขึ้นกับตัวกลาง (T, μ) เท่านั้น · f เพิ่ม → λ ลด · v คงที่' },
+          { v:'b', t:'v แปรผันตรงกับ f (v = f × constant)' },
+          { v:'c', t:'v แปรผกผันกับ f (v = 1/f)' }
+        ], ev:'จากทดสอบ A · เปลี่ยน f แล้ว v...'
+      },
+      { id:'m22', code:'M2.2', wrong:'เชือกตึงมาก → คลื่นช้าลง',
+        correct:[
+          { v:'a', t:'T มาก → v เร็วขึ้น (v = √(T/μ) · v ∝ √T)' },
+          { v:'b', t:'T มาก → v ช้าลง (เชือกแข็ง คลื่นผ่านยาก)' },
+          { v:'c', t:'T ไม่ส่งผลต่อ v · v ขึ้นกับ f เท่านั้น' }
+        ], ev:'จากทดสอบ B · เมื่อ T เพิ่ม v...'
+      },
+      { id:'m23', code:'M2.3', wrong:'สะบัดแรงขึ้น (A มาก) → v เร็วขึ้น',
+        correct:[
+          { v:'a', t:'A ไม่ส่งผลต่อ v · สะบัดแรงแค่ทำคลื่นสูงขึ้น · ความเร็วเท่าเดิม' },
+          { v:'b', t:'A มาก → v เร็วขึ้น (พลังงานเยอะ)' },
+          { v:'c', t:'A มาก → v ช้าลง (เชือกรับน้ำหนักมาก)' }
+        ], ev:'จากทดสอบ C · เปลี่ยน A แล้ว v...'
+      },
+      { id:'m24', code:'M2.4', wrong:'f เปลี่ยนเมื่อคลื่นผ่านตัวกลางต่างชนิด',
+        correct:[
+          { v:'a', t:'f คงที่ตามแหล่งกำเนิด · รอยต่อต้องสั่นพร้อมกัน · เฉพาะ v, λ เปลี่ยน' },
+          { v:'b', t:'f เปลี่ยนตามสัดส่วน v (v ลด → f ลด)' },
+          { v:'c', t:'f เปลี่ยนขึ้นกับคุณสมบัติตัวกลางใหม่' }
+        ], ev:'จากทดสอบ D (μ) · รอยต่อเชือก 2 ส่วน...'
+      }
+    ].map(m => `
+      <div style="background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 14px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px">
+          <span style="background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700">${m.code}</span>
+          <span style="color:#991b1b;font-weight:700">ข้อความที่ผิด:</span>
+          <em style="color:#2d3748">"${m.wrong}"</em>
+        </div>
+        <div style="margin:7px 0">
+          <div style="font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:4px">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <label style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px"><input type="radio" name="${m.id}-held" value="yes"> เคย</label>
+            <label style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px"><input type="radio" name="${m.id}-held" value="no"> ไม่เคย</label>
+            <label style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px"><input type="radio" name="${m.id}-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div style="margin:7px 0">
+          <div style="font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:4px">② แนวคิดที่ถูกต้องคือ:</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            ${m.correct.map(c => `<label style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;display:flex;gap:6px;align-items:flex-start"><input type="radio" name="${m.id}-correct" value="${c.v}" style="margin-top:3px"> ${c.t}</label>`).join('')}
+          </div>
+        </div>
+        <div style="margin:7px 0">
+          <div style="font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:4px">③ หลักฐานจากการทดลอง (1-2 ประโยค):</div>
+          <textarea id="${m.id}-evidence" rows="2" style="width:100%;min-height:44px;font-size:13.5px;border:1.5px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-family:inherit;resize:vertical" placeholder="${m.ev}"></textarea>
+        </div>
+      </div>
+    `).join('')}
   </div>
 
   <div class="submit-bar">
@@ -2295,7 +2354,20 @@ function renderPOE2(body){
       e_checks: ['c1','c2','c3','c4','c5'].filter(x => document.getElementById('p2e_'+x).checked).join(','),
       e_principle: val('p2e_principle'),
       e_4methods: val('p2e_4methods'),
-      e_confidence: eConf ? eConf.value : ''
+      e_confidence: eConf ? eConf.value : '',
+      // 3-part Misconception reflection (Posner Conceptual Change)
+      mc_m21_held:     (document.querySelector('input[name=m21-held]:checked')||{}).value || '',
+      mc_m21_correct:  (document.querySelector('input[name=m21-correct]:checked')||{}).value || '',
+      mc_m21_evidence: val('m21-evidence'),
+      mc_m22_held:     (document.querySelector('input[name=m22-held]:checked')||{}).value || '',
+      mc_m22_correct:  (document.querySelector('input[name=m22-correct]:checked')||{}).value || '',
+      mc_m22_evidence: val('m22-evidence'),
+      mc_m23_held:     (document.querySelector('input[name=m23-held]:checked')||{}).value || '',
+      mc_m23_correct:  (document.querySelector('input[name=m23-correct]:checked')||{}).value || '',
+      mc_m23_evidence: val('m23-evidence'),
+      mc_m24_held:     (document.querySelector('input[name=m24-held]:checked')||{}).value || '',
+      mc_m24_correct:  (document.querySelector('input[name=m24-correct]:checked')||{}).value || '',
+      mc_m24_evidence: val('m24-evidence')
     };
     if ((!pl.p_reason_opt && !pl.p_reason) || !pl.e_match || !pl.e_principle){
       const s = document.getElementById('poe2Stat');
