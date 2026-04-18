@@ -31,6 +31,13 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
 .mini-table th{background:#fff4e6;color:#7c2d12;padding:6px 8px;text-align:left;border:1px solid #fde3cf}
 .mini-table td{padding:6px 8px;border:1px solid #e2e8f0;height:30px}
 .sketch{width:100%;height:80px;background:#fffbf5;border:1.5px dashed #fde3cf;border-radius:8px;margin-top:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fed7aa;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#ffedd5 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fed7aa;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#7c2d12;font-weight:600}
+.c-btn.active{background:#c2410c;color:#fff;border-color:#c2410c}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #c2410c;box-shadow:0 0 0 2px #fff,0 0 0 4px #c2410c}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #fed7aa;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px}
 .pred-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
 @media (max-width:760px){.pred-grid{grid-template-columns:1fr}}
 .pred-cell{background:#fff;border:1.5px solid #bbdefb;border-radius:10px;padding:10px}
@@ -41,9 +48,9 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
 .answer-key .ak-row{background:#fff;border-left:4px solid #059669;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:14px}
 .answer-key .ak-row b{color:#047857}
 .answer-key .ak-tag{display:inline-block;background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;margin-right:6px;font-weight:700}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.answer-key{display:none}}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.answer-key{display:none}.canvas-toolbar{display:none}}
 </style></head>
-<body>
+<body data-ws-id="plan4-poe">
 
 <div class="page">
   <div class="head">
@@ -51,7 +58,12 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
       <h1>📝 POE-04 ใบบันทึก Predict–Observe–Explain</h1>
       <div class="meta"><span class="tag">แผน 4</span><span class="tag">ชุด A</span> คู่กับ Concept Cartoon "สงครามริ้วคลื่น" (E1–E3) · 3 ฐาน Slinky / Sim Superposition / Huygens Explorer</div>
     </div>
-    <div class="meta"><b>ชื่อ</b> ...................................... <b>เลขที่</b> ...... <b>ห้อง</b> ...... <b>กลุ่ม</b> ......</div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fed7aa;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fed7aa;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fed7aa;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #fed7aa;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
   </div>
 
   <div class="q"><b>🎯 คำถามหลัก:</b> เมื่อ pulse 2 ลูกชนกัน · (ก) ตอนพบกัน รูปเชือกเป็นอย่างไร? · (ข) หลังพ้นกัน คลื่นแต่ละลูกยังเหมือนเดิมหรือเปลี่ยนถาวร? · (ค) หน้าคลื่นใหม่สร้างจากอะไร (Huygens)?</div>
@@ -119,7 +131,15 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
           </div>
           <div>
             <div style="font-size:13px;color:#7c2d12;font-weight:700;margin-bottom:4px">✏️ วาดภาพ 3 ช่วง (ก่อน / ขณะ / หลัง)</div>
-            <div class="sketch" style="height:180px"></div>
+            <div class="canvas-toolbar">
+              <button class="c-btn active" id="tbo1-pencil" onclick="setTool('canvasO1','pencil',this)">✏️</button>
+              <button class="c-btn" id="tbo1-eraser" onclick="setTool('canvasO1','eraser',this)">⬜</button>
+              <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO1','#1a202c',this)"></div>
+              <div class="c-color" style="background:#c2410c" onclick="setColor('canvasO1','#c2410c',this)"></div>
+              <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO1','#3182ce',this)"></div>
+              <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
+            </div>
+            <canvas id="canvasO1" data-bg="lined" width="900" height="200"></canvas>
           </div>
         </div>
       </div>
@@ -146,7 +166,15 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
           </div>
           <div>
             <div style="font-size:13px;color:#7c2d12;font-weight:700;margin-bottom:4px">✏️ วาด screenshot กรณีที่แปลกใจที่สุด</div>
-            <div class="sketch" style="height:180px"></div>
+            <div class="canvas-toolbar">
+              <button class="c-btn active" id="tbo2-pencil" onclick="setTool('canvasO2','pencil',this)">✏️</button>
+              <button class="c-btn" id="tbo2-eraser" onclick="setTool('canvasO2','eraser',this)">⬜</button>
+              <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO2','#1a202c',this)"></div>
+              <div class="c-color" style="background:#c2410c" onclick="setColor('canvasO2','#c2410c',this)"></div>
+              <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO2','#3182ce',this)"></div>
+              <button class="c-btn" onclick="clearCanvas('canvasO2')" style="margin-left:auto;color:#c53030">🗑️</button>
+            </div>
+            <canvas id="canvasO2" data-bg="lined" width="900" height="200"></canvas>
           </div>
         </div>
       </div>
@@ -173,7 +201,15 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
           </div>
           <div>
             <div style="font-size:13px;color:#7c2d12;font-weight:700;margin-bottom:4px">✏️ วาดรูปแบบที่ชอบที่สุด (ระบุหน้าคลื่นเริ่ม → wavelet → envelope)</div>
-            <div class="sketch" style="height:180px"></div>
+            <div class="canvas-toolbar">
+              <button class="c-btn active" id="tbo3-pencil" onclick="setTool('canvasO3','pencil',this)">✏️</button>
+              <button class="c-btn" id="tbo3-eraser" onclick="setTool('canvasO3','eraser',this)">⬜</button>
+              <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO3','#1a202c',this)"></div>
+              <div class="c-color" style="background:#c2410c" onclick="setColor('canvasO3','#c2410c',this)"></div>
+              <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO3','#3182ce',this)"></div>
+              <button class="c-btn" onclick="clearCanvas('canvasO3')" style="margin-left:auto;color:#c53030">🗑️</button>
+            </div>
+            <canvas id="canvasO3" data-bg="lined" width="900" height="200"></canvas>
           </div>
         </div>
       </div>
@@ -264,5 +300,20 @@ body{font-family:'Sarabun',sans-serif;background:#fdf5ee;color:#1a202c;font-size
 
   <div class="foot">POE-04 · แผน 4 การซ้อนทับและฮอยเกนส์ · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
 </div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
 </body>
 </html>
