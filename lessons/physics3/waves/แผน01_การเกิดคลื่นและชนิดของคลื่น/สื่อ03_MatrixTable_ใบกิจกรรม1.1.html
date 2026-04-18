@@ -1,32 +1,66 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8"><title>ใบกิจกรรม 1.1 Matrix Table (แผน 1)</title>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 1.1 Matrix Table (แผน 1)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size:15.5px;line-height:1.55;padding:20px}
 .page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 32px}
-.head{border-bottom:3px solid #1565c0;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap}
+.head{border-bottom:3px solid #1565c0;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
 .head h1{font-size:22px;color:#0f2c5c}
-.meta{font-size:13px;color:#555}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px;color:#0d47a1;font-weight:600}
+.head-meta input{border:1.5px solid #90caf9;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
+.head-meta .name-input{width:160px}
+.head-meta .short-input{width:50px}
 .tag{display:inline-block;background:#1565c0;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
-.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
 table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
-th,td{border:1.5px solid #555;padding:10px;vertical-align:top}
+th,td{border:1.5px solid #90caf9;padding:10px;vertical-align:top}
 thead th{background:#1e88e5;color:#fff}
 .row-h{background:#e3f2fd;font-weight:700;color:#0d47a1;width:25%}
-td.fill{min-height:60px;background:#fafafa}
+td.fill{background:#fafafa;padding:6px}
+td.fill textarea{width:100%;min-height:70px;border:1.5px solid #bbdefb;border-radius:6px;padding:6px 8px;font-family:inherit;font-size:14px;resize:vertical;background:#fff}
+td.fill textarea:focus{outline:2px solid #1976d2;outline-offset:-1px}
+.check-row{display:flex;flex-wrap:wrap;gap:8px 14px;padding:4px 0}
+.check-row label{display:flex;align-items:center;gap:4px;cursor:pointer;padding:3px 8px;border-radius:6px;font-size:14px}
+.check-row label:hover{background:#e3f2fd}
+.check-row input[type=checkbox]{cursor:pointer}
+.other-input{margin-top:6px}
+.other-input input{width:100%;border:1.5px solid #bbdefb;border-radius:6px;padding:5px 8px;font-family:inherit;font-size:14px;background:#fff}
+.draw-toolbar{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:4px;font-size:12px}
+.dt-btn{background:#fff;border:1.5px solid #bbdefb;border-radius:6px;padding:3px 8px;cursor:pointer;color:#0d47a1;font-weight:600;font-size:12px}
+.dt-btn.active{background:#1565c0;color:#fff;border-color:#1565c0}
+.dt-color{width:18px;height:18px;border-radius:50%;cursor:pointer;border:1.5px solid #cbd5e1}
+.dt-color.active{box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1565c0}
+td.fill canvas{display:block;width:100%;height:120px;border:1.5px dashed #90caf9;border-radius:6px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 23px,#e3f2fd 24px);touch-action:none;cursor:crosshair}
 .tips{background:#e8f5e9;border-left:6px solid #2e7d32;padding:10px 14px;border-radius:8px;font-size:14px;margin-top:10px}
+.reflect{background:#fff5f5;border-left:6px solid #c62828;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px}
+.reflect b{color:#c53030}
+.reflect textarea{width:100%;min-height:70px;margin-top:6px;border:1.5px solid #fecaca;border-radius:6px;padding:6px 8px;font-family:inherit;font-size:14px;resize:vertical}
 .foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+@media print{
+  body{background:#fff;padding:0}
+  .page{box-shadow:none;border-radius:0}
+  .draw-toolbar{display:none}
+  textarea,input{border:1px solid #666 !important;background:transparent !important}
+  td.fill canvas{border:1px solid #999 !important}
+}
 </style></head>
-<body>
+<body data-ws-id="plan1-matrix-1.1">
 <div class="page">
   <div class="head">
     <div>
       <h1>📋 ใบกิจกรรม 1.1 — Matrix Table เปรียบเทียบคลื่นตามขวาง vs คลื่นตามยาว</h1>
-      <div class="meta"><span class="tag">แผน 1</span><span class="tag">E4 Elaborate</span> เวลา 8 นาที · ทำเป็นคู่</div>
+      <div style="font-size:13px;color:#555"><span class="tag">แผน 1</span><span class="tag">E4 Elaborate</span> เวลา 8 นาที · ทำเป็นคู่</div>
     </div>
-    <div class="meta"><b>ชื่อคู่</b> 1) ................................ 2) ................................ <b>ห้อง</b> ...... <b>กลุ่ม</b> ......</div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" class="name-input"></label>
+      <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
+      <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
+    </div>
   </div>
 
   <div class="q"><b>🎯 คำสั่ง:</b> เติมตารางเปรียบเทียบคลื่นทั้ง 2 ชนิด จากสิ่งที่นักเรียนได้สังเกตในขั้น Explore และสรุปในขั้น Explain · <b>วัตถุประสงค์:</b> K2 (ส่วนประกอบคลื่น) · <b>Misconception เป้าหมาย:</b> M1.1, M1.2</div>
@@ -38,23 +72,115 @@ td.fill{min-height:60px;background:#fafafa}
       <th>🔊 คลื่นตามยาว (Longitudinal)</th>
     </tr></thead>
     <tbody>
-      <tr><td class="row-h">1. ทิศการสั่นของอนุภาค</td><td class="fill"></td><td class="fill"></td></tr>
-      <tr><td class="row-h">2. ทิศการเคลื่อนที่ของคลื่น</td><td class="fill"></td><td class="fill"></td></tr>
-      <tr><td class="row-h">3. ความสัมพันธ์ระหว่าง 1 และ 2</td><td class="fill"></td><td class="fill"></td></tr>
-      <tr><td class="row-h">4. ตัวอย่างจริง 2 อย่าง</td><td class="fill"></td><td class="fill"></td></tr>
-      <tr><td class="row-h">5. ส่วนประกอบที่สังเกตได้</td><td class="fill">☐ ยอดคลื่น ☐ ท้องคลื่น ☐ λ ☐ A ☐ T</td><td class="fill">☐ ส่วนอัด ☐ ส่วนขยาย ☐ λ ☐ T</td></tr>
-      <tr><td class="row-h">6. วาดภาพตัวแทน</td><td class="fill" style="height:100px"></td><td class="fill" style="height:100px"></td></tr>
+      <!-- 1. ทิศการสั่น -->
+      <tr>
+        <td class="row-h">1. ทิศการสั่นของอนุภาค</td>
+        <td class="fill"><textarea id="q1-trans" placeholder="เช่น ตั้งฉากกับทิศคลื่น..."></textarea></td>
+        <td class="fill"><textarea id="q1-long" placeholder="เช่น ขนานกับทิศคลื่น..."></textarea></td>
+      </tr>
+      <!-- 2. ทิศการเคลื่อนที่ -->
+      <tr>
+        <td class="row-h">2. ทิศการเคลื่อนที่ของคลื่น</td>
+        <td class="fill"><textarea id="q2-trans" placeholder="เช่น แนวราบจากซ้ายไปขวา..."></textarea></td>
+        <td class="fill"><textarea id="q2-long" placeholder="เช่น แนวเดียวกับการสั่น..."></textarea></td>
+      </tr>
+      <!-- 3. ความสัมพันธ์ 1-2 -->
+      <tr>
+        <td class="row-h">3. ความสัมพันธ์ระหว่าง 1 และ 2</td>
+        <td class="fill"><textarea id="q3-trans" placeholder="⊥ / // / ↔ พร้อมอธิบาย..."></textarea></td>
+        <td class="fill"><textarea id="q3-long" placeholder="⊥ / // / ↔ พร้อมอธิบาย..."></textarea></td>
+      </tr>
+      <!-- 4. ตัวอย่างจริง -->
+      <tr>
+        <td class="row-h">4. ตัวอย่างจริง 2 อย่าง</td>
+        <td class="fill"><textarea id="q4-trans" placeholder="เช่น คลื่นเชือก, คลื่นน้ำผิว, คลื่นแสง..."></textarea></td>
+        <td class="fill"><textarea id="q4-long" placeholder="เช่น คลื่นเสียง, Slinky กดดึง..."></textarea></td>
+      </tr>
+      <!-- 5. ส่วนประกอบ -->
+      <tr>
+        <td class="row-h">5. ส่วนประกอบที่สังเกตได้</td>
+        <td class="fill">
+          <div class="check-row">
+            <label><input type="checkbox" id="q5-trans-crest">ยอดคลื่น</label>
+            <label><input type="checkbox" id="q5-trans-trough">ท้องคลื่น</label>
+            <label><input type="checkbox" id="q5-trans-lambda">λ</label>
+            <label><input type="checkbox" id="q5-trans-A">A</label>
+            <label><input type="checkbox" id="q5-trans-T">T</label>
+            <label><input type="checkbox" id="q5-trans-f">f</label>
+          </div>
+          <div class="other-input"><input type="text" id="q5-trans-other" placeholder="อื่นๆ..."></div>
+        </td>
+        <td class="fill">
+          <div class="check-row">
+            <label><input type="checkbox" id="q5-long-compress">ส่วนอัด</label>
+            <label><input type="checkbox" id="q5-long-rare">ส่วนขยาย</label>
+            <label><input type="checkbox" id="q5-long-lambda">λ</label>
+            <label><input type="checkbox" id="q5-long-T">T</label>
+            <label><input type="checkbox" id="q5-long-f">f</label>
+            <label><input type="checkbox" id="q5-long-A">A (ขนาดการสั่น)</label>
+          </div>
+          <div class="other-input"><input type="text" id="q5-long-other" placeholder="อื่นๆ..."></div>
+        </td>
+      </tr>
+      <!-- 6. วาดภาพตัวแทน -->
+      <tr>
+        <td class="row-h">6. วาดภาพตัวแทน</td>
+        <td class="fill">
+          <div class="draw-toolbar">
+            <button class="dt-btn active" id="tb6t-pencil" onclick="setTool('canvas6-trans','pencil',this)">✏️ ดินสอ</button>
+            <button class="dt-btn" id="tb6t-eraser" onclick="setTool('canvas6-trans','eraser',this)">⬜ ยางลบ</button>
+            <div class="dt-color active" style="background:#1a202c" onclick="setColor('canvas6-trans','#1a202c',this)"></div>
+            <div class="dt-color" style="background:#1565c0" onclick="setColor('canvas6-trans','#1565c0',this)"></div>
+            <div class="dt-color" style="background:#e53e3e" onclick="setColor('canvas6-trans','#e53e3e',this)"></div>
+            <button class="dt-btn" onclick="clearCanvas('canvas6-trans')" style="margin-left:auto;color:#c53030">🗑️</button>
+          </div>
+          <canvas id="canvas6-trans" data-bg="lined" width="600" height="120"></canvas>
+        </td>
+        <td class="fill">
+          <div class="draw-toolbar">
+            <button class="dt-btn active" id="tb6l-pencil" onclick="setTool('canvas6-long','pencil',this)">✏️ ดินสอ</button>
+            <button class="dt-btn" id="tb6l-eraser" onclick="setTool('canvas6-long','eraser',this)">⬜ ยางลบ</button>
+            <div class="dt-color active" style="background:#1a202c" onclick="setColor('canvas6-long','#1a202c',this)"></div>
+            <div class="dt-color" style="background:#1565c0" onclick="setColor('canvas6-long','#1565c0',this)"></div>
+            <div class="dt-color" style="background:#e53e3e" onclick="setColor('canvas6-long','#e53e3e',this)"></div>
+            <button class="dt-btn" onclick="clearCanvas('canvas6-long')" style="margin-left:auto;color:#c53030">🗑️</button>
+          </div>
+          <canvas id="canvas6-long" data-bg="lined" width="600" height="120"></canvas>
+        </td>
+      </tr>
     </tbody>
   </table>
 
   <div class="tips"><b>💡 คำแนะนำในการกรอก:</b> ใช้คำศัพท์วิทยาศาสตร์ที่ถูกต้อง ระบุทิศอย่างชัดเจน (⊥, //, ↔) และยกตัวอย่างจากการทดลอง Slinky หรือ Simulation ที่ทำไว้</div>
 
-  <div style="background:#fff5f5;border-left:6px solid #c62828;border-radius:8px;padding:10px 14px;font-size:14px;margin-top:10px">
-    <b style="color:#c53030">📌 สะท้อนคิด:</b> หลังกรอกตารางเสร็จ นักเรียนพบว่ามโนทัศน์เดิมของตนเองขัดกับข้อมูลในตารางหรือไม่ อย่างไร?
-    <div style="border-bottom:1.5px dashed #aaa;height:26px;margin-top:6px"></div>
-    <div style="border-bottom:1.5px dashed #aaa;height:26px"></div>
+  <div class="reflect">
+    <b>📌 สะท้อนคิด:</b> หลังกรอกตารางเสร็จ นักเรียนพบว่ามโนทัศน์เดิมของตนเองขัดกับข้อมูลในตารางหรือไม่ อย่างไร?
+    <textarea id="reflect-text" placeholder="พิมพ์สิ่งที่คิด/สิ่งที่เปลี่ยน..."></textarea>
   </div>
 
   <div class="foot">ใบกิจกรรม 1.1 · แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
+
+<script>
+/* Inline canvas init — minimal (worksheet-core.js จัดการ auto-save + toolbar) */
+const canvasState = {};
+function initCanvas(id){
+  const canvas = document.getElementById(id); if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.dataset.bg === 'lined';
+  canvasState[id] = { drawing:false, tool:'pencil', color:'#1a202c', lw:2.5, ctx, transparent };
+  if (!transparent) { ctx.fillStyle='#fff'; ctx.fillRect(0,0,canvas.width,canvas.height); }
+  function getPos(e){ const r=canvas.getBoundingClientRect(); const sx=canvas.width/r.width, sy=canvas.height/r.height; const s=e.touches?e.touches[0]:e; return { x:(s.clientX-r.left)*sx, y:(s.clientY-r.top)*sy }; }
+  function start(e){ e.preventDefault(); canvasState[id].drawing=true; ctx.beginPath(); const p=getPos(e); ctx.moveTo(p.x,p.y); }
+  function move(e){ e.preventDefault(); const st=canvasState[id]; if(!st.drawing) return; const p=getPos(e); ctx.lineTo(p.x,p.y); if(st.tool==='eraser'){ ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over'; ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff'; ctx.lineWidth=20; } else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=st.color; ctx.lineWidth=st.lw; } ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+  function end(e){ e.preventDefault(); canvasState[id].drawing=false; }
+  canvas.addEventListener('mousedown',start); canvas.addEventListener('mousemove',move); canvas.addEventListener('mouseup',end); canvas.addEventListener('mouseleave',end);
+  canvas.addEventListener('touchstart',start,{passive:false}); canvas.addEventListener('touchmove',move,{passive:false}); canvas.addEventListener('touchend',end,{passive:false});
+}
+function setTool(id,tool,btn){ canvasState[id].tool=tool; btn.closest('.draw-toolbar').querySelectorAll('.dt-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+function setColor(id,color,el){ canvasState[id].color=color; canvasState[id].tool='pencil'; el.closest('.draw-toolbar').querySelectorAll('.dt-color').forEach(c=>c.classList.remove('active')); el.classList.add('active'); el.closest('.draw-toolbar').querySelectorAll('.dt-btn').forEach(b=>{ b.classList.toggle('active', b.id && b.id.includes('pencil')); }); }
+function clearCanvas(id){ const st=canvasState[id]; const canvas=document.getElementById(id); st.ctx.globalCompositeOperation='source-over'; st.ctx.clearRect(0,0,canvas.width,canvas.height); if(!st.transparent){ st.ctx.fillStyle='#fff'; st.ctx.fillRect(0,0,canvas.width,canvas.height); } }
+document.addEventListener('DOMContentLoaded',()=>{ initCanvas('canvas6-trans'); initCanvas('canvas6-long'); });
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
 </body></html>
