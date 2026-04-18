@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบกิจกรรม 6.2 · Spot the Error (แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#ecfeff;color:#1a202c;font-size:15.5px;line-height:1.55;padding:20px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(8,145,178,.12);padding:28px 32px}
+.head{border-bottom:3px solid #0891b2;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap}
+.head h1{font-size:22px;color:#164e63}
+.head .meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0891b2;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#ecfeff;border-left:6px solid #0891b2;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #a5f3fc;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#f9fffe}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#0891b2;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#164e63;font-size:16px}
+.mc-tag{font-size:11.5px;background:#cffafe;color:#164e63;border:1px solid #67e8f9;padding:2px 8px;border-radius:10px}
+.grid-wrap{background:#fff;border:1.5px solid #a5f3fc;border-radius:8px;padding:8px;margin-top:8px;overflow-x:auto}
+.grid-wrap svg{display:block;max-width:100%;height:auto}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.ak-label{background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#ecfeff;border-left:6px solid #0891b2;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #a5f3fc;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#cffafe 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #a5f3fc;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#164e63;font-weight:600}
+.c-btn.active{background:#0891b2;color:#fff;border-color:#0891b2}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #0891b2;box-shadow:0 0 0 2px #fff,0 0 0 4px #0891b2}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#164e63;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
+</style></head>
+<body data-ws-id="plan6-spot-6.2">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔍 ใบกิจกรรม 6.2 · Spot the Error</h1>
+      <div class="meta"><span class="tag">แผน 6</span><span class="tag">ขั้น E4</span> 3 สถานการณ์ · ชน M6.1 · M6.2 · M6.3 · เวลา 12 นาที</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #a5f3fc;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #a5f3fc;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #a5f3fc;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #a5f3fc;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 คำสั่ง:</b> แต่ละข้อมีข้อความ/รูปที่<strong>ผิดหลักการ</strong> · (ก) วงกลม/ขีดทับ<u>จุดผิด</u>บนข้อความของเพื่อน (ข) เขียน<u>คำอธิบายที่ถูก</u>โดยอ้างหลักการหักเหของคลื่น (f คงที่ · v ∝ √h · กฎสเนลล์ · หน้าคลื่น⟂ทิศการเคลื่อนที่)
+  </div>
+
+  <!-- ═══ ข้อ 1 · M6.1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">"หักเหแล้ว f เปลี่ยน"</span>
+      <span class="mc-tag">M6.1</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนทดลองถาดคลื่น · ตั้งเครื่องสั่น f = 10 Hz · วัดในน้ำลึก λ_D = 6 cm · ในน้ำตื้น λ_S = 4 cm · แล้วเขียนรายงาน
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 240" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="g1" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0fafc" stroke-width="1"/>
+            </pattern>
+          </defs>
+          <rect width="680" height="240" fill="url(#g1)"/>
+          <!-- Deep water zone -->
+          <rect x="40" y="30" width="280" height="180" fill="#cffafe" stroke="#0891b2" stroke-width="2" rx="4"/>
+          <text x="180" y="24" font-size="13" fill="#0891b2" font-weight="700" text-anchor="middle">น้ำลึก D</text>
+          <!-- 3 wavefronts in deep (wider spacing, 60 px apart) -->
+          <g stroke="#0891b2" stroke-width="3">
+            <line x1="80" y1="40" x2="80" y2="200"/>
+            <line x1="150" y1="40" x2="150" y2="200"/>
+            <line x1="220" y1="40" x2="220" y2="200"/>
+            <line x1="290" y1="40" x2="290" y2="200"/>
+          </g>
+          <text x="180" y="224" font-size="12" fill="#0891b2" text-anchor="middle" font-weight="700">λ_D = 6 cm</text>
+          <!-- Shallow water zone -->
+          <rect x="360" y="30" width="280" height="180" fill="#ecfeff" stroke="#0284c7" stroke-width="2" rx="4"/>
+          <text x="500" y="24" font-size="13" fill="#0284c7" font-weight="700" text-anchor="middle">น้ำตื้น S</text>
+          <!-- 5 wavefronts in shallow (narrower, ~47 px) -->
+          <g stroke="#0284c7" stroke-width="3">
+            <line x1="385" y1="40" x2="385" y2="200"/>
+            <line x1="432" y1="40" x2="432" y2="200"/>
+            <line x1="479" y1="40" x2="479" y2="200"/>
+            <line x1="526" y1="40" x2="526" y2="200"/>
+            <line x1="573" y1="40" x2="573" y2="200"/>
+            <line x1="620" y1="40" x2="620" y2="200"/>
+          </g>
+          <text x="500" y="224" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="700">λ_S = 4 cm</text>
+          <!-- Boundary -->
+          <line x1="340" y1="30" x2="340" y2="210" stroke="#475569" stroke-width="2" stroke-dasharray="6,4"/>
+          <!-- Motion arrow -->
+          <text x="335" y="120" font-size="18" fill="#475569" text-anchor="middle">→</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องปาล์ม:</div>
+          <div class="say">"จากรูปเห็นว่าหน้าคลื่นในน้ำตื้น<b>ถี่กว่า</b>น้ำลึก · แปลว่าความถี่เพิ่มขึ้น · คำนวณได้ f_S = v/λ = 60/4 = <b>15 Hz</b> · ดังนั้น<b>การหักเหทำให้ความถี่เพิ่มจาก 10 → 15 Hz</b> สอดคล้องกับที่คลื่นดู 'ถี่' ขึ้นจริง"</div>
+        </div>
+        <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="200"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด (f ถูกกำหนดโดยอะไร + v ในน้ำตื้นเป็นเท่าใด)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#0891b2" onclick="setColor('canvas1','#0891b2',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas1','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas1" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q1-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5f3fc;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"ความถี่เพิ่มขึ้น"</b> และ<b>"f_S = 15 Hz"</b> · (ข) <b>M6.1</b> (คิดว่า f เปลี่ยนเมื่อหักเห) ·
+        (ค) <b>f ถูกกำหนดโดยแหล่งกำเนิด</b> (เครื่องสั่น 10 Hz) · ผ่านรอยต่อแล้ว f <b>คงที่ = 10 Hz</b> ทั้ง 2 เขต · เมื่อ f คงที่ แต่ λ ลด → <b>v ลด</b> จริง · คำนวณถูก: v_D = fλ_D = 10×6 = 60 cm/s · v_S = fλ_S = 10×4 = <b>40 cm/s</b> (ไม่ใช่ 60 ต่อด้วย f ใหม่) · "หน้าคลื่นถี่" ไม่ได้แปลว่า f เพิ่ม · แต่แปลว่า λ ลด เพราะ v ลดในน้ำตื้น
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 · M6.2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">"หักเหแล้วเปลี่ยนเป็นคลื่นตามยาว"</span>
+      <span class="mc-tag">M6.2</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนดู Lab 30 Coiled Spring · ส่งพัลส์ตามขวาง (transverse) ในเชือก 1 · พัลส์ข้ามรอยต่อเข้าเชือก 2 (μ มากกว่า) · นักเรียนเขียนรายงาน
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 พี่ภูมิ:</div>
+          <div class="say">"พอพัลส์ข้ามจากเชือกบางไปเชือกหนา · มันเจอแรงต้านเพิ่ม ทำให้<b>การสั่นตามขวางกลายเป็นการสั่นตามยาว</b> · อนุภาคเชือก 2 จึงสั่นในแนวเดียวกับการเคลื่อนที่ของคลื่น · นี่คือการหักเหทำให้คลื่น<b>เปลี่ยนชนิด</b>"</div>
+        </div>
+        <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="180"></canvas>
+      </div>
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- String 1 -->
+          <rect x="40" y="95" width="280" height="10" rx="4" fill="#bee3f8" stroke="#0ea5e9" stroke-width="1.5"/>
+          <text x="180" y="75" font-size="12" fill="#0ea5e9" text-anchor="middle" font-weight="700">เชือก 1 (μ น้อย · v เร็ว)</text>
+          <!-- Transverse pulse in string 1 -->
+          <path d="M 120,100 L 180,60 L 240,100" fill="none" stroke="#0891b2" stroke-width="3"/>
+          <text x="180" y="55" font-size="11" fill="#0891b2" text-anchor="middle">pulse ตามขวาง ↕</text>
+          <text x="260" y="120" font-size="12" fill="#0891b2" font-weight="700">→</text>
+          <!-- Boundary -->
+          <line x1="320" y1="60" x2="320" y2="150" stroke="#475569" stroke-width="2" stroke-dasharray="5,3"/>
+          <text x="320" y="55" font-size="10" fill="#475569" text-anchor="middle">รอยต่อ</text>
+          <!-- String 2 -->
+          <rect x="320" y="90" width="300" height="20" rx="5" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+          <text x="470" y="75" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="700">เชือก 2 (μ มาก · v ช้า)</text>
+          <!-- Expected transverse pulse (correct) -->
+          <path d="M 400,100 L 460,75 L 520,100" fill="none" stroke="#0284c7" stroke-width="3"/>
+          <text x="460" y="68" font-size="11" fill="#0284c7" text-anchor="middle" font-weight="700">pulse ยังตามขวาง ↕</text>
+          <!-- Wrong claim: longitudinal -->
+          <text x="400" y="160" font-size="11" fill="#dc2626">❌ นักเรียนคิดว่า: อนุภาคสั่นในแนว ⇄ (ตามยาว)</text>
+          <text x="400" y="178" font-size="11" fill="#059669">✓ จริง: อนุภาคสั่น ↕ (ตามขวาง) เหมือนเดิม · เฉพาะ v, λ เปลี่ยน</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด (อ้างว่าหักเหเปลี่ยนอะไรบ้าง · ไม่เปลี่ยนอะไร)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#0891b2" onclick="setColor('canvas2','#0891b2',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas2','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q2-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5f3fc;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"การสั่นตามขวางกลายเป็นการสั่นตามยาว"</b> และ<b>"เปลี่ยนชนิด"</b> · (ข) <b>M6.2</b> (คิดว่าหักเหเปลี่ยนชนิดคลื่น) ·
+        (ค) การหักเหเปลี่ยนเฉพาะ <b>v (ความเร็ว)</b> · <b>λ (ความยาวคลื่น)</b> และ <b>ทิศการเคลื่อนที่</b> เท่านั้น · <b>ชนิดของคลื่น (ตามขวาง/ตามยาว) ไม่เปลี่ยน</b> · อนุภาคเชือก 2 ยังสั่นในแนวตั้งฉากกับทิศการเคลื่อนที่ของคลื่นเหมือนเชือก 1 · การสั่นของอนุภาคถูกส่งผ่านจากเชือก 1 ด้วยแรงตึงที่รอยต่อ — แนวการสั่นส่งต่อได้ตรง ๆ ไม่เปลี่ยนทิศการสั่นของอนุภาค
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 · M6.3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">"เชือกหนา · สั่นช้าลง → f น้อยลง"</span>
+      <span class="mc-tag">M6.3</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนสะบัดคลื่นต่อเนื่องที่ปลายเชือกบาง (μ₁ = 0.01 kg/m) ด้วย f = 5 Hz · ต่อกับเชือกหนา (μ₂ = 0.04 kg/m) · ตึงเท่ากัน T = 20 N · นักเรียนนับคลื่นและคำนวณดังนี้
+
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="85" width="280" height="10" rx="4" fill="#bee3f8" stroke="#0ea5e9" stroke-width="1.5"/>
+          <rect x="310" y="75" width="320" height="30" rx="6" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+          <line x1="310" y1="50" x2="310" y2="130" stroke="#475569" stroke-width="2" stroke-dasharray="5,3"/>
+          <text x="310" y="45" font-size="10" fill="#475569" text-anchor="middle">รอยต่อ</text>
+          <text x="170" y="70" font-size="12" fill="#0ea5e9" text-anchor="middle" font-weight="700">เชือก 1 · μ₁=0.01 · v₁≈44.7 m/s</text>
+          <text x="470" y="68" font-size="12" fill="#0284c7" text-anchor="middle" font-weight="700">เชือก 2 · μ₂=0.04 · v₂≈22.4 m/s</text>
+          <!-- wave pattern 1 (more cycles visible) -->
+          <path d="M 30,90 Q 50,75 70,90 T 110,90 T 150,90 T 190,90 T 230,90 T 270,90 T 310,90" fill="none" stroke="#0ea5e9" stroke-width="2"/>
+          <text x="170" y="145" font-size="11" fill="#0ea5e9" text-anchor="middle">f = 5 Hz (ที่แหล่งกำเนิด)</text>
+          <!-- wave pattern 2 (fewer cycles, wider -- to show ambiguity) -->
+          <path d="M 310,90 Q 340,75 370,90 T 430,90 T 490,90 T 550,90 T 610,90" fill="none" stroke="#0284c7" stroke-width="2"/>
+          <text x="470" y="145" font-size="11" fill="#dc2626" text-anchor="middle">❌ นักเรียนบอก: f₂ = 2.5 Hz?</text>
+          <text x="100" y="175" font-size="11" fill="#059669">✓ จริง: f₂ = 5 Hz (เท่าเดิม · λ₂ = v₂/f = 22.4/5 ≈ 4.47 m)</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องโอ๊ต:</div>
+          <div class="say">"ฉันสังเกตว่าในเชือกหนา v ช้าลงจาก 44.7 → 22.4 m/s (ประมาณ<b>ครึ่งหนึ่ง</b>) · ดังนั้น<b>ความถี่ในเชือก 2 ต้องน้อยลงครึ่งหนึ่งด้วย = 2.5 Hz</b> · เพราะเชือกหนาสั่นไหวได้ช้ากว่าเชือกบาง · นี่ทำให้คลื่นในเชือก 2 มี λ₂ = v₂/f₂ = 22.4/2.5 ≈ 8.94 m (เท่ากับ λ₁)"</div>
+        </div>
+        <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="220"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + แสดงวิธีคิด (f คงที่เพราะอะไร · λ ในเชือก 2 จริงเป็นเท่าใด)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#164e63">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#0891b2" onclick="setColor('canvas3','#0891b2',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas3','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas3" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q3-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #a5f3fc;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"f₂ = 2.5 Hz"</b> และ<b>"ความถี่น้อยลงครึ่งหนึ่ง"</b> และ<b>"λ₂ = 8.94 m"</b> · (ข) <b>M6.3</b> (คิดว่าเชือก μ ต่าง → f ต่าง) ·
+        (ค) <b>f ถูกกำหนดโดยแหล่งกำเนิด</b> (มือสะบัด 5 Hz) · ที่รอยต่อ จุดเชื่อมเชือก 1 กับ 2 ต้อง<b>สั่นพร้อมกันด้วยความถี่เดียวกัน</b> (เชื่อมติดกันทางกายภาพ) → f₂ = f₁ = <b>5 Hz เท่าเดิม</b> · v ลดเพราะ μ เพิ่ม (v=√(T/μ)) · λ₂ = v₂/f₂ = 22.4/5 ≈ <b>4.47 m</b> (ครึ่งของ λ₁ = 8.94 m) · สรุป: เมื่อ v ลดครึ่งหนึ่ง f คงเดิม → λ ลดครึ่ง (ไม่ใช่ f ลดครึ่ง)
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–3 ต่อข้อ):</b><br>
+    <b>3</b> — ระบุจุดผิดถูก + MC ถูก + อธิบายถูกต้องโดยอ้างหลักการ<br>
+    <b>2</b> — จุดผิดถูก + อธิบายได้บางส่วน แต่ขาดการอ้างหลักการ<br>
+    <b>1</b> — ระบุได้บางส่วน หรืออธิบายผิด<br>
+    <b>0</b> — ว่างหรือผิดทั้งหมด
+  </div>
+
+  <div class="foot">ใบกิจกรรม 6.2 · แผน 6 การหักเหของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
+
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -325,5 +325,72 @@ window.KP_PLAN_MEDIA = {
       'MJ-01 → คำถามเด่นเป็น Hook แผน 6 (การหักเห)',
       'OB-01 → Perseverance (A1 ≥ 80%) · Respect (A2 ≥ 80%)'
     ]
+  },
+  6: {
+    folder: 'lessons/physics3/waves/แผน06_การหักเหของคลื่น',
+    title: 'แผน 6 — การหักเหของคลื่น',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 11–12 (100 นาที) · ว2.1 ม.5/4',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 6 (ฉบับสมบูรณ์)', file:'แผน6_Infographic.html',
+          d:'ภาพรวมทั้งแผน: สาระ · K/P/A · 5E+POE 9 ขั้น · สื่อ · การวัด · วPA 8 ตัวชี้วัด · Timeline · Theme สี Cyan (ฟ้าคราม)', chips:[] },
+        { cls:'sim', no:'SIM1', t:'Lab 30 — Waves on Coiled Spring (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html',
+          d:'Virtual Lab · โหมด "สปริง 2 อัน" · ปรับ μ₂/μ₁ · ส่งพัลส์ข้ามรอยต่อ · วัด v ทั้ง 2 เชือก · ยืนยัน f คงที่ · ใช้ใน POE-06 ฐาน 1',
+          chips:[['m','M6.1'],['m','M6.3'],['k','K1'],['p','P1']] },
+        { cls:'sim', no:'SIM2', t:'Lab 33 — Wave Refraction Ripple Tank (KP Science)',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/33.%20wave-refraction-ripple-tank.html',
+          d:'Virtual Lab · คลื่นผิวน้ำผ่านเขตน้ำลึก (D) → น้ำตื้น (S) · วัด λ_D, λ_S · ปรับมุมขอบ θ · ยืนยันกฎสเนลล์ sinθ₁/sinθ₂ = v₁/v₂ = λ₁/λ₂ · ใช้ใน POE-06 ฐาน 2',
+          chips:[['m','M6.1'],['m','M6.2'],['k','K1'],['k','K2'],['p','P1'],['p','P2']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e2', no:'02', t:'POE-06 Interactive · ใบบันทึก P / O / E', file:'สื่อ02_POE-06_ใบบันทึกPOE.html',
+          d:'Predict 4 ข้อ (λ ในน้ำตื้น · f · v ลึก↔ตื้น · เชือก μ ต่าง) ใช้ palette λ ใหญ่/เท่า/เล็ก · Observe 2 ฐาน (Lab 30 + Lab 33) · auto-check v₁ vs v₂ + auto-calc v=fλ · canvas วาดหน้าคลื่น+ทิศการเคลื่อนที่ · Explain CER + 🟢 Conceptual Inventory 5 ข้อ',
+          meta:'ใช้ตลอด E1–E3 · 35 นาที',
+          chips:[['p','P1'],['p','P2'],['m','M6.1'],['m','M6.2'],['m','M6.3']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 6.1 · Calc Refraction', file:'สื่อ03_Calc_ใบกิจกรรม6.1.html',
+          d:'4 ข้อไล่ระดับ · (1) วาดหน้าคลื่น+ทิศการเคลื่อนที่ในน้ำตื้น θ₁=40° scene-stack overlay · คำนวณ θ₂ ด้วยกฎสเนลล์ (2) คำนวณ v, λ, f · แก้ M6.1 (3) สร้างกราฟ v–√h ยืนยัน "น้ำลึก v มาก/ตื้น v น้อย" (4) เชือก μ₂=4μ₁ แก้ M6.3 · ใช้ worksheet-core.js',
+          meta:'ใช้ในฉาก E4 Elaborate · 15 นาที',
+          chips:[['k','K1'],['k','K2'],['p','P1'],['p','P2'],['m','M6.1'],['m','M6.3']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 6.2 · Spot the Error', file:'สื่อ04_Spot_ใบกิจกรรม6.2.html',
+          d:'3 สถานการณ์ · "หักเหแล้ว f เปลี่ยน" (M6.1) · "หักเห = เปลี่ยนชนิดคลื่น" (M6.2) · "เชือกหนา f ลดตาม v" (M6.3) · claim canvas overlay + canvas อธิบายที่ถูก',
+          meta:'ใช้ในฉาก E4 Elaborate · 12 นาที',
+          chips:[['k','K3'],['p','P2'],['m','M6.1'],['m','M6.2'],['m','M6.3']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F6 Four-tier · Pre + Post', file:'สื่อ05_F6_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier (T1 คำตอบ + T2 มั่นใจ + T3 เหตุผล + T4 มั่นใจ) · M6.1 (f คงที่) · M6.2 (ชนิดคลื่นไม่เปลี่ยน + ทิศหักเห) · M6.3 (เชือกรอยต่อ f คงที่) · SVG + Answer Key + Interpretation rubric',
+          meta:'ใช้ในฉาก F6 Pre (5\') + F6 Post (7\')',
+          chips:[['k','K1'],['k','K3'],['m','M6.1'],['m','M6.2'],['m','M6.3'],['w','วPA 2,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A1'],['w','วPA 4,7']] },
+        { cls:'mj', no:'MJ', t:'MJ-06 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ · 2 Transfer ชีวิตจริง (ตาปลา/เลนส์/เส้นใยแก้ว) · 1 คำถาม', meta:'ใช้ในฉาก MJ · 3 นาที',
+          chips:[['a','A2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Role Responsibility (A6.1) + Scientific Attitude (A6.2) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 100 นาที',
+          chips:[['a','A1'],['a','A2'],['w','วPA 4,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E (ใช้ร่วมกับแผน 1)', meta:'ครูใช้ประเมินใบ POE-06',
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: 🔁 f คงที่ (M6.1/M6.3) · 🏃 v, λ เปลี่ยน · 📐 ทิศการเคลื่อนที่หักเห (M6.2) · ผูก POE-06 ฐาน 1+2 · ทุกกลุ่มส่ง Claim+Evidence+Reasoning พร้อมกัน · ครูฉายจอเปรียบเทียบ real-time',
+          meta:'ใช้ในฉาก E3 · 8 นาที',
+          chips:[['p','P2'],['k','K2'],['a','A2'],['w','วPA 3,5,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F6 Pre/Post → % Sound · Misconception M6.1/M6.2/M6.3 · Normalized gain ของแผน 6 · เป้าหมายลด MC ของ M6.1 ≥ 50%, M6.2/M6.3 ≥ 30%',
+      'POE-06 + POE Rubric → คะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
+      'Calc 6.1 → คะแนนเฉลี่ย ≥ 70% · กราฟ v–√h r² ≥ 0.9 (เกณฑ์ K2, P2)',
+      'Spot 6.2 → Conceptual Change · เชื่อม M6.1–6.3 กับหลักฐาน',
+      'CER Board → คลัง Claim-Evidence-Reasoning เรื่องหักเห · วPA ด้าน 1 ข้อ 3, 5, 6',
+      'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',
+      'MJ-06 → คำถามเด่นเป็น Hook แผน 7 (การแทรกสอด — f เท่ากัน · เงื่อนไข)',
+      'OB-01 → Role Responsibility (A6.1 ≥ 80%) · Scientific Attitude (A6.2 ≥ 70%)'
+    ]
   }
 };

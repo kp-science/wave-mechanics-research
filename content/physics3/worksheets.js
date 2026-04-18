@@ -461,5 +461,78 @@ window.KP_WORKSHEETS = {
       allowImage: true,
       sheetPrefix: 'CER_P'
     }
+  },
+
+  // ───────── แผน 6 · การหักเหของคลื่น ─────────
+  6: {
+    // POE-06 · Interactive form · 2 ฐาน (Lab 30 Coiled Spring + Lab 33 Ripple Tank)
+    poe: {
+      title:       'POE-06 · ใบบันทึก Predict–Observe–Explain (แผน 6)',
+      description: 'Interactive: palette เลือกความยาวคลื่น + canvas วาดหน้าคลื่น/ทิศการเคลื่อนที่ · 2 ฐาน (Lab 30 · Lab 33)',
+      viewFile:    'สื่อ02_POE-06_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-06',
+      sheetPrefix: 'POE_P',
+      misconception: 'M6.1 · M6.2 · M6.3',
+      allowUpload: true,
+      hero: {
+        question: 'คลื่นผิวน้ำเดินทางจากน้ำลึก → น้ำตื้น · f เปลี่ยนหรือไม่? · v และ λ เปลี่ยนอย่างไร? · ทิศการเคลื่อนที่หักเหเข้าหาหรือออกจากเส้นปกติ?',
+        context:  'คู่กับ Concept Cartoon "ปลาในน้ำ" (3 ตัวละคร) · 2 ฐาน (Lab 30 Coiled Spring · Lab 33 Ripple Tank Refraction)'
+      }
+    },
+    // ใบ 6.1 · Calc Refraction · scene-stack overlay + lined canvas + graph
+    calc: {
+      title:       'ใบกิจกรรม 6.1 · Calc Refraction',
+      description: '4 ข้อไล่ระดับ · (1) วาดหน้าคลื่น + ทิศการเคลื่อนที่ในน้ำตื้น θ₁=40° · scene-stack overlay (2) คำนวณ v, λ, f แก้ M6.1 (3) สร้างกราฟ v–√h ยืนยันน้ำลึก v มาก/ตื้น v น้อย (4) เชือก 2 เส้น μ₂=4μ₁ แก้ M6.3 · ใช้ worksheet-core.js',
+      viewFile:    'สื่อ03_Calc_ใบกิจกรรม6.1.html',
+      submitLabel: '📤 ส่งใบกิจกรรม 6.1',
+      sheetPrefix: 'Calc_P',
+      allowUpload: true
+    },
+    // ใบ 6.2 · Spot the Error · claim-overlay + canvas อธิบาย
+    spot: {
+      title:       'ใบกิจกรรม 6.2 · Spot the Error',
+      description: '3 สถานการณ์ · วงกลม/ขีดทับจุดผิดบนข้อความ + canvas อธิบายที่ถูก · ชน M6.1 · M6.2 · M6.3',
+      viewFile:    'สื่อ04_Spot_ใบกิจกรรม6.2.html',
+      items: [
+        { misc:'M6.1', stmt:'น้องปาล์ม: "หน้าคลื่นในน้ำตื้นถี่กว่าน้ำลึก · แปลว่าความถี่เพิ่มขึ้น · f_S = 60/4 = 15 Hz · การหักเหทำให้ความถี่เพิ่มจาก 10 → 15 Hz"' },
+        { misc:'M6.2', stmt:'พี่ภูมิ: "พอพัลส์ข้ามจากเชือกบางไปเชือกหนา · มันเจอแรงต้านเพิ่ม ทำให้การสั่นตามขวางกลายเป็นการสั่นตามยาว · อนุภาคเชือก 2 จึงสั่นในแนวเดียวกับการเคลื่อนที่ของคลื่น · การหักเหทำให้คลื่นเปลี่ยนชนิด"' },
+        { misc:'M6.3', stmt:'น้องโอ๊ต: "ในเชือกหนา v ช้าลงจาก 44.7 → 22.4 m/s (ครึ่งหนึ่ง) · ดังนั้นความถี่ในเชือก 2 ต้องน้อยลงครึ่งหนึ่งด้วย = 2.5 Hz · เพราะเชือกหนาสั่นไหวได้ช้ากว่า"' }
+      ],
+      submitLabel: '📤 ส่งใบกิจกรรม 6.2',
+      sheetPrefix: 'Spot_P'
+    },
+    // CER Board · E3 Explain · 3 คอลัมน์ (f คงที่ / v เปลี่ยนตามตัวกลาง / ทิศการเคลื่อนที่หักเห)
+    cer: {
+      id: 'cer',
+      title: 'CER Board · Phase E3',
+      description: 'ใช้ข้อมูลจาก POE-06 ทั้ง 2 ฐาน (Lab 30 + Lab 33) · ทุกกลยุ่มส่ง CER พร้อมกัน · ครูฉายบนจอเพื่อเปรียบเทียบ',
+      columns: [
+        { id:'freq_constant', label:'🔁 f คงที่ · แก้ M6.1/M6.3', color:'#0891b2',
+          prompts: {
+            claim:     '👉 ความถี่ของคลื่นในตัวกลาง 2 เขตเป็นอย่างไรเทียบกัน?',
+            evidence:  '👉 ฐาน 1 Lab 30: เชือก 1 f = ____ · เชือก 2 f = ____ · ฐาน 2 Lab 33: f_D = ____ · f_S = ____',
+            reasoning: '👉 f ถูกกำหนดโดยอะไร (แหล่งกำเนิด)? · ทำไม f คงที่ที่รอยต่อ (จุดเชื่อมต้องสั่นพร้อมกัน)?'
+          } },
+        { id:'speed_lambda', label:'🏃 v, λ เปลี่ยน · น้ำลึก v มาก', color:'#0284c7',
+          prompts: {
+            claim:     '👉 v และ λ ในน้ำลึกเทียบน้ำตื้นเป็นอย่างไร? · เชือก μ ต่างเทียบเท่าอย่างไร?',
+            evidence:  '👉 Lab 30: v₁ ≈ ____ m/s · v₂ ≈ ____ m/s · Lab 33: λ_D = ____ · λ_S = ____ · v_D = fλ_D = ____ · v_S = ____',
+            reasoning: '👉 ทำไม v เปลี่ยน? (v = √(T/μ) ในเชือก · v ∝ √h ในน้ำ) · λ = v/f เปลี่ยนตาม v'
+          } },
+        { id:'refraction_direction', label:'📐 ทิศการเคลื่อนที่หักเห · แก้ M6.2', color:'#164e63',
+          prompts: {
+            claim:     '👉 ทิศการเคลื่อนที่หักเหเข้าหาหรือออกจากเส้นปกติเมื่อ v ลด?',
+            evidence:  '👉 Lab 33: θ₁ = ____° · θ₂ = ____° · sinθ₁/sinθ₂ = ____ · v_D/v_S = ____ (กฎสเนลล์)',
+            reasoning: '👉 ทำไม v ลด → ทิศเข้าหาเส้นปกติ? · หน้าคลื่นตั้งฉากกับทิศการเคลื่อนที่เสมอ · ชนิดคลื่นไม่เปลี่ยน'
+          } }
+      ],
+      prompts: {
+        claim:     'ข้อค้นพบสั้น ๆ...',
+        evidence:  'ข้อมูลที่วัดได้จากฐาน...',
+        reasoning: 'เหตุผลที่เชื่อมหลักฐานกับข้อสรุป...'
+      },
+      allowImage: true,
+      sheetPrefix: 'CER_P'
+    }
   }
 };

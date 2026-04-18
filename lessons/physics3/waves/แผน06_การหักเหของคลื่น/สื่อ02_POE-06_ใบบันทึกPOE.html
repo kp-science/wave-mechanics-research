@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POE-06 · การหักเหของคลื่น (Interactive)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#ecfeff;color:#1a202c;font-size:15px;line-height:1.6;padding:16px}
+.page{max-width:960px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 16px rgba(8,145,178,.12);padding:24px 28px}
+.head{border-bottom:3px solid #0891b2;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#164e63;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #a5f3fc;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#0891b2;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:4px}
+
+/* Sim launcher */
+.sim-bar{background:linear-gradient(135deg,#164e63,#0891b2);border-radius:10px;padding:10px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sim-bar span{color:#fff;font-weight:700;font-size:14px;flex:1;min-width:160px}
+.sim-btn{display:inline-block;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;transition:opacity .2s}
+.sim-btn:hover{opacity:.85}
+
+/* Sections */
+.sec{margin:16px 0;border-radius:12px;padding:16px 18px}
+.sec.p{background:#e3f2fd;border-left:6px solid #1976d2}
+.sec.o{background:#fff8f0;border-left:6px solid #ef6c00}
+.sec.e{background:#ecfeff;border-left:6px solid #0891b2}
+.sec-title{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sec.p .sec-title{color:#0d47a1}
+.sec.o .sec-title{color:#c05621}
+.sec.e .sec-title{color:#164e63}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:10px;background:#fff;border:1.5px solid currentColor;font-weight:600}
+
+/* Question blocks */
+.qblock{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1.5px solid #e2e8f0}
+.qblock:last-child{margin-bottom:0}
+.qlabel{font-weight:700;color:#1a202c;margin-bottom:10px;font-size:15px}
+.qsub{font-size:13.5px;color:#4a5568;margin-top:4px}
+
+/* Scenario SVG */
+.scenario-wrap{display:flex;align-items:center;gap:0;margin:10px 0;background:#f7fafc;border-radius:8px;padding:8px 12px;overflow-x:auto}
+
+/* Wavelength palette */
+.palette{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.shape-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;border-radius:10px;border:2.5px solid #e2e8f0;background:#f7fafc;cursor:pointer;transition:all .18s;min-width:90px;user-select:none}
+.shape-btn:hover{border-color:#0891b2;background:#ecfeff}
+.shape-btn.active{border-color:#0891b2;background:#cffafe;box-shadow:0 0 0 3px rgba(8,145,178,.25)}
+.shape-btn svg{display:block}
+.shape-btn .slabel{font-size:11.5px;font-weight:700;text-align:center}
+
+/* Drop zone */
+.drop-row{display:flex;align-items:center;gap:10px;margin:10px 0;flex-wrap:wrap}
+.drop-zone{min-width:140px;height:64px;border:2.5px dashed #a5f3fc;border-radius:10px;background:#ecfeff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;padding:6px 12px;position:relative;flex:1}
+.drop-zone:hover{border-color:#0891b2;background:#cffafe}
+.drop-zone.filled{border-style:solid;border-color:#0891b2;background:#ecfeff}
+.drop-zone .placeholder{font-size:12.5px;color:#a0aec0;text-align:center;pointer-events:none}
+.drop-zone .placed{display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:none}
+.drop-zone .placed .pname{font-size:11.5px;font-weight:700}
+.drop-label{font-size:13px;color:#4a5568;font-weight:600;white-space:nowrap}
+.drop-clear{font-size:11px;background:#fee2e2;color:#c53030;border:none;border-radius:6px;padding:2px 6px;cursor:pointer;position:absolute;top:4px;right:4px;font-family:inherit;display:none}
+.drop-zone.filled .drop-clear{display:block}
+
+/* Radio / Checkbox */
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+.radio-opt:hover{border-color:#0891b2;background:#ecfeff}
+.radio-opt.selected{border-color:#0891b2;background:#cffafe;font-weight:700}
+.radio-opt input{display:none}
+.check-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14.5px;cursor:pointer}
+.check-opt input[type=checkbox]{width:18px;height:18px;accent-color:#0891b2;flex-shrink:0;margin-top:2px}
+
+/* Textarea / Input */
+textarea{width:100%;border:1.5px solid #a5f3fc;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;resize:vertical;background:#ecfeff;color:#1a202c;margin-top:6px;min-height:56px}
+textarea:focus{outline:none;border-color:#0891b2;box-shadow:0 0 0 3px rgba(8,145,178,.15)}
+input[type=number],input[type=text]{border:1.5px solid #a5f3fc;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#ecfeff;width:80px;text-align:center}
+input[type=number]:focus,input[type=text]:focus{outline:none;border-color:#0891b2}
+
+/* Mini table */
+.mini-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.mini-table th{background:#cffafe;color:#164e63;padding:7px 8px;text-align:center;border:1px solid #a5f3fc;font-weight:700}
+.mini-table td{padding:6px 8px;border:1px solid #e2e8f0;text-align:center;vertical-align:middle}
+.mini-table td.left{text-align:left}
+.mini-table tr:nth-child(even) td{background:#f9fafb}
+.pct-cell{font-size:12px;color:#718096}
+
+/* Canvas */
+.canvas-wrap{margin-top:10px}
+.canvas-toolbar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
+.c-btn{padding:4px 10px;border-radius:7px;border:1.5px solid #a5f3fc;background:#ecfeff;font-family:inherit;font-size:12.5px;cursor:pointer;font-weight:600;transition:all .15s}
+.c-btn:hover{background:#cffafe;border-color:#0891b2}
+.c-btn.active{background:#0891b2;color:#fff;border-color:#0891b2}
+.c-color{width:24px;height:24px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s}
+.c-color.active{border-color:#0891b2;box-shadow:0 0 0 2px rgba(8,145,178,.4)}
+canvas{display:block;width:100%;border:2px solid #a5f3fc;border-radius:8px;background:#fff;touch-action:none;cursor:crosshair}
+.scene-stack{position:relative;border:2px solid #a5f3fc;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:0;background:transparent;z-index:2}
+.scene-hint{font-size:12px;color:#164e63;margin-top:4px}
+
+/* Station divider */
+.station{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.station-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.station-title{font-weight:800;color:#7c2d12;font-size:15px}
+.station-badge{background:#fff7ed;color:#9a3412;border:1.5px solid #fed7aa;border-radius:8px;font-size:12px;padding:2px 8px;font-weight:700}
+.station-sim{font-size:12.5px;padding:5px 10px}
+
+/* CER boxes */
+.cer-block{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.cer-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;margin-top:4px}
+.cer-c{background:#0891b2}
+.cer-e{background:#ef6c00}
+.cer-r{background:#5a67d8}
+.cer-content{flex:1}
+.cer-content label{font-weight:700;font-size:14px;display:block;margin-bottom:2px}
+
+/* Misconception correction */
+.misc-correct{background:#fff8e1;border-left:4px solid #f9a825;border-radius:8px;padding:12px 14px;margin-top:12px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#92400e;margin-bottom:8px}
+.misc-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;font-size:14px}
+.misc-code{background:#c53030;color:#fff;border-radius:6px;padding:1px 7px;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+
+/* Submit */
+.submit-bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.btn-submit{padding:10px 28px;border-radius:10px;background:#0891b2;color:#fff;font-family:inherit;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .18s}
+.btn-submit:hover{background:#0e7490}
+.btn-reset{padding:10px 18px;border-radius:10px;background:#f7fafc;color:#4a5568;font-family:inherit;font-size:14px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer}
+.result-box{margin-top:12px;background:#ecfeff;border:2px solid #0891b2;border-radius:10px;padding:14px;display:none;font-size:13.5px}
+.result-box h4{color:#164e63;margin-bottom:8px;font-size:15px}
+
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #e2e8f0;padding-top:10px}
+@media (max-width:640px){.drop-row{flex-direction:column}.scenario-wrap svg{max-width:100%}}
+</style>
+</head>
+<body data-ws-id="plan6-poe">
+
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <div class="head">
+    <div>
+      <h1>🌊 POE-06 · การหักเหของคลื่น</h1>
+      <div><span class="tag">แผน 6</span><span class="tag">Interactive</span> คู่กับ 🐟 Concept Cartoon "ปลาในน้ำ"</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-สกุล" style="width:150px"></label>
+      <label>เลขที่ <input type="number" id="s-num" class="short" min="1" max="50"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+      <label>กลุ่ม <input type="number" id="s-grp" class="short" min="1" max="10"></label>
+    </div>
+  </div>
+
+  <!-- ══ SIM LAUNCHER ══ -->
+  <div class="sim-bar">
+    <span>🚀 Simulation ที่ใช้ในคาบ · กดเพื่อเปิด</span>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html" target="_blank" rel="noopener" class="sim-btn" style="background:#0e7490">🌀 Lab 30 · Coiled Spring</a>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/33.%20wave-refraction-ripple-tank.html" target="_blank" rel="noopener" class="sim-btn" style="background:#164e63">🌊 Lab 33 · Ripple Tank Refraction</a>
+  </div>
+
+  <!-- ══ P · PREDICT ══ -->
+  <div class="sec p">
+    <div class="sec-title">🔮 P · Predict <span class="badge">ก่อนทดลอง · 5 นาที</span></div>
+
+    <!-- Q1: wavelength prediction with palette -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 1 · ความยาวคลื่น λ ในน้ำตื้น (M6.1)</div>
+      <div class="qsub">คลื่นผิวน้ำ (หน้าตรง) เดินทางจาก<strong>น้ำลึก → น้ำตื้น</strong> · ระยะห่างของหน้าคลื่น (λ) ในน้ำตื้นจะเป็นอย่างไร เมื่อเทียบกับในน้ำลึก?</div>
+      <div class="scenario-wrap">
+        <svg width="320" height="70" viewBox="0 0 320 70">
+          <!-- Deep water zone -->
+          <rect x="0" y="5" width="160" height="60" fill="#cffafe" stroke="#0891b2" stroke-width="1"/>
+          <rect x="160" y="5" width="160" height="60" fill="#ecfeff" stroke="#0284c7" stroke-width="1"/>
+          <line x1="160" y1="5" x2="160" y2="65" stroke="#475569" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <!-- 3 wavefronts in deep (wider spacing) -->
+          <line x1="20" y1="10" x2="20" y2="60" stroke="#0891b2" stroke-width="2.5"/>
+          <line x1="60" y1="10" x2="60" y2="60" stroke="#0891b2" stroke-width="2.5"/>
+          <line x1="100" y1="10" x2="100" y2="60" stroke="#0891b2" stroke-width="2.5"/>
+          <line x1="140" y1="10" x2="140" y2="60" stroke="#0891b2" stroke-width="2.5"/>
+          <!-- ? marks in shallow -->
+          <text x="200" y="38" font-size="14" fill="#475569" font-weight="700" font-family="Sarabun,sans-serif">λ₂ = ?</text>
+          <!-- labels -->
+          <text x="10" y="-2" font-size="10" fill="#0891b2" font-weight="700" font-family="Sarabun,sans-serif"></text>
+          <text x="40" y="62" font-size="9" fill="#0891b2" font-family="Sarabun,sans-serif" y="62">น้ำลึก (λ₁)</text>
+          <text x="200" y="62" font-size="9" fill="#0284c7" font-family="Sarabun,sans-serif">น้ำตื้น (λ₂?)</text>
+        </svg>
+      </div>
+      <div style="font-size:13.5px;margin-bottom:6px">🖱️ เลือกรูปแบบหน้าคลื่นในน้ำตื้น → คลิกรูปที่คิดว่าถูก แล้วคลิกช่องคำตอบ</div>
+      <div class="palette" data-group="p1">
+        <button class="shape-btn" data-shape="wf-same" data-group="p1" onclick="selectShape(this)">
+          <svg width="80" height="40" viewBox="0 0 80 40">
+            <line x1="10" y1="5" x2="10" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="30" y1="5" x2="30" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="50" y1="5" x2="50" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="70" y1="5" x2="70" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+          </svg>
+          <span class="slabel" style="color:#0284c7">λ เท่าเดิม</span>
+        </button>
+        <button class="shape-btn" data-shape="wf-narrow" data-group="p1" onclick="selectShape(this)">
+          <svg width="80" height="40" viewBox="0 0 80 40">
+            <line x1="8" y1="5" x2="8" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="20" y1="5" x2="20" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="32" y1="5" x2="32" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="44" y1="5" x2="44" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="56" y1="5" x2="56" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="68" y1="5" x2="68" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+          </svg>
+          <span class="slabel" style="color:#0284c7">λ เล็กลง (ถี่ขึ้น)</span>
+        </button>
+        <button class="shape-btn" data-shape="wf-wide" data-group="p1" onclick="selectShape(this)">
+          <svg width="80" height="40" viewBox="0 0 80 40">
+            <line x1="15" y1="5" x2="15" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="45" y1="5" x2="45" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+            <line x1="75" y1="5" x2="75" y2="35" stroke="#0284c7" stroke-width="2.2"/>
+          </svg>
+          <span class="slabel" style="color:#0284c7">λ ใหญ่ขึ้น (ห่างขึ้น)</span>
+        </button>
+        <button class="shape-btn" data-shape="wf-gone" data-group="p1" onclick="selectShape(this)">
+          <svg width="80" height="40" viewBox="0 0 80 40">
+            <text x="40" y="25" font-size="11" fill="#718096" font-family="Sarabun,sans-serif" text-anchor="middle">ไม่มีคลื่น</text>
+          </svg>
+          <span class="slabel" style="color:#718096">คลื่นไม่ผ่าน</span>
+        </button>
+      </div>
+      <div class="drop-row">
+        <span class="drop-label">λ ในน้ำตื้น:</span>
+        <div class="drop-zone" id="dz-p1" onclick="placeShape('p1','dz-p1')">
+          <span class="placeholder">คลิกรูปด้านบนก่อน<br>แล้วคลิกที่นี่เพื่อวาง</span>
+          <button class="drop-clear" onclick="clearZone('dz-p1',event)">✕ ล้าง</button>
+        </div>
+      </div>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:6px">เหตุผล (พิมพ์ได้):</label>
+      <textarea id="p1-reason" rows="2" placeholder="เพราะ..."></textarea>
+    </div>
+
+    <!-- Q2: frequency (M6.1) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 2 · ความถี่ f ในน้ำตื้น (M6.1 · แกนหลัก)</div>
+      <div class="qsub">ความถี่ f ของคลื่นในน้ำตื้น (f₂) เทียบกับในน้ำลึก (f₁) จะเป็นอย่างไร? · แหล่งกำเนิดคลื่นตัวเดียวกัน</div>
+      <div class="radio-row" id="p2">
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="f-bigger"> f₂ &gt; f₁ (ใหญ่ขึ้น)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="f-same"> f₂ = f₁ (เท่าเดิม)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="f-smaller"> f₂ &lt; f₁ (เล็กลง)</label>
+      </div>
+    </div>
+
+    <!-- Q3: speed (deep vs shallow) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 3 · ความเร็วคลื่น v ในน้ำลึก vs น้ำตื้น</div>
+      <div class="qsub">เปรียบเทียบ v ในน้ำลึก (v₁) กับในน้ำตื้น (v₂) — นึกถึงคลื่นสึนามิที่เร่งตัวเมื่อเข้าใกล้ชายฝั่งหรือชะลอตัว?</div>
+      <div class="radio-row" id="p3">
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="deep-fast"> น้ำลึก v มาก · น้ำตื้น v น้อย</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="equal"> v เท่ากันทั้ง 2 เขต</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="deep-slow"> น้ำลึก v น้อย · น้ำตื้น v มาก</label>
+      </div>
+    </div>
+
+    <!-- Q4: string freq (M6.3) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 4 · เชือก 2 เส้นต่อกัน μ₂ &gt; μ₁ (M6.3)</div>
+      <div class="qsub">เชือกบาง (μ₁ น้อย) ต่อกับเชือกหนา (μ₂ มาก) · สะบัดคลื่นต่อเนื่องจากปลายเชือกบาง · เมื่อคลื่นเข้าสู่เชือกหนา · <strong>f</strong> ในเชือก 2 จะเป็นอย่างไร?</div>
+      <div class="scenario-wrap">
+        <svg width="320" height="60" viewBox="0 0 320 60">
+          <rect x="10" y="26" width="140" height="8" rx="3" fill="#bee3f8" stroke="#0ea5e9" stroke-width="1.5"/>
+          <rect x="160" y="22" width="140" height="16" rx="4" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.5"/>
+          <line x1="155" y1="12" x2="155" y2="48" stroke="#475569" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <text x="45" y="18" font-size="10" fill="#0284c7" font-family="Sarabun,sans-serif" font-weight="700">เชือก 1 (μ₁ น้อย)</text>
+          <text x="190" y="18" font-size="10" fill="#0369a1" font-family="Sarabun,sans-serif" font-weight="700">เชือก 2 (μ₂ มาก)</text>
+          <text x="10" y="55" font-size="10" fill="#4a5568" font-family="Sarabun,sans-serif">← สะบัด (f คงที่)</text>
+          <text x="225" y="55" font-size="10" fill="#4a5568" font-family="Sarabun,sans-serif">f₂ = ?</text>
+        </svg>
+      </div>
+      <div class="radio-row" id="p4">
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="f-same"> f₂ = f₁ เท่าเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="f-bigger"> f₂ มากกว่า (μ มากทำให้สั่นถี่)</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="f-smaller"> f₂ น้อยกว่า (μ มากทำให้สั่นช้า)</label>
+      </div>
+    </div>
+
+    <!-- Confidence -->
+    <div class="qblock" style="padding:10px 14px">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจรวมก่อนทดลอง:</span>
+      <div class="radio-row" id="p-conf" style="margin-top:6px">
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="low">😕 น้อย</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ O · OBSERVE ══ -->
+  <div class="sec o">
+    <div class="sec-title">👁 O · Observe <span class="badge">2 ฐาน · 25 นาที</span></div>
+
+    <!-- ฐาน 1: Lab 30 Coiled Spring -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🌀 ฐาน 1 · Lab 30 — Waves on Coiled Spring (เชือก 2 เส้น)</span>
+        <span class="station-badge">12 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/30.%20waves-on-coiled-spring.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#0e7490">🚀 เปิด Lab 30 →</a>
+      </div>
+      <div style="font-size:13.5px;color:#555;margin-bottom:10px">โหมด "สปริง 2 อัน" · ส่งพัลส์จากปลายซ้าย · ปรับ μ₂/μ₁ = 1, 2, 3 → วัด v ในแต่ละเส้น · สังเกต f (จำนวนชีพจร/เวลา) ทั้ง 2 เส้น</div>
+
+      <table class="mini-table">
+        <tr>
+          <th style="width:100px">μ₂/μ₁</th>
+          <th>v₁ ในเชือก 1 (m/s)</th>
+          <th>v₂ ในเชือก 2 (m/s)</th>
+          <th>v₁ &gt; v₂ ?</th>
+          <th>f₁ เทียบ f₂</th>
+        </tr>
+        <tr>
+          <td class="left"><b>= 1 (เหมือนกัน)</b></td>
+          <td><input type="number" id="o1-v1a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-v1b" step="0.1" min="0" oninput="checkVRef(1)"></td>
+          <td id="o1-veq1" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-f1" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-f1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f1" value="eq">f₁=f₂</label>
+              <label class="radio-opt" onclick="selectRadio('o1-f1',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f1" value="ne">f₁≠f₂</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left"><b>= 2</b></td>
+          <td><input type="number" id="o1-v2a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-v2b" step="0.1" min="0" oninput="checkVRef(2)"></td>
+          <td id="o1-veq2" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-f2" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-f2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f2" value="eq">f₁=f₂</label>
+              <label class="radio-opt" onclick="selectRadio('o1-f2',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f2" value="ne">f₁≠f₂</label>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td class="left"><b>= 3</b></td>
+          <td><input type="number" id="o1-v3a" step="0.1" min="0"></td>
+          <td><input type="number" id="o1-v3b" step="0.1" min="0" oninput="checkVRef(3)"></td>
+          <td id="o1-veq3" style="font-size:13px">—</td>
+          <td>
+            <div class="radio-row" id="o1-f3" style="margin:0;gap:4px">
+              <label class="radio-opt" onclick="selectRadio('o1-f3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f3" value="eq">f₁=f₂</label>
+              <label class="radio-opt" onclick="selectRadio('o1-f3',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-f3" value="ne">f₁≠f₂</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:10px">สรุป μ ต่างกันทำให้ v และ f เปลี่ยนอย่างไร? (แก้ M6.3)</label>
+      <textarea id="o1-note" rows="2" placeholder="μ มาก → v ... ; f ตลอดเส้นเชือกคงที่ เพราะ ..."></textarea>
+    </div>
+
+    <!-- ฐาน 2: Lab 33 Ripple Tank Refraction -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🌊 ฐาน 2 · Lab 33 — Wave Refraction Ripple Tank</span>
+        <span class="station-badge">13 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/33.%20wave-refraction-ripple-tank.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#164e63">🚀 เปิด Lab 33 →</a>
+      </div>
+      <div style="font-size:13.5px;color:#555;margin-bottom:10px">ตั้งค่า f = 8 Hz · ปรับมุมขอบ θ + ความลึก (D=น้ำลึก · S=น้ำตื้น) · วัด λ_D และ λ_S 3 ชุด · คำนวณ v = fλ ในแต่ละเขต</div>
+
+      <table class="mini-table">
+        <tr>
+          <th>ครั้ง</th>
+          <th>มุม θ (°)</th>
+          <th>λ_D (น้ำลึก · mm)</th>
+          <th>λ_S (น้ำตื้น · mm)</th>
+          <th>v_D = fλ_D (mm/s)</th>
+          <th>v_S = fλ_S (mm/s)</th>
+          <th>λ_D &gt; λ_S ?</th>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td><input type="number" id="o2-th1" min="0" max="90" step="1"></td>
+          <td><input type="number" id="o2-ld1" min="0" step="0.1" oninput="calcRefrac(1)"></td>
+          <td><input type="number" id="o2-ls1" min="0" step="0.1" oninput="calcRefrac(1)"></td>
+          <td id="o2-vd1" class="pct-cell">—</td>
+          <td id="o2-vs1" class="pct-cell">—</td>
+          <td id="o2-chk1" class="pct-cell">—</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="number" id="o2-th2" min="0" max="90" step="1"></td>
+          <td><input type="number" id="o2-ld2" min="0" step="0.1" oninput="calcRefrac(2)"></td>
+          <td><input type="number" id="o2-ls2" min="0" step="0.1" oninput="calcRefrac(2)"></td>
+          <td id="o2-vd2" class="pct-cell">—</td>
+          <td id="o2-vs2" class="pct-cell">—</td>
+          <td id="o2-chk2" class="pct-cell">—</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="number" id="o2-th3" min="0" max="90" step="1"></td>
+          <td><input type="number" id="o2-ld3" min="0" step="0.1" oninput="calcRefrac(3)"></td>
+          <td><input type="number" id="o2-ls3" min="0" step="0.1" oninput="calcRefrac(3)"></td>
+          <td id="o2-vd3" class="pct-cell">—</td>
+          <td id="o2-vs3" class="pct-cell">—</td>
+          <td id="o2-chk3" class="pct-cell">—</td>
+        </tr>
+      </table>
+
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:10px">สรุปจาก 3 ค่า · <strong>f</strong> ทั้ง 2 เขตเท่ากันหรือไม่ (M6.1) · และ <strong>v</strong> เปลี่ยนอย่างไรตามความลึก:</label>
+      <textarea id="o2-conc" rows="2" placeholder="f ในน้ำลึกและน้ำตื้น... v_D เทียบ v_S..."></textarea>
+
+      <!-- Canvas: refraction diagram -->
+      <div style="font-weight:700;font-size:13.5px;color:#7c2d12;margin:14px 0 4px">✏️ จากภาพ <b>หน้าคลื่นตกกระทบในน้ำลึก</b> (เส้นส้ม) ให้นักเรียนวาดเพิ่ม:</div>
+      <div style="font-size:13px;color:#4a5568;margin-bottom:6px;padding-left:8px;line-height:1.7">
+        <span style="color:#0891b2">①</span> <b>ทิศการเคลื่อนที่ของคลื่นในน้ำลึก</b> (ลูกศรตั้งฉากกับหน้าคลื่น) ·
+        <span style="color:#475569">②</span> <b>เส้นปกติ</b> ที่รอยต่อ ·
+        <span style="color:#0284c7">③</span> <b>หน้าคลื่นในน้ำตื้น</b> (เส้นสั้น ถี่ขึ้น) + <b>ทิศการเคลื่อนที่ในน้ำตื้น</b> ·
+        <span style="color:#c53030">④</span> ระบุมุม <b>θ₁, θ₂</b>
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas-o2','pencil',this)">✏️ ดินสอ</button>
+          <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas-o2','eraser',this)">⬜ ยางลบ</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas-o2','#1a202c',this)" title="ดำ"></div>
+          <div class="c-color" style="background:#0891b2" onclick="setColor('canvas-o2','#0891b2',this)" title="ฟ้าคราม (ทิศน้ำลึก)"></div>
+          <div class="c-color" style="background:#0284c7" onclick="setColor('canvas-o2','#0284c7',this)" title="น้ำเงิน (ทิศน้ำตื้น)"></div>
+          <div class="c-color" style="background:#475569" onclick="setColor('canvas-o2','#475569',this)" title="เทา (Normal)"></div>
+          <div class="c-color" style="background:#c53030" onclick="setColor('canvas-o2','#c53030',this)" title="แดง (มุม θ)"></div>
+          <button class="c-btn" onclick="clearCanvas('canvas-o2')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+        </div>
+        <div class="scene-stack">
+          <svg class="bg" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid6" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#e0fafc" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <!-- Deep water zone (top) -->
+            <rect x="0" y="0" width="900" height="140" fill="#cffafe"/>
+            <!-- Shallow water zone (bottom) -->
+            <rect x="0" y="140" width="900" height="140" fill="#ecfeff"/>
+            <!-- Grid overlay -->
+            <rect width="900" height="280" fill="url(#grid6)"/>
+            <!-- Boundary (รอยต่อ) - horizontal dashed line -->
+            <line x1="0" y1="140" x2="900" y2="140" stroke="#475569" stroke-width="3" stroke-dasharray="8,5"/>
+            <text x="820" y="155" font-size="12" fill="#475569" font-weight="700" font-family="Sarabun,sans-serif">รอยต่อ</text>
+            <!-- Zone labels -->
+            <text x="20" y="24" font-size="15" fill="#0891b2" font-weight="800" font-family="Sarabun,sans-serif">น้ำลึก · v₁ มาก · λ₁ ใหญ่</text>
+            <text x="20" y="172" font-size="15" fill="#0284c7" font-weight="800" font-family="Sarabun,sans-serif">น้ำตื้น · v₂ น้อย · λ₂ เล็ก</text>
+            <!-- Incident wavefronts in deep water (4 parallel orange lines tilted ~40° from normal)
+                 Motion is down-right at 40° from vertical normal.
+                 Wavefront lines go from upper-right to lower-left (perpendicular to motion).
+                 Each wavefront ends at boundary (y=140) at various x, extends up-right into deep zone. -->
+            <g stroke="#ea8033" stroke-width="4" stroke-linecap="round">
+              <line x1="360" y1="140" x2="250" y2="48"/>
+              <line x1="440" y1="140" x2="330" y2="48"/>
+              <line x1="520" y1="140" x2="410" y2="48"/>
+              <line x1="600" y1="140" x2="490" y2="48"/>
+            </g>
+            <text x="150" y="70" font-size="13" fill="#c2410c" font-weight="700" font-family="Sarabun,sans-serif">หน้าคลื่นตกกระทบ</text>
+            <text x="150" y="90" font-size="11" fill="#6b7280" font-family="Sarabun,sans-serif">(ห่างกันกว้าง = λ₁ ใหญ่)</text>
+            <!-- Impact point marker at boundary -->
+            <circle cx="480" cy="140" r="5" fill="#0891b2"/>
+            <text x="490" y="136" font-size="11" fill="#0891b2" font-weight="700" font-family="Sarabun,sans-serif">จุดกระทบ</text>
+            <!-- Footer hint -->
+            <text x="20" y="270" font-size="11" fill="#64748b" font-family="Sarabun,sans-serif">กริด 30×30 px · วาดตามข้อ ①-④ ด้านบน</text>
+          </svg>
+          <canvas id="canvas-o2" class="overlay" width="900" height="280"></canvas>
+        </div>
+        <div class="scene-hint">💡 <b>คำใบ้:</b> หน้าคลื่นคือเส้นที่มีเฟสเดียวกัน · ทิศการเคลื่อนที่ของคลื่น⟂หน้าคลื่นเสมอ · ในน้ำตื้น λ เล็กลง ทิศเคลื่อนที่หักเหเข้าหาเส้นปกติ (θ₂&lt;θ₁)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ E · EXPLAIN / CER ══ -->
+  <div class="sec e">
+    <div class="sec-title">✍️ E · Explain — CER <span class="badge">ส่ง CER Live Board · 8 นาที</span></div>
+    <div style="background:#cffafe;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:13.5px;color:#164e63">
+      📡 <b>วิธีส่ง:</b> กรอก C + E + R ด้านล่าง → กด "ส่ง CER" → ระบบฉายขึ้นจอ · ทุกกลุ่มเห็นพร้อมกัน
+    </div>
+
+    <div class="cer-block">
+      <div class="cer-icon cer-c">C</div>
+      <div class="cer-content">
+        <label>Claim — ข้อกล่าวอ้าง: <span style="font-weight:400;font-size:13px;color:#555">สรุปเกี่ยวกับ f, v, λ, ทิศการเคลื่อนที่เมื่อหักเห</span></label>
+        <textarea id="cer-c" rows="3" placeholder="f: ... / v น้ำลึก↔ตื้น: ... / λ: ... / ทิศการเคลื่อนที่: ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-e">E</div>
+      <div class="cer-content">
+        <label>Evidence — หลักฐาน: <span style="font-weight:400;font-size:13px;color:#555">อ้างอิงจากฐาน 1 และ 2 ที่ทดลองจริง</span></label>
+        <textarea id="cer-e" rows="3" placeholder="ฐาน 1 (Lab 30): μ=.. v₁=.. v₂=.. f... / ฐาน 2 (Lab 33): λ_D=.. λ_S=.. v_D=.. v_S=.. f_D=f_S=..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-r">R</div>
+      <div class="cer-content">
+        <label>Reasoning — เหตุผลเชิงหลักการ: <span style="font-weight:400;font-size:13px;color:#555">ทำไม E ถึงสนับสนุน C? (ใช้หลักการฟิสิกส์)</span></label>
+        <textarea id="cer-r" rows="3" placeholder="f คงที่เพราะแหล่งกำเนิด... / v เปลี่ยนเพราะตัวกลาง (v∝√h ในน้ำตื้น · v=√(T/μ) ในเชือก)... / λ=v/f เมื่อ v เปลี่ยน f คงที่ → λ เปลี่ยน..."></textarea>
+      </div>
+    </div>
+
+    <!-- 🟢🔴 Conceptual Inventory (5 correct statements matched to M6.1-M6.3) -->
+    <div style="background:#fff;border:1.5px solid #7dd3fc;border-radius:10px;padding:12px 16px;margin-top:6px">
+      <div style="font-weight:700;color:#164e63;margin-bottom:8px;font-size:14.5px">🟢🔴 Conceptual Inventory · ติ๊กทุกข้อที่ตรงกับหลักฐานกลุ่มของคุณ:</div>
+      <label class="check-opt"><input type="checkbox" id="chk1"> 🟢 <b>f คงที่ทั้ง 2 เขต</b> (f₁ = f₂) เพราะถูกกำหนดโดยแหล่งกำเนิด <span style="color:#888;font-size:12.5px">— แก้ M6.1</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk2"> 🟢 <b>น้ำลึก v มาก · น้ำตื้น v น้อย</b> (v ∝ √(gh) ในน้ำตื้น) — ยืนยันจาก Lab 33</label>
+      <label class="check-opt"><input type="checkbox" id="chk3"> 🟢 <b>λ เปลี่ยนตามตัวกลาง</b> (น้ำลึก λ ใหญ่ · น้ำตื้น λ เล็ก) เพราะ λ = v/f</label>
+      <label class="check-opt"><input type="checkbox" id="chk4"> 🟢 <b>ทิศการเคลื่อนที่หักเหเข้าหาเส้นปกติ</b> เมื่อ v ลด (θ₂&lt;θ₁) — ชนิดคลื่นไม่เปลี่ยน <span style="color:#888;font-size:12.5px">— แก้ M6.2</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk5"> 🟢 <b>เชือก μ ต่างกัน f ยังคงที่ตามแหล่งกำเนิด</b> (v=√(T/μ) เปลี่ยน · λ เปลี่ยน · f คงที่) <span style="color:#888;font-size:12.5px">— แก้ M6.3</span></label>
+    </div>
+
+    <!-- Misconception correction -->
+    <div class="misc-correct">
+      <h4>🧠 สรุปแก้ Misconception (เขียนด้วยคำของตัวเอง):</h4>
+      <div class="misc-row"><span class="misc-code">M6.1</span><div style="flex:1">หักเห → f เปลี่ยน? → <textarea id="mc1" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
+      <div class="misc-row"><span class="misc-code">M6.2</span><div style="flex:1">หักเห → เปลี่ยนชนิดคลื่น? → <textarea id="mc2" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
+      <div class="misc-row"><span class="misc-code">M6.3</span><div style="flex:1">เชือก μ ต่าง → f ต่าง? → <textarea id="mc3" rows="1" style="min-height:32px" placeholder="ความจริงคือ..."></textarea></div></div>
+    </div>
+
+    <!-- Post confidence -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจหลังเรียน:</span>
+      <div class="radio-row" id="e-conf" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="low">😕 น้อย</label>
+      </div>
+      <div class="radio-row" id="e-change" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="up">↑ เพิ่มขึ้น</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="same">= เท่าเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="down">↓ ลดลง</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUBMIT ══ -->
+  <div class="submit-bar">
+    <button class="btn-submit" onclick="submitPOE()">📡 ส่ง POE-06</button>
+    <button class="btn-reset" onclick="if(confirm('ล้างข้อมูลทั้งหมด?'))location.reload()">🔄 เริ่มใหม่</button>
+    <span id="submit-status" style="font-size:13.5px;color:#164e63"></span>
+  </div>
+  <div class="result-box" id="result-box">
+    <h4>✅ สรุปคำตอบที่ส่ง</h4>
+    <pre id="result-pre" style="font-size:12.5px;white-space:pre-wrap;color:#1a202c"></pre>
+  </div>
+
+  <div class="foot">POE-06 Interactive · แผน 6 การหักเหของคลื่น · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+/* ─── Wave shape definitions ─── */
+const SHAPES = {
+  'wf-same': {
+    label: 'λ เท่าเดิม', color: '#0284c7',
+    svg: `<svg width="80" height="44" viewBox="0 0 80 44"><line x1="10" y1="8" x2="10" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="30" y1="8" x2="30" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="50" y1="8" x2="50" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="70" y1="8" x2="70" y2="36" stroke="#0284c7" stroke-width="2.5"/></svg>`
+  },
+  'wf-narrow': {
+    label: 'λ เล็กลง (ถี่)', color: '#0284c7',
+    svg: `<svg width="80" height="44" viewBox="0 0 80 44"><line x1="8" y1="8" x2="8" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="20" y1="8" x2="20" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="32" y1="8" x2="32" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="44" y1="8" x2="44" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="56" y1="8" x2="56" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="68" y1="8" x2="68" y2="36" stroke="#0284c7" stroke-width="2.5"/></svg>`
+  },
+  'wf-wide': {
+    label: 'λ ใหญ่ขึ้น (ห่าง)', color: '#0284c7',
+    svg: `<svg width="80" height="44" viewBox="0 0 80 44"><line x1="15" y1="8" x2="15" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="45" y1="8" x2="45" y2="36" stroke="#0284c7" stroke-width="2.5"/><line x1="75" y1="8" x2="75" y2="36" stroke="#0284c7" stroke-width="2.5"/></svg>`
+  },
+  'wf-gone': {
+    label: 'ไม่มีคลื่น', color: '#718096',
+    svg: `<svg width="80" height="44" viewBox="0 0 80 44"><text x="40" y="28" font-size="11" fill="#718096" font-family="Sarabun,sans-serif" text-anchor="middle">ไม่มีคลื่น</text></svg>`
+  }
+};
+
+/* ─── State ─── */
+const groupSelected = {};
+const zoneAnswers = {};
+
+/* ─── Shape selection ─── */
+function selectShape(btn) {
+  const group = btn.dataset.group;
+  groupSelected[group] = btn.dataset.shape;
+  btn.closest('.palette').querySelectorAll('.shape-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function placeShape(groupId, zoneId) {
+  const shape = groupSelected[groupId];
+  if (!shape) { alert('เลือกรูปคลื่นก่อนแล้วค่อยคลิกช่องคำตอบ'); return; }
+  const zone = document.getElementById(zoneId);
+  const s = SHAPES[shape];
+  zoneAnswers[zoneId] = shape;
+  zone.classList.add('filled');
+  const placeholder = zone.querySelector('.placeholder');
+  if (placeholder) placeholder.style.display = 'none';
+  let placed = zone.querySelector('.placed');
+  if (!placed) { placed = document.createElement('div'); placed.className = 'placed'; zone.appendChild(placed); }
+  placed.innerHTML = `${s.svg}<span class="pname" style="color:${s.color}">${s.label}</span>`;
+  zone.querySelector('.drop-clear').style.display = 'block';
+}
+
+function clearZone(zoneId, e) {
+  e && e.stopPropagation();
+  const zone = document.getElementById(zoneId);
+  zone.classList.remove('filled');
+  delete zoneAnswers[zoneId];
+  const placed = zone.querySelector('.placed');
+  if (placed) placed.innerHTML = '';
+  const placeholder = zone.querySelector('.placeholder');
+  if (placeholder) placeholder.style.display = '';
+}
+
+/* ─── Radio selection ─── */
+function selectRadio(groupId, labelEl) {
+  document.querySelectorAll(`#${groupId} .radio-opt`).forEach(l => l.classList.remove('selected'));
+  labelEl.classList.add('selected');
+  const input = labelEl.querySelector('input');
+  if (input) input.checked = true;
+}
+
+/* ─── Lab 30 · v₁ vs v₂ check per row ─── */
+function checkVRef(row) {
+  const va = parseFloat(document.getElementById(`o1-v${row}a`)?.value);
+  const vb = parseFloat(document.getElementById(`o1-v${row}b`)?.value);
+  const cell = document.getElementById(`o1-veq${row}`);
+  if (!cell) return;
+  if (isNaN(va) || isNaN(vb) || va === 0) { cell.textContent = '—'; cell.style.color = '#718096'; return; }
+  if (Math.abs(va - vb) / va < 0.05) { cell.innerHTML = '≈ เท่ากัน'; cell.style.color = '#0891b2'; }
+  else if (va > vb) { cell.innerHTML = `✅ v₁ &gt; v₂`; cell.style.color = '#0891b2'; }
+  else { cell.innerHTML = `v₁ &lt; v₂`; cell.style.color = '#c53030'; }
+}
+
+/* ─── Lab 33 · v = fλ calc and check ─── */
+function calcRefrac(row) {
+  const f = 8; // Hz (Lab 33 default)
+  const ld = parseFloat(document.getElementById(`o2-ld${row}`)?.value);
+  const ls = parseFloat(document.getElementById(`o2-ls${row}`)?.value);
+  const cellVd = document.getElementById(`o2-vd${row}`);
+  const cellVs = document.getElementById(`o2-vs${row}`);
+  const cellChk = document.getElementById(`o2-chk${row}`);
+  if (!isNaN(ld)) { cellVd.textContent = (f * ld).toFixed(1); cellVd.style.color = '#0891b2'; } else cellVd.textContent = '—';
+  if (!isNaN(ls)) { cellVs.textContent = (f * ls).toFixed(1); cellVs.style.color = '#0284c7'; } else cellVs.textContent = '—';
+  if (!isNaN(ld) && !isNaN(ls)) {
+    if (ld > ls) { cellChk.innerHTML = '✅ ใช่'; cellChk.style.color = '#0891b2'; }
+    else if (Math.abs(ld - ls) < 0.1) { cellChk.innerHTML = '≈ เท่า'; cellChk.style.color = '#718096'; }
+    else { cellChk.innerHTML = '❌ ไม่'; cellChk.style.color = '#c53030'; }
+  } else cellChk.textContent = '—';
+}
+
+/* ─── Canvas setup ─── */
+const canvasState = {};
+
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay');
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  if (!transparent) {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+  }
+  function start(e) { e.preventDefault(); const st = canvasState[id]; st.drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); }
+  function move(e) {
+    e.preventDefault();
+    const st = canvasState[id];
+    if (!st.drawing) return;
+    const p = getPos(e);
+    ctx.lineTo(p.x, p.y);
+    if (st.tool === 'eraser') {
+      ctx.globalCompositeOperation = st.transparent ? 'destination-out' : 'source-over';
+      ctx.strokeStyle = st.transparent ? 'rgba(0,0,0,1)' : '#fff';
+      ctx.lineWidth = 24;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = st.color;
+      ctx.lineWidth = st.lw;
+    }
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  }
+  function end(e) { e.preventDefault(); canvasState[id].drawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseleave', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', move, { passive: false });
+  canvas.addEventListener('touchend', end, { passive: false });
+}
+
+function setTool(id, tool, btn) {
+  canvasState[id].tool = tool;
+  btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setColor(id, color, el) {
+  canvasState[id].color = color;
+  canvasState[id].tool = 'pencil';
+  el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b => {
+    b.classList.toggle('active', b.id && b.id.includes('pencil'));
+  });
+}
+
+function clearCanvas(id) {
+  const st = canvasState[id];
+  const canvas = document.getElementById(id);
+  st.ctx.globalCompositeOperation = 'source-over';
+  st.ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (!st.transparent) { st.ctx.fillStyle = '#fff'; st.ctx.fillRect(0, 0, canvas.width, canvas.height); }
+}
+
+/* ─── Submit ─── */
+function submitPOE() {
+  const data = {
+    student: {
+      name: document.getElementById('s-name').value,
+      num: document.getElementById('s-num').value,
+      room: document.getElementById('s-room').value,
+      group: document.getElementById('s-grp').value
+    },
+    P: {
+      wavelength_predict: zoneAnswers['dz-p1'] || '—',
+      p1_reason: document.getElementById('p1-reason').value,
+      freq_predict: document.querySelector('input[name="p2"]:checked')?.value || '—',
+      speed_predict: document.querySelector('input[name="p3"]:checked')?.value || '—',
+      string_freq_predict: document.querySelector('input[name="p4"]:checked')?.value || '—',
+      confidence: document.querySelector('input[name="p-conf"]:checked')?.value || '—'
+    },
+    O: {
+      lab30: [1,2,3].map(i => ({
+        ratio: [1,2,3][i-1],
+        v1: document.getElementById(`o1-v${i}a`)?.value,
+        v2: document.getElementById(`o1-v${i}b`)?.value,
+        f_eq: document.querySelector(`input[name="o1-f${i}"]:checked`)?.value || '—'
+      })),
+      lab30_note: document.getElementById('o1-note').value,
+      lab33: [1,2,3].map(i => ({
+        theta: document.getElementById(`o2-th${i}`)?.value,
+        lambda_D: document.getElementById(`o2-ld${i}`)?.value,
+        lambda_S: document.getElementById(`o2-ls${i}`)?.value
+      })),
+      lab33_conc: document.getElementById('o2-conc').value
+    },
+    E: {
+      claim: document.getElementById('cer-c').value,
+      evidence: document.getElementById('cer-e').value,
+      reasoning: document.getElementById('cer-r').value,
+      checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
+      mc1: document.getElementById('mc1').value,
+      mc2: document.getElementById('mc2').value,
+      mc3: document.getElementById('mc3').value,
+      conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
+      conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
+    },
+    canvas_o2: document.getElementById('canvas-o2')?.toDataURL('image/png')
+  };
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'POE_SUBMIT', plan: 6, data }, '*');
+  }
+
+  const box = document.getElementById('result-box');
+  const pre = document.getElementById('result-pre');
+  const summary = [
+    `📋 นักเรียน: ${data.student.name || '—'} เลขที่ ${data.student.num} ห้อง ${data.student.room} กลุ่ม ${data.student.group}`,
+    `\n🔮 P — ทำนาย:`,
+    `  · λ ในน้ำตื้น: ${data.P.wavelength_predict}  |  f₂ vs f₁: ${data.P.freq_predict}`,
+    `  · v ลึก↔ตื้น: ${data.P.speed_predict}  |  เชือก μ₂>μ₁ · f: ${data.P.string_freq_predict}`,
+    `  · ความมั่นใจก่อน: ${data.P.confidence}`,
+    `\n👁 O — สังเกต:`,
+    `  · Lab 30: ${data.O.lab30.map(r => `[μ₂/μ₁=${r.ratio}: v₁=${r.v1||'—'} v₂=${r.v2||'—'} f:${r.f_eq}]`).join(' ')}`,
+    `  · Lab 33: ${data.O.lab33.map((r,i) => `[θ=${r.theta||'—'}° λ_D=${r.lambda_D||'—'} λ_S=${r.lambda_S||'—'}]`).join(' ')}`,
+    `  · สรุป Lab 33: ${data.O.lab33_conc.slice(0,80)}${data.O.lab33_conc.length>80?'…':''}`,
+    `\n✍️ E — CER:`,
+    `  · Claim: ${data.E.claim.slice(0,80)}${data.E.claim.length>80?'…':''}`,
+    `  · Evidence: ${data.E.evidence.slice(0,80)}${data.E.evidence.length>80?'…':''}`,
+    `  · Reasoning: ${data.E.reasoning.slice(0,80)}${data.E.reasoning.length>80?'…':''}`,
+    `  · Checklist ติ๊ก: ${data.E.checks || 'ยังไม่ได้ติ๊ก'}`,
+    `  · ความมั่นใจหลัง: ${data.E.conf_post} (${data.E.conf_change})`
+  ].join('\n');
+
+  pre.textContent = summary;
+  box.style.display = 'block';
+  document.getElementById('submit-status').textContent = '✅ ส่งแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ─── Init ─── */
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas('canvas-o2');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body>
+</html>

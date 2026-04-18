@@ -222,7 +222,8 @@ Base URL: `https://kp-science.github.io/physics-simulations/`
 | 4 | huygens | Huygens Principle Demo | `Demo/คลื่น/huygens-principle-demo.html` |
 | 5 | 38 | Wave Speed (re-use ปลายตรึง/อิสระ) | same |
 | 5 | 32 | Wave Reflection | `Virtual Physics Lab 02/32.%20wave-reflection.html` |
-| 6 | 33 | Wave Refraction | `Virtual Physics Lab 02/33.%20wave-refraction.html` (TBD) |
+| 6 | 30 | Waves on Coiled Spring (เชือก 2 เส้น) | `Virtual Physics Lab 02/30.%20waves-on-coiled-spring.html` |
+| 6 | 33 | Wave Refraction Ripple Tank | `Virtual Physics Lab 02/33.%20wave-refraction-ripple-tank.html` |
 | 7 | 34 | Wave Interference | `Virtual Physics Lab 02/34.%20wave-interference.html` (TBD) |
 | 8 | 35 | Wave Diffraction | `Virtual Physics Lab 02/35.%20wave-diffraction.html` (TBD) |
 | 9 | 36 | Standing Wave | `Virtual Physics Lab 02/36.%20standing-wave.html` (TBD) |
