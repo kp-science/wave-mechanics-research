@@ -984,13 +984,23 @@ function renderTools(){
       gateNote = `<div class="meta" style="color:#e65100;font-size:12px">⏰ จะเปิด ${opens}</div>`;
     }
 
+    // Per-plan override: ใช้ title จาก worksheets.js ถ้ามี (POE-05, Calc 5.1, Spot 5.2, Matrix 1.1, ...)
+    const schemaType = (key === 'poe') ? 'poe'
+                     : (key === 'matrix') ? 'matrix'
+                     : (key === 'calc' || key === 'calc2') ? 'calc'
+                     : (key === 'spot' || key === 'spot2') ? 'spot'
+                     : null;
+    const schema = schemaType ? ((window.KP_WORKSHEETS||{})[state.currentPlan]||{})[schemaType] : null;
+    const displayName = (schema && schema.title) ? schema.title : def.name;
+    const displayDesc = (schema && schema.description) ? schema.description : def.desc;
+
     const card = document.createElement('div');
     card.className = `tool-card ${def.color}${done?' done':''}${stateClass}`;
     card.innerHTML = `
       <div class="bar"></div>
       <div class="ico">${def.ico}</div>
-      <h3>${def.name}</h3>
-      <div class="desc">${def.desc}</div>
+      <h3>${displayName}</h3>
+      <div class="desc">${displayDesc}</div>
       <div class="meta"><span class="badge">แผน ${state.currentPlan}</span></div>
       ${gateNote}`;
     card.onclick = () => {
