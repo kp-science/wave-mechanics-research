@@ -596,6 +596,7 @@ let state = {
 // LocalStorage keys
 const LS_STU = 'wave_student';
 const LS_SUB = 'wave_submitted';
+const LS_SETTINGS = 'wave_settings';  // cache gate settings · แก้ 3-4s lag ใน preview iframe
 
 // ═══════════════════════════════════════════════════════════
 // BRANDING — เติมข้อมูลจาก KP_CONFIG ลง HTML
@@ -620,6 +621,12 @@ function applyBranding(){
 window.addEventListener('DOMContentLoaded', () => {
   applyBranding();
   initLoginUI();  // render UI ด้วย cache ก่อน (dropdown ว่างถ้ายังไม่มี roster)
+
+  // Hydrate settings cache · ทำให้แผนปลดล็อกทันทีโดยไม่รอ API 3-4s (stale-while-revalidate)
+  try {
+    const cached = localStorage.getItem(LS_SETTINGS);
+    if (cached) state.settings = JSON.parse(cached) || [];
+  } catch(e){}
 
   // ═════ Preview mode (?preview=1) — ครูดูตัวอย่าง ═════
   const isPreview = new URLSearchParams(location.search).get('preview') === '1';
@@ -667,10 +674,13 @@ async function loadStudents(){
   if (r && r.status === 'ok') state.students = r.students || [];
 }
 
-// โหลดสถานะแผน
+// โหลดสถานะแผน · cache ลง localStorage เพื่อ render ครั้งหน้าได้ทันทีโดยไม่รอ API 3-4s
 async function loadSettings(){
   const r = await DB.getSettings();
-  if (r && r.status === 'ok') state.settings = r.settings || [];
+  if (r && r.status === 'ok'){
+    state.settings = r.settings || [];
+    try { localStorage.setItem(LS_SETTINGS, JSON.stringify(state.settings)); } catch(e){}
+  }
 }
 
 // โหลดฟีดแบ็กของนักเรียนคนนี้
@@ -2520,6 +2530,10 @@ function enterTeacherMode(){
   showView('view-teacher');
   renderTeacherShell();
   switchTeacherTab('overview');
+  // Warm settings cache ล่วงหน้า · ถ้าครูคลิก "ดูหน้านักเรียน" ในภายหลัง iframe จะ hydrate จาก LS_SETTINGS ได้ทันที
+  if (isApiConfigured()){
+    loadSettings().catch(e => console.warn('warm settings cache:', e));
+  }
 }
 
 function logoutTeacher(){
