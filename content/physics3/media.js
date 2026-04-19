@@ -53,10 +53,15 @@ window.KP_PLAN_MEDIA = {
           chips:[['p','P1'],['p','P2'],['a','A1'],['w','วPA 4,7']] },
         { cls:'rubric', no:'09', t:'POE Rubric · เกณฑ์ให้คะแนน (0–3)', file:'สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
           d:'Rubric รายด้าน P/O/E + ตัวอย่างคะแนน + ตารางบันทึก', meta:'ครูใช้ประเมินใบ POE-01',
-          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] }
+          chips:[['p','P1'],['p','P2'],['w','วPA 3,5']] },
+        { cls:'ft', no:'10', t:'FT-01 · Four-tier Pre-test หลัก (20 ข้อ)', file:'สื่อ10_FT01_Fourtier_PreTest.html',
+          d:'Pre-test หลัก 20 ข้อ · ก่อนเริ่มบทเรียนแผน 1 · เก็บ baseline M1.x–M9.x · คู่กับ FT-02 แผน 10 เพื่อคำนวณ g = (Post−Pre)/(100−Pre)',
+          meta:'ใช้ก่อนเริ่มแผน 1 · 45 นาที',
+          chips:[['k','K1'],['m','M1.x–M9.x'],['w','วPA 1,6']] }
       ]}
     ],
     linkOut: [
+      'FT-01 → baseline 20 ข้อ · ใช้คู่กับ FT-02 แผน 10 · เป้า g ≥ 0.3 · SU ≥ 80% · MC ลด ≥ 20%',
       'F1 Pre/Post → ตาราง % Sound · Misconception · Normalized gain ของแผน 1',
       'POE-01 + POE Rubric → ตารางคะแนน POE รายบุคคล/กลุ่ม · เฉลี่ย ≥ 2.0',
       'TL-01 → อัตราบัตรเขียวก่อน-หลัง · เป้าหมาย ≥ 60%',

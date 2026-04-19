@@ -4,7 +4,7 @@
 
 // Tools ที่ใช้งานได้ในแต่ละแผน (ลำดับใน array = ลำดับการ์ดที่แสดง)
 window.KP_PLAN_TOOLS = {
-  1: ['tl-pre','f1-pre','poe','matrix','spot','tl-post','f1-post','mj','upload'],
+  1: ['tl-pre','ft01','f1-pre','poe','matrix','spot','tl-post','f1-post','mj','upload'],
   2: ['tl-pre','f2-pre','poe','calc2','spot2','tl-post','f2-post','mj','upload'],
   3: ['tl-pre','f3-pre','poe','cer','calc','spot','tl-post','f3-post','mj','upload'],
   4: ['tl-pre','f4-pre','poe','cer','calc','spot','tl-post','f4-post','mj','upload'],
@@ -48,6 +48,7 @@ window.KP_TOOL_DEFS = {
   'cer':     { ico:'🗒', name:'CER Board · โพสต์ขึ้นกระดาน', desc:'Claim-Evidence-Reasoning + แนบรูป/วาด', sheet:'CER', color:'tc-ce' },
   'mj':      { ico:'📓', name:'MJ-01 · Journal 3-2-1', desc:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม', sheet:'MJ', color:'tc-mj' },
   'upload':  { ico:'📎', name:'อัปโหลดใบงาน', desc:'ส่งไฟล์ PDF/รูปใบงานที่เขียนมือ', sheet:'Upload', color:'tc-up' },
+  'ft01':    { ico:'📋', name:'FT-01 Pre-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ Four-tier · ก่อนเริ่มเรียน', sheet:'FT01', color:'tc-ft' },
   'ft02':    { ico:'🏆', name:'FT-02 Post-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ Four-tier', sheet:'FT02', color:'tc-ft' },
   'review10':{ ico:'📝', name:'ใบทบทวน · 18 ข้อ', desc:'สรุปแผน 1–9 · interactive · ก่อน FT-02', sheet:'Review', color:'tc-ma' }
 };

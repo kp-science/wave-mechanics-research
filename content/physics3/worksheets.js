@@ -10,6 +10,16 @@
 window.KP_WORKSHEETS = {
   // ───────── แผน 1 · การเกิดคลื่น / ชนิด / ส่วนประกอบ ─────────
   1: {
+    // FT-01 · Pre-test หลัก 20 ข้อ (คู่กับ FT-02 แผน 10)
+    ft01: {
+      title:       'FT-01 · Four-tier Pre-test (20 ข้อ)',
+      description: 'Pre-test หลัก · ก่อนเริ่มเรียน · baseline M1.x–M9.x · ใช้คู่กับ FT-02 แผน 10',
+      viewFile:    'สื่อ10_FT01_Fourtier_PreTest.html',
+      submitLabel: '📋 ส่ง FT-01',
+      sheetPrefix: 'FT01',
+      misconception: 'M1.1–M9.4 (ครบทุกแผน)',
+      allowUpload: false
+    },
     // POE-01 · Concept Cartoon "ของลอยในทะเล" + Slinky + wave-types Sim
     poe: {
       title:       'POE-01 · ใบบันทึก Predict–Observe–Explain (แผน 1)',
