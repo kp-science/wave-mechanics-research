@@ -567,7 +567,8 @@ const DB = {
   markFeedbackRead(id)    { return DB._post('markRead',         {feedback_id: id}); },
   setCourseStatus(status) { return DB._post('setCourseStatus',  {teacher_pw: getTeacherPassword(), course_status: status}); },
   uploadFile(data)        { return DB._post('uploadFile',       {teacher_pw: getTeacherPassword(), ...data}); },
-  deleteRow(sheet, row)   { return DB._post('deleteRow',        {teacher_pw: getTeacherPassword(), sheet, row}); }
+  deleteRow(sheet, row)   { return DB._post('deleteRow',        {teacher_pw: getTeacherPassword(), sheet, row}); },
+  setCanvasScore(data)    { return DB._post('setCanvasScore',   {teacher_pw: getTeacherPassword(), ...data}); }
 };
 // Helper for functions that might be called before TEACHER_PW_KEY exists
 // (e.g. student submit doesn't need teacher pw — submit() sends empty which server ignores)
@@ -2879,6 +2880,7 @@ function renderTeacherShell(){
       <button class="tab-btn" data-tab="media" onclick="switchTeacherTab('media')">📚 สื่อ/เครื่องมือ</button>
       <button class="tab-btn" data-tab="feedback" onclick="switchTeacherTab('feedback')">💬 ส่งฟีดแบ็ก</button>
       <button class="tab-btn" data-tab="observe" onclick="switchTeacherTab('observe')">🔍 สังเกต/Rubric</button>
+      <button class="tab-btn" data-tab="gallery" onclick="switchTeacherTab('gallery')">🖼️ ตรวจรูป</button>
       <button class="tab-btn" data-tab="postplan" onclick="switchTeacherTab('postplan')">📓 บันทึกหลังแผน</button>
     </div>
     <div class="tab-panel" id="tab-overview"></div>
@@ -2890,6 +2892,7 @@ function renderTeacherShell(){
     <div class="tab-panel" id="tab-media"></div>
     <div class="tab-panel" id="tab-feedback"></div>
     <div class="tab-panel" id="tab-observe"></div>
+    <div class="tab-panel" id="tab-gallery"></div>
     <div class="tab-panel" id="tab-postplan"></div>
   `;
   refreshCourseStatusBadge();
@@ -2952,7 +2955,9 @@ function switchTeacherTab(name){
   if (name === 'media')    renderMediaTab();
   if (name === 'feedback') renderFeedbackTab();
   if (name === 'observe')  renderObserveTab();
+  if (name === 'gallery')  renderCanvasGallery();
   if (name === 'postplan') renderPostPlanTab();
+  if (name !== 'gallery') _galleryUnbindKeys();
 }
 
 async function loadTeacherDashboard(){
@@ -4281,6 +4286,283 @@ async function submitObOrGr(sheet, payload, stat, btn){
     stat.className='status ok'; stat.textContent='✅ บันทึกเรียบร้อย';
   } catch(e){ stat.className='status error'; stat.textContent='❌ '+e.message; }
   finally { btn.disabled=false; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: 🖼️ Canvas Gallery — ครูให้คะแนนภาพวาดนักเรียนรวดเดียว
+// ─────────────────────────────────────────────────────────
+// • ดึง rows จาก sheet {tool}_P{n} · สแกนคอลัมน์ `canvas_<id>_url`
+// • Grid 4 col · hotkey 1-4 = score 0-3 · Space = next · Shift+click = zoom
+// • บันทึกลง column `canvas_<id>_score` (ครู · manual)
+// • อ่าน AI score จาก {sheet}_Canvas_Scored (ถ้ามี) เพื่อ skip/hint
+// ═══════════════════════════════════════════════════════════
+let _galPlan = 1;
+let _galTool = 'spot';
+let _galItems = [];       // [{sheet, row, urlCol, scoreCol, url, sName, sNum, qId, score, aiScore, aiConf, aiNote}]
+let _galFocus = 0;
+let _galHideDone = false;
+let _galKeysBound = false;
+
+const GALLERY_CANVAS_TOOLS = [
+  {id:'spot',     prefix:'Spot_P',   label:'🔍 Spot the Error'},
+  {id:'spot2',    prefix:'Spot_P',   label:'🔍 Spot the Error (v2)'},
+  {id:'poe',      prefix:'POE_P',    label:'🔮 POE'},
+  {id:'cer',      prefix:'CER_P',    label:'🗒 CER Board'},
+  {id:'matrix',   prefix:'Matrix_P', label:'📊 Matrix Table'},
+  {id:'review10', prefix:'Review',   label:'📝 Review 18 (แผน 10)'}
+];
+
+async function renderCanvasGallery(){
+  const el = document.getElementById('tab-gallery');
+  if (!isApiConfigured()){
+    el.innerHTML = `<div class="warn-config">⚠️ ยังไม่ได้ตั้งค่า API_URL · ตั้งก่อนใช้งาน</div>`;
+    return;
+  }
+  const planOpts = (window.KP_PLANS || []).map(p =>
+    `<option value="${p.no}" ${p.no===_galPlan?'selected':''}>แผน ${p.no}: ${escapeHtml(p.title)}</option>`
+  ).join('');
+  const toolOpts = GALLERY_CANVAS_TOOLS.map(t =>
+    `<option value="${t.id}" ${t.id===_galTool?'selected':''}>${t.label}</option>`
+  ).join('');
+  el.innerHTML = `
+    <div style="background:linear-gradient(135deg,#fff8e1,#ffe082);border:1.5px solid #ff8f00;padding:14px 18px;border-radius:10px;margin-bottom:12px">
+      <div style="font-weight:800;color:#bf360c;font-size:16px;margin-bottom:4px">🖼️ ตรวจรูป Canvas รวดเดียว</div>
+      <div style="font-size:13px;color:#5d4037">Grid 4 คอลัมน์ · Hotkey <b>1-4</b> = ให้คะแนน 0-3 · <b>Space</b> = ถัดไป · <b>Shift+click</b> = ขยายภาพ · คะแนนบันทึกเข้า Sheet อัตโนมัติ</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px">
+      <label style="font-weight:700">📚 แผน:
+        <select id="galPlanSel" onchange="_galPlan=+this.value;loadCanvasGallery()">${planOpts}</select>
+      </label>
+      <label style="font-weight:700">🧩 เครื่องมือ:
+        <select id="galToolSel" onchange="_galTool=this.value;loadCanvasGallery()">${toolOpts}</select>
+      </label>
+      <button class="btn-sm" onclick="loadCanvasGallery()">🔄 โหลดใหม่</button>
+      <label style="font-weight:700;display:flex;align-items:center;gap:6px">
+        <input type="checkbox" id="galHideDone" ${_galHideDone?'checked':''} onchange="_galHideDone=this.checked;renderGalleryGrid()">
+        <span>ซ่อนที่ตรวจแล้ว</span>
+      </label>
+      <span style="flex:1"></span>
+      <div id="galProgress" style="font-weight:700;color:#1565c0"></div>
+    </div>
+    <div id="galleryBody"><div style="text-align:center;color:#718096;padding:40px">⏳ กำลังโหลด...</div></div>
+    <div id="galLightbox" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:9999;cursor:zoom-out;align-items:center;justify-content:center;padding:20px">
+      <img id="galLightboxImg" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 8px 40px rgba(0,0,0,.6)">
+    </div>
+  `;
+  _galleryBindKeys();
+  loadCanvasGallery();
+}
+
+async function loadCanvasGallery(){
+  const body = document.getElementById('galleryBody');
+  if (!body) return;
+  body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">⏳ กำลังโหลด...</div>`;
+  const toolDef = GALLERY_CANVAS_TOOLS.find(t => t.id === _galTool);
+  if (!toolDef){ body.innerHTML = '<div class="warn-config">❌ ไม่รู้จักเครื่องมือ</div>'; return; }
+  const sheet = toolDef.id === 'review10' ? 'Review' : `${toolDef.prefix}${_galPlan}`;
+
+  try {
+    const [rowsResp, aiResp] = await Promise.all([
+      DB.listSheet(sheet, true),
+      DB.listSheet(`${sheet}_Canvas_Scored`, false).catch(()=>null)
+    ]);
+    const rows = (rowsResp && rowsResp.data) || [];
+    if (rows.length === 0){
+      body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">ยังไม่มีข้อมูลใน <code>${sheet}</code></div>`;
+      _galItems = []; updateGalleryProgress(); return;
+    }
+
+    // Build AI score map keyed by s_num+qId (from {sheet}_Canvas_Scored)
+    const aiMap = {};
+    const aiRows = (aiResp && aiResp.data) || [];
+    aiRows.forEach(r => {
+      const sid = String(r.s_num || '');
+      Object.keys(r).forEach(k => {
+        const m = k.match(/^q(\d+)_score$/);
+        if (m && r[k] !== '' && r[k] != null){
+          aiMap[`${sid}|q${m[1]}`] = { score: r[k], conf: r[`q${m[1]}_conf`], note: r[`q${m[1]}_note`] };
+        }
+      });
+    });
+
+    // Flatten: each canvas cell = one grading item
+    _galItems = [];
+    rows.forEach(r => {
+      Object.keys(r).forEach(k => {
+        const m = k.match(/^canvas_(.+)_url$/);
+        if (!m) return;
+        const url = r[k];
+        if (!url || typeof url !== 'string' || !url.trim()) return;
+        const qId = m[1];
+        const scoreCol = `canvas_${qId}_score`;
+        const sid = String(r.s_num || r.student_id || '');
+        const ai = aiMap[`${sid}|${qId}`];
+        _galItems.push({
+          sheet, row: r._row || 0, urlCol: k, scoreCol,
+          url, qId,
+          sName: r.s_name || '(ไม่ระบุ)',
+          sNum: sid,
+          sRoom: r.s_room || '',
+          score: (r[scoreCol] !== '' && r[scoreCol] != null) ? Number(r[scoreCol]) : null,
+          aiScore: ai ? ai.score : null,
+          aiConf:  ai ? ai.conf  : null,
+          aiNote:  ai ? ai.note  : null
+        });
+      });
+    });
+
+    if (_galItems.length === 0){
+      body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">ไม่พบคอลัมน์ <code>canvas_*_url</code> ใน <code>${sheet}</code><br><small>นักเรียนอาจยังไม่ได้วาด · หรือ handler ยังไม่ได้ upload canvas → Drive</small></div>`;
+      updateGalleryProgress(); return;
+    }
+    _galFocus = Math.min(_galFocus, _galItems.length - 1);
+    if (_galFocus < 0) _galFocus = 0;
+    renderGalleryGrid();
+  } catch(e){
+    body.innerHTML = `<div style="color:#c62828;padding:20px">❌ โหลดไม่สำเร็จ: ${e.message}</div>`;
+  }
+}
+
+function _galleryVisibleIndices(){
+  const out = [];
+  _galItems.forEach((it, i) => { if (!_galHideDone || it.score == null) out.push(i); });
+  return out;
+}
+
+function renderGalleryGrid(){
+  const body = document.getElementById('galleryBody');
+  if (!body) return;
+  const visIdx = _galleryVisibleIndices();
+  if (visIdx.length === 0){
+    body.innerHTML = `<div style="text-align:center;color:#2e7d32;padding:40px;font-weight:700">✅ ตรวจครบทุกภาพแล้ว</div>`;
+    updateGalleryProgress(); return;
+  }
+  if (!visIdx.includes(_galFocus)) _galFocus = visIdx[0];
+
+  const cards = visIdx.map(i => {
+    const it = _galItems[i];
+    const isFocus = (i === _galFocus);
+    const scoreBadge = it.score != null
+      ? `<span style="background:#2e7d32;color:#fff;padding:2px 8px;border-radius:100px;font-weight:700">✓ ${it.score}</span>`
+      : '';
+    const aiBadge = it.aiScore != null
+      ? `<span title="AI: ${escapeHtml(it.aiNote||'')} (conf ${it.aiConf||'?'})" style="background:#7e57c2;color:#fff;padding:2px 8px;border-radius:100px;font-size:11px">🤖 ${it.aiScore}</span>`
+      : '';
+    const btns = [0,1,2,3].map(s => {
+      const active = (it.score === s);
+      return `<button data-gscore="${s}" onclick="event.stopPropagation();setGalleryScore(${i},${s})"
+        style="flex:1;padding:6px 0;border:1.5px solid ${active?'#1565c0':'#cbd5e1'};background:${active?'#1565c0':'#fff'};color:${active?'#fff':'#334155'};border-radius:6px;font-weight:700;cursor:pointer">${s}</button>`;
+    }).join('');
+    return `
+      <div class="gal-card" data-idx="${i}"
+        onclick="if(event.shiftKey){galleryZoom(${i})}else{focusGalleryItem(${i})}"
+        style="border:2.5px solid ${isFocus?'#ff8f00':'#e2e8f0'};border-radius:10px;background:#fff;overflow:hidden;cursor:pointer;box-shadow:${isFocus?'0 4px 16px rgba(255,143,0,.35)':'0 1px 3px rgba(0,0,0,.06)'};transition:.12s">
+        <div style="position:relative;background:#f8fafc;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center">
+          <img src="${escapeHtml(it.url)}" loading="lazy" style="max-width:100%;max-height:100%;object-fit:contain"
+            onerror="this.parentNode.innerHTML='<div style=\\'color:#c62828;font-size:12px;padding:10px;text-align:center\\'>⚠ โหลดรูปไม่ได้<br><small>' + '${escapeHtml(it.url).slice(0,60)}' + '</small></div>'">
+          <div style="position:absolute;top:6px;left:6px;display:flex;gap:4px">${scoreBadge}${aiBadge}</div>
+          <div style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;padding:2px 6px;border-radius:4px;font-size:11px">${escapeHtml(it.qId)}</div>
+        </div>
+        <div style="padding:8px 10px">
+          <div style="font-weight:700;font-size:13px;color:#0f2c5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.sName)}</div>
+          <div style="font-size:11px;color:#718096;margin-bottom:6px">เลขที่ ${escapeHtml(it.sNum)}${it.sRoom?' · '+escapeHtml(it.sRoom):''}</div>
+          <div style="display:flex;gap:4px">${btns}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  body.innerHTML = `<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">${cards}</div>`;
+  updateGalleryProgress();
+  _galleryScrollFocusIntoView();
+}
+
+function updateGalleryProgress(){
+  const p = document.getElementById('galProgress');
+  if (!p) return;
+  const done = _galItems.filter(it => it.score != null).length;
+  const total = _galItems.length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  p.innerHTML = `ตรวจแล้ว <b>${done}/${total}</b> (${pct}%) · focus #${_galFocus+1}`;
+}
+
+function focusGalleryItem(i){
+  _galFocus = i;
+  document.querySelectorAll('.gal-card').forEach(c => {
+    const idx = Number(c.dataset.idx);
+    c.style.borderColor = (idx===i) ? '#ff8f00' : '#e2e8f0';
+    c.style.boxShadow = (idx===i) ? '0 4px 16px rgba(255,143,0,.35)' : '0 1px 3px rgba(0,0,0,.06)';
+  });
+  updateGalleryProgress();
+  _galleryScrollFocusIntoView();
+}
+
+function _galleryScrollFocusIntoView(){
+  const card = document.querySelector(`.gal-card[data-idx="${_galFocus}"]`);
+  if (card) card.scrollIntoView({block:'nearest', behavior:'smooth'});
+}
+
+function galleryZoom(i){
+  const it = _galItems[i]; if (!it) return;
+  const box = document.getElementById('galLightbox');
+  const img = document.getElementById('galLightboxImg');
+  if (!box || !img) return;
+  img.src = it.url;
+  box.style.display = 'flex';
+}
+
+async function setGalleryScore(i, score){
+  const it = _galItems[i]; if (!it) return;
+  const prev = it.score;
+  it.score = score;
+  renderGalleryGrid();
+  try {
+    await DB.setCanvasScore({sheet: it.sheet, row: it.row, col: it.scoreCol, score});
+  } catch(e){
+    it.score = prev;
+    alert('❌ บันทึกไม่สำเร็จ: ' + e.message);
+    renderGalleryGrid();
+    return;
+  }
+  // Auto-advance to next ungraded
+  const visIdx = _galleryVisibleIndices();
+  const after = visIdx.find(j => j > _galFocus) ?? visIdx.find(j => j !== _galFocus);
+  if (after != null) focusGalleryItem(after);
+}
+
+function _galleryKeyHandler(e){
+  // Ignore when typing in form controls
+  const t = e.target;
+  if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if (!_galItems.length) return;
+  if (e.key >= '1' && e.key <= '4'){
+    e.preventDefault();
+    setGalleryScore(_galFocus, Number(e.key) - 1);
+    return;
+  }
+  if (e.code === 'Space' || e.key === 'ArrowRight'){
+    e.preventDefault();
+    const vis = _galleryVisibleIndices();
+    const nx = vis.find(j => j > _galFocus);
+    if (nx != null) focusGalleryItem(nx);
+    return;
+  }
+  if (e.key === 'ArrowLeft'){
+    e.preventDefault();
+    const vis = _galleryVisibleIndices();
+    const rev = vis.slice().reverse();
+    const pv = rev.find(j => j < _galFocus);
+    if (pv != null) focusGalleryItem(pv);
+  }
+}
+function _galleryBindKeys(){
+  if (_galKeysBound) return;
+  document.addEventListener('keydown', _galleryKeyHandler);
+  _galKeysBound = true;
+}
+function _galleryUnbindKeys(){
+  if (!_galKeysBound) return;
+  document.removeEventListener('keydown', _galleryKeyHandler);
+  _galKeysBound = false;
 }
 
 // ═══════════════════════════════════════════════════════════
