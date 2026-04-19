@@ -240,8 +240,6 @@ input.kp-auto-filled,textarea.kp-auto-filled{background:#ecfeff !important;color
     bar.innerHTML = `
       <span id="kp-save-status">พร้อมใช้งาน</span>
       <div style="flex:1"></div>
-      <button class="kp-btn" onclick="KP.exportJSON()">📥 ดาวน์โหลด .json</button>
-      <button class="kp-btn" onclick="KP.importJSON()">📤 นำเข้า .json</button>
       <button class="kp-btn" onclick="window.print()">🖨️ พิมพ์ / PDF</button>
       <button class="kp-btn" onclick="KP.submitToCloud()" title="ส่งเข้าระบบ KP-Classroom">☁️ ส่งครู</button>
       <button class="kp-btn kp-btn-danger" onclick="KP.clearSaved()">🗑️ ล้าง</button>
