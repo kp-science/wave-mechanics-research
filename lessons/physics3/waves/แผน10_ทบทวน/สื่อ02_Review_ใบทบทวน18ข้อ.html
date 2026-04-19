@@ -66,36 +66,47 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
   <div class="qtitle"><span class="qnum">1</span>ป้ายส่วนประกอบของคลื่น</div>
   <div>พิจารณารูปคลื่นไซน์ด้านล่าง แล้วเลือกชื่อส่วนประกอบที่ตรงกับตำแหน่ง A–F</div>
   <div class="svg-frame">
-    <svg viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" style="max-width:720px;width:100%;height:auto">
-      <!-- equilibrium line -->
+    <svg id="q1-svg" viewBox="0 0 720 260" xmlns="http://www.w3.org/2000/svg" style="max-width:720px;width:100%;height:auto">
       <line x1="30" y1="130" x2="700" y2="130" stroke="#525252" stroke-width="1" stroke-dasharray="5,4"/>
-      <text x="640" y="148" font-family="Sarabun" font-size="13" fill="#525252">F (แนวสมดุล)</text>
-      <!-- sine wave -->
-      <path d="M 30 130 Q 110 30 190 130 T 350 130 T 510 130 T 670 130" stroke="#171717" stroke-width="2.5" fill="none"/>
-      <!-- crest label (B) -->
-      <circle cx="190" cy="50" r="4" fill="#171717"/>
-      <text x="170" y="38" font-family="Sarabun" font-size="14" fill="#171717" font-weight="700">B</text>
-      <!-- trough label (C) -->
-      <circle cx="270" cy="210" r="4" fill="#171717"/>
-      <text x="258" y="230" font-family="Sarabun" font-size="14" fill="#171717" font-weight="700">C</text>
-      <!-- wavelength bracket (A) -->
-      <line x1="190" y1="50" x2="350" y2="50" stroke="#525252" stroke-width="1.2" stroke-dasharray="3,3"/>
-      <line x1="190" y1="45" x2="190" y2="55" stroke="#525252" stroke-width="1.2"/>
-      <line x1="350" y1="45" x2="350" y2="55" stroke="#525252" stroke-width="1.2"/>
-      <text x="260" y="40" font-family="Sarabun" font-size="14" fill="#171717" font-weight="700">A</text>
-      <!-- amplitude arrow (D) -->
-      <line x1="430" y1="130" x2="430" y2="50" stroke="#525252" stroke-width="1.5" marker-end="url(#arr)" marker-start="url(#arr)"/>
-      <text x="438" y="95" font-family="Sarabun" font-size="14" fill="#171717" font-weight="700">D</text>
-      <!-- displacement arrow (E) at some x -->
-      <line x1="560" y1="130" x2="560" y2="95" stroke="#525252" stroke-width="1.5" marker-end="url(#arr)"/>
-      <text x="568" y="115" font-family="Sarabun" font-size="14" fill="#171717" font-weight="700">E</text>
+      <text x="620" y="148" font-family="Sarabun" font-size="13" fill="#525252">F (แนวสมดุล)</text>
       <defs>
         <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
           <path d="M0,0 L8,4 L0,8 Z" fill="#525252"/>
         </marker>
       </defs>
+      <path id="q1-path" stroke="#171717" stroke-width="2.5" fill="none"/>
+      <g id="q1-ann"></g>
     </svg>
   </div>
+  <script>
+  (function(){
+    const A=80, base=130, xS=30, xE=700, lam=320;
+    const y=x=>base - A*Math.sin(2*Math.PI*(x-xS)/lam);
+    let d='M '+xS+' '+y(xS).toFixed(1);
+    for(let x=xS+2;x<=xE;x+=2) d+=' L '+x+' '+y(x).toFixed(1);
+    document.getElementById('q1-path').setAttribute('d',d);
+    const Bx=xS+lam/4, By=base-A;
+    const Cx=xS+3*lam/4, Cy=base+A;
+    const Ax1=xS+lam/4, Ax2=xS+lam+lam/4;
+    const Dx=Ax2;
+    const Ex=540, Ey=y(Ex);
+    document.getElementById('q1-ann').innerHTML = `
+      <circle cx="${Bx}" cy="${By}" r="4.5" fill="#171717"/>
+      <text x="${Bx-6}" y="${By-10}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">B</text>
+      <circle cx="${Cx}" cy="${Cy}" r="4.5" fill="#171717"/>
+      <text x="${Cx-6}" y="${Cy+20}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">C</text>
+      <line x1="${Ax1}" y1="${By-14}" x2="${Ax2}" y2="${By-14}" stroke="#525252" stroke-width="1.3" stroke-dasharray="4,3"/>
+      <line x1="${Ax1}" y1="${By-20}" x2="${Ax1}" y2="${By-8}" stroke="#525252" stroke-width="1.3"/>
+      <line x1="${Ax2}" y1="${By-20}" x2="${Ax2}" y2="${By-8}" stroke="#525252" stroke-width="1.3"/>
+      <text x="${(Ax1+Ax2)/2-6}" y="${By-20}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">A</text>
+      <line x1="${Dx}" y1="${base}" x2="${Dx}" y2="${By}" stroke="#525252" stroke-width="1.6" marker-end="url(#arr)" marker-start="url(#arr)"/>
+      <text x="${Dx+6}" y="${(base+By)/2+4}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">D</text>
+      <circle cx="${Ex}" cy="${Ey}" r="4" fill="#171717"/>
+      <line x1="${Ex}" y1="${base}" x2="${Ex}" y2="${Ey}" stroke="#525252" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="${Ex+6}" y="${(base+Ey)/2+4}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">E</text>
+    `;
+  })();
+  </script>
   <div class="two-col">
     <label>A = <select id="q1-a"><option value="">-- เลือก --</option><option>ความยาวคลื่น</option><option>สันคลื่น</option><option>ท้องคลื่น</option><option>แอมพลิจูด</option><option>การกระจัด</option><option>แนวสมดุล</option></select></label>
     <label>B = <select id="q1-b"><option value="">-- เลือก --</option><option>ความยาวคลื่น</option><option>สันคลื่น</option><option>ท้องคลื่น</option><option>แอมพลิจูด</option><option>การกระจัด</option><option>แนวสมดุล</option></select></label>
@@ -120,11 +131,12 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
         <text x="70" y="110" font-family="Sarabun" font-size="12" fill="#525252">อัด</text>
         <text x="210" y="110" font-family="Sarabun" font-size="12" fill="#525252">ขยาย</text>
         <line x1="10" y1="60" x2="325" y2="60" stroke="#d4d4d4" stroke-dasharray="3,3"/>
-        <line x1="170" y1="30" x2="170" y2="90" stroke="#525252" stroke-width="1" marker-end="url(#arr2)"/>
         <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#525252"/></marker></defs>
-        <text x="180" y="28" font-family="Sarabun" font-size="12" fill="#171717">ทิศสั่น</text>
+        <!-- ทิศสั่นของอนุภาค = แนวเดียวกับการเคลื่อนที่ (คลื่นตามยาว) · ใช้ลูกศรสองข้าง -->
+        <line x1="150" y1="100" x2="190" y2="100" stroke="#525252" stroke-width="1.4" marker-start="url(#arr2)" marker-end="url(#arr2)"/>
+        <text x="144" y="115" font-family="Sarabun" font-size="12" fill="#171717">ทิศสั่นของอนุภาค</text>
         <line x1="20" y1="20" x2="320" y2="20" stroke="#171717" stroke-width="1" marker-end="url(#arr2)"/>
-        <text x="150" y="15" font-family="Sarabun" font-size="12" fill="#171717">ทิศการเคลื่อนที่</text>
+        <text x="150" y="15" font-family="Sarabun" font-size="12" fill="#171717">ทิศการเคลื่อนที่ของคลื่น</text>
       </svg>
       <div class="radio-grp">
         <label><input type="radio" name="q2a" id="q2a-long" value="ตามยาว"> คลื่นตามยาว</label>
@@ -199,19 +211,30 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
   <div class="qtitle"><span class="qnum">5</span>หาเฟสของจุดบนคลื่นต่อเนื่อง</div>
   <div>ระบุเฟส (หน่วยองศา) ของจุด A–D บนคลื่น</div>
   <div class="svg-frame">
-    <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="max-width:640px;width:100%">
+    <svg id="q5-svg" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="max-width:640px;width:100%">
       <line x1="20" y1="100" x2="620" y2="100" stroke="#525252" stroke-dasharray="4,4"/>
-      <path d="M 20 100 Q 80 20 140 100 T 260 100 T 380 100 T 500 100 T 620 100" stroke="#171717" stroke-width="2.5" fill="none"/>
-      <!-- A at x=20 (0°) -->
-      <circle cx="20" cy="100" r="4" fill="#171717"/><text x="12" y="125" font-family="Sarabun" font-size="14" font-weight="700">A</text>
-      <!-- B at crest x=140? crest of 2nd? Let's use crest at x=80 (90°) -->
-      <circle cx="80" cy="40" r="4" fill="#171717"/><text x="70" y="30" font-family="Sarabun" font-size="14" font-weight="700">B</text>
-      <!-- C at zero crossing x=140 (180°) -->
-      <circle cx="140" cy="100" r="4" fill="#171717"/><text x="132" y="125" font-family="Sarabun" font-size="14" font-weight="700">C</text>
-      <!-- D at trough x=200 (270°) -->
-      <circle cx="200" cy="160" r="4" fill="#171717"/><text x="190" y="180" font-family="Sarabun" font-size="14" font-weight="700">D</text>
+      <path id="q5-path" stroke="#171717" stroke-width="2.5" fill="none"/>
+      <g id="q5-ann"></g>
     </svg>
   </div>
+  <script>
+  (function(){
+    const A=60, base=100, xS=20, xE=620, lam=240;
+    const y=x=>base - A*Math.sin(2*Math.PI*(x-xS)/lam);
+    let d='M '+xS+' '+y(xS).toFixed(1);
+    for(let x=xS+2;x<=xE;x+=2) d+=' L '+x+' '+y(x).toFixed(1);
+    document.getElementById('q5-path').setAttribute('d',d);
+    // A=0° at x=20, B=90° at x=80, C=180° at x=140, D=270° at x=200
+    const pts=[['A',20,22],['B',80,-14],['C',140,22],['D',200,22]];
+    let h='';
+    pts.forEach(([L,x,dy])=>{
+      const yy=y(x);
+      h+=`<circle cx="${x}" cy="${yy}" r="4.5" fill="#171717"/>`;
+      h+=`<text x="${x-6}" y="${yy+dy}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">${L}</text>`;
+    });
+    document.getElementById('q5-ann').innerHTML=h;
+  })();
+  </script>
   <div class="four-col">
     <label>เฟสจุด A = <input type="text" id="q5-a" placeholder="เช่น 0°"></label>
     <label>เฟสจุด B = <input type="text" id="q5-b" placeholder="เช่น 90°"></label>
@@ -263,27 +286,57 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
   <div class="qtitle"><span class="qnum">7</span>ความเร็ว–ความเร่งที่จุด A–D บนคลื่น</div>
   <div>กำหนด A (แอมพลิจูด) = 5 m, f = 2 Hz · จุด A อยู่บนสันคลื่น · B อยู่แนวสมดุลกำลังเคลื่อนลง · C อยู่บนท้องคลื่น · D อยู่ระหว่างสมดุลกับสันคลื่น</div>
   <div class="svg-frame">
-    <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="max-width:640px;width:100%">
+    <svg id="q7-svg" viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" style="max-width:640px;width:100%">
       <line x1="20" y1="100" x2="620" y2="100" stroke="#525252" stroke-dasharray="4,4"/>
-      <path d="M 20 100 Q 80 20 140 100 T 260 100 T 380 100 T 500 100 T 620 100" stroke="#171717" stroke-width="2.5" fill="none"/>
-      <circle cx="80" cy="40" r="5" fill="#171717"/><text x="72" y="30" font-family="Sarabun" font-size="14" font-weight="700">A</text>
-      <circle cx="140" cy="100" r="5" fill="#171717"/><text x="132" y="125" font-family="Sarabun" font-size="14" font-weight="700">B</text>
-      <circle cx="200" cy="160" r="5" fill="#171717"/><text x="192" y="180" font-family="Sarabun" font-size="14" font-weight="700">C</text>
-      <circle cx="50" cy="62" r="5" fill="#171717"/><text x="30" y="58" font-family="Sarabun" font-size="14" font-weight="700">D</text>
+      <defs><marker id="q7arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#525252"/></marker></defs>
+      <path id="q7-path" stroke="#171717" stroke-width="2.5" fill="none"/>
+      <g id="q7-ann"></g>
     </svg>
   </div>
-  <div class="hint">ตัวเลือกคำตอบ (พิมพ์ลงไป): <b>0</b> · <b>v_max</b> · <b>-v_max</b> · <b>a_max</b> · <b>-a_max</b> · <b>v=fλ</b> · <b>A·(2πf)</b> · <b>A·(2πf)²</b></div>
+  <script>
+  (function(){
+    const A=60, base=100, xS=20, xE=620, lam=240;
+    const y=x=>base - A*Math.sin(2*Math.PI*(x-xS)/lam);
+    let d='M '+xS+' '+y(xS).toFixed(1);
+    for(let x=xS+2;x<=xE;x+=2) d+=' L '+x+' '+y(x).toFixed(1);
+    document.getElementById('q7-path').setAttribute('d',d);
+    // A = crest (90°) at x=80 · B = equilibrium descending (180°) at x=140 · C = trough (270°) at x=200 · D = between equilibrium and crest (rising 45°) at x=50
+    const pts=[['A',80,-14],['B',140,22],['C',200,22],['D',50,-14]];
+    let h='';
+    pts.forEach(([L,x,dy])=>{
+      const yy=y(x);
+      h+=`<circle cx="${x}" cy="${yy}" r="5" fill="#171717"/>`;
+      h+=`<text x="${x-6}" y="${yy+dy}" font-family="Sarabun" font-size="14" font-weight="700" fill="#171717">${L}</text>`;
+    });
+    // y-displacement marker for D (from baseline to point D)
+    const Dx=50, Dy=y(Dx);
+    h+=`<line x1="${Dx-12}" y1="${base}" x2="${Dx-12}" y2="${Dy}" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#q7arr)"/>`;
+    h+=`<text x="${Dx-28}" y="${(base+Dy)/2+4}" font-family="Sarabun" font-size="13" fill="#dc2626" font-weight="700">y</text>`;
+    document.getElementById('q7-ann').innerHTML=h;
+  })();
+  </script>
+  <div class="hint">กำหนด: <b>ω = 2πf</b> · ให้เลือกนิพจน์ที่ตรงกับค่าในแต่ละข้อ (0 / ±Aω / ±Aω² / v=fλ)</div>
   <div class="four-col" style="margin-top:8px">
-    <label>ความเร็วจุด A = <input type="text" id="q7-va"></label>
-    <label>ความเร็วจุด B = <input type="text" id="q7-vb"></label>
-    <label>ความเร็วจุด C = <input type="text" id="q7-vc"></label>
-    <label>ความเร็วจุด D = <input type="text" id="q7-vd"></label>
-    <label>ความเร่งจุด A = <input type="text" id="q7-aa"></label>
-    <label>ความเร่งจุด B = <input type="text" id="q7-ab"></label>
-    <label>ความเร่งจุด C = <input type="text" id="q7-ac"></label>
-    <label>ความเร่งจุด D = <input type="text" id="q7-ad"></label>
-    <label>ความเร็วคลื่น = <input type="text" id="q7-vw"></label>
-    <label>ความเร่งคลื่น = <input type="text" id="q7-aw"></label>
+    <label>ความเร็วจุด A =
+      <select id="q7-va"><option value="">--</option><option>0</option><option>Aω</option><option>-Aω</option><option>Aω²</option><option>-Aω²</option><option>v=fλ</option></select></label>
+    <label>ความเร็วจุด B =
+      <select id="q7-vb"><option value="">--</option><option>0</option><option>Aω</option><option>-Aω</option><option>Aω²</option><option>-Aω²</option><option>v=fλ</option></select></label>
+    <label>ความเร็วจุด C =
+      <select id="q7-vc"><option value="">--</option><option>0</option><option>Aω</option><option>-Aω</option><option>Aω²</option><option>-Aω²</option><option>v=fλ</option></select></label>
+    <label>ความเร็วจุด D =
+      <select id="q7-vd"><option value="">--</option><option>0</option><option>Aω</option><option>-Aω</option><option>ω√(A²−y²)</option><option>-ω√(A²−y²)</option><option>v=fλ</option></select></label>
+    <label>ความเร่งจุด A =
+      <select id="q7-aa"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>-Aω²</option><option>ω²y</option><option>-ω²y</option></select></label>
+    <label>ความเร่งจุด B =
+      <select id="q7-ab"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>-Aω²</option><option>ω²y</option><option>-ω²y</option></select></label>
+    <label>ความเร่งจุด C =
+      <select id="q7-ac"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>-Aω²</option><option>ω²y</option><option>-ω²y</option></select></label>
+    <label>ความเร่งจุด D =
+      <select id="q7-ad"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>-Aω²</option><option>ω²y</option><option>-ω²y</option></select></label>
+    <label>ความเร็วคลื่น =
+      <select id="q7-vw"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>v=fλ</option><option>v=√(T/μ)</option></select></label>
+    <label>ความเร่งคลื่น =
+      <select id="q7-aw"><option value="">--</option><option>0</option><option>Aω</option><option>Aω²</option><option>-Aω²</option><option>ω²y</option></select></label>
   </div>
 </div>
 
@@ -304,9 +357,6 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
       <div class="label-row">
         <label>ความยาวคลื่น λ = <input type="number" id="q8a-lambda" step="0.01"> m</label>
       </div>
-      <div class="label-row">
-        <label>ระยะทาง (1 λ) = <input type="number" id="q8a-dist" step="0.01"> m</label>
-      </div>
     </div>
     <div class="panel">
       <h4>(ข) กราฟ y–t : เวลา 2 จุด = 0.5 s · Δเฟส = 540°</h4>
@@ -320,9 +370,6 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
       </svg>
       <div class="label-row">
         <label>คาบ T = <input type="number" id="q8b-T" step="0.001"> s</label>
-      </div>
-      <div class="label-row">
-        <label>เวลา (1 T) = <input type="number" id="q8b-time" step="0.001"> s</label>
       </div>
     </div>
   </div>
