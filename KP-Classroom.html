@@ -1294,6 +1294,23 @@ function flattenInputs(data){
   return out;
 }
 
+// Teacher-authorized unlock for one-shot tools (ft01/ft02)
+async function unlockTool(toolKey){
+  const pw = prompt('🔐 ใส่รหัสครูเพื่อปลดล็อก (ให้นักเรียนส่งใหม่):');
+  if (!pw) return;
+  try {
+    const r = await DB.verifyAdmin(pw);
+    if (!r || r.status !== 'ok'){ alert('❌ รหัสครูไม่ถูกต้อง'); return; }
+    const submitKey = `plan${state.currentPlan}_${toolKey}`;
+    delete state.submitted[submitKey];
+    localStorage.setItem(LS_SUB, JSON.stringify(state.submitted));
+    alert('✅ ปลดล็อกแล้ว · ให้นักเรียนกดเปิดเครื่องมือนี้อีกครั้ง');
+    goHome();
+  } catch(err){
+    alert('❌ ตรวจรหัสไม่สำเร็จ: ' + err.message);
+  }
+}
+
 function renderIframe(body, toolKey){
   const cfg = IFRAME_TOOLS[toolKey];
   if (!cfg){ body.innerHTML += `<div class="info">⚠️ ไม่พบการตั้งค่าเครื่องมือ ${toolKey}</div>`; showView('view-tool'); return; }
@@ -1306,7 +1323,10 @@ function renderIframe(body, toolKey){
         <h3 style="color:#1b5e20;margin-bottom:8px">✅ ส่งข้อสอบนี้เรียบร้อยแล้ว</h3>
         <p style="color:#2e7d32;font-size:14.5px">ข้อสอบชุดนี้เป็นแบบ <b>ส่งได้ครั้งเดียว</b> (Pre/Post-test หลัก สำหรับงานวิจัย)</p>
         <p style="color:#2e7d32;font-size:14px;margin-top:6px">ถ้าต้องการส่งใหม่ กรุณาติดต่อครูผู้สอน</p>
-        <button onclick="goHome()" style="margin-top:12px;padding:8px 18px;border:none;border-radius:8px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer">← กลับหน้าแรก</button>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="goHome()" style="padding:8px 18px;border:none;border-radius:8px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer">← กลับหน้าแรก</button>
+          <button onclick="unlockTool('${toolKey}')" style="padding:8px 18px;border:1.5px solid #2e7d32;border-radius:8px;background:#fff;color:#2e7d32;font-weight:700;cursor:pointer">🔓 ครูปลดล็อก (ต้องใส่รหัสครู)</button>
+        </div>
       </div>`;
     showView('view-tool');
     return;
