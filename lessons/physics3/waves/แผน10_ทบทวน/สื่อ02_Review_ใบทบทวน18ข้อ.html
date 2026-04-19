@@ -23,6 +23,14 @@ body{font-family:'Sarabun',sans-serif;background:#f5f5f5;color:#171717;font-size
 .scene-stack{position:relative;display:inline-block;width:100%;max-width:720px}
 .scene-stack svg,.scene-stack canvas{display:block;width:100%;height:auto}
 .scene-stack canvas{position:absolute;top:0;left:0;touch-action:none;cursor:crosshair}
+.canvas-tools{display:flex;gap:6px;margin:6px 0;flex-wrap:wrap;align-items:center}
+.canvas-tools .lbl{font-size:12px;color:#525252;font-weight:700;margin-right:2px}
+.canvas-tools button{background:#fff;border:1.5px solid #d4d4d4;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#171717;display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.canvas-tools button:hover{border-color:#525252}
+.canvas-tools button.active{background:#171717;color:#fff;border-color:#171717}
+.canvas-tools button.erase.active{background:#dc2626;border-color:#dc2626}
+.canvas-tools button.clear{color:#dc2626;border-color:#fca5a5}
+.canvas-tools button.clear:hover{background:#fef2f2}
 select,input[type="text"],input[type="number"]{border:1px solid #d4d4d4;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:14px;background:#fff}
 input[type="number"]{width:90px}
 input[type="text"]{min-width:120px}
@@ -971,14 +979,43 @@ table.review-tbl th{background:#f5f5f5;color:#171717;font-weight:700}
 </div><!-- /.container -->
 
 <script>
-/* Canvas pen-drawing for scene-stack overlays */
+/* Canvas pen/eraser drawing for scene-stack overlays */
 function initCanvas(id){
   const c=document.getElementById(id);if(!c)return;
   const ctx=c.getContext('2d');
-  ctx.strokeStyle='#dc2626';ctx.lineWidth=2.5;ctx.lineCap='round';
+  ctx.lineCap='round';ctx.lineJoin='round';
+  // per-canvas tool state
+  const state={tool:'pen'}; // 'pen' | 'erase'
+  // inject toolbar above canvas (inside parent .scene-stack's wrapper)
+  const stack=c.parentElement;                 // .scene-stack
+  const wrap=stack.parentElement;              // svg-frame OR panel
+  const bar=document.createElement('div');
+  bar.className='canvas-tools';
+  bar.innerHTML=`
+    <span class="lbl">เครื่องมือ:</span>
+    <button type="button" class="pen active" data-tool="pen">🖊 ปากกา</button>
+    <button type="button" class="erase" data-tool="erase">🧽 ยางลบ</button>
+    <button type="button" class="clear">🗑 ล้าง</button>`;
+  wrap.insertBefore(bar,stack);
+  bar.addEventListener('click',ev=>{
+    const btn=ev.target.closest('button');if(!btn)return;
+    if(btn.classList.contains('clear')){
+      ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore();
+      c.dispatchEvent(new Event('change'));return;
+    }
+    const t=btn.dataset.tool;if(!t)return;
+    state.tool=t;
+    bar.querySelectorAll('button').forEach(b=>{
+      if(b.dataset.tool) b.classList.toggle('active', b.dataset.tool===t);
+    });
+  });
   let drawing=false,lx=0,ly=0;
   const pos=e=>{const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const t=e.touches?e.touches[0]:e;return[(t.clientX-r.left)*sx,(t.clientY-r.top)*sy];};
-  const start=e=>{drawing=true;[lx,ly]=pos(e);e.preventDefault();};
+  const applyStyle=()=>{
+    if(state.tool==='erase'){ctx.globalCompositeOperation='destination-out';ctx.lineWidth=16;ctx.strokeStyle='rgba(0,0,0,1)';}
+    else{ctx.globalCompositeOperation='source-over';ctx.lineWidth=2.5;ctx.strokeStyle='#dc2626';}
+  };
+  const start=e=>{drawing=true;applyStyle();[lx,ly]=pos(e);e.preventDefault();};
   const move=e=>{if(!drawing)return;const[x,y]=pos(e);ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(x,y);ctx.stroke();[lx,ly]=[x,y];e.preventDefault();};
   const end=()=>{drawing=false;c.dispatchEvent(new Event('change'));};
   c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);
