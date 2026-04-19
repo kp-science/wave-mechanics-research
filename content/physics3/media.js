@@ -591,5 +591,58 @@ window.KP_PLAN_MEDIA = {
       'MJ-09 → Self-Efficacy FT-02 ≥ 7/10 · เชื่อมแผน 1-8 → พร้อมเข้า FT-02 (แผน 10)',
       'OB-01 → Collaborative Synthesis (A9.1 ≥ 80%)'
     ]
+  },
+
+  // ═════════════════════════ แผน 10 · ทบทวน + FT-02 ═════════════════════════
+  10: {
+    folder: 'lessons/physics3/waves/แผน10_ทบทวน',
+    title: 'แผน 10 — ทบทวน + FT-02 Post-test (Synthesis + Final Assessment)',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 19–20 (100 นาที) · ทบทวนรวมและประเมินผลสุดท้าย',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 10 (ฉบับสมบูรณ์)', file:'แผน10_Infographic.html',
+          d:'ภาพรวมทั้งแผน: concept · coverage map แผน 1–9 · K/P/A · Timeline 4 ขั้น · การวัด · วPA · Theme Neutral', chips:[] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e4', no:'02', t:'ใบทบทวน · 18 ข้อ (Interactive Review Sheet)', file:'สื่อ02_Review_ใบทบทวน18ข้อ.html',
+          d:'18 ข้อครอบคลุมแผน 1–9 · ส่วนประกอบคลื่น · ชนิด · จับคู่คำศัพท์ · เฟส · ความต่างเฟส · v,a บนคลื่น · ซ้อนทับ · สะท้อน ปลายตรึง/อิสระ + ผิวน้ำ · สเนลล์ · ลึก/ตื้น · แทรกสอด · เลี้ยวเบน · คลื่นนิ่ง · SVG ใหม่ + canvas + real form + auto-save',
+          meta:'ใช้ในคาบ 19 · 50 นาที (Think-Pair-Share)',
+          chips:[['k','K10.1'],['p','P10.1'],['m','M1.x–M9.x'],['w','วPA 1,3']] },
+        { cls:'ft', no:'03', t:'FT-02 · Four-tier Post-test (20 ข้อ)', file:'สื่อ03_FT02_Fourtier_PostTest.html',
+          d:'20 ข้อ Four-tier · กระจายครอบคลุม M1.1–M9.4 · T1 คำตอบ + T2 มั่นใจ + T3 เหตุผล + T4 มั่นใจ · Answer Key + Rubric (SU/MC/LK/LG + g) ซ่อนเมื่อ print',
+          meta:'ใช้ในคาบ 20 · 45 นาที',
+          chips:[['k','K10.2'],['m','M1.x–M9.x'],['w','วPA 1,6']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1) · คาบนี้ถามความพร้อม FT-02', meta:'ใช้ใน TLC ก่อน + หลัง',
+          chips:[['a','A10.1'],['w','วPA 6,8']] },
+        { cls:'mj', no:'MJ', t:'MJ Final · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจลึกที่สุดจาก 10 แผน · 2 เรื่องที่ยังสับสน · 1 เป้าหมายต่อไป (เสียง/แสง/PAT2)',
+          meta:'ใช้ในฉาก MJ · 5 นาที',
+          chips:[['a','A10.1'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Metacognitive Awareness (A10.1) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 100 นาที',
+          chips:[['a','A10.1'],['w','วPA 6,7']] },
+        { cls:'rubric', no:'R', t:'Error Analysis Rubric (P10.1)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'เปรียบเทียบ FT-01 vs FT-02 · รายงาน MC ลดลง · Conceptual change evidence · เกณฑ์ 0–4',
+          meta:'ครูใช้ประเมินหลังทำ FT-02',
+          chips:[['p','P10.1'],['w','วPA 6']] }
+      ]},
+      { title: '🔑 หลักฐานวิจัย', items: [
+        { cls:'info', no:'RES', t:'FT-01 → FT-02 Comparison Report',
+          d:'Normalized gain g = (Post−Pre)/(100−Pre) · เป้า g ≥ 0.3 · SU ≥ 80% · MC ลด ≥ 20% · รายงานรายข้อ รายแผน รายคน',
+          meta:'ผลลัพธ์สำคัญของงานวิจัย 5E+POE',
+          chips:[['k','K10.2'],['w','วPA 1,6']] }
+      ]}
+    ],
+    linkOut: [
+      'ใบทบทวน 18 ข้อ → ถูก ≥ 70% · ครอบคลุมแผน 1–9 · Portfolio evidence',
+      'FT-02 Post-test → SU ≥ 80% · MC ลด ≥ 20% · g ≥ 0.3',
+      'Error Analysis (P10.1) → Rubric ≥ 3/4 · เปรียบเทียบ FT-01 → FT-02',
+      'MJ Final (A10.1) → Metacognitive evidence · Rubric ≥ 3/4',
+      'TL-01 หลัง → บัตรเขียว ≥ 70% (เทียบคาบ 1)',
+      'ผลการวิจัย 5E+POE : Conceptual change · Transferable skills · Self-regulation ครบ'
+    ]
   }
 };

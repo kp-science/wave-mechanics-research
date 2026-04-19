@@ -747,5 +747,29 @@ window.KP_WORKSHEETS = {
       allowImage: true,
       sheetPrefix: 'CER_P'
     }
+  },
+
+  // ───────── แผน 10 · ทบทวน + FT-02 Post-test ─────────
+  10: {
+    // ใบทบทวน 18 ข้อ (Single Source of Truth · viewFile embed)
+    review: {
+      title:       'ใบทบทวน · 18 ข้อ (แผน 10 · สรุปแผน 1–9)',
+      description: 'Interactive · ส่วนประกอบ ชนิด เฟส สะท้อน หักเห แทรกสอด เลี้ยวเบน คลื่นนิ่ง · ก่อน FT-02',
+      viewFile:    'สื่อ02_Review_ใบทบทวน18ข้อ.html',
+      submitLabel: '📤 ส่งใบทบทวน 18 ข้อ',
+      sheetPrefix: 'REVIEW',
+      misconception: 'M1.x–M9.x',
+      allowUpload: true
+    },
+    // FT-02 · Four-tier 20 ข้อ · Post-test หลัก
+    ft02: {
+      title:       'FT-02 · Four-tier Post-test (20 ข้อ)',
+      description: 'Post-test หลัก · ครอบคลุม M1.x–M9.x · 45 นาที · วัด SU/MC/LK/LG + Normalized gain',
+      viewFile:    'สื่อ03_FT02_Fourtier_PostTest.html',
+      submitLabel: '🏆 ส่ง FT-02',
+      sheetPrefix: 'FT02',
+      misconception: 'M1.1–M9.4 (ครบทุกแผน)',
+      allowUpload: false
+    }
   }
 };

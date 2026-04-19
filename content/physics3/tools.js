@@ -13,7 +13,7 @@ window.KP_PLAN_TOOLS = {
   7: ['tl-pre','f7-pre','poe','cer','calc','spot','tl-post','f7-post','mj','upload'],
   8: ['tl-pre','f8-pre','poe','cer','calc','spot','tl-post','f8-post','mj','upload'],
   9: ['tl-pre','f9-pre','poe','cer','calc','spot','tl-post','f9-post','mj','upload'],
-  10:['tl-pre','ft02','tl-post','mj','upload']
+  10:['tl-pre','review10','ft02','tl-post','mj','upload']
 };
 
 // นิยาม tool แต่ละชนิด (icon, ชื่อ, คำอธิบาย, sheet ปลายทาง, สีธีม)
@@ -48,5 +48,6 @@ window.KP_TOOL_DEFS = {
   'cer':     { ico:'🗒', name:'CER Board · โพสต์ขึ้นกระดาน', desc:'Claim-Evidence-Reasoning + แนบรูป/วาด', sheet:'CER', color:'tc-ce' },
   'mj':      { ico:'📓', name:'MJ-01 · Journal 3-2-1', desc:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม', sheet:'MJ', color:'tc-mj' },
   'upload':  { ico:'📎', name:'อัปโหลดใบงาน', desc:'ส่งไฟล์ PDF/รูปใบงานที่เขียนมือ', sheet:'Upload', color:'tc-up' },
-  'ft02':    { ico:'🏆', name:'FT-02 Post-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ', sheet:'FT02', color:'tc-ft' }
+  'ft02':    { ico:'🏆', name:'FT-02 Post-test หลัก', desc:'ข้อสอบมโนทัศน์รวม 20 ข้อ Four-tier', sheet:'FT02', color:'tc-ft' },
+  'review10':{ ico:'📝', name:'ใบทบทวน · 18 ข้อ', desc:'สรุปแผน 1–9 · interactive · ก่อน FT-02', sheet:'Review', color:'tc-ma' }
 };
