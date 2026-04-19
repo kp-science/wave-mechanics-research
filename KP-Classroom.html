@@ -1366,6 +1366,29 @@ function renderIframe(body, toolKey){
   showView('view-tool');
 }
 
+// Collect non-blank canvas dataURLs to send inline with submit · server uploads → Drive,
+// replaces with canvas_<id>_url columns (see handleSubmit in Apps Script)
+function collectCanvasesForUpload(canvases){
+  const out = {};
+  if (!canvases || typeof canvases !== 'object') return out;
+  const BLANK_THRESHOLD = 600; // PNG ของ canvas ว่างจริงๆ ~100-500 · มีลายเส้น > 600 เสมอ
+  const stats = [];
+  Object.entries(canvases).forEach(([cid, dataUrl]) => {
+    if (typeof dataUrl !== 'string' || !dataUrl.startsWith('data:image/')) {
+      stats.push(`${cid}:skip(type)`); return;
+    }
+    const comma = dataUrl.indexOf(',');
+    if (comma < 0) { stats.push(`${cid}:skip(format)`); return; }
+    const b64 = dataUrl.slice(comma + 1);
+    if (b64.length < BLANK_THRESHOLD) { stats.push(`${cid}:blank(${b64.length})`); return; }
+    const mime = dataUrl.slice(5, comma).split(';')[0] || 'image/png';
+    out[cid] = {mime, data: b64};
+    stats.push(`${cid}:ok(${b64.length})`);
+  });
+  console.log('[WS_SUBMIT] canvases:', stats.join(' · '));
+  return out;
+}
+
 window.addEventListener('message', async (e) => {
   const msg = e.data;
   if (!msg || !msg.type) return;
@@ -1432,6 +1455,12 @@ window.addEventListener('message', async (e) => {
     if (!isApiConfigured()){
       console.warn('[WS_SUBMIT] API ยังไม่ได้ตั้งค่า · ไม่ส่ง');
       return;
+    }
+    // Attach non-blank canvases inline · Apps Script uploads to Drive, replaces with canvas_<id>_url
+    const canvasPack = collectCanvasesForUpload(msg.data?.canvases);
+    if (Object.keys(canvasPack).length){
+      full._canvases = canvasPack;
+      full._canvas_ws_id = msg.wsId;
     }
     try {
       await DB.submit(sheet, full);
