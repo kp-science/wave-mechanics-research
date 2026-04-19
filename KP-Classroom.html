@@ -4410,9 +4410,24 @@ async function loadCanvasGallery(){
         const scoreCol = `canvas_${qId}_score`;
         const sid = String(r.s_num || r.student_id || '');
         const ai = aiMap[`${sid}|${qId}`];
+        // เก็บ text field ของข้อนี้ (q1_justify, q1_explain, q1_answer, ฯลฯ)
+        // ยกเว้น *_url, *_score, *_conf, *_note, *_err, *_canvas_*
+        const textFields = [];
+        const aiTextScore = (r[`${qId}_score`] != null && r[`${qId}_score`] !== '') ? r[`${qId}_score`] : null;
+        const aiTextConf  = r[`${qId}_conf`] || null;
+        const aiTextNote  = r[`${qId}_note`] || null;
+        Object.keys(r).forEach(fk => {
+          if (!fk.startsWith(qId + '_')) return;
+          if (/_(url|score|conf|note|err|category|ai)$/.test(fk)) return;
+          const v = r[fk];
+          if (v == null || v === '' || typeof v !== 'string') return;
+          textFields.push({key: fk.slice(qId.length+1), value: v});
+        });
+
         _galItems.push({
           sheet, row: r._row || 0, urlCol: k, scoreCol,
           url: _galleryToImgUrl(url), origUrl: url, qId,
+          textFields, aiTextScore, aiTextConf, aiTextNote,
           sName: r.s_name || '(ไม่ระบุ)',
           sNum: sid,
           sRoom: r.s_room || '',
@@ -4525,6 +4540,11 @@ function renderGalleryGrid(){
         <div style="padding:8px 10px">
           <div style="font-weight:700;font-size:13px;color:#0f2c5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.sName)}</div>
           <div style="font-size:11px;color:#718096;margin-bottom:6px">เลขที่ ${escapeHtml(it.sNum)}${it.sRoom?' · '+escapeHtml(it.sRoom):''}</div>
+          ${(it.textFields && it.textFields.length) ? `
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:6px 8px;margin-bottom:6px;font-size:11.5px;line-height:1.4;max-height:110px;overflow:auto">
+              ${it.aiTextScore != null ? `<div style="display:inline-block;background:#7e57c2;color:#fff;padding:1px 6px;border-radius:100px;font-size:10px;margin-bottom:3px" title="${escapeHtml(it.aiTextNote||'')}">🤖 text: ${escapeHtml(String(it.aiTextScore))}${it.aiTextConf?` · ${it.aiTextConf}`:''}</div>` : ''}
+              ${it.textFields.map(tf => `<div><b style="color:#475569">${escapeHtml(tf.key)}:</b> ${escapeHtml(tf.value).slice(0,200)}${tf.value.length>200?'…':''}</div>`).join('')}
+            </div>` : ''}
           <div style="display:flex;gap:4px">${btns}</div>
         </div>
       </div>`;
