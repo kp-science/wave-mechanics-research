@@ -1353,7 +1353,14 @@ function renderFTForm(body, phase, toolKey){
   }
   const color = phase==='pre' ? '#1565c0' : '#c62828';
   body.innerHTML += `<div class="info" style="border-color:${color};background:${phase==='pre'?'#e3f2fd':'#ffebee'}">
-    <b>วิธีทำ Four-tier:</b> เลือก Tier 1 (คำตอบ) · Tier 2 (มั่นใจ?) · Tier 3 (เหตุผล) · Tier 4 (มั่นใจในเหตุผล?)</div>`;
+    <b>วิธีทำ Four-tier:</b> เลือก Tier 1 (คำตอบ) · Tier 2 (ความมั่นใจ 1–5) · Tier 3 (เหตุผล) · Tier 4 (ความมั่นใจในเหตุผล 1–5)</div>`;
+
+  const likertHtml = (n, t) => {
+    const labels = {1:'1 ไม่มั่นใจ', 2:'2', 3:'3', 4:'4', 5:'5 มั่นใจมาก'};
+    return [1,2,3,4,5].map(v =>
+      `<label style="margin-right:10px"><input type="radio" name="q${n}_${t}" value="${v}" ${v===1?'required':''}> ${labels[v]}</label>`
+    ).join('');
+  };
 
   const form = document.createElement('form');
   form.id = 'ftForm';
@@ -1372,13 +1379,11 @@ function renderFTForm(body, phase, toolKey){
       <div><span class="no">ข้อ ${n}</span> <span class="mis-tag">${q.misc}</span></div>
       <div class="stem">${q.stem}</div>
       <div class="tier"><b>Tier 1 · คำตอบ:</b>${optsHtml}</div>
-      <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
-        <div class="cert"><label><input type="radio" name="q${n}_t2" value="มั่นใจ" required> มั่นใจ</label>
-        <label><input type="radio" name="q${n}_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+      <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ (1–5):</b>
+        <div class="cert">${likertHtml(n,'t2')}</div></div>
       <div class="tier t3"><b>Tier 3 · เหตุผล:</b>${reasonHtml}</div>
-      <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
-        <div class="cert"><label><input type="radio" name="q${n}_t4" value="มั่นใจ" required> มั่นใจ</label>
-        <label><input type="radio" name="q${n}_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+      <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล (1–5):</b>
+        <div class="cert">${likertHtml(n,'t4')}</div></div>
     </div>`;
   });
   form.innerHTML += `
@@ -1401,14 +1406,16 @@ function renderFTForm(body, phase, toolKey){
         if (!v){ payload[`q${n}_${t}`]=''; return; }
         payload[`q${n}_${t}`] = v.value;
       });
-      // classify
-      const t1=payload[`q${n}_t1`],t2=payload[`q${n}_t2`],t3=payload[`q${n}_t3`],t4=payload[`q${n}_t4`];
-      let cat='No-K';
-      if (t1===q.key.t1){
-        if (t2!=='มั่นใจ') cat='Guessing';
-        else if (t3===q.key.t3 && t4==='มั่นใจ') cat='Sound';
-        else cat='Misconception';
-      }
+      // classify (Caleon & Subramaniam 2010 · 5-point Likert, conf ≥ 4 = มั่นใจ)
+      const t1=payload[`q${n}_t1`], t2=Number(payload[`q${n}_t2`])||0, t3=payload[`q${n}_t3`], t4=Number(payload[`q${n}_t4`])||0;
+      const confT1 = t2 >= 4, confT3 = t4 >= 4;
+      const corrT1 = t1 === q.key.t1, corrT3 = t3 === q.key.t3;
+      let cat;
+      if (t2 <= 2 || t4 <= 2)              cat = 'No-K';           // Lack of Knowledge
+      else if (corrT1 && corrT3 && confT1 && confT3)  cat = 'Sound';
+      else if (!corrT1 && !corrT3 && confT1 && confT3) cat = 'Misconception';
+      else if (corrT1 && !corrT3)          cat = 'Guessing';       // Lucky Guess
+      else                                 cat = 'No-K';
       payload[`q${n}_category`] = cat;
       payload[`q${n}_misc`] = q.misc;
     });
