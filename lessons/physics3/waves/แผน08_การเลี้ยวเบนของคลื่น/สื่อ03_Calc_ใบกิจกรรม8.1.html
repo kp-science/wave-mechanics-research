@@ -1,118 +1,274 @@
 <!DOCTYPE html>
 <html lang="th"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ใบกิจกรรม 8.1 · Calc Diffraction</title>
+<title>ใบกิจกรรม 8.1 · Calc Diffraction (แผน 8) · Interactive</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.55;padding:20px}
-.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.14);padding:26px 30px}
-.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:14px}
-.head h1{font-size:22px;color:#831843}
-.meta{color:#9d174d;font-size:13px;margin-top:4px}
-.id-box{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;font-size:13.5px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:8px;padding:10px}
-.id-box label{display:flex;align-items:center;gap:6px;color:#831843;font-weight:600}
-.id-box input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
-.name-input{width:220px}.short-input{width:70px}
-.q{border:1.5px solid #fbcfe8;border-radius:12px;padding:14px 16px;margin:14px 0;background:#fff}
-.q h2{color:#831843;font-size:17px;margin-bottom:6px}
-.q .tag{background:#db2777;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;margin-right:6px}
-.given{background:#fff7fb;border-left:6px solid #db2777;border-radius:6px;padding:8px 12px;margin:6px 0;font-size:14.5px}
-textarea,input[type=text]{border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;font-family:inherit;font-size:14px;width:100%;resize:vertical}
-textarea{min-height:80px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
-.canvas-wrap{border:1.5px solid #fbcfe8;border-radius:10px;padding:6px;background:#fff;margin:6px 0}
-canvas{display:block;width:100%;height:200px;background:#fff7fb;border-radius:6px;cursor:crosshair}
-.btn{background:#db2777;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
-.btn:hover{background:#9d174d}
-.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15.5px;line-height:1.55;padding:16px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.12);padding:24px 28px}
+.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#831843;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#db2777;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fce7f3;border-left:6px solid #db2777;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #fbcfe8;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#fff7fb}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#db2777;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#831843;font-size:16px}
+.level{font-size:11.5px;background:#fce7f3;color:#831843;padding:2px 8px;border-radius:10px;border:1px solid #fbcfe8}
+.level.easy{background:#dcfce7;color:#14532d;border-color:#86efac}
+.level.mid{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+.level.hard{background:#fce4ec;color:#ad1457;border-color:#f48fb1}
+.item-body{font-size:14.5px}
+.draw-task{background:#fce7f3;border-left:4px solid #db2777;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:13.5px;color:#831843}
+.draw-task b{color:#9d174d}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fbcfe8;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#9d174d;font-weight:600}
+.c-btn.active{background:#db2777;color:#fff;border-color:#db2777}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #db2777;box-shadow:0 0 0 2px #fff,0 0 0 4px #db2777}
+.scene-stack{position:relative;border:2px solid #fbcfe8;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fbcfe8;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fce7f3 28px);touch-action:none;cursor:crosshair}
+.scene-hint{font-size:12px;color:#9d174d;margin-top:4px}
+textarea,input[type=text],input[type=number]{font-family:inherit;font-size:14px;padding:6px 10px;border:1.5px solid #fbcfe8;border-radius:6px;width:100%;resize:vertical}
+textarea:focus,input:focus{outline:2px solid #db2777;outline-offset:-1px}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:8px 12px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#fce7f3;border-left:6px solid #db2777;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+.formula-box{background:#fce7f3;border-left:4px solid #db2777;padding:8px 12px;border-radius:6px;font-size:14px;margin:8px 0}
+.inline-row{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.inline-row label{font-size:13.5px;font-weight:600;color:#831843;display:flex;align-items:center;gap:6px}
+.inline-row label input{width:100px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key,.canvas-toolbar{display:none}.scene-stack canvas.overlay{display:none}}
 </style></head>
-<body data-ws-id="plan8-calc">
+<body data-ws-id="plan8-calc-8.1">
 
 <div class="page">
   <div class="head">
-    <h1>🧮 ใบกิจกรรม 8.1 · Calc Diffraction</h1>
-    <div class="meta">4 ข้อไล่ระดับ · เงื่อนไข d/λ · แนวมืด a sinθ = nλ · เชื่อมชีวิตจริง · ใช้ worksheet-core.js</div>
+    <div>
+      <h1>🧮 ใบกิจกรรม 8.1 · Calc Diffraction</h1>
+      <div style="font-size:13px;color:#555"><span class="tag">แผน 8</span><span class="tag">ขั้น E4</span> 4 ข้อ ไล่ระดับ · ประเมิน K8.1, K8.2, P8.1, P8.2 · Rubric 0–4 · เวลา 8 นาที</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-นามสกุล"></label>
+      <label>เลขที่ <input type="text" id="s-num" class="short"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short"></label>
+      <label>กลุ่ม <input type="text" id="s-grp" class="short"></label>
+    </div>
   </div>
 
-  <div class="id-box">
-    <label>ชื่อ–สกุล <input type="text" id="s-name" class="name-input"></label>
-    <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
-    <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
-    <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
-  </div>
-
-  <!-- ข้อ 1 -->
   <div class="q">
-    <h2><span class="tag">ข้อ 1</span>เงื่อนไขเลี้ยวเบนชัด (K8.1)</h2>
-    <div class="given"><b>กำหนด:</b> คลื่นน้ำ λ = 3 cm · ช่องเปิด 3 ขนาด · a₁ = 1 cm · a₂ = 3 cm · a₃ = 10 cm</div>
-    <p>ช่องใดทำให้เลี้ยวเบน <b>ชัดที่สุด</b> และช่องใด<b>น้อยที่สุด</b>? เพราะเหตุใด? (เขียนเงื่อนไข d/λ)</p>
-    <textarea id="q1-ans" placeholder="เช่น a₁ < λ → เลี้ยวเบนชัด · a₃ ≫ λ → เดินตรง..."></textarea>
+    <b>🎯 โจทย์ฝึก:</b> ประยุกต์<strong>หลักการเลี้ยวเบน</strong> · <b>เงื่อนไข:</b> d ≤ λ → เลี้ยวเบนแรง · d ≫ λ → เลี้ยวเบนน้อย · <b>แนวมืด:</b> a sinθ = nλ · <b>f, v, λ คงที่</b> (ตัวกลาง + แหล่งกำเนิดเดิม) · เปลี่ยนเฉพาะทิศหน้าคลื่น · แสดงวิธีทุกข้อ
   </div>
 
-  <!-- ข้อ 2 -->
-  <div class="q">
-    <h2><span class="tag">ข้อ 2</span>คำนวณมุมแนวมืดแรก · a sinθ = nλ</h2>
-    <div class="given"><b>กำหนด:</b> ช่องแคบเดียว · a = 4 cm · λ = 2 cm · หาแนวมืดลำดับ n = 1 ที่มุม θ เท่าใด?</div>
-    <div class="row">
-      <div>
-        <p><b>สมการ:</b></p>
-        <input type="text" id="q2-eq" value="a sinθ = nλ">
+  <!-- ═══ ข้อ 1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">เงื่อนไข d/λ · ช่องใดเลี้ยวเบนชัด/น้อย</span>
+      <span class="level easy">★ ง่าย</span>
+    </div>
+    <div class="item-body">
+      คลื่นน้ำ <b>λ = 3 cm</b> เดินทางมาที่กำแพงที่มีช่องเปิด 3 ขนาด · <b>a₁ = 1 cm · a₂ = 3 cm · a₃ = 10 cm</b>
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน — วาดเพิ่มบนภาพ:</b><br>
+        <span style="color:#db2777">①</span> วาด<b>หน้าคลื่นหลังช่อง</b>ทั้ง 3 ช่อง (ใช้วงกลม/ส่วนโค้ง)<br>
+        <span style="color:#dc2626">②</span> ระบุ d/λ ของแต่ละช่อง + "เลี้ยวเบนมาก/น้อย"<br>
+        <span style="color:#1a202c">③</span> วงกลมช่องที่เลี้ยวเบน<b>ชัดที่สุด</b>
       </div>
-      <div>
-        <p><b>คำตอบ θ =</b></p>
-        <input type="text" id="q2-ans" placeholder="เช่น sinθ = 2/4 = 0.5 → θ = 30°">
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas1','#db2777',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('canvas1','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="scene-stack">
+        <svg class="bg" viewBox="0 0 900 280" xmlns="http://www.w3.org/2000/svg">
+          <rect width="900" height="280" fill="#fff7fb"/>
+          <!-- 3 stacked scenes -->
+          <!-- Scene 1: narrow a=1 cm -->
+          <text x="10" y="20" font-size="13" fill="#831843" font-weight="700">ช่อง 1 · a = 1 cm · d &lt; λ</text>
+          <line x1="300" y1="15" x2="300" y2="38" stroke="#831843" stroke-width="3"/>
+          <line x1="300" y1="52" x2="300" y2="85" stroke="#831843" stroke-width="3"/>
+          <g stroke="#db2777" stroke-width="1.2" fill="none" opacity="0.5">
+            <line x1="50" y1="18" x2="50" y2="85"/><line x1="100" y1="18" x2="100" y2="85"/>
+            <line x1="150" y1="18" x2="150" y2="85"/><line x1="200" y1="18" x2="200" y2="85"/>
+          </g>
+          <line x1="10" y1="95" x2="890" y2="95" stroke="#fbcfe8" stroke-dasharray="3,3"/>
+
+          <!-- Scene 2: medium a=3 cm -->
+          <text x="10" y="115" font-size="13" fill="#831843" font-weight="700">ช่อง 2 · a = 3 cm · d ≈ λ</text>
+          <line x1="300" y1="108" x2="300" y2="128" stroke="#831843" stroke-width="3"/>
+          <line x1="300" y1="162" x2="300" y2="185" stroke="#831843" stroke-width="3"/>
+          <g stroke="#db2777" stroke-width="1.2" fill="none" opacity="0.5">
+            <line x1="50" y1="110" x2="50" y2="185"/><line x1="100" y1="110" x2="100" y2="185"/>
+            <line x1="150" y1="110" x2="150" y2="185"/><line x1="200" y1="110" x2="200" y2="185"/>
+          </g>
+          <line x1="10" y1="195" x2="890" y2="195" stroke="#fbcfe8" stroke-dasharray="3,3"/>
+
+          <!-- Scene 3: wide a=10 cm -->
+          <text x="10" y="215" font-size="13" fill="#831843" font-weight="700">ช่อง 3 · a = 10 cm · d ≫ λ</text>
+          <line x1="300" y1="208" x2="300" y2="218" stroke="#831843" stroke-width="3"/>
+          <line x1="300" y1="262" x2="300" y2="275" stroke="#831843" stroke-width="3"/>
+          <g stroke="#db2777" stroke-width="1.2" fill="none" opacity="0.5">
+            <line x1="50" y1="210" x2="50" y2="275"/><line x1="100" y1="210" x2="100" y2="275"/>
+            <line x1="150" y1="210" x2="150" y2="275"/><line x1="200" y1="210" x2="200" y2="275"/>
+          </g>
+          <text x="320" y="250" font-size="11" fill="#9d174d">← นักเรียนวาดหน้าคลื่นหลังช่อง</text>
+        </svg>
+        <canvas class="overlay" id="canvas1" width="900" height="280"></canvas>
+      </div>
+      <textarea id="q1-ans" rows="3" placeholder="สรุป: ช่องใดเลี้ยวเบนชัดที่สุด · ช่องใดน้อยที่สุด · เงื่อนไข d/λ..." style="margin-top:8px"></textarea>
+      <div class="ans-key">
+        <span style="background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px">เฉลย</span>
+        ช่อง 1 (a=1 cm, d/λ=1/3 &lt; 1) <b>เลี้ยวเบนชัดที่สุด</b> · หน้าคลื่นเป็นวงกลมกระจาย · ช่อง 2 (d/λ=1) เลี้ยวเบนปานกลาง · ช่อง 3 (d/λ≈3.3 ≫ 1) <b>เลี้ยวเบนน้อย</b> · เดินตรงเกือบเต็ม · เลี้ยวเบนเฉพาะขอบ · ตรง M8.1 (แคบ<λ ผ่านได้) + M8.2 (กว้างเลี้ยวเบนน้อย)
       </div>
     </div>
-    <p><b>แสดงการคำนวณ:</b></p>
-    <textarea id="q2-work" placeholder="sinθ = nλ/a = (1)(2)/4 = 0.5 · θ = arcsin(0.5) = 30°"></textarea>
   </div>
 
-  <!-- ข้อ 3 -->
-  <div class="q">
-    <h2><span class="tag">ข้อ 3</span>กราฟเปรียบเทียบ 3 ขนาดช่อง (P8.1) · วาด pattern</h2>
-    <div class="given"><b>กำหนด:</b> λ = 2 cm · วาดหน้าคลื่นหลังช่อง 3 ขนาด (a = 1, 2, 5 cm) ด้านล่าง ·
-    ใช้สัญลักษณ์ลูกศร <b>→</b> แสดงทิศการเคลื่อนที่ของหน้าคลื่น</div>
-    <div class="canvas-wrap">
-      <canvas id="q3-canvas" width="960" height="200"></canvas>
+  <!-- ═══ ข้อ 2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">คำนวณมุมแนวมืดแรก · a sinθ = nλ</span>
+      <span class="level mid">★★ ปานกลาง</span>
     </div>
-    <button class="btn" type="button" onclick="(function(){var c=document.getElementById('q3-canvas');c.getContext('2d').clearRect(0,0,c.width,c.height);})()">ล้างภาพวาด</button>
-    <p style="margin-top:8px"><b>สรุปจากภาพ:</b></p>
-    <textarea id="q3-sum" placeholder="เช่น ช่อง 1 cm → วงกลมกว้าง · 2 cm → ครึ่งวงกลม · 5 cm → เดินตรงเกือบเต็ม..."></textarea>
-  </div>
+    <div class="item-body">
+      ช่องแคบเดียว · <b>a = 4 cm</b> · <b>λ = 2 cm</b> · หามุม θ ของแนวมืดลำดับ n = 1
 
-  <!-- ข้อ 4 -->
-  <div class="q">
-    <h2><span class="tag">ข้อ 4</span>เชื่อมชีวิตจริง (P8.2) · เสียงรอบมุมตึก</h2>
-    <div class="given"><b>สถานการณ์:</b> เสียงพูด f = 500 Hz · v = 340 m/s ในอากาศ · มุมตึกเปิดกว้าง 1.5 m ·
-    หา λ ของเสียง · แล้วอธิบายว่าเสียงเลี้ยวเบนรอบมุมตึกได้ไหม เพราะเหตุใด?</div>
-    <div class="row">
-      <div>
-        <p><b>λ = v/f =</b></p>
-        <input type="text" id="q4-lam" placeholder="340/500 = 0.68 m">
+      <div class="formula-box">
+        <b>สูตร:</b> a sinθ = nλ · sinθ = nλ/a · θ = arcsin(nλ/a)
       </div>
-      <div>
-        <p><b>d/λ =</b></p>
-        <input type="text" id="q4-dl" placeholder="1.5/0.68 ≈ 2.2">
+
+      <div class="inline-row">
+        <label>sinθ = <input type="text" id="q2-sin" placeholder="= ..."></label>
+        <label>θ (องศา) = <input type="text" id="q2-theta" placeholder="= ..."></label>
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas2','#db2777',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="200"></canvas>
+      <div class="scene-hint">🖊️ แสดงวิธีคิด · เขียนสมการแทนค่า · วาดรูปช่อง + มุมแนวมืดแรก</div>
+
+      <div class="ans-key">
+        <span style="background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px">เฉลย</span>
+        sinθ = nλ/a = (1)(2)/4 = <b>0.5</b> · θ = arcsin(0.5) = <b>30°</b> · แนวมืดแรกอยู่ที่ 30° จากแนวตรง · ถ้า a = 2λ จะได้แนวมืดแรกที่ 30° เสมอ (n=1) และ 90° (n=2 · พอดีขอบ)
       </div>
     </div>
-    <p><b>อธิบาย:</b></p>
-    <textarea id="q4-exp" placeholder="เช่น d ≈ 2λ ถือว่าใกล้เคียง λ จึงเลี้ยวเบนได้พอประมาณ · เสียงจึงเดินโอบรอบมุมได้..."></textarea>
   </div>
 
-  <div class="foot">ใบกิจกรรม 8.1 · Calc Diffraction · แผน 8 · KP-Classroom</div>
+  <!-- ═══ ข้อ 3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">เปรียบเทียบ 3 ขนาดช่อง (P8.1) · วาด pattern</span>
+      <span class="level mid">★★ ปานกลาง</span>
+    </div>
+    <div class="item-body">
+      คลื่นน้ำ <b>λ = 2 cm</b> ผ่านช่องแคบเดียว 3 ขนาด · <b>a = 1, 2, 5 cm</b> · คำนวณ d/λ แล้ววาด pattern หน้าคลื่นหลังช่อง
+
+      <div class="inline-row">
+        <label>d/λ (a=1) = <input type="text" id="q3-r1" placeholder="0.5"></label>
+        <label>d/λ (a=2) = <input type="text" id="q3-r2" placeholder="1.0"></label>
+        <label>d/λ (a=5) = <input type="text" id="q3-r3" placeholder="2.5"></label>
+      </div>
+
+      <div class="draw-task">
+        ✏️ <b>งานของนักเรียน:</b> วาดหน้าคลื่นหลังช่องทั้ง 3 ขนาดบน canvas ด้านล่าง + ลูกศรแสดงทิศการเคลื่อนที่ + label a=1/2/5 cm
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas3','#db2777',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('canvas3','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas3" data-bg="lined" width="900" height="220"></canvas>
+      <textarea id="q3-sum" rows="2" placeholder="สรุปจากภาพ: ช่อง 1 cm → ... · ช่อง 2 cm → ... · ช่อง 5 cm → ..." style="margin-top:8px"></textarea>
+
+      <div class="ans-key">
+        <span style="background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px">เฉลย</span>
+        d/λ = 0.5, 1.0, 2.5 ตามลำดับ · ช่อง 1 cm (d&lt;λ) <b>วงกลมกว้าง</b>เลี้ยวเบนแรงสุด · ช่อง 2 cm (d=λ) <b>ครึ่งวงกลม</b>ปานกลาง · ช่อง 5 cm (d&gt;λ) <b>เดินตรงเกือบเต็ม</b> เลี้ยวเบนเฉพาะขอบ · ยิ่ง d/λ น้อย ยิ่งเลี้ยวเบนแรง (K8.2)
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 4 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">4</span>
+      <span class="item-title">เชื่อมชีวิตจริง (P8.2) · เสียงรอบมุมตึก</span>
+      <span class="level hard">★★★ ท้าทาย</span>
+    </div>
+    <div class="item-body">
+      เสียงพูด f = <b>500 Hz</b> · v = <b>340 m/s</b> ในอากาศ · มุมตึกเปิดกว้าง d = <b>1.5 m</b> · คำถาม: เสียงเลี้ยวเบนรอบมุมตึกได้ไหม · เพราะเหตุใด?
+
+      <div class="inline-row">
+        <label>λ = v/f = <input type="text" id="q4-lam" placeholder="0.68 m"></label>
+        <label>d/λ = <input type="text" id="q4-dl" placeholder="2.2"></label>
+      </div>
+
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tb4-pencil" onclick="setTool('canvas4','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb4-eraser" onclick="setTool('canvas4','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas4','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas4','#db2777',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas4" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q4-exp" rows="3" placeholder="อธิบาย: เสียงเลี้ยวเบนรอบมุมตึกได้/ไม่ได้ · เพราะ d/λ = ... เทียบได้ว่า ... · เชื่อมกับ Hook 'เสียงคุยรอบมุมตึก'" style="margin-top:8px"></textarea>
+
+      <div class="ans-key">
+        <span style="background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px">เฉลย</span>
+        λ = 340/500 = <b>0.68 m</b> · d/λ = 1.5/0.68 ≈ <b>2.2</b> (ใกล้เคียง λ) · เสียง<b>เลี้ยวเบนได้พอควร</b>รอบมุมตึก · นี่คือเหตุผลที่เรา<b>ได้ยินเสียงคนคุยที่มุมตึก</b>ทั้งที่มองไม่เห็น · เสียงความถี่ต่ำ (λ ยาว) เลี้ยวเบนได้ดีกว่าเสียงความถี่สูง (λ สั้น) · นำไปสู่การออกแบบลำโพง sub-woofer (ต่ำ เลี้ยวเบนรอบ) vs tweeter (สูง เป็นเส้นตรง)
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–4 ต่อข้อ · รวม 16 คะแนน):</b><br>
+    <b>4</b> — คำตอบถูก + แสดงวิธีครบ + วาด/อธิบายอ้างหลักการ<br>
+    <b>3</b> — คำตอบถูก + แสดงวิธีครบ แต่ขาดรายละเอียดหรือเหตุผล<br>
+    <b>2</b> — คำตอบถูกบางส่วน หรือแสดงวิธีไม่ครบ<br>
+    <b>1</b> — แสดงความเข้าใจเบื้องต้น แต่ผิดหลัก<br>
+    <b>0</b> — ว่างหรือผิดทั้งหมด
+  </div>
+
+  <div class="foot">ใบกิจกรรม 8.1 · แผน 8 การเลี้ยวเบนของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
 </div>
 
 <script>
-(function(){
-  const c=document.getElementById('q3-canvas'); const ctx=c.getContext('2d');
-  let d=false; ctx.strokeStyle='#db2777'; ctx.lineWidth=2;
-  function xy(e){ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; }
-  c.addEventListener('mousedown',e=>{d=true;const[x,y]=xy(e);ctx.beginPath();ctx.moveTo(x,y);});
-  c.addEventListener('mousemove',e=>{if(!d)return;const[x,y]=xy(e);ctx.lineTo(x,y);ctx.stroke();});
-  c.addEventListener('mouseup',()=>d=false); c.addEventListener('mouseleave',()=>d=false);
-})();
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
 </script>
+
 <script src="../../../shared/worksheet-core.js"></script>
 </body></html>

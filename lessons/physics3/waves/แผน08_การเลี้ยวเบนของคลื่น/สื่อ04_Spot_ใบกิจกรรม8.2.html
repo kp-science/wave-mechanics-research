@@ -1,112 +1,317 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ใบกิจกรรม 8.2 · Spot the Error</title>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบกิจกรรม 8.2 · Spot the Error (แผน 8)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.55;padding:20px}
-.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.14);padding:26px 30px}
-.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:14px}
+body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15.5px;line-height:1.55;padding:20px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.12);padding:28px 32px}
+.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap}
 .head h1{font-size:22px;color:#831843}
-.meta{color:#9d174d;font-size:13px;margin-top:4px}
-.id-box{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;font-size:13.5px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:8px;padding:10px}
-.id-box label{display:flex;align-items:center;gap:6px;color:#831843;font-weight:600}
-.id-box input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
-.name-input{width:220px}.short-input{width:70px}
-.item{border:1.5px solid #fbcfe8;border-radius:12px;padding:14px 16px;margin:14px 0;background:#fff}
-.item h2{color:#831843;font-size:17px;margin-bottom:6px}
-.mis-tag{background:#db2777;color:#fff;border-radius:12px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px}
-.stmt{background:#fff7fb;border-left:6px solid #db2777;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:14.5px;font-style:italic;color:#831843}
-.canvas-wrap{border:1.5px solid #fbcfe8;border-radius:10px;padding:6px;background:#fff;margin:6px 0}
-.canvas-wrap.overlay canvas{background:#fff7fb;cursor:crosshair}
-.canvas-wrap.explain canvas{background:#fff;cursor:crosshair}
-canvas{display:block;width:100%;height:190px;border-radius:6px}
-textarea{border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;font-family:inherit;font-size:14px;width:100%;resize:vertical;min-height:70px}
-.label{color:#9d174d;font-weight:700;margin:6px 0 4px}
-.btn{background:#db2777;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
-.btn:hover{background:#9d174d}
-.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+.head .meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#db2777;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fce7f3;border-left:6px solid #db2777;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #fbcfe8;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#fff7fb}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#db2777;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#831843;font-size:16px}
+.mc-tag{font-size:11.5px;background:#fce7f3;color:#831843;border:1px solid #fbcfe8;padding:2px 8px;border-radius:10px}
+.grid-wrap{background:#fff;border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;margin-top:8px;overflow-x:auto}
+.grid-wrap svg{display:block;max-width:100%;height:auto}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.ak-label{background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#fce7f3;border-left:6px solid #db2777;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fbcfe8;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fce7f3 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #fbcfe8;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#831843;font-weight:600}
+.c-btn.active{background:#db2777;color:#fff;border-color:#db2777}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #db2777;box-shadow:0 0 0 2px #fff,0 0 0 4px #db2777}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#831843;display:flex;align-items:center;gap:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
 </style></head>
-<body data-ws-id="plan8-spot">
+<body data-ws-id="plan8-spot-8.2">
 
 <div class="page">
   <div class="head">
-    <h1>🔍 ใบกิจกรรม 8.2 · Spot the Error</h1>
-    <div class="meta">3 สถานการณ์ · วงกลม/ขีดทับจุดผิดบน claim canvas + canvas อธิบายที่ถูก · ชน M8.1 · M8.2 · M8.3</div>
+    <div>
+      <h1>🔍 ใบกิจกรรม 8.2 · Spot the Error</h1>
+      <div class="meta"><span class="tag">แผน 8</span><span class="tag">ขั้น E4</span> 3 สถานการณ์ · ชน M8.1 · M8.2 · M8.3 · เวลา 5 นาที</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
   </div>
 
-  <div class="id-box">
-    <label>ชื่อ–สกุล <input type="text" id="s-name" class="name-input"></label>
-    <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
-    <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
-    <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
+  <div class="q">
+    <b>🎯 คำสั่ง:</b> แต่ละข้อมีข้อความที่<strong>ผิดหลักการ</strong> · (ก) วงกลม/ขีดทับ<u>จุดผิด</u>บนข้อความของเพื่อน (ข) เขียน<u>คำอธิบายที่ถูก</u>โดยอ้างหลักการเลี้ยวเบน (d ≤ λ เลี้ยวเบนชัด · d ≫ λ เลี้ยวเบนน้อย · หลักฮอยเกนส์ · f กำหนดโดยแหล่งกำเนิด · v, λ กำหนดโดยตัวกลาง)
   </div>
 
-  <!-- ═════ ข้อ 1 · M8.1 ═════ -->
+  <!-- ═══ ข้อ 1 · M8.1 ═══ -->
   <div class="item">
-    <h2><span class="mis-tag">M8.1</span>ข้อ 1 · ช่องแคบกว่า λ คลื่นผ่านไม่ได้</h2>
-    <div class="stmt">น้องพลอย: "ถ้าช่องเปิดในกำแพงกว้างแค่ 1 cm แต่ความยาวคลื่นน้ำ λ = 3 cm · แปลว่าช่องแคบกว่าคลื่น คลื่นจึงไม่สามารถผ่านช่องได้เลย · จะถูกกำแพงกั้นหมด เห็นเป็นเงาเงียบด้านหลัง"</div>
-    <p class="label">✏ วงกลม/ขีดทับจุดผิดใน claim (วาดทับข้อความข้างบน):</p>
-    <div class="canvas-wrap overlay"><canvas id="q1-claim" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q1-claim')">ล้าง</button>
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">"ช่องแคบกว่า λ คลื่นผ่านไม่ได้"</span>
+      <span class="mc-tag">M8.1</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> คลื่นน้ำ λ = 3 cm เดินทางมาถึงกำแพงที่มีช่องเปิดกว้าง a = 1 cm · น้องพลอยบันทึกผล
 
-    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
-    <textarea id="q1-text" placeholder="จุดผิด: ... · ที่ถูก: คลื่นผ่านได้และเลี้ยวเบนเป็นวงกลมแรงที่สุดเมื่อ d ≤ λ..."></textarea>
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fff7fb"/>
+          <line x1="340" y1="20" x2="340" y2="90" stroke="#831843" stroke-width="4"/>
+          <line x1="340" y1="110" x2="340" y2="180" stroke="#831843" stroke-width="4"/>
+          <text x="350" y="105" font-size="12" fill="#831843" font-weight="700">a=1 cm</text>
+          <text x="40" y="18" font-size="12" fill="#9d174d" font-weight="700">λ=3 cm</text>
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <line x1="40" y1="25" x2="40" y2="180"/>
+            <line x1="95" y1="25" x2="95" y2="180"/>
+            <line x1="150" y1="25" x2="150" y2="180"/>
+            <line x1="205" y1="25" x2="205" y2="180"/>
+          </g>
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <path d="M 342 60 A 40 40 0 0 1 342 140"/>
+            <path d="M 342 20 A 80 80 0 0 1 342 180"/>
+            <path d="M 342 -20 A 120 120 0 0 1 342 220"/>
+          </g>
+          <text x="470" y="30" font-size="12" fill="#9d174d" font-weight="700">d &lt; λ · เลี้ยวเบนเป็นวงกลม</text>
+          <text x="470" y="190" font-size="11" fill="#9d174d">(ยิ่งแคบ ยิ่งเลี้ยวเบนแรง)</text>
+        </svg>
+      </div>
 
-    <p class="label">🎨 วาดอธิบายที่ถูก (หน้าคลื่นหลังช่อง):</p>
-    <div class="canvas-wrap explain"><canvas id="q1-exp" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q1-exp')">ล้าง</button>
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc1-pencil" onclick="setTool('canvas-claim-1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc1-eraser" onclick="setTool('canvas-claim-1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-1','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-1','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องพลอย:</div>
+          <div class="say">"ถ้าช่องเปิดในกำแพงกว้างแค่ 1 cm แต่ความยาวคลื่นน้ำ λ = 3 cm · แปลว่า<b>ช่องแคบกว่าคลื่น</b> คลื่นจึง<b>ไม่สามารถผ่านช่องได้เลย</b> · จะ<b>ถูกกำแพงกั้นหมด</b> เห็นเป็นเงาเงียบด้านหลัง ไม่มีคลื่นเล็ดลอดผ่านไป"</div>
+        </div>
+        <canvas id="canvas-claim-1" class="claim-overlay overlay" width="900" height="180"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (คลื่นผ่านได้หรือไม่ · หน้าคลื่นหลังช่องเป็นรูปใด)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb1-pencil" onclick="setTool('canvas1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb1-eraser" onclick="setTool('canvas1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas1','#db2777',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas1','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas1" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q1-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fbcfe8;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"ไม่สามารถผ่านช่องได้เลย"</b> และ<b>"ถูกกำแพงกั้นหมด"</b> และ<b>"เห็นเป็นเงาเงียบ"</b> · (ข) <b>M8.1</b> (ช่องแคบ&lt;λ ไม่ได้กั้น) ·
+        (ค) <b>คลื่นผ่านช่องได้</b> และ<b>เลี้ยวเบนแรงที่สุด</b>เมื่อ <b>d ≤ λ</b> · อธิบายด้วย<b>หลักฮอยเกนส์</b> — ทุกจุดในช่องเป็นแหล่งกำเนิด wavelet ทุติยภูมิ · เมื่อช่องเล็กกว่า λ เหลือแหล่งกำเนิดเสมือน 1 จุด · envelope เป็น<b>หน้าคลื่นวงกลม</b>กระจายออกทุกทิศจากช่อง (ไม่มีเงาเงียบ)
+      </div>
+    </div>
   </div>
 
-  <!-- ═════ ข้อ 2 · M8.2 ═════ -->
+  <!-- ═══ ข้อ 2 · M8.2 ═══ -->
   <div class="item">
-    <h2><span class="mis-tag">M8.2</span>ข้อ 2 · ช่องกว้าง → เลี้ยวเบนมาก</h2>
-    <div class="stmt">พี่เจมส์: "ยิ่งช่องเปิดกว้างมาก คลื่นยิ่งมีที่ให้แผ่ออกไป เพราะฉะนั้นช่องที่กว้าง 10 cm จะเลี้ยวเบนมากกว่าช่อง 1 cm อย่างแน่นอน · ถ้าอยากให้เลี้ยวเบนน้อย ต้องทำให้ช่องแคบ"</div>
-    <p class="label">✏ วงกลม/ขีดทับจุดผิด:</p>
-    <div class="canvas-wrap overlay"><canvas id="q2-claim" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q2-claim')">ล้าง</button>
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">"ช่องยิ่งกว้าง คลื่นยิ่งเลี้ยวเบนมาก"</span>
+      <span class="mc-tag">M8.2</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> นักเรียนเปรียบเทียบ 2 ช่องเปิดใน ripple tank · λ = 2 cm เท่ากัน · ช่อง A กว้าง 1 cm · ช่อง B กว้าง 10 cm · พี่เจมส์สรุปผล
 
-    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
-    <textarea id="q2-text" placeholder="จุดผิด: สลับตรงข้าม · ที่ถูก: ช่องกว้าง (d ≫ λ) เลี้ยวเบนน้อย เดินตรงเกือบเต็ม · ช่องแคบ (d ≤ λ) ต่างหากที่เลี้ยวเบนมากสุด"></textarea>
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fff7fb"/>
+          <!-- Left panel: narrow slit -->
+          <line x1="170" y1="20" x2="170" y2="92" stroke="#831843" stroke-width="4"/>
+          <line x1="170" y1="108" x2="170" y2="180" stroke="#831843" stroke-width="4"/>
+          <text x="30" y="18" font-size="12" fill="#9d174d" font-weight="700">A · a=1 cm (d≤λ)</text>
+          <g stroke="#db2777" stroke-width="1.3" fill="none">
+            <line x1="30" y1="25" x2="30" y2="180"/>
+            <line x1="80" y1="25" x2="80" y2="180"/>
+            <line x1="130" y1="25" x2="130" y2="180"/>
+          </g>
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <path d="M 172 70 A 30 30 0 0 1 172 130"/>
+            <path d="M 172 40 A 60 60 0 0 1 172 160"/>
+            <path d="M 172 10 A 90 90 0 0 1 172 190"/>
+          </g>
+          <text x="175" y="30" font-size="11" fill="#9d174d" font-weight="700">วงกลมกว้าง</text>
+          <!-- Divider -->
+          <line x1="340" y1="15" x2="340" y2="185" stroke="#fbcfe8" stroke-width="1" stroke-dasharray="3,3"/>
+          <!-- Right panel: wide slit -->
+          <line x1="510" y1="20" x2="510" y2="55" stroke="#831843" stroke-width="4"/>
+          <line x1="510" y1="145" x2="510" y2="180" stroke="#831843" stroke-width="4"/>
+          <text x="360" y="18" font-size="12" fill="#9d174d" font-weight="700">B · a=10 cm (d≫λ)</text>
+          <g stroke="#db2777" stroke-width="1.3" fill="none">
+            <line x1="360" y1="25" x2="360" y2="180"/>
+            <line x1="410" y1="25" x2="410" y2="180"/>
+            <line x1="460" y1="25" x2="460" y2="180"/>
+          </g>
+          <!-- Wide slit: mostly straight transmitted wavefronts, tiny curvature at edges -->
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <line x1="512" y1="60" x2="650" y2="60"/>
+            <line x1="512" y1="100" x2="650" y2="100"/>
+            <line x1="512" y1="140" x2="650" y2="140"/>
+            <path d="M 512 55 Q 530 50 540 45" />
+            <path d="M 512 145 Q 530 150 540 155" />
+          </g>
+          <text x="540" y="30" font-size="11" fill="#9d174d" font-weight="700">เดินตรงเกือบเต็ม</text>
+        </svg>
+      </div>
 
-    <p class="label">🎨 วาดอธิบายที่ถูก (เปรียบเทียบ 2 ช่อง):</p>
-    <div class="canvas-wrap explain"><canvas id="q2-exp" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q2-exp')">ล้าง</button>
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc2-pencil" onclick="setTool('canvas-claim-2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc2-eraser" onclick="setTool('canvas-claim-2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-2','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-2','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 พี่เจมส์:</div>
+          <div class="say">"<b>ยิ่งช่องเปิดกว้างมาก คลื่นยิ่งมีที่ให้แผ่ออกไป</b> เพราะฉะนั้นช่อง B ที่กว้าง 10 cm จะ<b>เลี้ยวเบนมากกว่า</b>ช่อง A ที่กว้าง 1 cm อย่างแน่นอน · ถ้าอยากให้เลี้ยวเบนน้อย ต้องทำให้<b>ช่องแคบ</b>"</div>
+        </div>
+        <canvas id="canvas-claim-2" class="claim-overlay overlay" width="900" height="180"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (เทียบ 2 ช่อง · ช่องใดเลี้ยวเบนมากกว่า)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb2-pencil" onclick="setTool('canvas2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb2-eraser" onclick="setTool('canvas2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas2','#db2777',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas2','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas2" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q2-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fbcfe8;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"กว้างมาก...เลี้ยวเบนมากกว่า"</b> และ<b>"ช่องแคบ...เลี้ยวเบนน้อย"</b> (สลับตรงข้าม) · (ข) <b>M8.2</b> ·
+        (ค) <b>ช่องแคบ (d ≤ λ) ต่างหาก</b>ที่เลี้ยวเบนมากที่สุด · <b>ช่องกว้าง (d ≫ λ)</b> เลี้ยวเบน<b>น้อย</b> · คลื่นเดินตรงเกือบเต็มรูป · เลี้ยวเบนเฉพาะขอบเล็กน้อย · อธิบายด้วยฮอยเกนส์ — ช่องกว้างมี wavelet หลายจุดซ้อนทับเป็น envelope แบน (เสมือนหน้าคลื่นระนาบเดินต่อ) · ช่องแคบเหลือ wavelet 1 จุดจึงกระจายวงกลมกว้าง
+      </div>
+    </div>
   </div>
 
-  <!-- ═════ ข้อ 3 · M8.3 ═════ -->
+  <!-- ═══ ข้อ 3 · M8.3 ═══ -->
   <div class="item">
-    <h2><span class="mis-tag">M8.3</span>ข้อ 3 · เลี้ยวเบนทำให้ f เปลี่ยน</h2>
-    <div class="stmt">น้องโบ: "คลื่นน้ำ f = 10 Hz ผ่านช่องแคบแล้วเลี้ยวเบน · หน้าคลื่นหลังช่องโค้งออก ทำให้ระยะห่างของหน้าคลื่นถี่ขึ้น · ดังนั้น f หลังช่องต้องเพิ่มเป็น ~15 Hz เพราะการเลี้ยวเบนบีบให้คลื่นถี่ขึ้น"</div>
-    <p class="label">✏ วงกลม/ขีดทับจุดผิด:</p>
-    <div class="canvas-wrap overlay"><canvas id="q3-claim" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q3-claim')">ล้าง</button>
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">"การเลี้ยวเบนทำให้ความถี่ f เปลี่ยน"</span>
+      <span class="mc-tag">M8.3</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> คลื่นน้ำ f = 10 Hz · v = 20 cm/s · λ = 2 cm เดินผ่านช่องแคบแล้วเลี้ยวเบน · น้องโบเขียนรายงาน
 
-    <p class="label">📝 ระบุจุดผิด + อธิบายที่ถูก:</p>
-    <textarea id="q3-text" placeholder="จุดผิด: สรุปว่า f เปลี่ยน · ที่ถูก: เลี้ยวเบนเปลี่ยนเฉพาะทิศหน้าคลื่น · f ถูกแหล่งกำเนิดกำหนด · v และ λ เดิมเพราะตัวกลางเดิม"></textarea>
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="200" fill="#fff7fb"/>
+          <line x1="340" y1="20" x2="340" y2="90" stroke="#831843" stroke-width="4"/>
+          <line x1="340" y1="110" x2="340" y2="180" stroke="#831843" stroke-width="4"/>
+          <text x="350" y="105" font-size="12" fill="#831843" font-weight="700">ช่องแคบ</text>
+          <text x="40" y="18" font-size="12.5" fill="#9d174d" font-weight="700">ก่อนช่อง: f = 10 Hz · λ = 2 cm · v = 20 cm/s</text>
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <line x1="60" y1="25" x2="60" y2="180"/>
+            <line x1="100" y1="25" x2="100" y2="180"/>
+            <line x1="140" y1="25" x2="140" y2="180"/>
+            <line x1="180" y1="25" x2="180" y2="180"/>
+            <line x1="220" y1="25" x2="220" y2="180"/>
+            <line x1="260" y1="25" x2="260" y2="180"/>
+            <line x1="300" y1="25" x2="300" y2="180"/>
+          </g>
+          <g stroke="#db2777" stroke-width="1.5" fill="none">
+            <path d="M 342 60 A 40 40 0 0 1 342 140"/>
+            <path d="M 342 20 A 80 80 0 0 1 342 180"/>
+            <path d="M 342 -15 A 120 120 0 0 1 342 215"/>
+          </g>
+          <text x="370" y="18" font-size="12.5" fill="#9d174d" font-weight="700">หลังช่อง: f, λ, v ยังคงเดิม</text>
+          <text x="370" y="195" font-size="11" fill="#9d174d">(เปลี่ยนเฉพาะทิศหน้าคลื่น)</text>
+        </svg>
+      </div>
 
-    <p class="label">🎨 วาดอธิบายที่ถูก:</p>
-    <div class="canvas-wrap explain"><canvas id="q3-exp" width="960" height="190"></canvas></div>
-    <button class="btn" type="button" onclick="clr('q3-exp')">ล้าง</button>
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" id="tbc3-pencil" onclick="setTool('canvas-claim-3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tbc3-eraser" onclick="setTool('canvas-claim-3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('canvas-claim-3','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('canvas-claim-3','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas-claim-3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องโบ:</div>
+          <div class="say">"คลื่นน้ำ f = 10 Hz ผ่านช่องแคบแล้วเลี้ยวเบน · หน้าคลื่นหลังช่องโค้งออก ทำให้<b>ระยะห่างของหน้าคลื่นถี่ขึ้น</b> · ดังนั้น <b>f หลังช่องต้องเพิ่มเป็น ~15 Hz</b> เพราะ<b>การเลี้ยวเบนบีบให้คลื่นถี่ขึ้น</b> · สามารถตรวจสอบได้จากจำนวนยอดคลื่นที่ผ่านจุดหนึ่งต่อวินาที"</div>
+        </div>
+        <canvas id="canvas-claim-3" class="claim-overlay overlay" width="900" height="200"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปอธิบาย (f, v, λ ก่อน–หลังช่องเป็นอย่างไร · ทำไม)</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#831843">✍️ กระดานแสดงวิธีทำ / อธิบาย:</span>
+        <button class="c-btn active" id="tb3-pencil" onclick="setTool('canvas3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" id="tb3-eraser" onclick="setTool('canvas3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#db2777" onclick="setColor('canvas3','#db2777',this)"></div>
+        <div class="c-color" style="background:#c53030" onclick="setColor('canvas3','#c53030',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvas3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="canvas3" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q3-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..." style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #fbcfe8;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical"></textarea>
+
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่<b>"f เพิ่มเป็น ~15 Hz"</b> และ<b>"บีบให้คลื่นถี่ขึ้น"</b> และ<b>"ระยะห่างหน้าคลื่นถี่ขึ้น"</b> · (ข) <b>M8.3</b> ·
+        (ค) เลี้ยวเบน<b>ไม่เปลี่ยน f, v, λ</b> · <b>f กำหนดโดยแหล่งกำเนิด</b> (เครื่องสั่น) · <b>v, λ กำหนดโดยตัวกลาง</b> (น้ำเดิม) · ช่องไม่ใช่ตัวกลางใหม่ · การเลี้ยวเบนเปลี่ยน<b>เฉพาะทิศของหน้าคลื่น</b> (ตามฮอยเกนส์) · ระยะห่างระหว่างหน้าคลื่น (λ) เท่าเดิมเพราะ v = fλ และ v, f คงที่
+      </div>
+    </div>
   </div>
 
-  <div class="foot">ใบกิจกรรม 8.2 · Spot the Error · แผน 8 · KP-Classroom</div>
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–3 ต่อข้อ):</b><br>
+    <b>3</b> — ระบุจุดผิดถูก + MC ถูก + อธิบายถูกต้องโดยอ้างหลักการ<br>
+    <b>2</b> — จุดผิดถูก + อธิบายได้บางส่วน แต่ขาดการอ้างหลักการ<br>
+    <b>1</b> — ระบุได้บางส่วน หรืออธิบายผิด<br>
+    <b>0</b> — ว่างหรือผิดทั้งหมด
+  </div>
+
+  <div class="foot">ใบกิจกรรม 8.2 · แผน 8 การเลี้ยวเบนของคลื่น · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
 </div>
 
 <script>
-function attach(id,color){
-  const c=document.getElementById(id); const ctx=c.getContext('2d');
-  ctx.strokeStyle=color; ctx.lineWidth=2; let d=false;
-  function xy(e){ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; }
-  c.addEventListener('mousedown',e=>{d=true;const[x,y]=xy(e);ctx.beginPath();ctx.moveTo(x,y);});
-  c.addEventListener('mousemove',e=>{if(!d)return;const[x,y]=xy(e);ctx.lineTo(x,y);ctx.stroke();});
-  c.addEventListener('mouseup',()=>d=false); c.addEventListener('mouseleave',()=>d=false);
-}
-function clr(id){ const c=document.getElementById(id); c.getContext('2d').clearRect(0,0,c.width,c.height); }
-['q1-claim','q2-claim','q3-claim'].forEach(id=>attach(id,'#dc2626'));
-['q1-exp','q2-exp','q3-exp'].forEach(id=>attach(id,'#db2777'));
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
 </script>
+
 <script src="../../../shared/worksheet-core.js"></script>
 </body></html>

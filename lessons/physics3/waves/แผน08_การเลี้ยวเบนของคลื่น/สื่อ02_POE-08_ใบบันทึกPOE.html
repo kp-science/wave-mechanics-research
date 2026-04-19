@@ -1,169 +1,712 @@
 <!DOCTYPE html>
-<html lang="th"><head><meta charset="UTF-8">
+<html lang="th">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>POE-08 · ใบบันทึก Predict–Observe–Explain (แผน 8)</title>
+<title>POE-08 · การเลี้ยวเบนของคลื่น (Interactive)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.55;padding:20px}
-.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(219,39,119,.14);padding:26px 30px}
-.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:14px}
-.head h1{font-size:22px;color:#831843}
-.meta{color:#9d174d;font-size:13px;margin-top:4px}
-.id-box{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;font-size:13.5px;background:#fff7fb;border:1px solid #fbcfe8;border-radius:8px;padding:10px}
-.id-box label{display:flex;align-items:center;gap:6px;color:#831843;font-weight:600}
-.id-box input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px}
-.name-input{width:220px}.short-input{width:70px}
-.section{border:1.5px solid #fbcfe8;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fff}
-.section h2{color:#831843;font-size:17px;margin-bottom:8px;border-left:5px solid #db2777;padding-left:8px}
-.hero{background:#fce7f3;border-left:6px solid #db2777;padding:10px 14px;border-radius:8px;margin:8px 0;color:#831843;font-size:14.5px}
-label.opt{display:flex;gap:8px;margin:6px 0;cursor:pointer;align-items:flex-start}
-label.opt input{margin-top:4px}
-textarea,input[type=text]{border:1.5px solid #fbcfe8;border-radius:8px;padding:8px;font-family:inherit;font-size:14px;width:100%;resize:vertical}
-textarea{min-height:70px}
-.scenario{border:1px dashed #db2777;border-radius:10px;padding:10px 12px;margin:8px 0;background:#fff7fb}
-.scenario h3{color:#9d174d;font-size:15px;margin-bottom:6px}
-.canvas-wrap{position:relative;border:1.5px solid #fbcfe8;border-radius:10px;padding:6px;background:#fff;margin:6px 0}
-canvas{display:block;width:100%;height:220px;background:#fff7fb;border-radius:6px;cursor:crosshair}
-.btn{background:#db2777;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;font-family:inherit}
-.btn:hover{background:#9d174d}
-.mc-3part{background:#fff7fb;border:1.5px solid #fbcfe8;border-radius:10px;padding:10px 14px;margin:10px 0}
-.mc-3part h3{color:#831843;font-size:15px;margin-bottom:6px}
+body{font-family:'Sarabun',sans-serif;background:#fce7f3;color:#1a202c;font-size:15px;line-height:1.6;padding:16px}
+.page{max-width:960px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 16px rgba(219,39,119,.12);padding:24px 28px}
+.head{border-bottom:3px solid #db2777;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#831843;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #fbcfe8;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#db2777;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:4px}
+
+.sim-bar{background:linear-gradient(135deg,#831843,#db2777);border-radius:10px;padding:10px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sim-bar span{color:#fff;font-weight:700;font-size:14px;flex:1;min-width:160px}
+.sim-btn{display:inline-block;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;transition:opacity .2s}
+.sim-btn:hover{opacity:.85}
+
+.sec{margin:16px 0;border-radius:12px;padding:16px 18px}
+.sec.p{background:#e3f2fd;border-left:6px solid #1976d2}
+.sec.o{background:#fff8f0;border-left:6px solid #ef6c00}
+.sec.e{background:#fce7f3;border-left:6px solid #db2777}
+.sec-title{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sec.p .sec-title{color:#0d47a1}
+.sec.o .sec-title{color:#c05621}
+.sec.e .sec-title{color:#831843}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:10px;background:#fff;border:1.5px solid currentColor;font-weight:600}
+
+.qblock{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1.5px solid #e2e8f0}
+.qblock:last-child{margin-bottom:0}
+.qlabel{font-weight:700;color:#1a202c;margin-bottom:10px;font-size:15px}
+.qsub{font-size:13.5px;color:#4a5568;margin-top:4px}
+
+.scenario-wrap{display:flex;align-items:center;gap:0;margin:10px 0;background:#fff7fb;border-radius:8px;padding:8px 12px;overflow-x:auto}
+
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#fff7fb;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+.radio-opt:hover{border-color:#db2777;background:#fce7f3}
+.radio-opt.selected{border-color:#db2777;background:#fbcfe8;font-weight:700}
+.radio-opt input{display:none}
+.check-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14.5px;cursor:pointer}
+.check-opt input[type=checkbox]{width:18px;height:18px;accent-color:#db2777;flex-shrink:0;margin-top:2px}
+
+textarea{width:100%;border:1.5px solid #fbcfe8;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;resize:vertical;background:#fff7fb;color:#1a202c;margin-top:6px;min-height:56px}
+textarea:focus{outline:none;border-color:#db2777;box-shadow:0 0 0 3px rgba(219,39,119,.15)}
+input[type=number],input[type=text]{border:1.5px solid #fbcfe8;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#fff7fb;width:80px;text-align:center}
+input[type=number]:focus,input[type=text]:focus{outline:none;border-color:#db2777}
+select{border:1.5px solid #fbcfe8;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#fff7fb}
+
+.mini-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.mini-table th{background:#fce7f3;color:#831843;padding:7px 8px;text-align:center;border:1px solid #fbcfe8;font-weight:700}
+.mini-table td{padding:6px 8px;border:1px solid #e2e8f0;text-align:center;vertical-align:middle}
+.mini-table td.left{text-align:left}
+.mini-table tr:nth-child(even) td{background:#fff7fb}
+.pct-cell{font-size:12px;color:#718096}
+
+.canvas-wrap{margin-top:10px}
+.canvas-toolbar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
+.c-btn{padding:4px 10px;border-radius:7px;border:1.5px solid #fbcfe8;background:#fff7fb;font-family:inherit;font-size:12.5px;cursor:pointer;font-weight:600;transition:all .15s}
+.c-btn:hover{background:#fce7f3;border-color:#db2777}
+.c-btn.active{background:#db2777;color:#fff;border-color:#db2777}
+.c-color{width:24px;height:24px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s}
+.c-color.active{border-color:#db2777;box-shadow:0 0 0 2px rgba(219,39,119,.4)}
+canvas{display:block;width:100%;border:2px solid #fbcfe8;border-radius:8px;background:#fff;touch-action:none;cursor:crosshair}
+.scene-stack{position:relative;border:2px solid #fbcfe8;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:0;background:transparent;z-index:2}
+.scene-hint{font-size:12px;color:#831843;margin-top:4px}
+
+.station{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.station-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.station-title{font-weight:800;color:#7c2d12;font-size:15px}
+.station-badge{background:#fff7ed;color:#9a3412;border:1.5px solid #fed7aa;border-radius:8px;font-size:12px;padding:2px 8px;font-weight:700}
+.station-sim{font-size:12.5px;padding:5px 10px}
+
+.cer-block{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.cer-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;margin-top:4px}
+.cer-c{background:#db2777}
+.cer-e{background:#ef6c00}
+.cer-r{background:#5a67d8}
+.cer-content{flex:1}
+.cer-content label{font-weight:700;font-size:14px;display:block;margin-bottom:2px}
+
+.misc-correct{background:#fdf2f8;border-left:4px solid #db2777;border-radius:8px;padding:12px 14px;margin-top:12px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#831843;margin-bottom:4px}
+.misc-correct .hint{font-size:12.5px;color:#831843;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #fbcfe8;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px}
+.mc-header .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-header .mc-wrong{color:#991b1b;font-weight:700}
+.mc-header .mc-wrong em{font-style:italic;color:#2d3748;font-weight:400}
 .mc-row{margin:8px 0}
-.mc-row b{color:#9d174d}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:8px}
-@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
-</style></head>
+.mc-row>label{font-size:13px;font-weight:700;color:#831843;display:block;margin-bottom:4px}
+.mc-row .radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.mc-row .radio-col{display:flex;flex-direction:column;gap:4px}
+.mc-row .radio-opt{background:#fff7fb;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px}
+.mc-row .radio-opt:hover{border-color:#db2777;background:#fce7f3}
+.mc-row .radio-opt.selected{border-color:#db2777;background:#fbcfe8;font-weight:700}
+.mc-row .radio-opt input{display:none}
+.mc-row textarea{min-height:44px;font-size:13.5px}
+
+.deep-q{background:#fff;border:1.5px solid #fbcfe8;border-radius:10px;padding:12px 14px;margin-top:12px}
+.deep-q h4{color:#831843;font-size:14px;font-weight:800;margin-bottom:6px}
+.deep-q .dq{margin:10px 0;padding:8px 10px;background:#fff7fb;border-left:3px solid #db2777;border-radius:6px}
+.deep-q .dq label{font-weight:700;font-size:13.5px;color:#831843;display:block;margin-bottom:4px}
+
+.cartoon-box{background:#fdf2f8;border:1.5px dashed #db2777;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13.5px}
+.cartoon-box b{color:#831843}
+
+.submit-bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.btn-submit{padding:10px 28px;border-radius:10px;background:#db2777;color:#fff;font-family:inherit;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .18s}
+.btn-submit:hover{background:#9d174d}
+.btn-reset{padding:10px 18px;border-radius:10px;background:#fff7fb;color:#4a5568;font-family:inherit;font-size:14px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer}
+.result-box{margin-top:12px;background:#fce7f3;border:2px solid #db2777;border-radius:10px;padding:14px;display:none;font-size:13.5px}
+.result-box h4{color:#831843;margin-bottom:8px;font-size:15px}
+
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #e2e8f0;padding-top:10px}
+@media (max-width:640px){.scenario-wrap svg{max-width:100%}}
+</style>
+</head>
 <body data-ws-id="plan8-poe">
 
 <div class="page">
+
+  <!-- ══ HEADER ══ -->
   <div class="head">
-    <h1>🔮 POE-08 · ใบบันทึก Predict · Observe · Explain (แผน 8)</h1>
-    <div class="meta">แผน 8 การเลี้ยวเบนของคลื่น · 3 ฐาน (ช่องแคบ/ปานกลาง/กว้าง) · Sim: Lab 41 Two-Source (โหมดช่องแคบเดียว)</div>
+    <div>
+      <h1>🌊 POE-08 · การเลี้ยวเบนของคลื่น (Interactive)</h1>
+      <div><span class="tag">แผน 8</span><span class="tag">Interactive</span> คู่กับ 💬 Concept Cartoon "เสียงคุยรอบมุมตึก"</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-สกุล" style="width:150px"></label>
+      <label>เลขที่ <input type="number" id="s-num" class="short" min="1" max="50"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+      <label>กลุ่ม <input type="number" id="s-grp" class="short" min="1" max="10"></label>
+    </div>
   </div>
 
-  <div class="id-box">
-    <label>ชื่อ–สกุล <input type="text" id="s-name" class="name-input"></label>
-    <label>เลขที่ <input type="text" id="s-num" class="short-input"></label>
-    <label>ห้อง <input type="text" id="s-room" class="short-input"></label>
-    <label>กลุ่ม <input type="text" id="s-grp" class="short-input"></label>
+  <!-- ══ HOOK: Concept Cartoon ══ -->
+  <div class="cartoon-box">
+    💬 <b>Concept Cartoon "เสียงคุยรอบมุมตึก"</b> — ทำไมเรา<b>ได้ยินเสียง</b>คนคุยกันหลังมุมตึก ทั้งที่<b>มองไม่เห็น</b>ตัว? · คลื่นเสียง (λ ≈ 0.3–3 m) เทียบกับแสง (λ ≈ 500 nm) ผ่านช่อง/ขอบเดียวกันให้ผลต่างกันอย่างไร? วันนี้เราจะสืบค้นผ่าน <b>ripple tank</b> ว่า <b>ขนาดช่อง d</b> เทียบกับ <b>λ</b> มีผลต่อ<b>การเลี้ยวเบน</b>อย่างไร
   </div>
 
-  <div class="hero">
-    <b>🎯 คำถามหลัก:</b> คลื่นน้ำเดินทางผ่านช่องเปิดที่มีขนาดต่าง ๆ (d &lt; λ · d ≈ λ · d &gt; λ) ·
-    หน้าคลื่นที่โผล่พ้นช่องมีรูปร่างอย่างไร? · ความถี่ f เปลี่ยนไหม? · ช่องยิ่งแคบเลี้ยวเบนมากหรือน้อย?
+  <!-- ══ SIM LAUNCHER ══ -->
+  <div class="sim-bar">
+    <span>🚀 Simulation ที่ใช้ในคาบ · โหมดช่องแคบเดียว (Single Slit)</span>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn" style="background:#831843">🌊 Lab 41 · Wave Diffraction (single slit mode)</a>
   </div>
 
-  <!-- ═════ PREDICT ═════ -->
-  <div class="section">
-    <h2>📝 P · Predict (ก่อนดู Simulation)</h2>
-    <p><b>ฉันคิดว่า เมื่อช่องแคบลง (d เล็กลงจนน้อยกว่า λ):</b></p>
-    <label class="opt"><input type="radio" name="p1" value="block"><span>คลื่นผ่านช่องไม่ได้ (ช่องแคบกว่า λ กั้นคลื่น)</span></label>
-    <label class="opt"><input type="radio" name="p1" value="straight"><span>คลื่นผ่านได้ · แต่ยังเดินตรงเหมือนเดิม</span></label>
-    <label class="opt"><input type="radio" name="p1" value="spread"><span>คลื่นผ่านได้ · และกระจายเป็นวงกลมกว้าง (เลี้ยวเบนชัด)</span></label>
-    <label class="opt"><input type="radio" name="p1" value="fchange"><span>คลื่นผ่านได้ · ความถี่เปลี่ยนไปเพราะช่องบีบ</span></label>
+  <!-- ══ P · PREDICT ══ -->
+  <div class="sec p">
+    <div class="sec-title">🔮 P · Predict <span class="badge">ก่อนทดลอง · 5 นาที</span></div>
 
-    <p style="margin-top:10px"><b>เหตุผล:</b></p>
-    <textarea id="p-reason" placeholder="อธิบายว่าทำไมถึงคิดเช่นนั้น..."></textarea>
-  </div>
-
-  <!-- ═════ OBSERVE · 3 ฐาน ═════ -->
-  <div class="section">
-    <h2>🔍 O · Observe (ทดลองกับ Sim · 3 ขนาดช่อง)</h2>
-
-    <div class="scenario">
-      <h3>🔹 ฐาน 1 · ช่องแคบ (d &lt; λ · เช่น a = 1 cm, λ ≈ 2 cm)</h3>
-      <p>บันทึก: หน้าคลื่นหลังช่องมีรูปร่างอย่างไร?</p>
-      <textarea id="o1" placeholder="เช่น คลื่นกระจายเป็นวงกลม แทบไม่มีทิศตรง..."></textarea>
+    <div style="font-size:13.5px;color:#334155;background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:12px">
+      <b>สถานการณ์:</b> คลื่นผิวน้ำความยาวคลื่น λ = 3 cm เคลื่อนที่ตั้งฉากเข้าหากำแพงที่มีช่องเปิดเพียงช่องเดียวกว้าง <b>d</b> · เปลี่ยน d 3 ขนาด ( d &lt; λ · d ≈ λ · d &gt; λ ) แล้วเปรียบเทียบหน้าคลื่นหลังผ่านช่อง
     </div>
 
-    <div class="scenario">
-      <h3>🔹 ฐาน 2 · ช่องปานกลาง (d ≈ λ)</h3>
-      <p>บันทึก: หน้าคลื่นเปลี่ยนอย่างไรเทียบกับฐาน 1?</p>
-      <textarea id="o2" placeholder="เช่น ยังเลี้ยวเบนเห็นชัด แต่เริ่มมีทิศตรงชัดขึ้น..."></textarea>
-    </div>
-
-    <div class="scenario">
-      <h3>🔹 ฐาน 3 · ช่องกว้าง (d ≫ λ · เช่น a = 5 cm)</h3>
-      <p>บันทึก: หน้าคลื่นเป็นอย่างไร? · เลี้ยวเบนมาก/น้อย?</p>
-      <textarea id="o3" placeholder="เช่น เดินตรงเกือบเต็มรูป เลี้ยวเบนน้อยที่ขอบ..."></textarea>
-    </div>
-
-    <div class="grid2">
-      <div>
-        <p><b>ความถี่ f ก่อน–หลังช่อง:</b></p>
-        <input type="text" id="o-freq" placeholder="เช่น f ก่อน = 10 Hz · f หลัง = 10 Hz (เท่าเดิม)">
+    <!-- Q1: ช่องแคบมาก d<λ ผ่านได้ไหม (M8.1) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 1 · ช่องแคบมาก (d = 1 cm &lt; λ = 3 cm) · คลื่น "ผ่าน" ออกมาได้ไหม? (M8.1)</div>
+      <div class="qsub">นักเรียนคิดว่าเมื่อขนาดช่องเล็กกว่าความยาวคลื่น คลื่นจะเป็นอย่างไร?</div>
+      <div class="scenario-wrap">
+        <svg width="340" height="110" viewBox="0 0 340 110">
+          <rect x="0" y="0" width="340" height="110" fill="#fff7fb"/>
+          <g stroke="#db2777" stroke-width="1.5" fill="none" opacity="0.8">
+            <line x1="20" y1="15" x2="150" y2="15"/><line x1="20" y1="35" x2="150" y2="35"/>
+            <line x1="20" y1="55" x2="150" y2="55"/><line x1="20" y1="75" x2="150" y2="75"/>
+            <line x1="20" y1="95" x2="150" y2="95"/>
+          </g>
+          <rect x="150" y="0" width="10" height="50" fill="#831843"/>
+          <rect x="150" y="60" width="10" height="50" fill="#831843"/>
+          <text x="100" y="108" font-size="10" fill="#831843" font-weight="700">λ = 3 cm</text>
+          <text x="165" y="58" font-size="10" fill="#db2777" font-weight="700">d=1 cm</text>
+          <text x="200" y="58" font-size="11" fill="#831843" font-weight="700">?</text>
+        </svg>
       </div>
-      <div>
-        <p><b>สรุป: ช่องยิ่ง __ เลี้ยวเบนยิ่ง __</b></p>
-        <input type="text" id="o-rule" placeholder="เช่น แคบ · มาก / กว้าง · น้อย">
+      <div class="radio-row" id="p1">
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="no"> ผ่านไม่ได้ · คลื่นถูกกั้นหมดเพราะช่องเล็กเกิน</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="straight"> ผ่านได้ · แต่เป็นลำตรง ๆ ตามแนวเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="spread"> ผ่านได้ · แผ่โค้งออกทุกทิศเหมือนแหล่งกำเนิดจุด</label>
+      </div>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:6px">เหตุผล (พิมพ์ได้):</label>
+      <textarea id="p1-reason" rows="2" placeholder="เพราะ d < λ ทำให้ ..."></textarea>
+    </div>
+
+    <!-- Q2: ช่องไหนเลี้ยวเบนชัดสุด (M8.2 - สลับ) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 2 · ช่องใดทำให้หน้าคลื่น<b>โค้งออก (เลี้ยวเบน) ชัดที่สุด</b>? (M8.2)</div>
+      <div class="qsub">เปรียบเทียบ 3 กรณี · λ = 3 cm เท่ากันทุกกรณี</div>
+      <div class="radio-row" id="p2">
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="narrow"> ช่องแคบ d = 1 cm (d &lt; λ)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="medium"> ช่องปานกลาง d ≈ 3 cm (d ≈ λ)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="wide"> ช่องกว้าง d = 10 cm (d ≫ λ)</label>
+      </div>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:6px">เหตุผล:</label>
+      <textarea id="p2-reason" rows="2" placeholder="เพราะ d เทียบกับ λ เป็น ..."></textarea>
+    </div>
+
+    <!-- Q3: f change after diffraction (M8.3) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 3 · หลังเลี้ยวเบนผ่านช่องแคบ · <b>f (ความถี่)</b> และ <b>λ</b> เปลี่ยนไหม? (M8.3)</div>
+      <div class="qsub">แหล่งกำเนิดสั่นด้วย f = 10 Hz · คลื่นผ่านช่องแคบออกมา</div>
+      <div class="radio-row" id="p3">
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="both"> f และ λ เปลี่ยนทั้งคู่</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="f"> f เปลี่ยน · λ คงเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="lambda"> λ เปลี่ยน · f คงเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="none"> ทั้ง f และ λ คงเดิม · เปลี่ยนเฉพาะทิศการเคลื่อนที่/หน้าคลื่น</label>
       </div>
     </div>
 
-    <p style="margin-top:10px"><b>🎨 วาดเปรียบเทียบหน้าคลื่นทั้ง 3 ช่อง</b> (คลิกวาด · ทิศการเคลื่อนที่ของหน้าคลื่น):</p>
-    <div class="canvas-wrap">
-      <canvas id="draw" width="960" height="220"></canvas>
+    <!-- Q4: ช่องกว้างมาก wavefront -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 4 · ช่องกว้างมาก (d = 10 cm ≫ λ = 3 cm) · หน้าคลื่นหลังช่องเป็นอย่างไร?</div>
+      <div class="radio-row" id="p4">
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="flat"> เกือบตรง (ราบ) · มีโค้งที่ขอบนิดหน่อย</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="curve"> โค้งทั้งหน้าคลื่น เหมือนผ่านช่องแคบ</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="stop"> หยุดที่กำแพง · ไม่ออกมา</label>
+      </div>
     </div>
-    <button class="btn" type="button" onclick="document.getElementById('draw').getContext('2d').clearRect(0,0,960,220)">ล้างภาพวาด</button>
-  </div>
 
-  <!-- ═════ EXPLAIN ═════ -->
-  <div class="section">
-    <h2>💡 E · Explain (อธิบายด้วยหลักการ)</h2>
-    <p><b>P ตรงกับ O หรือไม่?</b></p>
-    <label class="opt"><input type="radio" name="pe" value="match"><span>ตรงกัน</span></label>
-    <label class="opt"><input type="radio" name="pe" value="partial"><span>ตรงบางส่วน</span></label>
-    <label class="opt"><input type="radio" name="pe" value="diff"><span>ไม่ตรง</span></label>
-
-    <p style="margin-top:10px"><b>เช็คลิสต์หลักการ:</b></p>
-    <label class="opt"><input type="checkbox" name="c1"><span>ช่องแคบ (d ≤ λ) ทำให้เลี้ยวเบนชัดที่สุด · คลื่นกระจายเป็นวงกลม</span></label>
-    <label class="opt"><input type="checkbox" name="c2"><span>ช่องกว้าง (d ≫ λ) ทำให้คลื่นเดินตรงเกือบเต็ม · เลี้ยวเบนเฉพาะขอบ</span></label>
-    <label class="opt"><input type="checkbox" name="c3"><span>ความถี่ f ไม่เปลี่ยน (ตัวกลางเดิม · แหล่งกำเนิดเดิม)</span></label>
-    <label class="opt"><input type="checkbox" name="c4"><span>อธิบายได้ด้วยหลักฮอยเกนส์ · ทุกจุดในช่องเป็นแหล่งกำเนิด wavelet</span></label>
-
-    <p style="margin-top:10px"><b>สรุปหลักการด้วยภาษาของนักเรียน:</b></p>
-    <textarea id="principle" placeholder="การเลี้ยวเบนคือ... · เกิดเมื่อ... · f ... · v ... · λ ..."></textarea>
-  </div>
-
-  <!-- ═════ MC Reflection 3-part ═════ -->
-  <div class="section">
-    <h2>🧠 Misconception Reflection (3 ส่วน)</h2>
-    <div class="mc-3part">
-      <h3>ส่วนที่ 1 · เคย/ไม่เคย</h3>
-      <div class="mc-row"><b>ก่อนบทเรียนนี้ ฉันเคยคิดว่า "ช่องแคบกว่า λ คลื่นผ่านไม่ได้" หรือไม่?</b></div>
-      <label class="opt"><input type="radio" name="mc-had" value="yes"><span>เคยคิดแบบนั้น</span></label>
-      <label class="opt"><input type="radio" name="mc-had" value="no"><span>ไม่เคยคิดแบบนั้น</span></label>
-      <label class="opt"><input type="radio" name="mc-had" value="unsure"><span>ไม่แน่ใจ</span></label>
-    </div>
-    <div class="mc-3part">
-      <h3>ส่วนที่ 2 · ตอนนี้คิดว่า</h3>
-      <label class="opt"><input type="radio" name="mc-now" value="narrow"><span>ช่องแคบกว่า λ → คลื่น<u>ผ่านได้</u>และเลี้ยวเบน<u>แรงที่สุด</u></span></label>
-      <label class="opt"><input type="radio" name="mc-now" value="wide"><span>ช่องกว้าง → เลี้ยวเบน<u>น้อย</u> · คลื่นเดินตรงเกือบเต็ม</span></label>
-      <label class="opt"><input type="radio" name="mc-now" value="fkeep"><span>เลี้ยวเบนไม่ทำให้ f เปลี่ยน · เปลี่ยนเฉพาะทิศหน้าคลื่น</span></label>
-    </div>
-    <div class="mc-3part">
-      <h3>ส่วนที่ 3 · หลักฐาน</h3>
-      <p>เขียนหลักฐานจากฐาน 1/2/3 ที่สนับสนุนว่าแนวคิดใหม่ถูกต้อง:</p>
-      <textarea id="mc-evidence" placeholder="เช่น ฐาน 1 a=1 cm < λ=2 cm สังเกตว่าคลื่นกระจายเป็นวงกลมหลังช่อง..."></textarea>
+    <!-- Confidence -->
+    <div class="qblock" style="padding:10px 14px">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจรวมก่อนทดลอง:</span>
+      <div class="radio-row" id="p-conf" style="margin-top:6px">
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="low">😕 น้อย</label>
+      </div>
     </div>
   </div>
 
-  <div class="foot">POE-08 · แผน 8 การเลี้ยวเบนของคลื่น · ว30203 ฟิสิกส์ 3</div>
+  <!-- ══ O · OBSERVE ══ -->
+  <div class="sec o">
+    <div class="sec-title">👁 O · Observe <span class="badge">3 ฐาน · 25 นาที</span></div>
+
+    <div style="background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13.5px">
+      📋 <b>ตั้งค่า sim:</b> เลือกโหมด Single Slit · λ = 3 cm · f = 10 Hz · เปลี่ยนเฉพาะ d (ขนาดช่อง) · สังเกต<b>หน้าคลื่นหลังช่อง</b> และ<b>ทิศการเคลื่อนที่</b>
+    </div>
+
+    <!-- ฐาน 1: d < λ -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🔹 ฐาน 1 · ช่องแคบ d = 1 cm (d &lt; λ)</span>
+        <span class="station-badge">8 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#831843">🚀 เปิด sim</a>
+      </div>
+      <table class="mini-table">
+        <tr><th>สิ่งที่สังเกต</th><th>บันทึก</th></tr>
+        <tr><td class="left">หน้าคลื่นหลังช่อง — <b>รูปร่าง</b></td>
+          <td>
+            <div class="radio-row" id="o1-shape" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o1-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-shape" value="arc">โค้งครึ่งวงกลม</label>
+              <label class="radio-opt" onclick="selectRadio('o1-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-shape" value="curve">โค้งเล็กน้อย</label>
+              <label class="radio-opt" onclick="selectRadio('o1-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-shape" value="flat">เกือบตรง</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">λ หลังช่อง (วัดจาก sim, cm)</td><td><input type="number" id="o1-lam" step="0.1" min="0" placeholder="3.0"></td></tr>
+        <tr><td class="left">f หลังช่อง (Hz)</td><td><input type="number" id="o1-freq" step="0.1" min="0" placeholder="10"></td></tr>
+        <tr><td class="left">เลี้ยวเบน <b>มาก / น้อย</b>?</td>
+          <td>
+            <div class="radio-row" id="o1-diff" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o1-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-diff" value="much">มาก</label>
+              <label class="radio-opt" onclick="selectRadio('o1-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-diff" value="some">ปานกลาง</label>
+              <label class="radio-opt" onclick="selectRadio('o1-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o1-diff" value="little">น้อย</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ฐาน 2: d ≈ λ -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🔸 ฐาน 2 · ช่องปานกลาง d ≈ 3 cm (d ≈ λ)</span>
+        <span class="station-badge">8 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#831843">🚀 เปิด sim</a>
+      </div>
+      <table class="mini-table">
+        <tr><th>สิ่งที่สังเกต</th><th>บันทึก</th></tr>
+        <tr><td class="left">หน้าคลื่นหลังช่อง — <b>รูปร่าง</b></td>
+          <td>
+            <div class="radio-row" id="o2-shape" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o2-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-shape" value="arc">โค้งครึ่งวงกลม</label>
+              <label class="radio-opt" onclick="selectRadio('o2-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-shape" value="curve">โค้งเล็กน้อย</label>
+              <label class="radio-opt" onclick="selectRadio('o2-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-shape" value="flat">เกือบตรง</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">λ หลังช่อง (cm)</td><td><input type="number" id="o2-lam" step="0.1" min="0" placeholder="3.0"></td></tr>
+        <tr><td class="left">f หลังช่อง (Hz)</td><td><input type="number" id="o2-freq" step="0.1" min="0" placeholder="10"></td></tr>
+        <tr><td class="left">เลี้ยวเบน มาก / น้อย?</td>
+          <td>
+            <div class="radio-row" id="o2-diff" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o2-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-diff" value="much">มาก</label>
+              <label class="radio-opt" onclick="selectRadio('o2-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-diff" value="some">ปานกลาง</label>
+              <label class="radio-opt" onclick="selectRadio('o2-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o2-diff" value="little">น้อย</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ฐาน 3: d > λ -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🔶 ฐาน 3 · ช่องกว้าง d = 10 cm (d ≫ λ)</span>
+        <span class="station-badge">8 นาที</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/41.%20wave-interference-two-source.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#831843">🚀 เปิด sim</a>
+      </div>
+      <table class="mini-table">
+        <tr><th>สิ่งที่สังเกต</th><th>บันทึก</th></tr>
+        <tr><td class="left">หน้าคลื่นหลังช่อง — <b>รูปร่าง</b></td>
+          <td>
+            <div class="radio-row" id="o3-shape" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o3-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-shape" value="arc">โค้งครึ่งวงกลม</label>
+              <label class="radio-opt" onclick="selectRadio('o3-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-shape" value="curve">โค้งที่ขอบเล็กน้อย</label>
+              <label class="radio-opt" onclick="selectRadio('o3-shape',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-shape" value="flat">เกือบตรง</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">λ หลังช่อง (cm)</td><td><input type="number" id="o3-lam" step="0.1" min="0" placeholder="3.0"></td></tr>
+        <tr><td class="left">f หลังช่อง (Hz)</td><td><input type="number" id="o3-freq" step="0.1" min="0" placeholder="10"></td></tr>
+        <tr><td class="left">เลี้ยวเบน มาก / น้อย?</td>
+          <td>
+            <div class="radio-row" id="o3-diff" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o3-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-diff" value="much">มาก</label>
+              <label class="radio-opt" onclick="selectRadio('o3-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-diff" value="some">ปานกลาง</label>
+              <label class="radio-opt" onclick="selectRadio('o3-diff',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o3-diff" value="little">น้อย</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Drawing canvas: 3 slits -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">✏️ วาดหน้าคลื่นหลังช่อง (ทั้ง 3 กรณี)</span>
+      </div>
+      <div style="font-size:13px;color:#4a5568;margin-bottom:6px;padding-left:4px;line-height:1.7">
+        <span style="color:#dc2626">①</span> <b>วาด "หน้าคลื่น"</b> หลังช่องแต่ละช่อง (เส้นโค้ง/เส้นตรง) ·
+        <span style="color:#0891b2">②</span> <b>วาดลูกศร "ทิศการเคลื่อนที่"</b> (ตั้งฉากกับหน้าคลื่น) ·
+        <span style="color:#000">③</span> เขียน "มาก/ปานกลาง/น้อย" ใต้แต่ละช่อง
+      </div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tb-pencil" onclick="setTool('canvas-o','pencil',this)">✏️ ดินสอ</button>
+          <button class="c-btn" id="tb-eraser" onclick="setTool('canvas-o','eraser',this)">⬜ ยางลบ</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas-o','#1a202c',this)" title="ดำ"></div>
+          <div class="c-color" style="background:#dc2626" onclick="setColor('canvas-o','#dc2626',this)" title="แดง (หน้าคลื่น)"></div>
+          <div class="c-color" style="background:#0891b2" onclick="setColor('canvas-o','#0891b2',this)" title="ฟ้า (ทิศ)"></div>
+          <div class="c-color" style="background:#db2777" onclick="setColor('canvas-o','#db2777',this)" title="ชมพู"></div>
+          <button class="c-btn" onclick="clearCanvas('canvas-o')" style="margin-left:auto;color:#c53030">🗑️ ล้างที่วาด</button>
+        </div>
+        <div class="scene-stack">
+          <svg class="bg" viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="grid8" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#fce7f3" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="900" height="220" fill="#fff7fb"/>
+            <rect width="900" height="220" fill="url(#grid8)"/>
+            <!-- 3 panels divider -->
+            <line x1="300" y1="0" x2="300" y2="220" stroke="#fbcfe8" stroke-width="2"/>
+            <line x1="600" y1="0" x2="600" y2="220" stroke="#fbcfe8" stroke-width="2"/>
+            <!-- incoming plane wavefronts on all 3 panels (left side) -->
+            <g stroke="#db2777" stroke-width="1.2" fill="none" opacity="0.7">
+              <line x1="30" y1="30" x2="30" y2="200"/><line x1="60" y1="30" x2="60" y2="200"/><line x1="90" y1="30" x2="90" y2="200"/><line x1="120" y1="30" x2="120" y2="200"/>
+              <line x1="330" y1="30" x2="330" y2="200"/><line x1="360" y1="30" x2="360" y2="200"/><line x1="390" y1="30" x2="390" y2="200"/><line x1="420" y1="30" x2="420" y2="200"/>
+              <line x1="630" y1="30" x2="630" y2="200"/><line x1="660" y1="30" x2="660" y2="200"/><line x1="690" y1="30" x2="690" y2="200"/><line x1="720" y1="30" x2="720" y2="200"/>
+            </g>
+            <!-- barrier panel 1: narrow d=1 (small gap) -->
+            <rect x="150" y="30" width="10" height="80" fill="#831843"/>
+            <rect x="150" y="120" width="10" height="80" fill="#831843"/>
+            <!-- barrier panel 2: medium d=3 (medium gap) -->
+            <rect x="450" y="30" width="10" height="70" fill="#831843"/>
+            <rect x="450" y="130" width="10" height="70" fill="#831843"/>
+            <!-- barrier panel 3: wide d=10 (large gap) -->
+            <rect x="750" y="30" width="10" height="45" fill="#831843"/>
+            <rect x="750" y="155" width="10" height="45" fill="#831843"/>
+            <!-- labels -->
+            <text x="150" y="20" font-size="13" fill="#831843" font-weight="800" text-anchor="middle" font-family="Sarabun,sans-serif">ฐาน 1 · d &lt; λ</text>
+            <text x="450" y="20" font-size="13" fill="#831843" font-weight="800" text-anchor="middle" font-family="Sarabun,sans-serif">ฐาน 2 · d ≈ λ</text>
+            <text x="825" y="20" font-size="13" fill="#831843" font-weight="800" text-anchor="middle" font-family="Sarabun,sans-serif">ฐาน 3 · d ≫ λ</text>
+            <text x="155" y="215" font-size="10" fill="#4a5568" text-anchor="middle" font-family="Sarabun,sans-serif">d=1 cm</text>
+            <text x="455" y="215" font-size="10" fill="#4a5568" text-anchor="middle" font-family="Sarabun,sans-serif">d≈3 cm</text>
+            <text x="755" y="215" font-size="10" fill="#4a5568" text-anchor="middle" font-family="Sarabun,sans-serif">d=10 cm</text>
+            <text x="15" y="215" font-size="9" fill="#64748b" font-family="Sarabun,sans-serif">λ = 3 cm (กริด 30 px)</text>
+          </svg>
+          <canvas id="canvas-o" class="overlay" width="900" height="220"></canvas>
+        </div>
+        <div class="scene-hint">💡 <b>คำใบ้:</b> ยิ่งช่องแคบเมื่อเทียบ λ · หน้าคลื่นออกมาเป็นเส้นโค้งมาก (เกือบครึ่งวงกลม) · ช่องกว้าง → หน้าคลื่นยังคง<b>เกือบตรง</b> โค้งเฉพาะที่ขอบ</div>
+      </div>
+
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:12px">สรุปรูปแบบจาก 3 ฐาน · ช่องใด→เลี้ยวเบนมาก · f และ λ เปลี่ยนหรือไม่?</label>
+      <textarea id="o-summary" rows="3" placeholder="ยิ่ง d/λ เล็ก → เลี้ยวเบน ... · f คง ... · λ คง ... · เฉพาะทิศการเคลื่อนที่/รูปหน้าคลื่นเปลี่ยน ..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ E · EXPLAIN / CER ══ -->
+  <div class="sec e">
+    <div class="sec-title">✍️ E · Explain — CER <span class="badge">ส่ง CER Live Board · 8 นาที</span></div>
+    <div style="background:#fce7f3;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:13.5px;color:#831843">
+      📡 <b>วิธีส่ง:</b> กรอก C + E + R ด้านล่าง → กด "ส่ง CER" → ระบบฉายขึ้นจอ · ทุกกลุ่มเห็นพร้อมกัน
+    </div>
+
+    <div class="cer-block">
+      <div class="cer-icon cer-c">C</div>
+      <div class="cer-content">
+        <label>Claim — ข้อกล่าวอ้าง: <span style="font-weight:400;font-size:13px;color:#555">สรุปผลของ d/λ ต่อเลี้ยวเบน · f/λ คงเดิม</span></label>
+        <textarea id="cer-c" rows="3" placeholder="เมื่อ d ≤ λ → เลี้ยวเบนชัด ... · d ≫ λ → ... · f และ λ ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-e">E</div>
+      <div class="cer-content">
+        <label>Evidence — หลักฐาน: <span style="font-weight:400;font-size:13px;color:#555">อ้างอิงจากฐาน 1–3</span></label>
+        <textarea id="cer-e" rows="3" placeholder="ฐาน 1 (d=1): หน้าคลื่น .. / ฐาน 2 (d=3): .. / ฐาน 3 (d=10): .. / λ วัดได้ .. f วัดได้ .."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-r">R</div>
+      <div class="cer-content">
+        <label>Reasoning — เหตุผลเชิงหลักการ: <span style="font-weight:400;font-size:13px;color:#555">หลัก Huygens · ทุกจุดบนหน้าคลื่นเป็นแหล่งกำเนิดใหม่</span></label>
+        <textarea id="cer-r" rows="3" placeholder="ตามหลัก Huygens ทุกจุดบนหน้าคลื่นที่ช่องเป็นแหล่งกำเนิดคลื่นใหม่ ... เมื่อ d เล็กเทียบ λ จำนวนแหล่งกำเนิดน้อย → หน้าคลื่นรวมโค้งออกเหมือนแหล่งจุด ... f กำหนดโดยแหล่งกำเนิดเดิม → คงที่ ... λ = v/f และ v คงที่ในตัวกลางเดิม → λ คงที่ ..."></textarea>
+      </div>
+    </div>
+
+    <!-- 🟢 Conceptual Inventory · 5 correct -->
+    <div style="background:#fff;border:1.5px solid #fbcfe8;border-radius:10px;padding:12px 16px;margin-top:6px">
+      <div style="font-weight:700;color:#831843;margin-bottom:8px;font-size:14.5px">🟢 Conceptual Inventory · ติ๊กทุกข้อที่ตรงกับหลักฐานกลุ่มของคุณ:</div>
+      <label class="check-opt"><input type="checkbox" id="chk1"> 🟢 <b>ยิ่ง d ≤ λ → เลี้ยวเบนชัดมาก</b> · หน้าคลื่นโค้งเกือบครึ่งวงกลม</label>
+      <label class="check-opt"><input type="checkbox" id="chk2"> 🟢 <b>ยิ่ง d ≫ λ → เลี้ยวเบนน้อย</b> · หน้าคลื่นเกือบตรง โค้งเฉพาะที่ขอบ</label>
+      <label class="check-opt"><input type="checkbox" id="chk3"> 🟢 <b>ช่องที่ d &lt; λ คลื่น "ผ่านออกมาได้"</b> · แผ่ออกเป็นแหล่งกำเนิดจุด ไม่ถูกกั้นหมด <span style="color:#888;font-size:12.5px">— แก้ M8.1</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk4"> 🟢 <b>หลังเลี้ยวเบน · f คงเดิม · λ คงเดิม · v คงเดิม</b> เปลี่ยนเฉพาะทิศการเคลื่อนที่/รูปหน้าคลื่น <span style="color:#888;font-size:12.5px">— แก้ M8.3</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk5"> 🟢 <b>หลัก Huygens</b>: ทุกจุดบนหน้าคลื่นที่ผ่านช่องเป็นแหล่งกำเนิดคลื่นใหม่ซ้อนทับกัน → อธิบายการเลี้ยวเบนได้</label>
+    </div>
+
+    <!-- 🔴 Misconception correction · 3 ส่วน per M -->
+    <div class="misc-correct">
+      <h4>🔴 สรุปแก้ Misconception · ติ๊กถ้ายังเคยเชื่อ/ไม่แน่ใจ</h4>
+      <div class="hint">ทำ 3 ขั้น · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M8.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M8.1</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"ช่องแคบกว่า λ (d &lt; λ) คลื่นผ่านไม่ได้ ถูกกั้นหมด"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc1-held">
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc1-correct">
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="a"> d &lt; λ คลื่นยัง<b>ผ่านออกได้</b> · แผ่เป็นแหล่งกำเนิดจุด (เลี้ยวเบนมากที่สุด)</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="b"> d &lt; λ คลื่นถูกสะท้อนกลับทั้งหมด ไม่เหลือผ่านออก</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="c"> d ต้อง &gt; λ เท่านั้นจึงผ่านได้</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากฐาน 1 (1-2 ประโยค):</label>
+          <textarea id="mc1-evidence" rows="2" placeholder="ที่ฐาน 1 d=1 cm < λ=3 cm · ยังเห็นคลื่นออกมา · หน้าคลื่นโค้งเกือบครึ่งวงกลม ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M8.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M8.2</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"ช่องกว้าง = เลี้ยวเบนมาก / ช่องแคบ = เลี้ยวเบนน้อย"</em> (สลับกัน)</div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc2-held">
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc2-correct">
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="a"> ช่อง<b>แคบ (d ≤ λ)</b> = เลี้ยวเบน<b>มาก</b> · ช่อง<b>กว้าง (d ≫ λ)</b> = เลี้ยวเบน<b>น้อย</b></label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="b"> ช่องกว้างเลี้ยวเบนมาก เพราะคลื่นมีพื้นที่แผ่ได้มาก</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="c"> ขนาดช่องไม่เกี่ยว · เลี้ยวเบนเท่ากันเสมอ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากฐาน 1 vs ฐาน 3 (1-2 ประโยค):</label>
+          <textarea id="mc2-evidence" rows="2" placeholder="ฐาน 1 (d=1<λ) หน้าคลื่นโค้งครึ่งวงกลม · ฐาน 3 (d=10≫λ) หน้าคลื่นเกือบตรง ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M8.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M8.3</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"การเลี้ยวเบนทำให้ f (ความถี่) และ λ เปลี่ยน"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc3-held">
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="yes"> เคย (คิดว่าจริง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้องคือ:</label>
+          <div class="radio-col" id="mc3-correct">
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="a"> f คงเดิม (กำหนดโดยแหล่งกำเนิด) · v คงเดิม (ตัวกลางเดิม) · λ = v/f คงเดิม · เปลี่ยนเฉพาะ<b>ทิศ/รูปหน้าคลื่น</b></label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="b"> f เปลี่ยน เพราะคลื่นเสียดสีกับขอบช่อง</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="c"> λ เปลี่ยน เพราะคลื่นต้องหดตัวเพื่อผ่านช่อง</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจากฐาน 1–3 (1-2 ประโยค):</label>
+          <textarea id="mc3-evidence" rows="2" placeholder="วัด λ ก่อน/หลังช่อง = ... cm เท่ากัน · f = ... Hz เท่ากัน ทั้ง 3 ฐาน ..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep-dive 3 questions -->
+    <div class="deep-q">
+      <h4>🔎 คำถามเจาะลึก 3 ข้อ</h4>
+      <div class="dq">
+        <label>ข้อ ก · ทำไมเมื่อ d ≤ λ การเลี้ยวเบนจึง<b>ชัดที่สุด</b>? (อธิบายด้วยหลัก Huygens)</label>
+        <textarea id="dq-a" rows="2" placeholder="ช่องเทียบ λ มีขนาดใกล้แหล่งกำเนิดจุด · ทุกจุดในช่องเป็นแหล่งกำเนิดใหม่ที่รวมกันแล้วหน้าคลื่นโค้ง ..."></textarea>
+      </div>
+      <div class="dq">
+        <label>ข้อ ข · ทำไม <b>f คงที่</b> แม้คลื่นเลี้ยวเบน? (เชื่อมกับ v = fλ)</label>
+        <textarea id="dq-b" rows="2" placeholder="f ถูกกำหนดโดยแหล่งกำเนิด (ไม่ใช่โดยสิ่งกีดขวาง) · v ขึ้นกับตัวกลาง · ทั้งก่อนและหลังช่องอยู่ในตัวกลางเดียวกัน ..."></textarea>
+      </div>
+      <div class="dq">
+        <label>ข้อ ค · <b>เปรียบเทียบ 3 ช่อง</b> (d=1 · d≈3 · d=10 cm) · ระดับการเลี้ยวเบน · รูปหน้าคลื่น · ทิศเคลื่อนที่ · โดยกรอกตารางสรุป:</label>
+        <div style="overflow-x:auto;margin-top:6px">
+          <table class="mini-table">
+            <tr><th>กรณี</th><th>d/λ</th><th>ระดับเลี้ยวเบน</th><th>รูปหน้าคลื่นหลังช่อง</th><th>ทิศการเคลื่อนที่</th></tr>
+            <tr><td>d = 1 cm</td><td>≈ 0.3</td>
+              <td><select id="dq-c1-level"><option value="">—</option><option>มาก</option><option>ปานกลาง</option><option>น้อย</option></select></td>
+              <td><input type="text" id="dq-c1-shape" placeholder="ครึ่งวงกลม" style="width:130px"></td>
+              <td><input type="text" id="dq-c1-dir" placeholder="แผ่ทุกทิศ" style="width:130px"></td>
+            </tr>
+            <tr><td>d ≈ 3 cm</td><td>≈ 1</td>
+              <td><select id="dq-c2-level"><option value="">—</option><option>มาก</option><option>ปานกลาง</option><option>น้อย</option></select></td>
+              <td><input type="text" id="dq-c2-shape" placeholder="โค้งมาก" style="width:130px"></td>
+              <td><input type="text" id="dq-c2-dir" placeholder="กระจาย" style="width:130px"></td>
+            </tr>
+            <tr><td>d = 10 cm</td><td>≈ 3.3</td>
+              <td><select id="dq-c3-level"><option value="">—</option><option>มาก</option><option>ปานกลาง</option><option>น้อย</option></select></td>
+              <td><input type="text" id="dq-c3-shape" placeholder="เกือบตรง" style="width:130px"></td>
+              <td><input type="text" id="dq-c3-dir" placeholder="ไปข้างหน้า" style="width:130px"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post confidence -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจหลังเรียน:</span>
+      <div class="radio-row" id="e-conf" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="low">😕 น้อย</label>
+      </div>
+      <div class="radio-row" id="e-change" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="up">↑ เพิ่มขึ้น</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="same">= เท่าเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="down">↓ ลดลง</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUBMIT ══ -->
+  <div class="submit-bar">
+    <button class="btn-submit" onclick="submitPOE()">📡 ส่ง POE-08</button>
+    <button class="btn-reset" onclick="if(confirm('ล้างข้อมูลทั้งหมด?'))location.reload()">🔄 เริ่มใหม่</button>
+    <span id="submit-status" style="font-size:13.5px;color:#831843"></span>
+  </div>
+  <div class="result-box" id="result-box">
+    <h4>✅ สรุปคำตอบที่ส่ง</h4>
+    <pre id="result-pre" style="font-size:12.5px;white-space:pre-wrap;color:#1a202c"></pre>
+  </div>
+
+  <div class="foot">POE-08 Interactive · แผน 8 การเลี้ยวเบนของคลื่น · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
 </div>
 
 <script>
-(function(){
-  const c = document.getElementById('draw');
-  const ctx = c.getContext('2d');
-  let drawing = false;
-  ctx.strokeStyle = '#db2777'; ctx.lineWidth = 2;
-  function xy(e){ const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]; }
-  c.addEventListener('mousedown', e=>{ drawing=true; const [x,y]=xy(e); ctx.beginPath(); ctx.moveTo(x,y); });
-  c.addEventListener('mousemove', e=>{ if(!drawing) return; const [x,y]=xy(e); ctx.lineTo(x,y); ctx.stroke(); });
-  c.addEventListener('mouseup', ()=>{ drawing=false; });
-  c.addEventListener('mouseleave', ()=>{ drawing=false; });
-})();
+function selectRadio(groupId, labelEl) {
+  document.querySelectorAll(`#${groupId} .radio-opt`).forEach(l => l.classList.remove('selected'));
+  labelEl.classList.add('selected');
+  const input = labelEl.querySelector('input');
+  if (input) input.checked = true;
+}
+
+const canvasState = {};
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay');
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  if (!transparent) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function start(e){e.preventDefault();const st=canvasState[id];st.drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+  function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function end(e){e.preventDefault();canvasState[id].drawing=false;}
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+
+function submitPOE() {
+  const data = {
+    student: {
+      name: document.getElementById('s-name').value,
+      num: document.getElementById('s-num').value,
+      room: document.getElementById('s-room').value,
+      group: document.getElementById('s-grp').value
+    },
+    P: {
+      p1: document.querySelector('input[name="p1"]:checked')?.value || '—',
+      p1_reason: document.getElementById('p1-reason').value,
+      p2: document.querySelector('input[name="p2"]:checked')?.value || '—',
+      p2_reason: document.getElementById('p2-reason').value,
+      p3: document.querySelector('input[name="p3"]:checked')?.value || '—',
+      p4: document.querySelector('input[name="p4"]:checked')?.value || '—',
+      confidence: document.querySelector('input[name="p-conf"]:checked')?.value || '—'
+    },
+    O: {
+      stations: [1,2,3].map(i => ({
+        shape: document.querySelector(`input[name="o${i}-shape"]:checked`)?.value || '—',
+        lambda: document.getElementById(`o${i}-lam`)?.value,
+        freq: document.getElementById(`o${i}-freq`)?.value,
+        diffraction: document.querySelector(`input[name="o${i}-diff"]:checked`)?.value || '—'
+      })),
+      summary: document.getElementById('o-summary').value
+    },
+    E: {
+      claim: document.getElementById('cer-c').value,
+      evidence: document.getElementById('cer-e').value,
+      reasoning: document.getElementById('cer-r').value,
+      checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
+      mc1_held: document.querySelector('input[name="mc1-held"]:checked')?.value || '—',
+      mc1_correct: document.querySelector('input[name="mc1-correct"]:checked')?.value || '—',
+      mc1_evidence: document.getElementById('mc1-evidence')?.value || '',
+      mc2_held: document.querySelector('input[name="mc2-held"]:checked')?.value || '—',
+      mc2_correct: document.querySelector('input[name="mc2-correct"]:checked')?.value || '—',
+      mc2_evidence: document.getElementById('mc2-evidence')?.value || '',
+      mc3_held: document.querySelector('input[name="mc3-held"]:checked')?.value || '—',
+      mc3_correct: document.querySelector('input[name="mc3-correct"]:checked')?.value || '—',
+      mc3_evidence: document.getElementById('mc3-evidence')?.value || '',
+      dq_a: document.getElementById('dq-a').value,
+      dq_b: document.getElementById('dq-b').value,
+      dq_c: [1,2,3].map(i => ({
+        level: document.getElementById(`dq-c${i}-level`)?.value,
+        shape: document.getElementById(`dq-c${i}-shape`)?.value,
+        dir: document.getElementById(`dq-c${i}-dir`)?.value
+      })),
+      conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
+      conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
+    },
+    canvas_o: document.getElementById('canvas-o')?.toDataURL('image/png')
+  };
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'POE_SUBMIT', plan: 8, data }, '*');
+  }
+
+  const box = document.getElementById('result-box');
+  const pre = document.getElementById('result-pre');
+  const summary = [
+    `📋 นักเรียน: ${data.student.name||'—'} เลขที่ ${data.student.num} ห้อง ${data.student.room} กลุ่ม ${data.student.group}`,
+    `\n🔮 P — ทำนาย:`,
+    `  · d<λ ผ่านได้? → ${data.P.p1}  |  ช่องเลี้ยวเบนชัดสุด → ${data.P.p2}`,
+    `  · f/λ เปลี่ยน? → ${data.P.p3}  |  d≫λ หน้าคลื่น → ${data.P.p4}`,
+    `  · ความมั่นใจก่อน: ${data.P.confidence}`,
+    `\n👁 O — สังเกต 3 ฐาน:`,
+    ...data.O.stations.map((s,i)=>`  · ฐาน ${i+1}: รูป=${s.shape} λ=${s.lambda||'—'} f=${s.freq||'—'} เลี้ยวเบน=${s.diffraction}`),
+    `  · สรุป: ${data.O.summary.slice(0,100)}${data.O.summary.length>100?'…':''}`,
+    `\n✍️ E — CER:`,
+    `  · Claim: ${data.E.claim.slice(0,80)}${data.E.claim.length>80?'…':''}`,
+    `  · Evidence: ${data.E.evidence.slice(0,80)}${data.E.evidence.length>80?'…':''}`,
+    `  · Reasoning: ${data.E.reasoning.slice(0,80)}${data.E.reasoning.length>80?'…':''}`,
+    `  · Checklist ติ๊ก: ${data.E.checks || 'ยังไม่ได้ติ๊ก'}`,
+    `  · M8.1: เคย=${data.E.mc1_held} ถูก=${data.E.mc1_correct}`,
+    `  · M8.2: เคย=${data.E.mc2_held} ถูก=${data.E.mc2_correct}`,
+    `  · M8.3: เคย=${data.E.mc3_held} ถูก=${data.E.mc3_correct}`,
+    `  · ความมั่นใจหลัง: ${data.E.conf_post} (${data.E.conf_change})`
+  ].join('\n');
+
+  pre.textContent = summary;
+  box.style.display = 'block';
+  document.getElementById('submit-status').textContent = '✅ ส่งแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas('canvas-o');
+});
 </script>
 <script src="../../../shared/worksheet-core.js"></script>
-</body></html>
+</body>
+</html>
