@@ -1255,17 +1255,63 @@ function markDone(){
 // Receives postMessage from iframe: REQUEST_STUDENT_INFO · WS_SUBMIT
 // ═══════════════════════════════════════════════════════════
 const IFRAME_TOOLS = {
-  'ft01':     { path:'lessons/physics3/waves/แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ10_FT01_Fourtier_PreTest.html', wsId:'plan1-ft01',     sheet:'FT01' },
-  'ft02':     { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ03_FT02_Fourtier_PostTest.html',               wsId:'plan10-ft02',    sheet:'FT02' },
-  'review10': { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ02_Review_ใบทบทวน18ข้อ.html',                  wsId:'plan10-review',  sheet:'Review' }
+  'ft01':     { path:'lessons/physics3/waves/แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ10_FT01_Fourtier_PreTest.html', wsId:'plan1-ft01',     sheet:'FT01',   lockAfterSubmit:true  },
+  'ft02':     { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ03_FT02_Fourtier_PostTest.html',               wsId:'plan10-ft02',    sheet:'FT02',   lockAfterSubmit:true  },
+  'review10': { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ02_Review_ใบทบทวน18ข้อ.html',                  wsId:'plan10-review',  sheet:'Review', lockAfterSubmit:false }
 };
 const WS_TO_TOOL = Object.fromEntries(
   Object.entries(IFRAME_TOOLS).map(([k,v]) => [v.wsId, k])
 );
 
+// Flatten worksheet-core state (inputs + canvases) → flat columns per question/tier
+// Input ID patterns: q1-t1-a (radio · value='ก'), q1-t3-1/other (radio · value='1'|'other'),
+//                    q1-t3-text (textarea), s-name/s-num/s-room/s-grp (identity)
+function flattenInputs(data){
+  const out = {};
+  if (!data || !data.inputs) return out;
+  Object.entries(data.inputs).forEach(([id, v]) => {
+    // Radio: only include checked; key = group name (strip last segment)
+    if (v && typeof v === 'object' && v._type === 'radio'){
+      if (!v.checked) return;
+      const m = id.match(/^(.+)-[^-]+$/);
+      const key = (m ? m[1] : id).replace(/-/g, '_');
+      out[key] = v.value;
+      return;
+    }
+    // Checkbox: include boolean
+    if (v && typeof v === 'object' && v._type === 'checkbox'){
+      out[id.replace(/-/g, '_')] = v.checked ? (v.value || '1') : '';
+      return;
+    }
+    // Text/textarea/select: store as-is
+    out[id.replace(/-/g, '_')] = v;
+  });
+  // canvases: store as count only (base64 images too big for flat columns · keep raw in `_canvases_json` if needed)
+  if (data.canvases){
+    const count = Object.keys(data.canvases).length;
+    if (count > 0) out._canvas_count = count;
+  }
+  return out;
+}
+
 function renderIframe(body, toolKey){
   const cfg = IFRAME_TOOLS[toolKey];
   if (!cfg){ body.innerHTML += `<div class="info">⚠️ ไม่พบการตั้งค่าเครื่องมือ ${toolKey}</div>`; showView('view-tool'); return; }
+
+  // Lock check: if tool is one-shot and already submitted, show locked view
+  const submitKey = `plan${state.currentPlan}_${toolKey}`;
+  if (cfg.lockAfterSubmit && state.submitted[submitKey] && !state.previewMode){
+    body.innerHTML += `
+      <div class="info" style="border-color:#2e7d32;background:#e8f5e9;padding:20px">
+        <h3 style="color:#1b5e20;margin-bottom:8px">✅ ส่งข้อสอบนี้เรียบร้อยแล้ว</h3>
+        <p style="color:#2e7d32;font-size:14.5px">ข้อสอบชุดนี้เป็นแบบ <b>ส่งได้ครั้งเดียว</b> (Pre/Post-test หลัก สำหรับงานวิจัย)</p>
+        <p style="color:#2e7d32;font-size:14px;margin-top:6px">ถ้าต้องการส่งใหม่ กรุณาติดต่อครูผู้สอน</p>
+        <button onclick="goHome()" style="margin-top:12px;padding:8px 18px;border:none;border-radius:8px;background:#2e7d32;color:#fff;font-weight:700;cursor:pointer">← กลับหน้าแรก</button>
+      </div>`;
+    showView('view-tool');
+    return;
+  }
+
   const frame = document.createElement('iframe');
   frame.src = encodeURI(cfg.path);
   frame.style.cssText = 'width:100%;height:1400px;min-height:800px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;display:block';
@@ -1309,9 +1355,17 @@ window.addEventListener('message', async (e) => {
       console.warn('[WS_SUBMIT] plan gated:', g.status);
       return;
     }
+    // Lock check: one-shot tools (ft01/ft02) — reject re-submit
+    const submitKey = `plan${state.currentPlan}_${toolKey}`;
+    if (cfg.lockAfterSubmit && state.submitted[submitKey]){
+      console.warn('[WS_SUBMIT] already submitted (locked):', submitKey);
+      return;
+    }
+
     const stu = state.student || {};
+    const flat = flattenInputs(msg.data);
     const full = {
-      ...msg.data,
+      ...flat,
       ws_id: msg.wsId,
       tool: toolKey,
       school: SCHOOL,
