@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบกิจกรรม 9.1 · Calc คลื่นนิ่ง + บูรณาการ (แผน 9) · Interactive</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#e0e7ff;color:#1a202c;font-size:15.5px;line-height:1.55;padding:16px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(79,70,229,.12);padding:24px 28px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#312e81;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#e0e7ff;border-left:6px solid #4f46e5;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #c7d2fe;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#f5f7ff}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#4f46e5;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#312e81;font-size:16px}
+.level{font-size:11.5px;background:#e0e7ff;color:#312e81;padding:2px 8px;border-radius:10px;border:1px solid #c7d2fe}
+.level.easy{background:#dcfce7;color:#14532d;border-color:#86efac}
+.level.mid{background:#fff3e0;color:#e65100;border-color:#ffcc80}
+.level.hard{background:#fce4ec;color:#ad1457;border-color:#f48fb1}
+.level.apply{background:#e0e7ff;color:#312e81;border-color:#c7d2fe}
+.item-body{font-size:14.5px}
+.draw-task{background:#e0e7ff;border-left:4px solid #4f46e5;border-radius:6px;padding:8px 12px;margin:8px 0;font-size:13.5px;color:#312e81}
+.draw-task b{color:#3730a3}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #c7d2fe;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #4f46e5;box-shadow:0 0 0 2px #fff,0 0 0 4px #4f46e5}
+.scene-stack{position:relative;border:2px solid #c7d2fe;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e0e7ff 28px);touch-action:none;cursor:crosshair}
+.scene-hint{font-size:12px;color:#3730a3;margin-top:4px}
+textarea,input[type=text],input[type=number]{font-family:inherit;font-size:14px;padding:6px 10px;border:1.5px solid #c7d2fe;border-radius:6px;width:100%;resize:vertical}
+textarea:focus,input:focus{outline:2px solid #4f46e5;outline-offset:-1px}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:8px 12px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#e0e7ff;border-left:6px solid #4f46e5;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+.formula-box{background:#e0e7ff;border-left:4px solid #4f46e5;padding:8px 12px;border-radius:6px;font-size:14px;margin:8px 0}
+.inline-row{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0}
+.inline-row label{font-size:13.5px;font-weight:600;color:#312e81;display:flex;align-items:center;gap:6px}
+.inline-row label input{width:100px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key,.canvas-toolbar{display:none}.scene-stack canvas.overlay{display:none}}
+</style></head>
+<body data-ws-id="plan9-calc-9.1">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🧮 ใบกิจกรรม 9.1 · Calc คลื่นนิ่ง + บูรณาการ</h1>
+      <div style="font-size:13px;color:#555"><span class="tag">แผน 9</span><span class="tag">ขั้น E4</span> 7 ข้อ (พื้นฐาน 3 + ประยุกต์ 4) · K9.1, K9.2, K9.3 · Rubric 0–4 · 25 นาที</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-นามสกุล"></label>
+      <label>เลขที่ <input type="text" id="s-num" class="short"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short"></label>
+      <label>กลุ่ม <input type="text" id="s-grp" class="short"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 สูตรหลัก:</b> ระยะ Node ติดกัน = <b>λ/2</b> → <b>λ = 2d</b> · <b>v = fλ</b> · บนเชือก <b>v = √(T/μ)</b> · ปลายตรึง 2 ปลาย <b>L = nλ/2</b> → <b>fₙ = (n/2L)√(T/μ)</b> · ท่อเปิด 2 ปลาย <b>L = nλ/2</b> · ท่อปิด 1 ปลาย <b>L = (2n−1)λ/4</b>
+  </div>
+
+  <!-- ═══ ข้อ 1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">λ จากระยะ Node · Lab 37</span>
+      <span class="level easy">★ พื้นฐาน</span>
+    </div>
+    <div class="item-body">
+      ใน Lab 37 เห็นคลื่นนิ่งบนเชือก · คลิกวัดระยะระหว่าง Node 2 จุดติดกันได้ <b>d = 0.25 m</b> · f = 60 Hz
+      <div class="draw-task">✏️ <b>วาด:</b> เชือกคลื่นนิ่ง · ระบุ N, A, และระยะ d, λ</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c1','#4f46e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('c1','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c1" data-bg="lined" width="900" height="220"></canvas>
+      <div class="inline-row" style="margin-top:10px">
+        <label>(ก) λ = <input type="number" id="q1a" step="0.01" placeholder="0.50"> m</label>
+        <label>(ข) v = fλ = <input type="number" id="q1b" step="0.01" placeholder="30"> m/s</label>
+      </div>
+      <div class="ans-key"><b>💡 เฉลย:</b> (ก) λ = 2d = 2(0.25) = <b>0.50 m</b> · (ข) v = (60)(0.50) = <b>30 m/s</b></div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">ความเร็วจากแรงตึง · v = √(T/μ)</span>
+      <span class="level easy">★ พื้นฐาน</span>
+    </div>
+    <div class="item-body">
+      เชือก μ = 4.0 g/m = 4.0×10⁻³ kg/m · ถ่วงน้ำหนัก W = 0.44 N (T = W) · หา v
+      <div class="formula-box">v = √(T/μ) = √(0.44 / 0.004) = √110 ≈ 10.49 m/s</div>
+      <div class="inline-row">
+        <label>v = <input type="number" id="q2" step="0.01" placeholder="10.49"> m/s</label>
+      </div>
+      <div class="ans-key"><b>💡 เฉลย:</b> v = √(0.44/0.004) = √110 ≈ <b>10.49 m/s</b> · (ตรงกับ Lab 37 ที่ W=0.44 N · v=10.49)</div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">Harmonic ทั้ง 3 · fₙ = (n/2L)√(T/μ)</span>
+      <span class="level mid">★★ กลาง</span>
+    </div>
+    <div class="item-body">
+      เชือกปลายตรึง 2 ปลาย · L = 1.50 m · μ = 4.0×10⁻³ kg/m · T = 0.44 N · หา f₁, f₂, f₃ (harmonic 1, 2, 3)
+      <div class="formula-box">fₙ = (n/2L)·√(T/μ) · v = √(0.44/0.004) ≈ 10.49 m/s</div>
+      <div class="inline-row">
+        <label>f₁ = <input type="number" id="q3a" step="0.01" placeholder="3.50"> Hz</label>
+        <label>f₂ = <input type="number" id="q3b" step="0.01" placeholder="7.00"> Hz</label>
+        <label>f₃ = <input type="number" id="q3c" step="0.01" placeholder="10.49"> Hz</label>
+      </div>
+      <div class="draw-task">✏️ <b>วาดโหมด n=1,2,3</b> บนเชือกเดียวกัน · ระบุ A, N</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c3','#4f46e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('c3','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c3" data-bg="lined" width="900" height="220"></canvas>
+      <div class="ans-key"><b>💡 เฉลย:</b> f₁ = (1/3)(10.49) ≈ <b>3.50 Hz</b> · f₂ = 2f₁ ≈ <b>7.00 Hz</b> · f₃ = 3f₁ ≈ <b>10.49 Hz</b></div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 4 · ประยุกต์ ไมโครเวฟ ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">4</span>
+      <span class="item-title">🎬 ประยุกต์ · คลื่นนิ่งในไมโครเวฟ</span>
+      <span class="level apply">🔗 ประยุกต์</span>
+    </div>
+    <div class="item-body">
+      จากคลิป Hook — ถอดจานหมุนออกจากไมโครเวฟ · อุ่นชีส · วัดระยะระหว่างจุดร้อน 2 จุดติดกัน = <b>6.0 cm</b> · c = 3×10⁸ m/s
+      <div class="inline-row">
+        <label>(ก) λ = <input type="number" id="q4a" step="0.001" placeholder="0.12"> m</label>
+        <label>(ข) f = c/λ = <input type="number" id="q4b" step="0.01" placeholder="2500"> MHz</label>
+      </div>
+      <label style="font-weight:600;color:#312e81;display:block;margin-top:8px">(ค) อธิบายว่าทำไมเกิดคลื่นนิ่งในไมโครเวฟ (2–3 ประโยค):</label>
+      <textarea id="q4c" rows="3" placeholder="ผนังโลหะภายในไมโครเวฟสะท้อนคลื่นกลับ · incident + reflected ซ้อนทับ → คลื่นนิ่ง · A = จุดร้อน (สนามแรง) · N = จุดเย็น (สนามเป็นศูนย์) · ระยะ A-A = λ/2 ..."></textarea>
+      <div class="ans-key"><b>💡 เฉลย:</b> (ก) λ = 2(0.06) = <b>0.12 m</b> · (ข) f = (3×10⁸)/0.12 = 2.5×10⁹ Hz = <b>2500 MHz ≈ 2.45 GHz</b> (ตรงกับไมโครเวฟมาตรฐาน) · (ค) ผนังโลหะสะท้อนคลื่น → 2 ขบวนสวนทาง → ซ้อนทับเกิด A/N คงที่ → จุดร้อน/เย็น</div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 5 · ประยุกต์ สายกีตาร์ ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">5</span>
+      <span class="item-title">🎸 ประยุกต์ · สายกีตาร์ (ตัด L ครึ่ง)</span>
+      <span class="level apply">🔗 ประยุกต์</span>
+    </div>
+    <div class="item-body">
+      สายกีตาร์ E₂ ยาว L = 0.65 m · f₁ = 82.4 Hz (fundamental)
+      <div class="inline-row">
+        <label>(ก) v ในสาย = <input type="number" id="q5a" step="0.1" placeholder="107.1"> m/s</label>
+      </div>
+      (ข) ถ้านักดนตรี<b>กดเฟร็ตตรงกึ่งกลาง</b> (L เหลือ 0.325 m) · f₁ ใหม่ = ?
+      <div class="inline-row">
+        <label>(ข) f₁' = <input type="number" id="q5b" step="0.1" placeholder="164.8"> Hz</label>
+      </div>
+      <label style="font-weight:600;color:#312e81;display:block;margin-top:8px">(ค) อธิบายทำไม f สูงขึ้น · โน้ตใหม่เป็นอะไร?</label>
+      <textarea id="q5c" rows="2" placeholder="L ลดลงครึ่งหนึ่ง → f₁ = v/(2L) เพิ่มเป็น 2 เท่า (v คงที่เพราะ T, μ ไม่เปลี่ยน) · f₁' = 2·82.4 ≈ 164.8 Hz = E₃ (สูงขึ้น 1 octave) ..."></textarea>
+      <div class="ans-key"><b>💡 เฉลย:</b> (ก) v = 2L·f₁ = 2(0.65)(82.4) ≈ <b>107.1 m/s</b> · (ข) f₁' = v/(2L') = 107.1/(2·0.325) ≈ <b>164.8 Hz</b> · (ค) L ครึ่ง → f สองเท่า = E₃ (สูงขึ้น 1 octave)</div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 6 · ประยุกต์ เชือก μ ต่าง ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">6</span>
+      <span class="item-title">🧵 ประยุกต์ · เปรียบเทียบ 2 เชือก (μ ต่าง)</span>
+      <span class="level apply">🔗 ประยุกต์</span>
+    </div>
+    <div class="item-body">
+      เชือก A (μ_A = 2.0 g/m) และเชือก B (μ_B = 8.0 g/m) · ทั้งคู่ L = 1.0 m · T = 10 N · ตรึงปลาย 2 ด้าน · หา f₁ ของแต่ละเส้น
+      <div class="inline-row">
+        <label>f₁(A) = <input type="number" id="q6a" step="0.1" placeholder="35.4"> Hz</label>
+        <label>f₁(B) = <input type="number" id="q6b" step="0.1" placeholder="17.7"> Hz</label>
+        <label>f_A/f_B = <input type="number" id="q6c" step="0.01" placeholder="2.00"></label>
+      </div>
+      <label style="font-weight:600;color:#312e81;display:block;margin-top:8px">(ง) เชือก B หนัก 4 เท่า · แต่ f ต่ำกว่าเพียง 2 เท่า · ทำไม?</label>
+      <textarea id="q6d" rows="2" placeholder="เพราะ f ∝ 1/√μ ไม่ใช่ 1/μ · μ เพิ่ม 4 เท่า → √μ เพิ่ม 2 เท่า → f ลดลง 2 เท่า ..."></textarea>
+      <div class="ans-key"><b>💡 เฉลย:</b> f₁(A) = (1/2·1)√(10/0.002) ≈ <b>35.4 Hz</b> · f₁(B) = (1/2)√(10/0.008) ≈ <b>17.7 Hz</b> · อัตราส่วน <b>2.00</b> · f ∝ 1/√μ</div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 7 · ประยุกต์ ท่อเป่า ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">7</span>
+      <span class="item-title">🎺 ประยุกต์ · ท่อเป่า (Integration 4 สมบัติ)</span>
+      <span class="level apply">🔗 ประยุกต์ · ★ ท้าทาย</span>
+    </div>
+    <div class="item-body">
+      ท่อเป่ายาว L = 0.60 m · v_เสียง = 340 m/s
+      <div class="inline-row">
+        <label>(ก) ท่อ<b>เปิด 2 ปลาย</b> · f₁ = <input type="number" id="q7a" step="0.1" placeholder="283.3"> Hz</label>
+        <label>(ข) ท่อ<b>ปิด 1 ปลาย</b> · f₁ = <input type="number" id="q7b" step="0.1" placeholder="141.7"> Hz</label>
+      </div>
+      <label style="font-weight:600;color:#312e81;display:block;margin-top:8px">(ค) <b>บูรณาการ:</b> อธิบายการเกิดคลื่นนิ่งในท่อเป่าผ่าน 4 สมบัติ (สะท้อน + ซ้อนทับ + แทรกสอด + หักเห) · 4–5 ประโยค:</label>
+      <textarea id="q7c" rows="4" placeholder="1) สะท้อน: ปลายท่อเปิด → สะท้อนเฟสเดิม · ปลายปิด → กลับเฟส 180° · 2) ซ้อนทับ: incident + reflected · 3) แทรกสอด: เสริม=A · หักล้าง=N · 4) หักเห: รอยต่ออากาศ-ผนังท่อ → บางส่วนสะท้อน · คลื่นนิ่งที่เกิดในท่อ = กรณีพิเศษของการซ้อนทับเสียงสะท้อนไปกลับ ..."></textarea>
+      <div class="ans-key"><b>💡 เฉลย:</b> (ก) ท่อเปิด 2 ปลาย: λ = 2L = 1.20 · f₁ = 340/1.20 ≈ <b>283.3 Hz</b> · (ข) ท่อปิด 1 ปลาย: λ = 4L = 2.40 · f₁ = 340/2.40 ≈ <b>141.7 Hz</b> (ต่ำกว่าครึ่งหนึ่ง) · (ค) ผนังท่อสะท้อนเสียง · incident+reflected ซ้อนทับ → ที่ λ เฉพาะจะแทรกสอดเสริมกัน (resonance) เกิดคลื่นนิ่ง · ปลายเปิด = A (อากาศเคลื่อนได้อิสระ) · ปลายปิด = N (อากาศติดผนัง)</div>
+    </div>
+  </div>
+
+  <div class="rubric">
+    📏 <b>Rubric 0–4</b> · แต่ละข้อ: 4=ถูก+อธิบายครบ+บูรณาการชัด · 3=ถูกแต่อธิบายสั้น · 2=หาค่าถูกแต่ไม่อธิบาย · 1=พยายามแต่ผิด · 0=ไม่ทำ · <b>รวม 7 ข้อ = 28 คะแนน · เป้าหมาย ≥ 20 (≥71%)</b>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:18px;flex-wrap:wrap">
+    <button onclick="window.print()" style="padding:10px 20px;border-radius:10px;background:#4f46e5;color:#fff;font-family:inherit;font-size:14px;font-weight:700;border:none;cursor:pointer">🖨️ พิมพ์ PDF</button>
+  </div>
+
+  <div class="foot">ใบกิจกรรม 9.1 · แผน 9 คลื่นนิ่ง + บูรณาการ · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState = {};
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay');
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function start(e){e.preventDefault();const st=canvasState[id];st.drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+  function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function end(e){e.preventDefault();canvasState[id].drawing=false;}
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);}
+document.addEventListener('DOMContentLoaded',()=>{['c1','c3'].forEach(initCanvas);});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

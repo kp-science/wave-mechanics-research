@@ -523,5 +523,73 @@ window.KP_PLAN_MEDIA = {
       'MJ-08 → คำถามเด่นเป็น Hook แผน 9 (คลื่นนิ่ง)',
       'OB-01 → Inquiry Engagement (A8.1 ≥ 80%)'
     ]
+  },
+  9: {
+    folder: 'lessons/physics3/waves/แผน09_คลื่นนิ่งและบูรณาการ',
+    title: 'แผน 9 — คลื่นนิ่ง + บูรณาการ (Standing Waves + Synthesis)',
+    meta: 'ว30203 ฟิสิกส์ 3 · ม.5 · คาบ 17–18 (100 นาที · 2 คาบ) · Theme Indigo',
+    sections: [
+      { title: '🗺 แผนภาพรวม', items: [
+        { cls:'info', no:'00', t:'Infographic แผน 9 (ฉบับสมบูรณ์)', file:'แผน9_Infographic.html',
+          d:'ภาพรวม 2 คาบ: สาระคลื่นนิ่ง · K9.1/9.2/9.3 + P9.1/9.2 + A9.1/9.2 · บูรณาการ 4 สมบัติ · 5E+POE Timeline 100\' · Theme Indigo', chips:[] },
+        { cls:'sim', no:'SIM', t:'Lab 37 — Standing Waves on a String',
+          file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/37.%20standing-waves.html',
+          d:'Virtual Lab · Doorbell vibrator + เชือก 0.5–2.5 m + น้ำหนัก 0.01–3.0 N + f 10–120 Hz · โหมดวัดค่าเอง: คลิก Node 2 จุด → วัด d → λ=2d · ใช้ใน POE-09 + Calc 9.1',
+          chips:[['m','M9.1'],['m','M9.2'],['m','M9.3'],['m','M9.4'],['k','K9.1'],['k','K9.2'],['p','P9.1']] },
+        { cls:'sim', no:'CLIP', t:'🎬 คลิปไมโครเวฟจุดร้อน (Hook Engage)',
+          d:'มาร์ชเมลโลว์/ชีสหลอมเป็นแพทเทิร์น A/N ในไมโครเวฟ (ถอดจานหมุน) · วัด λ/2 = 6cm → f = 2.45 GHz · ใช้ใน E1 Engage + Calc ข้อ 4',
+          chips:[['m','M9.1'],['m','M9.2'],['k','K9.3']] }
+      ]},
+      { title: '🎨 สื่อการสอน (ใช้ในกิจกรรม)', items: [
+        { cls:'e2', no:'02', t:'POE-09 Interactive · ใบบันทึก P / O / E', file:'สื่อ02_POE-09_ใบบันทึกPOE.html',
+          d:'Predict 5 ข้อ + canvas วาด mode n=1,2,3 · Observe 5 trials Lab 37 (W, f, n, d, λ, v) + Integration checklist · Explain CER + 🟢 Inventory 5 + 🔴 MC 4 (M9.1-M9.4)',
+          meta:'ใช้ตลอด E1–E3 · 50 นาที',
+          chips:[['p','P9.1'],['p','P9.2'],['m','M9.1'],['m','M9.2'],['m','M9.3'],['m','M9.4']] },
+        { cls:'e4', no:'03', t:'ใบกิจกรรม 9.1 · Calc คลื่นนิ่ง + บูรณาการ', file:'สื่อ03_Calc_ใบกิจกรรม9.1.html',
+          d:'7 ข้อ · พื้นฐาน (λ=2d · v=√(T/μ) · fₙ=(n/2L)√(T/μ) harmonic 1-3) + ประยุกต์ 4 (ไมโครเวฟ · กีตาร์ตัดครึ่ง · เชือก μ ต่าง · ท่อเปิด/ปิด) · canvas + worksheet-core.js',
+          meta:'ใช้ในฉาก E4 Elaborate · 25 นาที',
+          chips:[['k','K9.2'],['k','K9.3'],['p','P9.1'],['m','M9.4']] },
+        { cls:'e4', no:'04', t:'ใบกิจกรรม 9.2 · Spot the Error · คลื่นนิ่ง', file:'สื่อ04_Spot_ใบกิจกรรม9.2.html',
+          d:'5 สถานการณ์ · "คลื่นนิ่ง=หยุด" (M9.1) · "N=สั่นแรงสุด" (M9.2) · "1 ขบวนพอ" (M9.3) · "f มีค่าเดียว" (M9.4) · Integration error · claim canvas overlay + canvas อธิบาย',
+          meta:'ใช้ในฉาก E4 Elaborate · 10 นาที',
+          chips:[['k','K9.1'],['k','K9.3'],['m','M9.1'],['m','M9.2'],['m','M9.3'],['m','M9.4']] }
+      ]},
+      { title: '📊 เครื่องมือวัดและประเมิน', items: [
+        { cls:'ft', no:'05', t:'F9 Four-tier · Pre + Post', file:'สื่อ05_F9_Fourtier_PrePost.html',
+          d:'3 ข้อ Four-tier · M9.1 (คลื่นนิ่ง≠หยุด) · M9.2 (A สั่นแรง/N ไม่สั่น · ใช้ไมโครเวฟ) · M9.3 (ต้อง 2 ขบวน) · SVG + Answer Key',
+          meta:'ใช้ในฉาก F9 Pre (7\') + F9 Post (5\')',
+          chips:[['k','K9.1'],['k','K9.2'],['m','M9.1'],['m','M9.2'],['m','M9.3'],['w','วPA 1,6']] },
+        { cls:'tlc', no:'TL', t:'TL-01 · Traffic Light Card', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ06_TL-01_TrafficLight.html',
+          d:'บัตรประเมินตนเอง 🟢🟡🔴 (ใช้ร่วมกับแผน 1)', meta:'ใช้ในฉาก TLC ก่อน + TLC หลัง',
+          chips:[['a','A9.2'],['w','วPA 6,8']] },
+        { cls:'mj', no:'MJ', t:'MJ-09 · Metacognitive Journal 3-2-1', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ07_MJ-01_MetacognitiveJournal.html',
+          d:'3 เข้าใจใหม่ (A/N/fₙ/integration) · 2 เชื่อมแผน 1-8 · 1 Self-Efficacy สำหรับ FT-02 (0-10)',
+          meta:'ใช้ในฉาก MJ · 5 นาที',
+          chips:[['a','A9.1'],['a','A9.2'],['w','วPA 6,8']] },
+        { cls:'ob', no:'OB', t:'OB-01 · แบบสังเกตพฤติกรรม', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ08_OB-01_แบบสังเกตพฤติกรรม.html',
+          d:'เน้น Collaborative Synthesis (A9.1) · ใช้ร่วมกับแผน 1', meta:'ใช้ตลอด 100 นาที',
+          chips:[['a','A9.1'],['w','วPA 5,7']] },
+        { cls:'rubric', no:'R', t:'POE Rubric + Concept Map Rubric (0–4)', file:'../แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ09_POE_Rubric_เกณฑ์ให้คะแนน.html',
+          d:'Rubric รายด้าน P/O/E + Concept Map 4 สมบัติ → คลื่นนิ่ง · target ≥ 3/4', meta:'ครูใช้ประเมินใบ POE-09 + Concept Map',
+          chips:[['p','P9.1'],['p','P9.2'],['w','วPA 3,5']] }
+      ]},
+      { title: '🗒 CER Live Board', items: [
+        { cls:'info', no:'CER', t:'CER Board (ใช้ใน E3 Explain)',
+          d:'3 คอลัมน์: ↩️➕ สะท้อน+ซ้อนทับ (แก้ M9.3) · ✨ แทรกสอด→A,N (แก้ M9.2) · 🎼 Harmonics fₙ (แก้ M9.4) · ผูก POE-09 + 5 trials Lab 37',
+          meta:'ใช้ในฉาก E3 · 15 นาที',
+          chips:[['k','K9.1'],['k','K9.2'],['k','K9.3'],['w','วPA 1,3,6']] }
+      ]}
+    ],
+    linkOut: [
+      'F9 Pre/Post → % Sound · MC M9.1-M9.3 · Normalized gain · เป้า ลด MC M9.1 ≥ 50% · M9.2/M9.3 ≥ 30% · g ≥ 0.3',
+      'POE-09 + POE Rubric → คะแนนเฉลี่ย ≥ 2.0 · 5 trials Lab 37',
+      'Calc 9.1 → 7 ข้อ (พื้นฐาน 3 + ประยุกต์ 4) · คะแนนเฉลี่ย ≥ 71% (20/28)',
+      'Spot 9.2 → 5 claims · ถูก ≥ 3 ใน 5 ข้อ',
+      'Concept Map P9.2 → Rubric ≥ 3/4 · บูรณาการ 4 สมบัติ',
+      'CER Board → คลัง Claim-Evidence-Reasoning · Derive y = 2A sin(kx)cos(ωt) + fₙ = (n/2L)√(T/μ)',
+      'TL-01 → บัตรเขียว ≥ 60%',
+      'MJ-09 → Self-Efficacy FT-02 ≥ 7/10 · เชื่อมแผน 1-8 → พร้อมเข้า FT-02 (แผน 10)',
+      'OB-01 → Collaborative Synthesis (A9.1 ≥ 80%)'
+    ]
   }
 };

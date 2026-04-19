@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POE-09 · คลื่นนิ่ง + บูรณาการ (Interactive)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#e0e7ff;color:#1a202c;font-size:15px;line-height:1.6;padding:16px}
+.page{max-width:960px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 16px rgba(79,70,229,.12);padding:24px 28px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#312e81;font-weight:800}
+.head-meta{display:flex;flex-wrap:wrap;gap:8px;font-size:13.5px}
+.head-meta label{display:flex;align-items:center;gap:6px}
+.head-meta input{border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13.5px;width:120px}
+.head-meta input.short{width:60px}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:4px}
+
+.sim-bar{background:linear-gradient(135deg,#312e81,#4f46e5);border-radius:10px;padding:10px 16px;margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sim-bar span{color:#fff;font-weight:700;font-size:14px;flex:1;min-width:160px}
+.sim-btn{display:inline-block;padding:7px 14px;border-radius:9px;text-decoration:none;font-weight:700;font-size:13px;color:#fff;white-space:nowrap;transition:opacity .2s}
+.sim-btn:hover{opacity:.85}
+
+.sec{margin:16px 0;border-radius:12px;padding:16px 18px}
+.sec.p{background:#e3f2fd;border-left:6px solid #1976d2}
+.sec.o{background:#fff8f0;border-left:6px solid #ef6c00}
+.sec.e{background:#e0e7ff;border-left:6px solid #4f46e5}
+.sec-title{font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.sec.p .sec-title{color:#0d47a1}
+.sec.o .sec-title{color:#c05621}
+.sec.e .sec-title{color:#312e81}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:10px;background:#fff;border:1.5px solid currentColor;font-weight:600}
+
+.qblock{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:14px;border:1.5px solid #e2e8f0}
+.qblock:last-child{margin-bottom:0}
+.qlabel{font-weight:700;color:#1a202c;margin-bottom:10px;font-size:15px}
+.qsub{font-size:13.5px;color:#4a5568;margin-top:4px}
+
+.scenario-wrap{display:flex;align-items:center;gap:0;margin:10px 0;background:#f5f7ff;border-radius:8px;padding:8px 12px;overflow-x:auto}
+
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#f5f7ff;border:1.5px solid #e2e8f0;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:14px;transition:all .15s;user-select:none}
+.radio-opt:hover{border-color:#4f46e5;background:#e0e7ff}
+.radio-opt.selected{border-color:#4f46e5;background:#c7d2fe;font-weight:700}
+.radio-opt input{display:none}
+.check-opt{display:flex;align-items:flex-start;gap:8px;padding:6px 0;font-size:14.5px;cursor:pointer}
+.check-opt input[type=checkbox]{width:18px;height:18px;accent-color:#4f46e5;flex-shrink:0;margin-top:2px}
+
+textarea{width:100%;border:1.5px solid #c7d2fe;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:14px;resize:vertical;background:#f5f7ff;color:#1a202c;margin-top:6px;min-height:56px}
+textarea:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+input[type=number],input[type=text]{border:1.5px solid #c7d2fe;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#f5f7ff;width:80px;text-align:center}
+input[type=number]:focus,input[type=text]:focus{outline:none;border-color:#4f46e5}
+select{border:1.5px solid #c7d2fe;border-radius:6px;padding:4px 8px;font-family:inherit;font-size:13.5px;background:#f5f7ff}
+
+.mini-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+.mini-table th{background:#e0e7ff;color:#312e81;padding:7px 8px;text-align:center;border:1px solid #c7d2fe;font-weight:700}
+.mini-table td{padding:6px 8px;border:1px solid #e2e8f0;text-align:center;vertical-align:middle}
+.mini-table td.left{text-align:left}
+.mini-table tr:nth-child(even) td{background:#f5f7ff}
+
+.canvas-wrap{margin-top:10px}
+.canvas-toolbar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap;align-items:center}
+.c-btn{padding:4px 10px;border-radius:7px;border:1.5px solid #c7d2fe;background:#f5f7ff;font-family:inherit;font-size:12.5px;cursor:pointer;font-weight:600;transition:all .15s}
+.c-btn:hover{background:#e0e7ff;border-color:#4f46e5}
+.c-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.c-color{width:24px;height:24px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;transition:all .15s}
+.c-color.active{border-color:#4f46e5;box-shadow:0 0 0 2px rgba(79,70,229,.4)}
+canvas{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:#fff;touch-action:none;cursor:crosshair}
+.scene-stack{position:relative;border:2px solid #c7d2fe;border-radius:8px;overflow:hidden;background:#fff}
+.scene-stack svg.bg{display:block;width:100%;height:auto;position:relative;z-index:1}
+.scene-stack canvas.overlay{position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:0;background:transparent;z-index:2}
+.scene-hint{font-size:12px;color:#312e81;margin-top:4px}
+
+.station{background:#fff;border:1.5px solid #fed7aa;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+.station-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.station-title{font-weight:800;color:#7c2d12;font-size:15px}
+.station-badge{background:#fff7ed;color:#9a3412;border:1.5px solid #fed7aa;border-radius:8px;font-size:12px;padding:2px 8px;font-weight:700}
+.station-sim{font-size:12.5px;padding:5px 10px}
+
+.cer-block{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.cer-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;flex-shrink:0;margin-top:4px}
+.cer-c{background:#4f46e5}
+.cer-e{background:#ef6c00}
+.cer-r{background:#0891b2}
+.cer-content{flex:1}
+.cer-content label{font-weight:700;font-size:14px;display:block;margin-bottom:2px}
+
+.misc-correct{background:#eef2ff;border-left:4px solid #4f46e5;border-radius:8px;padding:12px 14px;margin-top:12px}
+.misc-correct h4{font-size:14px;font-weight:800;color:#312e81;margin-bottom:4px}
+.misc-correct .hint{font-size:12.5px;color:#312e81;margin-bottom:10px;opacity:.85}
+.mc-item{background:#fff;border:1.5px solid #c7d2fe;border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.mc-item:last-child{margin-bottom:0}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:13.5px}
+.mc-header .misc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.mc-header .mc-wrong{color:#991b1b;font-weight:700}
+.mc-header .mc-wrong em{font-style:italic;color:#2d3748;font-weight:400}
+.mc-row{margin:8px 0}
+.mc-row>label{font-size:13px;font-weight:700;color:#312e81;display:block;margin-bottom:4px}
+.mc-row .radio-row{display:flex;flex-wrap:wrap;gap:6px}
+.mc-row .radio-col{display:flex;flex-direction:column;gap:4px}
+.mc-row .radio-opt{background:#f5f7ff;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;transition:all .15s;user-select:none;display:flex;align-items:center;gap:6px}
+.mc-row .radio-opt:hover{border-color:#4f46e5;background:#e0e7ff}
+.mc-row .radio-opt.selected{border-color:#4f46e5;background:#c7d2fe;font-weight:700}
+.mc-row .radio-opt input{display:none}
+.mc-row textarea{min-height:44px;font-size:13.5px}
+
+.deep-q{background:#fff;border:1.5px solid #c7d2fe;border-radius:10px;padding:12px 14px;margin-top:12px}
+.deep-q h4{color:#312e81;font-size:14px;font-weight:800;margin-bottom:6px}
+.deep-q .dq{margin:10px 0;padding:8px 10px;background:#f5f7ff;border-left:3px solid #4f46e5;border-radius:6px}
+.deep-q .dq label{font-weight:700;font-size:13.5px;color:#312e81;display:block;margin-bottom:4px}
+
+.cartoon-box{background:#eef2ff;border:1.5px dashed #4f46e5;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13.5px}
+.cartoon-box b{color:#312e81}
+
+.submit-bar{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;align-items:center}
+.btn-submit{padding:10px 28px;border-radius:10px;background:#4f46e5;color:#fff;font-family:inherit;font-size:15px;font-weight:800;border:none;cursor:pointer;transition:all .18s}
+.btn-submit:hover{background:#3730a3}
+.btn-reset{padding:10px 18px;border-radius:10px;background:#f5f7ff;color:#4a5568;font-family:inherit;font-size:14px;font-weight:700;border:1.5px solid #e2e8f0;cursor:pointer}
+.result-box{margin-top:12px;background:#e0e7ff;border:2px solid #4f46e5;border-radius:10px;padding:14px;display:none;font-size:13.5px}
+.result-box h4{color:#312e81;margin-bottom:8px;font-size:15px}
+
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #e2e8f0;padding-top:10px}
+@media (max-width:640px){.scenario-wrap svg{max-width:100%}}
+</style>
+</head>
+<body data-ws-id="plan9-poe">
+
+<div class="page">
+
+  <!-- ══ HEADER ══ -->
+  <div class="head">
+    <div>
+      <h1>🎵 POE-09 · คลื่นนิ่ง + บูรณาการ (Interactive)</h1>
+      <div><span class="tag">แผน 9</span><span class="tag">Interactive</span> คู่กับ 🎬 คลิป "ไมโครเวฟจุดร้อน"</div>
+    </div>
+    <div class="head-meta">
+      <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อ-สกุล" style="width:150px"></label>
+      <label>เลขที่ <input type="number" id="s-num" class="short" min="1" max="50"></label>
+      <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/5"></label>
+      <label>กลุ่ม <input type="number" id="s-grp" class="short" min="1" max="10"></label>
+    </div>
+  </div>
+
+  <!-- ══ HOOK ══ -->
+  <div class="cartoon-box">
+    🎬 <b>คลิป "ไมโครเวฟจุดร้อน" (Microwave Standing Wave Demo)</b> — นักวิทยาศาสตร์ถอด<b>จานหมุน</b>ออกจากไมโครเวฟ · วาง<b>ชีสเยิ้ม/มาร์ชเมลโลว์</b>บนจาน · อุ่น 30 วินาที
+    · ผลที่ได้: <b>บางจุดหลอมเยิ้ม · บางจุดไม่หลอมเลย</b> สลับกันเป็นระยะเท่ากัน
+    · <b>คำถามชวนคิด:</b> (1) ทำไมบางจุดร้อน บางจุดเย็น? · (2) ถ้าวัดระยะระหว่างจุดร้อนได้ <b>6 cm (= λ/2)</b>
+    → ความถี่ไมโครเวฟ = ? · (3) ภายในไมโครเวฟมี<b>คลื่นนิ่ง</b>ได้อย่างไร? เกี่ยวกับ "การสะท้อนผนัง" + "การซ้อนทับ" อย่างไร? วันนี้จะหาคำตอบผ่าน Lab 37
+  </div>
+
+  <!-- ══ SIM LAUNCHER ══ -->
+  <div class="sim-bar">
+    <span>🚀 Simulation ที่ใช้ในคาบ · Lab 37 Standing Waves on a String (โหมดวัดค่าเอง)</span>
+    <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/37.%20standing-waves.html" target="_blank" rel="noopener" class="sim-btn" style="background:#312e81">🎵 Lab 37 · Standing Waves</a>
+  </div>
+
+  <!-- ══ P · PREDICT ══ -->
+  <div class="sec p">
+    <div class="sec-title">🔮 P · Predict <span class="badge">ก่อนทดลอง · 8 นาที</span></div>
+
+    <div style="font-size:13.5px;color:#334155;background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:12px">
+      <b>สถานการณ์:</b> ตั้ง Lab 37 · L = 1.50 m · μ = 4.0 g/m · f = 60 Hz (คงที่) · <b>เพิ่มน้ำหนัก W</b> ทีละขั้น (0.03 → 0.44 → 1.32 N) · สังเกต<b>จำนวน loops (n)</b>, <b>ความยาวคลื่น λ</b>, <b>ความเร็ว v</b>
+    </div>
+
+    <!-- Q1: เพิ่ม W → n loops (M9.4) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 1 · เพิ่ม W จาก 0.03 → 1.32 N · <b>จำนวน loops (n)</b> จะเปลี่ยนอย่างไร?</div>
+      <div class="qsub">น้ำหนักเพิ่ม → แรงตึง T เพิ่ม → v เพิ่ม → λ เพิ่ม (f คงที่)</div>
+      <div class="radio-row" id="p1">
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="up"> n เพิ่มขึ้น</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="down"> n ลดลง</label>
+        <label class="radio-opt" onclick="selectRadio('p1',this)"><input type="radio" name="p1" value="same"> n คงที่</label>
+      </div>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:6px">เหตุผล:</label>
+      <textarea id="p1-reason" rows="2" placeholder="เพราะ W เพิ่ม → T เพิ่ม → v = √(T/μ) เพิ่ม → λ = v/f เพิ่ม → L = nλ/2 คงที่ ดังนั้น n ..."></textarea>
+    </div>
+
+    <!-- Q2: Node/Antinode identification (M9.2) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 2 · บนเชือกคลื่นนิ่ง · จุดใด<b>สั่นแรงที่สุด</b>? (M9.2)</div>
+      <div class="radio-row" id="p2">
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="node"> N (Node · บัพ · จุดที่เชือกไขว้)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="antinode"> A (Antinode · ปฏิบัพ · จุดกลางระหว่าง Node)</label>
+        <label class="radio-opt" onclick="selectRadio('p2',this)"><input type="radio" name="p2" value="all"> ทุกจุดบนเชือกสั่นเท่ากัน</label>
+      </div>
+    </div>
+
+    <!-- Q3: Need 2 waves (M9.3) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 3 · คลื่นนิ่งเกิดได้จากคลื่นกี่ขบวน? (M9.3)</div>
+      <div class="radio-row" id="p3">
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="one"> 1 ขบวน (คลื่นหยุดนิ่งโดยธรรมชาติ)</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="two-same"> 2 ขบวน · ทิศเดียวกัน</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="two-opp"> 2 ขบวน · สวนทางกัน · λ, f เท่ากัน</label>
+        <label class="radio-opt" onclick="selectRadio('p3',this)"><input type="radio" name="p3" value="many"> ≥ 3 ขบวน จึงเกิดได้</label>
+      </div>
+    </div>
+
+    <!-- Q4: Standing wave means stop? (M9.1) -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 4 · "คลื่นนิ่ง" ชื่อบอกว่า "นิ่ง" · แปลว่าคลื่น<b>หยุดเคลื่อนไหว</b>แล้วใช่ไหม? (M9.1)</div>
+      <div class="radio-row" id="p4">
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="yes"> ใช่ · คลื่นหยุดแล้ว พลังงานหาย</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="partial"> คลื่นเคลื่อนครึ่งนึง นิ่งครึ่งนึง</label>
+        <label class="radio-opt" onclick="selectRadio('p4',this)"><input type="radio" name="p4" value="no"> ไม่ · คลื่น 2 ขบวนยังเคลื่อนอยู่ · "นิ่ง" หมายถึงตำแหน่ง A/N คงที่</label>
+      </div>
+    </div>
+
+    <!-- Q5: Draw modes n=1,2,3 -->
+    <div class="qblock">
+      <div class="qlabel">ข้อ 5 · ✏️ <b>วาดโหมด n = 1, 2, 3</b> บนเชือกสองปลายตรึง · ระบุตำแหน่ง A (ปฏิบัพ) และ N (บัพ)</div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tb-p-pencil" onclick="setTool('canvas-p','pencil',this)">✏️ ดินสอ</button>
+          <button class="c-btn" id="tb-p-eraser" onclick="setTool('canvas-p','eraser',this)">⬜ ยางลบ</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('canvas-p','#1a202c',this)" title="ดำ"></div>
+          <div class="c-color" style="background:#4f46e5" onclick="setColor('canvas-p','#4f46e5',this)" title="คลื่น"></div>
+          <div class="c-color" style="background:#dc2626" onclick="setColor('canvas-p','#dc2626',this)" title="A"></div>
+          <div class="c-color" style="background:#0891b2" onclick="setColor('canvas-p','#0891b2',this)" title="N"></div>
+          <button class="c-btn" onclick="clearCanvas('canvas-p')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+        </div>
+        <div class="scene-stack">
+          <svg class="bg" viewBox="0 0 900 220" xmlns="http://www.w3.org/2000/svg">
+            <rect width="900" height="220" fill="#f5f7ff"/>
+            <line x1="300" y1="0" x2="300" y2="220" stroke="#c7d2fe" stroke-dasharray="4,4"/>
+            <line x1="600" y1="0" x2="600" y2="220" stroke="#c7d2fe" stroke-dasharray="4,4"/>
+            <!-- Panel 1: n=1 -->
+            <text x="150" y="20" font-size="13" fill="#312e81" font-weight="800" text-anchor="middle">n = 1 (fundamental)</text>
+            <line x1="40" y1="110" x2="260" y2="110" stroke="#c7d2fe" stroke-dasharray="2,2"/>
+            <circle cx="40" cy="110" r="4" fill="#312e81"/><circle cx="260" cy="110" r="4" fill="#312e81"/>
+            <text x="40" y="200" font-size="10" fill="#4a5568" text-anchor="middle">ปลายตรึง (L=1.5m)</text>
+            <!-- Panel 2: n=2 -->
+            <text x="450" y="20" font-size="13" fill="#312e81" font-weight="800" text-anchor="middle">n = 2</text>
+            <line x1="340" y1="110" x2="560" y2="110" stroke="#c7d2fe" stroke-dasharray="2,2"/>
+            <circle cx="340" cy="110" r="4" fill="#312e81"/><circle cx="560" cy="110" r="4" fill="#312e81"/>
+            <!-- Panel 3: n=3 -->
+            <text x="750" y="20" font-size="13" fill="#312e81" font-weight="800" text-anchor="middle">n = 3</text>
+            <line x1="640" y1="110" x2="860" y2="110" stroke="#c7d2fe" stroke-dasharray="2,2"/>
+            <circle cx="640" cy="110" r="4" fill="#312e81"/><circle cx="860" cy="110" r="4" fill="#312e81"/>
+            <text x="15" y="215" font-size="9" fill="#64748b">💡 วาด A (ปฏิบัพ สั่นแรง) ด้วยจุดแดง · N (บัพ ไม่สั่น) ด้วยจุดฟ้า</text>
+          </svg>
+          <canvas id="canvas-p" class="overlay" width="900" height="220"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confidence -->
+    <div class="qblock" style="padding:10px 14px">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจรวมก่อนทดลอง:</span>
+      <div class="radio-row" id="p-conf" style="margin-top:6px">
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('p-conf',this)"><input type="radio" name="p-conf" value="low">😕 น้อย</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ O · OBSERVE ══ -->
+  <div class="sec o">
+    <div class="sec-title">👁 O · Observe <span class="badge">Lab 37 · 5 Trials · 30 นาที</span></div>
+
+    <div style="background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13.5px">
+      📋 <b>ตั้งค่า sim:</b> เลือก <b>โหมด "วัดค่าเอง"</b> · L = 1.50 m · μ = 4.0 g/m · f = <b>60 Hz (คงที่)</b> · ปรับ W ตามตาราง · คลิก Node 2 จุดติดกัน → ระบบวัดระยะ d ให้ → <b>λ = 2d</b> · บันทึก n (จำนวน loops ที่เห็น) + v = fλ
+    </div>
+
+    <!-- 5-trial table -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">📊 ตารางบันทึกผล 5 Trials</span>
+        <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/37.%20standing-waves.html" target="_blank" rel="noopener" class="sim-btn station-sim" style="background:#312e81">🚀 เปิด Lab 37</a>
+      </div>
+      <table class="mini-table">
+        <tr><th>Trial</th><th>W (N)</th><th>f (Hz)</th><th>n (loops)</th><th>d วัด (m)</th><th>λ = 2d (m)</th><th>v = fλ (m/s)</th></tr>
+        <tr><td>1</td><td>0.029</td><td>60</td>
+          <td><input type="number" id="t1-n" step="1" min="0" placeholder="17"></td>
+          <td><input type="number" id="t1-d" step="0.001" min="0" placeholder="0.088"></td>
+          <td><input type="number" id="t1-lam" step="0.001" min="0" placeholder="0.176"></td>
+          <td><input type="number" id="t1-v" step="0.01" min="0" placeholder="10.6"></td>
+        </tr>
+        <tr><td>2</td><td>0.11</td><td>60</td>
+          <td><input type="number" id="t2-n" step="1" min="0" placeholder="8-9"></td>
+          <td><input type="number" id="t2-d" step="0.001" min="0" placeholder="0.17"></td>
+          <td><input type="number" id="t2-lam" step="0.001" min="0" placeholder="0.34"></td>
+          <td><input type="number" id="t2-v" step="0.01" min="0" placeholder="20.4"></td>
+        </tr>
+        <tr><td>3</td><td>0.25</td><td>60</td>
+          <td><input type="number" id="t3-n" step="1" min="0" placeholder="5-6"></td>
+          <td><input type="number" id="t3-d" step="0.001" min="0" placeholder="0.25"></td>
+          <td><input type="number" id="t3-lam" step="0.001" min="0" placeholder="0.50"></td>
+          <td><input type="number" id="t3-v" step="0.01" min="0" placeholder="30.0"></td>
+        </tr>
+        <tr><td>4</td><td>0.44</td><td>60</td>
+          <td><input type="number" id="t4-n" step="1" min="0" placeholder="3-4"></td>
+          <td><input type="number" id="t4-d" step="0.001" min="0" placeholder="0.43"></td>
+          <td><input type="number" id="t4-lam" step="0.001" min="0" placeholder="0.86"></td>
+          <td><input type="number" id="t4-v" step="0.01" min="0" placeholder="51.6"></td>
+        </tr>
+        <tr><td>5</td><td>1.00</td><td>60</td>
+          <td><input type="number" id="t5-n" step="1" min="0" placeholder="2"></td>
+          <td><input type="number" id="t5-d" step="0.001" min="0" placeholder="0.65"></td>
+          <td><input type="number" id="t5-lam" step="0.001" min="0" placeholder="1.30"></td>
+          <td><input type="number" id="t5-v" step="0.01" min="0" placeholder="78"></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Observe questions -->
+    <div class="qblock">
+      <div class="qlabel">สังเกตจากตาราง 5 Trials</div>
+      <table class="mini-table">
+        <tr><td class="left">เมื่อ W เพิ่ม · <b>n (loops)</b> เปลี่ยนอย่างไร?</td>
+          <td>
+            <div class="radio-row" id="o-n" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o-n',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-n" value="up">เพิ่ม</label>
+              <label class="radio-opt" onclick="selectRadio('o-n',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-n" value="down">ลดลง</label>
+              <label class="radio-opt" onclick="selectRadio('o-n',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-n" value="same">คงที่</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">เมื่อ W เพิ่ม · <b>λ</b> เปลี่ยนอย่างไร?</td>
+          <td>
+            <div class="radio-row" id="o-lam" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o-lam',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-lam" value="up">เพิ่ม</label>
+              <label class="radio-opt" onclick="selectRadio('o-lam',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-lam" value="down">ลดลง</label>
+              <label class="radio-opt" onclick="selectRadio('o-lam',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-lam" value="same">คงที่</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">เมื่อ W เพิ่ม · <b>v</b> เปลี่ยนอย่างไร?</td>
+          <td>
+            <div class="radio-row" id="o-v" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o-v',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-v" value="up">เพิ่ม</label>
+              <label class="radio-opt" onclick="selectRadio('o-v',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-v" value="down">ลดลง</label>
+              <label class="radio-opt" onclick="selectRadio('o-v',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-v" value="same">คงที่</label>
+            </div>
+          </td>
+        </tr>
+        <tr><td class="left">ตำแหน่ง A และ N <b>เคลื่อนที่</b>ตามเวลาไหม?</td>
+          <td>
+            <div class="radio-row" id="o-an" style="margin:0;gap:4px;justify-content:center">
+              <label class="radio-opt" onclick="selectRadio('o-an',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-an" value="yes">เคลื่อน</label>
+              <label class="radio-opt" onclick="selectRadio('o-an',this)" style="padding:3px 8px;font-size:12px"><input type="radio" name="o-an" value="no">คงที่</label>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Integration observation -->
+    <div class="station">
+      <div class="station-head">
+        <span class="station-title">🔗 สังเกตบูรณาการ 4 สมบัติใน Lab 37</span>
+      </div>
+      <div style="font-size:13px;color:#4a5568;margin-bottom:8px">สังเกต Lab 37 · ระบุ<b>สมบัติที่พบใน sim</b>: 1) ปลายเชือกสะท้อนคลื่นกลับ? 2) incident+reflected ซ้อนทับกัน? 3) ตำแหน่ง A/N เกิดจากแทรกสอดเสริม/หักล้าง?</div>
+      <label class="check-opt"><input type="checkbox" id="int-1"> 🔸 <b>1. การสะท้อน</b> — เห็นคลื่นกลับจากปลายตรึง (แผน 5)</label>
+      <label class="check-opt"><input type="checkbox" id="int-2"> 🔸 <b>2. การซ้อนทับ</b> — incident + reflected รวมเป็นคลื่นเดียว (แผน 4)</label>
+      <label class="check-opt"><input type="checkbox" id="int-3"> 🔸 <b>3. การแทรกสอด</b> — A = เสริม (Δr=nλ) · N = หักล้าง (Δr=(n+½)λ) (แผน 7)</label>
+      <label class="check-opt"><input type="checkbox" id="int-4"> 🔸 <b>4. การหักเห</b> — ปลายเชือกตรึง = รอยต่อสุด (แผน 6) ทำให้กลับเฟส 180°</label>
+      <label style="font-size:13.5px;font-weight:700;display:block;margin-top:10px">สรุป (1-2 ประโยค):</label>
+      <textarea id="o-summary" rows="3" placeholder="เมื่อ W เพิ่ม → T เพิ่ม → v เพิ่ม → λ เพิ่ม (f=60 Hz คงที่) → n ลดลง · A/N ตำแหน่งคงที่แต่เชือกสั่นอยู่ตลอด · บูรณาการ 4 สมบัติ ..."></textarea>
+    </div>
+  </div>
+
+  <!-- ══ E · EXPLAIN / CER ══ -->
+  <div class="sec e">
+    <div class="sec-title">✍️ E · Explain — CER + Conceptual Inventory <span class="badge">15 นาที</span></div>
+    <div style="background:#e0e7ff;border-radius:8px;padding:8px 12px;margin-bottom:14px;font-size:13.5px;color:#312e81">
+      📡 <b>วิธีส่ง:</b> กรอก C + E + R → กด "ส่ง POE-09" → ระบบบันทึกข้อมูลและฉายขึ้นจอ
+    </div>
+
+    <div class="cer-block">
+      <div class="cer-icon cer-c">C</div>
+      <div class="cer-content">
+        <label>Claim — ข้อกล่าวอ้าง: <span style="font-weight:400;font-size:13px;color:#555">สรุปคลื่นนิ่ง + A/N + fₙ</span></label>
+        <textarea id="cer-c" rows="3" placeholder="คลื่นนิ่งเกิดจากคลื่น 2 ขบวนสวนทาง (incident + reflected) ซ้อนทับกัน · A = ปฏิบัพ (สั่นแรง) · N = บัพ (ไม่สั่น) · ระยะ N-N = λ/2 · fₙ = (n/2L)√(T/μ) ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-e">E</div>
+      <div class="cer-content">
+        <label>Evidence — หลักฐาน: <span style="font-weight:400;font-size:13px;color:#555">อ้างตาราง 5 Trials Lab 37</span></label>
+        <textarea id="cer-e" rows="3" placeholder="Trial 1 W=0.029 n=17 λ=0.176 v=10.6 · Trial 5 W=1.00 n=2 λ=1.30 v=78 · f=60 Hz คงที่ทุก trial · λ = 2d ยืนยัน · v² ∝ T (กราฟ v-√T) ..."></textarea>
+      </div>
+    </div>
+    <div class="cer-block">
+      <div class="cer-icon cer-r">R</div>
+      <div class="cer-content">
+        <label>Reasoning — เหตุผลเชิงหลักการ: <span style="font-weight:400;font-size:13px;color:#555">ซ้อนทับ + สะท้อน + แทรกสอด</span></label>
+        <textarea id="cer-r" rows="3" placeholder="y1 = A sin(kx-ωt) + y2 = A sin(kx+ωt) = 2A sin(kx)cos(ωt) · sin(kx)=0 → N · |sin(kx)|=1 → A · ปลายตรึง sin(kL)=0 → L=nλ/2 → fₙ = (n/2L)√(T/μ) · บูรณาการ 4 สมบัติ ..."></textarea>
+      </div>
+    </div>
+
+    <!-- 🟢 Conceptual Inventory · 5 correct -->
+    <div style="background:#fff;border:1.5px solid #c7d2fe;border-radius:10px;padding:12px 16px;margin-top:6px">
+      <div style="font-weight:700;color:#312e81;margin-bottom:8px;font-size:14.5px">🟢 Conceptual Inventory · ติ๊กทุกข้อที่ตรงกับหลักฐานกลุ่มของคุณ:</div>
+      <label class="check-opt"><input type="checkbox" id="chk1"> 🟢 <b>คลื่นนิ่ง = คลื่น 2 ขบวนสวนทางซ้อนทับ</b> · เชือกยังสั่นอยู่ · ตำแหน่ง A/N คงที่ <span style="color:#888;font-size:12.5px">— แก้ M9.1, M9.3</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk2"> 🟢 <b>A (Antinode) สั่นแรงสุด · N (Node) ไม่สั่นเลย</b> <span style="color:#888;font-size:12.5px">— แก้ M9.2</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk3"> 🟢 <b>ระยะ Node ติดกัน = λ/2</b> · ดังนั้น <b>λ = 2d</b> (สูตรลัด Lab 37)</label>
+      <label class="check-opt"><input type="checkbox" id="chk4"> 🟢 <b>เชือกมี harmonics หลายค่า</b> · fₙ = n·f₁ = (n/2L)√(T/μ) · n = 1, 2, 3, ... <span style="color:#888;font-size:12.5px">— แก้ M9.4</span></label>
+      <label class="check-opt"><input type="checkbox" id="chk5"> 🟢 <b>บูรณาการ 4 สมบัติ</b>: สะท้อน (5) + ซ้อนทับ (4) + แทรกสอด (7) + หักเห ที่รอยต่อ (6) → เกิดคลื่นนิ่ง</label>
+    </div>
+
+    <!-- 🔴 Misconception correction · 4 ส่วน -->
+    <div class="misc-correct">
+      <h4>🔴 สรุปแก้ Misconception · ติ๊กถ้ายังเคยเชื่อ/ไม่แน่ใจ</h4>
+      <div class="hint">ทำ 3 ขั้น · (①) ประเมินความเชื่อเดิม (②) เลือกแนวคิดที่ถูก (③) ยกหลักฐานสั้น ๆ</div>
+
+      <!-- M9.1 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M9.1</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"คลื่นนิ่ง = คลื่นที่หยุดนิ่ง ไม่เคลื่อนไหวแล้ว พลังงานหาย"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc1-held">
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="yes"> เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-held',this)"><input type="radio" name="mc1-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้อง:</label>
+          <div class="radio-col" id="mc1-correct">
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="a"> คลื่น 2 ขบวนยัง<b>เคลื่อนที่</b>อยู่ · เชือกยังสั่น · แค่<b>ตำแหน่ง A/N คงที่</b> · พลังงานยังอยู่ในระบบ</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="b"> คลื่นหยุดแล้วจริง พลังงานเปลี่ยนเป็นความร้อน</label>
+            <label class="radio-opt" onclick="selectRadio('mc1-correct',this)"><input type="radio" name="mc1-correct" value="c"> คลื่นหยุดบางส่วน ยังเคลื่อนบางส่วน</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจาก Lab 37 (1-2 ประโยค):</label>
+          <textarea id="mc1-evidence" rows="2" placeholder="ที่ Trial ใด ๆ เชือกยังสั่นอยู่ตลอด · ปฏิบัพกระพือขึ้น-ลง · บัพนิ่ง · ยังมี energy transfer ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M9.2 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M9.2</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"N (Node) คือจุดที่สั่นมากที่สุด"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc2-held">
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="yes"> เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-held',this)"><input type="radio" name="mc2-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้อง:</label>
+          <div class="radio-col" id="mc2-correct">
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="a"> <b>A (Antinode) = สั่นแรงสุด</b> (เฟสเดียวกัน เสริมกัน) · <b>N (Node) = ไม่สั่น</b> (สวนเฟส หักล้าง)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="b"> N สั่นแรง · A ไม่สั่น (ตามชื่อ)</label>
+            <label class="radio-opt" onclick="selectRadio('mc2-correct',this)"><input type="radio" name="mc2-correct" value="c"> ทุกจุดสั่นเท่ากัน ไม่มีต่าง</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจาก Lab 37:</label>
+          <textarea id="mc2-evidence" rows="2" placeholder="จุดที่เชือกไม่ขยับเลย = N · จุดที่กระพือมากสุดอยู่ตรงกลางระหว่าง N 2 ตัว = A ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M9.3 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M9.3</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"คลื่นขบวนเดียวก็ทำให้เกิดคลื่นนิ่งได้"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc3-held">
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="yes"> เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-held',this)"><input type="radio" name="mc3-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้อง:</label>
+          <div class="radio-col" id="mc3-correct">
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="a"> ต้องมี<b>ขั้นต่ำ 2 ขบวน</b> · ทิศตรงข้าม · λ, f, A เท่ากัน (ปกติคือ incident + reflected)</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="b"> 1 ขบวนพอ ถ้าแอมพลิจูดสูง</label>
+            <label class="radio-opt" onclick="selectRadio('mc3-correct',this)"><input type="radio" name="mc3-correct" value="c"> ต้อง ≥ 3 ขบวนทิศต่าง ๆ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจาก Lab 37 (ปลายเชือกตรึง):</label>
+          <textarea id="mc3-evidence" rows="2" placeholder="Lab 37 มี Doorbell สั่นส่งคลื่นเข้า (incident) · ปลายเชือกตรึงสะท้อนกลับ (reflected) · 2 ขบวนซ้อนทับ → คลื่นนิ่ง ถ้าตัดปลายออก คลื่นนิ่งหายไป ..."></textarea>
+        </div>
+      </div>
+
+      <!-- M9.4 -->
+      <div class="mc-item">
+        <div class="mc-header"><span class="misc-code">M9.4</span><span class="mc-wrong">ข้อความที่ผิด:</span> <em>"ความถี่ธรรมชาติของเชือกมีค่าเดียว เปลี่ยนไม่ได้"</em></div>
+        <div class="mc-row">
+          <label>① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+          <div class="radio-row" id="mc4-held">
+            <label class="radio-opt" onclick="selectRadio('mc4-held',this)"><input type="radio" name="mc4-held" value="yes"> เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc4-held',this)"><input type="radio" name="mc4-held" value="no"> ไม่เคย</label>
+            <label class="radio-opt" onclick="selectRadio('mc4-held',this)"><input type="radio" name="mc4-held" value="unsure"> ไม่แน่ใจ</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>② แนวคิดที่ถูกต้อง:</label>
+          <div class="radio-col" id="mc4-correct">
+            <label class="radio-opt" onclick="selectRadio('mc4-correct',this)"><input type="radio" name="mc4-correct" value="a"> มี<b>หลายค่า (harmonics)</b> · fₙ = n·f₁ = (n/2L)√(T/μ) · n=1,2,3,...</label>
+            <label class="radio-opt" onclick="selectRadio('mc4-correct',this)"><input type="radio" name="mc4-correct" value="b"> ค่าเดียว แต่หาด้วยสูตร v=fλ</label>
+            <label class="radio-opt" onclick="selectRadio('mc4-correct',this)"><input type="radio" name="mc4-correct" value="c"> ไม่มีค่าแน่นอน เปลี่ยนตามเวลา</label>
+          </div>
+        </div>
+        <div class="mc-row">
+          <label>③ หลักฐานจาก Lab 37 (เปลี่ยน W เห็น n ต่าง):</label>
+          <textarea id="mc4-evidence" rows="2" placeholder="Trial 1-5 น้ำหนักต่าง ได้ n ต่าง (1, 2, 3, ... 17) ทุกค่าเกิดคลื่นนิ่งได้ · เชือกมี harmonics หลายค่า ..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep-dive 3 questions -->
+    <div class="deep-q">
+      <h4>🔎 คำถามเจาะลึก 3 ข้อ</h4>
+      <div class="dq">
+        <label>ข้อ ก · ทำไมระยะ<b> Node ติดกัน = λ/2</b>? (อธิบายจาก y = 2A sin(kx)cos(ωt))</label>
+        <textarea id="dq-a" rows="2" placeholder="N เกิดเมื่อ sin(kx)=0 → kx=nπ → x=nπ/k=nλ/2 · ระยะระหว่าง N ติดกัน (n+1) - n = λ/2 ..."></textarea>
+      </div>
+      <div class="dq">
+        <label>ข้อ ข · ทำไม<b> fₙ = (n/2L)√(T/μ)</b>? (อนุมานจากปลายตรึง + v = √(T/μ))</label>
+        <textarea id="dq-b" rows="2" placeholder="ปลายตรึง 2 ปลาย → sin(kL)=0 → kL=nπ → 2πL/λ=nπ → λ=2L/n · f=v/λ=(n/2L)√(T/μ) ..."></textarea>
+      </div>
+      <div class="dq">
+        <label>ข้อ ค · <b>บูรณาการ 4 สมบัติ</b> → คลื่นนิ่ง · ระบุความเชื่อมโยง (ตอบตาราง):</label>
+        <div style="overflow-x:auto;margin-top:6px">
+          <table class="mini-table">
+            <tr><th>สมบัติ (แผน)</th><th>บทบาทในการสร้างคลื่นนิ่ง</th></tr>
+            <tr><td>สะท้อน (แผน 5)</td><td><input type="text" id="dq-c1" placeholder="ปลายตรึง → กลับเฟส 180°" style="width:100%"></td></tr>
+            <tr><td>ซ้อนทับ (แผน 4)</td><td><input type="text" id="dq-c2" placeholder="incident + reflected รวมพีชคณิต" style="width:100%"></td></tr>
+            <tr><td>แทรกสอด (แผน 7)</td><td><input type="text" id="dq-c3" placeholder="เสริม = A · หักล้าง = N" style="width:100%"></td></tr>
+            <tr><td>หักเห (แผน 6)</td><td><input type="text" id="dq-c4" placeholder="รอยต่อ μ เปลี่ยน → บางส่วนสะท้อน" style="width:100%"></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Post confidence -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap">
+      <span style="font-weight:700;font-size:14px">ความมั่นใจหลังเรียน:</span>
+      <div class="radio-row" id="e-conf" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="high">😊 มาก</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="mid">😐 ปานกลาง</label>
+        <label class="radio-opt" onclick="selectRadio('e-conf',this)" style="padding:5px 12px"><input type="radio" name="e-conf" value="low">😕 น้อย</label>
+      </div>
+      <div class="radio-row" id="e-change" style="margin:0">
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="up">↑ เพิ่มขึ้น</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="same">= เท่าเดิม</label>
+        <label class="radio-opt" onclick="selectRadio('e-change',this)" style="padding:5px 10px;font-size:13px"><input type="radio" name="e-change" value="down">↓ ลดลง</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SUBMIT ══ -->
+  <div class="submit-bar">
+    <button class="btn-submit" onclick="submitPOE()">📡 ส่ง POE-09</button>
+    <button class="btn-reset" onclick="if(confirm('ล้างข้อมูลทั้งหมด?'))location.reload()">🔄 เริ่มใหม่</button>
+    <span id="submit-status" style="font-size:13.5px;color:#312e81"></span>
+  </div>
+  <div class="result-box" id="result-box">
+    <h4>✅ สรุปคำตอบที่ส่ง</h4>
+    <pre id="result-pre" style="font-size:12.5px;white-space:pre-wrap;color:#1a202c"></pre>
+  </div>
+
+  <div class="foot">POE-09 Interactive · แผน 9 คลื่นนิ่ง + บูรณาการ · ว30203 ฟิสิกส์ 3 · นายโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+function selectRadio(groupId, labelEl) {
+  document.querySelectorAll(`#${groupId} .radio-opt`).forEach(l => l.classList.remove('selected'));
+  labelEl.classList.add('selected');
+  const input = labelEl.querySelector('input');
+  if (input) input.checked = true;
+}
+
+const canvasState = {};
+function initCanvas(id) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const transparent = canvas.classList.contains('overlay');
+  canvasState[id] = { drawing: false, tool: 'pencil', color: '#1a202c', lw: 2.5, ctx, transparent };
+  if (!transparent) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function start(e){e.preventDefault();const st=canvasState[id];st.drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+  function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function end(e){e.preventDefault();canvasState[id].drawing=false;}
+  canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+
+function submitPOE() {
+  const data = {
+    student: {
+      name: document.getElementById('s-name').value,
+      num: document.getElementById('s-num').value,
+      room: document.getElementById('s-room').value,
+      group: document.getElementById('s-grp').value
+    },
+    P: {
+      p1: document.querySelector('input[name="p1"]:checked')?.value || '—',
+      p1_reason: document.getElementById('p1-reason').value,
+      p2: document.querySelector('input[name="p2"]:checked')?.value || '—',
+      p3: document.querySelector('input[name="p3"]:checked')?.value || '—',
+      p4: document.querySelector('input[name="p4"]:checked')?.value || '—',
+      confidence: document.querySelector('input[name="p-conf"]:checked')?.value || '—'
+    },
+    O: {
+      trials: [1,2,3,4,5].map(i => ({
+        n: document.getElementById(`t${i}-n`)?.value,
+        d: document.getElementById(`t${i}-d`)?.value,
+        lam: document.getElementById(`t${i}-lam`)?.value,
+        v: document.getElementById(`t${i}-v`)?.value
+      })),
+      n_trend: document.querySelector('input[name="o-n"]:checked')?.value || '—',
+      lam_trend: document.querySelector('input[name="o-lam"]:checked')?.value || '—',
+      v_trend: document.querySelector('input[name="o-v"]:checked')?.value || '—',
+      an_move: document.querySelector('input[name="o-an"]:checked')?.value || '—',
+      integration: [1,2,3,4].filter(i => document.getElementById(`int-${i}`)?.checked).join(','),
+      summary: document.getElementById('o-summary').value
+    },
+    E: {
+      claim: document.getElementById('cer-c').value,
+      evidence: document.getElementById('cer-e').value,
+      reasoning: document.getElementById('cer-r').value,
+      checks: [1,2,3,4,5].filter(i => document.getElementById(`chk${i}`)?.checked).join(','),
+      mc1_held: document.querySelector('input[name="mc1-held"]:checked')?.value || '—',
+      mc1_correct: document.querySelector('input[name="mc1-correct"]:checked')?.value || '—',
+      mc1_evidence: document.getElementById('mc1-evidence')?.value || '',
+      mc2_held: document.querySelector('input[name="mc2-held"]:checked')?.value || '—',
+      mc2_correct: document.querySelector('input[name="mc2-correct"]:checked')?.value || '—',
+      mc2_evidence: document.getElementById('mc2-evidence')?.value || '',
+      mc3_held: document.querySelector('input[name="mc3-held"]:checked')?.value || '—',
+      mc3_correct: document.querySelector('input[name="mc3-correct"]:checked')?.value || '—',
+      mc3_evidence: document.getElementById('mc3-evidence')?.value || '',
+      mc4_held: document.querySelector('input[name="mc4-held"]:checked')?.value || '—',
+      mc4_correct: document.querySelector('input[name="mc4-correct"]:checked')?.value || '—',
+      mc4_evidence: document.getElementById('mc4-evidence')?.value || '',
+      dq_a: document.getElementById('dq-a').value,
+      dq_b: document.getElementById('dq-b').value,
+      dq_c: {
+        reflect: document.getElementById('dq-c1')?.value,
+        superpose: document.getElementById('dq-c2')?.value,
+        interfere: document.getElementById('dq-c3')?.value,
+        refract: document.getElementById('dq-c4')?.value
+      },
+      conf_post: document.querySelector('input[name="e-conf"]:checked')?.value || '—',
+      conf_change: document.querySelector('input[name="e-change"]:checked')?.value || '—'
+    },
+    canvas_p: document.getElementById('canvas-p')?.toDataURL('image/png')
+  };
+
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'POE_SUBMIT', plan: 9, data }, '*');
+  }
+
+  const box = document.getElementById('result-box');
+  const pre = document.getElementById('result-pre');
+  const summary = [
+    `📋 นักเรียน: ${data.student.name||'—'} เลขที่ ${data.student.num} ห้อง ${data.student.room} กลุ่ม ${data.student.group}`,
+    `\n🔮 P — ทำนาย:`,
+    `  · W↑→n? → ${data.P.p1}  |  สั่นแรง → ${data.P.p2}`,
+    `  · ต้องกี่ขบวน → ${data.P.p3}  |  หยุดจริงไหม → ${data.P.p4}`,
+    `  · ความมั่นใจก่อน: ${data.P.confidence}`,
+    `\n👁 O — Lab 37 5 Trials:`,
+    ...data.O.trials.map((t,i)=>`  · T${i+1}: n=${t.n||'—'} d=${t.d||'—'} λ=${t.lam||'—'} v=${t.v||'—'}`),
+    `  · แนวโน้ม: n=${data.O.n_trend} λ=${data.O.lam_trend} v=${data.O.v_trend} A/N=${data.O.an_move}`,
+    `  · บูรณาการติ๊ก: ${data.O.integration || 'ยังไม่ติ๊ก'}`,
+    `  · สรุป: ${data.O.summary.slice(0,100)}${data.O.summary.length>100?'…':''}`,
+    `\n✍️ E — CER:`,
+    `  · Claim: ${data.E.claim.slice(0,80)}${data.E.claim.length>80?'…':''}`,
+    `  · Evidence: ${data.E.evidence.slice(0,80)}${data.E.evidence.length>80?'…':''}`,
+    `  · Reasoning: ${data.E.reasoning.slice(0,80)}${data.E.reasoning.length>80?'…':''}`,
+    `  · Checklist: ${data.E.checks || 'ยังไม่ติ๊ก'}`,
+    `  · M9.1: เคย=${data.E.mc1_held} ถูก=${data.E.mc1_correct}`,
+    `  · M9.2: เคย=${data.E.mc2_held} ถูก=${data.E.mc2_correct}`,
+    `  · M9.3: เคย=${data.E.mc3_held} ถูก=${data.E.mc3_correct}`,
+    `  · M9.4: เคย=${data.E.mc4_held} ถูก=${data.E.mc4_correct}`,
+    `  · ความมั่นใจหลัง: ${data.E.conf_post} (${data.E.conf_change})`
+  ].join('\n');
+
+  pre.textContent = summary;
+  box.style.display = 'block';
+  document.getElementById('submit-status').textContent = '✅ ส่งแล้ว ' + new Date().toLocaleTimeString('th-TH');
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initCanvas('canvas-p');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body>
+</html>

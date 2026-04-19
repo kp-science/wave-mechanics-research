@@ -12,7 +12,7 @@ window.KP_PLAN_TOOLS = {
   6: ['tl-pre','f6-pre','poe','cer','calc','spot','tl-post','f6-post','mj','upload'],
   7: ['tl-pre','f7-pre','poe','cer','calc','spot','tl-post','f7-post','mj','upload'],
   8: ['tl-pre','f8-pre','poe','cer','calc','spot','tl-post','f8-post','mj','upload'],
-  9: ['tl-pre','f9-pre','poe','tl-post','f9-post','mj','upload'],
+  9: ['tl-pre','f9-pre','poe','cer','calc','spot','tl-post','f9-post','mj','upload'],
   10:['tl-pre','ft02','tl-post','mj','upload']
 };
 

@@ -676,5 +676,76 @@ window.KP_WORKSHEETS = {
       allowImage: true,
       sheetPrefix: 'CER_P'
     }
+  },
+
+  // ───────── แผน 9 · คลื่นนิ่ง + บูรณาการ ─────────
+  9: {
+    poe: {
+      title:       'POE-09 · ใบบันทึก Predict–Observe–Explain (แผน 9)',
+      description: 'Interactive: Predict modes n=1,2,3 + canvas วาด A/N · Observe 5 trials Lab 37 (วัด d, λ=2d, v=fλ) · Explain CER + 🟢🔴 Conceptual Inventory (M9.1-M9.4) + บูรณาการ 4 สมบัติ',
+      viewFile:    'สื่อ02_POE-09_ใบบันทึกPOE.html',
+      submitLabel: '📤 ส่ง POE-09',
+      sheetPrefix: 'POE_P',
+      misconception: 'M9.1 · M9.2 · M9.3 · M9.4',
+      allowUpload: true,
+      hero: {
+        question: 'คลื่น 2 ขบวนสวนทางบนเชือก L=1.5m f=60Hz · เพิ่ม W → n loops, λ, v เปลี่ยนอย่างไร? · A/N อยู่ตรงไหน?',
+        context:  'คู่กับ Hook 🎬 คลิปไมโครเวฟจุดร้อน + 5 trials Lab 37 Standing Waves on a String (วัดค่าเอง)'
+      }
+    },
+    calc: {
+      title:       'ใบกิจกรรม 9.1 · Calc คลื่นนิ่ง + บูรณาการ',
+      description: '7 ข้อ · พื้นฐาน 3 ข้อ (λ=2d, v=√(T/μ), fₙ=(n/2L)√(T/μ) harmonic 1-3) + ประยุกต์ 4 ข้อ (ไมโครเวฟ λ/2=6cm → f · สายกีตาร์ตัดครึ่ง L · เชือก μ ต่าง · ท่อเปิด/ปิด fundamental) · canvas วาด mode + worksheet-core.js',
+      viewFile:    'สื่อ03_Calc_ใบกิจกรรม9.1.html',
+      submitLabel: '📤 ส่งใบกิจกรรม 9.1',
+      sheetPrefix: 'Calc_P',
+      allowUpload: true
+    },
+    spot: {
+      title:       'ใบกิจกรรม 9.2 · Spot the Error · คลื่นนิ่ง',
+      description: '5 สถานการณ์ · "คลื่นนิ่ง=หยุด" (M9.1) · "N=สั่นแรงสุด" (M9.2) · "คลื่นเดียวก็เกิดคลื่นนิ่งได้" (M9.3) · "f ธรรมชาติมีค่าเดียว" (M9.4) · Integration error · claim canvas overlay + canvas อธิบายที่ถูก',
+      viewFile:    'สื่อ04_Spot_ใบกิจกรรม9.2.html',
+      items: [
+        { misc:'M9.1', stmt:'น้องข้าว: "คลื่นนิ่งแปลว่าคลื่นหยุดเคลื่อนที่แล้ว · เชือกก็ไม่สั่นแล้ว · พลังงานในคลื่นหายหมด · ถ้าทิ้ง Lab 37 ไว้เฉย ๆ คลื่นจะหายไปเพราะหยุดสนิท"' },
+        { misc:'M9.2', stmt:'น้องแบม: "จุดที่มาร์ชเมลโลว์เยิ้มสุด (ร้อนสุด) คือตำแหน่ง Node (N) · เพราะ Node แปลว่าศูนย์กลาง ต้องสั่นแรงสุด · ส่วน Antinode คือจุดที่ไม่มีพลังงาน"' },
+        { misc:'M9.3', stmt:'น้องแพรว์: "คลื่นนิ่งเกิดจากคลื่น 1 ขบวนที่มีแอมพลิจูดสูงมาก · ถ้าแรงพอจะหยุดสวิงตัวเองได้ ไม่ต้องมีคลื่นขบวนที่ 2 หรือการสะท้อน"' },
+        { misc:'M9.4', stmt:'น้องจิบ: "เชือกแต่ละเส้นมีความถี่ธรรมชาติเพียงค่าเดียว · ใน Lab 37 เปลี่ยน W ทำให้ความถี่เชือกต้องเปลี่ยนตามเป็น 80, 100, 120 Hz ... n loop ที่เปลี่ยน = f เปลี่ยน"' },
+        { misc:'Integration', stmt:'น้องโบ: "คลื่นนิ่งเป็นปรากฏการณ์พิเศษแยกต่างหาก · ไม่เกี่ยวกับการสะท้อน ซ้อนทับ หักเห แทรกสอด · เป็นคลื่นชนิดที่ 5 ที่อยู่โดยธรรมชาติในเชือก"' }
+      ],
+      submitLabel: '📤 ส่งใบกิจกรรม 9.2',
+      sheetPrefix: 'Spot_P'
+    },
+    cer: {
+      id: 'cer',
+      title: 'CER Board · Phase E3 (Derive fₙ + บูรณาการ 4 สมบัติ)',
+      description: 'ใช้ข้อมูลจาก POE-09 · 5 trials Lab 37 · ครูอนุมาน y = 2A sin(kx)cos(ωt) + fₙ = (n/2L)√(T/μ) · ทุกกลุ่มส่ง CER เชื่อม 4 สมบัติ (สะท้อน+ซ้อนทับ+แทรกสอด+หักเห) → คลื่นนิ่ง',
+      columns: [
+        { id:'reflect-super', label:'↩️➕ สะท้อน + ซ้อนทับ · แก้ M9.3', color:'#4f46e5',
+          prompts: {
+            claim:     '👉 คลื่นนิ่งเกิดจากคลื่นกี่ขบวน · ที่มาจากไหน?',
+            evidence:  '👉 Lab 37: Doorbell ส่ง incident · ปลายตรึงสะท้อน reflected · 2 ขบวนซ้อนทับ',
+            reasoning: '👉 y₁+y₂ = 2A sin(kx)cos(ωt) · ตำแหน่ง (sin) คงที่ · การสั่น (cos) ตามเวลา'
+          } },
+        { id:'interfere-an', label:'✨ แทรกสอด → A, N · แก้ M9.2', color:'#3730a3',
+          prompts: {
+            claim:     '👉 ทำไม A สั่นแรงสุด · N ไม่สั่น · ระยะ N-N = λ/2',
+            evidence:  '👉 ตาราง 5 trials: d วัดได้ ___ · λ = 2d ยืนยัน · ทุก trial f = 60 Hz',
+            reasoning: '👉 A = เสริมเฟส (Δphase=0) → 2A · N = หักล้าง (Δphase=π) → 0'
+          } },
+        { id:'harmonic', label:'🎼 Harmonics fₙ · แก้ M9.4', color:'#312e81',
+          prompts: {
+            claim:     '👉 เชือกมีความถี่ธรรมชาติกี่ค่า · สูตร fₙ = ?',
+            evidence:  '👉 Trial 1-5: W ต่าง → n ต่าง (17, 8, 5, 3, 2) · f=60Hz คงที่',
+            reasoning: '👉 fₙ = (n/2L)√(T/μ) · W↑→T↑→v↑→λ↑ · L=nλ/2 ให้ n ใหม่'
+          } }
+      ],
+      prompts: {
+        claim:     'ข้อค้นพบสั้น ๆ...',
+        evidence:  'ข้อมูลจาก 5 trials Lab 37...',
+        reasoning: 'เหตุผลเชื่อม 4 สมบัติ → คลื่นนิ่ง...'
+      },
+      allowImage: true,
+      sheetPrefix: 'CER_P'
+    }
   }
 };

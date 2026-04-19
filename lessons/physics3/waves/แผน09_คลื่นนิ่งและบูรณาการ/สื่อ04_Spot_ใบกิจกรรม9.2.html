@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบกิจกรรม 9.2 · Spot the Error (แผน 9)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#e0e7ff;color:#1a202c;font-size:15.5px;line-height:1.55;padding:20px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(79,70,229,.12);padding:28px 32px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap}
+.head h1{font-size:22px;color:#312e81}
+.head .meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#e0e7ff;border-left:6px solid #4f46e5;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:14.5px}
+.item{border:1.5px solid #c7d2fe;border-radius:12px;padding:16px 18px;margin-bottom:18px;background:#f5f7ff}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.item-no{background:#4f46e5;color:#fff;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;flex-shrink:0}
+.item-title{font-weight:700;color:#312e81;font-size:16px}
+.mc-tag{font-size:11.5px;background:#e0e7ff;color:#312e81;border:1px solid #c7d2fe;padding:2px 8px;border-radius:10px}
+.grid-wrap{background:#fff;border:1.5px solid #c7d2fe;border-radius:8px;padding:8px;margin-top:8px;overflow-x:auto}
+.grid-wrap svg{display:block;max-width:100%;height:auto}
+.ans-key{background:#ecfdf5;border:2px dashed #059669;border-radius:10px;padding:10px 14px;margin-top:10px;font-size:13.5px;color:#064e3b}
+.ans-key b{color:#047857}
+.ak-label{background:#059669;color:#fff;font-size:11px;padding:1px 8px;border-radius:10px;font-weight:700;margin-right:6px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.rubric{background:#e0e7ff;border-left:6px solid #4f46e5;border-radius:8px;padding:10px 14px;font-size:13.5px;margin-top:14px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e0e7ff 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #c7d2fe;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#312e81;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #4f46e5;box-shadow:0 0 0 2px #fff,0 0 0 4px #4f46e5}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-stack .claim-content{padding:12px 14px;font-size:14.5px;position:relative;z-index:1}
+.claim-stack .claim-content .who{font-weight:700;color:#991b1b;margin-bottom:4px}
+.claim-stack .claim-content .say{font-style:italic;color:#2d3748}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:16px;margin:14px 0 6px;color:#312e81;display:flex;align-items:center;gap:6px}
+textarea{width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+textarea:focus{outline:2px solid #4f46e5;outline-offset:-1px}
+input[type=text]{border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.ans-key{display:none}.canvas-toolbar{display:none}.claim-stack canvas.claim-overlay{display:none}}
+</style></head>
+<body data-ws-id="plan9-spot-9.2">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔍 ใบกิจกรรม 9.2 · Spot the Error · คลื่นนิ่ง</h1>
+      <div class="meta"><span class="tag">แผน 9</span><span class="tag">ขั้น E4</span> 5 สถานการณ์ · ชน M9.1 · M9.2 · M9.3 · M9.4 + Integration · 10 นาที</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q">
+    <b>🎯 คำสั่ง:</b> แต่ละข้อมีข้อความที่<strong>ผิดหลักการ</strong> · (ก) วงกลม/ขีดทับ<u>จุดผิด</u>บนข้อความของเพื่อน · (ข) เขียน<u>คำอธิบายที่ถูก</u>โดยอ้างหลักการ: คลื่นนิ่ง = 2 ขบวนสวนทาง · A=สั่นแรง · N=ไม่สั่น · ระยะ N-N=λ/2 · fₙ=(n/2L)√(T/μ) · บูรณาการ 4 สมบัติ
+  </div>
+
+  <!-- ═══ ข้อ 1 · M9.1 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">1</span>
+      <span class="item-title">"คลื่นนิ่ง = คลื่นที่หยุดนิ่ง"</span>
+      <span class="mc-tag">M9.1</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> ครูสาธิต Lab 37 · น้องข้าวบันทึกว่า "เห็นเชือกเป็นคลื่นนิ่ง"
+      <div class="grid-wrap">
+        <svg viewBox="0 0 680 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="680" height="180" fill="#f5f7ff"/>
+          <line x1="40" y1="90" x2="640" y2="90" stroke="#c7d2fe" stroke-dasharray="3,3"/>
+          <path d="M 40 90 Q 130 30 220 90 Q 310 150 400 90 Q 490 30 580 90 Q 625 120 640 90" stroke="#4f46e5" stroke-width="2.5" fill="none"/>
+          <path d="M 40 90 Q 130 150 220 90 Q 310 30 400 90 Q 490 150 580 90 Q 625 60 640 90" stroke="#818cf8" stroke-width="2" stroke-dasharray="4,3" fill="none"/>
+          <circle cx="40" cy="90" r="4" fill="#312e81"/><circle cx="220" cy="90" r="4" fill="#312e81"/><circle cx="400" cy="90" r="4" fill="#312e81"/><circle cx="580" cy="90" r="4" fill="#312e81"/>
+          <circle cx="130" cy="42" r="5" fill="#dc2626"/><circle cx="310" cy="138" r="5" fill="#dc2626"/><circle cx="490" cy="42" r="5" fill="#dc2626"/>
+          <text x="30" y="165" font-size="11" fill="#312e81">N</text><text x="395" y="165" font-size="11" fill="#312e81">N</text>
+          <text x="125" y="30" font-size="11" fill="#dc2626" font-weight="700">A</text><text x="485" y="30" font-size="11" fill="#dc2626" font-weight="700">A</text>
+          <text x="20" y="15" font-size="12" fill="#312e81" font-weight="700">Lab 37 · L=1.5m · f=60Hz · คลื่นนิ่ง n=3</text>
+        </svg>
+      </div>
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิดบนข้อความด้านล่าง</div>
+      <div class="canvas-toolbar">
+        <span style="font-size:13px;font-weight:700;color:#312e81">✍️ มาร์คจุดผิด:</span>
+        <button class="c-btn active" onclick="setTool('cc1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('cc1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('cc1','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('cc1','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cc1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องข้าว:</div>
+          <div class="say">"คลื่นนิ่งแปลว่า<b>คลื่นหยุดเคลื่อนที่แล้ว</b> · เชือกก็<b>ไม่สั่นแล้ว</b> · <b>พลังงานในคลื่นหายหมด</b>กลายเป็นพลังงานความร้อน · ถ้าเราทิ้ง Lab 37 ไว้เฉย ๆ สักพักคลื่นจะ<b>หายไป</b>เพราะหยุดสนิท"</div>
+        </div>
+        <canvas id="cc1" class="claim-overlay" width="900" height="150"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง + วาดรูปแสดงว่าเชือกยังสั่น</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c1','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c1','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c1','#4f46e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('c1','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c1" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q1-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..."></textarea>
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่ <b>"หยุดเคลื่อนที่"</b>, <b>"ไม่สั่น"</b>, <b>"พลังงานหายหมด"</b>, <b>"หายไปเพราะหยุดสนิท"</b> · (ข) <b>M9.1</b> · คลื่นนิ่งเกิดจากคลื่น 2 ขบวนสวนทาง (incident + reflected) · <b>ยังเคลื่อนที่</b>ตลอด · <b>เชือกยังสั่น</b> (A กระพือขึ้น-ลง · N ไม่สั่น) · "นิ่ง" หมายถึงตำแหน่ง A/N คงที่ไม่เลื่อน · <b>พลังงานยังอยู่ในระบบ</b> · ถ้าตัด source (ปิด Doorbell) คลื่นจะหายเพราะไม่มีขบวนป้อนใหม่ ไม่ใช่เพราะหยุดสนิท
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 2 · M9.2 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">2</span>
+      <span class="item-title">"N (Node) คือจุดสั่นแรงสุด"</span>
+      <span class="mc-tag">M9.2</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> ในคลิปไมโครเวฟจุดร้อน · มาร์ชเมลโลว์จุดหนึ่งเยิ้ม จุดถัดไปไม่เยิ้ม · น้องแบมบันทึก
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิด</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cc2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('cc2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('cc2','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('cc2','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cc2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องแบม:</div>
+          <div class="say">"จุดที่มาร์ชเมลโลว์<b>เยิ้มสุด</b> (ร้อนสุด) คือ<b>ตำแหน่ง Node (N)</b> · เพราะคำว่า Node แปลว่า "ศูนย์กลาง" ดังนั้นต้อง<b>สั่นแรงที่สุด</b> · ส่วนจุดที่ไม่เยิ้มคือ Antinode (A) ที่คลื่นหักล้างกัน ไม่มีพลังงาน"</div>
+        </div>
+        <canvas id="cc2" class="claim-overlay" width="900" height="130"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c2','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c2','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c2','#4f46e5',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c2" data-bg="lined" width="900" height="180"></canvas>
+      <textarea id="q2-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..."></textarea>
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) <b>สลับกัน</b> · ผิดที่ <b>"Node = สั่นแรงสุด"</b>, <b>"Node แปลว่าศูนย์กลาง"</b>, <b>"A = หักล้าง ไม่มีพลังงาน"</b> · (ข) <b>M9.2</b> · <b>A (Antinode · ปฏิบัพ) = จุดสั่นแรงที่สุด</b> (2 คลื่นเฟสเดียวกันเสริม) = จุดร้อนในไมโครเวฟ (สนามแรง) · <b>N (Node · บัพ) = จุดที่ไม่สั่นเลย</b> (2 คลื่นสวนเฟสหักล้างตลอดเวลา) = จุดเย็นในไมโครเวฟ · "Node" ในภาษาอังกฤษคลื่นหมายถึง "จุดผูก/จุดตรึง" ที่คลื่นไม่ขยับ
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 3 · M9.3 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">3</span>
+      <span class="item-title">"คลื่นเดียวก็ทำให้เกิดคลื่นนิ่งได้"</span>
+      <span class="mc-tag">M9.3</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> ครูถาม "เงื่อนไขการเกิดคลื่นนิ่งคืออะไร?" · น้องแพรว์ตอบ
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิด</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cc3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('cc3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('cc3','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('cc3','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cc3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องแพรว์:</div>
+          <div class="say">"คลื่นนิ่งเกิดจาก<b>คลื่น 1 ขบวน</b>ที่มี<b>แอมพลิจูดสูงมาก</b> · ถ้าคลื่นแรงพอก็จะ<b>หยุดสวิงตัวเอง</b>ได้เลย · <b>ไม่ต้องมีคลื่นขบวนที่ 2</b> หรือการสะท้อน · เหมือนคลื่นน้ำทะเลใหญ่ที่<b>สูงจนนิ่ง</b>ไม่ขยับ"</div>
+        </div>
+        <canvas id="cc3" class="claim-overlay" width="900" height="130"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง (อ้างสมการ y = 2A sin(kx)cos(ωt))</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c3','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c3','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c3','#4f46e5',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c3" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q3-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..."></textarea>
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดทั้งหมด: <b>"1 ขบวน"</b>, <b>"หยุดสวิงตัวเอง"</b>, <b>"ไม่ต้องมีคลื่นขบวนที่ 2"</b>, <b>"สูงจนนิ่ง"</b> · (ข) <b>M9.3</b> · ต้องมี<b>ขั้นต่ำ 2 ขบวน</b> · ทิศตรงข้าม · λ, f, A เท่ากัน · อนุมาน: y₁ = A sin(kx−ωt), y₂ = A sin(kx+ωt) → y = y₁+y₂ = <b>2A sin(kx) cos(ωt)</b> · sin(kx) ควบคุมตำแหน่ง (คงที่) · cos(ωt) ควบคุมการสั่นตามเวลา · ถ้ามีแค่ 1 ขบวนจะไม่เกิดการหักล้าง/เสริมคงที่ · ใน Lab 37 ขบวน 1 = จาก Doorbell · ขบวน 2 = reflected จากปลายตรึง
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 4 · M9.4 ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">4</span>
+      <span class="item-title">"ความถี่ธรรมชาติของเชือกมีค่าเดียว"</span>
+      <span class="mc-tag">M9.4</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> น้องฟ้า "ทำไม Lab 37 เปลี่ยน W แล้ว n เปลี่ยน?" · น้องจิบตอบ
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิด</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cc4','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('cc4','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('cc4','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('cc4','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cc4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องจิบ:</div>
+          <div class="say">"เชือกแต่ละเส้นมี<b>ความถี่ธรรมชาติเพียงค่าเดียว</b> ตายตัว · ใน Lab 37 ที่ f = 60 Hz คงที่ · เปลี่ยน W ทำให้ <b>ความถี่เชือกต้องเปลี่ยนตามไปด้วย</b> เป็น 80, 100, 120 Hz ... ดังนั้น n loop ที่เปลี่ยน <b>หมายถึง f เปลี่ยน</b> · ถ้า f ของเชือกไม่เท่ากับ 60 Hz คลื่นนิ่งจะ<b>หายไปทันที</b>"</div>
+        </div>
+        <canvas id="cc4" class="claim-overlay" width="900" height="140"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายที่ถูกต้อง (อ้าง fₙ = (n/2L)√(T/μ))</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c4','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c4','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c4','#4f46e5',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c4" data-bg="lined" width="900" height="200"></canvas>
+      <textarea id="q4-ans" rows="3" placeholder="คำอธิบายที่ถูกต้อง..."></textarea>
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดที่ <b>"ค่าเดียวตายตัว"</b>, <b>"ความถี่เชือกต้องเปลี่ยน"</b>, <b>"n เปลี่ยน = f เปลี่ยน"</b>, <b>"คลื่นนิ่งหายไปทันที"</b> · (ข) <b>M9.4</b> · เชือกมี<b>ความถี่ธรรมชาติหลายค่า (harmonics)</b> · fₙ = (n/2L)√(T/μ) · n=1,2,3,... · ใน Lab 37 เมื่อ driving f=60 Hz ตรงกับ fₙ ของเชือกที่ค่า n ใดค่าหนึ่ง → resonance เกิดคลื่นนิ่ง · เปลี่ยน W → T เปลี่ยน → v เปลี่ยน → λ = v/60 เปลี่ยน → L = nλ/2 ให้ค่า n ใหม่ · <b>f (60 Hz) คงที่ตลอด</b> (กำหนดจาก source) แต่ n เปลี่ยนเพราะ λ เปลี่ยน
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ข้อ 5 · Integration Error ═══ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="item-no">5</span>
+      <span class="item-title">"คลื่นนิ่งไม่เกี่ยวกับสมบัติคลื่นทั่วไป"</span>
+      <span class="mc-tag">บูรณาการ</span>
+    </div>
+    <div>
+      <b>สถานการณ์:</b> ครูถาม "คลื่นนิ่งเชื่อมโยงกับ 4 สมบัติที่เรียน (สะท้อน+ซ้อนทับ+หักเห+แทรกสอด) ยังไง?" · น้องโบตอบ
+
+      <div class="section-heading">🔍 (ก) วงกลม/ขีดทับส่วนที่ผิด</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cc5','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('cc5','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#dc2626" onclick="setColor('cc5','#dc2626',this)"></div>
+        <div class="c-color" style="background:#1a202c" onclick="setColor('cc5','#1a202c',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cc5')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <div class="claim-stack">
+        <div class="claim-content">
+          <div class="who">💬 น้องโบ:</div>
+          <div class="say">"คลื่นนิ่งเป็น<b>ปรากฏการณ์พิเศษแยกต่างหาก</b> · <b>ไม่เกี่ยวกับ</b>การสะท้อน, ซ้อนทับ, หักเห, แทรกสอดที่เรียนมา · มันเป็น<b>คลื่นชนิดที่ 5</b> ที่อยู่โดยธรรมชาติในเชือก · ไม่มีคลื่นสะท้อนมาเกี่ยวข้อง · ไม่ใช่การแทรกสอดเพราะไม่มี 2 แหล่งกำเนิด"</div>
+        </div>
+        <canvas id="cc5" class="claim-overlay" width="900" height="140"></canvas>
+      </div>
+
+      <div class="section-heading">✍️ (ข) อธิบายการบูรณาการที่ถูกต้อง (4 สมบัติ → คลื่นนิ่ง)</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('c5','pencil',this)">✏️ ดินสอ</button>
+        <button class="c-btn" onclick="setTool('c5','eraser',this)">⬜ ยางลบ</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('c5','#4f46e5',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c5" data-bg="lined" width="900" height="240"></canvas>
+      <textarea id="q5-ans" rows="4" placeholder="1) สะท้อน: ... · 2) ซ้อนทับ: ... · 3) แทรกสอด: ... · 4) หักเห: ..."></textarea>
+      <div class="ans-key">
+        <span class="ak-label">เฉลย</span>(ก) ผิดทั้งหมด — คลื่นนิ่ง<b>ไม่ใช่คลื่นชนิดที่ 5</b> แต่เป็น<b>กรณีพิเศษของการแทรกสอด</b> · (ข) บูรณาการครบ 4 สมบัติ: <b>(1) สะท้อน (แผน 5)</b> ปลายตรึง → คลื่น reflected กลับเฟส 180° · <b>(2) ซ้อนทับ (แผน 4)</b> incident + reflected บวกกันแบบพีชคณิต · <b>(3) แทรกสอด (แผน 7)</b> บางตำแหน่งเสริม (Δphase=0) = A · บางตำแหน่งหักล้าง (Δphase=π) = N · <b>(4) หักเห (แผน 6)</b> ปลายเชือก = รอยต่อระหว่างเชือก-ผนัง (μ ต่างกันมาก) ทำให้เกือบทั้งหมดสะท้อนกลับ · คลื่นนิ่ง = <b>การแทรกสอดของคลื่น 2 ขบวนสวนทาง</b> ที่มี λ, f, A เท่ากัน
+      </div>
+    </div>
+  </div>
+
+  <!-- Rubric -->
+  <div class="rubric">
+    <b>📊 เกณฑ์การให้คะแนน (Rubric 0–3 ต่อข้อ):</b><br>
+    <b>3</b> — ระบุจุดผิดถูก + MC ถูก + อธิบายถูกต้องโดยอ้างหลักการ/สมการ<br>
+    <b>2</b> — จุดผิดถูก + อธิบายได้บางส่วน แต่ขาดการอ้างหลักการ<br>
+    <b>1</b> — ระบุได้บางส่วน หรืออธิบายผิด<br>
+    <b>0</b> — ว่างหรือผิดทั้งหมด · <b>รวม 5 ข้อ = 15 คะแนน · เป้า ≥ 9 (≥60%) · ถูก ≥ 3 ใน 5 ข้อ</b>
+  </div>
+
+  <div class="foot">ใบกิจกรรม 9.2 · แผน 9 คลื่นนิ่ง + บูรณาการ · Physics 3 (ว30203) · โรงเรียนสตรีวิทยา</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');const transparent=canvas.classList.contains('claim-overlay')||canvas.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent};if(!transparent){ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);}
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation=st.transparent?'destination-out':'source-over';ctx.strokeStyle=st.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);if(!st.transparent){st.ctx.fillStyle='#fff';st.ctx.fillRect(0,0,canvas.width,canvas.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.claim-overlay').forEach(c=>initCanvas(c.id));});
+</script>
+
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>
