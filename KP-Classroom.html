@@ -1057,7 +1057,7 @@ function openTool(key){
   // Route by tool type
   if (key.startsWith('f') && key.includes('-pre'))  return renderFTForm(body, 'pre', key);
   if (key.startsWith('f') && key.includes('-post')) return renderFTForm(body, 'post', key);
-  if (key === 'ft02')   return renderFTForm(body, 'post', key, true);
+  if (key === 'ft01' || key === 'ft02' || key === 'review10') return renderIframe(body, key);
   if (key === 'tl-pre') return renderTL(body, 'pre');
   if (key === 'tl-post')return renderTL(body, 'post');
   if (key === 'poe' && state.currentPlan === 2) return renderPOE2(body); // Lab 38 (Phase 3b special)
@@ -1246,6 +1246,97 @@ function markDone(){
   state.submitted[k] = true;
   localStorage.setItem(LS_SUB, JSON.stringify(state.submitted));
 }
+
+// ═══════════════════════════════════════════════════════════
+// IFRAME BRIDGE — embed standalone worksheets (worksheet-core.js)
+//   · ft01  · plan1-ft01   → sheet FT01
+//   · ft02  · plan10-ft02  → sheet FT02
+//   · review10 · plan10-review → sheet Review
+// Receives postMessage from iframe: REQUEST_STUDENT_INFO · WS_SUBMIT
+// ═══════════════════════════════════════════════════════════
+const IFRAME_TOOLS = {
+  'ft01':     { path:'lessons/physics3/waves/แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ10_FT01_Fourtier_PreTest.html', wsId:'plan1-ft01',     sheet:'FT01' },
+  'ft02':     { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ03_FT02_Fourtier_PostTest.html',               wsId:'plan10-ft02',    sheet:'FT02' },
+  'review10': { path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ02_Review_ใบทบทวน18ข้อ.html',                  wsId:'plan10-review',  sheet:'Review' }
+};
+const WS_TO_TOOL = Object.fromEntries(
+  Object.entries(IFRAME_TOOLS).map(([k,v]) => [v.wsId, k])
+);
+
+function renderIframe(body, toolKey){
+  const cfg = IFRAME_TOOLS[toolKey];
+  if (!cfg){ body.innerHTML += `<div class="info">⚠️ ไม่พบการตั้งค่าเครื่องมือ ${toolKey}</div>`; showView('view-tool'); return; }
+  const frame = document.createElement('iframe');
+  frame.src = encodeURI(cfg.path);
+  frame.style.cssText = 'width:100%;height:1400px;min-height:800px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;display:block';
+  frame.setAttribute('title', toolKey);
+  frame.onerror = () => { body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">❌ โหลด iframe ไม่สำเร็จ: ${cfg.path}</div>`; };
+  body.appendChild(frame);
+  showView('view-tool');
+}
+
+window.addEventListener('message', async (e) => {
+  const msg = e.data;
+  if (!msg || !msg.type) return;
+
+  // Iframe asking for student identity → reply with state.student
+  if (msg.type === 'REQUEST_STUDENT_INFO'){
+    const stu = state.student || {};
+    e.source && e.source.postMessage({
+      type: 'STUDENT_INFO',
+      name:  stu.name  || '',
+      num:   stu.no    || '',
+      room:  stu.class || '',
+      group: ''
+    }, '*');
+    return;
+  }
+
+  // Iframe submitting worksheet → forward to Google Sheets via DB.submit
+  if (msg.type === 'WS_SUBMIT'){
+    const toolKey = WS_TO_TOOL[msg.wsId];
+    if (!toolKey) return;
+    const cfg = IFRAME_TOOLS[toolKey];
+
+    // Preview mode: skip send
+    if (state.previewMode){
+      console.log('[preview] WS_SUBMIT', cfg.sheet, msg.data);
+      return;
+    }
+    // Gate check
+    const g = getGate(state.currentPlan);
+    if (g.status === 'locked' || g.status === 'readonly'){
+      console.warn('[WS_SUBMIT] plan gated:', g.status);
+      return;
+    }
+    const stu = state.student || {};
+    const full = {
+      ...msg.data,
+      ws_id: msg.wsId,
+      tool: toolKey,
+      school: SCHOOL,
+      year: YEAR,
+      plan: state.currentPlan,
+      student_id: stu.student_id || '',
+      student_name: stu.name || '',
+      student_no:   stu.no   || '',
+      class:        stu.class|| '',
+      submitted_at: new Date().toISOString(),
+      source: 'web-iframe'
+    };
+    if (!isApiConfigured()){
+      console.warn('[WS_SUBMIT] API ยังไม่ได้ตั้งค่า · ไม่ส่ง');
+      return;
+    }
+    try {
+      await DB.submit(cfg.sheet, full);
+      // reflect completion back to home
+      if (state.currentTool === toolKey) markDone();
+    } catch(err){
+      console.error('[WS_SUBMIT] submit error:', err);
+    }
+  }
+});
 
 // ═══════════════════════════════════════════════════════════
 // FT_BANK — โหลดจาก content/questions.js
