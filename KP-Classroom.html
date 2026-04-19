@@ -4302,6 +4302,8 @@ let _galItems = [];       // [{sheet, row, urlCol, scoreCol, url, sName, sNum, q
 let _galFocus = 0;
 let _galHideDone = false;
 let _galKeysBound = false;
+let _galFilterStudent = '';  // '' = all | s_num of student
+let _galGroupBy = 'question'; // 'question' | 'student'
 
 const GALLERY_CANVAS_TOOLS = [
   {id:'spot',     prefix:'Spot_P',   label:'🔍 Spot the Error'},
@@ -4337,6 +4339,17 @@ async function renderCanvasGallery(){
         <select id="galToolSel" onchange="_galTool=this.value;loadCanvasGallery()">${toolOpts}</select>
       </label>
       <button class="btn-sm" onclick="loadCanvasGallery()">🔄 โหลดใหม่</button>
+      <label style="font-weight:700">👤 นักเรียน:
+        <select id="galStudentSel" onchange="_galFilterStudent=this.value;renderGalleryGrid()">
+          <option value="">— ทุกคน —</option>
+        </select>
+      </label>
+      <label style="font-weight:700">📑 จัดกลุ่ม:
+        <select id="galGroupSel" onchange="_galGroupBy=this.value;renderGalleryGrid()">
+          <option value="question" ${_galGroupBy==='question'?'selected':''}>ตามข้อ</option>
+          <option value="student" ${_galGroupBy==='student'?'selected':''}>ตามนักเรียน</option>
+        </select>
+      </label>
       <label style="font-weight:700;display:flex;align-items:center;gap:6px">
         <input type="checkbox" id="galHideDone" ${_galHideDone?'checked':''} onchange="_galHideDone=this.checked;renderGalleryGrid()">
         <span>ซ่อนที่ตรวจแล้ว</span>
@@ -4415,6 +4428,20 @@ async function loadCanvasGallery(){
       body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">ไม่พบคอลัมน์ <code>canvas_*_url</code> ใน <code>${sheet}</code><br><small>นักเรียนอาจยังไม่ได้วาด · หรือ handler ยังไม่ได้ upload canvas → Drive</small></div>`;
       updateGalleryProgress(); return;
     }
+    // Populate student dropdown (unique by s_num)
+    const sel = document.getElementById('galStudentSel');
+    if (sel){
+      const seen = new Set();
+      const students = [];
+      _galItems.forEach(it => {
+        if (seen.has(it.sNum)) return;
+        seen.add(it.sNum);
+        students.push({sNum:it.sNum, sName:it.sName});
+      });
+      students.sort((a,b) => String(a.sNum).localeCompare(String(b.sNum), 'th', {numeric:true}));
+      sel.innerHTML = '<option value="">— ทุกคน —</option>' +
+        students.map(s => `<option value="${escapeHtml(s.sNum)}" ${s.sNum===_galFilterStudent?'selected':''}>${escapeHtml(s.sName)} (เลขที่ ${escapeHtml(s.sNum)})</option>`).join('');
+    }
     _galFocus = Math.min(_galFocus, _galItems.length - 1);
     if (_galFocus < 0) _galFocus = 0;
     renderGalleryGrid();
@@ -4435,7 +4462,29 @@ function _galleryToImgUrl(url){
 
 function _galleryVisibleIndices(){
   const out = [];
-  _galItems.forEach((it, i) => { if (!_galHideDone || it.score == null) out.push(i); });
+  _galItems.forEach((it, i) => {
+    if (_galFilterStudent && String(it.sNum) !== String(_galFilterStudent)) return;
+    if (_galHideDone && it.score != null) return;
+    out.push(i);
+  });
+  // Sort by grouping preference
+  if (_galGroupBy === 'student'){
+    out.sort((a,b) => {
+      const A = _galItems[a], B = _galItems[b];
+      const sa = String(A.sNum||''), sb = String(B.sNum||'');
+      const cmp = sa.localeCompare(sb, 'th', {numeric:true});
+      if (cmp !== 0) return cmp;
+      return String(A.qId).localeCompare(String(B.qId), undefined, {numeric:true});
+    });
+  } else {
+    // ตามข้อ (default): qId → sNum
+    out.sort((a,b) => {
+      const A = _galItems[a], B = _galItems[b];
+      const cmp = String(A.qId).localeCompare(String(B.qId), undefined, {numeric:true});
+      if (cmp !== 0) return cmp;
+      return String(A.sNum||'').localeCompare(String(B.sNum||''), 'th', {numeric:true});
+    });
+  }
   return out;
 }
 
