@@ -661,6 +661,8 @@ function uploadCanvasPack_(pack, ctx) {
       const name = `${ctx.studentId}_${ctx.wsId}_${cid}_${ts}.${ext}`;
       const blob = Utilities.newBlob(Utilities.base64Decode(item.data), mime, name);
       const file = planFolder.createFile(blob);
+      // Anyone with link can view · จำเป็นสำหรับให้ <img> โหลด thumbnail ได้ใน Gallery
+      try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch(_){}
       out['canvas_' + String(cid).replace(/-/g, '_') + '_url'] = file.getUrl();
     } catch (err) {
       out['canvas_' + String(cid).replace(/-/g, '_') + '_err'] = String(err && err.message || err).slice(0, 200);
@@ -777,6 +779,32 @@ function handleSetCanvasScore(data) {
     'ครูให้คะแนน · ' + Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyy-MM-dd HH:mm')
   );
   return jsonOut({status:'ok', sheet:sheetName, row:rowNum, col:col, score:score});
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// shareAllCanvases — one-time fix สำหรับไฟล์ canvas เก่าที่อัพก่อนมี setSharing
+// Apps Script editor → เลือก shareAllCanvases → Run (ครั้งเดียว)
+// ═══════════════════════════════════════════════════════════════════
+function shareAllCanvases() {
+  const rootName = 'Uploads_วิจัยคลื่นกล';
+  const rs = DriveApp.getFoldersByName(rootName);
+  if (!rs.hasNext()) { Logger.log('no root folder'); return; }
+  const root = rs.next();
+  let count = 0, err = 0;
+  const planFolders = root.getFolders();
+  while (planFolders.hasNext()) {
+    const pf = planFolders.next();
+    const files = pf.getFiles();
+    while (files.hasNext()) {
+      const f = files.next();
+      try {
+        f.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+        count++;
+      } catch(e) { err++; }
+    }
+  }
+  Logger.log('shared ' + count + ' files · err=' + err);
+  return 'shared=' + count + ' err=' + err;
 }
 
 // ═══════════════════════════════════════════════════════════════════

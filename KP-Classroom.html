@@ -4399,7 +4399,7 @@ async function loadCanvasGallery(){
         const ai = aiMap[`${sid}|${qId}`];
         _galItems.push({
           sheet, row: r._row || 0, urlCol: k, scoreCol,
-          url, qId,
+          url: _galleryToImgUrl(url), origUrl: url, qId,
           sName: r.s_name || '(ไม่ระบุ)',
           sNum: sid,
           sRoom: r.s_room || '',
@@ -4421,6 +4421,16 @@ async function loadCanvasGallery(){
   } catch(e){
     body.innerHTML = `<div style="color:#c62828;padding:20px">❌ โหลดไม่สำเร็จ: ${e.message}</div>`;
   }
+}
+
+// แปลง Drive URL → URL ที่ embed ใน <img> ได้
+//  https://drive.google.com/file/d/FILEID/view  →  https://drive.google.com/thumbnail?id=FILEID&sz=w800
+//  (ต้องตั้ง sharing = Anyone with link · setSharing ใน uploadCanvasPack_ จัดการให้)
+function _galleryToImgUrl(url){
+  const s = String(url || '');
+  const m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w800`;
+  return s;
 }
 
 function _galleryVisibleIndices(){
@@ -4506,7 +4516,9 @@ function galleryZoom(i){
   const box = document.getElementById('galLightbox');
   const img = document.getElementById('galLightboxImg');
   if (!box || !img) return;
-  img.src = it.url;
+  // Lightbox ใช้ภาพขนาดใหญ่กว่า grid
+  const big = it.origUrl ? _galleryToImgUrl(it.origUrl).replace(/sz=w\d+/, 'sz=w2000') : it.url;
+  img.src = big;
   box.style.display = 'flex';
 }
 
