@@ -626,7 +626,7 @@ window.KP_WORKSHEETS = {
     },
     calc: {
       title:       'ใบกิจกรรม 8.1 · Calc Diffraction',
-      description: '4 ข้อไล่ระดับ · (1) เงื่อนไข d/λ ช่องเลี้ยวเบนชัด (2) คำนวณมุมแนวมืด a sinθ = nλ (3) วาดเปรียบเทียบ 3 ขนาดช่อง (canvas) (4) เสียงรอบมุมตึก λ = v/f · ใช้ worksheet-core.js',
+      description: '4 ข้อไล่ระดับ · (1) เงื่อนไข d/λ ช่องเลี้ยวเบนชัด (2) คำนวณมุมแนวบัพ a sinθ = nλ (3) วาดเปรียบเทียบ 3 ขนาดช่อง (canvas) (4) เสียงรอบมุมตึก λ = v/f · ใช้ worksheet-core.js',
       viewFile:    'สื่อ03_Calc_ใบกิจกรรม8.1.html',
       submitLabel: '📤 ส่งใบกิจกรรม 8.1',
       sheetPrefix: 'Calc_P',
