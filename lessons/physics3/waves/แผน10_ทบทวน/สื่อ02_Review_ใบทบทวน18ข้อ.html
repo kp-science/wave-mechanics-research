@@ -1140,43 +1140,68 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
 <!-- ═════ ข้อ 18 ═════ -->
 <div class="qcard">
   <div class="qtitle"><span class="qnum">18</span>คลื่นนิ่ง · หา λ หรือ L จากจำนวนลูป</div>
-  <div style="background:#eff6ff;border-left:4px solid #0891b2;color:#164e63;border-radius:8px;padding:10px;margin-top:8px;font-size:13.5px;line-height:1.6">แต่ละกรณีแสดง snapshot หลายภาพทับซ้อนกัน (envelope สีน้ำเงิน) · เชือกทั้งสองปลายถูกตรึง — จุดดำที่ปลายทั้งสองคือ <b>บัพ (node)</b> · อ่านจำนวนลูปแล้วเติมค่าที่ขาดหายไป (ใช้สูตร L = n·λ/2)</div>
+  <div style="background:#eff6ff;border-left:4px solid #0891b2;color:#164e63;border-radius:8px;padding:10px;margin-top:8px;font-size:13.5px;line-height:1.6">แต่ละกรณีแสดง snapshot หลายภาพทับซ้อนกัน (envelope สีน้ำเงิน) · พิจารณาปลายเชือกทั้ง 2 ข้างว่าเป็น <b>บัพ (●)</b> หรือ <b>ปฏิบัพ (◯)</b> · อ่านจำนวนลูปแล้วเติมค่าที่ขาดหายไป<br>สูตร: ตรึง-ตรึง/อิสระ-อิสระ: L = n·λ/2 · ตรึง-อิสระ: L = (2n−1)·λ/4</div>
   <div id="q18-grid" style="display:flex;flex-direction:column;gap:14px;margin-top:10px"></div>
   <script>
   (function(){
-    function drawStandingWave(svgEl, nLoops, width, height){
+    // boundary: 'ff' = fixed-fixed (บัพ-บัพ) · 'oo' = free-free (ปฏิบัพ-ปฏิบัพ) · 'fo' = fixed-free (บัพซ้าย-ปฏิบัพขวา)
+    function drawStandingWave(svgEl, nLoops, width, height, boundary){
+      boundary = boundary || 'ff';
       const base = height/2;
       const A = height*0.4;
-      const lam = width/(nLoops);
-      let top = 'M 0 '+base;
-      for(let x=0;x<=width;x+=2){const y = base - A*Math.abs(Math.sin(Math.PI*x/lam)); top += ' L '+x+' '+y.toFixed(1);}
-      let bot = 'M 0 '+base;
-      for(let x=0;x<=width;x+=2){const y = base + A*Math.abs(Math.sin(Math.PI*x/lam)); bot += ' L '+x+' '+y.toFixed(1);}
-      let html = `<path d="${top}" stroke="#60a5fa" stroke-width="1.4" fill="none"/><path d="${bot}" stroke="#60a5fa" stroke-width="1.4" fill="none"/>`;
-      for(let i=0;i<12;i++){
-        const phase = i/11;
-        let d = 'M 0 '+base;
-        for(let x=0;x<=width;x+=2){const y = base - A*Math.sin(Math.PI*x/lam)*Math.cos(phase*Math.PI); d += ' L '+x+' '+y.toFixed(1);}
-        const op = 0.15 + 0.5*(1-Math.abs(phase-0.5)*2);
-        html += `<path d="${d}" stroke="#525252" stroke-width="1" fill="none" opacity="${op.toFixed(2)}"/>`;
+      // envelope shape function in [0, 1] where x=0 is left endpoint
+      function env(x){
+        const u = x/width; // 0..1
+        if(boundary==='ff') return Math.abs(Math.sin(nLoops*Math.PI*u));
+        if(boundary==='oo') return Math.abs(Math.cos(nLoops*Math.PI*u));
+        // 'fo': fixed-free · pattern sin((2n-1)πu/2). Here nLoops means # of antinode humps.
+        return Math.abs(Math.sin((2*nLoops-1)*Math.PI*u/2));
       }
-      html += `<line x1="0" y1="${base}" x2="${width}" y2="${base}" stroke="#171717" stroke-width="1.3"/>`;
-      html += `<line x1="0" y1="8" x2="${width}" y2="8" stroke="#525252" stroke-width="1" stroke-dasharray="3,3"/>`;
-      html += `<line x1="0" y1="3" x2="0" y2="13" stroke="#525252"/><line x1="${width}" y1="3" x2="${width}" y2="13" stroke="#525252"/>`;
-      html += `<text x="${width/2-40}" y="28" font-family="Sarabun" font-size="11" fill="#525252">ความยาวเชือก L</text>`;
-      // fixed-end node dots (visible bullets marking บัพ at both ends)
-      html += `<circle cx="0" cy="${base}" r="5" fill="#171717"/><circle cx="${width}" cy="${base}" r="5" fill="#171717"/>`;
+      function inst(x, phase){
+        const u = x/width;
+        const t = Math.cos(phase*Math.PI);
+        if(boundary==='ff') return Math.sin(nLoops*Math.PI*u)*t;
+        if(boundary==='oo') return Math.cos(nLoops*Math.PI*u)*t;
+        return Math.sin((2*nLoops-1)*Math.PI*u/2)*t;
+      }
+      let top='M 0 '+(base-A*env(0));
+      for(let x=0;x<=width;x+=2){top+=' L '+x+' '+(base-A*env(x)).toFixed(1);}
+      let bot='M 0 '+(base+A*env(0));
+      for(let x=0;x<=width;x+=2){bot+=' L '+x+' '+(base+A*env(x)).toFixed(1);}
+      let html=`<path d="${top}" stroke="#60a5fa" stroke-width="1.4" fill="none"/><path d="${bot}" stroke="#60a5fa" stroke-width="1.4" fill="none"/>`;
+      for(let i=0;i<12;i++){
+        const phase=i/11;
+        let d='M 0 '+(base-A*inst(0,phase));
+        for(let x=0;x<=width;x+=2){d+=' L '+x+' '+(base-A*inst(x,phase)).toFixed(1);}
+        const op=0.15+0.5*(1-Math.abs(phase-0.5)*2);
+        html+=`<path d="${d}" stroke="#525252" stroke-width="1" fill="none" opacity="${op.toFixed(2)}"/>`;
+      }
+      html+=`<line x1="0" y1="${base}" x2="${width}" y2="${base}" stroke="#171717" stroke-width="1.3"/>`;
+      html+=`<line x1="0" y1="8" x2="${width}" y2="8" stroke="#525252" stroke-width="1" stroke-dasharray="3,3"/>`;
+      html+=`<line x1="0" y1="3" x2="0" y2="13" stroke="#525252"/><line x1="${width}" y1="3" x2="${width}" y2="13" stroke="#525252"/>`;
+      html+=`<text x="${width/2-40}" y="28" font-family="Sarabun" font-size="11" fill="#525252">ความยาวเชือก L</text>`;
+      // End markers: filled dot = บัพ (node) · open circle = ปฏิบัพ (antinode)
+      const leftIsNode = (boundary==='ff' || boundary==='fo');
+      const rightIsNode = (boundary==='ff');
+      if(leftIsNode) html+=`<circle cx="0" cy="${base}" r="5" fill="#171717"/>`;
+      else           html+=`<circle cx="0" cy="${base}" r="6" fill="#fff" stroke="#171717" stroke-width="2"/>`;
+      if(rightIsNode) html+=`<circle cx="${width}" cy="${base}" r="5" fill="#171717"/>`;
+      else            html+=`<circle cx="${width}" cy="${base}" r="6" fill="#fff" stroke="#171717" stroke-width="2"/>`;
+      // Legend on first case
       if(svgEl.dataset.firstCase==='1'){
-        html += `<text x="8" y="${base+20}" font-family="Sarabun" font-size="11" fill="#171717" font-weight="700">บัพ (ปลายตรึง)</text>`;
+        html+=`<g font-family="Sarabun" font-size="11" fill="#171717" font-weight="700">`+
+              `<circle cx="30" cy="${base+22}" r="4" fill="#171717"/><text x="40" y="${base+26}">บัพ (node)</text>`+
+              `<circle cx="120" cy="${base+22}" r="5" fill="#fff" stroke="#171717" stroke-width="2"/><text x="132" y="${base+26}">ปฏิบัพ (antinode)</text>`+
+              `</g>`;
       }
       svgEl.innerHTML = html;
     }
 
     const cases=[
-      {k:'a',lbl:'(ก)',loops:2,given:'lam',L:'',lam:'1'},   // λ=1 given, find L → 1 m
-      {k:'b',lbl:'(ข)',loops:4,given:'L',L:'1.5',lam:''},   // L=1.5 given, find λ → 0.75 m
-      {k:'c',lbl:'(ค)',loops:2,given:'L',L:'2',lam:''},     // L=2 given, find λ → 2 m
-      {k:'d',lbl:'(ง)',loops:4,given:'lam',L:'',lam:'0.4'}  // λ=0.4 given, find L → 0.8 m
+      {k:'a',lbl:'(ก)',loops:2,boundary:'ff',bLbl:'ปลายทั้งสองเป็นบัพ (ตรึง-ตรึง)',given:'lam',L:'',lam:'1'},   // fixed-fixed n=2 · λ=1 → L=1 m
+      {k:'b',lbl:'(ข)',loops:4,boundary:'ff',bLbl:'ปลายทั้งสองเป็นบัพ (ตรึง-ตรึง)',given:'L',L:'1.5',lam:''},  // fixed-fixed n=4 · L=1.5 → λ=0.75 m
+      {k:'c',lbl:'(ค)',loops:2,boundary:'oo',bLbl:'ปลายทั้งสองเป็นปฏิบัพ (อิสระ-อิสระ)',given:'L',L:'2',lam:''},// free-free n=2 · L=2 → λ=2 m
+      {k:'d',lbl:'(ง)',loops:3,boundary:'fo',bLbl:'ปลายซ้ายบัพ ปลายขวาปฏิบัพ (ตรึง-อิสระ)',given:'lam',L:'',lam:'0.4'} // fixed-free n=3 · λ=0.4 → L=5λ/4=0.5 m
     ];
     const grid=document.getElementById('q18-grid');
     cases.forEach(c=>{
@@ -1189,7 +1214,8 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
       grid.insertAdjacentHTML('beforeend',`
         <div class="panel" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
           <div style="flex:1 1 360px;min-width:280px">
-            <div style="font-weight:700;margin-bottom:4px">${c.lbl} จำนวนลูป = ${c.loops}</div>
+            <div style="font-weight:700;margin-bottom:2px">${c.lbl} จำนวนลูป = ${c.loops}</div>
+            <div style="font-size:12px;color:#0369a1;margin-bottom:4px">${c.bLbl}</div>
             <svg id="${svgId}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;max-width:${W}px;background:#fff;border:1px solid #e5e5e5;border-radius:6px"></svg>
           </div>
           <div style="flex:1 1 200px;min-width:200px;display:flex;flex-direction:column;gap:8px">
@@ -1201,7 +1227,7 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
       `);
       const svgEl=document.getElementById(svgId);
       if(c.k==='a') svgEl.dataset.firstCase='1';
-      drawStandingWave(svgEl, c.loops, W, H);
+      drawStandingWave(svgEl, c.loops, W, H, c.boundary);
     });
   })();
   </script>
