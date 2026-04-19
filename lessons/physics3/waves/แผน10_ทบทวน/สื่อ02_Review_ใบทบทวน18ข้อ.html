@@ -777,6 +777,12 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
             <marker id="arr14" markerWidth="14" markerHeight="14" refX="10" refY="7" orient="auto">
               <path d="M0,0 L14,7 L0,14 Z" fill="#ea580c"/>
             </marker>
+            <marker id="arrEnd14" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#0891b2"/>
+            </marker>
+            <marker id="arrStart14" markerWidth="8" markerHeight="8" refX="1" refY="4" orient="auto">
+              <path d="M8,0 L0,4 L8,8 Z" fill="#0891b2"/>
+            </marker>
           </defs>
 
           <!-- Deep region -->
@@ -790,10 +796,26 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
             <line x1="230" y1="240" x2="230" y2="400"/>
             <line x1="310" y1="240" x2="310" y2="400"/>
             <line x1="390" y1="240" x2="390" y2="400"/>
+            <!-- Wavefront touching boundary (top end on boundary at x=500, y=360) -->
+            <line x1="500" y1="360" x2="500" y2="220"/>
           </g>
 
           <!-- Refracted wavefronts (perpendicular to refracted ray) clipped to shallow -->
           <g clip-path="url(#clip-shallow14)" stroke="#171717" stroke-width="2.5" fill="none" id="refr-wavefronts14"></g>
+          <!-- Refracted wavefront touching boundary at (450, 410) -->
+          <g clip-path="url(#clip-shallow14)" stroke="#171717" stroke-width="2.5" fill="none">
+            <line x1="450" y1="410" x2="402" y2="506"/>
+          </g>
+
+          <!-- λ₁ bracket (between incident wavefronts at x=150 and x=230) -->
+          <g id="lam1-bracket14">
+            <line x1="150" y1="415" x2="150" y2="440" stroke="#0891b2" stroke-width="1.2"/>
+            <line x1="230" y1="415" x2="230" y2="440" stroke="#0891b2" stroke-width="1.2"/>
+            <line x1="150" y1="428" x2="230" y2="428" stroke="#0891b2" stroke-width="2" marker-start="url(#arrStart14)" marker-end="url(#arrEnd14)"/>
+          </g>
+
+          <!-- λ₂ bracket (between refracted wavefronts) -->
+          <g id="lam2-bracket14"></g>
 
           <!-- Boundary line -->
           <line x1="760" y1="100" x2="300" y2="560" stroke="#1e3a8a" stroke-width="4"/>
@@ -812,19 +834,50 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
           <!-- Region text labels -->
           <text x="170" y="210" font-family="Sarabun,sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">น้ำลึก</text>
           <text x="730" y="540" font-family="Sarabun,sans-serif" font-size="18" font-weight="700" fill="#1e3a8a">น้ำตื้น</text>
+
+          <!-- Numbered labels with leader lines -->
+          <g id="labels14" font-family="Sarabun,sans-serif" font-size="16" font-weight="800">
+            <!-- 1: Normal line -->
+            <line x1="690" y1="180" x2="660" y2="205" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="690" cy="180" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="690" y="186" text-anchor="middle" fill="#164e63">1</text>
+            <!-- 2: Refracted ray endpoint -->
+            <line x1="870" y1="490" x2="850" y2="475" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="870" cy="490" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="870" y="496" text-anchor="middle" fill="#164e63">2</text>
+            <!-- 3: λ₁ bracket -->
+            <line x1="190" y1="470" x2="190" y2="430" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="190" cy="470" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="190" y="476" text-anchor="middle" fill="#164e63">3</text>
+            <!-- 4: refracted angle (amber arc) -->
+            <line x1="640" y1="380" x2="605" y2="345" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="640" cy="380" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="640" y="386" text-anchor="middle" fill="#164e63">4</text>
+            <!-- 5: incident angle (green arc) -->
+            <line x1="460" y1="270" x2="495" y2="295" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="460" cy="270" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="460" y="276" text-anchor="middle" fill="#164e63">5</text>
+            <!-- 6: Deep water region -->
+            <circle cx="200" cy="140" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="200" y="146" text-anchor="middle" fill="#164e63">6</text>
+            <!-- 7: Shallow water region -->
+            <circle cx="760" cy="540" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="760" y="546" text-anchor="middle" fill="#164e63">7</text>
+            <!-- 8: λ₂ bracket -->
+            <line x1="720" y1="445" x2="695" y2="410" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="720" cy="445" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="720" y="451" text-anchor="middle" fill="#164e63">8</text>
+            <!-- 9: incident ray -->
+            <line x1="100" y1="290" x2="100" y2="315" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="100" cy="290" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="100" y="296" text-anchor="middle" fill="#164e63">9</text>
+            <!-- 10: incident wavefront touching boundary -->
+            <line x1="440" y1="280" x2="495" y2="300" stroke="#164e63" stroke-width="1.5"/>
+            <circle cx="440" cy="280" r="16" fill="#fff" stroke="#0891b2" stroke-width="2.5"/>
+            <text x="440" y="286" text-anchor="middle" fill="#164e63">10</text>
+          </g>
         </svg>
 
-        <!-- 10 numbered badges -->
-        <span class="numbadge" style="left:72%;top:28%">1</span>
-        <span class="numbadge" style="left:94%;top:82%">2</span>
-        <span class="numbadge" style="left:20%;top:43%">3</span>
-        <span class="numbadge" style="left:64%;top:58%">4</span>
-        <span class="numbadge" style="left:55%;top:47%">5</span>
-        <span class="numbadge" style="left:22%;top:22%">6</span>
-        <span class="numbadge" style="left:78%;top:88%">7</span>
-        <span class="numbadge" style="left:85%;top:72%">8</span>
-        <span class="numbadge" style="left:8%;top:54%">9</span>
-        <span class="numbadge" style="left:36%;top:53%">10</span>
       </div>
       <script>
       (function(){
@@ -843,6 +896,24 @@ table.review-tbl th{background:#e0f2fe;color:#0c4a6e;font-weight:700}
           return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;
         }).join('');
         wf.innerHTML=segs;
+
+        // λ₂ bracket between 1st and 2nd refracted wavefronts
+        const lam2=document.getElementById('lam2-bracket14');
+        if(lam2){
+          const d1=70, d2=120;
+          const c1x=rx+ux*d1, c1y=ry+uy*d1;
+          const c2x=rx+ux*d2, c2y=ry+uy*d2;
+          // Offset perpendicular to ray; choose sign toward open shallow area (px,py points to one side)
+          const offset=75;
+          // px=-uy≈-0.447, py=ux≈0.894 → direction roughly (-,+) i.e. down-left; but we want bracket in open shallow area (down-right from ray). Use opposite sign.
+          const sx=-px, sy=-py;
+          const b1x=c1x+sx*offset, b1y=c1y+sy*offset;
+          const b2x=c2x+sx*offset, b2y=c2y+sy*offset;
+          lam2.innerHTML=
+            `<line x1="${c1x.toFixed(1)}" y1="${c1y.toFixed(1)}" x2="${b1x.toFixed(1)}" y2="${b1y.toFixed(1)}" stroke="#0891b2" stroke-width="1.2"/>`+
+            `<line x1="${c2x.toFixed(1)}" y1="${c2y.toFixed(1)}" x2="${b2x.toFixed(1)}" y2="${b2y.toFixed(1)}" stroke="#0891b2" stroke-width="1.2"/>`+
+            `<line x1="${b1x.toFixed(1)}" y1="${b1y.toFixed(1)}" x2="${b2x.toFixed(1)}" y2="${b2y.toFixed(1)}" stroke="#0891b2" stroke-width="2" marker-start="url(#arrStart14)" marker-end="url(#arrEnd14)"/>`;
+        }
 
         const ang=document.getElementById('angles14');
         if(!ang)return;
