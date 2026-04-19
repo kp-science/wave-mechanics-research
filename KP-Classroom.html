@@ -1263,6 +1263,31 @@ const WS_TO_TOOL = Object.fromEntries(
   Object.entries(IFRAME_TOOLS).map(([k,v]) => [v.wsId, k])
 );
 
+// Map wsId → sheet name for ALL standalone worksheets (not just iframe-embedded)
+// wsId pattern: plan{N}-{tool}[-{suffix}]  (e.g. plan1-poe, plan2-matrix-2.1, plan5-f5-fourtier)
+function wsIdToSheet(wsId){
+  // 1) Explicit iframe tools first (FT01, FT02, Review)
+  const tk = WS_TO_TOOL[wsId];
+  if (tk) return IFRAME_TOOLS[tk].sheet;
+  // 2) Pattern parse
+  const m = wsId.match(/^plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
+  if (!m) return null;
+  const [, plan, tool] = m;
+  const prefixMap = {
+    'poe':     'POE',
+    'matrix':  'Matrix',
+    'spot':    'Spot',
+    'calc':    'Calc',
+    'cer':     'CER',
+    'mj':      'MJ',
+    'review':  'Review'
+  };
+  // f1..f9 fourtier → F_Fourtier_P{n}
+  if (/^f\d+$/.test(tool)) return `F_Fourtier_P${plan}`;
+  const prefix = prefixMap[tool.toLowerCase()] || (tool.charAt(0).toUpperCase() + tool.slice(1));
+  return `${prefix}_P${plan}`;
+}
+
 // Flatten worksheet-core state (inputs + canvases) → flat columns per question/tier
 // Input ID patterns: q1-t1-a (radio · value='ก'), q1-t3-1/other (radio · value='1'|'other'),
 //                    q1-t3-text (textarea), s-name/s-num/s-room/s-grp (identity)
@@ -1360,13 +1385,17 @@ window.addEventListener('message', async (e) => {
 
   // Iframe submitting worksheet → forward to Google Sheets via DB.submit
   if (msg.type === 'WS_SUBMIT'){
-    const toolKey = WS_TO_TOOL[msg.wsId];
-    if (!toolKey) return;
-    const cfg = IFRAME_TOOLS[toolKey];
+    const sheet = wsIdToSheet(msg.wsId);
+    if (!sheet){
+      console.warn('[WS_SUBMIT] unknown wsId pattern:', msg.wsId);
+      return;
+    }
+    const toolKey = WS_TO_TOOL[msg.wsId] || null;
+    const cfg = toolKey ? IFRAME_TOOLS[toolKey] : null;
 
     // Preview mode: skip send
     if (state.previewMode){
-      console.log('[preview] WS_SUBMIT', cfg.sheet, msg.data);
+      console.log('[preview] WS_SUBMIT', sheet, msg.data);
       return;
     }
     // Gate check
@@ -1376,10 +1405,12 @@ window.addEventListener('message', async (e) => {
       return;
     }
     // Lock check: one-shot tools (ft01/ft02) — reject re-submit
-    const submitKey = `plan${state.currentPlan}_${toolKey}`;
-    if (cfg.lockAfterSubmit && state.submitted[submitKey]){
-      console.warn('[WS_SUBMIT] already submitted (locked):', submitKey);
-      return;
+    if (cfg && cfg.lockAfterSubmit){
+      const submitKey = `plan${state.currentPlan}_${toolKey}`;
+      if (state.submitted[submitKey]){
+        console.warn('[WS_SUBMIT] already submitted (locked):', submitKey);
+        return;
+      }
     }
 
     const stu = state.student || {};
@@ -1387,7 +1418,7 @@ window.addEventListener('message', async (e) => {
     const full = {
       ...flat,
       ws_id: msg.wsId,
-      tool: toolKey,
+      tool: toolKey || msg.wsId,
       school: SCHOOL,
       year: YEAR,
       plan: state.currentPlan,
@@ -1403,9 +1434,10 @@ window.addEventListener('message', async (e) => {
       return;
     }
     try {
-      await DB.submit(cfg.sheet, full);
-      // reflect completion back to home
-      if (state.currentTool === toolKey) markDone();
+      await DB.submit(sheet, full);
+      console.log('[WS_SUBMIT] ✅ sent to', sheet, msg.wsId);
+      // reflect completion back to home (only iframe-embedded tools track currentTool)
+      if (toolKey && state.currentTool === toolKey) markDone();
     } catch(err){
       console.error('[WS_SUBMIT] submit error:', err);
     }
