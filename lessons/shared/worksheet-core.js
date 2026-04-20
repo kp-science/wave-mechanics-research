@@ -274,16 +274,24 @@ body.kp-grading-mode #kp-toolbar{display:none !important}
         }
       });
       // Canvas overlay: flat key `canvas_<cid>_url` → Drive URL · วาง <img> ทับ canvas
+      const canvasKeys = Object.keys(flat).filter(k => /^canvas_/.test(k));
+      console.log('[grading] flat canvas keys:', canvasKeys.length ? canvasKeys : '(none)');
       Object.keys(flat).forEach((k) => {
         const m = k.match(/^canvas_(.+)_url$/);
         if (!m) return;
         const url = flat[k];
-        if (!url || typeof url !== 'string') return;
+        if (!url || typeof url !== 'string') {
+          console.warn('[grading] skip', k, '· value:', url); return;
+        }
         const cid = m[1];
         const canvas =
           document.getElementById(cid) ||
           document.getElementById(cid.replace(/_/g, '-'));
-        if (!canvas) return;
+        if (!canvas){
+          console.warn('[grading] canvas element not found for cid:', cid, '· tried:', cid, cid.replace(/_/g, '-'));
+          return;
+        }
+        console.log('[grading] overlay canvas', cid, '←', url);
         overlayCanvasImage(canvas, url);
       });
     } finally {
