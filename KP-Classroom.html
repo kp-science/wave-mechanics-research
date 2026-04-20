@@ -4467,7 +4467,9 @@ async function loadCanvasGallery(){
         const url = r[k];
         if (!url || typeof url !== 'string' || !url.trim()) return;
         const qId = m[1];
-        const scoreCol = `canvas_${qId}_score`;
+        // คะแนนครู: ใช้ column เดียวกับ tab ตรวจงาน (q{N}_teacher_score) · sync อัตโนมัติ
+        const qNum = _galQNum(qId);
+        const scoreCol = qNum ? `q${qNum}_teacher_score` : `canvas_${qId}_score`;
         const sid = String(r.s_num || r.student_id || '');
         const ai = aiMap[`${sid}|${qId}`];
         // เก็บ text field ของข้อนี้ (q1_justify, q1_explain, q1_answer, ฯลฯ)
@@ -4675,12 +4677,18 @@ function galleryZoom(i){
 async function setGalleryScore(i, score){
   const it = _galItems[i]; if (!it) return;
   const prev = it.score;
-  it.score = score;
+  // Sync: update ทุก item ที่อยู่ข้อเดียวกัน+นักเรียนเดียวกัน (canvas หลายใบต่อข้อ)
+  const qNum = _galQNum(it.qId);
+  const siblings = _galItems.filter(x =>
+    x.sheet === it.sheet && x.row === it.row &&
+    qNum && _galQNum(x.qId) === qNum
+  );
+  siblings.forEach(x => { x.score = score; });
   renderGalleryGrid();
   try {
     await DB.setCanvasScore({sheet: it.sheet, row: it.row, col: it.scoreCol, score});
   } catch(e){
-    it.score = prev;
+    siblings.forEach(x => { x.score = prev; });
     alert('❌ บันทึกไม่สำเร็จ: ' + e.message);
     renderGalleryGrid();
     return;
