@@ -461,7 +461,8 @@ body.printing-tool #topBar{display:none !important}
   <div class="brand"><span class="logo">🌊</span><span id="brandTitle">วิจัยคลื่นกล</span> · <span id="brandGrade">ม.5</span></div>
   <div class="user">
     <span id="userLabel"></span>
-    <button class="btn-logout" id="btn-change-topic" onclick="showSubjects()" style="display:none">📚 เปลี่ยนวิชา/หัวข้อ</button>
+    <button class="btn-logout" id="btn-change-topic" onclick="showTopics(window.KP_COURSE)" style="display:none">📖 เปลี่ยนหัวข้อ</button>
+    <button class="btn-logout" onclick="location.href='index.html'">🏠 เปลี่ยนวิชา</button>
     <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
   </div>
 </header>
@@ -472,7 +473,8 @@ body.printing-tool #topBar{display:none !important}
 <div class="view active" id="view-login">
   <div class="login-wrap">
     <div class="login-card">
-      <h1>🔐 <span id="loginTitle">ลงชื่อเข้าเรียน</span></h1>
+      <div style="text-align:center;margin-bottom:4px;font-size:13px;color:#64748b;font-weight:600">🔐 ลงชื่อเข้าเรียน</div>
+      <h1><span id="loginTitle">ฟิสิกส์ 3</span></h1>
       <div class="sub" id="loginSubtitle">โรงเรียนสตรีวิทยา · ครูโกเมน ปาปะโถ · ปีการศึกษา 2569</div>
 
       <!-- Master Roster Login (id + birthdate) -->
@@ -518,7 +520,7 @@ body.printing-tool #topBar{display:none !important}
         <div class="hint" id="topics-meta">—</div>
       </div>
     </div>
-    <button class="btn-back-hero" onclick="showSubjects()">← เลือกวิชาอื่น</button>
+    <button class="btn-back-hero" onclick="location.href='index.html'">← เปลี่ยนวิชา</button>
   </div>
   <div class="topic-grid" id="topicGrid"></div>
 </div>
@@ -713,7 +715,7 @@ function applyBranding(){
   const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
   set('brandTitle',   c.title);
   set('brandGrade',   c.grade);
-  // loginTitle คงที่ "ลงชื่อเข้าเรียน" · ไม่ผูกกับวิชา (นักเรียนเลือกวิชาหลัง login)
+  set('loginTitle',   c.title);  // ชื่อวิชาที่เลือกมาจาก index.html
   set('loginSubtitle',`${c.schoolFull} · ${c.teacher} · ปีการศึกษา ${c.year}`);
   set('chip-subject', `📘 ${c.subject} · ${c.subjectCode}`);
   set('teacher-meta', `${c.teacher} · ดูสรุปข้อมูลวิจัย real-time`);
@@ -767,10 +769,10 @@ window.addEventListener('DOMContentLoaded', () => {
   if (isTeacherAuthed()){
     enterTeacherMode();
   } else if (state.student){
-    // ถ้า state.topic มีแล้ว (เคยเลือก) · ไปหน้าบ้านเลย · ไม่งั้นเลือกวิชา
-    if (state.topic) showHome();
-    else showSubjects();
-    // Session validity check ทันที · ถ้าถูกเตะออกจะ auto-logout
+    // ถ้า state.topic มีแล้ว (เคยเลือก) + ตรงกับ course ปัจจุบัน · ไปหน้าบ้านเลย
+    // ไม่งั้นไปหน้าเลือกหัวข้อของวิชานี้
+    if (state.topic && state.subject === window.KP_COURSE) showHome();
+    else showTopics(window.KP_COURSE);
     checkSession(false);
     startSessionHeartbeat();
   } else {
@@ -869,7 +871,7 @@ async function loginMaster(){
     };
     localStorage.setItem(LS_STU, JSON.stringify(state.student));
     clearAllWorksheetDrafts();
-    showSubjects();  // ← ไปหน้าเลือกวิชาก่อน
+    showTopics(window.KP_COURSE);  // ไปหน้าเลือกหัวข้อของวิชานี้เลย
     startSessionHeartbeat();
   } catch(e){
     showLoginError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ · ลองใหม่อีกครั้ง');
