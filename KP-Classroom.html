@@ -16,6 +16,7 @@
   window.KP_COURSE = new URLSearchParams(location.search).get('course') || 'physics3';
   const base = 'content/' + window.KP_COURSE;
   document.write(
+    '<script src="content/subjects.js"><\/script>' +
     '<script src="'+base+'/config.js"><\/script>' +
     '<script src="'+base+'/plans.js"><\/script>' +
     '<script src="'+base+'/tools.js"><\/script>' +
@@ -60,6 +61,21 @@ header.top .user{font-size:13px;opacity:.95;display:flex;align-items:center;gap:
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .btn-primary{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;padding:14px;border-radius:10px;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;width:100%;margin-top:20px;transition:all .15s}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(21,101,192,.35)}
+
+/* ═══════ SUBJECT/TOPIC VIEW ═══════ */
+.subject-grid,.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
+.subject-card,.topic-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.subject-card:hover,.topic-card:hover:not(.locked){transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.15);border-color:#1565c0}
+.subject-card .bar,.topic-card .bar{position:absolute;top:0;left:0;right:0;height:6px;background:#1565c0}
+.subject-card .big-ico,.topic-card .big-ico{font-size:48px;margin-bottom:8px}
+.subject-card h3,.topic-card h3{font-size:22px;color:#0f2c5c;margin:4px 0;font-weight:800}
+.subject-card .sub,.topic-card .sub{font-size:14px;color:#64748b;margin-bottom:10px}
+.subject-card .meta-chips,.topic-card .meta-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.subject-card .meta-chip,.topic-card .meta-chip{font-size:12px;padding:3px 10px;border-radius:12px;background:#e0f2ff;color:#0d47a1;font-weight:700}
+.topic-card.locked{opacity:.55;cursor:not-allowed;background:#f1f5f9}
+.topic-card.locked:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.topic-card.locked .badge-soon{position:absolute;top:12px;right:12px;background:#f59e0b;color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}
+.topic-card.open::after{content:"✓ เปิดใช้งาน";position:absolute;top:12px;right:12px;background:#16a34a;color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}
 
 /* ═══════ HOME VIEW ═══════ */
 .hero{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:20px}
@@ -387,6 +403,7 @@ body.printing-tool #topBar{display:none !important}
   <div class="brand"><span class="logo">🌊</span><span id="brandTitle">วิจัยคลื่นกล</span> · <span id="brandGrade">ม.5</span></div>
   <div class="user">
     <span id="userLabel"></span>
+    <button class="btn-logout" id="btn-change-topic" onclick="showSubjects()" style="display:none">📚 เปลี่ยนวิชา/หัวข้อ</button>
     <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
   </div>
 </header>
@@ -422,6 +439,27 @@ body.printing-tool #topBar{display:none !important}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ═══════════ VIEW: SUBJECTS (เลือกวิชา) ═══════════ -->
+<div class="view" id="view-subjects">
+  <div class="hero" style="background:linear-gradient(135deg,#0f2c5c,#1565c0)">
+    <h2 id="subj-greet">สวัสดี นักเรียน 👋</h2>
+    <div>เลือกวิชาที่ต้องการเรียน</div>
+  </div>
+  <div class="subject-grid" id="subjectGrid"></div>
+</div>
+
+<!-- ═══════════ VIEW: TOPICS (เลือกหัวข้อในวิชา) ═══════════ -->
+<div class="view" id="view-topics">
+  <div class="tool-header">
+    <div>
+      <h2 id="topics-title">📘 วิชา</h2>
+      <div class="meta" id="topics-meta">—</div>
+    </div>
+    <button class="btn-back" onclick="showSubjects()">← เลือกวิชาอื่น</button>
+  </div>
+  <div class="topic-grid" id="topicGrid"></div>
 </div>
 
 <!-- ═══════════ VIEW: HOME ═══════════ -->
@@ -603,6 +641,7 @@ let state = {
 const LS_STU = 'wave_student';
 const LS_SUB = 'wave_submitted';
 const LS_SETTINGS = 'wave_settings';  // cache gate settings · แก้ 3-4s lag ใน preview iframe
+const LS_NAV = 'wave_nav';  // {subject, topic} · จำหัวข้อที่เลือกล่าสุดไว้ resume หลัง reload
 
 // ═══════════════════════════════════════════════════════════
 // BRANDING — เติมข้อมูลจาก KP_CONFIG ลง HTML
@@ -656,13 +695,20 @@ window.addEventListener('DOMContentLoaded', () => {
     state.student = JSON.parse(s);
     const sub = localStorage.getItem(LS_SUB);
     if (sub) state.submitted = JSON.parse(sub);
+    // Restore last selected subject/topic
+    try {
+      const nav = JSON.parse(localStorage.getItem(LS_NAV) || 'null');
+      if (nav){ state.subject = nav.subject; state.topic = nav.topic; }
+    } catch(_){}
   }
 
   // Restore teacher session
   if (isTeacherAuthed()){
     enterTeacherMode();
   } else if (state.student){
-    showHome();
+    // ถ้า state.topic มีแล้ว (เคยเลือก) · ไปหน้าบ้านเลย · ไม่งั้นเลือกวิชา
+    if (state.topic) showHome();
+    else showSubjects();
     // Session validity check ทันที · ถ้าถูกเตะออกจะ auto-logout
     checkSession(false);
     startSessionHeartbeat();
@@ -762,7 +808,7 @@ async function loginMaster(){
     };
     localStorage.setItem(LS_STU, JSON.stringify(state.student));
     clearAllWorksheetDrafts();
-    showHome();
+    showSubjects();  // ← ไปหน้าเลือกวิชาก่อน
     startSessionHeartbeat();
   } catch(e){
     showLoginError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ · ลองใหม่อีกครั้ง');
@@ -783,6 +829,89 @@ function clearAllWorksheetDrafts(){
     }
     keys.forEach(k => localStorage.removeItem(k));
   } catch(e) { console.warn('clearAllWorksheetDrafts:', e); }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SUBJECT / TOPIC SELECTION (Phase 3)
+// ═══════════════════════════════════════════════════════════
+function showSubjects(){
+  // แสดง topBar (logout/เปลี่ยนวิชา) · ซ่อนปุ่มเปลี่ยนวิชาในหน้านี้
+  if (state.student){
+    document.getElementById('topBar').style.display = 'flex';
+    document.getElementById('userLabel').textContent =
+      `👤 ${state.student.name} · เลขที่ ${state.student.no || '—'} · ห้อง ${state.student.class || '—'}`;
+    const btnChange = document.getElementById('btn-change-topic');
+    if (btnChange) btnChange.style.display = 'none';
+  }
+  const grid = document.getElementById('subjectGrid');
+  const greet = document.getElementById('subj-greet');
+  if (greet && state.student) greet.textContent = `สวัสดี ${state.student.name} 👋`;
+  if (!window.KP_SUBJECTS) { grid.innerHTML = '<div class="info">ไม่พบ subject registry</div>'; showView('view-subjects'); return; }
+  grid.innerHTML = window.KP_SUBJECTS.map(s => {
+    const openCount = (s.topics || []).filter(t => t.status === 'open').length;
+    const total = (s.topics || []).length;
+    return `
+      <div class="subject-card" onclick="showTopics('${s.id}')">
+        <div class="bar" style="background:${s.color || '#1565c0'}"></div>
+        <div class="big-ico">${s.icon || '📚'}</div>
+        <h3>${s.title}</h3>
+        <div class="sub">${s.subtitle || ''}</div>
+        <div class="meta-chips">
+          <span class="meta-chip">${total} หัวข้อ</span>
+          <span class="meta-chip" style="background:#dcfce7;color:#15803d">${openCount} เปิดใช้งาน</span>
+        </div>
+      </div>`;
+  }).join('');
+  showView('view-subjects');
+}
+
+function showTopics(subjectId){
+  const subj = (window.KP_SUBJECTS || []).find(s => s.id === subjectId);
+  if (!subj){ alert('ไม่พบวิชานี้'); return; }
+  state.subject = subjectId;
+  document.getElementById('topics-title').textContent = `${subj.icon || '📚'} ${subj.title}`;
+  document.getElementById('topics-meta').textContent = subj.subtitle || '';
+  const grid = document.getElementById('topicGrid');
+  grid.innerHTML = (subj.topics || []).map(t => {
+    const isOpen = t.status === 'open';
+    const cls = isOpen ? 'topic-card open' : 'topic-card locked';
+    const onClick = isOpen
+      ? `onclick="selectTopic('${subj.id}','${t.id}')"`
+      : `onclick="alert('🔒 หัวข้อ &quot;${t.title}&quot; กำลังพัฒนา · เร็วๆ นี้')"`;
+    const badge = isOpen ? '' : '<div class="badge-soon">เร็วๆ นี้</div>';
+    const plansChip = t.numPlans ? `<span class="meta-chip">${t.numPlans} แผน</span>` : '';
+    return `
+      <div class="${cls}" ${onClick}>
+        <div class="bar" style="background:${subj.color || '#1565c0'}"></div>
+        ${badge}
+        <div class="big-ico">${t.icon || '📖'}</div>
+        <h3>${t.title}</h3>
+        <div class="sub">${t.shortTitle !== t.title ? t.shortTitle : ''}</div>
+        <div class="meta-chips">${plansChip}</div>
+      </div>`;
+  }).join('');
+  showView('view-topics');
+}
+
+function selectTopic(subjectId, topicId){
+  const subj = (window.KP_SUBJECTS || []).find(s => s.id === subjectId);
+  const topic = subj && (subj.topics || []).find(t => t.id === topicId);
+  if (!topic || topic.status !== 'open'){ alert('หัวข้อนี้ยังไม่เปิดใช้งาน'); return; }
+
+  state.subject = subjectId;
+  state.topic = topicId;
+  try { localStorage.setItem(LS_NAV, JSON.stringify({subject: subjectId, topic: topicId})); } catch(_){}
+
+  // ถ้า content pack ปัจจุบันตรงกับ subject นี้และเป็น topic current → แสดงบ้านตรงๆ
+  if (topic.current && window.KP_COURSE === subjectId){
+    showHome();
+    return;
+  }
+  // ถ้าไม่ใช่ content pack ปัจจุบัน · reload ไปที่ ?course=<subjectId>
+  // (ภายหลังจะรองรับ subfolder เช่น physics3/shm · ตอนนี้ยังมีแค่ course เดียวต่อ subject)
+  const params = new URLSearchParams(location.search);
+  params.set('course', subjectId);
+  location.search = params.toString();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -837,8 +966,10 @@ async function logout(){
   stopSessionHeartbeat();
   localStorage.removeItem(LS_STU);
   localStorage.removeItem(LS_SUB);
+  localStorage.removeItem(LS_NAV);
   clearAllWorksheetDrafts();
   state.student = null; state.currentPlan = 1; state.currentTool = null; state.submitted = {};
+  state.subject = null; state.topic = null;
   document.getElementById('topBar').style.display = 'none';
   showView('view-login');
 }
@@ -850,10 +981,18 @@ async function logout(){
 // SHOW HOME — optimistic UI (render ทันที · โหลดที่ background)
 // ═══════════════════════════════════════════════════════════
 function showHome(){
+  // Auto-set subject/topic ถ้ายังไม่มี (fallback สำหรับโค้ดเก่าที่เรียก showHome ตรงๆ)
+  if (!state.topic){
+    state.subject = window.KP_COURSE || 'physics3';
+    state.topic = 'waves';  // content pack ปัจจุบัน
+    try { localStorage.setItem(LS_NAV, JSON.stringify({subject: state.subject, topic: state.topic})); } catch(_){}
+  }
   // (1) Render ทันที ด้วย cache ที่มี (ไม่ await API → ไม่ค้าง)
   document.getElementById('topBar').style.display = 'flex';
   document.getElementById('userLabel').textContent =
     `👤 ${state.student.name} · เลขที่ ${state.student.no} · ห้อง ${state.student.class}`;
+  const btnChange = document.getElementById('btn-change-topic');
+  if (btnChange) btnChange.style.display = 'inline-block';
   document.getElementById('hero-greet').textContent = `สวัสดี ${state.student.name} 👋`;
 
   applyLockedPlanJump(); // ถ้าแผนปัจจุบันโดนล็อก → เลื่อนไปแผนที่เปิด (ใช้ cache)
