@@ -355,7 +355,31 @@ input[type=text],input[type=number]{padding:8px 12px;border:1.5px solid #cbd5e1;
 .print-student-bar{display:none}
 .print-page-break{display:none}
 body.printing-tool #topBar{display:none !important}
+
+/* ═══════ SUMMARY SUB-TABS + REPORT PRINT ═══════ */
+.sum-subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #e2e8f0}
+.sum-subtab{padding:8px 14px;border:none;border-radius:6px 6px 0 0;cursor:pointer;font-family:inherit;font-weight:600;font-size:13px;background:#e2e8f0;color:#2d3748;transition:all .15s}
+.sum-subtab:hover{background:#cbd5e0}
+.sum-subtab.active{background:#1F4E78;color:#fff}
+.sum-card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.sum-stat{background:linear-gradient(135deg,#1F4E78,#2e6da4);color:#fff;padding:18px;border-radius:10px;text-align:center}
+.sum-stat .v{font-size:32px;font-weight:800;line-height:1}
+.sum-stat .l{font-size:13px;opacity:.9;margin-top:6px}
+.sum-grid-stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px}
+.heatcell{padding:6px 4px;text-align:center;font-size:12px;border:1px solid #e2e8f0;min-width:44px}
+.report-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.report-table th,.report-table td{border:1px solid #333;padding:6px 10px;text-align:center}
+.report-table th{background:#f0f4f8;font-weight:700}
+.report-table caption{font-weight:700;font-size:14px;margin-bottom:6px;text-align:left}
+@media print{
+  body.printing-report *{visibility:hidden}
+  body.printing-report #reportPrintArea,body.printing-report #reportPrintArea *{visibility:visible}
+  body.printing-report #reportPrintArea{position:absolute;left:0;top:0;width:100%;padding:20px;background:#fff}
+  body.printing-report #reportPrintArea .report-table{font-size:11px}
+  @page{size:A4;margin:15mm}
+}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
@@ -5149,78 +5173,224 @@ function _gradingUnbindKeys(){
 // ═══════════════════════════════════════════════════════════
 // TAB: บันทึกหลังแผน (Auto-aggregate + Export Word)
 // ═══════════════════════════════════════════════════════════
-// ─── Summary tab · fetch + render custom table ───
+// ─── Summary tab · Multi-view dashboard (8 sub-tabs) ───
 const SUMMARY_SHEET_ID = '1BQwdNNr2UfxvD8T8nrBaSkzgAN2UL-Pw1lbXAsdAOLs';
 let _summaryData = null;
 let _summarySort = { col: null, dir: 1 };
 let _summaryFilter = { search: '', room: '' };
+let _summaryActiveSub = 'overview';
+let _summaryExtra = { ft01: null, ft02: null, loading: false };
+const _summaryCharts = {};
+const SUMMARY_SUBS = [
+  { id:'overview',  label:'📈 ภาพรวม' },
+  { id:'people',    label:'👥 รายคน' },
+  { id:'prepost',   label:'📊 Pre→Post' },
+  { id:'mc',        label:'🎯 Misconception' },
+  { id:'poe',       label:'🔬 POE' },
+  { id:'formative', label:'📋 Formative' },
+  { id:'poeft',     label:'🔗 POE vs FT' },
+  { id:'report',    label:'📑 Report' }
+];
+const HAKE_COLORS = { high:'#16a34a', medium:'#ca8a04', low:'#dc2626' };
 
 async function renderSummaryTab(){
   const el = document.getElementById('tab-summary');
   if (!el) return;
   const editUrl = `https://docs.google.com/spreadsheets/d/${SUMMARY_SHEET_ID}/edit`;
+  const subBtns = SUMMARY_SUBS.map(s =>
+    `<button class="sum-subtab${s.id===_summaryActiveSub?' active':''}" data-sub="${s.id}" onclick="switchSummarySub('${s.id}')">${s.label}</button>`
+  ).join('');
   el.innerHTML = `
     <div style="background:linear-gradient(135deg,#1F4E78 0%,#2e6da4 100%);color:#fff;padding:16px 20px;border-radius:10px;margin-bottom:14px">
-      <div style="font-size:20px;font-weight:800;margin-bottom:4px">📊 สรุปคะแนนทุกเครื่องมือ · รายนักเรียน</div>
-      <div style="font-size:13px;opacity:0.9">ดึงจาก Sheet <code>📊 Summary_All</code> · 1 row / คน · อัพเดตทุกครั้งที่กด Reload</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:4px">📊 สรุปคะแนนทุกเครื่องมือ · Summary Dashboard</div>
+      <div style="font-size:13px;opacity:0.9">ดึงจาก <code>📊 Summary_All</code> + FT01/FT02_Scored · อัพเดตทุกครั้งที่กด Reload</div>
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
         <a href="${editUrl}" target="_blank" style="background:#fff;color:#1F4E78;padding:6px 14px;border-radius:6px;text-decoration:none;font-weight:700;font-size:13px">🔗 เปิด Google Sheet</a>
-        <button onclick="loadSummaryData()" style="background:#fff;color:#1F4E78;padding:6px 14px;border-radius:6px;border:none;font-weight:700;font-size:13px;cursor:pointer">🔄 Reload</button>
+        <button onclick="loadSummaryData(true)" style="background:#fff;color:#1F4E78;padding:6px 14px;border-radius:6px;border:none;font-weight:700;font-size:13px;cursor:pointer">🔄 Reload</button>
         <button onclick="exportSummaryCSV()" style="background:#fff;color:#1F4E78;padding:6px 14px;border-radius:6px;border:none;font-weight:700;font-size:13px;cursor:pointer">⬇️ Export CSV</button>
-        <span style="color:#fff;font-size:12px;opacity:0.85">💡 อยากได้ข้อมูลล่าสุด → กด 📊 Summary→🔨 Refresh ใน Sheet → แล้วกด Reload</span>
+        <span style="color:#fff;font-size:12px;opacity:0.85">💡 ข้อมูลล่าสุด → 📊 Summary→🔨 Refresh ใน Sheet แล้วกด Reload</span>
       </div>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
-      <input id="sumSearch" placeholder="🔍 ค้นชื่อ/เลขที่..." oninput="_summaryFilter.search=this.value.toLowerCase();renderSummaryTable()" style="flex:1;min-width:200px;padding:8px 12px;border:1px solid #cbd5e0;border-radius:6px;font-size:14px">
-      <select id="sumRoom" onchange="_summaryFilter.room=this.value;renderSummaryTable()" style="padding:8px 12px;border:1px solid #cbd5e0;border-radius:6px;font-size:14px;background:#fff">
+    <div class="sum-subtabs">${subBtns}</div>
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="sumRoom" onchange="_summaryFilter.room=this.value;renderSummarySubPanel()" style="padding:8px 12px;border:1px solid #cbd5e0;border-radius:6px;font-size:14px;background:#fff">
         <option value="">ทุกห้อง</option>
       </select>
       <span id="sumCount" style="align-self:center;font-size:13px;color:#4a5568"></span>
     </div>
-    <div id="summaryTableWrap" style="overflow:auto;max-height:calc(100vh - 320px);border:1px solid #e0e0e0;border-radius:8px;background:#fff">
+    <div id="summarySubPanel">
       <div style="padding:40px;text-align:center;color:#718096">⏳ กำลังโหลด...</div>
     </div>
   `;
   loadSummaryData();
 }
 
-async function loadSummaryData(){
-  const wrap = document.getElementById('summaryTableWrap');
-  if (!wrap) return;
-  wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">⏳ กำลังโหลด...</div>`;
+function switchSummarySub(id){
+  _summaryActiveSub = id;
+  document.querySelectorAll('.sum-subtab').forEach(b => {
+    b.classList.toggle('active', b.dataset.sub === id);
+  });
+  renderSummarySubPanel();
+}
+
+async function loadSummaryData(force){
+  const panel = document.getElementById('summarySubPanel');
+  if (!panel) return;
+  panel.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">⏳ กำลังโหลด Summary_All...</div>`;
   try {
+    if (force) { _summaryData = null; _summaryExtra = { ft01:null, ft02:null, loading:false }; }
     const r = await DB.listSheet('📊 Summary_All');
     if (!r || r.status !== 'ok'){
-      wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ โหลดไม่สำเร็จ: ${r && r.message || 'unknown error'}<br><small>ตรวจว่ามี sheet 📊 Summary_All ใน database หรือยัง · ถ้ายัง ไปรัน 📊 Summary → 🔨 Refresh ก่อน</small></div>`;
+      panel.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ โหลดไม่สำเร็จ: ${r && r.message || 'unknown error'}<br><small>ตรวจว่ามี sheet 📊 Summary_All ใน database หรือยัง</small></div>`;
       return;
     }
     _summaryData = (r.data || []).filter(row => row.s_num !== '📊 สรุปรวม');
-    // Populate room filter
     const rooms = [...new Set(_summaryData.map(r => r.s_room).filter(Boolean))].sort();
     const roomSel = document.getElementById('sumRoom');
-    if (roomSel) {
-      roomSel.innerHTML = '<option value="">ทุกห้อง</option>' + rooms.map(r => `<option value="${r}">${r}</option>`).join('');
-    }
-    renderSummaryTable();
+    if (roomSel) roomSel.innerHTML = '<option value="">ทุกห้อง</option>' + rooms.map(r => `<option value="${r}">${r}</option>`).join('');
+    renderSummarySubPanel();
   } catch(e){
-    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ Error: ${e.message}</div>`;
+    panel.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ Error: ${e.message}</div>`;
   }
+}
+
+async function ensureFTScored(){
+  if (_summaryExtra.ft01 && _summaryExtra.ft02) return;
+  if (_summaryExtra.loading) return;
+  _summaryExtra.loading = true;
+  try {
+    const [r1, r2] = await Promise.all([DB.listSheet('FT01_Scored'), DB.listSheet('FT02_Scored')]);
+    _summaryExtra.ft01 = (r1 && r1.status === 'ok') ? (r1.data || []) : [];
+    _summaryExtra.ft02 = (r2 && r2.status === 'ok') ? (r2.data || []) : [];
+  } catch(e){
+    _summaryExtra.ft01 = _summaryExtra.ft01 || [];
+    _summaryExtra.ft02 = _summaryExtra.ft02 || [];
+  }
+  _summaryExtra.loading = false;
+}
+
+function _filteredRows(){
+  let rows = _summaryData || [];
+  if (_summaryFilter.room) rows = rows.filter(r => String(r.s_room||'') === _summaryFilter.room);
+  return rows;
+}
+
+function _destroyCharts(){
+  Object.keys(_summaryCharts).forEach(k => {
+    try { _summaryCharts[k].destroy(); } catch(e){}
+    delete _summaryCharts[k];
+  });
+}
+
+function renderSummarySubPanel(){
+  const panel = document.getElementById('summarySubPanel');
+  if (!panel || !_summaryData) return;
+  _destroyCharts();
+  const rows = _filteredRows();
+  const cnt = document.getElementById('sumCount');
+  if (cnt) cnt.textContent = `แสดง ${rows.length} / ${_summaryData.length} คน`;
+  if (rows.length === 0 && _summaryActiveSub !== 'people'){
+    panel.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">📭 ไม่มีข้อมูล · ลอง clear filter หรือรัน 📊 Summary→🔨 Refresh</div>`;
+    return;
+  }
+  switch(_summaryActiveSub){
+    case 'overview':  return renderSumOverview(rows, panel);
+    case 'people':    return renderSumPeople(panel);
+    case 'prepost':   return renderSumPrePost(rows, panel);
+    case 'mc':        return renderSumMC(rows, panel);
+    case 'poe':       return renderSumPOE(rows, panel);
+    case 'formative': return renderSumFormative(rows, panel);
+    case 'poeft':     return renderSumPoeFt(rows, panel);
+    case 'report':    return renderSumReport(rows, panel);
+  }
+}
+
+// ─── Helpers ───
+function _avg(arr){
+  const nums = arr.map(Number).filter(v => !isNaN(v) && v !== null);
+  if (!nums.length) return null;
+  return nums.reduce((a,b)=>a+b,0) / nums.length;
+}
+function _sum(arr){
+  return arr.map(Number).filter(v => !isNaN(v)).reduce((a,b)=>a+b, 0);
+}
+function _fmt(v, d){
+  if (v === null || v === undefined || v === '') return '—';
+  const n = Number(v);
+  if (isNaN(n)) return String(v);
+  return n.toFixed(d==null?2:d);
+}
+function _hakeLevel(g){
+  if (g === null || g === undefined || g === '' || isNaN(Number(g))) return null;
+  const n = Number(g);
+  if (n >= 0.7) return 'high';
+  if (n >= 0.3) return 'medium';
+  return 'low';
+}
+
+// ═══ SUB 1: ภาพรวม ═══
+function renderSumOverview(rows, panel){
+  const nGains = rows.map(r => Number(r.N_gain)).filter(v => !isNaN(v));
+  const avgGain = nGains.length ? nGains.reduce((a,b)=>a+b,0)/nGains.length : null;
+  let hi=0, me=0, lo=0;
+  rows.forEach(r => {
+    const lv = _hakeLevel(r.N_gain);
+    if (lv === 'high') hi++; else if (lv === 'medium') me++; else if (lv === 'low') lo++;
+  });
+  const totalHake = hi+me+lo || 1;
+  const poeKeys = Object.keys(rows[0]||{}).filter(k => /^POE_P\d+$/.test(k));
+  const calcKeys = Object.keys(rows[0]||{}).filter(k => /^Calc_P\d+$/.test(k));
+  const spotKeys = Object.keys(rows[0]||{}).filter(k => /^Spot_P\d+$/.test(k));
+  const avgPoe = _avg(rows.flatMap(r => poeKeys.map(k => r[k])));
+  const avgCalc = _avg(rows.flatMap(r => calcKeys.map(k => r[k])));
+  const avgSpot = _avg(rows.flatMap(r => spotKeys.map(k => r[k])));
+  const avgFt01 = _avg(rows.map(r => r.FT01_Sound));
+  const avgFt02 = _avg(rows.map(r => r.FT02_Sound));
+  const mcRed = _avg(rows.map(r => r.MC_reduced));
+
+  panel.innerHTML = `
+    <div class="sum-grid-stat">
+      <div class="sum-stat"><div class="v">${rows.length}</div><div class="l">จำนวนนักเรียน</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#16a34a,#15803d)"><div class="v">${_fmt(avgGain)}</div><div class="l">N-gain เฉลี่ย (Hake 1998)</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)"><div class="v">${_fmt(avgFt01,1)} → ${_fmt(avgFt02,1)}</div><div class="l">Sound เฉลี่ย Pre → Post (/20)</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#dc2626,#991b1b)"><div class="v">${_fmt(mcRed,1)}</div><div class="l">MC ลดลงเฉลี่ย (ข้อ)</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)"><div class="v">${_fmt(avgPoe,1)}</div><div class="l">POE เฉลี่ย (ทุกแผน)</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#f59e0b,#b45309)"><div class="v">${_fmt(avgCalc,1)}</div><div class="l">Calc เฉลี่ย</div></div>
+      <div class="sum-stat" style="background:linear-gradient(135deg,#0891b2,#155e75)"><div class="v">${_fmt(avgSpot,1)}</div><div class="l">Spot เฉลี่ย</div></div>
+    </div>
+    <div class="sum-card">
+      <div style="font-weight:700;margin-bottom:10px;color:#1F4E78">การกระจาย Hake Level · n=${totalHake}</div>
+      <div style="display:flex;gap:2px;height:36px;border-radius:8px;overflow:hidden;margin-bottom:10px">
+        <div style="flex:${hi};background:${HAKE_COLORS.high};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${hi>0?`High ${hi} (${(hi/totalHake*100).toFixed(0)}%)`:''}</div>
+        <div style="flex:${me};background:${HAKE_COLORS.medium};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${me>0?`Medium ${me} (${(me/totalHake*100).toFixed(0)}%)`:''}</div>
+        <div style="flex:${lo};background:${HAKE_COLORS.low};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">${lo>0?`Low ${lo} (${(lo/totalHake*100).toFixed(0)}%)`:''}</div>
+      </div>
+      <div style="font-size:12px;color:#64748b">🟢 High ≥0.7 · 🟡 Medium 0.3–0.7 · 🔴 Low &lt;0.3 (Hake 1998)</div>
+    </div>
+  `;
+}
+
+// ═══ SUB 2: รายคน (existing table) ═══
+function renderSumPeople(panel){
+  panel.innerHTML = `
+    <div style="margin-bottom:10px">
+      <input id="sumSearch" placeholder="🔍 ค้นชื่อ/เลขที่..." oninput="_summaryFilter.search=this.value.toLowerCase();renderSummaryTable()" value="${_summaryFilter.search||''}" style="width:100%;max-width:400px;padding:8px 12px;border:1px solid #cbd5e0;border-radius:6px;font-size:14px">
+    </div>
+    <div id="summaryTableWrap" style="overflow:auto;max-height:calc(100vh - 380px);border:1px solid #e0e0e0;border-radius:8px;background:#fff"></div>
+  `;
+  renderSummaryTable();
 }
 
 function renderSummaryTable(){
   const wrap = document.getElementById('summaryTableWrap');
   if (!wrap || !_summaryData) return;
-
-  let rows = _summaryData;
+  let rows = _filteredRows();
   if (_summaryFilter.search){
     const q = _summaryFilter.search;
     rows = rows.filter(r =>
       String(r.s_name||'').toLowerCase().includes(q) ||
       String(r.s_num||'').toLowerCase().includes(q)
     );
-  }
-  if (_summaryFilter.room){
-    rows = rows.filter(r => String(r.s_room||'') === _summaryFilter.room);
   }
   if (_summarySort.col){
     const c = _summarySort.col, d = _summarySort.dir;
@@ -5232,27 +5402,21 @@ function renderSummaryTable(){
       return String(av).localeCompare(String(bv), 'th', {numeric:true}) * d;
     });
   }
-
-  document.getElementById('sumCount').textContent = `แสดง ${rows.length} / ${_summaryData.length} คน`;
-
   if (rows.length === 0){
-    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">📭 ไม่มีข้อมูล · ลอง clear filter หรือตรวจว่ารัน Summary → Refresh ใน Sheet แล้วหรือยัง</div>`;
+    wrap.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">📭 ไม่มีข้อมูล</div>`;
     return;
   }
-
   const headers = Object.keys(rows[0]);
-  const stickyIdx = [0,1,2]; // s_num, s_name, s_room
+  const stickyIdx = [0,1,2];
   const stickyLefts = [0, 60, 220];
   const thBase = 'position:sticky;top:0;background:#1F4E78;color:#fff;padding:8px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;border-right:1px solid #2d5a8c;z-index:2';
   const tdBase = 'padding:6px 10px;font-size:13px;border-bottom:1px solid #eee;white-space:nowrap';
-
   const headerCells = headers.map((h, i) => {
     const sticky = stickyIdx.indexOf(i);
     const stickyCss = sticky >= 0 ? `;left:${stickyLefts[sticky]}px;z-index:3;min-width:${sticky===1?160:sticky===0?60:70}px` : '';
     const arrow = _summarySort.col === h ? (_summarySort.dir === 1 ? ' ▲' : ' ▼') : '';
     return `<th style="${thBase}${stickyCss}" onclick="summarySort('${h}')">${h}${arrow}</th>`;
   }).join('');
-
   const bodyRows = rows.map(row => {
     const cells = headers.map((h, i) => {
       let v = row[h];
@@ -5282,9 +5446,8 @@ function renderSummaryTable(){
       }
       return `<td style="${style}">${text}</td>`;
     }).join('');
-    return `<tr onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''">${cells}</tr>`;
+    return `<tr style="cursor:pointer" onclick="showStudentDetail('${encodeURIComponent(row.s_num||row.s_name)}')" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background=''">${cells}</tr>`;
   }).join('');
-
   wrap.innerHTML = `
     <table style="border-collapse:separate;border-spacing:0;width:max-content;min-width:100%;font-family:inherit">
       <thead><tr>${headerCells}</tr></thead>
@@ -5297,6 +5460,369 @@ function summarySort(col){
   if (_summarySort.col === col) _summarySort.dir *= -1;
   else { _summarySort.col = col; _summarySort.dir = 1; }
   renderSummaryTable();
+}
+
+function showStudentDetail(encKey){
+  const key = decodeURIComponent(encKey);
+  const r = (_summaryData||[]).find(x => String(x.s_num) === key || String(x.s_name) === key);
+  if (!r) return;
+  const entries = Object.entries(r).filter(([k,v]) => v !== '' && v !== null && v !== undefined);
+  const rowsHtml = entries.map(([k,v]) => `<tr><td style="padding:4px 10px;font-size:12px;color:#64748b;border-bottom:1px solid #eee">${k}</td><td style="padding:4px 10px;font-size:13px;font-weight:600;border-bottom:1px solid #eee">${typeof v==='number'?(Number.isInteger(v)?v:v.toFixed(2)):v}</td></tr>`).join('');
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:10px;max-width:640px;width:100%;max-height:85vh;overflow:auto">
+      <div style="background:#1F4E78;color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0">
+        <div><div style="font-weight:700;font-size:16px">${r.s_name||'—'}</div><div style="font-size:12px;opacity:.9">เลขที่ ${r.s_num||'—'} · ห้อง ${r.s_room||'—'}</div></div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.4);padding:5px 12px;border-radius:6px;cursor:pointer">✕ ปิด</button>
+      </div>
+      <table style="width:100%;border-collapse:collapse">${rowsHtml}</table>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+// ═══ SUB 3: Pre → Post per item ═══
+async function renderSumPrePost(rows, panel){
+  panel.innerHTML = `<div class="sum-card"><div style="font-weight:700;color:#1F4E78;margin-bottom:10px">📊 %Sound per ข้อ · Pre (FT01) vs Post (FT02)</div><div style="padding:30px;text-align:center;color:#718096">⏳ กำลังโหลด FT01_Scored + FT02_Scored...</div></div>`;
+  await ensureFTScored();
+  const roomFilter = _summaryFilter.room;
+  const filterRow = (r) => !roomFilter || String(r.s_room||'') === roomFilter;
+  const preRows = (_summaryExtra.ft01||[]).filter(filterRow);
+  const postRows = (_summaryExtra.ft02||[]).filter(filterRow);
+  if (!preRows.length && !postRows.length){
+    panel.innerHTML = `<div class="sum-card"><div style="color:#dc2626">⚠️ ไม่พบ FT01_Scored / FT02_Scored · ให้รัน 🎯 Auto-score ก่อน</div></div>`;
+    return;
+  }
+  const qs = Array.from({length:20}, (_,i) => i+1);
+  const pct = (rows, q) => {
+    const col = `q${q}_cat`;
+    const n = rows.filter(r => r[col] !== undefined && r[col] !== '').length;
+    if (!n) return 0;
+    const sound = rows.filter(r => String(r[col]).toLowerCase() === 'sound').length;
+    return sound / n * 100;
+  };
+  const prePct = qs.map(q => pct(preRows, q));
+  const postPct = qs.map(q => pct(postRows, q));
+  panel.innerHTML = `
+    <div class="sum-card" style="margin-bottom:12px">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">📊 %Sound per ข้อ · Pre (FT01 · n=${preRows.length}) vs Post (FT02 · n=${postRows.length})</div>
+      <div style="height:380px"><canvas id="prepostChart"></canvas></div>
+      <div style="font-size:12px;color:#64748b;margin-top:8px">💡 ข้อที่ %Sound เพิ่มขึ้นมาก = การสอนได้ผล · ข้อที่ไม่เพิ่ม = ต้องทบทวน</div>
+    </div>
+  `;
+  const ctx = document.getElementById('prepostChart');
+  _summaryCharts.prepost = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: qs.map(q => 'ข้อ '+q),
+      datasets: [
+        { label:'Pre (FT01)', data: prePct, backgroundColor:'#94a3b8', borderColor:'#64748b', borderWidth:1 },
+        { label:'Post (FT02)', data: postPct, backgroundColor:'#2e6da4', borderColor:'#1F4E78', borderWidth:1 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{position:'top'}, tooltip:{callbacks:{label:(c)=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`}} },
+      scales:{ y:{ beginAtZero:true, max:100, title:{display:true,text:'%Sound'} } }
+    }
+  });
+}
+
+// ═══ SUB 4: Misconception ═══
+async function renderSumMC(rows, panel){
+  panel.innerHTML = `<div class="sum-card"><div>⏳ กำลังโหลด...</div></div>`;
+  await ensureFTScored();
+  const roomFilter = _summaryFilter.room;
+  const filterRow = (r) => !roomFilter || String(r.s_room||'') === roomFilter;
+  const preRows = (_summaryExtra.ft01||[]).filter(filterRow);
+  const postRows = (_summaryExtra.ft02||[]).filter(filterRow);
+  const qs = Array.from({length:20}, (_,i) => i+1);
+  const mcCount = (arr, q) => arr.filter(r => String(r['q'+q+'_cat']||'').toLowerCase() === 'mc').length;
+  const preMC = qs.map(q => ({q, n: mcCount(preRows, q)}));
+  const postMC = qs.map(q => ({q, n: mcCount(postRows, q)}));
+  const top5Pre = [...preMC].sort((a,b) => b.n - a.n).slice(0,5);
+  const matrixRows = qs.map(q => {
+    const preN = preMC[q-1].n, postN = postMC[q-1].n;
+    const diff = postN - preN;
+    return { q, preN, postN, diff };
+  });
+  panel.innerHTML = `
+    <div class="sum-card" style="margin-bottom:12px">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">🎯 Top 5 ข้อที่มี Misconception มากสุด (Pre · FT01)</div>
+      <div style="height:250px"><canvas id="mcTop5Chart"></canvas></div>
+    </div>
+    <div class="sum-card">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">📋 MC Shift Matrix · Pre vs Post ต่อข้อ</div>
+      <div style="overflow:auto;max-height:400px">
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead><tr style="background:#1F4E78;color:#fff;position:sticky;top:0">
+          <th style="padding:8px">ข้อ</th><th style="padding:8px">MC Pre</th><th style="padding:8px">MC Post</th><th style="padding:8px">Δ (Post-Pre)</th><th style="padding:8px">แนวโน้ม</th>
+        </tr></thead>
+        <tbody>
+        ${matrixRows.map(m => {
+          const cls = m.diff < 0 ? 'background:#c6efce;color:#006100' : m.diff > 0 ? 'background:#ffc7ce;color:#9c0006' : '';
+          const ico = m.diff < 0 ? '✅ ลดลง' : m.diff > 0 ? '⚠️ เพิ่มขึ้น' : '— คงที่';
+          return `<tr><td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:600">${m.q}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center">${m.preN}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center">${m.postN}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;font-weight:700;${cls}">${m.diff>0?'+':''}${m.diff}</td>
+            <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center">${ico}</td></tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+      </div>
+    </div>
+  `;
+  const ctx = document.getElementById('mcTop5Chart');
+  _summaryCharts.mcTop5 = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: top5Pre.map(x => 'ข้อ '+x.q),
+      datasets: [{
+        label:'จำนวน MC (Pre)',
+        data: top5Pre.map(x => x.n),
+        backgroundColor:'#dc2626'
+      }]
+    },
+    options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{beginAtZero:true,ticks:{stepSize:1}}} }
+  });
+}
+
+// ═══ SUB 5: POE Heatmap ═══
+function renderSumPOE(rows, panel){
+  const poeKeys = Object.keys(rows[0]||{}).filter(k => /^POE_P\d+$/.test(k)).sort((a,b)=>parseInt(a.replace(/\D/g,''))-parseInt(b.replace(/\D/g,'')));
+  if (!poeKeys.length){
+    panel.innerHTML = `<div class="sum-card">ไม่มีคอลัมน์ POE_P*</div>`;
+    return;
+  }
+  const allVals = rows.flatMap(r => poeKeys.map(k => Number(r[k]))).filter(v => !isNaN(v));
+  const maxV = Math.max(...allVals, 1);
+  const color = (v) => {
+    if (v === null || v === undefined || v === '' || isNaN(Number(v))) return '#f1f5f9';
+    const t = Math.min(1, Number(v) / maxV);
+    const r = Math.round(255 - t * (255-31));
+    const g = Math.round(255 - t * (255-78));
+    const b = Math.round(255 - t * (255-120));
+    return `rgb(${r},${g},${b})`;
+  };
+  const headerHtml = poeKeys.map(k => `<th class="heatcell" style="background:#1F4E78;color:#fff;font-weight:700">${k.replace('POE_','')}</th>`).join('');
+  const bodyHtml = rows.map(r => {
+    const cells = poeKeys.map(k => {
+      const v = r[k];
+      const bg = color(v);
+      const txt = (v === '' || v === null || v === undefined) ? '—' : (typeof v==='number'?v.toFixed(1):v);
+      const tc = (bg === '#f1f5f9' ? '#94a3b8' : (Number(v)/maxV > 0.5 ? '#fff' : '#1a202c'));
+      return `<td class="heatcell" style="background:${bg};color:${tc}">${txt}</td>`;
+    }).join('');
+    return `<tr><td style="padding:4px 8px;font-size:12px;white-space:nowrap;border:1px solid #e2e8f0;position:sticky;left:0;background:#f8fafc;font-weight:600">${r.s_num||''} ${r.s_name||''}</td>${cells}</tr>`;
+  }).join('');
+  panel.innerHTML = `
+    <div class="sum-card">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">🔬 POE Heatmap · คน × แผน (1–10)</div>
+      <div style="overflow:auto;max-height:calc(100vh - 380px);border:1px solid #e2e8f0;border-radius:6px">
+        <table style="border-collapse:collapse;min-width:100%">
+          <thead><tr style="position:sticky;top:0;z-index:2">
+            <th style="padding:6px 8px;background:#1F4E78;color:#fff;position:sticky;left:0;z-index:3;min-width:180px;text-align:left">นักเรียน</th>
+            ${headerHtml}
+          </tr></thead>
+          <tbody>${bodyHtml}</tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:12px;color:#64748b">
+        <span>ต่ำ</span>
+        <div style="flex:1;max-width:200px;height:12px;background:linear-gradient(90deg,#fff,rgb(31,78,120));border:1px solid #cbd5e0;border-radius:3px"></div>
+        <span>สูง (max=${maxV.toFixed(1)})</span>
+      </div>
+    </div>
+  `;
+}
+
+// ═══ SUB 6: Formative progression ═══
+function renderSumFormative(rows, panel){
+  const plans = [1,2,3,4,5,6,7,8,9];
+  const preAvg = plans.map(p => _avg(rows.map(r => r[`F_Pre_P${p}_Sound`])));
+  const postAvg = plans.map(p => _avg(rows.map(r => r[`F_Post_P${p}_Sound`])));
+  panel.innerHTML = `
+    <div class="sum-card">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">📋 Formative พัฒนาการ · Sound เฉลี่ยต่อแผน (เต็ม 4)</div>
+      <div style="height:380px"><canvas id="formChart"></canvas></div>
+      <div style="font-size:12px;color:#64748b;margin-top:8px">💡 ถ้า Post &gt; Pre ทุกแผน = นักเรียนเข้าใจหลังสอนดีขึ้น · ถ้า Post ใกล้ Pre = ต้องปรับการสอน</div>
+    </div>
+  `;
+  const ctx = document.getElementById('formChart');
+  _summaryCharts.form = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: plans.map(p => 'แผน '+p),
+      datasets:[
+        { label:'F_Pre (ก่อนสอน)', data: preAvg, borderColor:'#94a3b8', backgroundColor:'#94a3b8', tension:0.2 },
+        { label:'F_Post (หลังสอน)', data: postAvg, borderColor:'#1F4E78', backgroundColor:'#2e6da4', tension:0.2 }
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{position:'top'}},
+      scales:{ y:{ beginAtZero:true, max:4, title:{display:true,text:'Sound เฉลี่ย (/4)'} } }
+    }
+  });
+}
+
+// ═══ SUB 7: POE vs FT scatter ═══
+function renderSumPoeFt(rows, panel){
+  const poeKeys = Object.keys(rows[0]||{}).filter(k => /^POE_P\d+$/.test(k));
+  const pts = rows.map(r => {
+    const poeVals = poeKeys.map(k => Number(r[k])).filter(v => !isNaN(v));
+    const poeAvg = poeVals.length ? poeVals.reduce((a,b)=>a+b,0)/poeVals.length : null;
+    const ft02 = Number(r.FT02_Sound);
+    if (poeAvg === null || isNaN(ft02)) return null;
+    return { x: poeAvg, y: ft02, label: `${r.s_num||''} ${r.s_name||''}` };
+  }).filter(Boolean);
+  const xMedian = pts.length ? [...pts].map(p=>p.x).sort((a,b)=>a-b)[Math.floor(pts.length/2)] : 0;
+  const yMedian = pts.length ? [...pts].map(p=>p.y).sort((a,b)=>a-b)[Math.floor(pts.length/2)] : 0;
+  const quad = (p) => p.x >= xMedian ? (p.y >= yMedian ? 'Q1' : 'Q4') : (p.y >= yMedian ? 'Q2' : 'Q3');
+  const colorOf = (p) => ({Q1:'#16a34a',Q2:'#f59e0b',Q3:'#dc2626',Q4:'#0ea5e9'})[quad(p)];
+  panel.innerHTML = `
+    <div class="sum-card">
+      <div style="font-weight:700;color:#1F4E78;margin-bottom:10px">🔗 POE เฉลี่ย (แกน x) vs FT02 Sound (แกน y) · Quadrant Analysis</div>
+      <div style="height:420px"><canvas id="scatterChart"></canvas></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px;font-size:12px">
+        <div style="background:#ecfdf5;border-left:4px solid #16a34a;padding:8px 10px"><b>Q1 · POE สูง + Post สูง</b><br>เข้าใจลึก ทั้งกระบวนการและผล</div>
+        <div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:8px 10px"><b>Q2 · POE ต่ำ + Post สูง</b><br>ทำข้อสอบได้แต่กระบวนการอ่อน</div>
+        <div style="background:#fee2e2;border-left:4px solid #dc2626;padding:8px 10px"><b>Q3 · POE ต่ำ + Post ต่ำ</b><br>ต้องช่วยเหลือเป็นพิเศษ</div>
+        <div style="background:#e0f2fe;border-left:4px solid #0ea5e9;padding:8px 10px"><b>Q4 · POE สูง + Post ต่ำ</b><br>กระบวนการดีแต่สอบยังไม่ผ่าน</div>
+      </div>
+    </div>
+  `;
+  const ctx = document.getElementById('scatterChart');
+  _summaryCharts.scatter = new Chart(ctx, {
+    type:'scatter',
+    data:{ datasets:[{
+      label:'นักเรียน',
+      data: pts,
+      backgroundColor: pts.map(colorOf),
+      pointRadius:5, pointHoverRadius:8
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{callbacks:{label:(c)=>`${c.raw.label}: POE=${c.raw.x.toFixed(1)}, FT02=${c.raw.y.toFixed(0)}`}} },
+      scales:{
+        x:{ title:{display:true,text:'POE เฉลี่ย'} },
+        y:{ title:{display:true,text:'FT02 Sound (/20)'}, beginAtZero:true, max:20 }
+      }
+    }
+  });
+}
+
+// ═══ SUB 8: Thesis Report ═══
+async function renderSumReport(rows, panel){
+  panel.innerHTML = `<div style="padding:20px">⏳ กำลังสร้าง report...</div>`;
+  await ensureFTScored();
+  const rooms = [...new Set(rows.map(r => r.s_room).filter(Boolean))].sort();
+  const t1Body = rooms.map(room => {
+    const rr = rows.filter(r => r.s_room === room);
+    const male = rr.length; // demographics placeholder · ไม่มี gender col
+    return { room, n: rr.length };
+  });
+  const totalN = rows.length;
+
+  // Table 2: Pre-Post per concept (ใช้ FT01/FT02_Scored · 5 concept groups ตามข้อ)
+  // Concept groups: 1-4 นิยาม · 5-8 คลื่นเสียง · 9-12 คลื่นผิวน้ำ · 13-16 สมบัติ · 17-20 การใช้งาน
+  const concepts = [
+    { name:'นิยาม/สมบัติทั่วไปของคลื่น', qs:[1,2,3,4] },
+    { name:'คลื่นเสียง', qs:[5,6,7,8] },
+    { name:'คลื่นผิวน้ำ', qs:[9,10,11,12] },
+    { name:'สมบัติการสะท้อน/หักเห/แทรกสอด', qs:[13,14,15,16] },
+    { name:'การประยุกต์ใช้งาน', qs:[17,18,19,20] }
+  ];
+  const roomFilter = _summaryFilter.room;
+  const filterRow = (r) => !roomFilter || String(r.s_room||'') === roomFilter;
+  const preRows = (_summaryExtra.ft01||[]).filter(filterRow);
+  const postRows = (_summaryExtra.ft02||[]).filter(filterRow);
+  const pctSound = (arr, qs) => {
+    let sound=0, tot=0;
+    arr.forEach(r => qs.forEach(q => {
+      const v = String(r['q'+q+'_cat']||'').toLowerCase();
+      if (v) { tot++; if (v==='sound') sound++; }
+    }));
+    return tot ? sound/tot*100 : 0;
+  };
+  const t2Body = concepts.map(c => {
+    const pre = pctSound(preRows, c.qs);
+    const post = pctSound(postRows, c.qs);
+    return { ...c, pre, post, diff: post - pre };
+  });
+
+  // Table 3: MC shift per item
+  const qsAll = Array.from({length:20}, (_,i) => i+1);
+  const mcCount = (arr, q) => arr.filter(r => String(r['q'+q+'_cat']||'').toLowerCase() === 'mc').length;
+  const t3Body = qsAll.map(q => {
+    const preN = mcCount(preRows, q);
+    const postN = mcCount(postRows, q);
+    return { q, preN, postN, diff: postN - preN };
+  });
+
+  const today = new Date().toLocaleDateString('th-TH', {year:'numeric',month:'long',day:'numeric'});
+  panel.innerHTML = `
+    <div class="sum-card" style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-weight:700;color:#1F4E78;font-size:16px">📑 Thesis Report · 3 ตารางพร้อมลงวิทยานิพนธ์</div>
+        <div style="font-size:12px;color:#64748b">ข้อมูล ณ ${today} · Filter: ${roomFilter||'ทุกห้อง'}</div>
+      </div>
+      <button onclick="printSummaryReport()" style="background:#1F4E78;color:#fff;padding:8px 18px;border:none;border-radius:6px;font-weight:700;cursor:pointer">🖨️ Print / Save PDF</button>
+    </div>
+    <div id="reportPrintArea">
+      <h2 style="color:#1F4E78;margin-bottom:10px">รายงานผลการวิจัย · ${roomFilter||'รวมทุกห้อง'}</h2>
+      <div style="font-size:13px;color:#64748b;margin-bottom:18px">ณ วันที่ ${today} · n = ${totalN} คน · เครื่องมือ: FT-01/FT-02 (Four-tier · Caleon &amp; Subramaniam 2010), POE, Calc, Spot</div>
+
+      <table class="report-table">
+        <caption>ตารางที่ 1 · ลักษณะกลุ่มตัวอย่าง (Demographics)</caption>
+        <thead><tr><th>ห้อง</th><th>จำนวน (คน)</th><th>ร้อยละ</th></tr></thead>
+        <tbody>
+          ${t1Body.map(r => `<tr><td>${r.room}</td><td>${r.n}</td><td>${(r.n/totalN*100).toFixed(1)}%</td></tr>`).join('')}
+          <tr style="font-weight:700;background:#f0f4f8"><td>รวม</td><td>${totalN}</td><td>100.0%</td></tr>
+        </tbody>
+      </table>
+
+      <table class="report-table">
+        <caption>ตารางที่ 2 · ร้อยละของแนวคิดวิทยาศาสตร์ (%Sound) ก่อนและหลังเรียน จำแนกตามมโนทัศน์</caption>
+        <thead><tr><th>มโนทัศน์</th><th>ข้อ</th><th>%Sound ก่อน (FT01)</th><th>%Sound หลัง (FT02)</th><th>ผลต่าง</th></tr></thead>
+        <tbody>
+          ${t2Body.map(c => `<tr>
+            <td style="text-align:left">${c.name}</td>
+            <td>${c.qs.join(',')}</td>
+            <td>${c.pre.toFixed(1)}%</td>
+            <td>${c.post.toFixed(1)}%</td>
+            <td style="font-weight:700;color:${c.diff>=0?'#16a34a':'#dc2626'}">${c.diff>=0?'+':''}${c.diff.toFixed(1)}%</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <table class="report-table">
+        <caption>ตารางที่ 3 · การเปลี่ยนแปลงแนวคิดคลาดเคลื่อน (Misconception Shift) รายข้อ</caption>
+        <thead><tr><th>ข้อ</th><th>MC ก่อน (คน)</th><th>MC หลัง (คน)</th><th>ผลต่าง</th><th>แนวโน้ม</th></tr></thead>
+        <tbody>
+          ${t3Body.map(r => `<tr>
+            <td>${r.q}</td><td>${r.preN}</td><td>${r.postN}</td>
+            <td style="font-weight:700;color:${r.diff<=0?'#16a34a':'#dc2626'}">${r.diff>0?'+':''}${r.diff}</td>
+            <td>${r.diff<0?'✅ ลดลง':r.diff>0?'⚠️ เพิ่มขึ้น':'— คงที่'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+
+      <div style="font-size:11px;color:#64748b;margin-top:14px;border-top:1px solid #ccc;padding-top:8px">
+        <b>อ้างอิง:</b> Hake, R. R. (1998). Interactive-engagement versus traditional methods. <i>Am. J. Phys.</i>, 66(1), 64–74. ·
+        Caleon, I., &amp; Subramaniam, R. (2010). Do students know what they know? A four-tier diagnostic test. <i>Res. Sci. Educ.</i>, 40(3), 313–337.
+      </div>
+    </div>
+  `;
+}
+
+function printSummaryReport(){
+  document.body.classList.add('printing-report');
+  window.print();
+  setTimeout(() => document.body.classList.remove('printing-report'), 500);
 }
 
 function exportSummaryCSV(){

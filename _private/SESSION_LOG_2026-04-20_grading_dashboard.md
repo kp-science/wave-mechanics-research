@@ -151,3 +151,47 @@ c744564 feat(grading): ตัวกรอง 4 ชั้น · แผน → ง
 ---
 
 **Next session:** ถ้าครูใช้จริงแล้วเจอปัญหาเพิ่ม · เน้น UX polish หรือขยับไปทำ Pivot Table สรุปผลวิจัย
+
+---
+
+## 🆕 Summary Dashboard 8 sub-tabs (2026-04-20 ต่อเนื่อง)
+
+แทนที่ `renderSummaryTab()` เดิม (raw table) ด้วย Multi-tab Dashboard
+
+### Sub-tabs ที่ทำ
+| # | id | ทำอะไร | Data source |
+|---|----|--------|-------------|
+| 1 | `overview` | 7 stat cards + Hake distribution bar | Summary_All |
+| 2 | `people` | ตารางเดิม + คลิกแถว → modal detail | Summary_All |
+| 3 | `prepost` | Bar chart %Sound ข้อ 1–20 Pre vs Post | FT01_Scored + FT02_Scored (lazy) |
+| 4 | `mc` | Top-5 MC horizontal bar + shift matrix 20 ข้อ | FT01/FT02_Scored |
+| 5 | `poe` | Heatmap คน × แผน 1–10 · color gradient | Summary_All (POE_P*) |
+| 6 | `formative` | Line chart F_Pre vs F_Post 9 แผน | Summary_All (F_Pre/Post_P*_Sound) |
+| 7 | `poeft` | Scatter POE avg × FT02 Sound · quadrant guide | Summary_All |
+| 8 | `report` | 3 ตารางวิทยานิพนธ์ (Demographics / Pre-Post per concept / MC shift) + Print A4 | Summary_All + FT01/FT02_Scored |
+
+### Technical
+- เพิ่ม Chart.js 4.4.1 CDN ใน `<head>`
+- เพิ่ม CSS `.sum-subtab/.sum-card/.sum-stat/.heatcell/.report-table` + `@media print` rules
+- ทุก fetch ผ่าน `DB.listSheet()` · lazy-load FT01/FT02_Scored เฉพาะ sub-tab ที่ต้องการ
+- Global state: `_summaryData`, `_summarySort`, `_summaryFilter`, `_summaryActiveSub`, `_summaryExtra`, `_summaryCharts`
+- `_destroyCharts()` ถูกเรียกก่อน re-render ทุกครั้ง · กันรูปซ้อน
+- Concepts grouping (report table 2): 1–4 นิยาม · 5–8 เสียง · 9–12 ผิวน้ำ · 13–16 สมบัติ · 17–20 ประยุกต์
+- Quadrant thresholds ใน POE vs FT: median ของ x และ y (ไม่ fix)
+- Print: `body.printing-report` → visibility hack · ซ่อนทุกอย่างยกเว้น `#reportPrintArea`
+
+### ข้อจำกัด / Known issues
+- Demographics table ไม่มี gender/age (schema Summary_All ไม่เก็บ) · แสดงแค่ห้อง+จำนวน
+- Concept grouping ใน report table 2 เป็น hardcoded · ถ้าแผนเปลี่ยนต้องแก้ใน code
+- POE heatmap scale = max ใน dataset (ไม่ normalize ต่อแผน) · แผนที่มีเต็ม 10 vs แผนที่มีเต็ม 20 จะ bias
+- Scatter quadrant ใช้ median ของ filtered set · เทียบระหว่างห้องต้องดูตัวเลขใน tooltip
+- Print preview ต้องใช้ Print dialog ของเบราว์เซอร์ (ไม่ได้ generate PDF server-side)
+
+### Follow-up tasks
+- [ ] Add override column ใน Summary_All (ครู manually set final grade)
+- [ ] Export PDF ผ่าน server-side (jsPDF + html2canvas) แทน browser print
+- [ ] Drill-down ใน prepost chart: คลิกข้อ → แสดงนักเรียนที่ตอบ MC ข้อนั้น
+- [ ] Configurable concept groups (UI แก้ได้ ไม่ต้อง hardcode)
+- [ ] Per-room comparison chart (Q1/Q2/Q3 pre vs post แยกห้อง)
+- [ ] Formative chart รองรับ per-room split
+- [ ] Export report table เป็น Word (สำหรับ paste ลง thesis โดยตรง)
