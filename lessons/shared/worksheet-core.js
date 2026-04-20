@@ -38,6 +38,12 @@
 .kp-toolbar .kp-btn-danger:hover{background:#fca5a5}
 body{padding-bottom:60px !important}
 input.kp-auto-filled,textarea.kp-auto-filled{background:#ecfeff !important;color:#0c4a40;cursor:not-allowed}
+body.kp-grading-mode{background:#fff8e1 !important}
+body.kp-grading-mode::before{content:'🔎 โหมดตรวจงาน · อ่านอย่างเดียว';position:fixed;top:0;left:0;right:0;background:#ff8f00;color:#fff;text-align:center;font-weight:800;padding:6px;z-index:10000;font-size:13px}
+body.kp-grading-mode{padding-top:34px !important}
+body.kp-grading-mode input,body.kp-grading-mode textarea,body.kp-grading-mode select{background:#fffde7 !important;color:#3e2723 !important}
+body.kp-grading-mode input[type=radio]:checked+*,body.kp-grading-mode label:has(input:checked){background:#fff3e0;border-radius:4px}
+body.kp-grading-mode #kp-toolbar{display:none !important}
 @media print{
   .kp-toolbar{display:none !important}
   body{padding-bottom:0 !important;background:#fff !important}
@@ -226,6 +232,83 @@ input.kp-auto-filled,textarea.kp-auto-filled{background:#ecfeff !important;color
     updateStatus('☁️ ส่งไปเซิร์ฟเวอร์แล้ว');
   }
 
+  /* ─── Restore from flat row (teacher grading) ─── */
+  // Flat keys come from flattenInputs() in KP-Classroom:
+  //   · radio group "q1_t1" → value 'ก' · matches radio whose name|id maps to q1_t1
+  //   · checkbox "q1_a"     → '1' or ''
+  //   · text/textarea/select "q1_explain" → value
+  // Canvas not restored here (requires Drive fetch · teacher can see original in ตรวจรูป tab)
+  function restoreFlatRow(flat) {
+    if (!flat || typeof flat !== 'object') return;
+    isRestoring = true;
+    try {
+      const setRadioOrCheck = (el) => {
+        const name = el.name || '';
+        const idKey = (el.id || '').replace(/-/g, '_');
+        const nameKey = name.replace(/-/g, '_');
+        // strip last segment for id-based group key (e.g. q1-t1-a → q1_t1)
+        const idGroup = idKey.replace(/_[^_]+$/, '');
+        const candidates = [nameKey, name, idKey, idGroup];
+        for (const k of candidates) {
+          if (!k) continue;
+          const v = flat[k];
+          if (v == null || v === '') continue;
+          if (el.type === 'checkbox') {
+            if (String(v) === String(el.value) || v === true || v === '1' || v === 1) {
+              el.checked = true;
+              return;
+            }
+          } else if (String(v) === String(el.value)) {
+            el.checked = true;
+            return;
+          }
+        }
+      };
+      document.querySelectorAll('input, textarea, select').forEach((el) => {
+        if (el.classList.contains('kp-auto-filled')) return;
+        if (el.type === 'radio' || el.type === 'checkbox') {
+          setRadioOrCheck(el);
+        } else if (el.id) {
+          const k = el.id.replace(/-/g, '_');
+          if (flat[k] != null) el.value = flat[k];
+        }
+      });
+    } finally {
+      setTimeout(() => { isRestoring = false; }, 300);
+    }
+  }
+
+  /* ─── Grading (read-only) mode ─── */
+  function enableGradingMode() {
+    document.body.classList.add('kp-grading-mode');
+    // disable student-side auto-save to avoid clobbering restored answers
+    document.removeEventListener('input', scheduleSave);
+    document.removeEventListener('change', scheduleSave);
+    document.querySelectorAll('input, textarea, select, button').forEach((el) => {
+      if (el.closest('#kp-toolbar')) return;
+      el.disabled = true;
+    });
+    document.querySelectorAll('canvas').forEach((c) => { c.style.pointerEvents = 'none'; });
+    const tb = document.getElementById('kp-toolbar');
+    if (tb) tb.style.display = 'none';
+    updateStatus('🔎 โหมดตรวจงาน');
+  }
+
+  /* ─── Handle parent postMessage (RESTORE_STATE / RESTORE_FLAT / GRADING_MODE) ─── */
+  window.addEventListener('message', (e) => {
+    const msg = e.data;
+    if (!msg || !msg.type) return;
+    if (msg.type === 'RESTORE_STATE' && msg.state) {
+      restoreState(msg.state);
+    } else if (msg.type === 'RESTORE_FLAT' && msg.flat) {
+      restoreFlatRow(msg.flat);
+    } else if (msg.type === 'GRADING_MODE') {
+      enableGradingMode();
+      if (msg.state) restoreState(msg.state);
+      else if (msg.flat) restoreFlatRow(msg.flat);
+    }
+  });
+
   function updateStatus(msg) {
     const el = document.getElementById('kp-save-status');
     if (el) el.textContent = msg;
@@ -276,6 +359,8 @@ input.kp-auto-filled,textarea.kp-auto-filled{background:#ecfeff !important;color
     submitToCloud,
     collectState,
     restoreState,
+    restoreFlatRow,
+    enableGradingMode,
     WS_ID,
   };
 

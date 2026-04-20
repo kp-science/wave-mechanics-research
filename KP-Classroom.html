@@ -2897,6 +2897,7 @@ function renderTeacherShell(){
       <button class="tab-btn" data-tab="feedback" onclick="switchTeacherTab('feedback')">💬 ส่งฟีดแบ็ก</button>
       <button class="tab-btn" data-tab="observe" onclick="switchTeacherTab('observe')">🔍 สังเกต/Rubric</button>
       <button class="tab-btn" data-tab="gallery" onclick="switchTeacherTab('gallery')">🖼️ ตรวจรูป</button>
+      <button class="tab-btn" data-tab="grading" onclick="switchTeacherTab('grading')">📝 ตรวจงาน</button>
       <button class="tab-btn" data-tab="postplan" onclick="switchTeacherTab('postplan')">📓 บันทึกหลังแผน</button>
     </div>
     <div class="tab-panel" id="tab-overview"></div>
@@ -2909,6 +2910,7 @@ function renderTeacherShell(){
     <div class="tab-panel" id="tab-feedback"></div>
     <div class="tab-panel" id="tab-observe"></div>
     <div class="tab-panel" id="tab-gallery"></div>
+    <div class="tab-panel" id="tab-grading"></div>
     <div class="tab-panel" id="tab-postplan"></div>
   `;
   refreshCourseStatusBadge();
@@ -2972,8 +2974,10 @@ function switchTeacherTab(name){
   if (name === 'feedback') renderFeedbackTab();
   if (name === 'observe')  renderObserveTab();
   if (name === 'gallery')  renderCanvasGallery();
+  if (name === 'grading')  renderGradingTab();
   if (name === 'postplan') renderPostPlanTab();
   if (name !== 'gallery') _galleryUnbindKeys();
+  if (name !== 'grading') _gradingUnbindKeys();
 }
 
 async function loadTeacherDashboard(){
@@ -4660,6 +4664,274 @@ function _galleryUnbindKeys(){
   if (!_galKeysBound) return;
   document.removeEventListener('keydown', _galleryKeyHandler);
   _galKeysBound = false;
+}
+
+// ═══════════════════════════════════════════════════════════
+// TAB: 📝 ตรวจงาน (Grading Dashboard · replay student view)
+// • Dropdown: plan → tool → student · โหลดแถวจาก Sheet
+// • iframe โหลดใบงาน standalone + postMessage GRADING_MODE + flat row
+// • worksheet-core reverse-fill inputs + disable editing
+// • Side panel: rubric 0-3 per question · Hotkey 1-4, Space=next, ←→=prev/next q
+// ═══════════════════════════════════════════════════════════
+const GRADING_TOOLS = [
+  // id ต้อง match wsIdToSheet tool segment · path = standalone HTML (ครูเปิดตรงๆ ก็ได้)
+  {id:'ft01',     label:'🧪 FT-01 Pre-test (แผน 1)',  plans:[1],  wsId:(p)=>'plan1-ft01',
+    path:'lessons/physics3/waves/แผน01_การเกิดคลื่นและชนิดของคลื่น/สื่อ10_FT01_Fourtier_PreTest.html',
+    sheet:(p)=>'FT01', qCount:10},
+  {id:'ft02',     label:'🧪 FT-02 Post-test (แผน 10)', plans:[10], wsId:(p)=>'plan10-ft02',
+    path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ03_FT02_Fourtier_PostTest.html',
+    sheet:(p)=>'FT02', qCount:10},
+  {id:'review10', label:'📝 Review 18 ข้อ (แผน 10)',   plans:[10], wsId:(p)=>'plan10-review',
+    path:'lessons/physics3/waves/แผน10_ทบทวน/สื่อ02_Review_ใบทบทวน18ข้อ.html',
+    sheet:(p)=>'Review', qCount:18}
+];
+
+let _grPlan = 1;
+let _grToolId = 'ft01';
+let _grStudent = '';   // s_num
+let _grRows = [];      // rows from sheet
+let _grCurrent = null; // current row
+let _grFocusQ = 1;     // focused question for hotkey scoring
+let _grKeysBound = false;
+let _grIframeReady = false;
+
+function _gradingCurrentTool(){ return GRADING_TOOLS.find(t => t.id === _grToolId); }
+
+function renderGradingTab(){
+  const el = document.getElementById('tab-grading');
+  if (!isApiConfigured()){
+    el.innerHTML = `<div class="warn-config">⚠️ ยังไม่ได้ตั้งค่า API_URL · ตั้งก่อนใช้งาน</div>`;
+    return;
+  }
+  const toolOpts = GRADING_TOOLS.map(t =>
+    `<option value="${t.id}" ${t.id===_grToolId?'selected':''}>${t.label}</option>`
+  ).join('');
+  el.innerHTML = `
+    <div style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);border:1.5px solid #2e7d32;padding:14px 18px;border-radius:10px;margin-bottom:12px">
+      <div style="font-weight:800;color:#1b5e20;font-size:16px;margin-bottom:4px">📝 ตรวจงานแบบ replay (เห็นเหมือนนักเรียน)</div>
+      <div style="font-size:13px;color:#2e4a30">เลือก <b>เครื่องมือ</b> + <b>นักเรียน</b> · iframe จะเติมคำตอบ + ล็อกแก้ไข · Hotkey <b>1-4</b>=ให้คะแนน 0-3 ข้อที่ focus · <b>Space</b>=คนถัดไป · <b>←→</b>=เปลี่ยนข้อ</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px">
+      <label style="font-weight:700">🧩 เครื่องมือ:
+        <select id="grToolSel" onchange="_grToolId=this.value;_onGradingToolChange()">${toolOpts}</select>
+      </label>
+      <label style="font-weight:700">👤 นักเรียน:
+        <select id="grStudentSel" onchange="_grStudent=this.value;_onGradingStudentChange()">
+          <option value="">— เลือกนักเรียน —</option>
+        </select>
+      </label>
+      <button class="btn-sm" onclick="_loadGradingRows()">🔄 โหลดใหม่</button>
+      <span style="flex:1"></span>
+      <div id="grProgress" style="font-weight:700;color:#1b5e20"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start">
+      <div style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;overflow:hidden;min-height:600px">
+        <iframe id="gradingFrame" title="grading-replay"
+          style="width:100%;height:calc(100vh - 280px);min-height:600px;border:0;background:#fff"></iframe>
+      </div>
+      <div id="gradingPanel" style="background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px;position:sticky;top:12px;max-height:calc(100vh - 260px);overflow:auto">
+        <div style="text-align:center;color:#718096;padding:30px">← เลือกนักเรียนก่อน</div>
+      </div>
+    </div>
+  `;
+  _gradingBindKeys();
+  _loadGradingRows();
+}
+
+async function _loadGradingRows(){
+  const tool = _gradingCurrentTool();
+  if (!tool) return;
+  const sheet = tool.sheet(_grPlan);
+  const sel = document.getElementById('grStudentSel');
+  if (sel) sel.innerHTML = '<option value="">⏳ กำลังโหลด...</option>';
+  try {
+    const r = await DB.listSheet(sheet, true);
+    _grRows = (r && r.data) || [];
+    if (sel){
+      // Unique by s_num · keep latest submission (highest _row)
+      const byNum = new Map();
+      _grRows.forEach(row => {
+        const n = String(row.s_num || row.student_id || '');
+        if (!n) return;
+        const prev = byNum.get(n);
+        if (!prev || (row._row||0) > (prev._row||0)) byNum.set(n, row);
+      });
+      const students = Array.from(byNum.values())
+        .sort((a,b) => String(a.s_num||'').localeCompare(String(b.s_num||''), 'th', {numeric:true}));
+      sel.innerHTML = '<option value="">— เลือกนักเรียน —</option>' +
+        students.map(s => {
+          const done = _gradingRowDoneCount(s, tool);
+          const mark = done > 0 ? ` ✓${done}` : '';
+          return `<option value="${escapeHtml(String(s.s_num||''))}">${escapeHtml(s.s_name||'(ไม่ระบุ)')} (เลขที่ ${escapeHtml(String(s.s_num||''))})${mark}</option>`;
+        }).join('');
+    }
+    _updateGradingProgress();
+  } catch(e){
+    if (sel) sel.innerHTML = `<option value="">❌ ${escapeHtml(e.message)}</option>`;
+  }
+}
+
+function _gradingRowDoneCount(row, tool){
+  let n = 0;
+  for (let q=1; q<=tool.qCount; q++){
+    const v = row[`q${q}_teacher_score`];
+    if (v !== '' && v != null) n++;
+  }
+  return n;
+}
+
+function _updateGradingProgress(){
+  const tool = _gradingCurrentTool();
+  const p = document.getElementById('grProgress');
+  if (!p || !tool) return;
+  const total = _grRows.length;
+  const done = _grRows.filter(r => _gradingRowDoneCount(r, tool) >= tool.qCount).length;
+  p.textContent = `ตรวจครบ ${done}/${total} คน`;
+}
+
+function _onGradingToolChange(){
+  _grStudent = '';
+  _grCurrent = null;
+  _grFocusQ = 1;
+  const frame = document.getElementById('gradingFrame');
+  if (frame) frame.src = 'about:blank';
+  const panel = document.getElementById('gradingPanel');
+  if (panel) panel.innerHTML = '<div style="text-align:center;color:#718096;padding:30px">← เลือกนักเรียนก่อน</div>';
+  _loadGradingRows();
+}
+
+function _onGradingStudentChange(){
+  const tool = _gradingCurrentTool();
+  if (!tool || !_grStudent){ _grCurrent = null; return; }
+  const row = _grRows.find(r => String(r.s_num||'') === String(_grStudent));
+  if (!row){ return; }
+  _grCurrent = row;
+  _grFocusQ = 1;
+  _grIframeReady = false;
+  const frame = document.getElementById('gradingFrame');
+  frame.onload = () => {
+    _grIframeReady = true;
+    // Wait for worksheet-core init (injects toolbar + restores localStorage)
+    setTimeout(() => {
+      try {
+        frame.contentWindow.postMessage({
+          type: 'GRADING_MODE',
+          flat: row,
+          wsId: tool.wsId(_grPlan)
+        }, '*');
+      } catch(e){ console.warn('[grading] postMessage failed', e); }
+    }, 600);
+  };
+  frame.src = encodeURI(tool.path) + '?grading=1&t=' + Date.now();
+  _renderGradingPanel();
+}
+
+function _renderGradingPanel(){
+  const panel = document.getElementById('gradingPanel');
+  const tool = _gradingCurrentTool();
+  if (!panel || !tool || !_grCurrent) return;
+  const row = _grCurrent;
+  const rows = [];
+  for (let q=1; q<=tool.qCount; q++){
+    const score = row[`q${q}_teacher_score`];
+    const hasScore = (score !== '' && score != null);
+    const focused = (q === _grFocusQ);
+    const answer = row[`q${q}_t1`] || row[`q${q}_answer`] || row[`q${q}`] || '';
+    const btns = [0,1,2,3].map(s => {
+      const active = (Number(score) === s);
+      return `<button onclick="_setGradingScore(${q},${s})"
+        style="flex:1;padding:6px 0;border:1.5px solid ${active?'#2e7d32':'#cbd5e1'};background:${active?'#2e7d32':'#fff'};color:${active?'#fff':'#334155'};border-radius:6px;font-weight:700;cursor:pointer">${s}</button>`;
+    }).join('');
+    rows.push(`
+      <div onclick="_grFocusQ=${q};_renderGradingPanel()"
+        style="padding:8px;margin-bottom:6px;border:2px solid ${focused?'#ff8f00':'#e2e8f0'};border-radius:8px;cursor:pointer;background:${focused?'#fff8e1':'#fff'}">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <b style="color:#0f2c5c">ข้อ ${q}</b>
+          ${hasScore ? `<span style="background:#2e7d32;color:#fff;padding:1px 8px;border-radius:100px;font-size:11px;font-weight:700">✓ ${score}</span>` : ''}
+          ${answer ? `<span style="font-size:11px;color:#718096">ตอบ: ${escapeHtml(String(answer)).slice(0,30)}</span>` : ''}
+        </div>
+        <div style="display:flex;gap:4px">${btns}</div>
+      </div>`);
+  }
+  const done = _gradingRowDoneCount(row, tool);
+  panel.innerHTML = `
+    <div style="margin-bottom:8px">
+      <div style="font-weight:800;color:#0f2c5c;font-size:14px">${escapeHtml(row.s_name||'')}</div>
+      <div style="font-size:11.5px;color:#718096">เลขที่ ${escapeHtml(String(row.s_num||''))} · ${escapeHtml(row.s_room||row.class||'')}</div>
+      <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-top:4px">ตรวจแล้ว ${done}/${tool.qCount} ข้อ</div>
+    </div>
+    <div style="border-top:1px solid #e2e8f0;margin-bottom:8px"></div>
+    ${rows.join('')}
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #e2e8f0;font-size:11px;color:#718096;line-height:1.5">
+      ⌨ <b>1-4</b>=คะแนน 0-3 ข้อที่เลือก · <b>←→</b>=ข้อก่อน/ถัดไป · <b>Space</b>=คนถัดไป
+    </div>
+  `;
+}
+
+async function _setGradingScore(q, score){
+  const tool = _gradingCurrentTool();
+  if (!tool || !_grCurrent) return;
+  const row = _grCurrent;
+  const sheet = tool.sheet(_grPlan);
+  const col = `q${q}_teacher_score`;
+  const prev = row[col];
+  row[col] = score;
+  _renderGradingPanel();
+  try {
+    await DB.setCanvasScore({sheet, row: row._row, col, score});
+    _updateGradingProgress();
+  } catch(e){
+    row[col] = prev;
+    alert('❌ บันทึกไม่สำเร็จ: ' + e.message);
+    _renderGradingPanel();
+  }
+}
+
+function _gradingNextStudent(dir){
+  const sel = document.getElementById('grStudentSel');
+  if (!sel) return;
+  const opts = Array.from(sel.options).filter(o => o.value);
+  const curIdx = opts.findIndex(o => o.value === _grStudent);
+  const nx = opts[curIdx + (dir||1)];
+  if (nx){ sel.value = nx.value; _grStudent = nx.value; _onGradingStudentChange(); }
+}
+
+function _gradingKeyHandler(e){
+  const t = e.target;
+  if (t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+  if (!_grCurrent) return;
+  if (e.key >= '1' && e.key <= '4'){
+    e.preventDefault();
+    _setGradingScore(_grFocusQ, Number(e.key) - 1);
+    return;
+  }
+  const tool = _gradingCurrentTool();
+  if ((e.key === 'ArrowRight' || e.key === 'ArrowDown') && tool){
+    e.preventDefault();
+    _grFocusQ = Math.min(tool.qCount, _grFocusQ + 1);
+    _renderGradingPanel();
+    return;
+  }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+    e.preventDefault();
+    _grFocusQ = Math.max(1, _grFocusQ - 1);
+    _renderGradingPanel();
+    return;
+  }
+  if (e.code === 'Space'){
+    e.preventDefault();
+    _gradingNextStudent(1);
+  }
+}
+function _gradingBindKeys(){
+  if (_grKeysBound) return;
+  document.addEventListener('keydown', _gradingKeyHandler);
+  _grKeysBound = true;
+}
+function _gradingUnbindKeys(){
+  if (!_grKeysBound) return;
+  document.removeEventListener('keydown', _gradingKeyHandler);
+  _grKeysBound = false;
 }
 
 // ═══════════════════════════════════════════════════════════

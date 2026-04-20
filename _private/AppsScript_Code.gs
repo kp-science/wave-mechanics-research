@@ -47,6 +47,7 @@ function doPost(e) {
     if (action === 'uploadFile')      return handleUploadFile(data);
     if (action === 'deleteRow')       return handleDeleteRow(data);
     if (action === 'setCanvasScore')  return handleSetCanvasScore(data);
+    if (action === 'setScore')        return handleSetCanvasScore(data); // alias · grading dashboard (generic cell write)
     return jsonOut({status:'error', message:'unknown action: ' + action});
   } catch (err) {
     return jsonOut({status:'error', message:err.toString()});
