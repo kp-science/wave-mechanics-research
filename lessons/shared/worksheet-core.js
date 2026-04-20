@@ -273,9 +273,55 @@ body.kp-grading-mode #kp-toolbar{display:none !important}
           if (flat[k] != null) el.value = flat[k];
         }
       });
+      // Canvas overlay: flat key `canvas_<cid>_url` → Drive URL · วาง <img> ทับ canvas
+      Object.keys(flat).forEach((k) => {
+        const m = k.match(/^canvas_(.+)_url$/);
+        if (!m) return;
+        const url = flat[k];
+        if (!url || typeof url !== 'string') return;
+        const cid = m[1];
+        const canvas =
+          document.getElementById(cid) ||
+          document.getElementById(cid.replace(/_/g, '-'));
+        if (!canvas) return;
+        overlayCanvasImage(canvas, url);
+      });
     } finally {
       setTimeout(() => { isRestoring = false; }, 300);
     }
+  }
+
+  // Drive URL → thumbnail URL (setSharing ANYONE_WITH_LINK required · handled server-side)
+  function driveToThumbUrl(url, sz) {
+    const s = String(url || '');
+    const m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w${sz || 1200}`;
+    return s;
+  }
+
+  // วาง <img> ทับ canvas แบบ absolute · read-only · ไม่แตะ canvas (กัน CORS taint)
+  function overlayCanvasImage(canvas, driveUrl) {
+    const parent = canvas.parentElement;
+    if (!parent) return;
+    // ensure parent is positioned so our absolute img stacks correctly
+    const pos = getComputedStyle(parent).position;
+    if (pos === 'static') parent.style.position = 'relative';
+    // remove old overlay if re-calling
+    const prev = parent.querySelector(`img[data-kp-overlay-for="${canvas.id}"]`);
+    if (prev) prev.remove();
+    const img = document.createElement('img');
+    img.dataset.kpOverlayFor = canvas.id;
+    img.src = driveToThumbUrl(driveUrl, 1200);
+    img.alt = 'คำตอบนักเรียน (canvas)';
+    img.style.cssText =
+      'position:absolute;left:' + canvas.offsetLeft + 'px;top:' + canvas.offsetTop + 'px;' +
+      'width:' + canvas.offsetWidth + 'px;height:' + canvas.offsetHeight + 'px;' +
+      'object-fit:contain;pointer-events:none;z-index:5;mix-blend-mode:multiply';
+    img.onerror = () => {
+      img.style.cssText += ';background:#fff3e0;padding:8px;font-size:11px;color:#c62828;mix-blend-mode:normal';
+      img.alt = '⚠ โหลดภาพไม่ได้';
+    };
+    parent.appendChild(img);
   }
 
   /* ─── Grading (read-only) mode ─── */
