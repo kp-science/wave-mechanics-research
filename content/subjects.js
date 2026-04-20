@@ -27,7 +27,8 @@ window.KP_SUBJECTS = [
         shortTitle: 'SHM',
         icon: '🎢',
         status: 'coming-soon',
-        numPlans: 0
+        numPlans: 0,
+        dbUrl: null  // ← TODO: deploy Apps Script + ใส่ URL ตอน open
       },
       {
         id: 'waves',
@@ -36,7 +37,8 @@ window.KP_SUBJECTS = [
         icon: '🌊',
         status: 'open',
         numPlans: 10,
-        current: true  // ← content pack ปัจจุบัน (ไม่ต้อง reload)
+        current: true,  // ← content pack ปัจจุบัน (ไม่ต้อง reload)
+        dbUrl: null     // ← null = ใช้ KP_CONFIG.apiUrl (ชีทคลื่นกลเดิม)
       },
       {
         id: 'sound',
@@ -44,7 +46,8 @@ window.KP_SUBJECTS = [
         shortTitle: 'เสียง',
         icon: '🔊',
         status: 'coming-soon',
-        numPlans: 0
+        numPlans: 0,
+        dbUrl: null
       },
       {
         id: 'light',
@@ -52,7 +55,8 @@ window.KP_SUBJECTS = [
         shortTitle: 'แสง',
         icon: '💡',
         status: 'coming-soon',
-        numPlans: 0
+        numPlans: 0,
+        dbUrl: null
       }
     ]
   },
@@ -70,7 +74,8 @@ window.KP_SUBJECTS = [
         shortTitle: 'หน่วย 1',
         icon: '🌠',
         status: 'coming-soon',
-        numPlans: 0
+        numPlans: 0,
+        dbUrl: null
       }
     ]
   }

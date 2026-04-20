@@ -708,6 +708,16 @@ const API_URL = KP_CONFIG.apiUrl;
 const SCHOOL  = KP_CONFIG.school;
 const YEAR    = KP_CONFIG.year;
 
+// Multi-topic DB routing: คืน dbUrl ของ topic ปัจจุบัน (ถ้ามี) · ไม่งั้น null → fallback API_URL
+function getTopicDbUrl(){
+  if (typeof state === 'undefined' || !state.subject || !state.topic) return null;
+  if (!window.KP_SUBJECTS) return null;
+  const subj = window.KP_SUBJECTS.find(s => s.id === state.subject);
+  if (!subj) return null;
+  const topic = (subj.topics || []).find(t => t.id === state.topic);
+  return (topic && topic.dbUrl) || null;
+}
+
 // ═══════════════════════════════════════════════════════════
 // 💾 DB Adapter (Phase 3c)
 // ─────────────────────────────────────────────────────────
@@ -762,9 +772,19 @@ const DB = {
     const stu = (typeof state !== 'undefined' && state.student) || {};
     const enriched = {
       session_token: stu.token || '',
+      subject: (typeof state !== 'undefined' && state.subject) || '',
+      topic:   (typeof state !== 'undefined' && state.topic) || '',
       ...payload
     };
-    return DB._post('submit', {sheet, payload: enriched});
+    // Route ไปที่ dbUrl ของ topic (ถ้ามี) · ไม่งั้น fallback API_URL (ของวิชา)
+    const targetUrl = getTopicDbUrl() || API_URL;
+    if (!targetUrl) return Promise.resolve();
+    return fetch(targetUrl, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action: 'submit', sheet, payload: enriched})
+    });
   },
   uploadStudents(rows)    { return DB._post('uploadStudents',   {teacher_pw: getTeacherPassword(), rows}); },
   updateSetting(data)     { return DB._post('updateSetting',    {teacher_pw: getTeacherPassword(), ...data}); },
