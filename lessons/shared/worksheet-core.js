@@ -324,26 +324,30 @@ body.kp-grading-mode #kp-toolbar{display:none !important}
     let attempt = 0;
     const tryNext = () => {
       if (attempt >= candidates.length) {
-        // All failed — replace with clickable link so teacher can open in new tab
+        console.warn('[grading] canvas image failed, all URLs:', candidates);
         img.remove();
         const link = document.createElement('a');
         link.dataset.kpOverlayFor = canvas.id;
         link.href = driveUrl;
         link.target = '_blank';
         link.rel = 'noopener';
-        link.textContent = '🔗 เปิดภาพใน Drive (hotlink ถูกบล็อก)';
+        link.innerHTML = '🔗 เปิดภาพใน Drive<br><span style="font-size:10px;word-break:break-all;font-weight:400">' +
+          String(driveUrl).slice(0, 80) + '</span>';
         link.style.cssText =
           'position:absolute;left:' + canvas.offsetLeft + 'px;top:' + canvas.offsetTop + 'px;' +
           'width:' + canvas.offsetWidth + 'px;height:' + canvas.offsetHeight + 'px;' +
-          'display:flex;align-items:center;justify-content:center;z-index:5;' +
-          'background:#fff3e0;border:2px dashed #ff8f00;border-radius:8px;' +
+          'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;' +
+          'padding:8px;z-index:5;background:#fff3e0;border:2px dashed #ff8f00;border-radius:8px;' +
           'color:#bf360c;font-weight:700;text-decoration:none;font-size:13px';
         parent.appendChild(link);
         return;
       }
-      img.src = candidates[attempt++];
+      const url = candidates[attempt++];
+      console.log('[grading] canvas try', attempt, '/', candidates.length, url);
+      img.src = url;
     };
     img.onerror = tryNext;
+    img.onload = () => { console.log('[grading] canvas image OK:', img.src); };
     parent.appendChild(img);
     tryNext();
   }

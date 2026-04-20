@@ -4728,16 +4728,22 @@ let _grKeysBound = false;
 
 function _gradingCurrentTask(){ return _grTasks.find(t => t.taskId === _grTaskId); }
 
-// ดึงห้องจากแถว · กรองค่าผิดประเภท (ISO date/timestamp/Date object)
+// ดึงห้องจากแถว · ถ้าเป็น ISO date → แปลงกลับเป็น "M/D" (Google Sheets มัก auto-parse "5/1" เป็นวันที่)
 function _cleanRoom(row){
   const candidates = [row.s_room, row.class, row.room];
   for (const v of candidates){
     if (v == null || v === '') continue;
     const s = String(v).trim();
     if (!s) continue;
-    // reject ISO date strings (เช่น '2026-04-30T17:00:00.000Z')
-    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) continue;
-    // reject long timestamps
+    // ISO date → convert back to Bangkok-local M/D (e.g. 2026-04-30T17:00:00.000Z = BKK May 1 = "5/1")
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)){
+      const d = new Date(s);
+      if (!isNaN(d.getTime())){
+        const bkk = new Date(d.getTime() + 7*3600*1000);
+        return `${bkk.getUTCMonth()+1}/${bkk.getUTCDate()}`;
+      }
+      continue;
+    }
     if (s.length > 20) continue;
     return s;
   }
