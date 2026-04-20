@@ -5245,7 +5245,9 @@ async function loadSummaryData(force){
       return;
     }
     _summaryData = (r.data || []).filter(row => row.s_num !== '📊 สรุปรวม');
-    const rooms = [...new Set(_summaryData.map(r => r.s_room).filter(Boolean))].sort();
+    // Normalize s_room · Apps Script converts Google Sheets auto-parsed dates (e.g. "5/1" → 2024-05-01) to ISO string
+    _summaryData.forEach(row => { row.s_room = _normRoom(row.s_room); });
+    const rooms = [...new Set(_summaryData.map(r => r.s_room).filter(Boolean))].sort((a,b) => String(a).localeCompare(String(b), 'th', {numeric:true}));
     const roomSel = document.getElementById('sumRoom');
     if (roomSel) roomSel.innerHTML = '<option value="">ทุกห้อง</option>' + rooms.map(r => `<option value="${r}">${r}</option>`).join('');
     renderSummarySubPanel();
@@ -5262,6 +5264,8 @@ async function ensureFTScored(){
     const [r1, r2] = await Promise.all([DB.listSheet('FT01_Scored'), DB.listSheet('FT02_Scored')]);
     _summaryExtra.ft01 = (r1 && r1.status === 'ok') ? (r1.data || []) : [];
     _summaryExtra.ft02 = (r2 && r2.status === 'ok') ? (r2.data || []) : [];
+    _summaryExtra.ft01.forEach(row => { row.s_room = _normRoom(row.s_room); });
+    _summaryExtra.ft02.forEach(row => { row.s_room = _normRoom(row.s_room); });
   } catch(e){
     _summaryExtra.ft01 = _summaryExtra.ft01 || [];
     _summaryExtra.ft02 = _summaryExtra.ft02 || [];
@@ -5306,6 +5310,19 @@ function renderSummarySubPanel(){
 }
 
 // ─── Helpers ───
+function _normRoom(v){
+  if (v === null || v === undefined || v === '') return '';
+  const s = String(v);
+  // ISO date from Apps Script (Google Sheets auto-converted "5/1" → Date)
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+  if (m) return parseInt(m[2],10) + '/' + parseInt(m[3],10);
+  // Locale-formatted date string fallback
+  if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(s)) {
+    const [a,b] = s.split('/');
+    return parseInt(a,10) + '/' + parseInt(b,10);
+  }
+  return s;
+}
 function _avg(arr){
   const nums = arr.map(Number).filter(v => !isNaN(v) && v !== null);
   if (!nums.length) return null;
