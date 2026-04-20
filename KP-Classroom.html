@@ -4920,7 +4920,7 @@ function _updateGradingProgress(){
   const task = _gradingCurrentTask();
   const p = document.getElementById('grProgress');
   if (!p || !task) return;
-  const scope = _grClass ? _grRows.filter(r => String(r.s_room||r.class||'') === _grClass) : _grRows;
+  const scope = _grClass ? _grRows.filter(r => _cleanRoom(r) === _grClass) : _grRows;
   const total = scope.length;
   const done = scope.filter(r => _gradingRowDoneCount(r, task) >= task.qCount).length;
   p.textContent = `ตรวจครบ ${done}/${total} คน${_grClass?' · '+_grClass:''}`;
@@ -4931,7 +4931,7 @@ function _onGradingStudentChange(){
   if (!task || !_grStudent){ _grCurrent = null; return; }
   // pick latest row within class scope
   const candidates = _grRows.filter(r => String(r.s_num||'') === String(_grStudent)
-    && (!_grClass || String(r.s_room||r.class||'') === _grClass));
+    && (!_grClass || _cleanRoom(r) === _grClass));
   if (!candidates.length) return;
   candidates.sort((a,b) => (b._row||0) - (a._row||0));
   const row = candidates[0];
