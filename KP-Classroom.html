@@ -2973,8 +2973,15 @@ function switchTeacherTab(name){
   if (name === 'media')    renderMediaTab();
   if (name === 'feedback') renderFeedbackTab();
   if (name === 'observe')  renderObserveTab();
-  if (name === 'gallery')  renderCanvasGallery();
-  if (name === 'grading')  renderGradingTab();
+  if (name === 'gallery'){
+    if (document.getElementById('galToolSel') && _galTool) loadCanvasGallery();
+    else renderCanvasGallery();
+  }
+  if (name === 'grading'){
+    // ถ้า tab เคย render แล้ว · แค่ reload rows (กัน cache ไม่ sync กับ Gallery)
+    if (document.getElementById('grTaskSel') && _gradingCurrentTask()) _loadGradingRows();
+    else renderGradingTab();
+  }
   if (name === 'postplan') renderPostPlanTab();
   if (name !== 'gallery') _galleryUnbindKeys();
   if (name !== 'grading') _gradingUnbindKeys();
@@ -4944,6 +4951,13 @@ async function _loadGradingRows(){
     }
     _populateStudentSelect();
     _updateGradingProgress();
+    // ถ้าเคยเลือกนักเรียนแล้ว → อัปเดต _grCurrent + refresh panel (กัน cache หลัง Gallery scored)
+    if (_grStudent && _grCurrent){
+      const fresh = _grRows.find(r =>
+        String(r.s_num||'') === String(_grStudent) && r._row === _grCurrent._row
+      );
+      if (fresh){ _grCurrent = fresh; _renderGradingPanel(); }
+    }
   } catch(e){
     if (stuSel) stuSel.innerHTML = `<option value="">❌ ${escapeHtml(e.message)}</option>`;
   }
