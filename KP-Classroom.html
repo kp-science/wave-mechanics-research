@@ -4728,6 +4728,22 @@ let _grKeysBound = false;
 
 function _gradingCurrentTask(){ return _grTasks.find(t => t.taskId === _grTaskId); }
 
+// ดึงห้องจากแถว · กรองค่าผิดประเภท (ISO date/timestamp/Date object)
+function _cleanRoom(row){
+  const candidates = [row.s_room, row.class, row.room];
+  for (const v of candidates){
+    if (v == null || v === '') continue;
+    const s = String(v).trim();
+    if (!s) continue;
+    // reject ISO date strings (เช่น '2026-04-30T17:00:00.000Z')
+    if (/^\d{4}-\d{2}-\d{2}T/.test(s)) continue;
+    // reject long timestamps
+    if (s.length > 20) continue;
+    return s;
+  }
+  return '';
+}
+
 function _gradingQCountFromRows(task){
   let max = 0;
   _grRows.forEach(r => {
@@ -4846,7 +4862,7 @@ async function _loadGradingRows(){
     // Populate class dropdown
     const classSel = document.getElementById('grClassSel');
     if (classSel){
-      const classes = [...new Set(_grRows.map(r => String(r.s_room || r.class || '')).filter(Boolean))]
+      const classes = [...new Set(_grRows.map(r => _cleanRoom(r)).filter(Boolean))]
         .sort((a,b) => a.localeCompare(b, 'th', {numeric:true}));
       classSel.innerHTML = '<option value="">— ทุกห้อง —</option>' +
         classes.map(c => `<option value="${escapeHtml(c)}" ${c===_grClass?'selected':''}>${escapeHtml(c)}</option>`).join('');
@@ -4865,7 +4881,7 @@ function _populateStudentSelect(){
   // Filter by class
   const filtered = _grRows.filter(r => {
     if (!_grClass) return true;
-    return String(r.s_room || r.class || '') === _grClass;
+    return _cleanRoom(r) === _grClass;
   });
   // Unique by s_num · keep latest submission (highest _row)
   const byNum = new Map();
@@ -4962,7 +4978,7 @@ function _renderGradingPanel(){
   panel.innerHTML = `
     <div style="margin-bottom:8px">
       <div style="font-weight:800;color:#0f2c5c;font-size:14px">${escapeHtml(row.s_name||'')}</div>
-      <div style="font-size:11.5px;color:#718096">เลขที่ ${escapeHtml(String(row.s_num||''))} · ${escapeHtml(row.s_room||row.class||'')}</div>
+      <div style="font-size:11.5px;color:#718096">เลขที่ ${escapeHtml(String(row.s_num||''))} · ${escapeHtml(_cleanRoom(row))}</div>
       <div style="font-size:12px;color:#2e7d32;font-weight:700;margin-top:4px">ตรวจแล้ว ${done}/${task.qCount} ข้อ</div>
     </div>
     <div style="border-top:1px solid #e2e8f0;margin-bottom:8px"></div>

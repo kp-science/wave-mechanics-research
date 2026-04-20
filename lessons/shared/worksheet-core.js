@@ -291,37 +291,61 @@ body.kp-grading-mode #kp-toolbar{display:none !important}
     }
   }
 
-  // Drive URL → thumbnail URL (setSharing ANYONE_WITH_LINK required · handled server-side)
-  function driveToThumbUrl(url, sz) {
+  // Drive URL → image URLs (try multiple · Drive thumbnails บางครั้งบล็อก hotlink)
+  function driveUrlCandidates(url) {
     const s = String(url || '');
     const m = s.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || s.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (m) return `https://drive.google.com/thumbnail?id=${m[1]}&sz=w${sz || 1200}`;
-    return s;
+    if (!m) return [s];
+    const id = m[1];
+    return [
+      `https://lh3.googleusercontent.com/d/${id}=w1600`,
+      `https://drive.google.com/thumbnail?id=${id}&sz=w1600`,
+      `https://drive.google.com/uc?id=${id}&export=view`,
+      s
+    ];
   }
 
   // วาง <img> ทับ canvas แบบ absolute · read-only · ไม่แตะ canvas (กัน CORS taint)
   function overlayCanvasImage(canvas, driveUrl) {
     const parent = canvas.parentElement;
     if (!parent) return;
-    // ensure parent is positioned so our absolute img stacks correctly
     const pos = getComputedStyle(parent).position;
     if (pos === 'static') parent.style.position = 'relative';
-    // remove old overlay if re-calling
-    const prev = parent.querySelector(`img[data-kp-overlay-for="${canvas.id}"]`);
+    const prev = parent.querySelector(`img[data-kp-overlay-for="${canvas.id}"], a[data-kp-overlay-for="${canvas.id}"]`);
     if (prev) prev.remove();
+    const candidates = driveUrlCandidates(driveUrl);
     const img = document.createElement('img');
     img.dataset.kpOverlayFor = canvas.id;
-    img.src = driveToThumbUrl(driveUrl, 1200);
-    img.alt = 'คำตอบนักเรียน (canvas)';
+    img.alt = 'คำตอบนักเรียน';
     img.style.cssText =
       'position:absolute;left:' + canvas.offsetLeft + 'px;top:' + canvas.offsetTop + 'px;' +
       'width:' + canvas.offsetWidth + 'px;height:' + canvas.offsetHeight + 'px;' +
-      'object-fit:contain;pointer-events:none;z-index:5;mix-blend-mode:multiply';
-    img.onerror = () => {
-      img.style.cssText += ';background:#fff3e0;padding:8px;font-size:11px;color:#c62828;mix-blend-mode:normal';
-      img.alt = '⚠ โหลดภาพไม่ได้';
+      'object-fit:contain;pointer-events:none;z-index:5;mix-blend-mode:multiply;background:transparent';
+    let attempt = 0;
+    const tryNext = () => {
+      if (attempt >= candidates.length) {
+        // All failed — replace with clickable link so teacher can open in new tab
+        img.remove();
+        const link = document.createElement('a');
+        link.dataset.kpOverlayFor = canvas.id;
+        link.href = driveUrl;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = '🔗 เปิดภาพใน Drive (hotlink ถูกบล็อก)';
+        link.style.cssText =
+          'position:absolute;left:' + canvas.offsetLeft + 'px;top:' + canvas.offsetTop + 'px;' +
+          'width:' + canvas.offsetWidth + 'px;height:' + canvas.offsetHeight + 'px;' +
+          'display:flex;align-items:center;justify-content:center;z-index:5;' +
+          'background:#fff3e0;border:2px dashed #ff8f00;border-radius:8px;' +
+          'color:#bf360c;font-weight:700;text-decoration:none;font-size:13px';
+        parent.appendChild(link);
+        return;
+      }
+      img.src = candidates[attempt++];
     };
+    img.onerror = tryNext;
     parent.appendChild(img);
+    tryNext();
   }
 
   /* ─── Grading (read-only) mode ─── */
