@@ -62,20 +62,78 @@ header.top .user{font-size:13px;opacity:.95;display:flex;align-items:center;gap:
 .btn-primary{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;border:none;padding:14px;border-radius:10px;font-family:inherit;font-size:17px;font-weight:800;cursor:pointer;width:100%;margin-top:20px;transition:all .15s}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(21,101,192,.35)}
 
-/* ═══════ SUBJECT/TOPIC VIEW ═══════ */
-.subject-grid,.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-top:16px}
-.subject-card,.topic-card{background:#fff;border-radius:16px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.08);cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;overflow:hidden}
-.subject-card:hover,.topic-card:hover:not(.locked){transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.15);border-color:#1565c0}
-.subject-card .bar,.topic-card .bar{position:absolute;top:0;left:0;right:0;height:6px;background:#1565c0}
-.subject-card .big-ico,.topic-card .big-ico{font-size:48px;margin-bottom:8px}
-.subject-card h3,.topic-card h3{font-size:22px;color:#0f2c5c;margin:4px 0;font-weight:800}
-.subject-card .sub,.topic-card .sub{font-size:14px;color:#64748b;margin-bottom:10px}
-.subject-card .meta-chips,.topic-card .meta-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.subject-card .meta-chip,.topic-card .meta-chip{font-size:12px;padding:3px 10px;border-radius:12px;background:#e0f2ff;color:#0d47a1;font-weight:700}
-.topic-card.locked{opacity:.55;cursor:not-allowed;background:#f1f5f9}
-.topic-card.locked:hover{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.08)}
-.topic-card.locked .badge-soon{position:absolute;top:12px;right:12px;background:#f59e0b;color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}
-.topic-card.open::after{content:"✓ เปิดใช้งาน";position:absolute;top:12px;right:12px;background:#16a34a;color:#fff;font-size:11px;padding:3px 10px;border-radius:10px;font-weight:700}
+/* ═══════ SUBJECT / TOPIC VIEW ═══════ */
+@keyframes cardSlideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes shine{0%{transform:translateX(-120%) rotate(12deg)}60%,100%{transform:translateX(280%) rotate(12deg)}}
+
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;margin-top:20px}
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:18px}
+.subject-card,.topic-card{animation:cardSlideUp .35s ease-out both}
+.subject-card:nth-child(2),.topic-card:nth-child(2){animation-delay:.05s}
+.subject-card:nth-child(3),.topic-card:nth-child(3){animation-delay:.1s}
+.subject-card:nth-child(4),.topic-card:nth-child(4){animation-delay:.15s}
+
+/* ─── Subject card (gradient tile) ─── */
+.subject-card{position:relative;overflow:hidden;border-radius:20px;padding:28px 26px;color:#fff;cursor:pointer;box-shadow:0 8px 20px rgba(21,101,192,.18);transition:transform .22s ease,box-shadow .22s ease;min-height:200px;display:flex;flex-direction:column;justify-content:space-between}
+.subject-card::before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:inherit;z-index:0}
+.subject-card::after{content:"";position:absolute;top:-40%;left:-30%;width:60%;height:220%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);transform:translateX(-120%) rotate(12deg);pointer-events:none;z-index:2}
+.subject-card:hover{transform:translateY(-6px);box-shadow:0 16px 34px rgba(21,101,192,.32)}
+.subject-card:hover::after{animation:shine 1.1s ease-out}
+.subject-card>*{position:relative;z-index:1}
+.subject-card .ico-wrap{width:64px;height:64px;border-radius:18px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:36px;backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);margin-bottom:14px}
+.subject-card h3{font-size:26px;font-weight:800;margin:0 0 4px;letter-spacing:.3px;text-shadow:0 1px 3px rgba(0,0,0,.15)}
+.subject-card .sub{font-size:14px;opacity:.92;margin-bottom:18px}
+.subject-card .meta-chips{display:flex;gap:8px;flex-wrap:wrap}
+.subject-card .meta-chip{font-size:12px;padding:5px 12px;border-radius:14px;background:rgba(255,255,255,.22);color:#fff;font-weight:700;border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(4px)}
+.subject-card .meta-chip.live{background:#dcfce7;color:#14532d;border-color:#86efac}
+.subject-card .arrow{position:absolute;right:20px;bottom:20px;font-size:22px;opacity:.7;transition:all .2s;z-index:1}
+.subject-card:hover .arrow{opacity:1;transform:translateX(4px)}
+
+/* ─── Topic card (white tile) ─── */
+.topic-card{position:relative;overflow:hidden;background:#fff;border-radius:18px;padding:22px 20px 20px;cursor:pointer;border:2px solid #e2e8f0;transition:all .2s ease;min-height:200px;display:flex;flex-direction:column}
+.topic-card .accent{position:absolute;top:0;left:0;bottom:0;width:5px;background:#1565c0}
+.topic-card .ico-wrap{width:58px;height:58px;border-radius:16px;background:#e0f2ff;color:#0d47a1;display:flex;align-items:center;justify-content:center;font-size:30px;margin-bottom:12px;transition:all .2s}
+.topic-card h3{font-size:18px;color:#0f2c5c;font-weight:800;margin:0 0 4px;line-height:1.3}
+.topic-card .sub{font-size:13px;color:#64748b;margin-bottom:12px;flex:1}
+.topic-card .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+.topic-card .meta-chip{font-size:12px;padding:4px 10px;border-radius:12px;background:#f1f5f9;color:#475569;font-weight:700}
+.topic-card .cta{font-size:13px;font-weight:800;color:#1565c0;display:flex;align-items:center;gap:4px;transition:all .2s}
+.topic-card.open:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(21,101,192,.18);border-color:#1565c0}
+.topic-card.open:hover .ico-wrap{background:#1565c0;color:#fff;transform:scale(1.06)}
+.topic-card.open:hover .cta{gap:8px;color:#0d47a1}
+.topic-card.open::before{content:"✓ พร้อมเรียน";position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:10px;letter-spacing:.3px;box-shadow:0 2px 6px rgba(22,163,74,.3)}
+
+.topic-card.locked{cursor:not-allowed;background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 10px,#f1f5f9 10px,#f1f5f9 20px);border:2px dashed #cbd5e1}
+.topic-card.locked .ico-wrap{background:#e2e8f0;color:#94a3b8;filter:grayscale(.4)}
+.topic-card.locked h3{color:#64748b}
+.topic-card.locked .sub{color:#94a3b8}
+.topic-card.locked .accent{background:#cbd5e1}
+.topic-card.locked .cta{color:#94a3b8}
+.topic-card.locked::before{content:"🔒 เร็วๆ นี้";position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:10px;letter-spacing:.3px;box-shadow:0 2px 6px rgba(245,158,11,.3)}
+.topic-card.locked:hover{transform:none;box-shadow:none}
+
+/* ─── Subject hero (full width) ─── */
+.subjects-hero{background:linear-gradient(135deg,#0f2c5c 0%,#1565c0 60%,#0288d1 100%);color:#fff;border-radius:20px;padding:28px 32px;margin-bottom:8px;box-shadow:0 10px 30px rgba(15,44,92,.25);position:relative;overflow:hidden}
+.subjects-hero::before{content:"";position:absolute;right:-80px;top:-80px;width:260px;height:260px;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%);pointer-events:none}
+.subjects-hero h2{font-size:28px;font-weight:800;margin-bottom:6px;letter-spacing:.3px}
+.subjects-hero .hint{font-size:14px;opacity:.9}
+
+/* ─── Topics hero (shows selected subject) ─── */
+.topics-hero{color:#fff;border-radius:20px;padding:24px 28px;margin-bottom:8px;box-shadow:0 8px 24px rgba(0,0,0,.15);position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.topics-hero::before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,.12),transparent 70%);pointer-events:none}
+.topics-hero .ico-big{font-size:52px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))}
+.topics-hero h2{font-size:26px;font-weight:800;margin-bottom:2px}
+.topics-hero .hint{font-size:14px;opacity:.9}
+.topics-hero .btn-back-hero{background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:10px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;transition:all .15s;backdrop-filter:blur(6px)}
+.topics-hero .btn-back-hero:hover{background:rgba(255,255,255,.32)}
+
+@media (max-width:640px){
+  .subject-card{padding:22px 20px;min-height:180px}
+  .subject-card h3{font-size:22px}
+  .topic-card{min-height:180px}
+  .subjects-hero,.topics-hero{padding:22px 20px}
+  .subjects-hero h2,.topics-hero h2{font-size:22px}
+}
 
 /* ═══════ HOME VIEW ═══════ */
 .hero{background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:16px;padding:24px 28px;margin-bottom:20px}
@@ -443,21 +501,24 @@ body.printing-tool #topBar{display:none !important}
 
 <!-- ═══════════ VIEW: SUBJECTS (เลือกวิชา) ═══════════ -->
 <div class="view" id="view-subjects">
-  <div class="hero" style="background:linear-gradient(135deg,#0f2c5c,#1565c0)">
+  <div class="subjects-hero">
     <h2 id="subj-greet">สวัสดี นักเรียน 👋</h2>
-    <div>เลือกวิชาที่ต้องการเรียน</div>
+    <div class="hint">เลือกวิชาที่ต้องการเรียนวันนี้</div>
   </div>
   <div class="subject-grid" id="subjectGrid"></div>
 </div>
 
 <!-- ═══════════ VIEW: TOPICS (เลือกหัวข้อในวิชา) ═══════════ -->
 <div class="view" id="view-topics">
-  <div class="tool-header">
-    <div>
-      <h2 id="topics-title">📘 วิชา</h2>
-      <div class="meta" id="topics-meta">—</div>
+  <div class="topics-hero" id="topicsHero">
+    <div style="display:flex;align-items:center;gap:18px;flex:1;min-width:200px">
+      <div class="ico-big" id="topicsIco">📘</div>
+      <div>
+        <h2 id="topics-title">วิชา</h2>
+        <div class="hint" id="topics-meta">—</div>
+      </div>
     </div>
-    <button class="btn-back" onclick="showSubjects()">← เลือกวิชาอื่น</button>
+    <button class="btn-back-hero" onclick="showSubjects()">← เลือกวิชาอื่น</button>
   </div>
   <div class="topic-grid" id="topicGrid"></div>
 </div>
@@ -850,16 +911,17 @@ function showSubjects(){
   grid.innerHTML = window.KP_SUBJECTS.map(s => {
     const openCount = (s.topics || []).filter(t => t.status === 'open').length;
     const total = (s.topics || []).length;
+    const bg = s.bgGradient || `linear-gradient(135deg,${s.color || '#1565c0'},#0d47a1)`;
     return `
-      <div class="subject-card" onclick="showTopics('${s.id}')">
-        <div class="bar" style="background:${s.color || '#1565c0'}"></div>
-        <div class="big-ico">${s.icon || '📚'}</div>
+      <div class="subject-card" style="background:${bg}" onclick="showTopics('${s.id}')">
+        <div class="ico-wrap">${s.icon || '📚'}</div>
         <h3>${s.title}</h3>
         <div class="sub">${s.subtitle || ''}</div>
         <div class="meta-chips">
-          <span class="meta-chip">${total} หัวข้อ</span>
-          <span class="meta-chip" style="background:#dcfce7;color:#15803d">${openCount} เปิดใช้งาน</span>
+          <span class="meta-chip">📖 ${total} หัวข้อ</span>
+          ${openCount ? `<span class="meta-chip live">✓ ${openCount} เปิดใช้งาน</span>` : ''}
         </div>
+        <div class="arrow">→</div>
       </div>`;
   }).join('');
   showView('view-subjects');
@@ -869,8 +931,16 @@ function showTopics(subjectId){
   const subj = (window.KP_SUBJECTS || []).find(s => s.id === subjectId);
   if (!subj){ alert('ไม่พบวิชานี้'); return; }
   state.subject = subjectId;
-  document.getElementById('topics-title').textContent = `${subj.icon || '📚'} ${subj.title}`;
-  document.getElementById('topics-meta').textContent = subj.subtitle || '';
+
+  // ปรับสี hero ให้เข้ากับวิชา
+  const hero = document.getElementById('topicsHero');
+  if (hero) hero.style.background = subj.bgGradient || `linear-gradient(135deg,${subj.color || '#1565c0'},#0d47a1)`;
+  document.getElementById('topicsIco').textContent = subj.icon || '📘';
+  document.getElementById('topics-title').textContent = subj.title;
+  const openCount = (subj.topics || []).filter(t => t.status === 'open').length;
+  document.getElementById('topics-meta').textContent =
+    `${subj.subtitle || ''} · ${openCount}/${(subj.topics || []).length} หัวข้อพร้อมเรียน`;
+
   const grid = document.getElementById('topicGrid');
   grid.innerHTML = (subj.topics || []).map(t => {
     const isOpen = t.status === 'open';
@@ -878,16 +948,18 @@ function showTopics(subjectId){
     const onClick = isOpen
       ? `onclick="selectTopic('${subj.id}','${t.id}')"`
       : `onclick="alert('🔒 หัวข้อ &quot;${t.title}&quot; กำลังพัฒนา · เร็วๆ นี้')"`;
-    const badge = isOpen ? '' : '<div class="badge-soon">เร็วๆ นี้</div>';
-    const plansChip = t.numPlans ? `<span class="meta-chip">${t.numPlans} แผน</span>` : '';
+    const plansText = t.numPlans ? `${t.numPlans} แผน` : 'เร็วๆ นี้';
+    const cta = isOpen ? 'เริ่มเรียน →' : 'รอเปิด';
     return `
       <div class="${cls}" ${onClick}>
-        <div class="bar" style="background:${subj.color || '#1565c0'}"></div>
-        ${badge}
-        <div class="big-ico">${t.icon || '📖'}</div>
+        <div class="accent" style="background:${isOpen ? (subj.color || '#1565c0') : '#cbd5e1'}"></div>
+        <div class="ico-wrap">${t.icon || '📖'}</div>
         <h3>${t.title}</h3>
-        <div class="sub">${t.shortTitle !== t.title ? t.shortTitle : ''}</div>
-        <div class="meta-chips">${plansChip}</div>
+        <div class="sub">${t.shortTitle && t.shortTitle !== t.title ? t.shortTitle : ''}</div>
+        <div class="foot">
+          <span class="meta-chip">${plansText}</span>
+          <span class="cta">${cta}</span>
+        </div>
       </div>`;
   }).join('');
   showView('view-topics');
