@@ -3457,72 +3457,140 @@ function renderSheetSummary(name, data, isFT){
 // ═══════════════════════════════════════════════════════════
 // TAB: นักเรียน (อัปโหลด + ดู)
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+// TAB: นักเรียน — Master Roster (Phase 4)
+// จัดการรายชื่อกลาง (ใช้ทุกวิชา) · login ด้วย student_id + วันเกิด
+// ═══════════════════════════════════════════════════════════
+let _rosterCache = [];  // cache roster จาก Master Roster
+
+async function loadMasterRoster(){
+  if (!ROSTER_URL) return { students: [] };
+  try {
+    const qs = new URLSearchParams({action:'getRoster', teacher_pw: getTeacherPassword(), _: Date.now()});
+    const r = await fetch(`${ROSTER_URL}?${qs}`);
+    const data = await r.json();
+    if (data && data.status === 'ok'){
+      _rosterCache = data.students || [];
+      return data;
+    }
+    return { students: [], error: data && data.message };
+  } catch(e){
+    console.warn('loadMasterRoster:', e);
+    return { students: [], error: e.message };
+  }
+}
+
 async function renderStudentsTab(){
   const el = document.getElementById('tab-students');
   el.innerHTML = `
     <div class="hero" style="background:linear-gradient(135deg,#6a1b9a,#4a148c);margin-bottom:16px">
-      <h2>👥 จัดการรายชื่อนักเรียน</h2>
-      <div>อัปโหลดรายชื่อครั้งเดียว → นักเรียนเลือกจาก dropdown ตอน login (ไม่ต้องพิมพ์ชื่อเอง)</div>
+      <h2>👥 จัดการรายชื่อนักเรียน (Master Roster)</h2>
+      <div>รายชื่อกลาง · ใช้ login ได้ทุกวิชา · แก้ที่เดียวมีผลทุกที่</div>
     </div>
 
-    <div class="info"><b>📋 รูปแบบที่รองรับ:</b>
+    <div class="info"><b>📋 รูปแบบที่รองรับ (วางจาก Excel ได้ทันที):</b>
       <ul style="margin:6px 0 0 20px">
-        <li>วางจาก Excel/Google Sheets ได้เลย — 1 บรรทัด = 1 คน</li>
-        <li>คอลัมน์ (คั่นด้วย Tab หรือ comma): <code>student_id, full_name, class, number, pin4</code></li>
-        <li><code>pin4</code> = 4 หลักท้ายของเลขประจำตัวประชาชน (ใช้ยืนยันตอน login)</li>
+        <li>คอลัมน์ (คั่นด้วย Tab หรือ comma): <code>student_id, full_name, room, birthdate, number</code></li>
+        <li><code>birthdate</code> = วันเดือนปีเกิด 8 หลัก <code>DDMMYYYY</code> พ.ศ. (เช่น 15082551)</li>
+        <li><code>number</code> = เลขที่ในห้อง (optional)</li>
+        <li>Password = <code>birthdate</code> · ระบบ hash เก็บให้อัตโนมัติ</li>
+        <li>⚠️ อัปโหลดจะ <b>แทนที่รายชื่อทั้งหมด</b> · session token เก่าถูก clear</li>
       </ul>
     </div>
 
     <div class="upload-area">
       <label style="font-weight:700">📝 วางรายชื่อที่นี่:</label>
       <textarea id="stuPaste" placeholder="ตัวอย่าง (คั่นด้วย Tab):
-47111	สมหญิง รักเรียน	5/1	1	1234
-47112	สมศรี มีเพื่อน	5/1	2	5678
-47213	สุดา ตั้งใจดี	5/2	3	9012"></textarea>
+47111	สมหญิง รักเรียน	5/1	15082551	1
+47112	สมศรี มีเพื่อน	5/1	22092551	2
+47213	สุดา ตั้งใจดี	5/2	03112551	3" style="min-height:120px"></textarea>
       <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-        <button class="btn-sm" onclick="doUploadStudents()">📤 อัปโหลด</button>
+        <button class="btn-sm" onclick="doUploadMasterRoster()">📤 อัปโหลด (แทนที่ทั้งหมด)</button>
+        <button class="btn-sm" style="background:#00897b" onclick="exportRosterPDF()">🖨️ Export PDF รหัสนักเรียน</button>
         <span id="stuUploadStat" style="font-size:13px"></span>
       </div>
     </div>
 
-    <h3 style="color:#4a148c;margin-top:20px">รายชื่อปัจจุบัน (<span id="stuCount">—</span> คน)</h3>
-    <div id="stuList"></div>
+    <div style="margin-top:18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <h3 style="color:#4a148c;margin:0">รายชื่อปัจจุบัน (<span id="stuCount">—</span> คน)</h3>
+      <input type="text" id="stuSearch" placeholder="🔍 ค้นหา ชื่อ/รหัส/ห้อง" style="padding:6px 12px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;flex:1;min-width:200px" oninput="renderRosterList()">
+    </div>
+    <div id="stuList" style="margin-top:10px">⏳ กำลังโหลด...</div>
   `;
-  // โหลดและแสดงรายชื่อ
-  await loadStudents();
-  renderStudentsList();
-}
-
-function renderStudentsList(){
-  const listEl = document.getElementById('stuList');
-  const countEl = document.getElementById('stuCount');
-  countEl.textContent = state.students.length;
-  if (!state.students.length){
-    listEl.innerHTML = '<div class="info">ยังไม่มีรายชื่อ — อัปโหลดก่อนเพื่อให้นักเรียนใช้ dropdown ได้</div>';
+  const res = await loadMasterRoster();
+  if (res.error) {
+    document.getElementById('stuList').innerHTML =
+      `<div class="info" style="background:#fee2e2;color:#991b1b">⚠️ โหลดไม่ได้: ${escapeHtml(res.error)}<br>
+       ตรวจ: (1) content/physics3/config.js มี rosterApiUrl (2) รหัสครูตรงกับ Master Roster Script Property</div>`;
     return;
   }
-  const byClass = {};
-  state.students.forEach(s => {
-    const c = s.class || '(ไม่ระบุ)';
-    if (!byClass[c]) byClass[c] = [];
-    byClass[c].push(s);
+  renderRosterList();
+}
+
+function renderRosterList(){
+  const listEl = document.getElementById('stuList');
+  const countEl = document.getElementById('stuCount');
+  if (!listEl) return;
+  const q = (document.getElementById('stuSearch')?.value || '').trim().toLowerCase();
+  const filtered = q
+    ? _rosterCache.filter(s => [s.student_id, s.full_name, s.room, s.number].some(v => String(v||'').toLowerCase().includes(q)))
+    : _rosterCache;
+  if (countEl) countEl.textContent = `${filtered.length}${q ? ` / ${_rosterCache.length}` : ''}`;
+  if (!_rosterCache.length){
+    listEl.innerHTML = '<div class="info">ยังไม่มีรายชื่อ · วางข้อมูลจาก Excel ด้านบนแล้วกดอัปโหลด</div>';
+    return;
+  }
+  if (!filtered.length){
+    listEl.innerHTML = '<div class="info">ไม่พบนักเรียนตามที่ค้นหา</div>';
+    return;
+  }
+  const byRoom = {};
+  filtered.forEach(s => {
+    const c = s.room || '(ไม่ระบุ)';
+    if (!byRoom[c]) byRoom[c] = [];
+    byRoom[c].push(s);
   });
   let html = '';
-  Object.keys(byClass).sort().forEach(c => {
-    const list = byClass[c].sort((a,b)=>Number(a.number||0)-Number(b.number||0));
-    html += `<h4 style="margin-top:12px;color:#6a1b9a">ห้อง ${c} (${list.length} คน)</h4>
+  Object.keys(byRoom).sort().forEach(c => {
+    const list = byRoom[c].sort((a,b) => Number(a.number||0) - Number(b.number||0));
+    const onlineCount = list.filter(s => s.has_token).length;
+    html += `<h4 style="margin-top:16px;color:#6a1b9a">ห้อง ${c} · ${list.length} คน · 🟢 ${onlineCount} online</h4>
       <table class="stu-table">
-        <tr><th style="width:80px">เลขที่</th><th>ชื่อ-สกุล</th><th style="width:120px">รหัสนักเรียน</th></tr>
-        ${list.map(s => `<tr><td>${s.number||'—'}</td><td>${escapeHtml(s.full_name)}</td><td>${escapeHtml(String(s.student_id))}</td></tr>`).join('')}
+        <tr>
+          <th style="width:50px">#</th>
+          <th style="width:110px">รหัสนักเรียน</th>
+          <th>ชื่อ-สกุล</th>
+          <th style="width:120px">วันเกิด</th>
+          <th style="width:80px">Session</th>
+          <th style="width:190px">การกระทำ</th>
+        </tr>
+        ${list.map(s => {
+          const online = s.has_token
+            ? '<span style="color:#16a34a;font-weight:700">🟢 online</span>'
+            : '<span style="color:#94a3b8">— offline</span>';
+          const sid = escapeHtml(String(s.student_id));
+          return `<tr>
+            <td>${s.number || '—'}</td>
+            <td><code>${sid}</code></td>
+            <td>${escapeHtml(s.full_name)}</td>
+            <td>${escapeHtml(s.birthdate || '—')}</td>
+            <td>${online}</td>
+            <td>
+              <button class="btn-sm" style="background:#f59e0b;font-size:11px;padding:3px 8px" onclick="doResetPassword('${sid}','${escapeHtml(s.full_name)}')">🔑 Reset</button>
+              ${s.has_token ? `<button class="btn-sm" style="background:#dc2626;font-size:11px;padding:3px 8px" onclick="doForceLogout('${sid}','${escapeHtml(s.full_name)}')">🚪 Kick</button>` : ''}
+            </td>
+          </tr>`;
+        }).join('')}
       </table>`;
   });
   listEl.innerHTML = html;
 }
 
-async function doUploadStudents(){
+async function doUploadMasterRoster(){
   const raw = document.getElementById('stuPaste').value.trim();
   const stat = document.getElementById('stuUploadStat');
   if (!raw){ stat.textContent = '⚠️ วางข้อมูลก่อน'; return; }
+  if (!ROSTER_URL){ stat.textContent = '❌ ไม่พบ rosterApiUrl ใน config'; return; }
 
   const lines = raw.split(/\r?\n/).filter(l => l.trim());
   const rows = lines.map(l => {
@@ -3530,29 +3598,111 @@ async function doUploadStudents(){
     return {
       student_id: parts[0] || '',
       full_name:  parts[1] || '',
-      class:      parts[2] || '',
-      number:     parts[3] || '',
-      pin4:       parts[4] || ''
+      room:       parts[2] || '',
+      birthdate:  parts[3] || '',
+      number:     parts[4] || ''
     };
-  }).filter(r => r.student_id && r.full_name);
+  }).filter(r => r.student_id && r.full_name && r.birthdate);
 
-  if (!rows.length){ stat.textContent = '❌ ไม่พบข้อมูลที่ใช้ได้'; return; }
-
-  if (!confirm(`จะแทนที่รายชื่อเดิมทั้งหมดด้วย ${rows.length} คน — ยืนยัน?`)) return;
+  if (!rows.length){ stat.textContent = '❌ ไม่พบข้อมูลที่ใช้ได้ · ตรวจว่ามี student_id + full_name + birthdate ครบ'; return; }
+  if (!confirm(`จะแทนที่รายชื่อทั้งหมดใน Master Roster ด้วย ${rows.length} คน\n(session token เก่าจะถูก clear ทั้งหมด)\n\nยืนยัน?`)) return;
 
   stat.textContent = '⏳ กำลังอัปโหลด...';
   try {
-    await DB.uploadStudents(rows);
-    stat.innerHTML = `✅ อัปโหลด ${rows.length} คนสำเร็จ — กำลังรีโหลด...`;
+    const r = await fetch(ROSTER_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'uploadRoster', teacher_pw: getTeacherPassword(), rows})
+    });
+    stat.textContent = `✅ ส่ง ${rows.length} คนเข้าระบบแล้ว · กำลังรีโหลด...`;
     setTimeout(async () => {
-      await loadStudents();
-      renderStudentsList();
-      stat.textContent = `✅ เสร็จสิ้น (${state.students.length} คนในระบบ)`;
+      await loadMasterRoster();
+      renderRosterList();
+      stat.textContent = `✅ เสร็จสิ้น (${_rosterCache.length} คนในระบบ)`;
       document.getElementById('stuPaste').value = '';
-    }, 1500);
+    }, 2000);
   } catch(e){
     stat.textContent = '❌ ผิดพลาด: ' + e.message;
   }
+}
+
+async function doResetPassword(sid, name){
+  if (!confirm(`Reset password ของ "${name}" (${sid}) กลับเป็นวันเกิด?\n(session token จะถูก clear · นักเรียนต้อง login ใหม่)`)) return;
+  try {
+    await fetch(ROSTER_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'resetPassword', teacher_pw: getTeacherPassword(), student_id: sid})
+    });
+    alert(`✅ Reset password แล้ว · นักเรียนใช้วันเกิดเดิม login ได้`);
+    setTimeout(async () => { await loadMasterRoster(); renderRosterList(); }, 1500);
+  } catch(e){ alert('❌ ผิดพลาด: ' + e.message); }
+}
+
+async function doForceLogout(sid, name){
+  if (!confirm(`เตะ "${name}" (${sid}) ออกจากระบบ?`)) return;
+  try {
+    await fetch(ROSTER_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'forceLogout', teacher_pw: getTeacherPassword(), student_id: sid})
+    });
+    alert(`✅ เตะออกแล้ว · ครั้งต่อไปที่ทำอะไร นักเรียนจะถูกบังคับ login ใหม่`);
+    setTimeout(async () => { await loadMasterRoster(); renderRosterList(); }, 1500);
+  } catch(e){ alert('❌ ผิดพลาด: ' + e.message); }
+}
+
+function exportRosterPDF(){
+  if (!_rosterCache.length){ alert('ยังไม่มีรายชื่อ · อัปโหลดก่อน'); return; }
+  const byRoom = {};
+  _rosterCache.forEach(s => {
+    const c = s.room || '(ไม่ระบุ)';
+    if (!byRoom[c]) byRoom[c] = [];
+    byRoom[c].push(s);
+  });
+  const today = new Date().toLocaleDateString('th-TH', {year:'numeric', month:'long', day:'numeric'});
+  let body = '';
+  Object.keys(byRoom).sort().forEach(c => {
+    const list = byRoom[c].sort((a,b) => Number(a.number||0) - Number(b.number||0));
+    body += `<h2>ห้อง ${c} · ${list.length} คน</h2>
+      <table>
+        <thead><tr><th>#</th><th>ชื่อ-สกุล</th><th>รหัสนักเรียน (username)</th><th>วันเดือนปีเกิด (password)</th></tr></thead>
+        <tbody>${list.map(s => `<tr>
+          <td>${s.number||'—'}</td>
+          <td>${escapeHtml(s.full_name)}</td>
+          <td><code>${escapeHtml(String(s.student_id))}</code></td>
+          <td><code>${escapeHtml(s.birthdate||'—')}</code></td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+  });
+  const html = `<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>รหัสนักเรียน · ${KP_CONFIG.teacherShort} · ${today}</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Sarabun',sans-serif;padding:24px;color:#1a202c;font-size:13px}
+h1{color:#4a148c;margin-bottom:4px}
+.meta{color:#64748b;font-size:13px;margin-bottom:16px}
+h2{color:#6a1b9a;margin-top:24px;padding-bottom:4px;border-bottom:2px solid #e2e8f0}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}
+th{background:#6a1b9a;color:#fff;padding:6px 10px;text-align:left}
+td{padding:5px 10px;border-bottom:1px solid #e2e8f0}
+code{background:#f1f5f9;padding:2px 6px;border-radius:4px;font-family:monospace;font-weight:700}
+tr:nth-child(even) td{background:#faf5ff}
+.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;color:#64748b;font-size:11px}
+@media print{body{padding:0} h2{page-break-after:avoid} table{page-break-inside:auto} tr{page-break-inside:avoid}}
+</style></head><body>
+<h1>🔐 รหัสนักเรียน · Login KP-Classroom</h1>
+<div class="meta">ออกเมื่อ ${today} · ${KP_CONFIG.schoolFull} · ${KP_CONFIG.teacher} · ปี ${KP_CONFIG.year}</div>
+<div class="info" style="background:#fff3cd;padding:10px 14px;border-radius:6px;border-left:4px solid #f59e0b;font-size:12px">
+  <b>วิธี login:</b> พิมพ์รหัสนักเรียนในช่อง "รหัสนักเรียน" · พิมพ์วันเดือนปีเกิด 8 หลัก (DDMMYYYY พ.ศ.) ในช่อง "วันเดือนปีเกิด" · หากลืม ให้แจ้งครู
+</div>
+${body}
+<div class="footer">⚠️ เอกสารลับ · แจกเฉพาะเจ้าของรหัส · เก็บรักษาให้ปลอดภัย</div>
+<script>window.onload = () => setTimeout(() => window.print(), 300)</script>
+</body></html>`;
+  const w = window.open('', '_blank');
+  w.document.write(html);
+  w.document.close();
 }
 
 // ═══════════════════════════════════════════════════════════
