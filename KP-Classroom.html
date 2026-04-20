@@ -761,6 +761,7 @@ function login(){
   const sid = `${cls.replace('/','_')}_${no}`;
   state.student = { student_id:sid, name, no:Number(no), class:cls };
   localStorage.setItem(LS_STU, JSON.stringify(state.student));
+  clearAllWorksheetDrafts();
   showHome();
 }
 
@@ -780,15 +781,30 @@ function loginRoster(){
     pin4:  pin  // เก็บไว้ verify ฝั่ง submit (ครูตรวจภายหลังจาก payload)
   };
   localStorage.setItem(LS_STU, JSON.stringify(state.student));
+  clearAllWorksheetDrafts();
   showHome();
   // หมายเหตุ: PIN verify ทำฝั่ง server ตอน submit (ไม่ verify ตอน login
   // เพื่อไม่ให้หน้าค้าง — ถ้า PIN ผิด ครูจะเห็นจาก sheet ได้)
+}
+
+// ลบ auto-save ของ worksheet-core ทุกอัน (key: kp-ws-<wsId>)
+// ป้องกันนักเรียนคนต่อไปเห็นคำตอบของคนก่อน
+function clearAllWorksheetDrafts(){
+  try {
+    const keys = [];
+    for (let i=0; i<localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (k && k.startsWith('kp-ws-')) keys.push(k);
+    }
+    keys.forEach(k => localStorage.removeItem(k));
+  } catch(e) { console.warn('clearAllWorksheetDrafts:', e); }
 }
 
 function logout(){
   if (!confirm('ออกจากระบบ? (ข้อมูลที่ยังไม่ได้ส่งจะหายไป)')) return;
   localStorage.removeItem(LS_STU);
   localStorage.removeItem(LS_SUB);
+  clearAllWorksheetDrafts();
   state.student = null; state.currentPlan = 1; state.currentTool = null; state.submitted = {};
   document.getElementById('topBar').style.display = 'none';
   showView('view-login');
