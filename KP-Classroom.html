@@ -4323,7 +4323,17 @@ let _galFocus = 0;
 let _galHideDone = false;
 let _galKeysBound = false;
 let _galFilterStudent = '';  // '' = all | s_num of student
+let _galFilterClass = '';    // '' = all | class string
+let _galFilterQ = '';        // '' = all | question number string
 let _galGroupBy = 'question'; // 'question' | 'student'
+
+// Extract question number from canvas qId · รองรับ pattern:
+//   canvas_claim_1 → 1 · canvas1 → 1 · q2 → 2 · claim_3 → 3
+function _galQNum(qId){
+  const s = String(qId || '');
+  const m = s.match(/(\d+)/);
+  return m ? m[1] : '';
+}
 
 const GALLERY_CANVAS_TOOLS = [
   {id:'spot',     prefix:'Spot_P',   label:'🔍 Spot the Error'},
@@ -4343,9 +4353,6 @@ async function renderCanvasGallery(){
   const planOpts = (window.KP_PLANS || []).map(p =>
     `<option value="${p.no}" ${p.no===_galPlan?'selected':''}>แผน ${p.no}: ${escapeHtml(p.title)}</option>`
   ).join('');
-  const toolOpts = GALLERY_CANVAS_TOOLS.map(t =>
-    `<option value="${t.id}" ${t.id===_galTool?'selected':''}>${t.label}</option>`
-  ).join('');
   el.innerHTML = `
     <div style="background:linear-gradient(135deg,#fff8e1,#ffe082);border:1.5px solid #ff8f00;padding:14px 18px;border-radius:10px;margin-bottom:12px">
       <div style="font-weight:800;color:#bf360c;font-size:16px;margin-bottom:4px">🖼️ ตรวจรูป Canvas รวดเดียว</div>
@@ -4353,17 +4360,27 @@ async function renderCanvasGallery(){
     </div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px;padding:10px 12px;background:#fff;border:1.5px solid #e2e8f0;border-radius:10px">
       <label style="font-weight:700">📚 แผน:
-        <select id="galPlanSel" onchange="_galPlan=+this.value;loadCanvasGallery()">${planOpts}</select>
+        <select id="galPlanSel" onchange="_galPlan=+this.value;_galOnPlanChange()">${planOpts}</select>
       </label>
-      <label style="font-weight:700">🧩 เครื่องมือ:
-        <select id="galToolSel" onchange="_galTool=this.value;loadCanvasGallery()">${toolOpts}</select>
+      <label style="font-weight:700">🧩 งาน:
+        <select id="galToolSel" onchange="_galTool=this.value;loadCanvasGallery()"></select>
       </label>
-      <button class="btn-sm" onclick="loadCanvasGallery()">🔄 โหลดใหม่</button>
+      <label style="font-weight:700">🏫 ห้อง:
+        <select id="galClassSel" onchange="_galFilterClass=this.value;_galFilterStudent='';_galPopulateStudentSelect();renderGalleryGrid()">
+          <option value="">— ทุกห้อง —</option>
+        </select>
+      </label>
       <label style="font-weight:700">👤 นักเรียน:
         <select id="galStudentSel" onchange="_galFilterStudent=this.value;renderGalleryGrid()">
           <option value="">— ทุกคน —</option>
         </select>
       </label>
+      <label style="font-weight:700">❓ ข้อ:
+        <select id="galQSel" onchange="_galFilterQ=this.value;renderGalleryGrid()">
+          <option value="">— ทุกข้อ —</option>
+        </select>
+      </label>
+      <button class="btn-sm" onclick="loadCanvasGallery()">🔄 โหลดใหม่</button>
       <label style="font-weight:700">📑 จัดกลุ่ม:
         <select id="galGroupSel" onchange="_galGroupBy=this.value;renderGalleryGrid()">
           <option value="question" ${_galGroupBy==='question'?'selected':''}>ตามข้อ</option>
@@ -4383,16 +4400,39 @@ async function renderCanvasGallery(){
     </div>
   `;
   _galleryBindKeys();
+  _galOnPlanChange();
+}
+
+// เติม dropdown งานจาก _buildGradingTasks(plan) · ใช้ pattern เดียวกับ tab ตรวจงาน
+function _galOnPlanChange(){
+  const tasks = _buildGradingTasks(_galPlan);
+  const sel = document.getElementById('galToolSel');
+  if (!sel) return;
+  if (!tasks.length){
+    sel.innerHTML = '<option value="">— แผนนี้ไม่มีงาน canvas —</option>';
+    _galTool = '';
+    document.getElementById('galleryBody').innerHTML = '<div style="text-align:center;color:#718096;padding:40px">แผนนี้ยังไม่มีงานที่มี canvas ให้ตรวจ</div>';
+    return;
+  }
+  // keep current task if available in new plan, otherwise pick first
+  if (!tasks.find(t => t.taskId === _galTool)) _galTool = tasks[0].taskId;
+  sel.innerHTML = tasks.map(t =>
+    `<option value="${escapeHtml(t.taskId)}" ${t.taskId===_galTool?'selected':''}>${escapeHtml(t.label)}</option>`
+  ).join('');
   loadCanvasGallery();
+}
+
+function _galCurrentTask(){
+  return _buildGradingTasks(_galPlan).find(t => t.taskId === _galTool);
 }
 
 async function loadCanvasGallery(){
   const body = document.getElementById('galleryBody');
   if (!body) return;
   body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">⏳ กำลังโหลด...</div>`;
-  const toolDef = GALLERY_CANVAS_TOOLS.find(t => t.id === _galTool);
-  if (!toolDef){ body.innerHTML = '<div class="warn-config">❌ ไม่รู้จักเครื่องมือ</div>'; return; }
-  const sheet = toolDef.id === 'review10' ? 'Review' : `${toolDef.prefix}${_galPlan}`;
+  const task = _galCurrentTask();
+  if (!task){ body.innerHTML = '<div class="warn-config">❌ ไม่รู้จักงาน</div>'; return; }
+  const sheet = task.sheet;
 
   try {
     const [rowsResp, aiResp] = await Promise.all([
@@ -4450,7 +4490,7 @@ async function loadCanvasGallery(){
           textFields, aiTextScore, aiTextConf, aiTextNote,
           sName: r.s_name || '(ไม่ระบุ)',
           sNum: sid,
-          sRoom: r.s_room || '',
+          sRoom: _cleanRoom(r),
           score: (r[scoreCol] !== '' && r[scoreCol] != null) ? Number(r[scoreCol]) : null,
           aiScore: ai ? ai.score : null,
           aiConf:  ai ? ai.conf  : null,
@@ -4463,20 +4503,23 @@ async function loadCanvasGallery(){
       body.innerHTML = `<div style="text-align:center;color:#718096;padding:40px">ไม่พบคอลัมน์ <code>canvas_*_url</code> ใน <code>${sheet}</code><br><small>นักเรียนอาจยังไม่ได้วาด · หรือ handler ยังไม่ได้ upload canvas → Drive</small></div>`;
       updateGalleryProgress(); return;
     }
-    // Populate student dropdown (unique by s_num)
-    const sel = document.getElementById('galStudentSel');
-    if (sel){
-      const seen = new Set();
-      const students = [];
-      _galItems.forEach(it => {
-        if (seen.has(it.sNum)) return;
-        seen.add(it.sNum);
-        students.push({sNum:it.sNum, sName:it.sName});
-      });
-      students.sort((a,b) => String(a.sNum).localeCompare(String(b.sNum), 'th', {numeric:true}));
-      sel.innerHTML = '<option value="">— ทุกคน —</option>' +
-        students.map(s => `<option value="${escapeHtml(s.sNum)}" ${s.sNum===_galFilterStudent?'selected':''}>${escapeHtml(s.sName)} (เลขที่ ${escapeHtml(s.sNum)})</option>`).join('');
+    // Populate class dropdown (unique cleaned rooms)
+    const classSel = document.getElementById('galClassSel');
+    if (classSel){
+      const classes = [...new Set(_galItems.map(it => it.sRoom).filter(Boolean))]
+        .sort((a,b) => a.localeCompare(b, 'th', {numeric:true}));
+      classSel.innerHTML = '<option value="">— ทุกห้อง —</option>' +
+        classes.map(c => `<option value="${escapeHtml(c)}" ${c===_galFilterClass?'selected':''}>${escapeHtml(c)}</option>`).join('');
     }
+    // Populate question dropdown (unique question numbers)
+    const qSel = document.getElementById('galQSel');
+    if (qSel){
+      const qnums = [...new Set(_galItems.map(it => _galQNum(it.qId)).filter(Boolean))]
+        .sort((a,b) => Number(a) - Number(b));
+      qSel.innerHTML = '<option value="">— ทุกข้อ —</option>' +
+        qnums.map(q => `<option value="${escapeHtml(q)}" ${q===_galFilterQ?'selected':''}>ข้อ ${escapeHtml(q)}</option>`).join('');
+    }
+    _galPopulateStudentSelect();
     _galFocus = Math.min(_galFocus, _galItems.length - 1);
     if (_galFocus < 0) _galFocus = 0;
     renderGalleryGrid();
@@ -4495,10 +4538,28 @@ function _galleryToImgUrl(url){
   return s;
 }
 
+function _galPopulateStudentSelect(){
+  const sel = document.getElementById('galStudentSel');
+  if (!sel) return;
+  const seen = new Set();
+  const students = [];
+  _galItems.forEach(it => {
+    if (_galFilterClass && it.sRoom !== _galFilterClass) return;
+    if (seen.has(it.sNum)) return;
+    seen.add(it.sNum);
+    students.push({sNum:it.sNum, sName:it.sName});
+  });
+  students.sort((a,b) => String(a.sNum).localeCompare(String(b.sNum), 'th', {numeric:true}));
+  sel.innerHTML = '<option value="">— ทุกคน —</option>' +
+    students.map(s => `<option value="${escapeHtml(s.sNum)}" ${s.sNum===_galFilterStudent?'selected':''}>เลขที่ ${escapeHtml(s.sNum)} · ${escapeHtml(s.sName)}</option>`).join('');
+}
+
 function _galleryVisibleIndices(){
   const out = [];
   _galItems.forEach((it, i) => {
+    if (_galFilterClass && it.sRoom !== _galFilterClass) return;
     if (_galFilterStudent && String(it.sNum) !== String(_galFilterStudent)) return;
+    if (_galFilterQ && _galQNum(it.qId) !== _galFilterQ) return;
     if (_galHideDone && it.score != null) return;
     out.push(i);
   });
@@ -4555,7 +4616,7 @@ function renderGalleryGrid(){
           <img src="${escapeHtml(it.url)}" loading="lazy" style="max-width:100%;max-height:100%;object-fit:contain"
             onerror="this.parentNode.innerHTML='<div style=\\'color:#c62828;font-size:12px;padding:10px;text-align:center\\'>⚠ โหลดรูปไม่ได้<br><small>' + '${escapeHtml(it.url).slice(0,60)}' + '</small></div>'">
           <div style="position:absolute;top:6px;left:6px;display:flex;gap:4px">${scoreBadge}${aiBadge}</div>
-          <div style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;padding:2px 6px;border-radius:4px;font-size:11px">${escapeHtml(it.qId)}</div>
+          <div style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.78);color:#fff;padding:3px 8px;border-radius:4px;font-size:12px;font-weight:700" title="${escapeHtml(it.qId)}">ข้อ ${escapeHtml(_galQNum(it.qId) || '?')} <span style="opacity:.7;font-weight:400;font-size:10px">· ${escapeHtml(it.qId)}</span></div>
         </div>
         <div style="padding:8px 10px">
           <div style="font-weight:700;font-size:13px;color:#0f2c5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(it.sName)}</div>
