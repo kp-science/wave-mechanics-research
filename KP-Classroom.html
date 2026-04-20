@@ -400,48 +400,21 @@ body.printing-tool #topBar{display:none !important}
       <h1>🌊 <span id="loginTitle">วิจัยคลื่นกล</span></h1>
       <div class="sub" id="loginSubtitle">โรงเรียนสตรีวิทยา · ครูโกเมน ปาปะโถ · ปีการศึกษา 2569</div>
 
-      <!-- โหมดเลือกจากรายชื่อ (ค่าเริ่มต้น เมื่อครูอัปโหลดรายชื่อแล้ว) -->
-      <div id="login-roster" style="display:none">
-        <label>🏫 ห้องของฉัน</label>
-        <select id="sel-class"><option value="">-- เลือกห้อง --</option></select>
+      <!-- Master Roster Login (id + birthdate) -->
+      <div id="login-master">
+        <label>🎓 รหัสนักเรียน</label>
+        <input type="text" id="in-sid" inputmode="numeric" placeholder="เช่น 12345" autocomplete="username">
 
-        <label>👤 ชื่อของฉัน</label>
-        <select id="sel-name" disabled><option value="">-- เลือกห้องก่อน --</option></select>
+        <label>🎂 วันเดือนปีเกิด</label>
+        <input type="password" id="in-bd" inputmode="numeric" maxlength="8" placeholder="DDMMYYYY (เช่น 15082551)" autocomplete="current-password">
+        <div style="font-size:12px;color:#64748b;margin-top:4px">รูปแบบ: วัน+เดือน+ปีพ.ศ. · 8 หลัก</div>
 
-        <label>🔐 รหัสยืนยัน 4 ตัวท้าย (เลขประจำตัวประชาชน)</label>
-        <input type="password" id="in-pin" inputmode="numeric" maxlength="4" placeholder="0000">
-
-        <button class="btn-primary" onclick="loginRoster()">เข้าสู่ระบบ 🚀</button>
-        <div style="text-align:center;margin-top:10px">
-          <a href="#" onclick="switchLoginMode('manual');return false;" style="color:#1565c0;font-size:12px">ไม่พบชื่อในรายการ? กรอกด้วยตัวเอง</a>
-        </div>
-      </div>
-
-      <!-- โหมดกรอกเอง (fallback) -->
-      <div id="login-manual">
-        <label>ชื่อ-สกุล</label>
-        <input type="text" id="in-name" placeholder="เช่น สมหญิง รักเรียน" autocomplete="name">
-        <div class="row2">
-          <div>
-            <label>เลขที่</label>
-            <input type="number" id="in-no" placeholder="15" min="1" max="50">
-          </div>
-          <div>
-            <label>ห้อง</label>
-            <select id="in-class">
-              <option value="">เลือกห้อง</option>
-              <option>5/1</option><option>5/2</option><option>5/3</option><option>5/4</option>
-              <option>5/5</option><option>5/6</option><option>5/7</option><option>5/8</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="login()">เข้าสู่ระบบ 🚀</button>
-        <div id="switch-roster-link" style="text-align:center;margin-top:10px;display:none">
-          <a href="#" onclick="switchLoginMode('roster');return false;" style="color:#1565c0;font-size:12px">กลับไปเลือกจากรายชื่อ</a>
-        </div>
+        <button class="btn-primary" id="btn-login" onclick="loginMaster()">เข้าสู่ระบบ 🚀</button>
+        <div id="login-error" style="display:none;margin-top:12px;padding:10px;background:#fee2e2;border-radius:6px;color:#991b1b;font-size:13px"></div>
       </div>
 
       <div style="text-align:center;margin-top:14px;font-size:12px;color:#888">
+        หากลืมรหัสผ่าน · ติดต่อครูผู้สอน<br>
         ข้อมูลของนักเรียนจะถูกใช้เพื่องานวิจัยในชั้นเรียนเท่านั้น
       </div>
       <div style="text-align:center;margin-top:16px;border-top:1px solid #eee;padding-top:12px">
@@ -583,7 +556,15 @@ const DB = {
 
   // ─── Writes (ต้องมี teacher_pw) ───
   // Student submit (payload wraps form data · Apps Script handleSubmit expects this shape)
-  submit(sheet, payload) { return DB._post('submit', {sheet, payload}); },
+  submit(sheet, payload) {
+    // แนบ session_token อัตโนมัติจาก state.student (ถ้ามี) · ห้าม overwrite ถ้า caller ส่งมาเอง
+    const stu = (typeof state !== 'undefined' && state.student) || {};
+    const enriched = {
+      session_token: stu.token || '',
+      ...payload
+    };
+    return DB._post('submit', {sheet, payload: enriched});
+  },
   uploadStudents(rows)    { return DB._post('uploadStudents',   {teacher_pw: getTeacherPassword(), rows}); },
   updateSetting(data)     { return DB._post('updateSetting',    {teacher_pw: getTeacherPassword(), ...data}); },
   deleteSetting(data)     { return DB._post('deleteSetting',    {teacher_pw: getTeacherPassword(), ...data}); },
@@ -645,7 +626,8 @@ function applyBranding(){
 // ═══════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
   applyBranding();
-  initLoginUI();  // render UI ด้วย cache ก่อน (dropdown ว่างถ้ายังไม่มี roster)
+  initLoginUI();  // focus ช่องรหัสนักเรียน
+  bindLoginEnter();  // Enter key = submit login
 
   // Hydrate settings cache · ทำให้แผนปลดล็อกทันทีโดยไม่รอ API 3-4s (stale-while-revalidate)
   try {
@@ -681,16 +663,15 @@ window.addEventListener('DOMContentLoaded', () => {
     enterTeacherMode();
   } else if (state.student){
     showHome();
+    // Session validity check ทันที · ถ้าถูกเตะออกจะ auto-logout
+    checkSession(false);
+    startSessionHeartbeat();
   } else {
     showView('view-login');  // ← หน้า login แสดงทันที (<150ms)
   }
 
-  // Background: โหลดรายชื่อนักเรียน (ไม่ block UI) · re-render login ถ้ายังอยู่หน้านั้น
-  loadStudents().then(() => {
-    if (document.getElementById('view-login').classList.contains('active')){
-      initLoginUI();  // refresh dropdown หลัง roster มา
-    }
-  }).catch(e => console.warn('background loadStudents:', e));
+  // Background: โหลดรายชื่อนักเรียน (ใช้ในหน้า Teacher Dashboard · ไม่เกี่ยวกับ login แล้ว)
+  loadStudents().catch(e => console.warn('background loadStudents:', e));
 });
 
 // โหลดรายชื่อนักเรียนจาก API
@@ -715,53 +696,18 @@ async function loadFeedback(){
   if (r && r.status === 'ok') state.feedback = r.feedback || [];
 }
 
-// ตั้งโหมด login ตามรายชื่อที่โหลดมา
+// Master Roster mode only (Phase 7) — โฟกัสช่องรหัสนักเรียน
 function initLoginUI(){
-  if (state.students.length > 0){
-    state.loginMode = 'roster';
-    document.getElementById('login-roster').style.display = 'block';
-    document.getElementById('login-manual').style.display = 'none';
-    document.getElementById('switch-roster-link').style.display = 'block';
-    // เติม dropdown ห้อง (unique)
-    const classes = [...new Set(state.students.map(s => s.class).filter(Boolean))].sort();
-    const selC = document.getElementById('sel-class');
-    classes.forEach(c => {
-      const o = document.createElement('option'); o.value=c; o.textContent=c;
-      selC.appendChild(o);
-    });
-    selC.onchange = () => {
-      const c = selC.value;
-      const selN = document.getElementById('sel-name');
-      selN.innerHTML = '<option value="">-- เลือกชื่อ --</option>';
-      if (!c){ selN.disabled = true; return; }
-      const list = state.students.filter(s => s.class === c)
-                   .sort((a,b) => Number(a.number||0) - Number(b.number||0));
-      list.forEach(s => {
-        const o = document.createElement('option');
-        o.value = s.student_id;
-        o.textContent = `เลขที่ ${s.number || '—'} · ${s.full_name}`;
-        selN.appendChild(o);
-      });
-      selN.disabled = false;
-    };
-  } else {
-    // ยังไม่มีรายชื่อ → ใช้ manual
-    state.loginMode = 'manual';
-    document.getElementById('login-roster').style.display = 'none';
-    document.getElementById('login-manual').style.display = 'block';
-    document.getElementById('switch-roster-link').style.display = 'none';
-  }
+  const sid = document.getElementById('in-sid');
+  if (sid) sid.focus();
 }
 
-function switchLoginMode(mode){
-  state.loginMode = mode;
-  if (mode === 'roster'){
-    document.getElementById('login-roster').style.display = 'block';
-    document.getElementById('login-manual').style.display = 'none';
-  } else {
-    document.getElementById('login-roster').style.display = 'none';
-    document.getElementById('login-manual').style.display = 'block';
-  }
+// Enter ในช่องใดก็ได้ = submit
+function bindLoginEnter(){
+  ['in-sid','in-bd'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('keypress', e => { if (e.key === 'Enter') loginMaster(); });
+  });
 }
 
 function showView(id){
@@ -771,44 +717,59 @@ function showView(id){
 }
 
 // ═══════════════════════════════════════════════════════════
-// LOGIN / LOGOUT
+// LOGIN / LOGOUT — Master Roster (Phase 7)
 // ═══════════════════════════════════════════════════════════
-function login(){
-  const name = document.getElementById('in-name').value.trim();
-  const no = document.getElementById('in-no').value.trim();
-  const cls = document.getElementById('in-class').value;
-  if (!name || !no || !cls){
-    alert('⚠️ กรอกชื่อ เลขที่ และห้องให้ครบก่อน');
-    return;
-  }
-  // manual mode: สร้าง student_id ชั่วคราวจาก class+no
-  const sid = `${cls.replace('/','_')}_${no}`;
-  state.student = { student_id:sid, name, no:Number(no), class:cls };
-  localStorage.setItem(LS_STU, JSON.stringify(state.student));
-  clearAllWorksheetDrafts();
-  showHome();
+const ROSTER_URL = KP_CONFIG.rosterApiUrl || '';
+
+function showLoginError(msg){
+  const el = document.getElementById('login-error');
+  if (!el) { alert(msg); return; }
+  el.textContent = '⚠️ ' + msg;
+  el.style.display = 'block';
+}
+function clearLoginError(){
+  const el = document.getElementById('login-error');
+  if (el) el.style.display = 'none';
 }
 
-function loginRoster(){
-  const sid = document.getElementById('sel-name').value;
-  const pin = document.getElementById('in-pin').value.trim();
-  if (!sid){ alert('⚠️ เลือกห้องและชื่อก่อน'); return; }
-  if (!/^\d{4}$/.test(pin)){ alert('⚠️ กรอกรหัส 4 หลักให้ครบ'); return; }
+async function loginMaster(){
+  clearLoginError();
+  const sid = document.getElementById('in-sid').value.trim();
+  const bd  = document.getElementById('in-bd').value.trim();
+  if (!sid || !bd){ showLoginError('กรอกรหัสนักเรียนและวันเกิดให้ครบ'); return; }
+  if (!ROSTER_URL){ showLoginError('ระบบยังไม่ได้ตั้งค่า rosterApiUrl'); return; }
 
-  const stu = state.students.find(s => String(s.student_id) === String(sid));
-  if (!stu){ alert('ไม่พบนักเรียนคนนี้'); return; }
-  state.student = {
-    student_id: stu.student_id,
-    name:  stu.full_name,
-    no:    Number(stu.number || 0),
-    class: stu.class,
-    pin4:  pin  // เก็บไว้ verify ฝั่ง submit (ครูตรวจภายหลังจาก payload)
-  };
-  localStorage.setItem(LS_STU, JSON.stringify(state.student));
-  clearAllWorksheetDrafts();
-  showHome();
-  // หมายเหตุ: PIN verify ทำฝั่ง server ตอน submit (ไม่ verify ตอน login
-  // เพื่อไม่ให้หน้าค้าง — ถ้า PIN ผิด ครูจะเห็นจาก sheet ได้)
+  const btn = document.getElementById('btn-login');
+  if (btn){ btn.disabled = true; btn.textContent = 'กำลังเข้าสู่ระบบ...'; }
+
+  try {
+    const r = await fetch(ROSTER_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'login', student_id: sid, password: bd })
+    });
+    const data = await r.json();
+    if (data.status !== 'ok'){
+      showLoginError(data.message || 'เข้าสู่ระบบไม่สำเร็จ');
+      return;
+    }
+    state.student = {
+      student_id: data.student.id,
+      name:       data.student.name,
+      no:         Number(data.student.number || 0),
+      class:      data.student.room,
+      token:      data.token
+    };
+    localStorage.setItem(LS_STU, JSON.stringify(state.student));
+    clearAllWorksheetDrafts();
+    showHome();
+    startSessionHeartbeat();
+  } catch(e){
+    showLoginError('เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ · ลองใหม่อีกครั้ง');
+    console.error('loginMaster:', e);
+  } finally {
+    if (btn){ btn.disabled = false; btn.textContent = 'เข้าสู่ระบบ 🚀'; }
+  }
 }
 
 // ลบ auto-save ของ worksheet-core ทุกอัน (key: kp-ws-<wsId>)
@@ -824,8 +785,56 @@ function clearAllWorksheetDrafts(){
   } catch(e) { console.warn('clearAllWorksheetDrafts:', e); }
 }
 
-function logout(){
+// ═══════════════════════════════════════════════════════════
+// SESSION HEARTBEAT — verify token ทุก 10 นาที · auto-logout ถ้าถูกเตะออก
+// ═══════════════════════════════════════════════════════════
+let _sessionCheckTimer = null;
+async function checkSession(silent){
+  if (!ROSTER_URL || !state.student || !state.student.token) return;
+  try {
+    const qs = new URLSearchParams({
+      action: 'verifyToken',
+      student_id: state.student.student_id,
+      token: state.student.token,
+      _: Date.now()
+    });
+    const r = await fetch(`${ROSTER_URL}?${qs}`);
+    const data = await r.json();
+    if (data && data.status === 'ok' && data.valid === false){
+      stopSessionHeartbeat();
+      if (!silent) alert('⚠️ บัญชีนี้ถูก login จากเครื่องอื่น · กรุณา login ใหม่\n\nเหตุผล: ' + (data.reason || 'token invalid'));
+      // clear local state แล้วกลับหน้า login (ไม่เรียก logout เพราะไม่ต้องแจ้ง server อีก)
+      localStorage.removeItem(LS_STU);
+      localStorage.removeItem(LS_SUB);
+      clearAllWorksheetDrafts();
+      state.student = null; state.submitted = {};
+      document.getElementById('topBar').style.display = 'none';
+      showView('view-login');
+    }
+  } catch(e){ /* network error · ปล่อยไว้ ไม่ต้อง logout */ }
+}
+function startSessionHeartbeat(){
+  stopSessionHeartbeat();
+  _sessionCheckTimer = setInterval(() => checkSession(false), 10 * 60 * 1000);  // 10 นาที
+}
+function stopSessionHeartbeat(){
+  if (_sessionCheckTimer){ clearInterval(_sessionCheckTimer); _sessionCheckTimer = null; }
+}
+
+async function logout(){
   if (!confirm('ออกจากระบบ? (ข้อมูลที่ยังไม่ได้ส่งจะหายไป)')) return;
+  // Best-effort: แจ้ง Master Roster ให้ clear token (ไม่ต้องรอผล)
+  if (ROSTER_URL && state.student && state.student.token){
+    try {
+      fetch(ROSTER_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({action:'logout', student_id: state.student.student_id, token: state.student.token})
+      });
+    } catch(_){}
+  }
+  stopSessionHeartbeat();
   localStorage.removeItem(LS_STU);
   localStorage.removeItem(LS_SUB);
   clearAllWorksheetDrafts();
@@ -1490,6 +1499,7 @@ window.addEventListener('message', async (e) => {
       student_name: stu.name || '',
       student_no:   stu.no   || '',
       class:        stu.class|| '',
+      session_token: stu.token || '',
       submitted_at: new Date().toISOString(),
       source: 'web-iframe'
     };

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>ทดสอบ Login · Master Roster v2</title>
+<style>
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;padding:40px;max-width:600px;margin:0 auto}
+h1{color:#1565c0}
+.card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.08);margin-bottom:16px}
+label{display:block;font-weight:600;margin:10px 0 4px;color:#333}
+input{width:100%;padding:10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit;font-size:15px;box-sizing:border-box}
+button{background:#1565c0;color:#fff;border:none;padding:12px 20px;border-radius:8px;font-family:inherit;font-weight:700;cursor:pointer;margin-top:16px;font-size:15px;width:100%}
+button:hover{background:#0d47a1}
+.btn-sec{background:#64748b}
+.btn-sec:hover{background:#475569}
+pre{background:#1e293b;color:#4ade80;padding:14px;border-radius:8px;overflow-x:auto;font-size:13px;white-space:pre-wrap;word-break:break-all}
+.ok{color:#16a34a;font-weight:700}
+.err{color:#dc2626;font-weight:700}
+.hint{font-size:13px;color:#666;margin-top:4px}
+</style>
+</head>
+<body>
+
+<h1>🔐 ทดสอบระบบ Login</h1>
+<div class="hint" style="margin-bottom:20px">Master Roster Backend · v1</div>
+
+<div class="card">
+  <h2>1️⃣ Login ทดสอบ</h2>
+  <label>รหัสนักเรียน</label>
+  <input type="text" id="sid" value="99999">
+
+  <label>วันเดือนปีเกิด (DDMMYYYY)</label>
+  <input type="text" id="pw" value="01012551">
+  <div class="hint">รูปแบบ: วัน+เดือน+ปี พ.ศ. · เช่น 01012551 = 1 ม.ค. 2551</div>
+
+  <button onclick="doLogin()">🚀 Login</button>
+  <button class="btn-sec" onclick="doVerify()">🔍 Verify Token (หลัง login)</button>
+  <button class="btn-sec" onclick="doLogout()">🚪 Logout</button>
+</div>
+
+<div class="card">
+  <h2>📡 ผลลัพธ์</h2>
+  <pre id="out">รอทดสอบ...</pre>
+  <div id="sess" style="margin-top:12px;font-size:13px;color:#64748b"></div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyhekgIs5ufh9KBsd-PKSqp0dc6WgSmaPauHppsKopKZf02aXBR6cnxQxDQuVkgUs_L4A/exec';
+
+var kpSess = null;
+function showSession() {
+  const el = document.getElementById('sess');
+  if (kpSess) {
+    el.innerHTML = `<b class="ok">✓ Session:</b> ${kpSess.student.name} (${kpSess.student.id}) · ห้อง ${kpSess.student.room} · token: <code>${kpSess.token.slice(0,16)}...</code>`;
+  } else {
+    el.innerHTML = '<span style="color:#94a3b8">ยังไม่มี kpSess</span>';
+  }
+}
+showSession();
+
+function show(obj) {
+  const el = document.getElementById('out');
+  el.textContent = JSON.stringify(obj, null, 2);
+  if (obj.status === 'ok') el.style.color = '#4ade80';
+  else el.style.color = '#f87171';
+}
+
+async function doLogin() {
+  const sid = document.getElementById('sid').value.trim();
+  const pw = document.getElementById('pw').value.trim();
+  show({status: 'loading', message: 'กำลัง login...'});
+  try {
+    const r = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'login', student_id: sid, password: pw})
+    });
+    const data = await r.json();
+    show(data);
+    if (data.status === 'ok') {
+      kpSess = data;
+      showSession();
+    }
+  } catch (e) {
+    show({status:'error', message: e.message});
+  }
+}
+
+async function doVerify() {
+  if (!kpSess) { show({status:'error', message:'ยังไม่ได้ login'}); return; }
+  show({status: 'loading', message: 'กำลัง verify token...'});
+  try {
+    const qs = new URLSearchParams({action:'verifyToken', student_id: kpSess.student.id, token: kpSess.token});
+    const r = await fetch(`${API_URL}?${qs}`);
+    const data = await r.json();
+    show(data);
+  } catch (e) {
+    show({status:'error', message: e.message});
+  }
+}
+
+async function doLogout() {
+  if (!kpSess) { show({status:'error', message:'ยังไม่ได้ login'}); return; }
+  show({status: 'loading', message: 'กำลัง logout...'});
+  try {
+    const r = await fetch(API_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({action:'logout', student_id: kpSess.student.id, token: kpSess.token})
+    });
+    const data = await r.json();
+    show(data);
+    kpSess = null;
+    showSession();
+  } catch (e) {
+    show({status:'error', message: e.message});
+  }
+}
+</script>
+</body>
+</html>

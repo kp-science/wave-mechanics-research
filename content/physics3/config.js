@@ -23,6 +23,9 @@ window.KP_CONFIG = {
   // ─── Backend (Apps Script Web App URL — ของวิชานี้เท่านั้น) ───
   apiUrl:       'https://script.google.com/macros/s/AKfycbwoI8M3mJ3wKdNHUigoK4LFbZJH0f94WykTfBz97KPgeTo0Zi-N9DZdiEGzW3u6jofiwA/exec',
 
+  // ─── Master Roster Backend (ใช้ร่วมกันทุกวิชา · login/password/session) ───
+  rosterApiUrl: 'https://script.google.com/macros/s/AKfycbyhekgIs5ufh9KBsd-PKSqp0dc6WgSmaPauHppsKopKZf02aXBR6cnxQxDQuVkgUs_L4A/exec',
+
   // ─── Admin Password (Phase 4: server-side) ───
   // ⚠️ รหัสเก็บใน Apps Script Properties (ชื่อ 'TEACHER_PASSWORD')
   // ห้ามใส่รหัสในไฟล์นี้ (repo public)
