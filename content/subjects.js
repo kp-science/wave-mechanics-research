@@ -29,7 +29,9 @@ window.KP_SUBJECTS = [
         status: 'open',
         numPlans: 6,
         unit: 'shm',  // ← subfolder · loader โหลด content/physics3/units/shm/*
-        dbUrl: 'TODO_DEPLOY_SHM_BACKEND'  // ← วาง Apps Script URL ของ SHM ที่นี่ (ต้องขึ้นต้นด้วย https://script.google.com/)
+        // ⚠️ TODO: deploy SHM backend ตาม _private/SETUP_SHM_Backend.md แล้วแทน URL ด้านล่าง
+        // หลังแทนแล้ว · ต้อง refresh browser · Dashboard ใน ?unit=shm จะเริ่มอ่าน Sheet `Physics3-SHM-2569`
+        dbUrl: 'https://script.google.com/macros/s/AKfycbxgxmp3c5kNZyG3RCY9b8wGJYOf-HKTsnX1F7MIi181vIasXopB3QY_8OSwWDMCvq-OaQ/exec'
       },
       {
         id: 'waves',
