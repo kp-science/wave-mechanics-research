@@ -37,8 +37,10 @@
 ### `KP-Classroom.html` (แก้ 11 จุด)
 8. **`DB._get` per-unit routing (~บรรทัด 741-757)** — เพิ่ม `_UNIT_SCOPED_READS = {info,list,stats,planStats}` · reads กลุ่มนี้ route ไป `topic.dbUrl` ถ้า valid · กลุ่มอื่น (students/settings/courseStatus/feedback/verifyAdmin) อยู่ที่ `API_URL` เสมอ (shared roster)
 9. **`syncStateFromUrl()` ใน init (~บรรทัด 894-915)** — ครูที่เปิดแท็บใหม่ที่ `?unit=shm` ตรงๆ (ไม่ผ่าน Hub) ไม่มี LS_NAV → state.topic ว่าง → DB fallback API_URL = อ่านชีทคลื่น (บัก!) · Fix: derive state.subject/topic/unit จาก URL params ก่อน routing
-10. **Unit Selector dropdown ใน `renderTeacherShell` (~บรรทัด 3340-3400)** — `<select id="unitSwitcher">` ใน courseToggleBar · option value=topic.id · render เฉพาะถ้ามี >1 หัวข้อ · onChange → `switchUnit(topicId)` reload URL ด้วย `?unit=`
-11. **`loadTeacherDashboard` multi-unit aggregate (~บรรทัด 3500+)** — Overview ไม่ผูก `?unit=` · loop ทุกหัวข้อ status='open' ของวิชา · ยิง backend แต่ละหัวข้อขนานกันด้วย `_fetchSheetInfo`/`_fetchSheetData` (raw fetch · ไม่ผ่าน DB._get เพราะ DB._get ผูก state.topic) · จัดกลุ่ม section header `[ไอคอน หัวข้อ] [ss_name · N เครื่องมือ] [⚙ จัดการ tabs]` · Sheets ในแต่ละกลุ่มยังคงรูปแบบ tools-grid เดิม
+10. **Unit Selector dropdown ใน `renderTeacherShell` (~บรรทัด 3340-3400)** — `<select id="unitSwitcher">` ใน courseToggleBar · option value=topic.id · render เฉพาะถ้ามี >1 หัวข้อ
+11. **`loadTeacherDashboard` multi-unit aggregate (~บรรทัด 3500+)** — Overview ไม่ผูก `?unit=` · loop ทุกหัวข้อ status='open' ของวิชา · ยิง backend แต่ละหัวข้อขนานกันด้วย `_fetchSheetInfo`/`_fetchSheetData` (raw fetch · ไม่ผ่าน DB._get เพราะ DB._get ผูก state.topic) · จัดกลุ่ม section header `[ไอคอน หัวข้อ] [ss_name · N เครื่องมือ] [⚙ จัดการ tabs]`
+12. **`switchUnit()` dynamic load (~บรรทัด 3415-3470)** — ไม่ใช้ reload page · โหลด plans/tools/media/questions/worksheets ของหน่วยใหม่ผ่าน dynamic `<script>` tags · **mutate aliases in-place** (PLANS/PLAN_TOOLS/TOOL_DEFS/PLAN_MEDIA/FT_BANK เป็น `const` ที่ capture reference ตอน script load → ต้องเคลียร์ + re-fill array/object เพื่อให้ render functions เห็นข้อมูลใหม่) · update URL ด้วย `history.replaceState` · บันทึก `teacher_unit_pref` ใน LS
+13. **`enterTeacherMode` aware ของ teacher pref (~บรรทัด 3306-3320)** — ครู refresh ที่ `?course=physics3` (ไม่มี unit) แต่ pref บันทึก SHM ไว้ → auto-redirect ไป `?course=physics3&unit=shm` · ครูไม่ต้อง re-select dropdown ทุกครั้ง
 
 แก้เดิม 7 จุด:
 1. **Loader (บรรทัด 14-34)** — รับ `?unit=` → load จาก `content/{course}/units/{unit}/*` แทน top-level

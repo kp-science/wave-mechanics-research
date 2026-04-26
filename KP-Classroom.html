@@ -3342,6 +3342,21 @@ async function openTeacher(){
 }
 
 function enterTeacherMode(){
+  // ถ้าครูเคยเลือกหน่วยไว้ใน dropdown · refresh แล้วยังอยู่หน่วยเดิม
+  // (URL ไม่มี ?unit= แต่ pref บอก unit ของวิชาเดียวกัน → redirect)
+  try {
+    const pref = JSON.parse(localStorage.getItem('teacher_unit_pref') || 'null');
+    if (pref && pref.course === window.KP_COURSE && !window.KP_UNIT){
+      const subj = (window.KP_SUBJECTS || []).find(s => s.id === pref.course);
+      const topic = subj && (subj.topics || []).find(t => t.id === pref.topicId);
+      if (topic && topic.unit){
+        const params = new URLSearchParams(location.search);
+        params.set('unit', topic.unit);
+        location.search = params.toString();
+        return;  // จะ reload เข้า init() ใหม่ด้วย ?unit=
+      }
+    }
+  } catch(_){}
   document.getElementById('topBar').style.display = 'flex';
   document.getElementById('userLabel').textContent = `👨‍🏫 โหมดครู · ${KP_CONFIG.teacherShort}`;
   // ซ่อนปุ่ม "ออกจากระบบ" ของนักเรียนใน topBar ขณะเป็นครู และเพิ่ม handler ของครูแทน
@@ -3459,10 +3474,10 @@ function applyCourseStatusBadge(status){
   b.style.color = m.fg;
 }
 
-// สลับหัวข้อจาก dropdown / ปุ่ม "จัดการ tabs" · reload URL ด้วย ?unit= ใหม่
-// รับ topicId (ของ KP_SUBJECTS) แล้ว map เป็น ?unit= (หรือลบออกถ้าหัวข้อไม่มี unit)
-// tabs ที่ผูกหน่วย (จัดการแผน/หน้าจอสอน/สื่อ/CER/ดูหน้านักเรียน) จะ follow
-function switchUnit(topicId){
+// สลับหัวข้อจาก dropdown · dynamic load content pack ของหน่วยใหม่ (ไม่ reload page)
+// → tabs ที่ผูกหน่วย (จัดการแผน/หน้าจอสอน/สื่อ/CER/ดูหน้านักเรียน) refresh ทันที
+// → URL update ผ่าน history.replaceState · ครู refresh ก็ยังอยู่หน่วยเดิม
+async function switchUnit(topicId){
   const subj = (window.KP_SUBJECTS || []).find(s => s.id === window.KP_COURSE);
   if (!subj) return;
   const topic = (subj.topics || []).find(t => t.id === topicId);
@@ -3470,13 +3485,63 @@ function switchUnit(topicId){
   const newUnit = topic.unit || null;
   const curUnit = window.KP_UNIT || null;
   if (newUnit === curUnit) return;
+
+  // 1. โหลด content pack ของหน่วยใหม่ (plans/tools/media/questions/worksheets)
+  const packBase = newUnit
+    ? 'content/' + window.KP_COURSE + '/units/' + newUnit
+    : 'content/' + window.KP_COURSE;
+  // ล้างของเดิมก่อน เพื่อให้รู้ทันถ้าโหลดใหม่ไม่สำเร็จ
+  const _resetWindow = () => { ['KP_PLANS','KP_TOOLS','KP_PLAN_MEDIA','KP_QUESTIONS','KP_WORKSHEETS','KP_FT_BANK'].forEach(k => { delete window[k]; }); };
+  _resetWindow();
+  try {
+    await Promise.all(['plans','tools','media','questions','worksheets'].map(name => new Promise((res, rej) => {
+      const tag = document.createElement('script');
+      tag.src = packBase + '/' + name + '.js?_=' + Date.now();
+      tag.onload = res;
+      tag.onerror = () => rej(new Error('load ' + name + ' failed'));
+      document.head.appendChild(tag);
+    })));
+  } catch(e){
+    alert('❌ สลับหน่วยไม่สำเร็จ: ' + e.message + '\nลอง refresh browser');
+    return;
+  }
+
+  // 2. Sync aliases เก่า (PLANS, PLAN_TOOLS, TOOL_DEFS, PLAN_MEDIA, FT_BANK)
+  // ─ ตอนต้น script ทำ const PLANS = KP_PLANS (capture reference) → ต้อง mutate in-place
+  //   เพื่อให้ render functions ที่ใช้ alias เห็นข้อมูลใหม่
+  const _replaceArr = (target, source) => { if (!target||!Array.isArray(target)) return; target.length = 0; if (Array.isArray(source)) source.forEach(x => target.push(x)); };
+  const _replaceObj = (target, source) => { if (!target||typeof target!=='object') return; Object.keys(target).forEach(k => delete target[k]); if (source && typeof source === 'object') Object.assign(target, source); };
+  _replaceArr(PLANS,        window.KP_PLANS);
+  _replaceObj(PLAN_TOOLS,   window.KP_PLAN_TOOLS);
+  _replaceObj(TOOL_DEFS,    window.KP_TOOL_DEFS);
+  _replaceObj(PLAN_MEDIA,   window.KP_PLAN_MEDIA);
+  _replaceObj(FT_BANK,      window.KP_FT_BANK);
+  // จากนั้น re-bind window references ให้ชี้กลับ alias (กัน race ครั้งหน้า)
+  window.KP_PLANS      = PLANS;
+  window.KP_PLAN_TOOLS = PLAN_TOOLS;
+  window.KP_TOOL_DEFS  = TOOL_DEFS;
+  window.KP_PLAN_MEDIA = PLAN_MEDIA;
+  window.KP_FT_BANK    = FT_BANK;
+
+  // 3. Update window/state
+  window.KP_UNIT = newUnit;
+  state.subject = subj.id;
+  state.topic   = topic.id;
+  state.unit    = newUnit;
+
+  // 4. Update URL (ไม่ reload)
   const params = new URLSearchParams(location.search);
   params.set('course', window.KP_COURSE);
   if (newUnit) params.set('unit', newUnit);
   else params.delete('unit');
-  // ล้าง LS_NAV เพื่อกัน redirect logic เด้งกลับหน่วยเก่า
-  try { localStorage.removeItem('wave_nav'); } catch(_){}
-  location.search = params.toString();
+  history.replaceState(null, '', location.pathname + '?' + params.toString());
+
+  // 5. Persist preference สำหรับ refresh ครั้งหน้า
+  try { localStorage.setItem('teacher_unit_pref', JSON.stringify({course: window.KP_COURSE, topicId: topic.id})); } catch(_){}
+
+  // 6. Re-render dashboard (refresh tabs ทั้งหมด)
+  renderTeacherShell();
+  switchTeacherTab(teacherCurrentTab || 'overview');
 }
 
 async function setCourseStatusUI(newStatus){
