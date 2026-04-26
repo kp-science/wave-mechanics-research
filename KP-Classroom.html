@@ -891,6 +891,30 @@ window.addEventListener('DOMContentLoaded', () => {
     if (cached) state.settings = JSON.parse(cached) || [];
   } catch(e){}
 
+  // ═════ Sync state จาก URL ═════
+  // จำเป็นสำหรับ DB.* routing (per-unit reads ใช้ getTopicDbUrl ที่อ่าน state.topic)
+  // ครูที่เปิดแท็บใหม่ที่ ?course=physics3&unit=shm โดยตรง = ยังไม่มี LS_NAV
+  // → state ว่าง → DB._get fallback API_URL = อ่านชีทคลื่น (บัก!)
+  // Fix: ถ้า URL มี ?unit=<X> → หาหัวข้อใน KP_SUBJECTS ที่ unit==X แล้วเซ็ต state.topic
+  // ถ้าไม่มี ?unit= → fallback หัวข้อที่ current:true ของวิชา
+  (function syncStateFromUrl(){
+    if (!window.KP_SUBJECTS) return;
+    const subj = window.KP_SUBJECTS.find(s => s.id === window.KP_COURSE);
+    if (!subj) return;
+    let topic = null;
+    if (window.KP_UNIT){
+      topic = (subj.topics || []).find(t => t.unit === window.KP_UNIT);
+    } else {
+      topic = (subj.topics || []).find(t => t.current === true)
+           || (subj.topics || []).find(t => !t.unit && t.status === 'open');
+    }
+    if (topic){
+      state.subject = subj.id;
+      state.topic   = topic.id;
+      state.unit    = topic.unit || null;
+    }
+  })();
+
   // ═════ Preview mode (?preview=1) — ครูดูตัวอย่าง ═════
   const isPreview = new URLSearchParams(location.search).get('preview') === '1';
   if (isPreview){
