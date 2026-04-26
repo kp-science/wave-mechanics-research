@@ -34,8 +34,11 @@
 
 ## 🔧 ไฟล์ที่ถูกแก้ (Engine)
 
-### `KP-Classroom.html` (7958 บรรทัด · แก้ 8 จุด)
-8. **`DB._get` per-unit routing (~บรรทัด 741-757)** — เพิ่ม `_UNIT_SCOPED_READS = {info,list,stats,planStats}` · reads กลุ่มนี้ route ไป `topic.dbUrl` ถ้า valid · กลุ่มอื่น (students/settings/courseStatus/feedback/verifyAdmin) อยู่ที่ `API_URL` เสมอ (shared roster) · ผล: Teacher Dashboard ใน `?unit=shm` อ่าน SHM Sheets เมื่อ deploy backend แล้ว · ตอนนี้ TODO placeholder = fallback API_URL (ไม่ error)
+### `KP-Classroom.html` (แก้ 11 จุด)
+8. **`DB._get` per-unit routing (~บรรทัด 741-757)** — เพิ่ม `_UNIT_SCOPED_READS = {info,list,stats,planStats}` · reads กลุ่มนี้ route ไป `topic.dbUrl` ถ้า valid · กลุ่มอื่น (students/settings/courseStatus/feedback/verifyAdmin) อยู่ที่ `API_URL` เสมอ (shared roster)
+9. **`syncStateFromUrl()` ใน init (~บรรทัด 894-915)** — ครูที่เปิดแท็บใหม่ที่ `?unit=shm` ตรงๆ (ไม่ผ่าน Hub) ไม่มี LS_NAV → state.topic ว่าง → DB fallback API_URL = อ่านชีทคลื่น (บัก!) · Fix: derive state.subject/topic/unit จาก URL params ก่อน routing
+10. **Unit Selector dropdown ใน `renderTeacherShell` (~บรรทัด 3340-3400)** — `<select id="unitSwitcher">` ใน courseToggleBar · option value=topic.id · render เฉพาะถ้ามี >1 หัวข้อ · onChange → `switchUnit(topicId)` reload URL ด้วย `?unit=`
+11. **`loadTeacherDashboard` multi-unit aggregate (~บรรทัด 3500+)** — Overview ไม่ผูก `?unit=` · loop ทุกหัวข้อ status='open' ของวิชา · ยิง backend แต่ละหัวข้อขนานกันด้วย `_fetchSheetInfo`/`_fetchSheetData` (raw fetch · ไม่ผ่าน DB._get เพราะ DB._get ผูก state.topic) · จัดกลุ่ม section header `[ไอคอน หัวข้อ] [ss_name · N เครื่องมือ] [⚙ จัดการ tabs]` · Sheets ในแต่ละกลุ่มยังคงรูปแบบ tools-grid เดิม
 
 แก้เดิม 7 จุด:
 1. **Loader (บรรทัด 14-34)** — รับ `?unit=` → load จาก `content/{course}/units/{unit}/*` แทน top-level

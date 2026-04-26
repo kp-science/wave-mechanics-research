@@ -3375,10 +3375,33 @@ function logoutTeacher(){
 
 function renderTeacherShell(){
   const el = document.getElementById('teacherContent');
+  // หาหัวข้อทั้งหมดของวิชาปัจจุบัน (เพื่อ render dropdown สลับหน่วย)
+  const subj = (window.KP_SUBJECTS || []).find(s => s.id === window.KP_COURSE);
+  const topics = (subj && subj.topics) || [];
+  // หัวข้อปัจจุบัน: ถ้า URL มี ?unit= → match topic.unit · ไม่งั้น → topic ที่ไม่มี unit (เช่น waves)
+  const curUnit = window.KP_UNIT || null;
+  const curTopic = curUnit
+    ? topics.find(t => t.unit === curUnit)
+    : topics.find(t => !t.unit);
+  const selId = curTopic ? curTopic.id : '';
+  // option value = topic.id (unique) · switchUnit จะ map เป็น ?unit= ภายหลัง
+  const optionsHtml = topics.map(t => {
+    const sel = t.id === selId ? ' selected' : '';
+    const dis = t.status !== 'open' ? ' disabled' : '';
+    const tag = t.status === 'open' ? '' : (t.status === 'coming-soon' ? ' (กำลังเตรียม)' : ' (ปิด)');
+    return `<option value="${t.id}"${sel}${dis}>${t.icon || ''} ${t.shortTitle || t.title} (${t.numPlans || 0} แผน)${tag}</option>`;
+  }).join('');
+  const showSelector = topics.length > 1;
   el.innerHTML = `
     <div id="courseToggleBar" style="margin-bottom:14px;padding:12px 16px;background:linear-gradient(135deg,#fff,#f8fafc);border:1.5px solid #e2e8f0;border-radius:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <span style="font-weight:700;color:#0f2c5c">📢 สถานะวิชานี้:</span>
       <span id="courseStatusBadge" style="padding:4px 12px;border-radius:100px;font-size:13px;font-weight:600;background:#e8f5e9;color:#2e7d32">⏳ กำลังตรวจ...</span>
+      ${showSelector ? `
+      <span style="display:flex;align-items:center;gap:6px;padding-left:8px;border-left:1px solid #e2e8f0">
+        <span style="font-weight:700;color:#0f2c5c;font-size:13px">หน่วย:</span>
+        <select id="unitSwitcher" onchange="switchUnit(this.value)" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:8px;font-family:inherit;font-size:13px;background:#fff;cursor:pointer">${optionsHtml}</select>
+        <span style="font-size:11px;color:#64748b">(ผูก tabs: จัดการแผน · หน้าจอสอน · สื่อ · ฯลฯ)</span>
+      </span>` : ''}
       <span style="flex:1"></span>
       <button id="btnCourseOpen" class="btn-sm" style="background:#43a047" onclick="setCourseStatusUI('open')">▶ เปิดเรียน</button>
       <button id="btnCourseLock" class="btn-sm" style="background:#fb8c00" onclick="setCourseStatusUI('coming-soon')">⏸ กำลังเตรียม</button>
@@ -3436,6 +3459,26 @@ function applyCourseStatusBadge(status){
   b.style.color = m.fg;
 }
 
+// สลับหัวข้อจาก dropdown / ปุ่ม "จัดการ tabs" · reload URL ด้วย ?unit= ใหม่
+// รับ topicId (ของ KP_SUBJECTS) แล้ว map เป็น ?unit= (หรือลบออกถ้าหัวข้อไม่มี unit)
+// tabs ที่ผูกหน่วย (จัดการแผน/หน้าจอสอน/สื่อ/CER/ดูหน้านักเรียน) จะ follow
+function switchUnit(topicId){
+  const subj = (window.KP_SUBJECTS || []).find(s => s.id === window.KP_COURSE);
+  if (!subj) return;
+  const topic = (subj.topics || []).find(t => t.id === topicId);
+  if (!topic) return;
+  const newUnit = topic.unit || null;
+  const curUnit = window.KP_UNIT || null;
+  if (newUnit === curUnit) return;
+  const params = new URLSearchParams(location.search);
+  params.set('course', window.KP_COURSE);
+  if (newUnit) params.set('unit', newUnit);
+  else params.delete('unit');
+  // ล้าง LS_NAV เพื่อกัน redirect logic เด้งกลับหน่วยเก่า
+  try { localStorage.removeItem('wave_nav'); } catch(_){}
+  location.search = params.toString();
+}
+
 async function setCourseStatusUI(newStatus){
   const labels = {'open':'เปิดเรียน', 'coming-soon':'กำลังเตรียม', 'closed':'ปิดเทอม'};
   if (!confirm(`เปลี่ยนสถานะวิชาเป็น "${labels[newStatus]}"?\nนักเรียนจะเห็นผลหลัง refresh landing`)) return;
@@ -3488,6 +3531,49 @@ function switchTeacherTab(name){
   if (name !== 'grading') _gradingUnbindKeys();
 }
 
+// ─── Multi-unit overview helpers ─────────────────────────────
+// ภาพรวม = ระดับวิชา (loop ทุกหัวข้อของ KP_COURSE) · ไม่ผูกกับ ?unit=
+// แต่ละหัวข้อใช้ endpoint ต่างกัน:
+//   - topic.dbUrl ที่ valid (เช่น SHM) → ยิงไปหัวข้อนั้น
+//   - dbUrl=null/invalid → fallback API_URL (เช่น คลื่นใช้ชีทหลัก)
+
+async function _fetchSheetInfo(url){
+  if (!url || !url.startsWith('https://script.google.com/')) return null;
+  try {
+    const r = await fetch(url + '?action=info&_=' + Date.now());
+    return await r.json();
+  } catch(e){ return null; }
+}
+async function _fetchSheetData(url, sheet, isFT){
+  if (!url || !url.startsWith('https://script.google.com/')) return null;
+  try {
+    const action = isFT ? 'stats' : 'list';
+    const r = await fetch(url + '?action=' + action + '&sheet=' + encodeURIComponent(sheet) + '&_=' + Date.now());
+    return await r.json();
+  } catch(e){ return null; }
+}
+
+// คืน array ของหัวข้อใน KP_COURSE ที่มี endpoint ใช้ได้
+// แต่ละ entry: {topic, endpoint, label}
+function _getCourseTopicsForOverview(){
+  const subj = (window.KP_SUBJECTS || []).find(s => s.id === window.KP_COURSE);
+  if (!subj) return [];
+  const out = [];
+  for (const t of (subj.topics || [])){
+    if (t.status !== 'open') continue;  // ข้าม coming-soon/closed
+    let endpoint = null;
+    if (t.dbUrl && typeof t.dbUrl === 'string' && t.dbUrl.startsWith('https://script.google.com/')){
+      endpoint = t.dbUrl;
+    } else if (!t.dbUrl) {
+      endpoint = API_URL;  // หัวข้อหลัก (waves) ใช้ API_URL
+    } else {
+      continue;  // dbUrl เป็น TODO_DEPLOY_* หรือ invalid → ข้าม
+    }
+    out.push({topic: t, endpoint, label: `${t.icon || '📘'} ${t.title}`});
+  }
+  return out;
+}
+
 async function loadTeacherDashboard(){
   const el = document.getElementById('tab-overview');
   if (!isApiConfigured()){
@@ -3495,55 +3581,76 @@ async function loadTeacherDashboard(){
     return;
   }
 
-  try {
-    // ดึงรายชื่อ sheets · กรองออก:
-    //  - Sheet1 (default ของ Google)
-    //  - ชื่อขึ้นต้น '_' (internal: _Students, _Settings, _Feedback)
-    //  - 'Default' (ถ้า client ส่งโดยไม่ระบุ sheet = junk/test)
-    const info = await DB.getInfo();
-    const sheets = ((info && info.sheets) || []).filter(n =>
+  const groups = _getCourseTopicsForOverview();
+  if (groups.length === 0){
+    el.innerHTML = `<div class="warn-config">⚠️ วิชานี้ยังไม่มีหัวข้อที่เปิดใช้งาน</div>`;
+    return;
+  }
+
+  // ส่วนหัว + container per group
+  let html = `<div class="hero" style="margin-bottom:16px">
+    <h2>📊 ภาพรวมงานวิจัย — ระดับวิชา</h2>
+    <div id="ovHeader">รวม ${groups.length} หัวข้อ · กำลังโหลด...</div>
+  </div>`;
+  for (const g of groups){
+    const tid = g.topic.id;
+    html += `
+      <div style="margin-bottom:24px">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:linear-gradient(135deg,#0f2c5c,#1565c0);color:#fff;border-radius:10px 10px 0 0">
+          <h3 style="margin:0;font-size:17px">${g.label}</h3>
+          <span id="ovGroupMeta-${tid}" style="font-size:12px;opacity:.85">⏳ โหลด...</span>
+          <span style="flex:1"></span>
+          <button class="btn-sm" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3)" onclick="switchUnit('${g.topic.id}')">⚙ จัดการ tabs ของหัวข้อนี้ →</button>
+        </div>
+        <div id="ovGroup-${tid}" class="tools-grid" style="border:1.5px solid #e2e8f0;border-top:0;border-radius:0 0 10px 10px;padding:14px;background:#fff">
+          <div class="info">⏳ กำลังโหลด...</div>
+        </div>
+      </div>`;
+  }
+  html += `<div class="info" style="margin-top:8px">
+    💡 ภาพรวมแยกตามหัวข้อ · แต่ละหัวข้อใช้ Google Sheet คนละไฟล์ (ไม่ปนกัน)
+    · ถ้าจะดู tabs อื่น (จัดการแผน/หน้าจอสอน/ฯลฯ) ให้ใช้ปุ่ม "จัดการ tabs ของหัวข้อนี้" หรือ dropdown ด้านบน
+  </div>`;
+  el.innerHTML = html;
+
+  // โหลดแต่ละกลุ่มขนานกัน
+  let totalSheets = 0;
+  await Promise.all(groups.map(async g => {
+    const tid = g.topic.id;
+    const meta = document.getElementById('ovGroupMeta-' + tid);
+    const grid = document.getElementById('ovGroup-' + tid);
+    const info = await _fetchSheetInfo(g.endpoint);
+    if (!info || info.status !== 'ok'){
+      grid.innerHTML = `<div class="warn-config">❌ ดึงข้อมูลไม่สำเร็จ · ตรวจ deployment + access:Anyone</div>`;
+      meta.textContent = '× error';
+      return;
+    }
+    const sheets = (info.sheets || []).filter(n =>
       n !== 'Sheet1' && !n.startsWith('_') && n !== 'Default'
     );
-
-    let html = `<div class="hero" style="margin-bottom:16px">
-      <h2>📊 ภาพรวมงานวิจัย</h2>
-      <div>ข้อมูลจาก ${sheets.length} เครื่องมือ · อัปเดต: ${new Date().toLocaleString('th-TH')}</div>
-    </div>`;
-
-    html += `<div class="tools-grid" id="sheetCards"></div>`;
-    el.innerHTML = html;
-
-    const grid = document.getElementById('sheetCards');
+    meta.textContent = `${info.ss_name} · ${sheets.length} เครื่องมือ`;
+    totalSheets += sheets.length;
     if (sheets.length === 0){
       grid.innerHTML = '<div class="info">ยังไม่มีข้อมูลเข้ามา · รอให้นักเรียนส่งคำตอบก่อน</div>';
       return;
     }
-
-    // ดึงสถิติแต่ละ sheet
+    grid.innerHTML = '';
     for (const s of sheets){
       const isFT = s.startsWith('F_') || s.startsWith('FT');
-      try {
-        const r = await (isFT ? DB.statsSheet(s) : DB.listSheet(s));
-        const card = document.createElement('div');
-        card.className = 'tool-card tc-ft';
-        card.style.cursor = 'default';
-        card.innerHTML = renderSheetSummary(s, r, isFT);
-        grid.appendChild(card);
-      } catch(e){
-        const card = document.createElement('div');
-        card.className = 'tool-card';
-        card.innerHTML = `<div class="bar" style="background:#999"></div><h3>${s}</h3><div class="desc">ดึงข้อมูลไม่ได้: ${e.message}</div>`;
-        grid.appendChild(card);
+      const data = await _fetchSheetData(g.endpoint, s, isFT);
+      const card = document.createElement('div');
+      card.className = 'tool-card tc-ft';
+      card.style.cursor = 'default';
+      if (!data || data.status !== 'ok'){
+        card.innerHTML = `<div class="bar" style="background:#999"></div><h3>${s}</h3><div class="desc">ดึงข้อมูลไม่ได้</div>`;
+      } else {
+        card.innerHTML = renderSheetSummary(s, data, isFT);
       }
+      grid.appendChild(card);
     }
-
-    html += `<div class="info" style="margin-top:20px">
-      💡 คลิกชื่อ Sheet เพื่อเปิดใน Google Sheets → วิเคราะห์เชิงลึกด้วย Pivot Table / Chart
-    </div>`;
-
-  } catch(err){
-    el.innerHTML = `<div class="warn-config">❌ ดึงข้อมูลไม่สำเร็จ: ${err.message}<br>ตรวจสอบว่า API_URL ถูกต้อง และตั้ง "Who has access: Anyone" แล้ว</div>`;
-  }
+  }));
+  const hdr = document.getElementById('ovHeader');
+  if (hdr) hdr.textContent = `รวม ${groups.length} หัวข้อ · ${totalSheets} เครื่องมือ · อัปเดต: ${new Date().toLocaleString('th-TH')}`;
 }
 
 function renderSheetSummary(name, data, isFT){
