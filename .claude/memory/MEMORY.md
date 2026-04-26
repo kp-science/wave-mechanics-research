@@ -12,3 +12,4 @@
 - **Skill v2** ⭐: `skills/game-lesson-builder/SKILL.md` รองรับ 2 รูปแบบ (5-องก์ EP03 / 4-องก์ EP04) + `references/ep04-structure.md` blueprint สำหรับ EP05+
 - [Teacher Pace Remote](reference_pace_remote.md) — backend paceGet/paceSet + pace-client.js + book.js banner · opt-in ?room=XXX · ต้อง redeploy Apps Script
 - [Puzzle interaction patterns](feedback_puzzle_interaction_patterns.md) — 7 stabilized UX patterns (slot+hint, shuffle, match-by-id, journal A2, image state swap) from EP02 session 3
+- [SHM imported as physics3 sub-unit](project_shm_import.md) — `?course=physics3&unit=shm` · Hybrid tools (engine-native + iframe def.file + external sim) · Sheet `SHM_*_P{N}` แยกจาก waves · log: lessons/physics3/SHM/SESSION_LOG_2026-04-27_SHM_import.md

@@ -20,9 +20,9 @@ window.KP_PLAN_TOOLS = {
   1: ['tl-pre','f1-pre','simlab1','poe1','calc1','spot1','cer1','exercise1','tl-post','f1-post','mj1','upload'],
   2: ['tl-pre','f2-pre','simlab2','poe2','calc2','spot2','cer2','exercise2','tl-post','f2-post','mj2','upload'],
   3: ['tl-pre','f3-pre','engage3','simlab3','poe3','concept3','exercise3','case3','exit3','exercise3-ext','tl-post','mj3','upload'],
-  4: ['tl-pre','f4-pre','engage4','simlab4','jigsaw4','concept4','exercise4','case4','exit4','exercise4-ext','tl-post','mj4','upload'],
-  5: ['tl-pre','f5-pre','engage5','simlab5','tps5','concept5','exercise5','exit5','f5-post','exercise5-ext','tl-post','mj5','upload'],
-  6: ['tl-pre','f6-pre','engage6','simlab6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','upload']
+  4: ['tl-pre','f4-pre','engage4','simlab4','poe4','jigsaw4','concept4','exercise4','case4','exit4','exercise4-ext','tl-post','mj4','upload'],
+  5: ['tl-pre','f5-pre','engage5','simlab5','poe5','tps5','concept5','exercise5','exit5','f5-post','exercise5-ext','tl-post','mj5','upload'],
+  6: ['tl-pre','f6-pre','engage6','simlab6','poe6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','upload']
 };
 
 // ─────────────────────────────────────────────────────────────────
@@ -52,6 +52,10 @@ window.KP_TOOL_DEFS = {
   'poe1':    { ico:'🔮', name:'POE-01 · ใบบันทึก',         desc:'Predict-Observe-Explain (แผน 1)',         sheet:'SHM_POE_P1', color:'tc-poe', file:'สื่อ02_POE-01_ใบบันทึกPOE.html' },
   'poe2':    { ico:'🔮', name:'POE-02 · ใบบันทึก 3 ฐาน',  desc:'Predict-Observe-Explain 3 ฐาน (แผน 2)',  sheet:'SHM_POE_P2', color:'tc-poe', file:'สื่อ02_POE-02_ใบบันทึก3ฐาน.html' },
   'poe3':    { ico:'🔮', name:'POE · Spring Builder',     desc:'Predict-Observe-Explain ระบบมวล-สปริง',  sheet:'SHM_POE_P3', color:'tc-poe', file:'สื่อ03_POE_SpringBuilder.html' },
+  // POE 4-6 = ใช้ไฟล์ใบงานหลักของแผน (มี P+O+E ครบในไฟล์เดียวกัน · เพิ่งใส่ Predict + Explain ห่อ Observe เดิม)
+  'poe4':    { ico:'🔮', name:'POE · เฟส x, v, a',         desc:'Predict-Observe-Explain (ใช้ Jigsaw Phase Explorer เป็น O)', sheet:'SHM_POE_P4', color:'tc-poe', file:'สื่อ03_Jigsaw_PhaseExplorer.html' },
+  'poe5':    { ico:'🔮', name:'POE · พลังงาน SHM',         desc:'Predict-Observe-Explain (ใช้ TPS + SIM05 เป็น O)',           sheet:'SHM_POE_P5', color:'tc-poe', file:'สื่อ03_TPS_SIM05_ใบบันทึก.html' },
+  'poe6':    { ico:'🔮', name:'POE · Damping & Resonance', desc:'Predict-Observe-Explain (ใช้ SIM06 Worksheet เป็น O)',       sheet:'SHM_POE_P6', color:'tc-poe', file:'03_SIM06_Worksheet.html' },
   'tps5':    { ico:'👥', name:'TPS + SIM05 · ใบบันทึก',   desc:'Think-Pair-Share + Simulation พลังงาน',   sheet:'SHM_TPS_P5', color:'tc-poe', file:'สื่อ03_TPS_SIM05_ใบบันทึก.html' },
   'sim6':    { ico:'🧪', name:'SIM06 · Damping & Resonance', desc:'ใบบันทึก Simulation Damping/Resonance', sheet:'SHM_SIM_P6', color:'tc-poe', file:'03_SIM06_Worksheet.html' },
 

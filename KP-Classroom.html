@@ -738,15 +738,29 @@ function getTopicDbUrl(){
 // ปัจจุบัน: Google Apps Script + Sheets (via fetch)
 // อนาคต: swap ไป Firebase/Supabase = เขียนใหม่แค่ object นี้
 // ═══════════════════════════════════════════════════════════
+// Actions ที่อ่าน "ดาต้าของหน่วย" (ชีทผลงานนักเรียน) → route ไป topic.dbUrl ถ้ามี
+// ส่วน roster/settings/feedback/courseStatus/verifyAdmin = shared ใช้ API_URL เสมอ
+const _UNIT_SCOPED_READS = new Set(['info', 'list', 'stats', 'planStats']);
+
 const DB = {
   // ─── GET (CORS-safe · read response) ───
   async _get(action, params = {}, timeoutMs = 8000){
-    if (!isApiConfigured()) return null;
+    // เลือก endpoint: per-unit reads → topic.dbUrl (ถ้า valid) · ไม่งั้น API_URL
+    let url = API_URL;
+    if (_UNIT_SCOPED_READS.has(action)){
+      const tdb = getTopicDbUrl();
+      if (typeof tdb === 'string' && tdb.startsWith('https://script.google.com/')){
+        url = tdb;
+      }
+    }
+    if (typeof url !== 'string' || !url.startsWith('https://script.google.com/macros/s/') || !url.endsWith('/exec')){
+      return null;
+    }
     const qs = new URLSearchParams({action, ...params, _: Date.now()});
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), timeoutMs);
     try {
-      const r = await fetch(`${API_URL}?${qs}`, {signal: ctrl.signal});
+      const r = await fetch(`${url}?${qs}`, {signal: ctrl.signal});
       return await r.json();
     } catch(e){
       console.warn('DB._get('+action+') failed:', e.message);

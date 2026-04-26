@@ -64,7 +64,7 @@ canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c4b5fd;border-
 .foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
 @media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
 </style></head>
-<body>
+<body data-ws-id="shm-plan6-poe">
 <div class="page">
   <div class="head">
     <div>
@@ -86,6 +86,54 @@ canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c4b5fd;border-
     <label>เลขที่ <input type="number" id="student_no" required></label>
     <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
     <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!--  P · PREDICT — ทำนายก่อนเปิด SIM06 (3 นาที)                    -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div style="background:#ede9fe;border-left:6px solid #7c3aed;border-radius:12px;padding:14px 18px;margin:14px 0">
+    <h2 style="font-size:18px;color:#4c1d95;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      🔮 P · Predict (ทำนายก่อนทำ SIM06)
+      <span style="background:#fff;border:1.5px solid #4c1d95;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;color:#4c1d95">E1 Engage · 3 นาที</span>
+    </h2>
+    <div style="background:#fff;border:1.5px dashed #c4b5fd;border-radius:8px;padding:10px 14px;margin-bottom:10px;font-size:13.5px;color:#4c1d95">
+      <b>🎯 คำถามหลัก:</b> ระบบ SHM ที่มี <b>damping</b> (b > 0) และมีแรงขับภายนอก f_drive — แอมพลิจูดและความถี่ธรรมชาติเปลี่ยนอย่างไร? จะเกิด <b>resonance</b> เมื่อใด?
+    </div>
+
+    <div class="sub" style="border-left-color:#7c3aed">
+      <b>P1.</b> เมื่อเพิ่มสัมประสิทธิ์ damping (b) — ความถี่ธรรมชาติ (f_natural = √(k/m)/2π) จะเปลี่ยนหรือไม่?
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
+      <label class="opt"><input type="radio" name="p_pred_freq" value="A"> เพิ่มขึ้น</label>
+      <label class="opt"><input type="radio" name="p_pred_freq" value="B"> ลดลง</label>
+      <label class="opt"><input type="radio" name="p_pred_freq" value="C"> ไม่เปลี่ยน (ขึ้นกับ k, m เท่านั้น)</label>
+      <label class="opt"><input type="radio" name="p_pred_freq" value="D"> เพิ่มเป็น 2 เท่า</label>
+    </div>
+
+    <div class="sub" style="border-left-color:#7c3aed;margin-top:12px">
+      <b>P2.</b> เมื่อเพิ่ม b มากขึ้น · แอมพลิจูดของการสั่นตามเวลาเป็นอย่างไร?
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
+      <label class="opt"><input type="radio" name="p_pred_amp" value="A"> คงที่ ไม่เปลี่ยน</label>
+      <label class="opt"><input type="radio" name="p_pred_amp" value="B"> ลดลงแบบเส้นตรง</label>
+      <label class="opt"><input type="radio" name="p_pred_amp" value="C"> ลดลงแบบ exponential decay (envelope: A₀·exp(−bt/2m))</label>
+      <label class="opt"><input type="radio" name="p_pred_amp" value="D"> เพิ่มขึ้น</label>
+    </div>
+
+    <div class="sub" style="border-left-color:#7c3aed;margin-top:12px">
+      <b>P3.</b> Resonance เกิดขึ้นเมื่อใด?
+    </div>
+    <div style="display:flex;flex-direction:column;gap:5px;margin-top:6px">
+      <label class="opt"><input type="radio" name="p_pred_res" value="A"> เมื่อแรงขับ F₀ มีค่ามากที่สุด</label>
+      <label class="opt"><input type="radio" name="p_pred_res" value="B"> เมื่อ f_drive ≈ f_natural (ความถี่ตรงกัน)</label>
+      <label class="opt"><input type="radio" name="p_pred_res" value="C"> เมื่อ damping เป็น 0</label>
+      <label class="opt"><input type="radio" name="p_pred_res" value="D"> เมื่อมวล m มากที่สุด</label>
+    </div>
+
+    <div class="sub" style="border-left-color:#7c3aed;margin-top:12px">
+      <b>P4.</b> เหตุผลที่ทำนายเช่นนั้น (สั้น ๆ):
+    </div>
+    <textarea id="p_pred_reason" class="ans-ta" rows="2" placeholder="ฉันคิดว่า... เพราะ..."></textarea>
   </div>
 
   <!-- ฐาน A: Damping -->
@@ -277,8 +325,48 @@ canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c4b5fd;border-
     <textarea class="ans-ta" id="final-concl" rows="3" placeholder="กฎ 1 (จาก ฐาน A): ...\nกฎ 2 (จาก ฐาน B): ..."></textarea>
   </div>
 
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!--  E · EXPLAIN — อธิบายเชื่อม P↔O หลังทำกิจกรรม SIM06 (3 ฐาน)    -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div style="background:#dcfce7;border-left:6px solid #15803d;border-radius:12px;padding:14px 18px;margin:14px 0">
+    <h2 style="font-size:18px;color:#14532d;margin-bottom:10px;display:flex;align-items:center;gap:8px">
+      ✍️ E · Explain (อธิบายหลังทำ SIM06 ฐาน A/B/C)
+      <span style="background:#fff;border:1.5px solid #14532d;border-radius:20px;padding:2px 10px;font-size:12px;font-weight:700;color:#14532d">E3 Explain · 5 นาที</span>
+    </h2>
+
+    <div class="sub" style="border-left-color:#15803d">
+      <b>E1.</b> เปรียบเทียบ P (ทำนาย) กับ O (ผลจาก SIM06) — คำทำนายตรงกับผลจริงไหม?
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+      <label class="opt"><input type="radio" name="e_cmp" value="match"> ตรงกันทั้งหมด</label>
+      <label class="opt"><input type="radio" name="e_cmp" value="partial"> ตรงบางส่วน</label>
+      <label class="opt"><input type="radio" name="e_cmp" value="diff"> ไม่ตรงเลย</label>
+    </div>
+
+    <div class="sub" style="border-left-color:#15803d;margin-top:10px">
+      <b>E2.</b> อธิบายว่าข้อใดตรง · ข้อใดต่าง · เพราะอะไร?
+    </div>
+    <textarea id="e_cmp_text" class="ans-ta" rows="2" placeholder="P1/P2/P3 ของฉัน... ผลจาก SIM06 พบว่า... สิ่งที่ฉันเข้าใจผิดคือ..."></textarea>
+
+    <div class="sub" style="border-left-color:#15803d;margin-top:10px">
+      <b>E3.</b> ✅ สรุปจากหลักฐาน (SIM06 ทั้ง 3 ฐาน) — ติ๊กข้อที่ <u>ถูกต้อง</u>:
+    </div>
+    <div class="checkbox-bank" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:8px;padding:8px 12px">
+      <label class="opt" style="background:transparent;border:none"><input type="checkbox" name="e_chk" value="c1"> Damping ลด <b>แอมพลิจูด</b> แต่ไม่เปลี่ยน <b>f_natural</b> (M6.1 — ฐาน A)</label>
+      <label class="opt" style="background:transparent;border:none"><input type="checkbox" name="e_chk" value="c2"> Envelope ของแอมพลิจูดเป็น A₀·exp(−bt/2m) — ลดลงแบบ exponential</label>
+      <label class="opt" style="background:transparent;border:none"><input type="checkbox" name="e_chk" value="c3"> Resonance เกิดเมื่อ f_drive ≈ f_natural — ไม่ใช่เพราะแรงมาก (M6.3 — ฐาน B)</label>
+      <label class="opt" style="background:transparent;border:none"><input type="checkbox" name="e_chk" value="c4"> ที่จุด resonance · A_steady-state จะสูงสุด (Q-factor สูงเมื่อ damping ต่ำ)</label>
+      <label class="opt" style="background:transparent;border:none"><input type="checkbox" name="e_chk" value="c5"> Tacoma Bridge / Wine Glass / Taipei 101 — ทุก case คือ resonance ในชีวิตจริง (ฐาน C)</label>
+    </div>
+
+    <div class="sub" style="border-left-color:#15803d;margin-top:10px">
+      <b>E4.</b> สรุปเงื่อนไข Resonance + วิธีลดผลกระทบ (ใช้ข้อมูลจาก Tacoma/Taipei 101) ด้วยคำของตัวเอง:
+    </div>
+    <textarea id="e_summary" class="ans-ta" rows="3" placeholder="Resonance เกิดเมื่อ... ผลกระทบคือ... วิธีป้องกัน เช่น tuned mass damper ใน Taipei 101 ทำให้..."></textarea>
+  </div>
+
   <div class="submit-bar">
-    <h3>📤 ส่งใบบันทึก SIM06 Worksheet</h3>
+    <h3>📤 ส่งใบบันทึก POE + SIM06 Worksheet</h3>
     <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
     <div class="status" id="submitStatus"></div>
   </div>
