@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P06 · REVEAL 400 ly</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .timeline { display:flex; justify-content:space-between; align-items:center; padding:20px; background:rgba(0,0,0,0.3); border-radius:10px; margin:14px 0; position:relative; }
+  .timeline::before { content:''; position:absolute; top:50%; left:10%; right:10%; height:2px; background:linear-gradient(90deg, #ffcb6b, #64d8ff); }
+  .tl-node { background:#0a0418; padding:8px 14px; border-radius:20px; font-family:Orbitron,sans-serif; font-size:12px; z-index:1; position:relative; border:1px solid #333; }
+  .tl-node.past { border-color:#ffcb6b; color:#ffcb6b; }
+  .tl-node.now { border-color:#64d8ff; color:#64d8ff; background:rgba(100,216,255,0.1); box-shadow:0 0 15px #64d8ff; }
+  .big-num { font-family:Orbitron,sans-serif; font-size:42px; color:#ffcb6b; text-align:center; letter-spacing:0.1em; padding:14px; }
+</style>
+</head>
+<body data-page="p06" data-type="story">
+<div class="page">
+  <div class="lbl">🎞️ REVEAL · เสียงจากอดีต</div>
+  <h1>1,300 ปีแสง...</h1>
+
+  <div class="card">
+    <div class="narrative">LEMAÎTRE ประมวลผล: <span class="chain-chip">p_sos = 0.0025"</span> · <span class="chain-chip">d = <span id="dv">400</span> pc</span></div>
+    <div class="big-num">≈ 1,300 ปีแสง</div>
+    <div class="narrative" style="text-align:center;color:#ffd88a;">แปลว่าเสียง SOS <b>เดินทางมา 1,300 ปี</b></div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-node past">ปี 967</div>
+    <div class="tl-node past">ปี 1500</div>
+    <div class="tl-node now">ปี 2267 · NOW</div>
+  </div>
+
+  <div class="card">
+    <span class="leader-voice">LEMAÎTRE: "ใครก็ตามที่ส่ง · ส่งเมื่อ <b>1,300 ปีก่อน</b> · มนุษย์ไม่ไปอวกาศไกลขนาดนั้นในยุคนั้น"</span>
+    <div class="narrative">อารยา (เสียงเบา): <i>"แล้วใคร...ส่งชื่อเรา?"</i></div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.3;">(ไม่ต้องส่ง)</button>
+    <button class="next-btn" id="nextBtn">▶ ไปเจอ Dr.Hubble</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+document.getElementById('dv').textContent = Chain.get('d_sos_pc') || 400;
+setTimeout(() => {
+  const nb = document.getElementById('nextBtn');
+  Gate.soloMode(nb, 'p07-council.html');
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined') Transition.wireNext(nb, 'p06-to-p07', 'p07-council.html');
+  }, 100);
+  if (window.PaceClient) Gate.wireButton('p06', nb, 'p07-council.html');
+}, 200);
+</script>
+</body></html>

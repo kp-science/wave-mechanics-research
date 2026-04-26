@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P12 · Father's Journal</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* === Journal layout · old-paper feel === */
+  body { background:#04050d; }
+
+  .case-header { padding:12px 16px; background:linear-gradient(135deg, rgba(255,203,107,0.12), rgba(120,80,40,0.06)); border:1px solid #ffcb6b; border-radius:10px; margin:8px 0 14px; }
+  .case-header .case-tag { font-family:Orbitron,sans-serif; font-size:10px; letter-spacing:0.2em; color:#ffcb6b; }
+  .case-header .case-title { font-family:Orbitron,sans-serif; font-size:18px; color:#ffd88a; margin:4px 0; }
+  .case-header .case-sub { font-size:13px; color:#c8cde0; line-height:1.6; }
+
+  /* Lock UI · top */
+  .lock-strip { display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:10px; margin-bottom:14px; }
+  .lock-strip .lock-icon { font-size:28px; }
+  .lock-strip .lock-meta { flex:1; padding:0 12px; }
+  .lock-strip .lock-meta .lbl { font-family:Orbitron,sans-serif; font-size:10px; color:#9aa3c0; letter-spacing:0.15em; }
+  .lock-strip .lock-meta .code { font-family:monospace; font-size:18px; color:#ff5c7a; letter-spacing:0.2em; }
+  .lock-strip .lock-meta .code.unlocked { color:#7effb2; }
+  .lock-strip .timer { font-family:Orbitron,monospace; font-size:18px; color:#ffcb6b; }
+
+  /* Journal · paper-like */
+  .journal { position:relative; padding:24px 28px; background:linear-gradient(135deg, #2a2014 0%, #1f1810 100%);
+    border:1px solid #5a4530; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.6), inset 0 0 60px rgba(255,200,140,0.04);
+    color:#d8c8a8; line-height:1.8; min-height:320px; font-family:'Sarabun',serif; font-size:15px;
+    background-image:repeating-linear-gradient(0deg, transparent 0px, transparent 28px, rgba(180,150,100,0.08) 28px, rgba(180,150,100,0.08) 29px); }
+  .journal::before { content:''; position:absolute; left:50px; top:0; bottom:0; width:1px; background:rgba(200,100,100,0.2); }
+  .page-num { position:absolute; top:12px; right:18px; font-family:Orbitron,sans-serif; font-size:10px; color:#a09070; letter-spacing:0.15em; }
+  .father-handwritten { color:#ffd88a; font-style:italic; font-weight:500; }
+  .father-handwritten b { color:#ffe8b5; font-weight:700; }
+  .data-stamp { display:inline-block; padding:2px 10px; background:rgba(180,80,80,0.2); border:1px dashed #c45; color:#ffaaa0; border-radius:4px; font-family:monospace; font-size:13px; margin:0 2px; }
+
+  /* Page navigation */
+  .journal-nav { display:flex; gap:8px; margin:14px 0; }
+  .journal-nav button { flex:1; padding:10px; background:rgba(120,90,50,0.2); border:1px solid #8a7050; color:#d8c8a8; border-radius:6px; font-family:Orbitron,sans-serif; cursor:pointer; font-size:12px; letter-spacing:0.1em; }
+  .journal-nav button:hover:not(:disabled) { background:rgba(180,140,90,0.3); }
+  .journal-nav button:disabled { opacity:0.3; cursor:not-allowed; }
+  .page-dots { display:flex; align-items:center; justify-content:center; gap:8px; }
+  .page-dot { width:10px; height:10px; border-radius:50%; background:rgba(200,150,100,0.2); border:1px solid #8a7050; cursor:pointer; }
+  .page-dot.active { background:#ffcb6b; border-color:#ffcb6b; }
+  .page-dot.read { background:rgba(126,255,178,0.4); border-color:#7effb2; }
+
+  /* Active reading mini-task per page */
+  .mini-task { padding:12px 14px; margin-top:14px; background:rgba(212,184,255,0.06); border:1px dashed #d4b8ff; border-radius:8px; }
+  .mini-task .q { font-family:'Sarabun',sans-serif; font-size:14px; color:#d4b8ff; font-weight:700; margin-bottom:8px; }
+  .mini-task .opts { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:6px; }
+  .mini-task button { padding:8px 12px; background:rgba(212,184,255,0.06); border:1px solid rgba(212,184,255,0.3); color:#e8ecf8; border-radius:6px; cursor:pointer; font-family:inherit; font-size:13px; }
+  .mini-task button.correct { border-color:#7effb2; background:rgba(126,255,178,0.15); color:#7effb2; }
+  .mini-task button.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.1); color:#ff5c7a; }
+  .mini-task button:disabled { cursor:not-allowed; }
+  .mini-task .feedback { margin-top:8px; padding:6px 10px; font-size:12px; border-radius:6px; }
+  .mini-task .feedback.ok { color:#7effb2; background:rgba(126,255,178,0.06); }
+  .mini-task .feedback.bad { color:#ff8fa5; background:rgba(255,92,122,0.06); }
+
+  /* Evidence panel (right side / bottom on mobile) */
+  .evidence-card { padding:12px 14px; background:rgba(0,0,0,0.5); border:1px solid #2a3050; border-radius:10px; margin:14px 0; }
+  .evidence-card .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .evidence-card .title { font-family:Orbitron,sans-serif; font-size:11px; color:#7effb2; letter-spacing:0.15em; }
+  .evidence-card .count { font-size:11px; color:#9aa3c0; font-family:monospace; }
+  .evidence-list { display:flex; flex-wrap:wrap; gap:6px; min-height:30px; }
+  .evidence-chip { padding:4px 10px; background:rgba(126,255,178,0.1); border:1px solid #7effb2; color:#7effb2; border-radius:12px; font-family:monospace; font-size:12px; animation:chipIn .3s; }
+  @keyframes chipIn { from { transform:translateY(-10px); opacity:0; } }
+  .evidence-empty { color:#6a7394; font-size:12px; font-style:italic; padding:4px; }
+
+  /* Hint button */
+  .hint-bar { display:flex; gap:8px; align-items:center; padding:8px 12px; background:rgba(212,184,255,0.06); border:1px dashed #d4b8ff; border-radius:8px; margin:12px 0; font-size:12px; color:#d4b8ff; }
+  .hint-bar .btn-hint { padding:6px 12px; background:rgba(212,184,255,0.15); border:1px solid #d4b8ff; color:#d4b8ff; border-radius:6px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .hint-bar .btn-hint:disabled { opacity:0.4; cursor:not-allowed; }
+  .hint-cost { font-family:monospace; color:#ffcb6b; }
+  .hints-shown { padding:8px 12px; background:rgba(0,0,0,0.4); border-left:3px solid #d4b8ff; border-radius:0 8px 8px 0; margin:8px 0; font-size:13px; color:#e8ecf8; }
+  .hints-shown div { padding:4px 0; }
+  .hints-shown div::before { content:'💡 '; }
+
+  /* Suspect lineup · final */
+  .lineup { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin:14px 0; }
+  .suspect { padding:14px; background:rgba(0,0,0,0.4); border:2px solid #2a3050; border-radius:10px; cursor:pointer; transition:all .2s; }
+  .suspect:hover { border-color:#ffcb6b; transform:translateY(-3px); box-shadow:0 6px 20px rgba(255,203,107,0.2); }
+  .suspect .star-name { font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; color:#e8ecf8; margin-bottom:4px; }
+  .suspect .star-data { font-family:monospace; font-size:11px; color:#9aa3c0; line-height:1.6; }
+  .suspect.correct { border-color:#7effb2; background:rgba(126,255,178,0.12); }
+  .suspect.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.08); opacity:0.5; }
+  .suspect.locked { pointer-events:none; }
+
+  /* Final unlock celebration */
+  .unlock-banner { padding:24px; background:radial-gradient(ellipse, rgba(126,255,178,0.15), #0a0420); border:3px solid #7effb2; border-radius:14px; text-align:center; margin:14px 0; }
+  .unlock-banner .icon { font-size:56px; filter:drop-shadow(0 0 24px rgba(126,255,178,0.5)); margin-bottom:8px; }
+  .unlock-banner h2 { font-family:Orbitron,sans-serif; color:#7effb2; font-size:22px; letter-spacing:0.15em; margin:6px 0; }
+  .unlock-banner .father-msg { font-style:italic; color:#ffd88a; padding:14px; background:rgba(0,0,0,0.4); border-radius:8px; margin:12px 0; line-height:1.7; }
+
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px; background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s ease-out; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px) scale(0.8); opacity:0; } to { transform:translateX(-50%) translateY(0) scale(1); opacity:1; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+</style>
+</head>
+<body data-page="p12" data-type="puzzle">
+<div class="page">
+  <div class="case-header">
+    <div class="case-tag">📓 INVESTIGATION · CASE EP03-12</div>
+    <div class="case-title">กล่องพ่อ · บันทึกของผู้สำรวจ</div>
+    <div class="case-sub">
+      🪙 K1+K4 · ทักษะ: <b>read · synthesize · eliminate</b><br>
+      🎯 อ่านบันทึกพ่อ 5 หน้า · เก็บหลักฐาน · เลือกดาวที่ตรงกับ <b>"ดาวหรี่ตา · แต่สว่างจริง"</b>
+    </div>
+  </div>
+
+  <div class="lock-strip">
+    <div class="lock-icon" id="lockIcon">🔒</div>
+    <div class="lock-meta">
+      <div class="lbl">CIPHER · กล่องล็อกด้วยรหัส:</div>
+      <div class="code" id="lockCode">_ _ _ _ _</div>
+    </div>
+    <div class="timer" id="timer">⏱ 06:00</div>
+  </div>
+
+  <!-- Journal -->
+  <div class="journal" id="journal">
+    <div class="page-num" id="pageNum">หน้า 1 / 5</div>
+    <div id="journalContent"></div>
+    <div id="miniTask"></div>
+  </div>
+
+  <div class="page-dots" id="pageDots" style="margin:14px 0;"></div>
+
+  <div class="journal-nav">
+    <button id="prevBtn" onclick="flipPage(-1)">← หน้าก่อน</button>
+    <button id="nextBtn" onclick="flipPage(1)">หน้าต่อไป →</button>
+  </div>
+
+  <!-- Evidence sheet -->
+  <div class="evidence-card">
+    <div class="header">
+      <span class="title">🧾 หลักฐาน · EVIDENCE</span>
+      <span class="count" id="evidenceCount">0 / 5</span>
+    </div>
+    <div class="evidence-list" id="evidenceList">
+      <div class="evidence-empty">— ยังไม่มีหลักฐาน · อ่านสมุดและทำ mini-task เพื่อเก็บ —</div>
+    </div>
+  </div>
+
+  <!-- Hint -->
+  <div class="hint-bar">
+    <span>💡 ใบ้: <b id="hintCount">3</b> ครั้ง · cost <span class="hint-cost">10 ✦/ครั้ง</span></span>
+    <button class="btn-hint" id="btnHint" onclick="useHint()">ขอใบ้</button>
+  </div>
+  <div id="hintsShown" class="hints-shown" style="display:none;"></div>
+
+  <!-- Suspect lineup · revealed after all pages read -->
+  <div id="lineupSection" style="display:none;">
+    <h2 style="font-family:Orbitron,sans-serif;color:#ffcb6b;font-size:18px;letter-spacing:0.1em;margin:14px 0 8px;">🔍 ผู้ต้องสงสัย 5 ดาว</h2>
+    <div style="font-size:13px;color:#9aa3c0;margin-bottom:10px;">
+      จากหลักฐานที่เก็บ · เลือก<b>1 ดาว</b>ที่ตรงกับเงื่อนงำของพ่อ
+    </div>
+    <div class="lineup" id="lineup"></div>
+  </div>
+
+  <!-- Unlock banner -->
+  <div class="unlock-banner" id="unlockBanner" style="display:none;">
+    <div class="icon">🔓</div>
+    <h2 id="unlockTitle">CASE SOLVED</h2>
+    <div id="unlockBody"></div>
+  </div>
+
+  <div class="btn-pair" id="submitBar" style="display:none;">
+    <button class="submit-btn">💾 ส่งรายงาน</button>
+    <button class="next-btn" id="nextBtn2" disabled>🔒 รอครู</button>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Father's Journal (P12)</summary>
+    <div class="body">
+      <b>แนวใหม่</b>: detective journal · ไม่ใช่ลำดับ step · narrative-driven<br>
+      <b>เป้า</b>: ใช้ K1+K4 (m, M, distance modulus) มาแก้ปริศนา · จับ M2<br>
+      <b>กลไก</b>: 5 หน้าสมุด · แต่ละหน้ามี clue + mini-task · เก็บ 5 evidence chips → คลายปริศนา<br>
+      <b>Hint system</b>: 3 hints · cost 10 photon ต่อครั้ง · เด็กตัดสินใจเอง<br>
+      <b>Lineup</b>: 5 ดาว · DENEB เป็นคำตอบ · try-1 = +15 · try-2 = +5 · try-3+ = 0<br>
+      <b>🪙 Coin (max 45)</b>:<br>
+      · อ่านครบทุกหน้า + mini-task ถูก: 0-15 (3/หน้า × 5)<br>
+      · ปลด lineup try-1: +15 (try-2 = +5)<br>
+      · ไม่ใช้ hint: +5 bonus<br>
+      · เสร็จ < 4 นาที: +5 bonus<br>
+      · เก็บหลักฐานครบ 5: +5
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== JOURNAL DATA ==================== */
+const PAGES = [
+  {
+    title: 'หน้า 1 · ลายมือพ่อตอนเริ่มภารกิจ',
+    body: `
+      <p class="father-handwritten">
+        <b>ถึงลูกสาวของพ่อ</b><br>
+        ถ้าเปิดสมุดนี้ได้ · แปลว่าหนูตามมาถึงนี่แล้ว<br><br>
+        กล่องนี้พ่อล็อกด้วยรหัส 5 ตัวอักษร · ชื่อดาวที่<b>หลอกตาคนดูทั้งโลก</b><br>
+        ทุกคนเห็นมัน<b>หรี่</b> · แต่ความจริง · มัน<b>ปล่อยแสง</b>มากกว่าดวงอาทิตย์เป็น<b>หมื่นเท่า</b><br><br>
+        วิธีไขเดียว: อ่านบันทึกของพ่อจนถึงหน้าสุดท้าย · แล้วตอบให้ถูก<br>
+        — พ่อ Aravind, 12 มกราคม 2078
+      </p>
+    `,
+    task: {
+      q: 'จากย่อหน้านี้ · พ่อ<b>รู้สึกอย่างไร</b>?',
+      opts: [
+        { t:'มั่นใจ · ฝากภารกิจ', correct:true, why:'✓ พ่อใช้คำว่า "วิธีไขเดียว" · มั่นใจในตัวลูก' },
+        { t:'หลงทาง · ไม่รู้ทำอะไร', correct:false, why:'✗ พ่อให้ทิศทางชัดเจน' },
+        { t:'โกรธลูก', correct:false, why:'✗ ใช้คำว่า "ลูกสาวของพ่อ"' },
+      ],
+    },
+    evidence: '🔢 รหัส = ชื่อดาว 5 ตัวอักษร',
+  },
+  {
+    title: 'หน้า 2 · บันทึกการสังเกตด้วยตาเปล่า',
+    body: `
+      <p class="father-handwritten">
+        ที่หอดูดาวเชียงใหม่ · 21 กุมภาพันธ์<br><br>
+        คืนนี้ฟ้าเปิด · พ่อชี้ไปที่ดาวดวงนี้บอกผู้ช่วย "ลองมองสิ"<br>
+        ผู้ช่วยถาม "ดาวไหนครับ? · ผมเห็นแต่ดาวเล็กๆ"<br><br>
+        นั่นแหละ! · มัน <b>ดูธรรมดามาก</b> · ตาเปล่าวัด <span class="data-stamp">m = +1.25</span><br>
+        ไม่เด่นเลย · เกือบไม่สังเกต · เด็กๆ ส่วนใหญ่<b>มองข้าม</b> ไปหา Sirius (m = −1.46) ที่ดูจัดจ้านแทน
+      </p>
+    `,
+    task: {
+      q: 'พ่อบันทึก <b>m</b> ของดาวนี้เท่าไร?',
+      opts: [
+        { t:'+1.25', correct:true, why:'✓ ระวัง · ค่านี้สำคัญต่อการเลือกดาว' },
+        { t:'−1.46', correct:false, why:'✗ นั่นคือ Sirius · ดาวที่พ่อบอกผู้ช่วยว่าเด็กๆ ไปหาแทน' },
+        { t:'+11', correct:false, why:'✗ ไม่ใช่' },
+      ],
+    },
+    evidence: '👁️ m = +1.25 (หรี่ตา)',
+  },
+  {
+    title: 'หน้า 3 · วัดด้วย parallax',
+    body: `
+      <p class="father-handwritten">
+        ใช้ parallax วัดมุมเล็กมาก · พ่อต้องวัดซ้ำ 30 ครั้ง<br>
+        ค่าเฉลี่ย <span class="data-stamp">p ≈ 0.00125 arcsec</span><br>
+        ใช้สูตร <b>d = 1 / p</b> ได้:<br><br>
+        <span class="data-stamp">d ≈ 800 pc</span> · ประมาณ <b>2,600 ปีแสง</b><br><br>
+        ที่ระยะนี้ · ดาวที่ดูธรรมดาในตา · มัน<b>โหดมาก</b>ในจักรวาล · เพราะถ้าใกล้กว่านี้ · มันจะส่องแสงทั้งฟ้า
+      </p>
+    `,
+    task: {
+      q: 'จาก p = 0.00125" · d ≈ ?',
+      opts: [
+        { t:'~800 pc', correct:true, why:'✓ d = 1/0.00125 = 800 pc · อยู่ไกลมาก' },
+        { t:'~80 pc', correct:false, why:'✗ คำนวณผิด · 1/0.00125 = 800' },
+        { t:'~8 pc', correct:false, why:'✗ ไกลกว่านี้มาก' },
+      ],
+    },
+    evidence: '📏 d ≈ 800 pc (ไกลมาก)',
+  },
+  {
+    title: 'หน้า 4 · คำนวณ M (สว่างจริง)',
+    body: `
+      <p class="father-handwritten">
+        ตอนนี้ที่รู้ m และ d ครบแล้ว · พ่อใช้ <b>distance modulus</b>:<br>
+        <span class="data-stamp">M = m − 5×log(d/10) = +1.25 − 5×log(80) ≈ −8.4</span><br><br>
+        พ่อ<b>เย็นไปทั้งหลัง</b> ตอนเห็นค่านี้<br>
+        M = −8.4 หมายถึง · ถ้าย้ายดาวนี้ไปที่ระยะมาตรฐาน 10 pc · มันจะ<b>สว่างกว่าดวงอาทิตย์ 20,000 เท่า</b><br><br>
+        ดาวธรรมดาๆ ในตา · ที่ไม่มีใครสังเกต · ความจริงคือ<b>ผู้ปล่อยแสงระดับ supergiant</b>
+      </p>
+    `,
+    task: {
+      q: 'M = −8.4 หมายความว่าอะไร?',
+      opts: [
+        { t:'ปล่อยแสงจริงเยอะมาก (luminous)', correct:true, why:'✓ M ติดลบมาก = สว่างจริงมาก' },
+        { t:'อยู่ใกล้โลกมาก', correct:false, why:'✗ Trap · M ไม่บอกระยะ · บอก intrinsic luminosity' },
+        { t:'ดาวมืด · จาง', correct:false, why:'✗ Trap M1 · M ติดลบ ≠ จาง · กลับด้าน' },
+      ],
+    },
+    evidence: '⚡ M = −8.4 (สว่างจริง · 20,000× Sun)',
+  },
+  {
+    title: 'หน้า 5 · บทสรุปและคำท้า',
+    body: `
+      <p class="father-handwritten">
+        สรุปดาวลึกลับนี้:<br>
+        · <b>m = +1.25</b> (ดูหรี่ตาเปล่า)<br>
+        · <b>d = 800 pc</b> (ไกลมาก)<br>
+        · <b>M = −8.4</b> (ปล่อยแสงเยอะที่สุดในกลุ่มที่พ่อบันทึก)<br><br>
+        ดาวนี้คือสิ่งที่พ่อตามหาตลอด · ดาวที่<b>หลอกตา</b>ทุกคน:<br>
+        — เห็นเป็นดาวเล็กๆ ในกลุ่มดาวหงส์ (Cygnus)<br>
+        — แต่ความจริงเป็น blue supergiant<br><br>
+        <b>ลูกเลือกดาวให้ถูก</b> · กล่องจะเปิด · พ่อรอข้อความของลูกอยู่
+      </p>
+    `,
+    task: {
+      q: 'พ่อใช้คำว่า <b>"ดาวที่หลอกตา"</b> หมายถึงอะไร?',
+      opts: [
+        { t:'m คือ<b>อันดับความสว่างปรากฎ</b> · ไม่ใช่ <b>ปล่อยแสงจริง</b>', correct:true, why:'✓ M2 misconception · m ≠ M' },
+        { t:'ดาวเปลี่ยนสีตามฤดู', correct:false, why:'✗ ไม่เกี่ยว' },
+        { t:'ดาวเคลื่อนที่เร็วเกิน', correct:false, why:'✗ ไม่เกี่ยว' },
+      ],
+    },
+    evidence: '💡 บทสรุป · m หรี่ + M สว่าง = trap M2',
+  },
+];
+
+const SUSPECTS = [
+  { id:'sirius',  name:'Sirius',     m:-1.46, d:2.64,  M:1.4,   note:'สว่างปรากฎสุด · M ธรรมดา · ใกล้' },
+  { id:'vega',    name:'Vega',       m:0.03,  d:7.68,  M:0.58,  note:'สว่างปรากฎเฉยๆ · M ธรรมดา' },
+  { id:'polaris', name:'Polaris',    m:1.98,  d:133,   M:-3.6,  note:'หรี่ตา · M สว่างปานกลาง' },
+  { id:'deneb',   name:'Deneb',      m:1.25,  d:802,   M:-8.4,  note:'หรี่ตา · M สว่างมาก ★' },
+  { id:'proxima', name:'Proxima',    m:11,    d:1.30,  M:15.5,  note:'มองไม่เห็นเปล่า · M น้อยมาก' },
+];
+const CORRECT_ID = 'deneb';
+
+const HINTS = [
+  '👀 หลีกเลี่ยงดาวที่ m ติดลบ (ดูสว่างปรากฎ) · พ่อบอกว่ามัน "หรี่"',
+  '⚡ M ของคำตอบเป็น -8 หรือ ลบกว่านั้น · ค่ามากที่สุดในกลุ่ม',
+  '🔤 ตัวอักษรแรกคือ D · 5 ตัวอักษร',
+];
+
+const state = {
+  currentPage: 0,
+  pagesRead: new Set(),
+  taskAns: {},  // pageIdx → choiceIdx
+  evidence: [],
+  hintsLeft: 3,
+  hintsShown: [],
+  hintCost: 10,  // photon
+  attempts: 0,
+  solved: false,
+  startedAt: Date.now(),
+  // coin breakdown
+  coins: { reading:0, lineup:0, noHint:0, speed:0, evidence:0 },
+};
+
+let timerInterval;
+const TIME_LIMIT = 360;  // 6 min
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (state.solved) { clearInterval(timerInterval); return; }
+    const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+    const left = TIME_LIMIT - elapsed;
+    if (left <= 0) {
+      document.getElementById('timer').textContent = '⏱ 00:00';
+      clearInterval(timerInterval);
+      // No game over · just lose speed bonus
+      return;
+    }
+    const m = Math.floor(left / 60), s = left % 60;
+    document.getElementById('timer').textContent = '⏱ ' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    if (left < 60) document.getElementById('timer').style.color = '#ff5c7a';
+  }, 1000);
+}
+
+/* ==================== RENDER JOURNAL ==================== */
+function renderPage() {
+  const p = PAGES[state.currentPage];
+  document.getElementById('pageNum').textContent = `หน้า ${state.currentPage + 1} / ${PAGES.length}`;
+  document.getElementById('journalContent').innerHTML = `
+    <h3 style="font-family:Orbitron,sans-serif;color:#ffcb6b;font-size:14px;letter-spacing:0.1em;margin-bottom:10px;">
+      ${p.title}
+    </h3>
+    ${p.body}
+  `;
+  // Mini-task
+  const ans = state.taskAns[state.currentPage];
+  const taskEl = document.getElementById('miniTask');
+  taskEl.innerHTML = `
+    <div class="mini-task">
+      <div class="q">${p.task.q}</div>
+      <div class="opts">
+        ${p.task.opts.map((o,i) => {
+          let cls = '';
+          if (ans != null && i === ans) cls = o.correct ? 'correct' : 'wrong';
+          return `<button onclick="answerMini(${i})" ${ans!=null?'disabled':''} class="${cls}">${o.t}</button>`;
+        }).join('')}
+      </div>
+      ${ans != null
+        ? `<div class="feedback ${p.task.opts[ans].correct?'ok':'bad'}">${p.task.opts[ans].why}</div>`
+        : ''}
+    </div>
+  `;
+  // Page nav buttons
+  document.getElementById('prevBtn').disabled = state.currentPage === 0;
+  document.getElementById('nextBtn').disabled = state.currentPage >= PAGES.length - 1;
+  // Page dots
+  renderDots();
+}
+function renderDots() {
+  document.getElementById('pageDots').innerHTML = PAGES.map((_, i) =>
+    `<div class="page-dot ${i === state.currentPage ? 'active' : ''} ${state.pagesRead.has(i) ? 'read' : ''}" onclick="jumpToPage(${i})"></div>`
+  ).join('');
+}
+window.jumpToPage = (i) => { state.currentPage = i; renderPage(); };
+window.flipPage = (dir) => {
+  state.currentPage = Math.max(0, Math.min(PAGES.length-1, state.currentPage + dir));
+  renderPage();
+};
+
+/* ==================== MINI TASK ==================== */
+window.answerMini = (idx) => {
+  const pageIdx = state.currentPage;
+  if (state.taskAns[pageIdx] != null) return;
+  state.taskAns[pageIdx] = idx;
+  const opt = PAGES[pageIdx].task.opts[idx];
+  if (opt.correct) {
+    state.coins.reading += 3;
+    state.pagesRead.add(pageIdx);
+    if (typeof Coin !== 'undefined') Coin.add(3, 'p12-page' + pageIdx);
+    showCoinToast(3, '✓ Mini-task หน้า ' + (pageIdx+1));
+    // Add evidence
+    addEvidence(PAGES[pageIdx].evidence);
+  } else {
+    showCoinToast(0, '✗ ผิด · ลองอ่านใหม่');
+    if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p12');
+  }
+  renderPage();
+  checkAllRead();
+};
+
+function addEvidence(text) {
+  if (state.evidence.includes(text)) return;
+  state.evidence.push(text);
+  const list = document.getElementById('evidenceList');
+  if (state.evidence.length === 1) list.innerHTML = '';
+  const chip = document.createElement('span');
+  chip.className = 'evidence-chip';
+  chip.textContent = text;
+  list.appendChild(chip);
+  document.getElementById('evidenceCount').textContent = state.evidence.length + ' / 5';
+  if (state.evidence.length === 5) {
+    state.coins.evidence = 5;
+    if (typeof Coin !== 'undefined') Coin.add(5, 'p12-evidence');
+    showCoinToast(5, 'เก็บหลักฐานครบ 5/5');
+  }
+}
+
+function checkAllRead() {
+  if (state.pagesRead.size === PAGES.length) {
+    document.getElementById('lineupSection').style.display = 'block';
+    renderLineup();
+  }
+}
+
+/* ==================== LINEUP ==================== */
+function renderLineup() {
+  document.getElementById('lineup').innerHTML = SUSPECTS.map(s => {
+    return `<div class="suspect" onclick="pickSuspect('${s.id}')" id="sus_${s.id}">
+      <div class="star-name">⭐ ${s.name}</div>
+      <div class="star-data">
+        m = ${s.m >= 0 ? '+' : ''}${s.m}<br>
+        d = ${s.d} pc<br>
+        M = ${s.M >= 0 ? '+' : ''}${s.M}<br>
+        <span style="color:#a09070;font-style:italic;">${s.note}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+window.pickSuspect = (id) => {
+  if (state.solved) return;
+  state.attempts++;
+  const el = document.getElementById('sus_' + id);
+  if (id === CORRECT_ID) {
+    state.solved = true;
+    el.classList.add('correct', 'locked');
+    document.querySelectorAll('.suspect').forEach(s => s.classList.add('locked'));
+    // Coin awards
+    let lineupCoin = 0;
+    if (state.attempts === 1) lineupCoin = 15;
+    else if (state.attempts === 2) lineupCoin = 5;
+    else lineupCoin = 0;
+    state.coins.lineup = lineupCoin;
+    if (lineupCoin > 0 && typeof Coin !== 'undefined') Coin.add(lineupCoin, 'p12-lineup');
+    showCoinToast(lineupCoin, lineupCoin>0 ? '🔓 ตอบถูก · try ' + state.attempts : 'ตอบถูกแต่หลายรอบ');
+    // No-hint bonus
+    if (state.hintsShown.length === 0) {
+      state.coins.noHint = 5;
+      if (typeof Coin !== 'undefined') Coin.add(5, 'p12-nohint');
+      showCoinToast(5, 'ไม่ใช้ hint · bonus');
+    }
+    // Speed bonus < 4 min
+    const elapsed = (Date.now() - state.startedAt) / 1000;
+    if (elapsed < 240) {
+      state.coins.speed = 5;
+      if (typeof Coin !== 'undefined') Coin.add(5, 'p12-speed');
+      showCoinToast(5, 'เร็ว < 4 นาที · bonus');
+    }
+    // Update lock UI
+    document.getElementById('lockIcon').textContent = '🔓';
+    document.getElementById('lockCode').textContent = 'D E N E B';
+    document.getElementById('lockCode').classList.add('unlocked');
+    // Set chain
+    if (typeof Chain !== 'undefined') Chain.set('DENEB_unlocked', true);
+    if (typeof Photon !== 'undefined') Photon.add(60, 'p12-deneb');
+    // Reveal banner
+    document.getElementById('unlockBanner').style.display = 'block';
+    document.getElementById('unlockBody').innerHTML = `
+      <div class="father-msg">
+        "ลูกของพ่อ · เก่งกว่าพ่อแล้ว · ในกล่องนี้มีบันทึกสุดท้ายของพ่อ · เปิดต่อในหน้าถัดไปนะ ..."
+        <br><span style="font-size:11px;color:#9aa3c0;">— Aravind</span>
+      </div>
+      <div style="font-size:13px;color:#7effb2;">
+        🪙 รวมจาก case นี้: <b>${totalCoinNow()}</b> · ✦ +60 photon · 🔑 DENEB unlocked → P13
+      </div>
+    `;
+    document.getElementById('submitBar').style.display = 'flex';
+    clearInterval(timerInterval);
+  } else {
+    el.classList.add('wrong');
+    if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p12');
+    showCoinToast(0, '✗ ไม่ใช่ดวงนี้ · ลองอีก');
+  }
+};
+
+function totalCoinNow() {
+  return Object.values(state.coins).reduce((a,b)=>a+b, 0);
+}
+
+/* ==================== HINT ==================== */
+window.useHint = () => {
+  if (state.hintsLeft <= 0 || state.solved) return;
+  // Cost check
+  if (typeof Photon !== 'undefined' && Photon.get() < state.hintCost) {
+    alert('photon ไม่พอ · ต้องการ ' + state.hintCost + ' ✦');
+    return;
+  }
+  // Spend
+  if (typeof Photon !== 'undefined') Photon.spend(state.hintCost, 'p12-hint');
+  const idx = HINTS.length - state.hintsLeft;
+  state.hintsShown.push(HINTS[idx]);
+  state.hintsLeft--;
+  document.getElementById('hintCount').textContent = state.hintsLeft;
+  document.getElementById('btnHint').disabled = (state.hintsLeft === 0);
+  const sh = document.getElementById('hintsShown');
+  sh.style.display = 'block';
+  sh.innerHTML = state.hintsShown.map(h => `<div>${h}</div>`).join('');
+};
+
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 +' + amount : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* ==================== INIT ==================== */
+renderPage();
+startTimer();
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p12',
+    nextHref: 'p13-maze.html',
+    getPayload: () => {
+      if (!state.solved) { alert('ยังไม่ได้ปลดล็อก · เลือกดาวให้ถูกก่อน'); throw new Error('locked'); }
+      return {
+        tag: 'father-journal',
+        durationSec: Math.round((Date.now()-state.startedAt)/1000),
+        pagesRead: Array.from(state.pagesRead),
+        taskAnswers: state.taskAns,
+        evidence: state.evidence,
+        attempts: state.attempts,
+        hintsUsed: state.hintsShown.length,
+        coins: state.coins,
+        coinTotal: totalCoinNow(),
+        solved: state.solved,
+        // legacy
+        correct: state.solved ? 1 : 0,
+        total: 1,
+      };
+    },
+    isPerfect: () => false,
+    onSubmit: () => {
+      alert('✓ ส่งแล้ว · 🪙 รวม ' + totalCoinNow() + ' coin · 🔑 DENEB unlocked');
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p12-to-p13', 'p13-maze.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

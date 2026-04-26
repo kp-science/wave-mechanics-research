@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน 2.1 · คำนวณคาบลูกตุ้ม (SHM แผน 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.formula{background:#ccfbf1;border:1.5px solid #5eead4;border-radius:10px;padding:12px 16px;margin:10px 0;text-align:center;font-size:16px}
+.formula code{font-family:'Cambria Math',serif;font-size:17px;color:#115e59;font-weight:700;margin:0 10px}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
+.item .num{display:inline-block;background:#0d9488;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
+.item b.title{color:#115e59;font-size:15.5px}
+.step{background:#fff;border:1.5px solid #5eead4;border-radius:8px;padding:10px 12px;margin-top:8px}
+.step-lbl{font-weight:700;color:#115e59;margin-bottom:4px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:#fff}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f0fdfa 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-calc-2.1">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบงาน 2.1 — คำนวณคาบลูกตุ้ม</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag">E4 Elaborate</span> 6 ข้อ · 10' · allowUpload</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำสั่ง:</b> ใช้สูตร T = 2π√(l/g) คำนวณ · g = 9.8 m/s² (ยกเว้นระบุ) · <b>วัตถุประสงค์:</b> K2.1, K2.2, P2.2 · <b>เกณฑ์ผ่าน:</b> ถูก ≥ 4/6 ข้อ</div>
+
+  <div class="formula">
+    <code>T = 2π√(l/g)</code> · <code>ω = √(g/l)</code> · <code>f = (1/2π)√(g/l)</code> · π² ≈ 9.87
+  </div>
+
+  <!-- ข้อ 1 -->
+  <div class="item">
+    <div><span class="num">1</span><b class="title">ลูกตุ้มเชือกยาว l = 1.0 m แกว่งที่ผิวโลก (g = 9.8 m/s²) · หาคาบ T · ความถี่ f · ω</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb1p" onclick="setTool('c1','pencil',this)">✏️</button><button class="c-btn" id="tb1e" onclick="setTool('c1','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c1','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c1" data-bg="lined" width="940" height="180"></canvas>
+      <textarea id="a1" class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..."></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T = <input class="ans-in" id="t1"> s · f = <input class="ans-in" id="f1"> Hz · ω = <input class="ans-in" id="w1"> rad/s</div>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="item">
+    <div><span class="num">2</span><b class="title">ต้องการให้ T = 2.0 s พอดี (นาฬิกาลูกตุ้ม Huygens) · ต้องใช้ความยาวเชือก l = ? m</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb2p" onclick="setTool('c2','pencil',this)">✏️</button><button class="c-btn" id="tb2e" onclick="setTool('c2','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c2','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c2" data-bg="lined" width="940" height="180"></canvas>
+      <textarea id="a2" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> l = <input class="ans-in" id="l2"> m · <span class="hint">(เฉลย Huygens ~ 0.994 m)</span></div>
+  </div>
+
+  <!-- ข้อ 3 ดวงจันทร์ -->
+  <div class="item">
+    <div><span class="num">3</span><b class="title">นาฬิกาลูกตุ้มที่เดินตรงเวลาบนโลก (g = 9.8) ถูกนำไปใช้บนดวงจันทร์ (g = 1.63 m/s²) · T ใหม่ = ? s · นาฬิกาเดินช้าหรือเร็ว?</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด (ใช้ T_earth = 2 s):</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️</button><button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c3','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c3" data-bg="lined" width="940" height="200"></canvas>
+      <textarea id="a3" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T_moon = <input class="ans-in" id="t3"> s ·
+      <select id="q3-fast" style="padding:4px 8px;border:1.5px solid #5eead4;border-radius:6px">
+        <option value="">-- เลือก --</option>
+        <option value="slow">นาฬิกาเดินช้าลง</option>
+        <option value="fast">นาฬิกาเดินเร็วขึ้น</option>
+        <option value="same">เดินเท่าเดิม</option>
+      </select>
+    </div>
+    <div class="hint">💡 Hint: g ลดลง → T เพิ่ม → นาฬิกานับรอบได้น้อยกว่าในเวลาเท่าเดิม</div>
+  </div>
+
+  <!-- ข้อ 4 อัตราการเปลี่ยน -->
+  <div class="item">
+    <div><span class="num">4</span><b class="title">ลูกตุ้มยืดออก 0.5% (เช่น ยืดเพราะความร้อน) · T จะเพิ่มขึ้นกี่เปอร์เซ็นต์ (ตอบใน 2 ตำแหน่งทศนิยม)</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด (ใช้ ΔT/T ≈ 0.5 × Δl/l):</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb4p" onclick="setTool('c4','pencil',this)">✏️</button><button class="c-btn" id="tb4e" onclick="setTool('c4','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c4','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c4" data-bg="lined" width="940" height="180"></canvas>
+      <textarea id="a4" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> ΔT/T ≈ <input class="ans-in" id="r4"> % <span class="hint">(ตรวจด้วย: T = 2π√(l/g) · ln T = ln(2π) + ½ ln l − ½ ln g → dT/T = ½ dl/l)</span></div>
+  </div>
+
+  <!-- ข้อ 5 วัด g -->
+  <div class="item">
+    <div><span class="num">5</span><b class="title">นักเรียนใช้ลูกตุ้มเชือก 1.5 m วัดเวลาแกว่ง 100 รอบ ได้ 246 วินาที · หาค่า g ที่ได้ (m/s²) · %error จาก 9.8 ?</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb5p" onclick="setTool('c5','pencil',this)">✏️</button><button class="c-btn" id="tb5e" onclick="setTool('c5','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c5','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c5" data-bg="lined" width="940" height="200"></canvas>
+      <textarea id="a5" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T = <input class="ans-in" id="t5"> s · g = <input class="ans-in" id="g5"> m/s² · %error = <input class="ans-in" id="e5" style="width:70px"> %</div>
+    <div class="hint">💡 Hint: T = 246/100 · g = 4π²l/T²</div>
+  </div>
+
+  <!-- ข้อ 6 Challenge -->
+  <div class="item">
+    <div><span class="num">6</span><b class="title">🏆 Challenge — ลูกตุ้มคู่ความถี่ 1 : 2</b></div>
+    <div style="background:#fff3e0;border-left:4px solid #ef6c00;padding:10px 14px;border-radius:8px;margin:8px 0;font-size:14px">มีลูกตุ้ม A และ B ต้องการให้ f_A : f_B = 1 : 2 · ถ้า l_A = 1.6 m · จงหา l_B</div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb6p" onclick="setTool('c6','pencil',this)">✏️</button><button class="c-btn" id="tb6e" onclick="setTool('c6','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c6','#1a202c',this)"></div><div class="c-color" style="background:#0d9488" onclick="setColor('c6','#0d9488',this)"></div><button class="c-btn" onclick="clearCanvas('c6')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c6" data-bg="lined" width="940" height="200"></canvas>
+      <textarea id="a6" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> l_B = <input class="ans-in" id="l6"> m <span class="hint">(f ∝ 1/√l · f_B = 2 f_A ⇒ √l_A/√l_B = 2 ⇒ l_B = l_A/4)</span></div>
+  </div>
+
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">✅ Self-check:</b> ฉันตอบถูก <input type="number" id="self" min="0" max="6" style="width:50px;padding:4px 8px;border:1px solid #86efac;border-radius:6px"> / 6 ข้อ · ข้อที่อยากให้ครูอธิบายเพิ่ม: <input type="text" id="ask" style="width:60%;padding:4px 8px;border:1px solid #86efac;border-radius:6px">
+  </div>
+
+  <div class="foot">ใบงาน 2.1 · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Exit Ticket · ระบบมวล-สปริง (SHM แผน 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#ea580c;box-shadow:0 0 0 3px rgba(234,88,12,.15)}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfffd}
+.item .no{display:inline-block;background:#ea580c;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.item .skill.calc{background:#dcfce7;color:#166534}
+.item .skill.theory{background:#fde68a;color:#78350f}
+.item .skill.appli{background:#bae6fd;color:#075985}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#9a3412}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #fdba74}
+.sub b{color:#9a3412}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:#fff8}
+select.ans-in{border:1.5px solid #fdba74;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;width:auto;min-width:140px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:5px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.opt:hover{border-color:#ea580c;background:#fff7ed}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#ea580c}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+@media(max-width:760px){.checkbox-bank{grid-template-columns:1fr}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 24px,#ffedd5 25px),repeating-linear-gradient(to bottom,#fff 0,#fff 24px,#ffedd5 25px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600}
+.c-btn.active{background:#ea580c;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #ea580c}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.timer-row{display:flex;align-items:center;gap:14px;background:#ffedd5;border:1.5px solid #fdba74;border-radius:10px;padding:12px 16px;margin:10px 0}
+#timer{font-size:2rem;font-weight:800;color:#ea580c;font-variant-numeric:tabular-nums}
+.timer-start{background:#ea580c;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.reveal-box{margin-top:8px;padding:8px 14px;border-radius:7px;font-size:13.5px;display:none;line-height:1.6}
+.reveal-box.ok{background:#dcfce7;color:#166534;border:1.5px solid #16a34a}
+.reveal-box.bad{background:#fee2e2;color:#991b1b;border:1.5px solid #dc2626}
+.score-tag{display:inline-block;margin-left:8px;font-weight:800;font-size:.92rem}
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+.check-btn{background:#ea580c;color:#fff;border:none;border-radius:7px;padding:6px 15px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
+</style></head>
+<body data-ws-id="shm-plan3-exit-ticket">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎫 Exit Ticket · ระบบมวล-สปริง (T = 2π√(m/k))</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">3 ข้อ · 5 นาที</span> ตรวจสอบความเข้าใจก่อนออกจากห้อง</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">⏱ ทำให้เสร็จภายใน 5 นาที</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b></div>
+
+  <div class="info"><b>วิธีทำ:</b> คำนวณ → วาดวิธีคิดบน canvas · ทฤษฎี → เลือก/ติ๊ก · <b>M3.1</b>: T ≠ f(A) · <b>M3.3</b>: g ไม่ส่งผลต่อ T สปริงแนวดิ่ง</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <div class="timer-row">
+    <div>
+      <div style="font-size:13px;color:#9a3412;font-weight:600">⏱ เวลาที่เหลือ</div>
+      <div id="timer">05:00</div>
+    </div>
+    <button class="timer-start" onclick="startTimer()">เริ่มจับเวลา</button>
+  </div>
+
+  <form id="exForm">
+
+  <!-- ข้อ 1 -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="skill calc">คำนวณ · k_eff อนุกรม + T (K3.2)</span></div>
+    <div class="stem">สปริง 3 ตัวต่ออนุกรม: k₁ = 100 N/m, k₂ = 200 N/m, k₃ = 400 N/m แขวนมวล m = 0.5 kg</div>
+    <div class="sub"><b>(1.1)</b> k_eff = <input class="ans-in" id="q1-k"> N/m &nbsp;·&nbsp; T = <input class="ans-in" id="q1-t"> s &nbsp;·&nbsp; f = <input class="ans-in" id="q1-f"> Hz</div>
+    <div class="sub"><b>(1.2) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('c1','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('c1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#ea580c" onclick="setColor('c1','#ea580c',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c1','#e53e3e',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c1" data-bg="lined" width="980" height="240"></canvas>
+    <div class="sub" style="margin-top:10px"><b>(1.3)</b> T มีค่าใกล้เคียงข้อใดมากที่สุด?</div>
+    <label class="opt"><input type="radio" name="q1r" value="a"> ① T ≈ 0.257 s</label>
+    <label class="opt"><input type="radio" name="q1r" value="b"> ② T ≈ 0.589 s</label>
+    <label class="opt"><input type="radio" name="q1r" value="c"> ③ T ≈ 0.364 s</label>
+    <label class="opt"><input type="radio" name="q1r" value="d"> ④ T ≈ 0.628 s</label>
+    <button type="button" class="check-btn" onclick="chkR('q1r','b','q1fb','q1ok','q1bad')">ตรวจ ข้อ 1.3</button>
+    <span class="score-tag" id="q1fb"></span>
+    <div class="reveal-box ok" id="q1ok">✅ 1/k_eff = 1/100+1/200+1/400 = 7/400 → k_eff ≈ 57.14 N/m → T = 2π√(0.5/57.14) ≈ 0.589 s</div>
+    <div class="reveal-box bad" id="q1bad">❌ ใช้ 1/k_eff = 1/k₁+1/k₂+1/k₃ แล้วแทน T = 2π√(m/k_eff)</div>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="skill theory">จับคู่ · ผลของตัวแปรต่อ T (K3.1 · M3.1/M3.4)</span></div>
+    <div class="stem">เลือกผลที่เกิดกับคาบ T เมื่อตัวแปรต่อไปนี้เปลี่ยน (ตัวแปรอื่นคงที่)</div>
+    <div class="sub">
+      <b>m เพิ่ม 4 เท่า →</b>
+      <select class="ans-in" id="q2a"><option value="">--</option><option value="2x">T ×2</option><option value="half">T ×½</option><option value="4x">T ×4</option><option value="same">T ไม่เปลี่ยน</option></select>
+    </div>
+    <div class="sub">
+      <b>k เพิ่ม 4 เท่า →</b>
+      <select class="ans-in" id="q2b"><option value="">--</option><option value="2x">T ×2</option><option value="half">T ×½</option><option value="4x">T ×4</option><option value="same">T ไม่เปลี่ยน</option></select>
+    </div>
+    <div class="sub">
+      <b>A เพิ่ม 2 เท่า →</b>
+      <select class="ans-in" id="q2c"><option value="">--</option><option value="2x">T ×2</option><option value="half">T ×½</option><option value="4x">T ×4</option><option value="same">T ไม่เปลี่ยน</option></select>
+    </div>
+    <button type="button" class="check-btn" onclick="chkQ2()">ตรวจ ข้อ 2</button>
+    <span class="score-tag" id="q2fb"></span>
+    <div class="reveal-box ok" id="q2ok">✅ T∝√m: ×4m → T×2 | T∝1/√k: ×4k → T×½ | A ไม่ส่งผล (isochronism) → T ไม่เปลี่ยน</div>
+    <div class="reveal-box bad" id="q2bad">❌ จำสูตร T = 2π√(m/k): T∝√m, T∝1/√k, A ไม่ปรากฏในสูตร</div>
+  </div>
+
+  <!-- ข้อ 3 -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="skill theory">Checkbox Bank · ตัวแปรที่ส่งผลต่อ T (K3.1 · M3.1/M3.3/M3.4)</span></div>
+    <div class="stem">ติ๊ก ✔ <b>ทุกข้อ</b>ที่ส่งผลต่อคาบ T ของระบบมวล-สปริง · <span style="color:#c53030">ถูก 3 · ลวง 5</span></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q3" value="a" data-correct="true"> ① มวล m ของวัตถุ</label>
+      <label class="opt"><input type="checkbox" name="q3" value="b" data-correct="true"> ② ค่าคงที่สปริง k</label>
+      <label class="opt"><input type="checkbox" name="q3" value="c" data-correct="false"> ③ แอมพลิจูด A (M3.1)</label>
+      <label class="opt"><input type="checkbox" name="q3" value="d" data-correct="false"> ④ ความเร็วสูงสุด v_max</label>
+      <label class="opt"><input type="checkbox" name="q3" value="e" data-correct="false"> ⑤ g สำหรับสปริงแนวดิ่ง (M3.3)</label>
+      <label class="opt"><input type="checkbox" name="q3" value="f" data-correct="false"> ⑥ พลังงานกล E_total</label>
+      <label class="opt"><input type="checkbox" name="q3" value="g" data-correct="true"> ⑦ k_eff (เมื่อต่อสปริงหลายตัว)</label>
+      <label class="opt"><input type="checkbox" name="q3" value="h" data-correct="false"> ⑧ แรงสูงสุด F_max</label>
+    </div>
+    <div class="hint">💡 T = 2π√(m/k) — ตัวแปรที่ปรากฏในสูตรคือ m และ k เท่านั้น</div>
+    <button type="button" class="check-btn" onclick="chkCB('q3','q3fb','q3ok','q3bad')">ตรวจ ข้อ 3</button>
+    <span class="score-tag" id="q3fb"></span>
+    <div class="reveal-box ok" id="q3ok">✅ T = 2π√(m/k) — ส่งผล: m, k, k_eff เท่านั้น</div>
+    <div class="reveal-box bad" id="q3bad">❌ เฉพาะ m, k (รวม k_eff) ที่ปรากฏใน T = 2π√(m/k) — A, v_max, g, E, F_max ไม่ส่งผล</div>
+    <div class="sub" style="margin-top:12px"><b>(3.2)</b> เหตุใด g ถึงไม่ส่งผลต่อ T ของสปริงแนวดิ่ง?</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('c3r','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('c3r','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3r','#1a202c',this)"></div>
+      <div class="c-color" style="background:#ea580c" onclick="setColor('c3r','#ea580c',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('c3r')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3r" data-bg="lined" width="980" height="120"></canvas>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ ทำครบ 3 ข้อแล้ว กดส่งคำตอบ</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+  <div class="foot">Exit Ticket · SHM แผน 3 · ระบบมวล-สปริง · 2569</div>
+</div>
+
+<script>
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='ExitTicket3_SHM_Plan3';
+
+// Timer
+let timerInt, timerSec=300, timerStarted=false;
+function startTimer(){if(timerStarted)return;timerStarted=true;timerInt=setInterval(()=>{timerSec--;const m=String(Math.floor(timerSec/60)).padStart(2,'0'),s=String(timerSec%60).padStart(2,'0');document.getElementById('timer').textContent=`${m}:${s}`;if(timerSec<=0)clearInterval(timerInt);},1000);}
+
+// Canvas
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);}
+
+// Check radio
+function chkR(name,correct,fbId,okId,badId){
+  const sel=document.querySelector(`input[name="${name}"]:checked`)?.value;
+  const fb=document.getElementById(fbId),ok=document.getElementById(okId),bad=document.getElementById(badId);
+  if(sel===correct){fb.textContent='✅';fb.style.color='#16a34a';ok.style.display='block';bad.style.display='none';}
+  else{fb.textContent='❌';fb.style.color='#dc2626';bad.style.display='block';ok.style.display='none';}
+}
+// Check Q2 dropdowns
+function chkQ2(){
+  const a=document.getElementById('q2a').value,b=document.getElementById('q2b').value,c=document.getElementById('q2c').value;
+  const ok=a==='2x'&&b==='half'&&c==='same';
+  const fb=document.getElementById('q2fb'),okEl=document.getElementById('q2ok'),badEl=document.getElementById('q2bad');
+  if(ok){fb.textContent='✅ 3/3';fb.style.color='#16a34a';okEl.style.display='block';badEl.style.display='none';}
+  else{let s=0;if(a==='2x')s++;if(b==='half')s++;if(c==='same')s++;fb.textContent=`❌ ${s}/3`;fb.style.color='#dc2626';badEl.style.display='block';okEl.style.display='none';}
+}
+// Check checkbox
+function chkCB(name,fbId,okId,badId){
+  const items=document.querySelectorAll(`input[name="${name}"]`);let s=0,t=items.length;
+  items.forEach(cb=>{if((cb.dataset.correct==='true')===cb.checked)s++;});
+  const fb=document.getElementById(fbId),ok=document.getElementById(okId),bad=document.getElementById(badId);
+  fb.textContent=s===t?`✅ ${s}/${t}`:`❌ ${s}/${t}`;
+  fb.style.color=s===t?'#16a34a':'#dc2626';
+  if(s===t){ok.style.display='block';bad.style.display='none';}else{bad.style.display='block';ok.style.display='none';}
+}
+
+function collectAnswers(){
+  const ans={};
+  ans.q1_k=document.getElementById('q1-k').value;ans.q1_t=document.getElementById('q1-t').value;ans.q1_f=document.getElementById('q1-f').value;
+  ans.q1r=document.querySelector('input[name="q1r"]:checked')?.value||'';
+  ans.q2a=document.getElementById('q2a').value;ans.q2b=document.getElementById('q2b').value;ans.q2c=document.getElementById('q2c').value;
+  ans.q3_sel=Array.from(document.querySelectorAll('input[name="q3"]:checked')).map(c=>c.value);
+  let q3sc=0;document.querySelectorAll('input[name="q3"]').forEach(cb=>{if((cb.dataset.correct==='true')===cb.checked)q3sc++;});
+  ans.q3_score=q3sc+'/8';
+  ['c1','c3r'].forEach(id=>{const c=document.getElementById(id);if(c)try{ans[id+'_img']=c.toDataURL('image/png');}catch(e){}});
+  return ans;
+}
+
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้องก่อน';return;}
+  const payload={plan:'SHM-3',type:'ExitTicket',student_name:name,student_no:Number(no),class:cls,test_date:document.getElementById('test_date').value,...collectAnswers()};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'){status.className='status error';status.innerHTML='⚠️ ยังไม่ได้ตั้งค่า API · <a href="#" onclick="dlJSON();return false;" style="color:#9a3412">Download JSON</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ ส่งสำเร็จ! 🎉';btn.textContent='✅ ส่งแล้ว';}
+  catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function dlJSON(){if(!window._lastPayload)return;const b=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`ET3_${window._lastPayload.student_name}.json`;a.click();}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('canvas[data-bg]').forEach(c=>initCanvas(c.id));
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE')document.getElementById('configWarn').classList.add('show');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

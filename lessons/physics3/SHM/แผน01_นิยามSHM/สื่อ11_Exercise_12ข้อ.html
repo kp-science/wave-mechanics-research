@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>แบบฝึกหัด 12 ข้อ · นิยาม SHM + f, T, ω (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#312e81}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#eef2ff;border-left:6px solid #4f46e5;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfdff}
+.item .no{display:inline-block;background:#4f46e5;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;background:#fbcfe8;color:#831843;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.item .skill.calc{background:#dcfce7;color:#166534}
+.item .skill.theory{background:#fde68a;color:#78350f}
+.item .skill.appli{background:#bae6fd;color:#075985}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#1e1b4b}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #a5b4fc}
+.sub b{color:#3730a3}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:4px}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:#fff8}
+select.ans-in{border:1.5px solid #c7d2fe;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;width:auto;min-width:140px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:5px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.opt:hover{border-color:#4f46e5;background:#eef2ff}
+.opt input{margin-top:3px;flex-shrink:0}
+.opt:has(input:checked){background:#eef2ff;border-color:#4f46e5;font-weight:600}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+@media(max-width:760px){.checkbox-bank{grid-template-columns:1fr}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#eef2ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 24px,#eef2ff 25px),repeating-linear-gradient(to bottom,#fff 0,#fff 24px,#eef2ff 25px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #4f46e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+
+/* Drag-Drop */
+.dd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+@media(max-width:760px){.dd-wrap{grid-template-columns:1fr}}
+.dd-pool{background:#fff8e1;border:2px dashed #f9a825;border-radius:10px;padding:10px;min-height:80px}
+.dd-pool-title{font-weight:700;color:#7a5800;font-size:13px;margin-bottom:6px}
+.dd-zone{background:#f0fdf4;border:2px dashed #86efac;border-radius:10px;padding:10px;min-height:120px}
+.dd-zone.wrong{background:#fff1f2;border-color:#fecaca}
+.dd-zone-title{font-weight:700;font-size:14px;margin-bottom:6px;color:#166534}
+.dd-zone.wrong .dd-zone-title{color:#991b1b}
+.dd-item{display:inline-block;background:#fff;border:1.5px solid #c7d2fe;border-radius:8px;padding:6px 12px;margin:4px;cursor:grab;font-size:14px;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dd-item:active{cursor:grabbing;opacity:.6}
+.dd-item.placed{border-color:#4f46e5}
+
+/* Match lines */
+.match-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0}
+.match-side{background:#fff;border:1.5px solid #c7d2fe;border-radius:8px;padding:8px 12px;font-size:14px}
+.match-side.left{background:#eef2ff;font-weight:600;color:#3730a3}
+.match-side.right select{border:none;width:100%;background:transparent;font-family:inherit;font-size:14px;outline:none}
+
+/* Submit */
+.submit-bar{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#1b5e20;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-exercise">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 แบบฝึกหัด · นิยาม SHM + ปริมาณพื้นฐาน (f, T, ω)</h1>
+      <div class="meta"><span class="tag">SHM แผน 1</span><span class="tag">12 ข้อ · 60 นาที</span> Mixed Methods · ส่งออนไลน์ได้</div>
+    </div>
+    <div class="meta" style="color:#3730a3;font-weight:700">💾 ทำเสร็จกดปุ่ม "ส่งคำตอบ" ด้านล่าง</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — เปิด <code>_SETUP_AppsScript_Database.html</code> แล้ววาง URL ในโค้ด JavaScript</div>
+
+  <div class="info"><b>วิธีทำ:</b> (ก) โจทย์คำนวณ → วาดวิธีคิดบน canvas (กระดาษมีเส้น/ช่องตาราง) · (ข) โจทย์ทฤษฎี → ติ๊ก checkbox/เลือก/ลากวาง · (ค) เติมคำตอบใน input ·
+  <b>เกณฑ์:</b> ถูก ≥ 8/12 = ผ่าน · <b>Misconception เป้าหมาย:</b> M1.1, M1.2, M1.3 · <b>จุดประสงค์:</b> K1.1, K1.2, P1.1, P1.2</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" placeholder="เช่น สมหญิง รักเรียน" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="exForm">
+
+  <!-- ═══════ ข้อ 1: Drag-Drop จำแนก SHM/ไม่-SHM ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="skill theory">ทฤษฎี · จำแนก (Drag-Drop)</span></div>
+    <div class="stem">ลาก 8 สถานการณ์ด้านล่างไปวางในกล่องที่ถูกต้อง ("SHM" / "ไม่ใช่ SHM") · (K1.1 · M1.1)</div>
+    <div class="dd-pool">
+      <div class="dd-pool-title">🔄 ลากจากที่นี่ → ไปวางในกล่องด้านล่าง</div>
+      <div id="dd-pool-1">
+        <span class="dd-item" draggable="true" data-ans="shm">ลูกตุ้มแกว่งมุมเล็ก</span>
+        <span class="dd-item" draggable="true" data-ans="no">ลูกบอลเด้งบนพื้น</span>
+        <span class="dd-item" draggable="true" data-ans="shm">มวล-สปริงแนวระดับ</span>
+        <span class="dd-item" draggable="true" data-ans="no">วงกลมสม่ำเสมอแนวระดับ</span>
+        <span class="dd-item" draggable="true" data-ans="shm">มวล-สปริงแนวดิ่ง</span>
+        <span class="dd-item" draggable="true" data-ans="no">พัดลมเพดาน</span>
+        <span class="dd-item" draggable="true" data-ans="shm">ส้อมเสียงสั่น (amplitude เล็ก)</span>
+        <span class="dd-item" draggable="true" data-ans="no">รถที่แล่นด้วยความเร็วคงที่</span>
+      </div>
+    </div>
+    <div class="dd-wrap">
+      <div class="dd-zone" data-zone="shm"><div class="dd-zone-title">✅ เป็น SHM (F = −kx)</div><div class="dd-drop" data-zone="shm"></div></div>
+      <div class="dd-zone wrong" data-zone="no"><div class="dd-zone-title">❌ ไม่ใช่ SHM</div><div class="dd-drop" data-zone="no"></div></div>
+    </div>
+  </div>
+
+  <!-- ═══════ ข้อ 2: Checkbox Bank · เงื่อนไข SHM ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="skill theory">ทฤษฎี · Checkbox Bank</span></div>
+    <div class="stem">ติ๊ก ✔ ทุกข้อที่เป็น <b>เงื่อนไขที่จำเป็น</b>ของการเคลื่อนที่แบบ SHM (K1.1 · M1.2) · <span style="color:#c53030">ระวังตัวลวง!</span></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q2" value="a" data-correct="true"> ① ต้องมีตำแหน่งสมดุล</label>
+      <label class="opt"><input type="checkbox" name="q2" value="b" data-correct="true"> ② แรงลัพธ์ต้อง ∝ −x (ทิศตรงข้ามกับการกระจัด)</label>
+      <label class="opt"><input type="checkbox" name="q2" value="c" data-correct="false"> ③ ต้องมีแรงเสียดทานคอยดึงกลับ</label>
+      <label class="opt"><input type="checkbox" name="q2" value="d" data-correct="true"> ④ การเคลื่อนที่ต้องซ้ำทางเดิม (periodic)</label>
+      <label class="opt"><input type="checkbox" name="q2" value="e" data-correct="false"> ⑤ ต้องเกิดในแนวระดับเท่านั้น</label>
+      <label class="opt"><input type="checkbox" name="q2" value="f" data-correct="true"> ⑥ คาบ T ต้องคงที่</label>
+      <label class="opt"><input type="checkbox" name="q2" value="g" data-correct="false"> ⑦ ความเร็วของวัตถุต้องคงที่ทุกจุด</label>
+      <label class="opt"><input type="checkbox" name="q2" value="h" data-correct="false"> ⑧ ต้องมีวัตถุหมุนรอบแกนกลาง</label>
+    </div>
+    <div class="hint">💡 คำตอบถูก 4 ข้อ · เลือกให้ครบ · แต่ละตัวลวงมี M1.2 หรือ M1.3 ซ่อนอยู่</div>
+  </div>
+
+  <!-- ═══════ ข้อ 3: Calc canvas ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="skill calc">คำนวณ · Canvas</span></div>
+    <div class="stem">อนุภาคหนึ่งสั่นแบบ SHM ครบ <b>60 รอบ ในเวลา 30 วินาที</b> (K1.2 · P1.2)</div>
+    <div class="sub"><b>(3.1) หาคาบ T =</b> <input class="ans-in" id="q3-t"> s &nbsp; <b>ความถี่ f =</b> <input class="ans-in" id="q3-f"> Hz &nbsp; <b>ω =</b> <input class="ans-in" id="q3-w"> rad/s</div>
+    <div class="sub"><b>(3.2) แสดงวิธีคิด บน canvas:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c3','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="980" height="220"></canvas>
+  </div>
+
+  <!-- ═══════ ข้อ 4: Calc rpm ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="skill calc">คำนวณ · Canvas</span></div>
+    <div class="stem">เครื่องจักรหนึ่งหมุนด้วยอัตรา <b>6,000 รอบต่อนาที (rpm)</b> (K1.2)</div>
+    <div class="sub"><b>(4.1)</b> f = <input class="ans-in" id="q4-f"> Hz &nbsp; T = <input class="ans-in" id="q4-t"> s &nbsp; ω = <input class="ans-in" id="q4-w"> rad/s</div>
+    <div class="sub"><b>(4.2)</b> หาก f เพิ่มเป็น 2 เท่า · T และ ω จะเปลี่ยนเป็นกี่เท่า? → T เปลี่ยนเป็น
+      <select class="ans-in" id="q4-Trate"><option value="">--</option><option value="2">2 เท่า</option><option value="0.5">0.5 เท่า</option><option value="1">เท่าเดิม</option><option value="4">4 เท่า</option></select>
+      &nbsp; ω เปลี่ยนเป็น
+      <select class="ans-in" id="q4-wrate"><option value="">--</option><option value="2">2 เท่า</option><option value="0.5">0.5 เท่า</option><option value="1">เท่าเดิม</option><option value="4">4 เท่า</option></select>
+    </div>
+    <div class="sub"><b>(4.3) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb4p" onclick="setTool('c4','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb4e" onclick="setTool('c4','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c4','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c4" data-bg="lined" width="980" height="200"></canvas>
+  </div>
+
+  <!-- ═══════ ข้อ 5: Calc ลูกตุ้ม ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span> <span class="skill calc">คำนวณ · Canvas</span></div>
+    <div class="stem">ลูกตุ้มนาฬิกาแกว่งด้วยคาบ <b>T = 1.5 วินาที</b> · และสมมติว่าเป็น SHM (P1.2)</div>
+    <div class="sub"><b>(5.1)</b> f = <input class="ans-in" id="q5-f"> Hz (ปัดทศนิยม 3 ตำแหน่ง) &nbsp; ω = <input class="ans-in" id="q5-w"> rad/s (ตอบในรูป π ได้)</div>
+    <div class="sub"><b>(5.2)</b> ใน 1 ชั่วโมง (3600 s) ลูกตุ้มแกว่งครบทั้งหมดกี่รอบ? → <input class="ans-in" id="q5-n"> รอบ</div>
+    <div class="sub"><b>(5.3) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb5p" onclick="setTool('c5','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb5e" onclick="setTool('c5','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c5','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c5" data-bg="lined" width="980" height="200"></canvas>
+  </div>
+
+  <!-- ═══════ ข้อ 6: Match (dropdown) ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 6</span> <span class="skill theory">ทฤษฎี · จับคู่ (Dropdown)</span></div>
+    <div class="stem">จับคู่ปริมาณกับความหมาย/หน่วยที่ถูกต้อง (K1.2)</div>
+    <div class="match-row"><div class="match-side left">🅰️ ความถี่ f</div><div>↔</div><div class="match-side right"><select name="q6-a"><option value="">-- เลือก --</option><option value="1">จำนวนรอบต่อวินาที · หน่วย Hz</option><option value="2">เวลาต่อ 1 รอบ · หน่วย s</option><option value="3">เรเดียนต่อวินาที · หน่วย rad/s</option><option value="4">ระยะจากสมดุลมากที่สุด · หน่วย m</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅱️ คาบ T</div><div>↔</div><div class="match-side right"><select name="q6-b"><option value="">-- เลือก --</option><option value="1">จำนวนรอบต่อวินาที · หน่วย Hz</option><option value="2">เวลาต่อ 1 รอบ · หน่วย s</option><option value="3">เรเดียนต่อวินาที · หน่วย rad/s</option><option value="4">ระยะจากสมดุลมากที่สุด · หน่วย m</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅲️ ความถี่เชิงมุม ω</div><div>↔</div><div class="match-side right"><select name="q6-c"><option value="">-- เลือก --</option><option value="1">จำนวนรอบต่อวินาที · หน่วย Hz</option><option value="2">เวลาต่อ 1 รอบ · หน่วย s</option><option value="3">เรเดียนต่อวินาที · หน่วย rad/s</option><option value="4">ระยะจากสมดุลมากที่สุด · หน่วย m</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅳️ แอมพลิจูด A</div><div>↔</div><div class="match-side right"><select name="q6-d"><option value="">-- เลือก --</option><option value="1">จำนวนรอบต่อวินาที · หน่วย Hz</option><option value="2">เวลาต่อ 1 รอบ · หน่วย s</option><option value="3">เรเดียนต่อวินาที · หน่วย rad/s</option><option value="4">ระยะจากสมดุลมากที่สุด · หน่วย m</option></select></div></div>
+  </div>
+
+  <!-- ═══════ ข้อ 7: F = −kx · Identify variables ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 7</span> <span class="skill theory">ทฤษฎี · ระบุตัวแปร</span></div>
+    <div class="stem">ในสมการ <b style="font-family:'Cambria Math',serif;color:#3730a3">F = −kx</b> ที่เป็นเงื่อนไขของ SHM — ระบุความหมายของแต่ละตัวแปร (K1.1)</div>
+    <div class="sub"><b>F</b> หมายถึง
+      <select class="ans-in" style="min-width:220px"><option value="">--</option><option value="1">แรงคืนตัว (restoring force)</option><option value="2">แรงเสียดทาน</option><option value="3">แรงโน้มถ่วง</option><option value="4">แรงเข้าสู่ศูนย์กลาง</option></select>
+    </div>
+    <div class="sub"><b>k</b> หมายถึง
+      <select class="ans-in" style="min-width:220px"><option value="">--</option><option value="1">ค่าคงตัวของสปริง (spring constant)</option><option value="2">มวลของวัตถุ</option><option value="3">ความเร่ง</option><option value="4">จำนวนรอบ</option></select>
+    </div>
+    <div class="sub"><b>x</b> หมายถึง
+      <select class="ans-in" style="min-width:220px"><option value="">--</option><option value="1">การกระจัดจากตำแหน่งสมดุล</option><option value="2">ระยะทางที่เดินทางทั้งหมด</option><option value="3">ความเร็ว</option><option value="4">เวลา</option></select>
+    </div>
+    <div class="sub"><b>เครื่องหมาย −</b> บอกความหมายว่า
+      <select class="ans-in" style="min-width:280px"><option value="">--</option><option value="1">แรงมีทิศตรงข้ามกับการกระจัด</option><option value="2">แรงมีขนาดเป็นลบ</option><option value="3">การกระจัดเป็นลบเสมอ</option><option value="4">วัตถุเคลื่อนที่ช้าลง</option></select>
+    </div>
+  </div>
+
+  <!-- ═══════ ข้อ 8: กราฟ F-x + วาด canvas ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 8</span> <span class="skill theory">ทฤษฎี · อ่าน/วาดกราฟ</span></div>
+    <div class="stem">กราฟ F-x ของการเคลื่อนที่ <b>แบบใด</b> จึงเป็น SHM? (K1.1 · P1.1)</div>
+    <label class="opt"><input type="radio" name="q8"> ① กราฟเป็นเส้นโค้งแบบ parabola ผ่านจุดกำเนิด</label>
+    <label class="opt"><input type="radio" name="q8"> ② กราฟเป็นเส้นตรงผ่านจุดกำเนิด ความชัน −k (ลาดลง)</label>
+    <label class="opt"><input type="radio" name="q8"> ③ กราฟเป็นเส้นตรงผ่านจุดกำเนิด ความชัน +k (ลาดขึ้น)</label>
+    <label class="opt"><input type="radio" name="q8"> ④ กราฟเป็นวงกลมรอบจุดกำเนิด</label>
+    <div class="sub"><b>(8.2)</b> วาดกราฟ F-x ของ SHM บนกระดาษกราฟด้านล่าง (ลากเส้นตรงผ่าน (0,0) ลาดลง):</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb8p" onclick="setTool('c8','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb8e" onclick="setTool('c8','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c8','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c8','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c8','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c8')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c8" data-bg="grid" width="980" height="280"></canvas>
+  </div>
+
+  <!-- ═══════ ข้อ 9: Calc ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 9</span> <span class="skill calc">คำนวณ · Canvas</span></div>
+    <div class="stem">อนุภาคสั่นด้วย <b>f = 2.5 Hz</b> (K1.2 · P1.2)</div>
+    <div class="sub"><b>(9.1)</b> T = <input class="ans-in" id="q9-t"> s · ω = <input class="ans-in" id="q9-w"> rad/s</div>
+    <div class="sub"><b>(9.2)</b> ใน 1 นาที สั่นครบกี่รอบ? → <input class="ans-in" id="q9-n"> รอบ</div>
+    <div class="sub"><b>(9.3) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb9p" onclick="setTool('c9','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb9e" onclick="setTool('c9','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c9','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c9','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c9')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c9" data-bg="lined" width="980" height="200"></canvas>
+  </div>
+
+  <!-- ═══════ ข้อ 10: Spot error + checkbox bank ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 10</span> <span class="skill theory">ทฤษฎี · Spot the Error + Checkbox</span></div>
+    <div class="stem">ข้อความต่อไปนี้มีส่วนที่ "ผิด":<br><em style="color:#b91c1c;background:#fee2e2;padding:4px 10px;border-radius:6px;display:inline-block;margin-top:4px">"การเคลื่อนที่แบบ periodic ทุกประเภทเป็นการเคลื่อนที่แบบ SHM เพราะทั้งคู่ใช้เวลาในแต่ละรอบเท่ากัน"</em></div>
+    <div class="sub"><b>(10.1)</b> ติ๊ก ✔ ข้อที่เป็น "เหตุผลที่ถูกต้อง" ในการอธิบายว่าข้อความนี้ผิด (ถูก 3 ข้อ · M1.1)</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q10" value="a" data-correct="true"> ① SHM เป็นกรณีพิเศษของ periodic · ต้องเพิ่มเงื่อนไข F = −kx</label>
+      <label class="opt"><input type="checkbox" name="q10" value="b" data-correct="false"> ② SHM กว้างกว่า periodic · periodic เป็นส่วนหนึ่งของ SHM</label>
+      <label class="opt"><input type="checkbox" name="q10" value="c" data-correct="true"> ③ วงกลมสม่ำเสมอเป็น periodic แต่ไม่ใช่ SHM (แรงเข้าสู่ศูนย์กลางไม่ ∝ x)</label>
+      <label class="opt"><input type="checkbox" name="q10" value="d" data-correct="false"> ④ คาบเท่ากันเป็นเงื่อนไขเฉพาะของ SHM</label>
+      <label class="opt"><input type="checkbox" name="q10" value="e" data-correct="true"> ⑤ ลูกบอลเด้งเป็น periodic แต่ F ไม่ ∝ −x จึงไม่ใช่ SHM</label>
+      <label class="opt"><input type="checkbox" name="q10" value="f" data-correct="false"> ⑥ periodic ทุกแบบเป็น SHM ถ้าแอมพลิจูดเล็กพอ</label>
+    </div>
+    <div class="sub"><b>(10.2)</b> เขียนข้อความที่ "ถูกต้อง" ให้แทนข้อความเดิม:</div>
+    <textarea class="ans-ta" id="q10-correct" rows="2" placeholder="SHM เป็นกรณีพิเศษของ periodic ที่ต้อง..."></textarea>
+  </div>
+
+  <!-- ═══════ ข้อ 11: SHM ในชีวิต (Checkbox Bank) ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 11</span> <span class="skill appli">ประยุกต์ · Checkbox Bank</span></div>
+    <div class="stem">ติ๊ก ✔ สถานการณ์ที่<b>เป็น SHM</b> · และ ✘ สถานการณ์ที่<b>ไม่ใช่ SHM</b> (K1.1 · M1.1, M1.3 · ถูก 5 / ไม่ถูก 5)</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q11" value="a" data-correct="true"> ① สายกีตาร์ดีด (amplitude เล็ก)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="b" data-correct="false"> ② ล้อรถหมุนด้วยความเร็วคงที่</label>
+      <label class="opt"><input type="checkbox" name="q11" value="c" data-correct="true"> ③ เมโทรนอมแกว่ง</label>
+      <label class="opt"><input type="checkbox" name="q11" value="d" data-correct="false"> ④ ลูกโป่งถูกแรงลมพัด</label>
+      <label class="opt"><input type="checkbox" name="q11" value="e" data-correct="true"> ⑤ ผลึกควอตซ์สั่นในนาฬิกา (f = 32,768 Hz)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="f" data-correct="false"> ⑥ คนเดินบนถนน</label>
+      <label class="opt"><input type="checkbox" name="q11" value="g" data-correct="true"> ⑦ ส้อมเสียงสั่นสม่ำเสมอ</label>
+      <label class="opt"><input type="checkbox" name="q11" value="h" data-correct="false"> ⑧ เข็มวินาทีของนาฬิกาเดินรอบหน้าปัด</label>
+      <label class="opt"><input type="checkbox" name="q11" value="i" data-correct="true"> ⑨ โมเลกุลอากาศสั่นเมื่อได้ยินเสียงดนตรี</label>
+      <label class="opt"><input type="checkbox" name="q11" value="j" data-correct="false"> ⑩ ยางรถเด้งหลังตกจากเนิน</label>
+    </div>
+    <div class="hint">💡 Hint: ต้องมี F = −kx (แรงคืนตัวเชิงเส้น) จึงเป็น SHM</div>
+  </div>
+
+  <!-- ═══════ ข้อ 12: ประยุกต์ สปริงแนวดิ่ง ═══════ -->
+  <div class="item">
+    <div><span class="no">ข้อ 12</span> <span class="skill appli">ประยุกต์ · Canvas + อธิบาย</span></div>
+    <div class="stem">มวล m = 0.5 kg แขวนกับสปริง k = 50 N/m ในแนวดิ่ง · ดึงลง 3 cm แล้วปล่อย (K1.1, P1.1 · M1.3)</div>
+    <div class="sub"><b>(12.1)</b> การเคลื่อนที่นี้เป็น SHM หรือไม่?
+      <label class="opt" style="display:inline-flex;margin-left:6px"><input type="radio" name="q12-isshm" value="yes" data-correct="true"> เป็น SHM</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="q12-isshm" value="no" data-correct="false"> ไม่ใช่ SHM</label>
+    </div>
+    <div class="sub"><b>(12.2)</b> ตำแหน่งสมดุลใหม่ (ระยะยืดของสปริงเมื่อแขวนมวล): x₀ = <input class="ans-in" id="q12-x0"> cm &nbsp; <span class="hint">(mg = kx₀ · g = 10 m/s²)</span></div>
+    <div class="sub"><b>(12.3)</b> อธิบาย + วาดแผนภาพแรง (FBD) + กราฟ F-x รอบสมดุลใหม่ บน canvas:</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb12p" onclick="setTool('c12','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb12e" onclick="setTool('c12','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c12','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c12','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c12','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c12')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c12" data-bg="grid" width="980" height="280"></canvas>
+    <div class="sub"><b>(12.4) สรุปคำอธิบาย:</b></div>
+    <textarea class="ans-ta" id="q12-exp" rows="3" placeholder="สปริงแนวดิ่งเป็น SHM เพราะ... เปลี่ยนจุดอ้างอิงไปที่สมดุลใหม่... F รอบสมดุลใหม่ = −kx..."></textarea>
+    <div class="sub"><b>(12.5) ✅ ติ๊กหลักการที่ถูกต้อง:</b></div>
+    <label class="opt"><input type="checkbox" name="q12" value="a" data-correct="true"> (ก) ที่ตำแหน่งสมดุลใหม่ แรงลัพธ์ = 0 (kx₀ = mg)</label>
+    <label class="opt"><input type="checkbox" name="q12" value="b" data-correct="true"> (ข) รอบสมดุลใหม่ F_net = −kx (ยังเป็น SHM)</label>
+    <label class="opt"><input type="checkbox" name="q12" value="c" data-correct="false"> (ค) mg รบกวนเงื่อนไข F = −kx จึงไม่เป็น SHM</label>
+    <label class="opt"><input type="checkbox" name="q12" value="d" data-correct="false"> (ง) SHM ต้องเกิดในแนวระดับเท่านั้น</label>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <h3>✅ ทำครบทุกข้อแล้ว กดปุ่มเพื่อส่งคำตอบ</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+
+  <div class="foot">แบบฝึกหัด 12 ข้อ · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+// ═══════ Canvas (pencil/eraser) ═══════
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='lined'||c.dataset.bg==='grid';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function drawAxes(id){const c=document.getElementById(id);if(!c||c.dataset.bg!=='grid')return;const ctx=c.getContext('2d');const w=c.width,h=c.height;const cx=w/2,cy=h/2;ctx.save();ctx.strokeStyle='#64748b';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(20,cy);ctx.lineTo(w-20,cy);ctx.moveTo(cx,20);ctx.lineTo(cx,h-20);ctx.stroke();ctx.fillStyle='#3730a3';ctx.font='700 13px Sarabun';ctx.fillText('F',cx+6,28);ctx.fillText('x',w-18,cy-6);ctx.fillText('0',cx+6,cy+14);ctx.restore();}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}drawAxes(id);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas[data-bg="grid"]').forEach(c=>{initCanvas(c.id);drawAxes(c.id);});initDragDrop();document.getElementById('test_date').value=new Date().toISOString().split('T')[0];if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}});
+
+// ═══════ Drag-Drop (ข้อ 1) ═══════
+function initDragDrop(){
+  document.querySelectorAll('.dd-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',e.target.textContent);e.dataTransfer.setData('ans',e.target.dataset.ans);e.target.classList.add('dragging');window._draggingEl=e.target;});
+    item.addEventListener('dragend',e=>{e.target.classList.remove('dragging');});
+  });
+  document.querySelectorAll('.dd-drop, .dd-pool > #dd-pool-1').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();});
+    zone.addEventListener('drop',e=>{e.preventDefault();if(window._draggingEl){zone.appendChild(window._draggingEl);window._draggingEl.classList.add('placed');window._draggingEl=null;}});
+  });
+  // Mobile touch fallback
+  document.querySelectorAll('.dd-item').forEach(item=>{
+    item.addEventListener('click',e=>{
+      const zones=['dd-pool-1'];document.querySelectorAll('.dd-drop').forEach(z=>zones.push(z));
+      const current=item.parentElement;let next;
+      if(current.id==='dd-pool-1'){next=document.querySelector('.dd-drop[data-zone="shm"]');}
+      else if(current.dataset.zone==='shm'){next=document.querySelector('.dd-drop[data-zone="no"]');}
+      else{next=document.getElementById('dd-pool-1');}
+      if(next){next.appendChild(item);item.classList.add('placed');}
+    });
+  });
+}
+
+// ═══════ Apps Script submission ═══════
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='Exercise_SHM_Plan1';
+
+function collectAnswers(){
+  const ans={};
+  // ข้อ 1 drag-drop
+  const shmZone=document.querySelector('.dd-drop[data-zone="shm"]');
+  const noZone=document.querySelector('.dd-drop[data-zone="no"]');
+  let q1score=0;
+  ans.q1_shm=Array.from(shmZone.querySelectorAll('.dd-item')).map(e=>{if(e.dataset.ans==='shm')q1score++;return e.textContent;});
+  ans.q1_no=Array.from(noZone.querySelectorAll('.dd-item')).map(e=>{if(e.dataset.ans==='no')q1score++;return e.textContent;});
+  ans.q1_score=q1score+'/8';
+  // ข้อ 2, 10, 11, 12 · checkbox with data-correct
+  ['q2','q10','q11','q12'].forEach(q=>{
+    let score=0,max=0;
+    document.querySelectorAll(`input[name="${q}"]`).forEach(cb=>{
+      max++;const correct=cb.dataset.correct==='true';const checked=cb.checked;
+      if(correct===checked)score++;
+    });
+    ans[q+'_selected']=Array.from(document.querySelectorAll(`input[name="${q}"]:checked`)).map(c=>c.value);
+    ans[q+'_score']=score+'/'+max;
+  });
+  // ข้อ 3, 4, 5, 9 calc inputs
+  ['q3-t','q3-f','q3-w','q4-f','q4-t','q4-w','q4-Trate','q4-wrate','q5-f','q5-w','q5-n','q9-t','q9-w','q9-n','q12-x0'].forEach(id=>{
+    const el=document.getElementById(id);if(el)ans[id]=el.value;
+  });
+  // ข้อ 6 match dropdown
+  ['q6-a','q6-b','q6-c','q6-d'].forEach(n=>{const el=document.querySelector(`select[name="${n}"]`);if(el)ans[n]=el.value;});
+  // ข้อ 7 dropdowns
+  document.querySelectorAll('.item').forEach((it,i)=>{if(i===6){it.querySelectorAll('select').forEach((s,j)=>{ans['q7-'+j]=s.value;});}});
+  // ข้อ 8 radio
+  const q8=document.querySelector('input[name="q8"]:checked');ans.q8=q8?q8.value:'';
+  // ข้อ 10, 12 text
+  ans.q10_correct=document.getElementById('q10-correct').value;
+  ans.q12_isshm=(document.querySelector('input[name="q12-isshm"]:checked')||{}).value||'';
+  ans.q12_exp=document.getElementById('q12-exp').value;
+  // Canvas เป็น dataURL (สั้น ๆ)
+  ['c3','c4','c5','c8','c9','c12'].forEach(id=>{const c=document.getElementById(id);if(c){try{ans[id+'_img']=c.toDataURL('image/png');}catch(e){}}});
+  return ans;
+}
+
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();const date=document.getElementById('test_date').value;
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ และห้องให้ครบก่อน';return;}
+  const answers=collectAnswers();
+  const payload={plan:'SHM-1',type:'Exercise-12',student_name:name,student_no:Number(no),class:cls,test_date:date,...answers};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){
+    status.className='status error';status.innerHTML='⚠️ ครูยังไม่ได้ตั้งค่า API URL · <a href="#" onclick="downloadJSON();return false;" style="color:#3730a3;text-decoration:underline">Download .json</a>';
+    window._lastPayload=payload;return;
+  }
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});
+    status.className='status success';status.innerHTML='✅ ส่งคำตอบสำเร็จ! 🎉';btn.textContent='✅ ส่งแล้ว';
+  }catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Exercise_SHM1_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

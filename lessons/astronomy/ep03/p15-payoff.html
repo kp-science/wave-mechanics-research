@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P15 · STELLAR HEIST</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:radial-gradient(ellipse at 50% 0%, #1a0a1a 0%, #04050d 60%); }
+
+  /* === Top HUD === */
+  .heist-hud { display:grid; grid-template-columns:auto 1fr auto auto; gap:12px; align-items:center;
+    padding:12px 16px; background:rgba(0,0,0,0.5); border:1px solid #ff5c7a; border-radius:12px; margin:8px 0 14px;
+    box-shadow:0 0 20px rgba(255,92,122,0.15); }
+  .heist-hud.danger { animation:dangerPulse 0.6s infinite; }
+  @keyframes dangerPulse { 50% { box-shadow:0 0 30px rgba(255,92,122,0.5); } }
+  .hud-label { font-family:Orbitron,sans-serif; font-size:9px; letter-spacing:0.2em; color:#9aa3c0; }
+  .hp-block { width:160px; }
+  .hp-bar { width:100%; height:14px; background:rgba(0,0,0,0.6); border:1px solid #2a3050; border-radius:7px; overflow:hidden; margin-top:2px; }
+  .hp-fill { height:100%; background:linear-gradient(90deg, #7effb2 0%, #ffcb6b 60%, #ff5c7a 100%); transition:width .4s; }
+  .hp-text { font-family:monospace; font-size:13px; color:#7effb2; }
+  .hp-text.low { color:#ff5c7a; }
+
+  .timer-block { text-align:center; }
+  .timer-text { font-family:Orbitron,monospace; font-size:24px; color:#ffcb6b; letter-spacing:0.1em; }
+  .timer-text.warn { color:#ff5c7a; animation:tBlink 0.5s infinite; }
+  @keyframes tBlink { 50% { opacity:0.5; } }
+
+  .combo-block { padding:6px 10px; background:rgba(212,184,255,0.1); border:1px solid #d4b8ff; border-radius:8px; }
+  .combo-text { font-family:Orbitron,sans-serif; font-size:14px; color:#d4b8ff; }
+  .combo-mult { font-size:11px; color:#ffcb6b; }
+
+  .coin-block { padding:6px 10px; background:rgba(255,203,107,0.1); border:1px solid #ffcb6b; border-radius:8px; }
+  .coin-text { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; }
+
+  /* === Phase indicator === */
+  .phase-indicator { display:flex; gap:6px; margin:8px 0 14px; }
+  .phase-pip { flex:1; padding:8px; border:1px solid #2a3050; border-radius:8px; text-align:center;
+    font-family:Orbitron,sans-serif; font-size:11px; color:#6a7394; letter-spacing:0.15em; }
+  .phase-pip.active { background:rgba(255,92,122,0.15); border-color:#ff5c7a; color:#ff5c7a; box-shadow:0 0 12px rgba(255,92,122,0.3); }
+  .phase-pip.done { background:rgba(126,255,178,0.1); border-color:#7effb2; color:#7effb2; }
+
+  /* === Main vault container === */
+  .vault { padding:18px; background:rgba(22,27,58,0.6); border:2px solid rgba(120,140,220,0.4); border-radius:14px; min-height:340px; position:relative; overflow:hidden; }
+  .vault.shake { animation:shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  .vault-title { font-family:Orbitron,sans-serif; font-size:14px; color:#ff5c7a; letter-spacing:0.2em; margin-bottom:14px; text-align:center; }
+
+  /* === Phase 1 · Parallax problem === */
+  .p1-problem { padding:20px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:10px; text-align:center; }
+  .p1-problem .equation { font-family:Orbitron,monospace; font-size:24px; color:#ffcb6b; margin:10px 0; }
+  .p1-problem .equation .hl { color:#7effb2; padding:0 6px; background:rgba(126,255,178,0.1); border-radius:6px; }
+  .p1-choices { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin-top:14px; }
+  .p1-choice { padding:14px; background:rgba(100,216,255,0.08); border:2px solid rgba(120,140,220,0.3); color:#e8ecf8;
+    border-radius:10px; font-family:monospace; font-size:18px; cursor:pointer; transition:all .15s; }
+  .p1-choice:hover { border-color:#64d8ff; transform:translateY(-3px); box-shadow:0 6px 18px rgba(100,216,255,0.2); }
+  .p1-choice.correct { border-color:#7effb2; background:rgba(126,255,178,0.2); color:#7effb2; }
+  .p1-choice.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.2); color:#ff5c7a; }
+
+  /* === Phase 2 · Magnitude scale drop === */
+  .p2-scale { position:relative; width:100%; height:50px; background:linear-gradient(to right, #fff, #ffd, #fa3, #831, #200); border-radius:25px; margin:20px 0 30px; box-shadow:inset 0 2px 8px rgba(0,0,0,0.5); }
+  .p2-tick { position:absolute; top:-4px; bottom:-4px; width:1px; background:rgba(0,0,0,0.4); }
+  .p2-tick .lbl { position:absolute; top:54px; left:50%; transform:translateX(-50%); font-size:10px; color:#6a7394; font-family:monospace; }
+  .p2-token { position:absolute; top:-12px; padding:5px 10px; background:#0a0420; border:2px solid #64d8ff; border-radius:14px; font-size:11px; color:#64d8ff; cursor:grab; transform:translateX(-50%); user-select:none; }
+  .p2-token.placed-ok { border-color:#7effb2; color:#7effb2; }
+  .p2-token.placed-bad { border-color:#ff5c7a; color:#ff5c7a; }
+  .p2-tray { display:flex; flex-wrap:wrap; gap:8px; padding:12px; background:rgba(0,0,0,0.4); border:1px dashed #2a3050; border-radius:10px; margin:10px 0; min-height:46px; }
+  .p2-tray .p2-token { position:static; transform:none; top:auto; }
+
+  /* === Phase 3 · Compute M === */
+  .p3-grid { display:grid; gap:8px; }
+  .p3-row { display:grid; grid-template-columns:1fr auto; gap:10px; padding:12px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; align-items:center; }
+  .p3-row.locked { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .p3-info { font-size:13px; }
+  .p3-info b { color:#e8ecf8; }
+  .p3-info .data { font-family:monospace; font-size:11px; color:#9aa3c0; }
+  .p3-row input { padding:8px; width:80px; background:rgba(0,0,0,0.5); border:1px solid #2a3050; color:#ffcb6b; font-family:monospace; font-size:14px; border-radius:6px; }
+  .p3-row button { padding:8px 12px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; color:#64d8ff; border-radius:6px; cursor:pointer; font-size:12px; font-family:inherit; }
+
+  /* === Power-up dock === */
+  .power-dock { display:flex; gap:8px; padding:8px 12px; background:rgba(0,0,0,0.5); border:1px solid #2a3050; border-radius:10px; margin:10px 0; flex-wrap:wrap; align-items:center; }
+  .power-dock .lbl { font-family:Orbitron,sans-serif; font-size:10px; color:#9aa3c0; letter-spacing:0.15em; margin-right:6px; }
+  .power-btn { padding:6px 12px; background:rgba(212,184,255,0.1); border:1px solid #d4b8ff; color:#d4b8ff; border-radius:6px; cursor:pointer; font-size:13px; font-family:inherit; }
+  .power-btn:hover:not(:disabled) { background:rgba(212,184,255,0.25); }
+  .power-btn:disabled { opacity:0.3; cursor:not-allowed; }
+  .power-btn .count { font-family:monospace; color:#ffcb6b; }
+  .power-empty { font-size:11px; color:#6a7394; font-style:italic; }
+
+  /* === VOID Intercept overlay === */
+  .void-overlay { position:fixed; inset:0; background:rgba(255,92,122,0.15); backdrop-filter:blur(6px); z-index:9000; display:flex; align-items:center; justify-content:center; animation:voidIn 0.3s; }
+  @keyframes voidIn { from { opacity:0; } }
+  .void-modal { width:90%; max-width:420px; padding:24px; background:#0d1126; border:3px solid #ff5c7a; border-radius:16px; box-shadow:0 0 60px rgba(255,92,122,0.5); text-align:center; }
+  .void-modal .vh-icon { font-size:40px; margin-bottom:8px; filter:drop-shadow(0 0 20px rgba(255,92,122,0.8)); }
+  .void-modal .vh-title { font-family:Orbitron,sans-serif; color:#ff5c7a; font-size:14px; letter-spacing:0.2em; }
+  .void-modal .vh-claim { font-size:16px; color:#ffd; padding:14px 8px; line-height:1.6; min-height:50px; }
+  .void-modal .vh-charge { width:100%; height:5px; background:rgba(0,0,0,0.5); border-radius:3px; overflow:hidden; margin:10px 0; }
+  .void-modal .vh-fill { height:100%; background:linear-gradient(90deg, #7effb2, #ffcb6b, #ff5c7a); transition:width 0.1s linear; }
+  .void-modal .vh-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  .vh-btn { padding:12px; border-radius:10px; cursor:pointer; font-family:Orbitron,sans-serif; font-weight:700; border:2px solid; }
+  .vh-btn.trap { background:rgba(255,92,122,0.15); border-color:#ff5c7a; color:#ff5c7a; }
+  .vh-btn.fact { background:rgba(126,255,178,0.15); border-color:#7effb2; color:#7effb2; }
+
+  /* === End screen === */
+  .end-banner { padding:30px; border-radius:16px; text-align:center; margin:14px 0; }
+  .end-banner.win { background:radial-gradient(ellipse, rgba(126,255,178,0.2), #0a0420); border:3px solid #7effb2; }
+  .end-banner.fail { background:radial-gradient(ellipse, rgba(255,92,122,0.2), #0a0420); border:3px solid #ff5c7a; }
+  .end-banner .big-icon { font-size:64px; }
+  .end-banner h2 { font-family:Orbitron,sans-serif; font-size:24px; letter-spacing:0.2em; margin:8px 0; }
+  .end-banner.win h2 { color:#7effb2; }
+  .end-banner.fail h2 { color:#ff5c7a; }
+  .end-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:10px; margin-top:14px; }
+  .end-stat { padding:10px; background:rgba(0,0,0,0.3); border-radius:8px; }
+  .end-stat .v { font-family:Orbitron,monospace; font-size:18px; color:#ffcb6b; }
+  .end-stat .k { font-size:10px; color:#9aa3c0; letter-spacing:0.1em; }
+
+  /* Floating combo number */
+  .combo-pop { position:fixed; padding:8px 18px; font-family:Orbitron,sans-serif; font-size:24px; font-weight:700;
+    color:#ffcb6b; text-shadow:0 0 12px #ffcb6b; pointer-events:none; z-index:9001; animation:comboPop 0.8s ease-out forwards; }
+  @keyframes comboPop { 0% { opacity:0; transform:scale(0.5); } 30% { opacity:1; transform:scale(1.2); } 100% { opacity:0; transform:translateY(-40px) scale(1); } }
+
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px; background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s ease-out; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px) scale(0.8); opacity:0; } to { transform:translateX(-50%) translateY(0) scale(1); opacity:1; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+
+  /* Scoreboard mini */
+  .score-board { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin:8px 0; font-size:11px; }
+  .score-cell { padding:6px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:6px; text-align:center; }
+  .score-cell.active { border-color:#ff5c7a; }
+  .score-cell.done { border-color:#7effb2; color:#7effb2; }
+  .score-cell .label { font-family:Orbitron,sans-serif; font-size:9px; letter-spacing:0.1em; color:#9aa3c0; }
+  .score-cell .val { font-family:monospace; font-size:13px; color:#ffcb6b; }
+</style>
+</head>
+<body data-page="p15" data-type="puzzle">
+<div class="page">
+  <div style="text-align:center;">
+    <div style="display:inline-block;padding:4px 12px;background:rgba(255,92,122,0.15);border:1px solid #ff5c7a;border-radius:8px;font-family:Orbitron,sans-serif;font-size:11px;color:#ff5c7a;letter-spacing:0.15em;">
+      🔥 STELLAR HEIST · CLIMAX · ARCADE
+    </div>
+    <h1 style="margin-top:10px;">หนีจากมิติ VOID · 3 vault</h1>
+    <div style="font-size:13px;color:#c8cde0;line-height:1.6;">
+      ดาว SOS กำลัง supernova · พ่ออารยายังรอข้อความ · VOIDHUNTER ปิดล้อม<br>
+      <b style="color:#ff5c7a;">ต้องผ่าน 3 vault</b>: Parallax · Magnitude · ทบทวน<br>
+      🛡️ มี item จาก shop? ใช้ได้ที่นี่!
+    </div>
+  </div>
+
+  <div class="phase-indicator" id="phaseInd">
+    <div class="phase-pip" data-p="0">1 · PARALLAX VAULT</div>
+    <div class="phase-pip" data-p="1">2 · MAGNITUDE VAULT</div>
+    <div class="phase-pip" data-p="2">3 · REVIEW VAULT</div>
+  </div>
+
+  <div class="heist-hud" id="hud">
+    <div class="hp-block">
+      <div class="hud-label">HP</div>
+      <div class="hp-text" id="hpText">100</div>
+      <div class="hp-bar"><div class="hp-fill" id="hpFill" style="width:100%;"></div></div>
+    </div>
+    <div class="timer-block">
+      <div class="hud-label">TIME · PHASE</div>
+      <div class="timer-text" id="timer">60</div>
+    </div>
+    <div class="combo-block">
+      <div class="hud-label">COMBO</div>
+      <div class="combo-text"><span id="combo">0</span><span class="combo-mult" id="comboMult"></span></div>
+    </div>
+    <div class="coin-block">
+      <div class="hud-label">🪙</div>
+      <div class="coin-text" id="coinTotal">0</div>
+    </div>
+  </div>
+
+  <div class="score-board" id="scoreBoard">
+    <div class="score-cell" data-p="0">
+      <div class="label">VAULT 1</div>
+      <div class="val" id="s1">—</div>
+    </div>
+    <div class="score-cell" data-p="1">
+      <div class="label">VAULT 2</div>
+      <div class="val" id="s2">—</div>
+    </div>
+    <div class="score-cell" data-p="2">
+      <div class="label">VAULT 3</div>
+      <div class="val" id="s3">—</div>
+    </div>
+  </div>
+
+  <div class="power-dock" id="powerDock">
+    <span class="lbl">POWER:</span>
+    <span class="power-empty" id="powerEmpty">— ไม่มี item · ซื้อก่อนหน้านี้ที่ shop —</span>
+  </div>
+
+  <div class="vault" id="vaultArea">
+    <div class="vault-title" id="vaultTitle">▶ กดเริ่มเพื่อเข้า VAULT 1</div>
+    <div id="vaultBody" style="text-align:center;padding:60px 20px;">
+      <button onclick="startHeist()" style="padding:14px 30px;background:rgba(255,92,122,0.2);border:2px solid #ff5c7a;color:#ff5c7a;font-family:Orbitron,sans-serif;font-size:14px;letter-spacing:0.2em;border-radius:10px;cursor:pointer;">
+        🚨 START HEIST
+      </button>
+      <div style="margin-top:14px;font-size:12px;color:#9aa3c0;">
+        ⚠ เริ่มแล้วหยุดไม่ได้ · เสร็จในเวลาที่กำหนดเท่านั้น
+      </div>
+    </div>
+  </div>
+
+  <div id="endArea" style="display:none;"></div>
+
+  <div class="btn-pair" id="submitBar" style="display:none;">
+    <button class="submit-btn">💾 ส่งรายงาน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · STELLAR HEIST (P15)</summary>
+    <div class="body">
+      <b>แนว arcade game</b> · ผสมความรู้ K2(parallax) + K1(m) + ทบทวนแนวคิด เข้าใน 3 vault<br>
+      <b>HP/Time/Combo</b>: pressure จริง · เด็กต้องคิดเร็ว + แม่น<br>
+      <b>VOID intercept</b>: คั่นกลาง · ให้ความรู้สึก boss-fight<br>
+      <b>Shop items ใช้ได้</b>: 🛡️ shield · ⏱️ chronos · 🌑 cloak (ถ้าซื้อจาก P11 มาก่อน)<br>
+      <b>🪙 Coin (max ~60 · TUNED)</b>:<br>
+      · Vault 1 (4 ข้อ): 2 coin/ข้อ + speed (1/10s) = 0-14<br>
+      · Vault 2 (5 ดาว ruler): 2 coin/correct + speed = 0-16<br>
+      · Vault 3 (4 ทบทวน MCQ): 4 coin/ข้อ + speed = 0-23<br>
+      · VOID intercept correct: +3 (max ~6 รวม)<br>
+      · Combo bonus: streak 3 = ×1.3 · streak 5 = ×1.5<br>
+      · All-clear: +5 · HP > 60% (>72): +3<br>
+      <b>HP system (TUNED)</b>: เริ่ม 120 · damage 8-10 · VOID miss -10<br>
+      <b>VOID timing</b>: 7s reaction · gap 14-22s · skip ถ้าเหลือ <15s<br>
+      <b>Win</b>: ผ่าน 3 vault HP > 0 · <b>Fail</b>: HP=0 หรือ time runs out ใน vault ใด vault หนึ่ง<br>
+      <b>Calculator</b>: 🧮 FAB ใช้ได้ทุก vault (กด C)
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== DATA ==================== */
+const PHASE1_PROBS = [
+  { p:0.5,  d:2,    choices:[0.5, 2, 5] },
+  { p:0.1,  d:10,   choices:[1, 10, 100] },
+  { p:0.01, d:100,  choices:[10, 100, 1000] },
+  { p:0.005, d:200, choices:[20, 200, 2000] },
+];
+const PHASE2_STARS = [
+  { id:'sirius',  name:'Sirius',  m:-1.46 },
+  { id:'vega',    name:'Vega',    m:0.03 },
+  { id:'deneb',   name:'Deneb',   m:1.25 },
+  { id:'polaris', name:'Polaris', m:1.98 },
+  { id:'eye',     name:'ตาเปล่า', m:6 },
+];
+const PHASE3_REVIEW = [
+  {
+    id:'q1',
+    q:'ดาว A: parallax = <b>0.5″</b> · ดาว B: parallax = <b>0.05″</b><br>ดาวไหน <b>ใกล้โลก</b> มากกว่า?',
+    choices:['A · ใกล้กว่า', 'B · ใกล้กว่า', 'ห่างเท่ากัน'],
+    correct:0,
+    hint:'parallax ใหญ่ = ใกล้ (d = 1/p)',
+  },
+  {
+    id:'q2',
+    q:'เรียงดาวจาก <b>สว่างที่สุด</b> → น้อยที่สุด<br>Sirius (m=−1.5) · Vega (m=0.0) · Polaris (m=+2.0)',
+    choices:['Sirius → Vega → Polaris', 'Polaris → Vega → Sirius', 'Vega → Sirius → Polaris'],
+    correct:0,
+    hint:'m น้อย (ติดลบ) = สว่างกว่า',
+  },
+  {
+    id:'q3',
+    q:'ดาว 2 ดวง <b>เห็นสว่างเท่ากัน</b> · ดวงหนึ่งอยู่ไกลกว่า<br>ดวงไกลกว่า ปล่อย <b>แสงจริง</b> เป็นอย่างไร?',
+    choices:['น้อยกว่า', 'มากกว่า', 'เท่ากัน'],
+    correct:1,
+    hint:'ไกลแต่เห็นสว่างเท่ากัน → ของจริงต้องสว่างกว่า',
+  },
+  {
+    id:'q4',
+    q:'การวัด parallax ต้องสังเกตดาว <b>ห่างกันกี่เดือน</b>?<br>(โลกโคจรรอบดวงอาทิตย์)',
+    choices:['1 เดือน', '6 เดือน', '12 เดือน'],
+    correct:1,
+    hint:'ม.ค. ↔ ก.ค. · เส้นฐานยาวสุด = 2 AU',
+  },
+];
+const VOID_INTERRUPTS = [
+  { text:'ดาวที่<b>เห็นสว่างที่สุด</b> = <b>ปล่อยแสงจริง</b>เยอะที่สุด', isTrap:true },
+  { text:'M ติดลบมาก = ปล่อยแสงจริงเยอะ', isTrap:false },
+  { text:'parsec เป็นหน่วยเวลา', isTrap:true },
+  { text:'d = 1/p (parallax in arcsec, d in pc)', isTrap:false },
+];
+
+const PHASE_TIMES = [60, 60, 75];
+const PHASE_NAMES = ['PARALLAX VAULT', 'MAGNITUDE VAULT', 'REVIEW VAULT'];
+
+const state = {
+  started: false,
+  phase: 0,
+  phaseTimeLeft: 60,
+  hp: 120,        // tuning: bumped from 100 → 120 for better survivability
+  combo: 0,
+  maxCombo: 0,
+  coinTotal: 0,
+  coins: { phase: [0,0,0], combo:0, completion:0, hp:0 },
+  // phase 1
+  p1Idx: 0, p1Results: [],
+  // phase 2
+  p2Placed: {}, p2Order: [],
+  // phase 3 (review MCQ)
+  p3Idx: 0, p3Results: [],
+  // void intercept
+  voidActive: false, voidTimer: 0, voidStart: 0, voidIdx: -1,
+  voidRaf: null,
+  // items used
+  itemsUsed: { shieldPlus:0, chronos:0, cloakBuy:0 },
+  shieldArmed: false,
+  // outcome
+  finished: false,
+  outcome: null,
+  startedAt: 0,
+};
+
+let timerRaf = null;
+let phaseStartTime = 0;
+
+/* ==================== START ==================== */
+window.startHeist = function() {
+  state.started = true;
+  state.startedAt = Date.now();
+  state.phase = 0;
+  state.hp = 120;
+  state.combo = 0;
+  state.coinTotal = 0;
+  // Reset visuals
+  document.getElementById('phaseInd').children[0].classList.add('active');
+  document.querySelector('.score-cell[data-p="0"]').classList.add('active');
+  refreshHUD();
+  renderPowerDock();
+  startPhase(0);
+  // schedule random void intercept (tuning: 14-22s gap · was 8-16s)
+  setTimeout(() => triggerVoidIntercept(), 14000 + Math.random() * 8000);
+};
+
+/* ==================== PHASE TIMER ==================== */
+function startPhase(p) {
+  state.phase = p;
+  state.phaseTimeLeft = PHASE_TIMES[p];
+  phaseStartTime = Date.now();
+  document.getElementById('vaultTitle').textContent = '▶ VAULT ' + (p+1) + ' · ' + PHASE_NAMES[p];
+  // visuals
+  document.querySelectorAll('.phase-pip').forEach((el,i) => {
+    el.classList.toggle('active', i === p);
+    el.classList.toggle('done', i < p);
+  });
+  document.querySelectorAll('.score-cell').forEach((el,i) => {
+    el.classList.toggle('active', i === p);
+    el.classList.toggle('done', i < p);
+  });
+  if (p === 0) renderPhase1();
+  else if (p === 1) renderPhase2();
+  else if (p === 2) renderPhase3();
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+  tickTimer();
+}
+function tickTimer() {
+  const elapsed = (Date.now() - phaseStartTime) / 1000;
+  const left = Math.max(0, PHASE_TIMES[state.phase] + state.bonusTime() - elapsed);
+  state.phaseTimeLeft = left;
+  document.getElementById('timer').textContent = Math.ceil(left) + 's';
+  document.getElementById('timer').classList.toggle('warn', left < 10);
+  document.getElementById('hud').classList.toggle('danger', state.hp < 30 || left < 10);
+  if (left <= 0 && !state.voidActive) {
+    failPhase();
+    return;
+  }
+  if (state.finished) return;
+  timerRaf = requestAnimationFrame(tickTimer);
+}
+state.bonusTime = function() { return state._bonusTime || 0; };
+function addTime(sec) {
+  state._bonusTime = (state._bonusTime || 0) + sec;
+}
+
+/* ==================== HP / COMBO / COINS ==================== */
+function damage(n, label) {
+  if (state.shieldArmed) {
+    state.shieldArmed = false;
+    showCoinToast(0, '🛡️ Shield ป้องกัน · ' + label);
+    return;
+  }
+  state.hp = Math.max(0, state.hp - n);
+  state.combo = 0;
+  refreshHUD();
+  document.getElementById('vaultArea').classList.add('shake');
+  setTimeout(() => document.getElementById('vaultArea').classList.remove('shake'), 300);
+  if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p15');
+  if (state.hp <= 0) failPhase('hp');
+}
+function reward(coins, label) {
+  state.combo++;
+  state.maxCombo = Math.max(state.maxCombo, state.combo);
+  let mult = 1;
+  if (state.combo >= 5) mult = 1.5;       // tuning: was 2.0 · prevented runaway scoring
+  else if (state.combo >= 3) mult = 1.3;  // tuning: was 1.5
+  const total = Math.round(coins * mult);
+  state.coinTotal += total;
+  state.coins.phase[state.phase] += total;
+  if (typeof Coin !== 'undefined') Coin.add(total, 'p15-phase' + state.phase);
+  refreshHUD();
+  if (mult > 1) showComboPop('×' + mult + '!');
+  showCoinToast(total, label + (mult > 1 ? ' (combo ×' + mult + ')' : ''));
+}
+function refreshHUD() {
+  document.getElementById('hpText').textContent = state.hp;
+  document.getElementById('hpText').classList.toggle('low', state.hp < 30);
+  document.getElementById('hpFill').style.width = (state.hp / 120 * 100) + '%';
+  document.getElementById('combo').textContent = state.combo;
+  const m = state.combo >= 5 ? '×1.5' : state.combo >= 3 ? '×1.3' : '';
+  document.getElementById('comboMult').textContent = m;
+  document.getElementById('coinTotal').textContent = state.coinTotal;
+}
+function showComboPop(text) {
+  const el = document.createElement('div');
+  el.className = 'combo-pop';
+  el.textContent = text;
+  el.style.left = (Math.random() * 60 + 20) + '%';
+  el.style.top = '40%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 800);
+}
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 +' + amount : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1400);
+  setTimeout(() => el.remove(), 2000);
+}
+
+/* ==================== PHASE 1 · PARALLAX VAULT ==================== */
+function renderPhase1() {
+  const body = document.getElementById('vaultBody');
+  body.innerHTML = `
+    <div style="text-align:center;font-size:13px;color:#9aa3c0;margin-bottom:10px;">
+      ❓ ปัญหา <b id="p1Num">${state.p1Idx + 1}</b>/${PHASE1_PROBS.length} · ใช้ <b>d = 1/p</b>
+    </div>
+    <div class="p1-problem">
+      <div>parallax angle:</div>
+      <div class="equation">p = <span class="hl" id="p1P">${PHASE1_PROBS[state.p1Idx].p}"</span></div>
+      <div style="font-size:14px;color:#9aa3c0;">d = ?</div>
+      <div class="p1-choices" id="p1Choices"></div>
+    </div>
+  `;
+  renderP1Choices();
+}
+function renderP1Choices() {
+  const prob = PHASE1_PROBS[state.p1Idx];
+  document.getElementById('p1Choices').innerHTML = prob.choices.map(c =>
+    `<button class="p1-choice" onclick="answerP1(${c})">${c} pc</button>`
+  ).join('');
+}
+window.answerP1 = function(d) {
+  const prob = PHASE1_PROBS[state.p1Idx];
+  const correct = (d === prob.d);
+  state.p1Results.push({ p:prob.p, ans:d, correct });
+  document.querySelectorAll('.p1-choice').forEach(b => {
+    b.disabled = true;
+    const v = parseFloat(b.textContent);
+    if (v === prob.d) b.classList.add('correct');
+    else if (v === d && !correct) b.classList.add('wrong');
+  });
+  if (correct) {
+    reward(2, 'Vault 1 · ข้อ ' + (state.p1Idx + 1) + ' ถูก');  // tuning: 3→2
+    addTime(2);
+  } else {
+    damage(10, 'parallax ผิด');  // tuning: 15→10
+  }
+  setTimeout(() => {
+    state.p1Idx++;
+    if (state.p1Idx >= PHASE1_PROBS.length) {
+      finishPhase(0);
+    } else {
+      renderPhase1();
+    }
+  }, 1000);
+};
+
+/* ==================== PHASE 2 · MAGNITUDE VAULT ==================== */
+function renderPhase2() {
+  const body = document.getElementById('vaultBody');
+  body.innerHTML = `
+    <div style="text-align:center;font-size:13px;color:#9aa3c0;margin-bottom:10px;">
+      ลาก 5 ดาวลงไม้บรรทัด m · ±0.6 = ผ่าน
+    </div>
+    <div class="p2-scale" id="p2Scale"></div>
+    <div class="p2-tray" id="p2Tray"></div>
+  `;
+  // ticks
+  const scale = document.getElementById('p2Scale');
+  for (let m = -2; m <= 6; m++) {
+    const t = document.createElement('div');
+    t.className = 'p2-tick';
+    t.style.left = ((m + 2) / 8 * 100) + '%';
+    t.innerHTML = '<span class="lbl">' + (m >= 0 ? '+' : '') + m + '</span>';
+    scale.appendChild(t);
+  }
+  setupP2Drop(scale);
+  renderP2Tokens();
+}
+function renderP2Tokens() {
+  const scale = document.getElementById('p2Scale');
+  const tray = document.getElementById('p2Tray');
+  // remove existing tokens
+  scale.querySelectorAll('.p2-token').forEach(el => el.remove());
+  tray.innerHTML = '';
+  PHASE2_STARS.forEach(s => {
+    const placed = state.p2Placed[s.id];
+    if (placed != null) {
+      const tok = makeP2Token(s);
+      tok.style.left = placed + '%';
+      const placedM = (placed / 100) * 8 - 2;
+      const ok = Math.abs(placedM - s.m) < 0.6;
+      tok.classList.add(ok ? 'placed-ok' : 'placed-bad');
+      tok.draggable = false;
+      scale.appendChild(tok);
+    } else {
+      tray.appendChild(makeP2Token(s));
+    }
+  });
+}
+function makeP2Token(star) {
+  const t = document.createElement('div');
+  t.className = 'p2-token';
+  t.draggable = true;
+  t.dataset.id = star.id;
+  t.textContent = star.name;
+  t.ondragstart = (e) => { e.dataTransfer.setData('star', star.id); e.dataTransfer.setData('text/plain', star.id); };
+  if (typeof TouchDrag !== 'undefined') TouchDrag.makeDraggable(t, () => star.id);
+  return t;
+}
+function placeP2Star(id, clientX) {
+  if (!id) return;
+  const scale = document.getElementById('p2Scale');
+  const rect = scale.getBoundingClientRect();
+  const x = Math.max(0, Math.min(100, (clientX - rect.left) / rect.width * 100));
+  state.p2Placed[id] = x;
+  const star = PHASE2_STARS.find(s => s.id === id);
+  const placedM = (x / 100) * 8 - 2;
+  const correct = Math.abs(placedM - star.m) < 0.6;
+  if (correct) {
+    reward(2, 'Vault 2 · ' + star.name + ' ✓');
+    addTime(2);
+  } else {
+    damage(8, star.name + ' วางผิด');
+  }
+  renderP2Tokens();
+  const all = PHASE2_STARS.every(s => state.p2Placed[s.id] != null);
+  if (all) setTimeout(() => finishPhase(1), 600);
+}
+function setupP2Drop(scale) {
+  scale.ondragover = (e) => e.preventDefault();
+  scale.ondrop = (e) => {
+    e.preventDefault();
+    let id = e.dataTransfer.getData('star');
+    if (!id) id = e.dataTransfer.getData('text/plain');
+    placeP2Star(id, e.clientX);
+  };
+  if (typeof TouchDrag !== 'undefined') {
+    TouchDrag.makeDropTarget(scale, (id, cx) => placeP2Star(id, cx));
+  }
+}
+
+/* ==================== PHASE 3 · REVIEW VAULT ==================== */
+function renderPhase3() {
+  const body = document.getElementById('vaultBody');
+  const total = PHASE3_REVIEW.length;
+  const cur = PHASE3_REVIEW[state.p3Idx];
+  body.innerHTML = `
+    <div style="text-align:center;font-size:13px;color:#9aa3c0;margin-bottom:10px;">
+      📚 ทบทวนสิ่งที่เรียนมา · ข้อ <b id="p3Num">${state.p3Idx + 1}</b>/${total}
+    </div>
+    <div class="p1-problem">
+      <div style="font-size:15px;color:#e8ecf8;line-height:1.7;">${cur.q}</div>
+      <div class="p1-choices" id="p3Choices" style="grid-template-columns:1fr;gap:8px;margin-top:18px;"></div>
+      <div style="margin-top:10px;font-size:11px;color:#6a7394;font-style:italic;">💡 ${cur.hint}</div>
+    </div>
+  `;
+  renderP3Choices();
+}
+function renderP3Choices() {
+  const cur = PHASE3_REVIEW[state.p3Idx];
+  document.getElementById('p3Choices').innerHTML = cur.choices.map((c, i) =>
+    `<button class="p1-choice" onclick="answerP3(${i})" style="text-align:left;padding:14px 18px;font-size:14px;font-family:inherit;">${String.fromCharCode(65+i)}. ${c}</button>`
+  ).join('');
+}
+window.answerP3 = function(idx) {
+  const cur = PHASE3_REVIEW[state.p3Idx];
+  const correct = (idx === cur.correct);
+  state.p3Results.push({ id:cur.id, ans:idx, correct });
+  document.querySelectorAll('#p3Choices .p1-choice').forEach((b, i) => {
+    b.disabled = true;
+    if (i === cur.correct) b.classList.add('correct');
+    else if (i === idx && !correct) b.classList.add('wrong');
+  });
+  if (correct) {
+    reward(4, 'Vault 3 · ข้อ ' + (state.p3Idx + 1) + ' ถูก');
+    addTime(3);
+  } else {
+    damage(8, 'ทบทวน · ข้อ ' + (state.p3Idx + 1) + ' ผิด');
+  }
+  setTimeout(() => {
+    state.p3Idx++;
+    if (state.p3Idx >= PHASE3_REVIEW.length) {
+      finishPhase(2);
+    } else {
+      renderPhase3();
+    }
+  }, 1100);
+};
+
+/* ==================== FINISH PHASE / GAME ==================== */
+function finishPhase(p) {
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+  // Speed bonus: 1 coin per 10 sec left (tuning: was 1/5s · prevented inflation)
+  const tLeft = Math.max(0, state.phaseTimeLeft);
+  const bonus = Math.floor(tLeft / 10);
+  if (bonus > 0) {
+    state.coinTotal += bonus;
+    state.coins.phase[p] += bonus;
+    if (typeof Coin !== 'undefined') Coin.add(bonus, 'p15-phase' + p + '-speed');
+    showCoinToast(bonus, 'Vault ' + (p+1) + ' Speed bonus');
+  }
+  // update score cell
+  document.getElementById('s' + (p+1)).textContent = '✓ ' + state.coins.phase[p] + '🪙';
+  document.querySelector('.score-cell[data-p="' + p + '"]').classList.add('done');
+  document.querySelector('.score-cell[data-p="' + p + '"]').classList.remove('active');
+  if (p < 2) {
+    state._bonusTime = 0;
+    setTimeout(() => startPhase(p + 1), 1200);
+  } else {
+    win();
+  }
+  refreshHUD();
+}
+function failPhase(reason) {
+  state.finished = true;
+  state.outcome = reason || 'time';
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+  showEndScreen();
+}
+function win() {
+  state.finished = true;
+  state.outcome = 'win';
+  // Completion bonus
+  const completion = 5;
+  state.coins.completion = completion;
+  state.coinTotal += completion;
+  // HP bonus (tuning: threshold 50→60% of 120, reward 5→3)
+  if (state.hp >= 72) {
+    state.coins.hp = 3;
+    state.coinTotal += 3;
+  }
+  if (typeof Coin !== 'undefined') Coin.add(completion + state.coins.hp, 'p15-clear');
+  if (typeof Photon !== 'undefined') Photon.add(40, 'p15-clear');
+  if (typeof Chain !== 'undefined') Chain.set('p15_route', 'escape');
+  showEndScreen();
+}
+function showEndScreen() {
+  const ea = document.getElementById('endArea');
+  const win = state.outcome === 'win';
+  const reason = state.outcome === 'hp' ? 'HP หมด · VOIDHUNTER ตัดสัญญาณ'
+                : state.outcome === 'time' ? 'หมดเวลา · ยังไม่ผ่าน vault'
+                : '';
+  ea.innerHTML = `
+    <div class="end-banner ${win?'win':'fail'}">
+      <div class="big-icon">${win?'🌟':'☠'}</div>
+      <h2>${win?'ESCAPED · BEACON LIVE':'CAUGHT BY VOID'}</h2>
+      <div style="font-size:13px;color:#c8cde0;margin:8px 0;">
+        ${win ? 'ผ่าน 3 vault สำเร็จ · ส่ง beacon ถึงพ่อได้' : reason}
+      </div>
+      <div class="end-stats">
+        <div class="end-stat"><div class="v">${state.coins.phase[0]}</div><div class="k">VAULT 1 · 🪙</div></div>
+        <div class="end-stat"><div class="v">${state.coins.phase[1]}</div><div class="k">VAULT 2 · 🪙</div></div>
+        <div class="end-stat"><div class="v">${state.coins.phase[2]}</div><div class="k">VAULT 3 · 🪙</div></div>
+        <div class="end-stat"><div class="v">${state.maxCombo}</div><div class="k">MAX COMBO</div></div>
+        <div class="end-stat"><div class="v">${state.hp}</div><div class="k">HP LEFT</div></div>
+        <div class="end-stat"><div class="v">${state.coinTotal}</div><div class="k">รวม 🪙</div></div>
+      </div>
+      ${win ? '<div style="margin-top:12px;color:#7effb2;">+✦ 40 photon · เปิดทาง P16 (Recap)</div>' : '<div style="margin-top:12px;color:#9aa3c0;">หมายเหตุ: ครูอาจให้เล่นใหม่ ถ้าทีมยังไม่พร้อม</div>'}
+    </div>
+  `;
+  ea.style.display = 'block';
+  document.getElementById('vaultArea').style.display = 'none';
+  document.getElementById('submitBar').style.display = 'flex';
+}
+
+/* ==================== VOID INTERCEPT ==================== */
+function triggerVoidIntercept() {
+  if (state.finished || state.voidActive) return;
+  // tuning: don't fire in last 15s of phase (don't steal victory)
+  if (state.phaseTimeLeft < 15) {
+    setTimeout(() => triggerVoidIntercept(), 5000);
+    return;
+  }
+  state.voidActive = true;
+  state.voidIdx = (state.voidIdx + 1) % VOID_INTERRUPTS.length;
+  state.voidStart = Date.now();
+  const claim = VOID_INTERRUPTS[state.voidIdx];
+  // pause phase timer · we'll account for time
+  if (timerRaf) cancelAnimationFrame(timerRaf);
+  const overlay = document.createElement('div');
+  overlay.className = 'void-overlay';
+  overlay.id = 'voidOverlay';
+  overlay.innerHTML = `
+    <div class="void-modal">
+      <div class="vh-icon">👁️</div>
+      <div class="vh-title">VOID INTERCEPT · 7s</div>
+      <div class="vh-claim">${claim.text}</div>
+      <div class="vh-charge"><div class="vh-fill" id="vhFill" style="width:0%;"></div></div>
+      <div class="vh-actions">
+        <button class="vh-btn trap" onclick="answerVoid(true)">🚨 TRAP</button>
+        <button class="vh-btn fact" onclick="answerVoid(false)">✅ FACT</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  // charge timer (7 sec · tuning: was 5s, more reaction time)
+  const tick = () => {
+    if (!state.voidActive) return;
+    const el = (Date.now() - state.voidStart) / 7000 * 100;
+    document.getElementById('vhFill').style.width = Math.min(100, el) + '%';
+    if (el >= 100) {
+      handleVoidAnswer(null);
+    } else {
+      state.voidRaf = requestAnimationFrame(tick);
+    }
+  };
+  state.voidRaf = requestAnimationFrame(tick);
+}
+window.answerVoid = function(asTrap) { handleVoidAnswer(asTrap); };
+function handleVoidAnswer(asTrap) {
+  if (!state.voidActive) return;
+  if (state.voidRaf) cancelAnimationFrame(state.voidRaf);
+  const claim = VOID_INTERRUPTS[state.voidIdx];
+  const correct = (asTrap === claim.isTrap);
+  if (asTrap == null) {
+    damage(10, 'VOID · พลาดเวลา');     // tuning: 15→10
+  } else if (correct) {
+    reward(3, 'VOID · จับ trap ได้');   // tuning: 4→3
+    addTime(5);
+  } else {
+    damage(10, 'VOID · คิดผิด');       // tuning: 15→10
+  }
+  document.getElementById('voidOverlay').remove();
+  state.voidActive = false;
+  // resume phase timer · but offset time elapsed during void
+  phaseStartTime = Date.now() - ((state.phase === 0 ? PHASE_TIMES[0] : PHASE_TIMES[state.phase]) - state.phaseTimeLeft) * 1000;
+  if (!state.finished) tickTimer();
+  // schedule next intercept · tuning: 18-26s gap · was 12-20s
+  if (state.phase < 2) {
+    setTimeout(() => triggerVoidIntercept(), 18000 + Math.random() * 8000);
+  }
+}
+
+/* ==================== POWER-UP DOCK ==================== */
+function renderPowerDock() {
+  const dock = document.getElementById('powerDock');
+  dock.innerHTML = '<span class="lbl">POWER:</span>';
+  let any = false;
+  if (typeof ShopItems !== 'undefined') {
+    const items = ShopItems.load();
+    const usables = [
+      { id:'shieldPlus', icon:'🛡️', name:'Shield', use: () => { state.shieldArmed = true; showCoinToast(0, '🛡️ Shield พร้อม block ครั้งถัดไป'); } },
+      { id:'chronos',    icon:'⏱️', name:'+10s',  use: () => { addTime(10); showCoinToast(0, '⏱️ +10 วินาที'); } },
+      { id:'cloakBuy',   icon:'🌑', name:'Cloak', use: () => { skipCurrent(); } },
+    ];
+    usables.forEach(u => {
+      const it = items[u.id];
+      if (it && it.uses > 0) {
+        any = true;
+        const btn = document.createElement('button');
+        btn.className = 'power-btn';
+        btn.innerHTML = u.icon + ' ' + u.name + ' <span class="count">×' + it.uses + '</span>';
+        btn.onclick = () => {
+          if (state.itemsUsed[u.id] >= it.uses) { btn.disabled = true; return; }
+          ShopItems.use(u.id);
+          state.itemsUsed[u.id]++;
+          u.use();
+          renderPowerDock();
+        };
+        dock.appendChild(btn);
+      }
+    });
+  }
+  if (!any) {
+    const empty = document.createElement('span');
+    empty.className = 'power-empty';
+    empty.textContent = '— ไม่มี item · ซื้อก่อนหน้านี้ที่ shop —';
+    dock.appendChild(empty);
+  }
+}
+function skipCurrent() {
+  // Skip current question in current phase
+  if (state.phase === 0) {
+    state.p1Idx++;
+    if (state.p1Idx >= PHASE1_PROBS.length) finishPhase(0);
+    else renderPhase1();
+  } else if (state.phase === 1) {
+    // Place 1 random unplaced star at correct location
+    const unplaced = PHASE2_STARS.find(s => state.p2Placed[s.id] == null);
+    if (unplaced) {
+      state.p2Placed[unplaced.id] = ((unplaced.m + 2) / 8) * 100;
+      renderP2Tokens();
+      const all = PHASE2_STARS.every(s => state.p2Placed[s.id] != null);
+      if (all) finishPhase(1);
+    }
+  } else if (state.phase === 2) {
+    if (state.p3Idx < PHASE3_REVIEW.length) {
+      const cur = PHASE3_REVIEW[state.p3Idx];
+      state.p3Results.push({ id:cur.id, ans:cur.correct, correct:true, skipped:true });
+      state.p3Idx++;
+      if (state.p3Idx >= PHASE3_REVIEW.length) finishPhase(2);
+      else renderPhase3();
+    }
+  }
+}
+
+/* ==================== SUBMIT ==================== */
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p15',
+    nextHref: 'p16-recap.html',
+    getPayload: () => {
+      if (!state.finished) { alert('เริ่ม heist ก่อน · ต้องจบเกมจึงส่งได้'); throw new Error('not finished'); }
+      return {
+        tag: 'stellar-heist',
+        durationSec: Math.round((Date.now()-state.startedAt)/1000),
+        outcome: state.outcome,
+        hp: state.hp,
+        maxCombo: state.maxCombo,
+        coinTotal: state.coinTotal,
+        coins: state.coins,
+        p1Results: state.p1Results,
+        p2Placed: state.p2Placed,
+        p3Results: state.p3Results,
+        itemsUsed: state.itemsUsed,
+        // legacy
+        correct: state.outcome === 'win' ? 1 : 0,
+        total: 1,
+      };
+    },
+    isPerfect: () => false,
+    onSubmit: () => {
+      alert('✓ ส่งแล้ว · 🪙 รวม ' + state.coinTotal + ' coin · outcome: ' + state.outcome);
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p15-to-p16', 'p16-recap.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P13 · Ship Coordinate Lock · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.situation-card { background: rgba(0,0,0,0.35); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin: 14px 0; }
+.situation-card h5 { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 8px; }
+.situation-card ul { list-style: none; padding: 0; }
+.situation-card li { font-size: 13.5px; color: var(--text-dim); padding: 6px 0; border-bottom: 1px dashed var(--border); }
+.situation-card li:last-child { border-bottom: none; }
+.situation-card b { color: var(--accent-gold); }
+.lock-panel {
+  background: rgba(0,0,0,0.5); border: 2px solid rgba(100,216,255,0.4);
+  border-radius: 12px; padding: 22px 24px; margin: 14px 0;
+}
+.lock-row {
+  display: grid; grid-template-columns: 220px 1fr 160px;
+  gap: 12px; align-items: center; margin: 12px 0;
+}
+@media (max-width: 700px) { .lock-row { grid-template-columns: 1fr; } }
+.lock-lbl { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.1em; color: var(--accent); }
+.lock-hint { font-family: 'VT323'; font-size: 16px; color: var(--text-faint); }
+.lock-btn {
+  width: 100%; padding: 14px; margin-top: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border: none; border-radius: 10px; color: #fff;
+  font-family: 'Orbitron'; font-size: 14px; letter-spacing: 0.25em;
+  cursor: pointer; transition: all 0.2s;
+}
+.lock-btn:hover { box-shadow: 0 0 30px rgba(100,216,255,0.4); transform: translateY(-1px); }
+.lock-indicator {
+  margin-top: 14px; text-align: center; font-family: 'Orbitron';
+  font-size: 14px; letter-spacing: 0.2em; padding: 12px;
+  border-radius: 8px; color: var(--text-faint);
+  background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+}
+.lock-indicator.green { color: var(--accent-green); background: rgba(126,255,178,0.12); border-color: var(--accent-green); animation: pulse-green 1.4s infinite; }
+.lock-indicator.red { color: var(--accent-red); background: rgba(255,92,122,0.12); border-color: var(--accent-red); }
+@keyframes pulse-green { 0%,100% { box-shadow: 0 0 10px rgba(126,255,178,0.3); } 50% { box-shadow: 0 0 30px rgba(126,255,178,0.75); } }
+</style>
+</head>
+<body data-page="p13">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ PAGE 13 / 16 · PUZZLE · 8 นาที</div>
+<h1 class="page-title">Ship Coordinate Lock</h1>
+<h2 class="page-sub">ตั้งคอร์สยาน · ไฟเขียว = ผ่าน · ไฟแดง = คำนวณใหม่</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag do">อำนวย</span><span>ให้ทีมคำนวณเองก่อน · ถ้าติด 2 นาที ค่อยใบ้</span></div>
+    <div class="role"><span class="tag say">ใบ้ช่อง 1</span><span>"ระยะก่อนขยาย = ระยะปัจจุบัน ÷ อัตราขยาย · 100 ÷ 2 = ?"</span></div>
+    <div class="role"><span class="tag say">ใบ้ช่อง 2</span><span>"ความเร็ว = H₀ × D · 70 × 100 = ?"</span></div>
+    <div class="role"><span class="tag dont">ห้าม</span><span>บอกคำตอบตรง ๆ · ให้ทีมคิดเอง</span></div>
+  </div>
+</div>
+
+<div class="dialog-box hubble" data-speaker="ดร.ฮับเบิล">
+  <div class="txt">ทีมมีข้อมูลครบแล้ว · ระยะปัจจุบัน · H₀ · อัตราขยาย · <b>คำนวณและตั้งคอร์สยาน</b> · ถ้าถูก ไฟเขียวปลดล็อก · ถ้าผิด ไฟแดง คำนวณใหม่</div>
+</div>
+
+<div class="situation-card">
+  <h5>📡 ข้อมูลจากเซ็นเซอร์ยาน</h5>
+  <ul>
+    <li>ระยะปัจจุบันของ Galaxy A · <b>D<sub>now</sub> = 100 Mpc</b></li>
+    <li>ค่าคงที่ฮับเบิล · <b>H₀ = 70 km/s/Mpc</b></li>
+    <li>อัตราขยายของเอกภพในช่วงเวลาที่พิจารณา · <b>2 เท่า</b> (จากลูกโป่ง)</li>
+  </ul>
+</div>
+
+<div class="lock-panel">
+  <div class="lock-row">
+    <span class="lock-lbl">① ระยะก่อนขยาย (Mpc)</span>
+    <input type="number" id="lock-past" placeholder="Mpc">
+    <span class="lock-hint">= D<sub>now</sub> ÷ ratio</span>
+  </div>
+  <div class="lock-row">
+    <span class="lock-lbl">② ความเร็วเคลื่อนออก (km/s)</span>
+    <input type="number" id="lock-vel" placeholder="km/s">
+    <span class="lock-hint">= H₀ × D<sub>now</sub></span>
+  </div>
+  <button class="lock-btn" onclick="checkLock()">🔐 LOCK COORDINATES</button>
+  <div class="lock-indicator" id="lock-light">⚪ STANDBY · รอตั้งค่า</div>
+</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag k">K · กฎฮับเบิล v=H₀D</span>
+  <span class="ped-tag p">P · คำนวณ</span>
+  <span class="ped-tag">วPA 5 · พัฒนาทักษะ</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+function checkLock() {
+  const past = parseFloat(document.getElementById('lock-past').value);
+  const vel = parseFloat(document.getElementById('lock-vel').value);
+  const light = document.getElementById('lock-light');
+  const r = document.getElementById('result');
+
+  const cPast = 50, cVel = 7000;
+  const pastOk = !isNaN(past) && Math.abs(past - cPast) < 5;
+  const velOk = !isNaN(vel) && Math.abs(vel - cVel) < 50;
+
+  if (pastOk && velOk) {
+    light.className = 'lock-indicator green';
+    light.innerHTML = '🟢 GREEN · COORDINATES LOCKED';
+    Book.savePageData('p13', { past, vel, correct: true });
+    Book.addEnergy(5, 'Ship Lock');
+    Book.addDiscovery('Galaxy A · Past Position 50 Mpc');
+    Book.addInventory('🚀 Ship Course · Galaxy A @ 50 Mpc · 7000 km/s');
+    Book.completePage('p13');
+    r.innerHTML = `
+      <div class="branch-reveal main" style="padding:18px;">
+        <h3>✓ COORDINATE LOCK CONFIRMED</h3>
+        <p>Galaxy A · ระยะอดีต <b>50 Mpc</b> · ความเร็ว <b>7,000 km/s</b></p>
+        <p style="color:var(--accent-gold); margin-top:10px;">+5 Energy · 🚀 Ship Course พร้อม · กด "ต่อไป →"</p>
+      </div>`;
+  } else {
+    light.className = 'lock-indicator red';
+    light.innerHTML = '🔴 RED · MISMATCH · คำนวณใหม่';
+    let hint = '';
+    if (!pastOk) hint += '<div>① ระยะก่อนขยาย = D<sub>now</sub> ÷ อัตราขยาย = 100 ÷ 2 = ?</div>';
+    if (!velOk) hint += '<div>② ความเร็ว = H₀ × D<sub>now</sub> = 70 × 100 = ?</div>';
+    r.innerHTML = `<div class="warn">⚠ พิกัดไม่ตรง${hint}</div>`;
+    const panel = document.querySelector('.lock-panel');
+    panel.classList.add('shake');
+    setTimeout(() => panel.classList.remove('shake'), 450);
+  }
+}
+</script>
+</body>
+</html>

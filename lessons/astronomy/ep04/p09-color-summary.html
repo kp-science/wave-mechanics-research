@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P09 · สรุปสีของเส้นทาง</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .route-line { padding:18px; background:radial-gradient(ellipse at center,#000814 0%,#000 80%); border:1.5px solid #ffcb6b; border-radius:14px; margin:14px 0; }
+  .route-stars { display:flex; align-items:center; justify-content:space-between; gap:6px; flex-wrap:wrap; }
+  .route-star { display:flex; flex-direction:column; align-items:center; gap:4px; min-width:70px; }
+  .route-star .orb { width:34px; height:34px; border-radius:50%; box-shadow:0 0 18px currentColor; }
+  .route-star .lab { font-family:Orbitron; font-size:10px; color:#ffcb6b; letter-spacing:0.1em; }
+  .route-star .code { font-family:Orbitron; font-size:14px; font-weight:700; }
+  .route-star .temp { font-family:monospace; font-size:10px; color:#9aa3c0; }
+  .route-star.danger { border:2px solid #ff5c7a; padding:6px; border-radius:10px; box-shadow:0 0 14px rgba(255,92,122,0.3); }
+  .route-arrow { color:#9aa3c0; font-size:18px; }
+</style>
+</head>
+<body data-page="p09" data-type="story">
+<div class="page">
+
+  <span class="lbl story">📊 ACT B · COLOR SUMMARY</span>
+  <h1>สรุปสี · ดาวบนเส้นทาง</h1>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "นี่คือดาว 7 ดวงที่จะอยู่บนเส้นทาง · เรารู้สีและอุณหภูมิแล้ว ·
+      <b style="color:#ff5c7a;">ดวงที่กรอบแดง = อันตรายจากความร้อน</b>"
+    </span>
+  </div>
+
+  <div class="route-line">
+    <div style="text-align:center; font-family:Orbitron; color:#ffcb6b; font-size:11px; letter-spacing:0.18em; margin-bottom:10px;">
+      🚀 จากยานเรา · → · 📡 SOS ของพ่อ
+    </div>
+    <div class="route-stars" id="routeStars"></div>
+  </div>
+
+  <div class="callout danger">
+    <span class="star">⚠</span> <b>ดาวที่ต้องระวังจากความร้อน:</b><br>
+    <span style="font-size:14px; color:#ffb5c2; font-weight:400;">
+      ดาวสเปกตรัม <b>O และ B</b> อุณหภูมิเกิน 10,000 K · ผิวดาวร้อนพอละลายเกราะยาน · ต้อง<b>เลี่ยง</b>หรือผ่านระยะไกล
+    </span>
+  </div>
+
+  <div class="callout success">
+    <span class="star">✓</span> <b>ดาวที่ผ่านได้สบาย:</b><br>
+    <span style="font-size:14px; color:#bcffd6; font-weight:400;">
+      ดาวสเปกตรัม <b>K · M</b> (ส้ม-แดง) เย็นกว่า 5,000 K · ผ่านได้ปลอดภัย
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>📝 สรุปสิ่งที่เรารู้แล้ว</h3>
+    <ul style="padding-left:18px; line-height:1.9; font-size:14.5px;">
+      <li>✅ สี ↔ อุณหภูมิ (OBAFGKM · ร้อน → เย็น)</li>
+      <li>✅ ดาว 7 ดวงบนเส้นทาง · รู้รหัสสีและอุณหภูมิแล้ว</li>
+      <li>✅ รู้ว่าดวงไหน "ร้อน" ดวงไหน "เย็น"</li>
+      <li>⚠️ <b style="color:#ffcb6b;">แต่ยังไม่รู้:</b> ดาวมวลเท่าไร · แรงโน้มถ่วงเท่าไร · จุดจบเป็นอะไร</li>
+    </ul>
+  </div>
+
+  <div class="card gold">
+    <h3>🗣️ ร้อยโทเคน</h3>
+    <div class="narrative" style="padding-left:14px; border-left:3px solid #ffcb6b;">
+      "เรารู้อุณหภูมิแล้ว · <b>ขั้นต่อไป — แรงโน้มถ่วง</b> ·
+      ดาวสีเดียวกันอาจมีมวลต่างกันได้ · เลือกผิด = ถูกแรงดูด"
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P09</summary>
+    <div class="body">
+      <b>ตัวเชื่อม:</b> หน้านี้สรุป Lab สี + เปิดทางสู่ Lab มวล<br>
+      <b>เน้น:</b> "สีไม่บอกมวล" — เปิดประตูเรียนรู้เรื่องวิวัฒนาการ
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ ไปเรียนเรื่องมวล</button>
+  </div>
+  <div class="gate-hint">หน้าสรุป · ครูคุมจังหวะ</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const ROUTE = (EP_CONFIG.routeStars || []);
+const host = document.getElementById('routeStars');
+host.innerHTML = ROUTE.map((s,i) => `
+  <div class="route-star ${s.tempK > 10000 ? 'danger' : ''}">
+    <div class="orb" style="background:${s.hex}; color:${s.hex};"></div>
+    <div class="lab">${s.label}</div>
+    <div class="code" style="color:${s.hex};">${s.type}</div>
+    <div class="temp">${s.tempK.toLocaleString()} K</div>
+  </div>
+  ${i < ROUTE.length-1 ? '<span class="route-arrow">→</span>' : ''}
+`).join('');
+
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p10-bridge-mass.html');
+  if (window.PaceClient) Gate.wireButton('p09', btn, 'p10-bridge-mass.html');
+}, 200);
+</script>
+</body></html>

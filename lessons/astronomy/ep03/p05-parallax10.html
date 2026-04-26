@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P05 · Parallax Lab</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* Lab stepper */
+  .lab-steps { display:flex; gap:6px; margin:10px 0 14px; flex-wrap:wrap; }
+  .lab-step { flex:1; min-width:72px; padding:6px 4px; background:rgba(100,216,255,0.05); border:1px solid #2a3050; border-radius:8px; text-align:center; font-size:10px; color:#6a7394; letter-spacing:0.05em; font-family:Orbitron,sans-serif; }
+  .lab-step.active { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; box-shadow:0 0 12px rgba(255,203,107,0.2); }
+  .lab-step.done { background:rgba(126,255,178,0.08); border-color:#7effb2; color:#7effb2; }
+
+  .step-card { padding:16px; background:rgba(22,27,58,0.7); border:1px solid rgba(120,140,220,0.3); border-radius:12px; margin:14px 0; }
+  .step-title { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; text-transform:uppercase; }
+  .step-hint { font-size:13px; color:#9aa3c0; margin:6px 0 12px; line-height:1.7; }
+
+  /* ===== Question prompt · prominent (large + bold) ===== */
+  .q-prompt { font-size:17px; font-weight:700; color:#ffcb6b; line-height:1.6; margin:14px 0 6px; padding:10px 14px; background:rgba(255,203,107,0.08); border-left:4px solid #ffcb6b; border-radius:0 10px 10px 0; }
+  .q-prompt .icon { font-size:20px; margin-right:6px; }
+  .q-prompt b { color:#fff; }
+  .q-sub { font-size:13px; color:#c8cde0; margin:4px 0 12px; padding-left:12px; }
+
+  /* ===== Statement card with ✓/✗ toggle ===== */
+  .stmt-list { display:flex; flex-direction:column; gap:10px; }
+  .stmt-item { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; transition:all .15s; }
+  .stmt-item.classified-ok { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-item.classified-bad { border-color:#ff5c7a; background:rgba(255,92,122,0.06); }
+  .stmt-text { font-size:14px; color:#e8ecf8; line-height:1.55; }
+  .stmt-toggle { display:flex; gap:4px; }
+  .stmt-btn { padding:8px 12px; min-width:46px; border-radius:8px; cursor:pointer; font-family:Orbitron,sans-serif; font-size:13px; font-weight:700; border:2px solid; background:transparent; transition:all .12s; }
+  .stmt-btn.tick { color:#7effb2; border-color:rgba(126,255,178,0.4); }
+  .stmt-btn.cross { color:#ff5c7a; border-color:rgba(255,92,122,0.4); }
+  .stmt-btn.tick.on { background:rgba(126,255,178,0.25); border-color:#7effb2; }
+  .stmt-btn.cross.on { background:rgba(255,92,122,0.25); border-color:#ff5c7a; }
+  .stmt-feedback { grid-column:1 / -1; font-size:12px; padding:6px 10px; border-radius:6px; margin-top:6px; }
+  .stmt-feedback.ok { color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-feedback.bad { color:#ff8fa5; background:rgba(255,92,122,0.06); }
+
+  /* Parallax canvas */
+  #stage { width:100%; height:340px; background:radial-gradient(ellipse at center, rgba(100,216,255,0.04), #000 70%); border:1px solid #2a3050; border-radius:12px; display:block; }
+  .slider-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; margin:10px 0; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px; }
+  .slider-row label { color:#d4b8ff; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.1em; }
+  .slider-row .val { color:#ffcb6b; font-family:monospace; font-size:14px; min-width:90px; text-align:right; }
+  input[type=range] { width:100%; }
+
+  /* Readouts */
+  .readout-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+  @media(max-width:520px){ .readout-grid { grid-template-columns:1fr; } }
+  .readout { padding:10px 14px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; border-radius:8px; }
+  .readout .k { font-size:10px; color:#9aa3c0; letter-spacing:0.1em; font-family:Orbitron,sans-serif; }
+  .readout .v { font-size:20px; color:#7effb2; font-family:monospace; margin-top:2px; }
+  .readout .v.danger { color:#ff5c7a; }
+
+  /* Target list */
+  .target-card { padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; margin:8px 0; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
+  .target-card.active { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .target-card.locked { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .target-card .name { font-weight:700; color:#e8ecf8; }
+  .target-card .pval { color:#d4b8ff; font-family:monospace; font-size:12px; }
+  .target-card .status { font-size:18px; }
+  .btn-measure { padding:6px 12px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; color:#64d8ff; border-radius:6px; font-size:12px; font-family:inherit; cursor:pointer; }
+  .btn-measure:disabled { opacity:0.5; }
+
+  /* Rank drag list */
+  .rank-list { display:flex; flex-direction:column; gap:6px; margin:10px 0; }
+  .rank-item { padding:10px 14px; background:rgba(100,216,255,0.08); border:2px solid rgba(120,140,220,0.3); border-radius:8px; cursor:grab; user-select:none; display:flex; justify-content:space-between; align-items:center; }
+  .rank-item:active { cursor:grabbing; }
+  .rank-item.drag-over { border-color:#ffcb6b; }
+  .rank-item .pos { font-family:Orbitron,sans-serif; color:#ffcb6b; font-size:12px; margin-right:10px; }
+  .rank-hint { font-size:11px; color:#9aa3c0; margin-top:4px; }
+
+  /* Checkbox list (multi-select reflection) */
+  .check-list { display:flex; flex-direction:column; gap:8px; }
+  .check-item { padding:10px 14px; background:rgba(100,216,255,0.04); border:2px solid rgba(120,140,220,0.3); border-radius:8px; cursor:pointer; user-select:none; display:flex; align-items:flex-start; gap:10px; transition:all .12s; }
+  .check-item:hover { border-color:#64d8ff; }
+  .check-item.on { background:rgba(126,255,178,0.12); border-color:#7effb2; }
+  .check-item .box { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; min-width:22px; border:2px solid #64d8ff; border-radius:5px; font-size:14px; color:#7effb2; font-weight:700; }
+  .check-item.on .box { background:#7effb2; border-color:#7effb2; color:#0a0420; }
+  .check-item .label { font-size:13px; color:#e8ecf8; line-height:1.5; }
+
+  textarea.lab-note { width:100%; min-height:70px; padding:10px 12px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:13px; line-height:1.6; box-sizing:border-box; resize:vertical; }
+  textarea.lab-note:focus { border-color:#64d8ff; outline:none; }
+
+  .formative { padding:10px 12px; background:rgba(212,184,255,0.08); border:1px dashed #d4b8ff; border-radius:8px; margin:8px 0; font-size:13px; color:#d4b8ff; }
+
+  .step-nav { display:flex; gap:10px; margin-top:14px; }
+  .step-nav button { flex:1; padding:10px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; }
+  .step-nav .back { background:rgba(100,100,140,0.1); border:1px solid #444; color:#9aa3c0; }
+  .step-nav .fwd { background:rgba(126,255,178,0.1); border:1px solid #7effb2; color:#7effb2; }
+  .step-nav .fwd:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .kpa-chip { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; letter-spacing:0.1em; margin-right:4px; }
+  .kpa-chip.k { background:rgba(100,216,255,0.1); color:#64d8ff; border:1px solid rgba(100,216,255,0.3); }
+  .kpa-chip.p { background:rgba(126,255,178,0.1); color:#7effb2; border:1px solid rgba(126,255,178,0.3); }
+  .kpa-chip.a { background:rgba(255,203,107,0.1); color:#ffcb6b; border:1px solid rgba(255,203,107,0.3); }
+  .kpa-chip.c { background:rgba(212,184,255,0.1); color:#d4b8ff; border:1px solid rgba(212,184,255,0.3); }
+
+  /* ===== Coin toast ===== */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px; background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; letter-spacing:0.05em; z-index:9999; box-shadow:0 6px 24px rgba(255,203,107,0.6), 0 0 30px rgba(255,203,107,0.3); animation:coinPop .4s ease-out; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px) scale(0.8); opacity:0; } to { transform:translateX(-50%) translateY(0) scale(1); opacity:1; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+  .coin-toast .big { font-size:18px; }
+
+  /* Step coin badge in stepper */
+  .lab-step .coin { display:block; font-size:9px; color:#ffcb6b; font-family:monospace; margin-top:2px; }
+  .lab-step.done .coin { color:#ffcb6b; }
+</style>
+</head>
+<body data-page="p05" data-type="puzzle">
+<div class="page">
+  <div class="lbl puzzle">🔬 PARALLAX LAB · 7 นาที · วัดจริง · คิดจริง</div>
+  <h1>แล็บวัดดาว 3 ดวง</h1>
+
+  <div style="margin:8px 0;">
+    <span class="kpa-chip k">K2 d=1/p</span>
+    <span class="kpa-chip p">P1 สังเกต·วัด</span>
+    <span class="kpa-chip p">P4 คำนวณ</span>
+    <span class="kpa-chip c">4C คิดวิพากษ์</span>
+    <span class="kpa-chip a">จิตวิทย์</span>
+  </div>
+
+  <div class="lab-steps" id="labSteps">
+    <div class="lab-step" data-s="0">1·PREDICT</div>
+    <div class="lab-step" data-s="1">2·EXPLORE</div>
+    <div class="lab-step" data-s="2">3·MEASURE</div>
+    <div class="lab-step" data-s="3">4·ANALYZE</div>
+    <div class="lab-step" data-s="4">5·NOTE</div>
+    <div class="lab-step" data-s="5">6·PEER</div>
+  </div>
+
+  <!-- STEP 0 · PREDICT (hypothesis, no right/wrong) -->
+  <div class="step-card" data-step="0">
+    <div class="step-title">🔮 Step 1 · Predict · <span style="color:#9aa3c0;font-size:11px;">ไม่มีผิดถูก · แค่ตั้งสมมติฐาน</span></div>
+    <div class="narrative">
+      ก่อนจะวัดจริง · <b>เดาก่อน</b> (ไม่มีผิด · เทียบกับผลลัพธ์จริงตอนท้าย)<br>
+      ยานจะวัด 3 ดาว: <b>SOS · Sirius · Proxima</b>
+    </div>
+    <div class="q-prompt"><span class="icon">🧠</span>สมมติฐาน 1 · ดาวใดอยู่<b>ใกล้โลก</b>ที่สุด?</div>
+    <div class="choice-row" id="predNearest"></div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>สมมติฐาน 2 · ดาวใดอยู่<b>ไกลโลก</b>ที่สุด?</div>
+    <div class="choice-row" id="predFarthest"></div>
+    <div class="step-nav">
+      <button class="fwd" id="next0" disabled>▶ Explore Lab →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1 · EXPLORE (discover d↔p relationship) -->
+  <div class="step-card" data-step="1" style="display:none;">
+    <div class="step-title">🛰️ Step 2 · Explore · <span style="color:#9aa3c0;font-size:11px;">เลื่อน slider · สังเกต</span></div>
+    <div class="step-hint">ลาก slider "d" ด้านล่าง · สังเกตว่า<b>มุม p</b> เปลี่ยนอย่างไรบน canvas</div>
+
+    <canvas id="stage" width="700" height="340"></canvas>
+
+    <div class="slider-row">
+      <label>d (pc)</label>
+      <input type="range" id="dSlider" min="-1" max="2.7" step="0.01" value="1">
+      <span class="val" id="dVal">10.00</span>
+    </div>
+
+    <div class="readout-grid">
+      <div class="readout"><div class="k">📐 มุม PARALLAX (p)</div><div class="v" id="pVal">0.100"</div></div>
+      <div class="readout"><div class="k">📏 ระยะ (d)</div><div class="v" id="d2Val">10.00 pc</div></div>
+    </div>
+
+    <div class="q-prompt"><span class="icon">🧠</span>สังเกต · เมื่อ <b>d เพิ่ม</b> · p จะ ...</div>
+    <div class="choice-row" id="relObserve" style="margin-top:8px;"></div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(0)">← กลับ</button>
+      <button class="fwd" id="next1" disabled>▶ เริ่มวัด 3 ดาว →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · MEASURE -->
+  <div class="step-card" data-step="2" style="display:none;">
+    <div class="step-title">🎯 Step 3 · Measure · <span style="color:#9aa3c0;font-size:11px;">เลื่อน d จน p ตรงกับเป้า</span></div>
+    <div class="step-hint">
+      แต่ละดาวมี <b>p เป้าหมาย</b> · ให้เลื่อน slider จน p บน canvas <b>ใกล้เคียง</b> เป้า (±5%) · กด "บันทึก" เพื่อล็อกค่า d
+    </div>
+
+    <canvas id="stage2" width="700" height="300"></canvas>
+
+    <div class="slider-row">
+      <label>d (pc)</label>
+      <input type="range" id="dSlider2" min="-1" max="2.8" step="0.001" value="1">
+      <span class="val" id="dVal2">10.00</span>
+    </div>
+
+    <div class="readout-grid">
+      <div class="readout"><div class="k">CURRENT p</div><div class="v" id="pVal2">0.100"</div></div>
+      <div class="readout"><div class="k">TARGET p</div><div class="v" id="pTarget">—</div></div>
+    </div>
+
+    <div id="targets"></div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(1)">← กลับ</button>
+      <button class="fwd" id="next2" disabled>▶ วิเคราะห์ผล →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 · ANALYZE · rank by distance -->
+  <div class="step-card" data-step="3" style="display:none;">
+    <div class="step-title">📊 Step 4 · Analyze · <span style="color:#9aa3c0;font-size:11px;">จัดลำดับ · ทำนาย</span></div>
+    <div class="step-hint">จัดเรียง 3 ดาว <b>จากใกล้โลก → ไกลโลก</b> (ลากขึ้น-ลงได้)</div>
+
+    <div class="rank-list" id="rankList"></div>
+    <div class="rank-hint">💡 ใช้ค่า <b>d ที่วัดได้จาก Step 3</b>  ·  d น้อย = ใกล้  ·  d มาก = ไกล</div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>ทำนาย · ถ้าพบดาวใหม่ p = <b>0.1"</b> · d จะประมาณเท่าไร?</div>
+    <div class="choice-row" id="predictApply" style="margin-top:8px;"></div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(2)">← กลับ</button>
+      <button class="fwd" id="next3" disabled>▶ บันทึกแล็บ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 · LAB NOTE + FORMALIZE (statement classification, not free-text) -->
+  <div class="step-card" data-step="4" style="display:none;">
+    <div class="step-title">📓 Step 5 · Lab Note · <span style="color:#9aa3c0;font-size:11px;">ประเมินทุกข้อ</span></div>
+
+    <!-- 5.1 Observation classification -->
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">🔍</span>ข้อสังเกตข้อใดเป็น<b>การสังเกตทางวิทยาศาสตร์ที่ใช้ได้</b>?</div>
+      <div class="q-sub">กดปุ่ม <b>✓</b> ถ้าข้อนั้นใช้ได้ · กดปุ่ม <b>✗</b> ถ้าผิด/อ่อน · ต้องประเมินครบทั้ง 5 ข้อ</div>
+      <div class="stmt-list" id="obsList"></div>
+    </div>
+
+    <!-- 5.2 Rule classification -->
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">📐</span>ข้อใด<b>สรุปสูตร d = 1/p</b> ได้ถูกต้อง?</div>
+      <div class="q-sub">เช่นเดียวกัน · กด ✓ หรือ ✗ ทุกข้อ · ระวัง trap (mis­conception) ปะปนอยู่</div>
+      <div class="stmt-list" id="ruleList"></div>
+    </div>
+
+    <!-- 5.3 Reflection · checkbox already good · keep -->
+    <div style="margin-bottom:14px;">
+      <div class="q-prompt"><span class="icon">🔮</span>เทียบ<b>สมมติฐาน</b>กับ<b>ผลจริง</b> · ติ๊กข้อที่ตรงกับตัวเอง</div>
+      <div class="q-sub">ติ๊กได้หลายข้อ · ตอบตามจริงเลย ไม่มีผิดถูก</div>
+      <div id="reflectCmp" style="font-size:13px;color:#c8cde0;margin:6px 0 10px;padding:10px 14px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px dashed #2a3050;"></div>
+      <div class="check-list" id="reflectHypo"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(3)">← กลับ</button>
+      <button class="fwd" id="next4" disabled>▶ ช่วงคุยกับเพื่อน →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 · PEER + APPLY -->
+  <div class="step-card" data-step="5" style="display:none;">
+    <div class="step-title">👥 Step 6 · Peer Apply · <span style="color:#9aa3c0;font-size:11px;">คุยกับทีมก่อน · แล้วตอบ</span></div>
+
+    <div class="formative" style="background:rgba(255,203,107,0.1);border-color:#ffcb6b;color:#ffcb6b;">
+      📣 <b>หยุดก่อน · คุยในทีม 1 นาที</b><br>
+      <span style="color:#e8ecf8;font-size:12px;">
+        ครูจะกระตุ้นให้คุยกัน · แลกคำตอบ Step 5 · ถ้าต่างกัน · ให้เหตุผลโน้มน้าวเพื่อน
+      </span>
+    </div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🎯</span>โจทย์ท้าย · ดาวใหม่ "Tau Ceti" มี <b>p = 0.275"</b> · d ≈ ?</div>
+    <div class="choice-row" id="applyQ"></div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">💬</span>เพื่อนในทีมตอบ<b>ตรงกับคุณ</b>ไหม?</div>
+    <div class="choice-row" id="peerCheck"></div>
+
+    <div class="btn-pair">
+      <button class="submit-btn">💾 ส่งแล็บรายงาน</button>
+      <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+    </div>
+    <div class="gate-hint">ทำครบ + ถูกทุก step = 🪙20 · ครูจะเปิด gate เมื่อทุกคนส่ง</div>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Parallax Lab (P05)</summary>
+    <div class="body">
+      <b>7 นาที · 6 steps</b> · inquiry-based · student-centered · 4C active<br>
+      <b>Step 1 PREDICT</b>: ให้นักเรียนเดาก่อน · <b>อย่าบอกคำตอบ</b> · ใช้เป็น formative ตอนท้าย<br>
+      <b>Step 2 EXPLORE</b>: ให้ลอง slider เองก่อน 1 นาที · แล้วถาม "ใครสังเกตอะไร?" (open · ไม่ไล่จี้)<br>
+      <b>Step 3 MEASURE</b>: เดินดูทีม · ถ้าใครค่าห่าง · ถามคำถามนำ "p ต้องเล็กหรือใหญ่ถ้าดาวไกล?" (ไม่ให้คำตอบ)<br>
+      <b>Step 4 ANALYZE</b>: เปรียบเทียบ hypothesis กับผล · นี่คือ<b>หัวใจ conceptual change</b><br>
+      <b>Step 5 NOTE</b>: ห้ามลอก · ถ้าเขียนสั้นไป กลับไปให้ขยาย · เก็บไว้วัดทักษะการเขียน<br>
+      <b>Step 6 PEER</b>: กระตุ้นให้คุยจริง · ถ้าทีมไหนต่างคำตอบ · ให้เถียงกัน (productive struggle)<br>
+      <b>วPA alignment</b>:<br>
+      · ด้าน 1 การจัดการเรียนรู้ · Active Learning + Inquiry ✓<br>
+      · ด้าน 2 ส่งเสริมผู้เรียน · differentiated pace + peer support ✓<br>
+      · ด้าน 3 พัฒนาตนเอง · ใช้เครื่องมือดิจิทัล + formative data ✓<br>
+      <b>KPA ที่วัด</b>:<br>
+      · K2 d=1/p (measure ถูก + formalize ถูก)<br>
+      · P1 สังเกต·วัด (Step 2-3)<br>
+      · P4 คำนวณ (Step 3 apply)<br>
+      · A4 จิตวิทยาศาสตร์ (note + ไม่ลอกเพื่อน)<br>
+      <b>4C</b>:<br>
+      · Critical Thinking (hypothesis + evaluate)<br>
+      · Communication (lab note + peer discuss)<br>
+      · Collaboration (Step 6)<br>
+      · Creativity (formalize ด้วยคำตัวเอง)<br>
+      <b>Formative check</b>: เก็บ payload → ดู hypothesis vs actual · ดูจำนวน reset slider · ดูความยาว note<br>
+      <b>ถ้าทำไม่ทัน</b>: ข้าม Step 6 peer · ให้เป็นการบ้าน (แต่อย่าข้าม hypothesis!)<br><br>
+      <b>🪙 Coin reward (per step · ตามความถูกต้อง)</b>:<br>
+      · Step 1 PREDICT: 0 (ไม่ประเมิน · เปิดใจ)<br>
+      · Step 2 EXPLORE: 0-3 (Q สังเกตถูก = 3)<br>
+      · Step 3 MEASURE: 0-15 (5/ดาว 1-shot · 3/ดาว 2-shot · 1/ดาว ≥3-shot)<br>
+      · Step 4 ANALYZE: 0-8 (rank 4 + apply 4)<br>
+      · Step 5 NOTE: 0-14 (1/ข้อ × 9 + bonus 5 ถ้า 9/9 — <b>หนักสุด</b>)<br>
+      · Step 6 PEER: 0-5 (apply Q ถูก = 5)<br>
+      <b>รวมสูงสุด: 45 coin</b> · พอซื้อ shop item 1 ชิ้น (cost 30-100)
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== STATE ==================== */
+const STARS = [
+  { id:'sos',     name:'ดาว SOS',   p:0.0025, d:400,  tol:0.1 },  // tolerance fractional
+  { id:'sirius',  name:'Sirius',    p:0.379,  d:2.64, tol:0.1 },
+  { id:'proxima', name:'Proxima',   p:0.769,  d:1.30, tol:0.1 },
+];
+const STAR_NAMES = STARS.map(s => s.name);
+
+const state = {
+  step: 0,
+  stepsDone: new Set(),
+  // step 0 PREDICT
+  predNearest: null,
+  predFarthest: null,
+  // step 1 EXPLORE
+  exploredDRange: { min: Infinity, max: -Infinity },  // track slider usage
+  relObserve: null,
+  // step 2 MEASURE
+  measured: {},  // star.id → d value recorded
+  measureAttempts: {},
+  activeStarIdx: 0,
+  // step 3 ANALYZE
+  rank: [],  // array of star ids
+  applyAns: null,
+  // step 4 NOTE (statement classification)
+  obsClass: {},   // { stmtId: 'tick' | 'cross' }
+  ruleClass: {},  // { stmtId: 'tick' | 'cross' }
+  reflectHypo: [],  // multi-select checkbox · array of ids
+  // coin tracking · per-step (awarded once on Next click)
+  stepCoins: {},   // { stepIdx: amount awarded }
+  // step 5 PEER
+  peerQ: null,
+  peerCheck: null,
+  startedAt: Date.now(),
+};
+
+/* ==================== CANVAS DRAWING ==================== */
+function drawStage(canvas, d, targetP) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // background star field (static seed)
+  if (!canvas._bg) {
+    canvas._bg = Array.from({length:80}, () => ({ x: Math.random()*W, y: Math.random()*(H*0.6), r: Math.random()*0.8+0.2 }));
+  }
+  ctx.fillStyle = '#fff';
+  for (const s of canvas._bg) { ctx.globalAlpha = s.r * 0.6; ctx.fillRect(s.x, s.y, 1, 1); }
+  ctx.globalAlpha = 1;
+
+  const cx = W/2;
+  const baseY = H - 60;
+  const orbitR = 70;
+
+  // Earth orbit ellipse
+  ctx.strokeStyle = 'rgba(255,203,107,0.3)';
+  ctx.setLineDash([3, 3]);
+  ctx.beginPath();
+  ctx.ellipse(cx, baseY, orbitR, orbitR*0.25, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Sun
+  ctx.fillStyle = '#ffcb6b';
+  ctx.beginPath(); ctx.arc(cx, baseY, 9, 0, Math.PI*2); ctx.fill();
+  ctx.shadowColor = '#ffcb6b'; ctx.shadowBlur = 15;
+  ctx.beginPath(); ctx.arc(cx, baseY, 9, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+  ctx.fillText('☀ Sun', cx, baseY + 24);
+
+  // Earth orbits (animate)
+  const t = Date.now() / 1800;
+  const phase = t % (Math.PI*2);
+  const eax = cx + Math.cos(phase) * orbitR;
+  const eay = baseY + Math.sin(phase) * orbitR * 0.25;
+  const ebx = cx - Math.cos(phase) * orbitR;
+  const eby = baseY - Math.sin(phase) * orbitR * 0.25;
+
+  // Star position · visual height scales with log(d)
+  const logD = Math.log10(Math.max(0.3, d));      // -0.5 .. 2.7
+  const starY = Math.max(30, baseY - 90 - logD * 70);
+  const starX = cx;
+
+  // Observation lines from Earth to Star (exaggerated for visual only)
+  ctx.strokeStyle = 'rgba(255,92,122,0.55)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(eax, eay); ctx.lineTo(starX, starY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(ebx, eby); ctx.lineTo(starX, starY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1;
+
+  // Baseline (AU between the two Earth positions)
+  ctx.strokeStyle = 'rgba(100,216,255,0.4)';
+  ctx.beginPath(); ctx.moveTo(eax, eay); ctx.lineTo(ebx, eby); ctx.stroke();
+  ctx.fillStyle = '#64d8ff'; ctx.font = '10px monospace';
+  ctx.fillText('2 AU (baseline)', cx, baseY - orbitR * 0.25 - 6);
+
+  // Earths
+  ctx.fillStyle = '#64d8ff';
+  ctx.beginPath(); ctx.arc(eax, eay, 5, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#7effb2';
+  ctx.beginPath(); ctx.arc(ebx, eby, 5, 0, Math.PI*2); ctx.fill();
+
+  // Star
+  ctx.fillStyle = '#ffd88a';
+  ctx.shadowColor = '#ffd88a'; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.arc(starX, starY, 7, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Star label & readouts
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#ffd88a'; ctx.font = 'bold 13px Sarabun';
+  ctx.fillText('★ STAR · d = ' + fmtD(d), starX, starY - 14);
+
+  // Parallax angle arc at star
+  const p = 1 / d;
+  ctx.strokeStyle = '#7effb2'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  const aSpan = Math.min(0.45, Math.atan(orbitR / (starY > baseY-20 ? 40 : baseY - starY)));
+  ctx.arc(starX, starY, 22, Math.PI/2 - aSpan, Math.PI/2 + aSpan);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  ctx.fillStyle = '#7effb2'; ctx.font = 'bold 12px monospace';
+  ctx.fillText('∠p = ' + fmtP(p), starX, starY + 38);
+
+  // Target p indicator (if set)
+  if (targetP != null) {
+    const match = Math.abs(p - targetP) / targetP < 0.08;
+    ctx.fillStyle = match ? '#7effb2' : '#ffcb6b';
+    ctx.font = '11px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText('🎯 TARGET p = ' + fmtP(targetP) + (match ? ' ✓ ตรง!' : ''), 12, 22);
+  }
+
+  // Legend
+  ctx.textAlign = 'left'; ctx.fillStyle = '#9aa3c0'; ctx.font = '10px Sarabun';
+  ctx.fillText('🔵 Earth (Jan)   🟢 Earth (Jul)   ☀ Sun   ★ Star', 12, H - 10);
+}
+
+function fmtD(d) {
+  if (d < 0.1) return d.toFixed(3) + ' pc';
+  if (d < 10) return d.toFixed(2) + ' pc';
+  if (d < 100) return d.toFixed(1) + ' pc';
+  return Math.round(d) + ' pc';
+}
+function fmtP(p) {
+  if (p >= 1) return p.toFixed(2) + '"';
+  if (p >= 0.01) return p.toFixed(3) + '"';
+  return p.toExponential(2) + '"';
+}
+
+/* animation loop */
+function animLoop() {
+  if (state.step === 1) drawStage(document.getElementById('stage'), state.exploreD || 10, null);
+  else if (state.step === 2) {
+    const tgt = STARS[state.activeStarIdx];
+    drawStage(document.getElementById('stage2'), state.measureD || 10, tgt ? tgt.p : null);
+  }
+  requestAnimationFrame(animLoop);
+}
+
+/* ==================== STEP NAV ==================== */
+function go(s) {
+  state.step = s;
+  document.querySelectorAll('.step-card').forEach(el => {
+    el.style.display = (+el.dataset.step === s) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.lab-step').forEach(el => {
+    const idx = +el.dataset.s;
+    el.classList.toggle('active', idx === s);
+    el.classList.toggle('done', state.stepsDone.has(idx));
+  });
+  window.scrollTo({ top: 0, behavior:'smooth' });
+  renderStep(s);
+}
+
+function markDone(s) {
+  state.stepsDone.add(s);
+  const el = document.querySelector(`.lab-step[data-s="${s}"]`);
+  if (el) {
+    el.classList.add('done');
+    // show coin earned in stepper
+    const c = state.stepCoins[s];
+    if (c != null) {
+      const existing = el.querySelector('.coin');
+      if (!existing) {
+        const span = document.createElement('span');
+        span.className = 'coin';
+        span.textContent = '🪙' + c;
+        el.appendChild(span);
+      }
+    }
+  }
+}
+
+/* ==================== COIN AWARDS PER STEP ==================== */
+function awardStepCoin(stepIdx, amount, label) {
+  if (state.stepCoins[stepIdx] != null) return;  // award once
+  state.stepCoins[stepIdx] = amount;
+  if (amount > 0 && typeof Coin !== 'undefined' && Coin.add) {
+    Coin.add(amount, 'p05-step' + stepIdx);
+  }
+  showCoinToast(amount, label);
+  // refresh stepper coin badge
+  const el = document.querySelector(`.lab-step[data-s="${stepIdx}"]`);
+  if (el && !el.querySelector('.coin')) {
+    const span = document.createElement('span');
+    span.className = 'coin';
+    span.textContent = '🪙' + amount;
+    el.appendChild(span);
+  }
+}
+
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 <span class="big">+' + amount + '</span>' : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = 0; }, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+function calcStep1Coin() { return state.relObserve === 1 ? 3 : 0; }
+function calcStep2Coin() {
+  let coin = 0;
+  STARS.forEach(s => {
+    const n = state.measureAttempts[s.id] || 99;
+    if (n === 1) coin += 5;
+    else if (n === 2) coin += 3;
+    else if (state.measured[s.id] != null) coin += 1;
+  });
+  return coin;
+}
+function calcStep3Coin() {
+  let coin = 0;
+  if (state.rank.join(',') === 'proxima,sirius,sos') coin += 4;
+  if (state.applyAns === 1) coin += 4;
+  return coin;
+}
+function calcStep4Coin() {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  let coin = obsOk + ruleOk;  // up to 9
+  if (obsOk === OBS_STMTS.length && ruleOk === RULE_STMTS.length) coin += 5; // all-right bonus
+  return coin;
+}
+function calcStep5Coin() { return state.peerQ === 2 ? 5 : 0; }
+
+/* ==================== STEP 0 · PREDICT ==================== */
+function renderPredict() {
+  const renderRow = (containerId, key, label) => {
+    const el = document.getElementById(containerId);
+    el.innerHTML = STAR_NAMES.map((n, i) =>
+      `<button class="choice-btn" data-i="${i}" onclick="pickPred('${key}', ${i})">${n}</button>`
+    ).join('');
+    if (state[key] != null) {
+      el.querySelectorAll('.choice-btn').forEach((b, i) =>
+        b.classList.toggle('correct', i === state[key]));
+    }
+  };
+  renderRow('predNearest', 'predNearest');
+  renderRow('predFarthest', 'predFarthest');
+  updatePredGate();
+}
+window.pickPred = (key, i) => {
+  state[key] = i;
+  document.querySelectorAll(`#${key === 'predNearest' ? 'predNearest' : 'predFarthest'} .choice-btn`)
+    .forEach((b, bi) => b.classList.toggle('correct', bi === i));
+  updatePredGate();
+};
+function updatePredGate() {
+  const ready = state.predNearest != null && state.predFarthest != null;
+  document.getElementById('next0').disabled = !ready;
+  if (ready) markDone(0);
+}
+document.getElementById('next0').onclick = () => {
+  // PREDICT step · no coin (no eval)
+  go(1);
+};
+
+/* ==================== STEP 1 · EXPLORE ==================== */
+const dSlider = document.getElementById('dSlider');
+const dVal = document.getElementById('dVal');
+const pVal = document.getElementById('pVal');
+const d2Val = document.getElementById('d2Val');
+
+dSlider.addEventListener('input', () => {
+  const d = Math.pow(10, parseFloat(dSlider.value));
+  state.exploreD = d;
+  dVal.textContent = fmtD(d);
+  d2Val.textContent = fmtD(d);
+  pVal.textContent = fmtP(1/d);
+  state.exploredDRange.min = Math.min(state.exploredDRange.min, d);
+  state.exploredDRange.max = Math.max(state.exploredDRange.max, d);
+  updateExploreGate();
+});
+// init
+state.exploreD = 10;
+
+function renderExploreObserve() {
+  const el = document.getElementById('relObserve');
+  const opts = ['เพิ่ม (ใหญ่ขึ้น)', 'ลด (เล็กลง)', 'ไม่เปลี่ยน'];
+  el.innerHTML = opts.map((o, i) =>
+    `<button class="choice-btn" onclick="pickRelObs(${i})">${o}</button>`
+  ).join('');
+  if (state.relObserve != null) {
+    el.querySelectorAll('.choice-btn').forEach((b, i) =>
+      b.classList.toggle('correct', i === state.relObserve));
+  }
+}
+window.pickRelObs = (i) => {
+  state.relObserve = i;
+  document.querySelectorAll('#relObserve .choice-btn').forEach((b, bi) =>
+    b.classList.toggle('correct', bi === i));
+  updateExploreGate();
+};
+
+function updateExploreGate() {
+  // require slider exploration + ANSWER (any) · ผิดก็ผ่านได้แต่ coin = 0
+  const played = (state.exploredDRange.max / Math.max(0.01, state.exploredDRange.min)) > 10;
+  const answered = state.relObserve != null;
+  document.getElementById('next1').disabled = !(played && answered);
+  if (played && answered) markDone(1);
+}
+document.getElementById('next1').onclick = () => {
+  awardStepCoin(1, calcStep1Coin(), 'Explore · Q สังเกต');
+  go(2);
+};
+
+/* ==================== STEP 2 · MEASURE ==================== */
+const dSlider2 = document.getElementById('dSlider2');
+const dVal2 = document.getElementById('dVal2');
+const pVal2 = document.getElementById('pVal2');
+const pTarget = document.getElementById('pTarget');
+
+dSlider2.addEventListener('input', () => {
+  const d = Math.pow(10, parseFloat(dSlider2.value));
+  state.measureD = d;
+  dVal2.textContent = fmtD(d);
+  pVal2.textContent = fmtP(1/d);
+});
+state.measureD = 10;
+
+function renderTargets() {
+  document.getElementById('targets').innerHTML = STARS.map((s, i) => {
+    const locked = state.measured[s.id] != null;
+    const active = state.activeStarIdx === i && !locked;
+    return `
+      <div class="target-card ${active?'active':''} ${locked?'locked':''}">
+        <div>
+          <div class="name">${s.name}</div>
+          <div class="pval">🎯 target p = ${fmtP(s.p)} · ${locked ? '✓ บันทึก: d = ' + fmtD(state.measured[s.id]) : (active ? 'วัดตอนนี้' : 'รอคิว')}</div>
+        </div>
+        ${locked
+          ? '<span class="status">✅</span>'
+          : active
+            ? `<button class="btn-measure" onclick="lockMeasure(${i})">📸 บันทึก d</button>`
+            : `<button class="btn-measure" onclick="focusStar(${i})">→ เลือก</button>`}
+      </div>
+    `;
+  }).join('');
+  // update live target
+  const t = STARS[state.activeStarIdx];
+  if (t && !state.measured[t.id]) pTarget.textContent = fmtP(t.p);
+  else pTarget.textContent = '—';
+}
+window.focusStar = (i) => { state.activeStarIdx = i; renderTargets(); };
+window.lockMeasure = (i) => {
+  const t = STARS[i];
+  const cur = state.measureD;
+  const curP = 1/cur;
+  const within = Math.abs(curP - t.p) / t.p < t.tol;
+  state.measureAttempts[t.id] = (state.measureAttempts[t.id]||0) + 1;
+  if (!within) {
+    alert(`p ยังไม่ตรงกับเป้า (ต่างเกิน ±${Math.round(t.tol*100)}%) · ลองใหม่`);
+    return;
+  }
+  state.measured[t.id] = cur;
+  // advance to next unmeasured
+  const next = STARS.findIndex(s => state.measured[s.id] == null);
+  if (next >= 0) state.activeStarIdx = next;
+  renderTargets();
+  updateMeasureGate();
+};
+function updateMeasureGate() {
+  const done = Object.keys(state.measured).length === STARS.length;
+  document.getElementById('next2').disabled = !done;
+  if (done) {
+    // Chain.set d_sos_pc for downstream pages
+    Chain.set('d_sos_pc', Math.round(state.measured.sos));
+    markDone(2);
+  }
+}
+document.getElementById('next2').onclick = () => {
+  const c = calcStep2Coin();
+  const oneShot = Object.values(state.measureAttempts).filter(n => n === 1).length;
+  awardStepCoin(2, c, 'Measure · 1-shot ' + oneShot + '/3 ดาว');
+  go(3);
+};
+
+/* ==================== STEP 3 · ANALYZE · drag to rank ==================== */
+function renderRank() {
+  if (!state.rank.length) state.rank = [...STARS.map(s => s.id)];
+  const list = document.getElementById('rankList');
+  list.innerHTML = state.rank.map((id, i) => {
+    const s = STARS.find(x => x.id === id);
+    const d = state.measured[id];
+    return `<div class="rank-item" draggable="true" data-id="${id}">
+      <span><span class="pos">${i+1}</span>${s.name}</span>
+      <span style="font-family:monospace;color:#9aa3c0;font-size:12px;">d = ${fmtD(d)}</span>
+    </div>`;
+  }).join('');
+  // drag handlers
+  let dragId = null;
+  list.querySelectorAll('.rank-item').forEach(el => {
+    el.addEventListener('dragstart', (e) => { dragId = el.dataset.id; el.style.opacity = 0.5; });
+    el.addEventListener('dragend', () => { el.style.opacity = 1; });
+    el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', (e) => {
+      e.preventDefault(); el.classList.remove('drag-over');
+      const targetId = el.dataset.id;
+      if (dragId === targetId) return;
+      const from = state.rank.indexOf(dragId);
+      const to = state.rank.indexOf(targetId);
+      state.rank.splice(from, 1);
+      state.rank.splice(to, 0, dragId);
+      renderRank();
+      updateAnalyzeGate();
+    });
+  });
+}
+function renderApplyQ() {
+  const el = document.getElementById('predictApply');
+  const opts = ['1 pc', '10 pc', '100 pc'];
+  el.innerHTML = opts.map((o, i) =>
+    `<button class="choice-btn" onclick="pickApply(${i})">${o}</button>`
+  ).join('');
+  if (state.applyAns != null) {
+    el.querySelectorAll('.choice-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i === 1) b.classList.add('correct');
+      else if (i === state.applyAns) b.classList.add('wrong');
+    });
+  }
+}
+window.pickApply = (i) => {
+  if (state.applyAns != null) return;
+  state.applyAns = i;
+  renderApplyQ();
+  if (i !== 1) VoidHunter.wrongAnswer('p05');
+  updateAnalyzeGate();
+};
+function updateAnalyzeGate() {
+  // Allow advance with any rank order + any apply answer · partial coin
+  const ranked = state.rank.length === STARS.length;  // rank exists (drag-or-default)
+  const applied = state.applyAns != null;
+  document.getElementById('next3').disabled = !(ranked && applied);
+  if (ranked && applied) markDone(3);
+}
+document.getElementById('next3').onclick = () => {
+  awardStepCoin(3, calcStep3Coin(), 'Analyze · rank+apply');
+  go(4);
+};
+
+/* ==================== STEP 4 · NOTE · statement classification ==================== */
+// Each statement: id, text, correct (true=ใช้ได้/ถูก, false=ผิด/อ่อน), why (feedback)
+const OBS_STMTS = [
+  { id:'o1', text:'ฉันสังเกตว่า ดาวยิ่งไกล มุม p ยิ่งเล็กลง', correct:true,
+    why:'✓ ใช้ได้ · ระบุความสัมพันธ์ d ↔ p ตามจริง' },
+  { id:'o2', text:'ดาวอยู่ตรงกลางหน้าจอเสมอ', correct:false,
+    why:'✗ อ่อน · ไม่เกี่ยวกับ d/p · เป็นแค่ตำแหน่งวาด' },
+  { id:'o3', text:'พอ d > 100 pc · p เล็กกว่า 0.01 arcsec', correct:true,
+    why:'✓ ดี · มีตัวเลขประกอบ specific' },
+  { id:'o4', text:'p น้อย แปลว่าดาวสว่างกว่า', correct:false,
+    why:'✗ misconception · p บอก<b>ระยะ</b> ไม่ใช่ความสว่าง' },
+  { id:'o5', text:'Proxima ใกล้สุด เพราะวัด p ได้ใหญ่สุด (0.77")', correct:true,
+    why:'✓ ใช้ได้ · ระบุดาว + ค่า + เหตุผลจาก d=1/p' },
+];
+const RULE_STMTS = [
+  { id:'r1', text:'d = 1/p · ดาวยิ่งไกล มุม p ยิ่งเล็ก (สัมพันธ์ผกผัน)', correct:true,
+    why:'✓ ถูก · จับคู่ "ส่วนกลับ" + คำอธิบายภาษามนุษย์' },
+  { id:'r2', text:'d เพิ่ม → p เพิ่ม (สัมพันธ์ตรง)', correct:false,
+    why:'✗ ผิด · จริงๆ ผกผัน ไม่ใช่ตรง' },
+  { id:'r3', text:'p เป็นมุม (arcsec) · d เป็นระยะ (pc) · เป็นส่วนกลับกัน', correct:true,
+    why:'✓ ถูก · ระบุหน่วย + relation' },
+  { id:'r4', text:'p คือเวลาที่แสงเดินทางจากดาวมาถึงโลก', correct:false,
+    why:'✗ misconception M3 · p เป็น<b>มุม</b> ไม่ใช่<b>เวลา</b>' },
+];
+
+function renderStmtList(containerId, stmts, classMap) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = stmts.map(s => {
+    const choice = classMap[s.id];
+    const itemClass = choice ? (choice === (s.correct?'tick':'cross') ? 'classified-ok' : 'classified-bad') : '';
+    const fb = choice
+      ? `<div class="stmt-feedback ${choice === (s.correct?'tick':'cross') ? 'ok' : 'bad'}">${s.why}</div>`
+      : '';
+    return `<div class="stmt-item ${itemClass}" data-id="${s.id}">
+      <div class="stmt-text">${s.text}</div>
+      <div class="stmt-toggle">
+        <button class="stmt-btn tick ${choice==='tick'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','tick')">✓</button>
+        <button class="stmt-btn cross ${choice==='cross'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','cross')">✗</button>
+      </div>
+      ${fb}
+    </div>`;
+  }).join('');
+}
+
+window.classifyStmt = (containerId, stmtId, choice) => {
+  const map = containerId === 'obsList' ? state.obsClass : state.ruleClass;
+  map[stmtId] = choice;
+  if (containerId === 'obsList') renderStmtList('obsList', OBS_STMTS, state.obsClass);
+  else renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+  updateNoteGate();
+};
+
+function renderReflect() {
+  // Show prediction vs actual reality comparison panel
+  const guessNear = state.predNearest != null ? STAR_NAMES[state.predNearest] : '?';
+  const guessFar  = state.predFarthest != null ? STAR_NAMES[state.predFarthest] : '?';
+  const actualNear = 'Proxima'; // d=1.30 pc
+  const actualFar  = 'ดาว SOS'; // d=400 pc
+  document.getElementById('reflectCmp').innerHTML =
+    '<b>Predict (Step 1)</b> · ใกล้สุด: <span style="color:#d4b8ff;">' + guessNear + '</span>' +
+    ' · ไกลสุด: <span style="color:#d4b8ff;">' + guessFar + '</span><br>' +
+    '<b>Actual (Step 3)</b> · ใกล้สุด: <span style="color:#7effb2;">' + actualNear + '</span>' +
+    ' · ไกลสุด: <span style="color:#7effb2;">' + actualFar + '</span>';
+
+  const items = [
+    { id:'near', label:'ฉันทาย<b>ดาวใกล้สุด</b>ถูก (Proxima)' },
+    { id:'far',  label:'ฉันทาย<b>ดาวไกลสุด</b>ถูก (SOS)' },
+    { id:'surprise', label:'ฉันเซอร์ไพรส์ตอนวัด · ไม่คิดว่าจะต่างกันขนาดนี้' },
+    { id:'changed',  label:'ฉันเปลี่ยนความเข้าใจหลังทำแล็บ' },
+  ];
+  const el = document.getElementById('reflectHypo');
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  el.innerHTML = items.map(it => {
+    const on = state.reflectHypo.includes(it.id);
+    return '<div class="check-item ' + (on?'on':'') + '" data-id="' + it.id + '" onclick="toggleReflect(\''+it.id+'\')">' +
+           '<span class="box">' + (on?'✓':'') + '</span>' +
+           '<span class="label">' + it.label + '</span></div>';
+  }).join('');
+}
+window.toggleReflect = (id) => {
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  const i = state.reflectHypo.indexOf(id);
+  if (i >= 0) state.reflectHypo.splice(i, 1);
+  else state.reflectHypo.push(id);
+  renderReflect();
+  updateNoteGate();
+};
+function updateNoteGate() {
+  // Must classify ALL statements + at least 1 reflection ticked
+  const allObs = OBS_STMTS.every(s => state.obsClass[s.id] != null);
+  const allRule = RULE_STMTS.every(s => state.ruleClass[s.id] != null);
+  const reflectOk = Array.isArray(state.reflectHypo) && state.reflectHypo.length > 0;
+  const ok = allObs && allRule && reflectOk;
+  document.getElementById('next4').disabled = !ok;
+  if (ok) markDone(4);
+}
+document.getElementById('next4').onclick = () => {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  awardStepCoin(4, calcStep4Coin(), 'Note · ประเมิน ' + (obsOk+ruleOk) + '/9 ถูก');
+  go(5);
+};
+
+/* ==================== STEP 5 · PEER + APPLY ==================== */
+function renderPeerQs() {
+  const applyEl = document.getElementById('applyQ');
+  const opts = ['0.275 pc', '2.75 pc', '3.64 pc', '36.4 pc'];
+  // correct: d=1/0.275 ≈ 3.64
+  applyEl.innerHTML = opts.map((o, i) =>
+    `<button class="choice-btn" onclick="pickPeerQ(${i})">${o}</button>`
+  ).join('');
+  if (state.peerQ != null) {
+    applyEl.querySelectorAll('.choice-btn').forEach((b, i) => {
+      b.disabled = true;
+      if (i === 2) b.classList.add('correct');
+      else if (i === state.peerQ) b.classList.add('wrong');
+    });
+  }
+  const peerEl = document.getElementById('peerCheck');
+  const peerOpts = ['ตรงกัน · confident', 'ต่างกัน · ได้อภิปราย', 'คนในทีมยังไม่เสร็จ'];
+  peerEl.innerHTML = peerOpts.map((o, i) =>
+    `<button class="choice-btn" onclick="pickPeerCheck(${i})">${o}</button>`
+  ).join('');
+  if (state.peerCheck != null) {
+    peerEl.querySelectorAll('.choice-btn').forEach((b, i) =>
+      b.classList.toggle('correct', i === state.peerCheck));
+  }
+}
+window.pickPeerQ = (i) => {
+  if (state.peerQ != null) return;
+  state.peerQ = i;
+  renderPeerQs();
+  if (i === 2) Photon.add(15, 'p05-peer');
+  else VoidHunter.wrongAnswer('p05');
+  // Coin award for peer step (regardless of correctness · gives correctness-based amount)
+  awardStepCoin(5, calcStep5Coin(), i === 2 ? 'Peer apply ถูก' : 'Peer apply ผิด');
+  updatePeerGate();
+};
+window.pickPeerCheck = (i) => {
+  state.peerCheck = i;
+  renderPeerQs();
+  updatePeerGate();
+};
+function updatePeerGate() {
+  const ok = state.peerQ != null && state.peerCheck != null;
+  if (ok) markDone(5);
+}
+
+/* ==================== RENDER DISPATCH ==================== */
+function renderStep(s) {
+  if (s === 0) renderPredict();
+  else if (s === 1) { renderExploreObserve(); }
+  else if (s === 2) { renderTargets(); }
+  else if (s === 3) { renderRank(); renderApplyQ(); }
+  else if (s === 4) {
+    renderStmtList('obsList', OBS_STMTS, state.obsClass);
+    renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+    renderReflect();
+    updateNoteGate();
+  }
+  else if (s === 5) { renderPeerQs(); }
+}
+
+/* ==================== INIT ==================== */
+renderStep(0);
+animLoop();
+
+/* ==================== SUBMIT ==================== */
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p05',
+    nextHref: 'p06-magnitude.html',
+    getPayload: () => {
+      // Gather all evidence
+      const allStepsDone = state.stepsDone.size >= 5 && state.peerQ != null && state.peerCheck != null;
+      if (!allStepsDone) { alert('ทำให้ครบทุก step ก่อนส่ง'); throw new Error('incomplete'); }
+      // Measure accuracy
+      const measureOk = Object.keys(state.measured).length === STARS.length;
+      // Correctness summary
+      const accuracyByStar = STARS.map(s => {
+        const got = state.measured[s.id];
+        if (got == null) return { id:s.id, ok:false };
+        return { id:s.id, ok:true, got, expected:s.d, attempts:state.measureAttempts[s.id]||1 };
+      });
+      // Score statement classification
+      const obsCorrect = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+      const ruleCorrect = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+      const perfect = measureOk
+        && state.relObserve === 1
+        && state.applyAns === 1
+        && state.peerQ === 2
+        && state.rank.join(',') === 'proxima,sirius,sos'
+        && obsCorrect === OBS_STMTS.length
+        && ruleCorrect === RULE_STMTS.length
+        && Object.values(state.measureAttempts).every(n => n <= 2);  // ≤2 attempts per star
+      return {
+        tag: 'parallax-lab',
+        durationSec: Math.round((Date.now() - state.startedAt)/1000),
+        hypothesis: { nearest: STAR_NAMES[state.predNearest], farthest: STAR_NAMES[state.predFarthest] },
+        explore: { dRange: state.exploredDRange, relObserve: state.relObserve },
+        measured: state.measured,
+        measureAttempts: state.measureAttempts,
+        accuracyByStar,
+        rank: state.rank,
+        applyAns: state.applyAns,
+        obsClass: state.obsClass,
+        ruleClass: state.ruleClass,
+        obsCorrect, obsTotal: OBS_STMTS.length,
+        ruleCorrect, ruleTotal: RULE_STMTS.length,
+        stepCoins: state.stepCoins,
+        coinTotal: Object.values(state.stepCoins).reduce((a,b)=>a+b, 0),
+        reflectHypo: state.reflectHypo,
+        peerQ: state.peerQ,
+        peerCheck: state.peerCheck,
+        perfect,
+        // legacy for downstream compat
+        correct: (state.applyAns===1?1:0) + (state.peerQ===2?1:0) + (measureOk?1:0),
+        total: 3,
+      };
+    },
+    // legacy perfectBonus path disabled · เราใช้ per-step award แทน
+    isPerfect: () => false,
+    onSubmit: () => {
+      const total = Object.values(state.stepCoins).reduce((a,b) => a+b, 0);
+      const perfect = state.stepCoins[1]===3 && state.stepCoins[2]>=12 && state.stepCoins[3]===8 && state.stepCoins[4]===14 && state.stepCoins[5]===5;
+      const msg = perfect
+        ? '🌟 PERFECT LAB · 🪙 รวม ' + total + ' coin · ทำได้สมบูรณ์ทุก step!'
+        : '✓ ส่งแล้ว · 🪙 รวม ' + total + ' coin · ดูแยกต่อ step ที่ stepper ด้านบน';
+      alert(msg);
+    },
+  });
+  // Wire Next button to play transition before navigating
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p05-to-p06', 'p06-magnitude.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

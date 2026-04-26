@@ -26,9 +26,10 @@ window.KP_SUBJECTS = [
         title: 'การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย',
         shortTitle: 'SHM',
         icon: '🎢',
-        status: 'coming-soon',
-        numPlans: 0,
-        dbUrl: null  // ← TODO: deploy Apps Script + ใส่ URL ตอน open
+        status: 'open',
+        numPlans: 6,
+        unit: 'shm',  // ← subfolder · loader โหลด content/physics3/units/shm/*
+        dbUrl: 'TODO_DEPLOY_SHM_BACKEND'  // ← วาง Apps Script URL ของ SHM ที่นี่ (ต้องขึ้นต้นด้วย https://script.google.com/)
       },
       {
         id: 'waves',

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EP01 · การปะทะ · COSMOS LOG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #05060f;
+    --bg-1: #0a0d1f;
+    --bg-card: rgba(22, 27, 58, 0.6);
+    --border: rgba(120, 140, 220, 0.18);
+    --border-strong: rgba(140, 180, 255, 0.35);
+    --text: #e8ecf8;
+    --text-dim: #9aa3c0;
+    --text-faint: #6a7394;
+    --accent: #64d8ff;
+    --accent-2: #b980ff;
+    --accent-gold: #ffcb6b;
+    --accent-red: #ff5c7a;
+    --accent-green: #7effb2;
+    --ep-color: #64d8ff;
+    --ep-color-2: #7a3fff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Sarabun', system-ui, sans-serif;
+    background: var(--bg-0);
+    color: var(--text);
+    line-height: 1.7;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(100, 216, 255, 0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(185, 128, 255, 0.08) 0%, transparent 50%);
+    pointer-events: none; z-index: -1;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, white, transparent),
+      radial-gradient(1px 1px at 150px 50px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 250px 180px, white, transparent),
+      radial-gradient(1px 1px at 400px 250px, white, transparent),
+      radial-gradient(1px 1px at 500px 60px, rgba(255,255,255,0.5), transparent);
+    background-size: 550px 400px;
+    opacity: 0.35;
+    pointer-events: none; z-index: -1;
+  }
+
+  /* TOPNAV */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px);
+    background: rgba(5, 6, 15, 0.85);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 5vw;
+    display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  nav.topnav .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.15em;
+  }
+  nav.topnav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  nav.topnav a:hover { color: var(--accent); }
+  nav.topnav .back {
+    margin-left: auto;
+    padding: 4px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    color: var(--accent);
+  }
+
+  /* POSTER HERO */
+  .poster {
+    position: relative;
+    min-height: 72vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 60px 5vw 80px;
+    overflow: hidden;
+  }
+  .poster::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(100, 216, 255, 0.25) 0%, transparent 50%),
+      radial-gradient(circle at 70% 70%, rgba(122, 63, 255, 0.3) 0%, transparent 50%),
+      linear-gradient(180deg, transparent 0%, var(--bg-0) 100%);
+    z-index: 0;
+  }
+  .poster-content { position: relative; z-index: 1; max-width: 1000px; }
+  .ep-label {
+    display: inline-block;
+    padding: 6px 16px;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 24px;
+  }
+  .poster h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(44px, 8vw, 96px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    background: linear-gradient(180deg, #fff 0%, #8ca0d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  .poster .subtitle {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(15px, 2vw, 20px);
+    color: var(--accent-gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 28px;
+  }
+  .poster .logline {
+    max-width: 720px;
+    font-size: clamp(15px, 1.4vw, 17px);
+    color: var(--text-dim);
+    margin-bottom: 30px;
+  }
+  .poster .meta {
+    display: flex; gap: 28px; flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-faint);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .poster .meta b { color: var(--text); font-weight: 500; }
+
+  /* SECTIONS */
+  section {
+    padding: 70px 5vw;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  .label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px, 3vw, 36px);
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(180deg, #fff 0%, #7e8bb8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .sub {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin-bottom: 36px;
+    max-width: 760px;
+  }
+
+  /* OBJECTIVES */
+  .obj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .obj-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+  .obj-card::before {
+    content: attr(data-letter);
+    position: absolute;
+    top: -20px; right: -10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 120px;
+    font-weight: 900;
+    color: var(--obj-color);
+    opacity: 0.1;
+  }
+  .obj-card.k { --obj-color: var(--accent); }
+  .obj-card.p { --obj-color: var(--accent-green); }
+  .obj-card.a { --obj-color: var(--accent-gold); }
+  .obj-card h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--obj-color);
+    margin-bottom: 14px;
+  }
+  .obj-card ul { list-style: none; }
+  .obj-card li {
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--text-dim);
+    padding-left: 20px;
+    position: relative;
+  }
+  .obj-card li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--obj-color);
+  }
+
+  /* INDICATORS */
+  .ind-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 800px) { .ind-wrap { grid-template-columns: 1fr; } }
+  .ind-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+  }
+  .ind-block h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent-gold);
+    margin-bottom: 12px;
+  }
+  .ind-block .code {
+    display: inline-block;
+    background: rgba(255, 203, 107, 0.1);
+    border: 1px solid rgba(255, 203, 107, 0.3);
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-right: 6px;
+  }
+  .ind-block p { font-size: 14px; color: var(--text-dim); margin-top: 6px; }
+
+  /* CONCEPT */
+  .concept {
+    background: linear-gradient(135deg, rgba(100, 216, 255, 0.05), rgba(185, 128, 255, 0.05));
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 30px 36px;
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+  .concept b { color: var(--accent); }
+
+  /* MATERIALS */
+  .mat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .mat-item {
+    background: rgba(100, 216, 255, 0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .mat-item .ic {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* SCRIPT / TIMELINE */
+  .script-wrap { position: relative; }
+  .script-wrap::before {
+    content: '';
+    position: absolute;
+    left: 100px;
+    top: 10px; bottom: 10px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent-2));
+    opacity: 0.3;
+  }
+  @media (max-width: 700px) { .script-wrap::before { display: none; } }
+  .beat {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 40px;
+    margin-bottom: 36px;
+    align-items: flex-start;
+  }
+  @media (max-width: 700px) {
+    .beat { grid-template-columns: 1fr; gap: 12px; }
+  }
+  .beat-time {
+    text-align: right;
+    padding-top: 14px;
+    position: relative;
+  }
+  @media (max-width: 700px) { .beat-time { text-align: left; padding-top: 0; } }
+  .beat-time .t-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .beat-time .t-sub {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'Space Grotesk', sans-serif;
+    margin-top: 2px;
+  }
+  .beat-time::after {
+    content: '';
+    position: absolute;
+    right: -48px; top: 20px;
+    width: 14px; height: 14px;
+    background: var(--accent);
+    border: 3px solid var(--bg-0);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--accent);
+  }
+  @media (max-width: 700px) { .beat-time::after { display: none; } }
+  .beat-content {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+  }
+  .beat-content .beat-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--accent-2);
+    margin-bottom: 6px;
+  }
+  .beat-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    margin-bottom: 14px;
+  }
+  .beat-content p { font-size: 14.5px; color: var(--text-dim); margin-bottom: 10px; }
+  .beat-content ul { padding-left: 20px; margin-bottom: 10px; }
+  .beat-content li { font-size: 14px; color: var(--text-dim); padding: 3px 0; }
+  .dialog {
+    margin: 14px 0;
+    padding: 14px 16px;
+    background: rgba(0, 0, 0, 0.25);
+    border-left: 3px solid var(--char-color, var(--accent));
+    border-radius: 4px;
+    font-size: 14px;
+    font-style: italic;
+    color: #d8dff0;
+  }
+  .dialog::before {
+    content: attr(data-speaker);
+    display: block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    font-style: normal;
+    color: var(--char-color, var(--accent));
+    margin-bottom: 6px;
+  }
+  .dialog.lem { --char-color: #a0e8ff; }
+  .dialog.hubble { --char-color: #d4b8ff; }
+  .dialog.arya { --char-color: #64d8ff; }
+  .dialog.void { --char-color: #ff5c7a; }
+  .tag-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .tag {
+    padding: 3px 10px;
+    background: rgba(126, 255, 178, 0.08);
+    border: 1px solid rgba(126, 255, 178, 0.3);
+    border-radius: 100px;
+    font-size: 11px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--accent-green);
+  }
+  .tag.exp { background: rgba(100,216,255,0.08); border-color: rgba(100,216,255,0.3); color: var(--accent); }
+  .tag.lbl { background: rgba(212,184,255,0.08); border-color: rgba(212,184,255,0.3); color: #d4b8ff; }
+  .tag.eval { background: rgba(255,203,107,0.08); border-color: rgba(255,203,107,0.3); color: var(--accent-gold); }
+
+  /* MISSION CARDS */
+  .mission-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .mission-card {
+    background: linear-gradient(160deg, rgba(22, 27, 58, 0.8), rgba(8, 10, 24, 0.9));
+    border: 1px solid var(--mc-color, var(--accent));
+    border-radius: 14px;
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+  }
+  .mission-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    background: radial-gradient(circle at top right, var(--mc-color) 0%, transparent 70%);
+    opacity: 0.25;
+  }
+  .mc-nav   { --mc-color: #64d8ff; }
+  .mc-eng   { --mc-color: #ff8fa5; }
+  .mc-med   { --mc-color: #7effb2; }
+  .mc-mech  { --mc-color: #ffcb6b; }
+  .mission-card .role-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--mc-color);
+    margin-bottom: 6px;
+  }
+  .mission-card h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+  .mission-card p { font-size: 13.5px; color: var(--text-dim); }
+  .mission-card .reward {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* VOID CARD DECK */
+  .void-wrap {
+    background: linear-gradient(135deg, rgba(255, 92, 122, 0.08), rgba(122, 63, 255, 0.08));
+    border: 1px solid rgba(255, 92, 122, 0.3);
+    border-radius: 18px;
+    padding: 30px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .void-wrap::before {
+    content: '👁️';
+    position: absolute;
+    top: -30px; right: -20px;
+    font-size: 160px;
+    opacity: 0.08;
+  }
+  .void-wrap h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--accent-red);
+    margin-bottom: 8px;
+  }
+  .void-claim {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffb0bf;
+    font-style: italic;
+    margin: 16px 0 22px;
+    padding: 16px 20px;
+    background: rgba(0,0,0,0.25);
+    border-left: 3px solid var(--accent-red);
+    border-radius: 4px;
+  }
+  .void-counter {
+    background: rgba(126, 255, 178, 0.05);
+    border: 1px solid rgba(126, 255, 178, 0.2);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-top: 14px;
+  }
+  .void-counter h5 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent-green);
+    margin-bottom: 8px;
+  }
+  .void-counter ul { padding-left: 20px; margin-top: 8px; }
+  .void-counter li { font-size: 13.5px; color: var(--text-dim); padding: 3px 0; }
+
+  /* ASSESSMENT */
+  .assess-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  .assess-table th, .assess-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    vertical-align: top;
+  }
+  .assess-table th {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .assess-table td { color: var(--text-dim); }
+  .assess-table td:first-child { color: var(--text); font-weight: 500; }
+  .xp-chip {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(255, 203, 107, 0.1);
+    border: 1px solid rgba(255, 203, 107, 0.3);
+    border-radius: 100px;
+    font-size: 11px;
+    color: var(--accent-gold);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* HOMEWORK */
+  .hw {
+    background: rgba(100, 216, 255, 0.04);
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
+    padding: 22px 26px;
+  }
+  .hw h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+  }
+  .hw ul { padding-left: 20px; margin-top: 8px; }
+  .hw li { padding: 4px 0; color: var(--text-dim); font-size: 14px; }
+
+  footer {
+    padding: 60px 5vw 40px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 60px;
+    color: var(--text-faint);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    font-family: 'Orbitron', sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">★ COSMOS LOG</div>
+  <a href="#obj">Objectives</a>
+  <a href="#indicators">Indicators</a>
+  <a href="#concept">Concept</a>
+  <a href="#script">Script</a>
+  <a href="#missions">Missions</a>
+  <a href="#void">VOID Card</a>
+  <a href="#assess">Assessment</a>
+  <a href="cosmos-log-series-bible.html" class="back">← Series Bible</a>
+</nav>
+
+<!-- POSTER -->
+<section class="poster">
+  <div class="poster-content">
+    <div class="ep-label">★ EPISODE 01 · PILOT ★</div>
+    <h1>การปะทะ</h1>
+    <div class="subtitle">THE COLLISION</div>
+    <p class="logline">
+      ยาน <b style="color: var(--accent);">T.H.E.O.S.-IX</b> ชนวัตถุปริศนาขณะสำรวจนอกระบบสุริยะ หัวเรือแตก
+      เศษวัตถุสะท้อน "แสงอายุ 13.8 พันล้านปี" ทีมต้องถอดรหัส <b style="color: var(--accent-gold);">ศิลาต้นกำเนิด</b>
+      ก่อนเงาดำในจอเรดาร์จะเข้าใกล้ Cadets...
+    </p>
+    <div class="meta">
+      <span>📅 <b>2 คาบ</b> (100 นาที)</span>
+      <span>🎓 <b>ม.6</b></span>
+      <span>📚 <b>เอกภพ · บิกแบง</b></span>
+      <span>🎯 <b>ว 7.1 ม.4-6/1</b></span>
+      <span>🏆 <b>🎈 Big Bang Witness</b></span>
+    </div>
+  </div>
+</section>
+
+<!-- OBJECTIVES -->
+<section id="obj">
+  <div class="label">◤ SECTION 01</div>
+  <h2 class="title">จุดประสงค์การเรียนรู้ (KPA)</h2>
+  <p class="sub">วัดได้ · สังเกตได้ · เชื่อมโยงทั้งกับเนื้อหาและประสบการณ์ในฉากซีรีส์</p>
+
+  <div class="obj-grid">
+    <div class="obj-card k" data-letter="K">
+      <h4>K · KNOWLEDGE</h4>
+      <ul>
+        <li>อธิบายสาระสำคัญของทฤษฎีบิกแบงได้</li>
+        <li>เรียงลำดับวิวัฒนาการของเอกภพตามช่วงอุณหภูมิ (10⁻⁴³ วิ → 13.8 Gyr)</li>
+        <li>ระบุหลักฐาน 2 ประการที่สนับสนุนบิกแบง (การเลื่อนทางแดง · CMB 2.73 K)</li>
+      </ul>
+    </div>
+    <div class="obj-card p" data-letter="P">
+      <h4>P · PROCESS</h4>
+      <ul>
+        <li>ตีความข้อมูลสเปกตรัมเพื่ออนุมานระยะเวลาการเดินทางของแสง</li>
+        <li>สร้างแบบจำลองการขยายตัวของเอกภพ (activity ลูกโป่ง)</li>
+        <li>โต้แย้งข้อมูลผิดพลาดของ VOID ด้วยหลักฐานเชิงประจักษ์</li>
+      </ul>
+    </div>
+    <div class="obj-card a" data-letter="A">
+      <h4>A · ATTITUDE</h4>
+      <ul>
+        <li>เห็นคุณค่าของการตั้งคำถามเชิงวิทยาศาสตร์</li>
+        <li>ทำงานเป็นทีมข้ามความเชี่ยวชาญ (4 บทบาท)</li>
+        <li>กล้าแสดงความคิดเห็นแม้ขัดกับสัญชาตญาณ</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- INDICATORS -->
+<section id="indicators">
+  <div class="label">◤ SECTION 02</div>
+  <h2 class="title">ตัวชี้วัด · มาตรฐาน</h2>
+  <div class="ind-wrap">
+    <div class="ind-block">
+      <h4>ว 7.1 — ดาราศาสตร์และอวกาศ</h4>
+      <div><span class="code">ว 7.1 ม.4-6/1</span></div>
+      <p>สืบค้นและอธิบายการเกิดและวิวัฒนาการของระบบสุริยะ กาแล็กซี และเอกภพ</p>
+    </div>
+    <div class="ind-block">
+      <h4>ว 8.1 — กระบวนการทางวิทยาศาสตร์</h4>
+      <div><span class="code">ว 8.1 (1,4,5)</span></div>
+      <p>ตั้งคำถาม · วิเคราะห์ข้อมูลและหลักฐาน · สื่อสารความคิดเชิงวิทยาศาสตร์</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<section id="concept">
+  <div class="label">◤ SECTION 03</div>
+  <h2 class="title">สาระสำคัญ (Concept)</h2>
+  <div class="concept">
+    เอกภพเริ่มต้นเมื่อ <b>13.8 พันล้านปีก่อน</b> จากสภาวะร้อนหนาแน่นยิ่งยวด แล้ว <b>ขยายตัว</b> ออกมา
+    (ไม่ใช่การระเบิดในที่ว่าง แต่เป็นการขยายของอวกาศเอง) · การขยายตัวทำให้เอกภพเย็นลงเรื่อย ๆ
+    ผ่านช่วงสำคัญ: เกิดอนุภาคมูลฐาน → เกิดอะตอมฮีเลียม/ไฮโดรเจน (3 นาที) →
+    <b>โฟตอนหลุดเป็นอิสระที่ 3,000 K</b> (300,000 ปี) → กาแล็กซีก่อตัว (1 พันล้านปี) →
+    ปัจจุบันเอกภพมีอุณหภูมิเฉลี่ย <b>2.73 K</b> · หลักฐานหลัก 2 ประการ:
+    (1) การเลื่อนทางแดงของกาแล็กซีไกล (กฎฮับเบิล-เลอเมตร์) และ
+    (2) การแผ่รังสีไมโครเวฟพื้นหลังของจักรวาล (CMB) ที่ Penzias &amp; Wilson พบในปี 1965
+  </div>
+</section>
+
+<!-- MATERIALS -->
+<section>
+  <div class="label">◤ SECTION 04</div>
+  <h2 class="title">สื่อและอุปกรณ์</h2>
+  <div class="mat-grid">
+    <div class="mat-item"><span class="ic">🎬</span><div>วิดีโอเปิดซีรีส์ 2 นาที (ฉากยานชนวัตถุ)</div></div>
+    <div class="mat-item"><span class="ic">🎈</span><div>ลูกโป่ง + ปากกามาร์กเกอร์ 6 ชุด (1 ชุด/ทีม)</div></div>
+    <div class="mat-item"><span class="ic">🃏</span><div>การ์ด VOID ใบที่ 1 (พิมพ์ A5)</div></div>
+    <div class="mat-item"><span class="ic">📋</span><div>Mission Log Book นักเรียน (1 เล่ม/คน)</div></div>
+    <div class="mat-item"><span class="ic">🔭</span><div>ภาพ CMB map (WMAP/Planck) พิมพ์ใหญ่</div></div>
+    <div class="mat-item"><span class="ic">📊</span><div>กราฟ Hubble's redshift (หน้าจอ)</div></div>
+    <div class="mat-item"><span class="ic">🎴</span><div>Badge sticker 🎈 Big Bang Witness</div></div>
+    <div class="mat-item"><span class="ic">🖥️</span><div>สื่อ 4-tier Misconception pre-test (Google Form)</div></div>
+  </div>
+</section>
+
+<!-- SCRIPT -->
+<section id="script">
+  <div class="label">◤ SECTION 05</div>
+  <h2 class="title">บทและกระบวนการจัดการเรียนรู้ · 100 นาที</h2>
+  <p class="sub">8 บีท ดำเนินเหมือนหนัง · Experience (สีเขียว) มาก่อน Labeling (สีม่วง) · ครูสวมบท LEMAÎTRE/ดร.ฮับเบิล</p>
+
+  <div class="script-wrap">
+
+    <!-- BEAT 1 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">0–2′</div>
+        <div class="t-sub">นาทีที่ 0</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 01 · RECAP / OPENING CREDIT</div>
+        <h3>"ตอนแรก... ของการเดินทาง"</h3>
+        <p>เปิดจอมืดพร้อม voice-over: "ในปี 2267 มนุษยชาติได้ขยายการสำรวจออกนอกระบบสุริยะ... นี่คือบันทึกภารกิจลับของยาน T.H.E.O.S.-IX" + ดนตรีเปิดซีรีส์ + โลโก้ COSMOS LOG</p>
+        <p style="color:var(--text-faint); font-size:13px;">🎯 เป้าหมาย: สร้างบรรยากาศ Cadets ให้รู้สึกว่าไม่ใช่ชั้นเรียน</p>
+      </div>
+    </div>
+
+    <!-- BEAT 2 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">2–10′</div>
+        <div class="t-sub">Cold Open</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 02 · COLD OPEN · การปะทะ</div>
+        <h3>ฉากยานชนวัตถุ</h3>
+        <p>ฉายคลิป/slide 2 นาที: ยานกำลังเดินทาง → เรดาร์ตรวจจับวัตถุไม่รู้จัก → กัปตันอารยาสั่งหลบ → ชน! → ไฟสีแดงกระพริบในห้อง (ครูเปิดไฟแดง/ดนตรีเตือนภัย) → ยานขาดการควบคุม</p>
+        <div class="dialog lem" data-speaker="LEMAÎTRE (AI)">"Cadets... นี่คือคอมพิวเตอร์ยาน เราชนกับวัตถุปริศนา เซ็นเซอร์จับได้ว่าวัตถุนี้สะท้อนแสงที่... เก่ากว่าดวงอาทิตย์ของเรา ทีมสำรวจต้องหาคำตอบก่อนที่เงาดำในจอเรดาร์จะเข้าใกล้"</div>
+        <div class="tag-row"><span class="tag exp">Experience Phase</span><span class="tag">Hook</span></div>
+      </div>
+    </div>
+
+    <!-- BEAT 3 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">10–15′</div>
+        <div class="t-sub">Mission Brief</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 03 · MISSION ASSIGNMENT</div>
+        <h3>แบ่งทีม · เลือกบทบาท</h3>
+        <p>แบ่งนักเรียนเป็นทีมละ 4–5 คน แต่ละคนเลือกบทบาท NAV / ENG / MED / MECH (ตามสีในการ์ด) ครูแจก Mission Log Book</p>
+        <div class="dialog lem" data-speaker="LEMAÎTRE">"ภารกิจของคุณ: ระบุแหล่งกำเนิดของวัตถุปริศนา · วิเคราะห์แสงที่มันสะท้อน · และอธิบายว่าทำไมแสงนั้นถึงเก่าได้ถึง 13,800,000,000 ปี · คุณมีเวลา 30 นาที"</div>
+      </div>
+    </div>
+
+    <!-- BEAT 4 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">15–45′</div>
+        <div class="t-sub">30 นาที</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 04 · INVESTIGATION · Experience Before Labeling</div>
+        <h3>ลงมือสืบสวน (ห้ามใช้ศัพท์วิชาการ)</h3>
+        <p>Cadets ทำ 3 สถานี หมุนเวียนกลุ่มละ 10 นาที · ครูยังไม่เฉลยชื่อวิทยาศาสตร์ใด ๆ</p>
+        <ul>
+          <li><b>Station A — ลูกโป่งแห่งการเริ่มต้น</b>: ทีมวาดจุด 10 จุดบนลูกโป่งแฟบ แล้วเป่าทีละนิด สังเกตว่าจุดทั้งหมดห่างกันอย่างไร · บันทึกใน Log</li>
+          <li><b>Station B — ลำแสงจากอดีต</b>: ครูมีรูปโพลาลอยด์ 4 ใบ (กาแล็กซีใกล้-ไกล) พร้อมสเกลสี Red-shift · ทีมต้องเรียงลำดับ "ใครวิ่งหนีไกลเร็วที่สุด"</li>
+          <li><b>Station C — เสียงจากเบื้องหลัง</b>: ครูเปิดเสียง static วิทยุ (แทน CMB) + ภาพ WMAP · ถามทีม "เสียงนี้มาจากไหน ทำไมมันมีอยู่ทุกทิศ"</li>
+        </ul>
+        <p style="color:var(--accent-green); font-size:13px; margin-top:12px;">✦ กุญแจสำคัญ: ให้ Cadets <em>รู้สึก</em> ว่าจุดบนลูกโป่ง, แสงจากกาแล็กซีไกล, และเสียงวิทยุ <em>เชื่อมโยงกัน</em> ด้วยตัวเอง — ครูถามคำถามนำ ไม่เฉลย</p>
+        <div class="tag-row"><span class="tag exp">Experience</span><span class="tag">Hands-on</span><span class="tag">Station Rotation</span></div>
+      </div>
+    </div>
+
+    <!-- BEAT 5 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">45–55′</div>
+        <div class="t-sub">Villain Strike</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 05 · VILLAIN STRIKE</div>
+        <h3>VOID ปรากฏตัว</h3>
+        <p>ครูดับไฟ · เปิดคลิปเสียง VOID (บันทึกล่วงหน้า) หรือสวมบทเอง · ฉายการ์ด VOID ขึ้นจอ</p>
+        <div class="dialog void" data-speaker="จักรพรรดิ VOID">"Cadets น่าสงสารของสหพันธ์... พวกแกเชื่อนิทานที่ครูสอน? ว่าเอกภพเกิดจากการระเบิดกลางอวกาศว่างเปล่า? ถ้าระเบิดจริง ศูนย์กลางต้องมีอยู่ — แสดงมาสิ! พวกแกไม่เคยพิสูจน์ด้วยตาตัวเอง"</div>
+        <p>ครูให้แต่ละทีม 5 นาที ใช้ข้อมูลจาก Station A, B, C โต้แย้ง VOID · บันทึกคำโต้ลง Log Book · ทีมไหนเสนอหลักฐานดีสุด +1 Fuel Cell</p>
+        <div class="tag-row"><span class="tag">Misconception Confront</span><span class="tag">Argumentation</span></div>
+      </div>
+    </div>
+
+    <!-- BEAT 6 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">55–80′</div>
+        <div class="t-sub">25 นาที</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 06 · THE REVEAL · Labeling Phase</div>
+        <h3>ดร.ฮับเบิล · "ขอเฉลยชื่อจริง"</h3>
+        <p>ครูเปลี่ยนเสียง/สวมแว่น/สวมบทเป็น ดร.ฮับเบิล (mentor) · เริ่มเฉลยชื่อวิชาการของประสบการณ์ที่ Cadets เพิ่งเจอ</p>
+        <div class="dialog hubble" data-speaker="ดร.ฮับเบิล">"Cadets ลูกโป่งที่พวกเธอเป่าเมื่อกี้... นั่นคือ <b>การขยายตัวของอวกาศเอง</b> ไม่ใช่ระเบิดในที่ว่าง · ชื่อทางวิทยาศาสตร์ของมันคือ <b>ทฤษฎีบิกแบง</b>"</div>
+        <p>เฉลยทีละ station:</p>
+        <ul>
+          <li><b>Station A</b> = การขยายตัว · ไม่มีจุดศูนย์กลาง (ตอบ VOID ข้อแรกได้)</li>
+          <li><b>Station B</b> = กฎฮับเบิล-เลอเมตร์ · v = H₀D · แสงเลื่อนทางแดง</li>
+          <li><b>Station C</b> = Cosmic Microwave Background · 2.73 K · ค้นพบ 1965 โดย Penzias &amp; Wilson</li>
+        </ul>
+        <p>แสดงลำดับเวลา Big Bang timeline จาก 10⁻⁴³ วิ → 13.8 Gyr บนจอ · ชี้ 4 ช่วงสำคัญ</p>
+        <div class="dialog hubble" data-speaker="ดร.ฮับเบิล">"เอกภพเริ่มร้อน 10³² K · เย็นลงจนฟิวชันสร้างฮีเลียมใน 3 นาทีแรก · ที่ 300,000 ปี อะตอมเป็นกลางเป็นครั้งแรก โฟตอนจึงวิ่งอิสระ — และเสียงจาก Station C คือโฟตอนเหล่านั้นที่ยังเดินทางอยู่"</div>
+        <div class="tag-row"><span class="tag lbl">Labeling Phase</span><span class="tag">Direct Instruction</span></div>
+      </div>
+    </div>
+
+    <!-- BEAT 7 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">80–95′</div>
+        <div class="t-sub">Boss Move</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 07 · BOSS MOVE · Elaborate</div>
+        <h3>ภารกิจสุดท้าย · ถอดรหัสศิลาต้นกำเนิด</h3>
+        <p>LEMAÎTRE ส่งข้อมูลสเปกตรัมของ "ศิลาต้นกำเนิด" มาให้ · Cadets ต้องตอบ 3 คำถาม (รวมทีม)</p>
+        <ol style="padding-left: 20px; color: var(--text-dim); font-size: 14.5px;">
+          <li>ถ้าแสงจากกาแล็กซี A มีค่า redshift z = 0.1 และ H₀ = 70 km/s/Mpc ระยะห่างกี่ Mpc? (คำนวณ v = cz = 30,000 km/s → D = v/H₀ = 428 Mpc)</li>
+          <li>ถ้าแสงจากศิลาต้นกำเนิดเก่า 13.8 พันล้านปี มาจากยุคใดของ timeline?</li>
+          <li>ทำไมอุณหภูมิปัจจุบัน 2.73 K ไม่ใช่ 0 K? (หลักฐานยังคงอยู่ของบิกแบง)</li>
+        </ol>
+        <p>ทีมที่ตอบครบ 3 ข้อถูก → +3 Stardust ต่อคน · ทีมแรก +5 Fuel Cell</p>
+        <div class="tag-row"><span class="tag eval">Boss Fight</span><span class="tag">Calculation</span></div>
+      </div>
+    </div>
+
+    <!-- BEAT 8 -->
+    <div class="beat">
+      <div class="beat-time">
+        <div class="t-num">95–100′</div>
+        <div class="t-sub">End Credits</div>
+      </div>
+      <div class="beat-content">
+        <div class="beat-label">◦ BEAT 08 · END CREDITS · Evaluate + Cliffhanger</div>
+        <h3>ปิดฉาก · ปลด Badge</h3>
+        <p>ครูประกาศคะแนน Stardust · แจก Badge 🎈 <b>Big Bang Witness</b> ให้ทุกคนที่จบภารกิจ · ปลดเลเวล CADET → PILOT ถ้าสะสม XP ครบ</p>
+        <div class="dialog arya" data-speaker="กัปตัน อารยา (voice-over)">"บันทึกจากยาน T.H.E.O.S.-IX · วันที่ 14 ของภารกิจ... ศิลาต้นกำเนิดถูกถอดรหัสเรียบร้อย เราเห็นแสงจากวินาทีแรกของเอกภพ · แต่ในจอเรดาร์ เงาดำนั้น... ส่งพิกัดกลับมา — พิกัดของบ้านเกิดมัน"</div>
+        <p style="color: var(--accent-gold); font-style: italic; margin-top: 12px;">[หน้าจอตัดเป็นสีดำ · ปรากฏข้อความ "To Be Continued..." · EP02 · แผนที่ลับกาแล็กซี]</p>
+        <div class="tag-row"><span class="tag eval">Evaluate</span><span class="tag">Cliffhanger</span><span class="tag">Badge Drop</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MISSION CARDS PER ROLE -->
+<section id="missions">
+  <div class="label">◤ SECTION 06</div>
+  <h2 class="title">ภารกิจแยกบทบาท · Role-Specific Missions</h2>
+  <p class="sub">แต่ละบทบาทมีภารกิจเฉพาะระหว่าง BEAT 04 (Investigation) · เลือก 1 บทบาทต่อตอน</p>
+
+  <div class="mission-grid">
+    <div class="mission-card mc-nav">
+      <div class="role-tag">NAV · NAVIGATOR</div>
+      <h4>วาดแผนที่การขยายตัว</h4>
+      <p>Station A: รับผิดชอบเป่าลูกโป่ง · วัดระยะระหว่างจุด 3 คู่ก่อน/หลัง · สรุปว่าจุดห่างกันแบบใด</p>
+      <div class="reward">+2 Stardust · Fuel Cell หากวัดแม่นยำ ±1 มม.</div>
+    </div>
+    <div class="mission-card mc-eng">
+      <div class="role-tag">ENG · SPECTRAL</div>
+      <h4>ถอดรหัสสีของแสง</h4>
+      <p>Station B: จัดลำดับภาพ 4 ใบตาม redshift · อธิบายว่าทำไมแสงเปลี่ยนสีเมื่อระยะไกลขึ้น</p>
+      <div class="reward">+2 Stardust · ชุด Fuel Cell พิเศษ สำหรับคำอธิบาย Doppler</div>
+    </div>
+    <div class="mission-card mc-med">
+      <div class="role-tag">MED · LIFE ANALYST</div>
+      <h4>ค้นหาเสียงจากอดีต</h4>
+      <p>Station C: ฟังเสียง static · อธิบายว่าทำไมมันอยู่ทุกทิศทาง · เชื่อมโยงกับสิ่งมีชีวิต (คาร์บอนจาก Big Bang)</p>
+      <div class="reward">+2 Stardust · Bonus ถ้าโยงไปถึงธาตุในร่างกาย</div>
+    </div>
+    <div class="mission-card mc-mech">
+      <div class="role-tag">MECH · ENGINEER</div>
+      <h4>สร้างแบบจำลองเวลา</h4>
+      <p>รับ timeline card 4 ใบ → จัดเรียงตามอุณหภูมิ/เวลา · คำนวณว่าเอกภพเย็นลงด้วยอัตราใด</p>
+      <div class="reward">+2 Stardust · บทบาทนำใน Boss Move</div>
+    </div>
+  </div>
+</section>
+
+<!-- VOID CARD -->
+<section id="void">
+  <div class="label">◤ SECTION 07</div>
+  <h2 class="title">การ์ด VOID ใบที่ 1</h2>
+  <p class="sub">มโนทัศน์คลาดเคลื่อนที่ VOID ใช้เป็นอาวุธ · Cadets ต้องหาหลักฐานหักล้าง</p>
+
+  <div class="void-wrap">
+    <h4>👁️ VOID CLAIM · MISCONCEPTION #01</h4>
+    <div class="void-claim">
+      "บิกแบงคือระเบิดในที่ว่าง · ถ้ามีระเบิดต้องมีศูนย์กลาง · ไปหาสิว่าศูนย์กลางเอกภพอยู่ไหน — หาไม่เจอแปลว่าทฤษฎีนี้โกหก"
+    </div>
+
+    <div class="void-counter">
+      <h5>✦ หลักฐานหักล้าง · ให้ Cadets เขียนเองก่อน แล้วครูเสริม</h5>
+      <ul>
+        <li>บิกแบงไม่ใช่การ "ระเบิดใน" อวกาศ แต่เป็นการ "ขยายของ" อวกาศเอง — สาธิตลูกโป่ง: ทุกจุดห่างกันพร้อมกัน ไม่มีจุดไหนเป็นศูนย์กลาง</li>
+        <li>กฎฮับเบิล-เลอเมตร์: กาแล็กซีทุกทิศถอยห่างจากเรา — ถ้าเราเป็น "ศูนย์กลาง" แสดงว่า <em>ทุก</em> ผู้สังเกตในเอกภพก็เห็นแบบเดียวกัน (ไม่มีตำแหน่งพิเศษ)</li>
+        <li>CMB 2.73 K วัดได้เท่ากันทุกทิศทาง — ไม่ใช่คลื่นที่วิ่งออกจากจุดระเบิด แต่เป็นฉากหลังที่อยู่ทั่วเอกภพตั้งแต่อะตอมเป็นกลาง</li>
+        <li>การเปรียบเทียบที่ถูกต้อง: ลูกโป่งพองออก → ผิวลูกโป่ง = อวกาศ → ทุกจุดบนผิวห่างออกพร้อมกัน · ผิวลูกโป่งไม่มี "ศูนย์กลาง"</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ASSESSMENT -->
+<section id="assess">
+  <div class="label">◤ SECTION 08</div>
+  <h2 class="title">การวัดและประเมินผล</h2>
+  <p class="sub">Formative ระหว่างเล่น · Summative ปลายภารกิจ · ผูกกับระบบ XP/Badge โดยตรง</p>
+
+  <table class="assess-table">
+    <thead>
+      <tr>
+        <th>สิ่งที่ประเมิน</th>
+        <th>วิธีประเมิน</th>
+        <th>เครื่องมือ</th>
+        <th>เกณฑ์ผ่าน</th>
+        <th>Reward</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>K1 · ทฤษฎีบิกแบง</td>
+        <td>Boss Move ข้อ 1-2</td>
+        <td>Log Book · คำตอบ</td>
+        <td>2/3 ข้อ</td>
+        <td><span class="xp-chip">+3 XP</span></td>
+      </tr>
+      <tr>
+        <td>K2 · CMB เป็นหลักฐาน</td>
+        <td>คำโต้ VOID</td>
+        <td>Rubric 3 ระดับ</td>
+        <td>อ้างถึง CMB หรือ redshift</td>
+        <td><span class="xp-chip">+2 XP</span></td>
+      </tr>
+      <tr>
+        <td>P1 · สร้างแบบจำลอง</td>
+        <td>Station A · วัดระยะ</td>
+        <td>ภาพถ่ายลูกโป่ง + ตาราง</td>
+        <td>วัดอย่างน้อย 3 คู่จุด</td>
+        <td><span class="xp-chip">+2 XP</span> +1 FC</td>
+      </tr>
+      <tr>
+        <td>P2 · โต้แย้งด้วยหลักฐาน</td>
+        <td>Villain Strike · คำตอบทีม</td>
+        <td>Rubric การให้เหตุผล</td>
+        <td>ใช้หลักฐาน 1/3 station</td>
+        <td><span class="xp-chip">+3 XP</span></td>
+      </tr>
+      <tr>
+        <td>A1 · ทำงานทีม</td>
+        <td>สังเกตระหว่างคาบ</td>
+        <td>Checklist 5 พฤติกรรม</td>
+        <td>3/5 พฤติกรรม</td>
+        <td><span class="xp-chip">+2 XP</span></td>
+      </tr>
+      <tr>
+        <td>Misconception เริ่มต้น</td>
+        <td>4-tier pre-test (เข้าคาบ)</td>
+        <td>Google Form</td>
+        <td>ใช้เป็น baseline</td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>Misconception สิ้นสุด</td>
+        <td>4-tier post-test (ท้ายคาบ)</td>
+        <td>Google Form</td>
+        <td>ลดลง ≥30% จาก baseline</td>
+        <td><span class="xp-chip">+5 XP</span> ทีมที่ลดเยอะสุด</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- HOMEWORK -->
+<section>
+  <div class="label">◤ SECTION 09</div>
+  <h2 class="title">Side Quest · ภารกิจนอกห้อง</h2>
+  <div class="hw">
+    <h4>🌙 MISSION CONTINUES...</h4>
+    <p style="color:var(--text-dim); font-size:14.5px;">Cadets มีเวลา 1 สัปดาห์ · ทำให้ครบอย่างน้อย 1 อย่าง · ส่งผ่าน Mission Log Book</p>
+    <ul>
+      <li><b>ภารกิจ Alpha</b>: ค้นหาและสรุปข่าวกล้อง JWST 1 ข่าว · บอกว่าข่าวนั้นเชื่อมกับบิกแบงอย่างไร (+3 XP)</li>
+      <li><b>ภารกิจ Beta</b>: ทำคลิป 60 วินาที อธิบาย "ทำไมบิกแบงไม่ใช่ระเบิดในที่ว่าง" โดยใช้ลูกโป่งของคุณเอง (+5 XP)</li>
+      <li><b>ภารกิจ Gamma</b>: เขียนจดหมายถึง VOID · โน้มน้าวให้เชื่อว่าเอกภพมีจุดเริ่มต้น ด้วยหลักฐาน 2 อย่าง (+4 XP)</li>
+      <li><b>Secret Quest</b>: ดูดาวในคืนไม่มีเมฆ · ถ่ายภาพทางช้างเผือกด้วยมือถือ · ส่งพร้อมบรรยาย (+7 XP, Hidden Badge)</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  COSMOS LOG · EPISODE 01 · PILOT · ว 7.1 ม.4-6/1
+</footer>
+
+</body>
+</html>

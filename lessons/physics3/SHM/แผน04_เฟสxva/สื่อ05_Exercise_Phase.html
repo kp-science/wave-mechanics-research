@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Exercise Phase · SHM แผน 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff1f2;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #e11d48;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#881337}
+.tag{display:inline-block;background:#e11d48;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#e11d48}
+.info{background:#ffe4e6;border-left:6px solid #e11d48;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+
+.item{border:2px solid #fda4af;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fff}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.no{display:inline-block;background:#e11d48;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700}
+.skill.calc{background:#dcfce7;color:#166534}
+.skill.theory{background:#fde68a;color:#78350f}
+.skill.graph{background:#dbeafe;color:#1e40af}
+.skill.vec{background:#ede9fe;color:#5b21b6}
+.mis-tag{display:inline-block;background:#ffe4e6;color:#881337;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700}
+.stem{font-size:16px;font-weight:600;color:#881337;margin:8px 0 6px}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #fda4af;font-size:15px}
+.sub b{color:#881337}
+
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:transparent}
+select.sel{border:1.5px solid #fda4af;border-radius:8px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;min-width:160px}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #fda4af;border-radius:8px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:4px}
+.ans-ta:focus,.ans-in:focus{outline:none;border-color:#e11d48}
+
+.opts-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.opts-row label{background:#fff;border:1.5px solid #fda4af;border-radius:8px;padding:7px 14px;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;transition:all .15s}
+.opts-row label:has(input:checked){background:#ffe4e6;border-color:#e11d48;font-weight:700}
+.chk-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:700px){.chk-bank{grid-template-columns:1fr}}
+.chk{display:flex;gap:8px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;align-items:flex-start;transition:all .15s}
+.chk:hover{border-color:#e11d48;background:#fff1f2}
+.chk:has(input:checked){background:#ffe4e6;border-color:#e11d48;font-weight:600}
+.chk input{margin-top:3px;flex-shrink:0;accent-color:#e11d48}
+
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fda4af;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff1f2 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fda4af;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 25px,#ffe4e6 26px),repeating-linear-gradient(to bottom,#fff 0,#fff 25px,#ffe4e6 26px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #e11d48;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#881337;font-weight:600}
+.c-btn.active{background:#e11d48;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #1a202c}
+.hint{font-size:12.5px;color:#64748b;margin-top:5px;font-style:italic}
+
+.prog-bar{background:#ffe4e6;border:1.5px solid #fda4af;border-radius:10px;padding:10px 16px;margin:10px 0;display:flex;align-items:center;gap:12px}
+.prog-track{flex:1;background:#fff;border-radius:20px;height:12px;overflow:hidden;border:1px solid #fda4af}
+.prog-fill{height:100%;background:linear-gradient(90deg,#e11d48,#881337);border-radius:20px;width:0%;transition:width .3s}
+.prog-txt{font-size:.84rem;font-weight:700;color:#881337;white-space:nowrap}
+
+.submit-bar{background:linear-gradient(135deg,#881337,#e11d48);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#881337;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar,.prog-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan4-exercise">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 Exercise · Phase Relationships · y, v, a</h1>
+      <div class="meta"><span class="tag">SHM แผน 4</span><span class="tag" style="background:#be123c;">05_Exercise</span> 8 ข้อ · E4 Elaborate · K4.1, K4.2, P4.1, P4.2</div>
+    </div>
+    <div class="meta" style="color:#881337;font-weight:700">เกณฑ์ผ่าน ≥ 5/8</div>
+  </div>
+  <div class="warn-config" id="configWarn">⚠️ API ยังไม่ตั้งค่า — download .json แทน</div>
+  <div class="info"><b>วิธีทำ:</b> (คำนวณ) → วาดวิธีคิดบน canvas · (ทฤษฎี) → ติ๊ก/เลือก · (กราฟ) → วาดบน canvas กระดาษกราฟ</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <div class="prog-bar">
+    <span style="font-size:.85rem;color:#881337;font-weight:600">ความคืบหน้า</span>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <span class="prog-txt" id="progTxt">0/8</span>
+  </div>
+
+  <form id="exForm">
+
+  <!-- ข้อ 1 คำนวณ v, a ที่ t ใดๆ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 1</span>
+      <span class="skill calc">🔢 คำนวณ</span>
+      <span class="mis-tag">K4.1</span>
+    </div>
+    <div class="stem">วัตถุเคลื่อนที่แบบ SHM ตาม y = 0.20 sin(4t) เมตร · คำนวณ v, a ที่ t = 0.25 s</div>
+    <div class="sub"><b>(ก)</b> v = dy/dt = <input class="ans-in" id="q1a_ans" placeholder="?"> m/s</div>
+    <div class="sub"><b>(ข)</b> a = d²y/dt² = <input class="ans-in" id="q1b_ans" placeholder="?"> m/s²</div>
+    <div class="sub"><b>(ค)</b> แสดงวิธีคิด:</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cv1','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cv1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cv1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#e11d48" onclick="setColor('cv1','#e11d48',this)"></div>
+      <div class="c-color" style="background:#2563eb" onclick="setColor('cv1','#2563eb',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cv1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cv1" data-bg="lined" width="980" height="200"></canvas>
+    <div class="hint">💡 y = A sin(ωt) → v = Aω cos(ωt) → a = −Aω² sin(ωt) · ที่ t=0.25: ωt = 4×0.25 = 1 rad</div>
+  </div>
+
+  <!-- ข้อ 2 หา v ที่ตำแหน่ง y ใดๆ -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 2</span>
+      <span class="skill calc">🔢 คำนวณ</span>
+      <span class="mis-tag">K4.2</span>
+    </div>
+    <div class="stem">วัตถุ SHM มี A = 0.30 m · ω = 6 rad/s · ณ ตำแหน่ง y = 0.15 m (= A/2) ความเร็วมีค่าเท่าใด?</div>
+    <div class="sub"><b>(ก)</b> v = ω√(A² − y²) = <input class="ans-in" id="q2a_ans" placeholder="?"> m/s</div>
+    <div class="sub"><b>(ข)</b> แสดงวิธีคิด:</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cv2','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cv2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cv2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#059669" onclick="setColor('cv2','#059669',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cv2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cv2" data-bg="lined" width="980" height="200"></canvas>
+    <div class="hint">💡 v = ω√(A²−y²) = 6×√(0.09−0.0225) = 6×√0.0675 ≈ 6×0.260 ≈ 1.56 m/s · หรือ v = (√3/2)Aω</div>
+  </div>
+
+  <!-- ข้อ 3 เวลาที่ v สูงสุด -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 3</span>
+      <span class="skill theory">💡 ทฤษฎี</span>
+      <span class="mis-tag">M4.2</span>
+    </div>
+    <div class="stem">y = A sin(ωt) · ความเร็ว v สูงสุดเกิดขึ้น ณ เวลาใด (ภายในคาบแรก T)?</div>
+    <div class="opts-row">
+      <label><input type="radio" name="q3" value="a"> t = 0 (y = 0, เพิ่งเริ่ม)</label>
+      <label><input type="radio" name="q3" value="b"> t = T/4 (y = +A, ปลายสุด)</label>
+      <label><input type="radio" name="q3" value="c"> t = T/2 (y = 0, กลับสมดุล)</label>
+      <label><input type="radio" name="q3" value="d"> t = 3T/4 (y = −A, ปลายล่าง)</label>
+    </div>
+    <div style="margin-top:8px;">
+      <b>เพราะอะไร?</b>
+      <div class="chk-bank">
+        <label class="chk"><input type="checkbox" name="q3r" value="a"> v = Aω cos(ωt) สูงสุดเมื่อ cos(ωt) = 1 → ωt = 0 → t = 0</label>
+        <label class="chk"><input type="checkbox" name="q3r" value="b"> v สูงสุดที่ y = 0 → cos(0) = 1 แต่ sin(ωt)=0 เมื่อ t=0, T/2, T</label>
+        <label class="chk"><input type="checkbox" name="q3r" value="c"> v สูงสุดที่ y = ±A (ปลายสุด)</label>
+        <label class="chk"><input type="checkbox" name="q3r" value="d"> v = ω√(A²−y²) สูงสุดเมื่อ y = 0</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 4 อ่านกราฟ y-t -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 4</span>
+      <span class="skill graph">📊 กราฟ</span>
+      <span class="mis-tag">P4.2</span>
+    </div>
+    <div class="stem">จากกราฟ y-t ด้านล่าง อ่านค่า A, T, ω และ f</div>
+    <div style="text-align:center;margin:10px 0">
+      <svg viewBox="0 0 520 150" width="100%" style="max-width:520px;border:1.5px solid #fda4af;border-radius:8px;background:#fff">
+        <line x1="30" y1="75" x2="510" y2="75" stroke="#cbd5e0" stroke-width="1.5"/>
+        <line x1="30" y1="20" x2="30" y2="130" stroke="#cbd5e0" stroke-width="1.5"/>
+        <!-- grid -->
+        <line x1="30" y1="30" x2="510" y2="30" stroke="#f0f4f8" stroke-width="1"/>
+        <line x1="30" y1="120" x2="510" y2="120" stroke="#f0f4f8" stroke-width="1"/>
+        <line x1="150" y1="20" x2="150" y2="130" stroke="#f0f4f8" stroke-width="1"/>
+        <line x1="270" y1="20" x2="270" y2="130" stroke="#f0f4f8" stroke-width="1"/>
+        <line x1="390" y1="20" x2="390" y2="130" stroke="#f0f4f8" stroke-width="1"/>
+        <!-- y = 0.15 sin(π t) → T=2s -->
+        <path d="M30,75 C50,30 100,30 150,75 C200,120 250,120 270,75 C290,30 340,30 390,75 C440,120 490,120 510,75" stroke="#e11d48" stroke-width="2.5" fill="none"/>
+        <!-- amplitude markers -->
+        <text x="22" y="33" font-family="Sarabun" font-size="11" fill="#881337" text-anchor="end">0.15</text>
+        <text x="22" y="123" font-family="Sarabun" font-size="11" fill="#881337" text-anchor="end">−0.15</text>
+        <text x="22" y="78" font-family="Sarabun" font-size="11" fill="#4a5568" text-anchor="end">0</text>
+        <!-- time markers -->
+        <text x="150" y="143" font-family="Sarabun" font-size="11" fill="#4a5568" text-anchor="middle">1</text>
+        <text x="270" y="143" font-family="Sarabun" font-size="11" fill="#4a5568" text-anchor="middle">2</text>
+        <text x="390" y="143" font-family="Sarabun" font-size="11" fill="#4a5568" text-anchor="middle">3</text>
+        <text x="505" y="78" font-family="Sarabun" font-size="11" fill="#e11d48" font-weight="700">y(m)</text>
+        <text x="510" y="143" font-family="Sarabun" font-size="11" fill="#4a5568">t(s)</text>
+      </svg>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+      <div>A = <input class="ans-in" id="q4_A" placeholder="? m"> m</div>
+      <div>T = <input class="ans-in" id="q4_T" placeholder="? s"> s</div>
+      <div>ω = <input class="ans-in" id="q4_w" placeholder="? rad/s"> rad/s</div>
+      <div>f = <input class="ans-in" id="q4_f" placeholder="? Hz"> Hz</div>
+    </div>
+  </div>
+
+  <!-- ข้อ 5 วาดกราฟ v-t จาก y-t -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 5</span>
+      <span class="skill graph">📊 กราฟ</span>
+      <span class="mis-tag">M4.3 · P4.2</span>
+    </div>
+    <div class="stem">จากกราฟ y-t ในข้อ 4 (y = 0.15 sin(πt)) · วาดกราฟ v-t บน canvas กระดาษกราฟด้านล่าง</div>
+    <div style="font-size:13.5px;color:#4a5568;margin-bottom:8px;">v(t) = Aω cos(ωt) = 0.15π cos(πt) · v_max = 0.15π ≈ 0.47 m/s · เฟสนำหน้า y อยู่ 90°</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cv5','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cv5','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#059669" onclick="setColor('cv5','#059669',this)" title="v สีเขียว"></div>
+      <div class="c-color" style="background:#e11d48" onclick="setColor('cv5','#e11d48',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cv5','#1a202c',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cv5')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cv5" data-bg="grid" width="980" height="260"></canvas>
+    <div class="hint">💡 cos เริ่มที่ค่าสูงสุด t=0 ต่างจาก sin ที่เริ่ม 0 → เฟสต่าง 90°</div>
+  </div>
+
+  <!-- ข้อ 6 ที่ y=+A ความเร่งเป็นเท่าใด -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 6</span>
+      <span class="skill calc">🔢 คำนวณ</span>
+      <span class="mis-tag star" style="background:#fecdd3;color:#7f1d1d;">M4.1 ★★</span>
+    </div>
+    <div class="stem">y = 0.20 sin(5t) m · ณ ตำแหน่ง y = +A = +0.20 m <b>ความเร่ง a มีค่าและทิศเป็นอย่างไร?</b></div>
+    <div class="sub"><b>(ก)</b> a = −ω²y = <input class="ans-in" id="q6a_ans" placeholder="?"> m/s²</div>
+    <div class="sub"><b>(ข)</b> ทิศของ a:
+      <select class="sel" id="q6b_dir">
+        <option value="">-- เลือก --</option>
+        <option value="plus">ทิศ +y (ออกจากสมดุล)</option>
+        <option value="minus">ทิศ −y (ชี้กลับสมดุล) ✓</option>
+        <option value="zero">ไม่มีทิศ (a = 0)</option>
+      </select>
+    </div>
+    <div class="sub"><b>(ค)</b> แสดงวิธีคิด:</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cv6','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cv6','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#2563eb" onclick="setColor('cv6','#2563eb',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cv6','#1a202c',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cv6')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cv6" data-bg="lined" width="980" height="200"></canvas>
+    <div class="hint">💡 a = −ω²y = −(25)(0.20) = −5 m/s² · ลบแปลว่าชี้ทิศ −y (กลับสมดุล) · ★ v = 0 แต่ a ≠ 0!</div>
+  </div>
+
+  <!-- ข้อ 7 เปรียบเทียบ v กับ a ทิศเดียวกันไหม -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 7</span>
+      <span class="skill theory">💡 ทฤษฎี</span>
+      <span class="mis-tag">M4.4</span>
+    </div>
+    <div class="stem">y = A sin(ωt) · วัตถุกำลังเคลื่อนจาก y = −A/2 ไปยัง y = 0 · v กับ a ชี้ทิศเดียวกันหรือสวนทางกัน?</div>
+    <div class="opts-row">
+      <label><input type="radio" name="q7" value="a"> ทิศเดียวกัน (ความเร็วเพิ่มขึ้น)</label>
+      <label><input type="radio" name="q7" value="b"> สวนทางกัน (ความเร็วลดลง)</label>
+      <label><input type="radio" name="q7" value="c"> a = 0 จึงไม่มีทิศ</label>
+      <label><input type="radio" name="q7" value="d"> ขึ้นกับเวลา ไม่แน่นอน</label>
+    </div>
+    <div style="margin-top:8px;"><b>เหตุผล:</b>
+      <textarea class="ans-ta" id="q7_reason" rows="2" placeholder="เพราะ y = −A/2 < 0 → a = −ω²y = −ω²(−A/2) > 0 → a ชี้ทิศ +y · และวัตถุกำลังไปทาง +y (จาก −A/2 → 0) → v ทิศ +y → ทิศเดียวกัน → เร็วขึ้น"></textarea>
+    </div>
+  </div>
+
+  <!-- ข้อ 8 Challenge: หา φ จาก y(0) ≠ 0 -->
+  <div class="item">
+    <div class="item-head">
+      <span class="no">ข้อ 8</span>
+      <span class="skill calc">🔢 คำนวณ</span>
+      <span class="skill" style="background:#fce7f3;color:#9d174d;">⭐ Challenge</span>
+      <span class="mis-tag">K4.1</span>
+    </div>
+    <div class="stem">วัตถุ SHM มี A = 0.10 m · ω = 2π rad/s · ที่ t = 0: y(0) = 0.05 m และ v(0) &gt; 0 · หา φ</div>
+    <div class="sub"><b>(ก)</b> y(0) = A sin(φ) → sin(φ) = y(0)/A = <input class="ans-in" id="q8a_sin" placeholder="?"> → φ = <input class="ans-in" id="q8a_phi" placeholder="? rad"> rad</div>
+    <div class="sub"><b>(ข)</b> ตรวจสอบ: v(0) = Aω cos(φ) = <input class="ans-in" id="q8b_v0" placeholder="?"> m/s · ถ้า v(0) &gt; 0 แสดงว่า φ = <input class="ans-in" id="q8b_phi" placeholder="?"> rad</div>
+    <div class="sub"><b>(ค)</b> เขียนสมการครบ: y(t) = <textarea class="ans-ta" id="q8c_eq" rows="1" placeholder="y(t) = ?"></textarea></div>
+    <div class="sub"><b>(ง)</b> แสดงวิธีคิด:</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cv8','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cv8','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cv8','#1a202c',this)"></div>
+      <div class="c-color" style="background:#e11d48" onclick="setColor('cv8','#e11d48',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('cv8','#7c3aed',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cv8')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cv8" data-bg="lined" width="980" height="220"></canvas>
+    <div class="hint">💡 sin(φ) = 0.5 → φ = π/6 หรือ 5π/6 · v(0) = Aω cos(φ) > 0 → cos(φ) > 0 → φ = π/6 ≈ 30°</div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ ส่งใบงาน Exercise Phase</h3>
+    <p style="font-size:13px;margin-bottom:10px;opacity:.9">ทำครบ 8 ข้อ · เกณฑ์ผ่าน ≥ 5/8</p>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  </form>
+
+  <div class="foot">05_Exercise Phase · SHM แผน 4 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx};
+  function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+  function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=28;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function en(e){e.preventDefault();canvasState[id].drawing=false;}
+  c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.clearRect(0,0,c.width,c.height);}
+
+// Progress tracking
+function updateProgress(){
+  const inputs=document.querySelectorAll('#exForm input:not([type=submit]),#exForm textarea,#exForm select');
+  let filled=0;const total=8;
+  const itemsFilled=new Set();
+  inputs.forEach(el=>{
+    if(el.value.trim()){const m=el.id.match(/^q(\d+)/);if(m)itemsFilled.add(m[1]);}
+  });
+  document.querySelectorAll('#exForm input[type=radio]:checked,#exForm input[type=checkbox]:checked').forEach(el=>{const m=el.name.match(/^q(\d+)/);if(m)itemsFilled.add(m[1]);});
+  const count=Math.min(itemsFilled.size,total);
+  document.getElementById('progFill').style.width=(count/total*100)+'%';
+  document.getElementById('progTxt').textContent=count+'/'+total;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('canvas[data-bg]').forEach(c=>initCanvas(c.id));
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('exForm').addEventListener('change',updateProgress);
+  document.getElementById('exForm').addEventListener('input',updateProgress);
+  if(typeof API_URL!=='undefined'&&API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'){document.getElementById('configWarn').classList.add('show');}
+});
+
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();
+  const no=document.getElementById('student_no').value.trim();
+  const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้อง';return;}
+  const ans={};
+  document.querySelectorAll('input,textarea,select').forEach(el=>{if(el.id&&!['student_name','student_no','class','test_date'].includes(el.id)&&el.type!=='submit')ans[el.id]=el.value;});
+  ['q3','q7'].forEach(q=>{const r=document.querySelector(`input[name="${q}"]:checked`);ans[q]=r?r.value:'';});
+  ans.q3r=Array.from(document.querySelectorAll('input[name="q3r"]:checked')).map(c=>c.value).join(',');
+  const imgs={};
+  ['cv1','cv2','cv5','cv6','cv8'].forEach(id=>{try{imgs['img_'+id]=document.getElementById(id).toDataURL('image/png');}catch(err){}});
+  const payload={plan:'SHM-4',type:'Exercise',student_name:name,student_no:Number(no),class:cls,test_date:document.getElementById('test_date').value,...ans,...imgs};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'){status.className='status error';status.innerHTML='⚠️ API ยังไม่ตั้งค่า · <button onclick="downloadJSON()" style="color:#881337;background:none;border:none;cursor:pointer;text-decoration:underline">Download .json</button>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{
+    await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:'Exercise_SHM_Plan4',payload})});
+    status.className='status success';status.innerHTML='✅ ส่งสำเร็จ 🎉';btn.textContent='✅ ส่งแล้ว';
+  }catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Exercise_SHM4_${window._lastPayload.student_name||'student'}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

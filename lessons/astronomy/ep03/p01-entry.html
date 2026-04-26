@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P01 · Pre-test</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .q-card .tag-row { display:flex; gap:6px; margin-top:6px; }
+  .mtag { padding:1px 8px; font-size:10px; border-radius:10px; background:rgba(255,92,122,0.1); color:#ff8fa5; border:1px solid rgba(255,92,122,0.3); font-family:Orbitron,sans-serif; letter-spacing:0.1em; }
+  .cri-row { display:flex; gap:6px; margin-top:10px; padding:8px; background:rgba(0,0,0,0.25); border-radius:8px; border:1px dashed rgba(212,184,255,0.4); }
+  .cri-label { font-size:11px; color:#d4b8ff; letter-spacing:0.12em; font-family:Orbitron,sans-serif; align-self:center; margin-right:4px; }
+  .cri-btn { flex:1; padding:8px; background:rgba(212,184,255,0.06); border:1px solid rgba(212,184,255,0.3); color:#c8cde0; border-radius:6px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .cri-btn.on { background:rgba(212,184,255,0.2); border-color:#d4b8ff; color:#fff; }
+  .progress-line { font-size:12px; color:#9aa3c0; text-align:center; margin:8px 0; }
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px;
+    background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999;
+    box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px); opacity:0; } }
+  /* Submit button states */
+  .submit-btn.armed { background:rgba(126,255,178,0.2); border-color:#7effb2; color:#7effb2;
+    cursor:pointer; animation:armedPulse 1.5s infinite; }
+  @keyframes armedPulse { 50% { box-shadow:0 0 16px rgba(126,255,178,0.5); } }
+  .submit-btn.done { background:rgba(100,100,140,0.1); border-color:#555; color:#888; cursor:not-allowed; opacity:0.7; }
+  .next-btn.armed { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; cursor:pointer; }
+  .next-btn.armed:hover { background:rgba(255,203,107,0.3); }
+</style>
+</head>
+<body data-page="p01" data-type="reflection">
+<div class="page">
+  <div class="lbl">📝 REFLECTION · ก่อนออกเดินทาง</div>
+  <h1>จดหมายจากตัวเอง + Pre-test</h1>
+
+  <div class="card">
+    <h3>💌 ลายมือของคุณ (เขียนไว้ตอนจบ EP02)</h3>
+    <div class="father-voice">
+      "ถ้าอ่านสิ่งนี้ แปลว่ารอดจาก VOID แล้ว · ฉันรู้สึกว่ามีคนกำลังเรียกหาเราอยู่... · สัญญานะว่า<b>จะไม่หยุดฟัง</b>"<br>
+      <span style="font-size:11px;color:#9aa3c0;">— กัปตัน Arya เวชชาชีวะ</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📝 Pre-test · 6 ข้อ · เงียบ · ไม่ปรึกษา · ไม่มีเฉลย</h3>
+    <div class="narrative" style="font-size:13px;margin:6px 0 10px;">
+      แต่ละข้อให้เลือก <b>คำตอบ</b> + <b>ระดับความมั่นใจ</b> · ไม่มีผิด-ถูกแสดงตอนนี้ (ครูจะดูทีหลัง)
+    </div>
+    <div id="quiz"></div>
+    <div class="progress-line" id="progress">ตอบแล้ว 0 / 6</div>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Pre-test</summary>
+    <div class="body">
+      <b>เป้า</b>: เก็บ baseline ความเข้าใจก่อนเรียน · ไม่ใช่ทดสอบให้ได้คะแนน<br>
+      <b>บอกนักเรียน</b>: "ไม่มีผิดไม่มีถูกในตอนนี้ · ตอบแบบที่คิดจริง ๆ · ถ้าเดาให้เลือก 'เดา' ได้"<br>
+      <b>อย่าเฉลย</b> ระหว่างทำ · เก็บไว้เทียบ post-test ตอนจบ EP03<br>
+      <b>3 VOID ที่วัด</b>:<br>
+      · M1 "เลขน้อย = หรี่" (ข้อ 1,2) — ระบบ magnitude กลับทิศ<br>
+      · M2 "สว่างปรากฎ = สว่างจริง" (ข้อ 3,4) — m vs M<br>
+      · M3 "parsec = เวลา" (ข้อ 5,6) — pc เป็นระยะทาง<br>
+      <b>CRI</b>: ผิด + มั่นใจ = misconception จริง · ผิด + ลังเล/เดา = ไม่รู้ (ต่างกัน)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ตอบครบ 6 ข้อก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งคำตอบก่อน</button>
+  </div>
+  <div class="gate-hint" id="gateHint">🤫 ตอบ + เลือกความมั่นใจครบทุกข้อ · กดส่ง · แล้วจึงไปต่อได้</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+// Pre-test items · 6 ข้อ · 2 ต่อ misconception · parallel กับ post-test ใน p19
+const QUIZ = [
+  { id:'Q1', m:'M1',
+    q:'Polaris (m = +2.0) · Sirius (m = −1.5) · ใครสว่างปรากฎกว่า?',
+    a:['Sirius (m ติดลบ)', 'Polaris (m สูงกว่า)', 'เท่ากัน เพราะเห็นทั้งคู่'],
+    c:0,
+    // ตอบ 1 = M1 (เลขมาก = สว่าง) · ตอบ 2 = ไม่รู้
+  },
+  { id:'Q2', m:'M1',
+    q:'ดาว A: m = 6 (จางมาก ตาเปล่าแทบไม่เห็น) · ดาว B: m = 1 (ชัดเจน) · ข้อใด <b>ถูก</b>?',
+    a:['B สว่างปรากฎกว่า · m น้อย = แสงเข้าตามากกว่า', 'A สว่างปรากฎกว่า · m มาก = สว่างมาก', 'สว่างเท่ากัน เพราะทั้งคู่เป็นดาว'],
+    c:0,
+  },
+  { id:'Q3', m:'M2',
+    q:'Deneb (m = +1.25, M = −8.4) · Sirius (m = −1.46, M = +1.4) · ใคร<b>ปล่อยแสงจริง</b>มากกว่า?',
+    a:['Deneb (เทียบ M · M ติดลบมากกว่า)', 'Sirius (เทียบ m · m ติดลบ)', 'เท่ากัน · m กับ M คนละอย่าง'],
+    c:0,
+  },
+  { id:'Q4', m:'M2',
+    q:'ข้อใด<b>จริง</b>?',
+    a:['ดาวที่อันดับความสว่างปรากฎ (m) ติดลบมาก = ปล่อยแสงจริงเยอะเสมอ',
+       'ดาวที่ M ติดลบมาก = ปล่อยแสงจริงเยอะ · ส่วน m ขึ้นกับระยะด้วย',
+       'm กับ M เป็นค่าเดียวกัน'],
+    c:1,
+  },
+  { id:'Q5', m:'M3',
+    q:'ดาว SOS อยู่ห่างจากโลก <b>400 pc</b> · แปลว่าอะไร?',
+    a:['ระยะทาง ~1,300 ปีแสง',
+       'แสงใช้เวลาเดินทาง 400 ปี',
+       '400 ปีก่อน ดาวดวงนี้เกิด'],
+    c:0,
+  },
+  { id:'Q6', m:'M3',
+    q:'parallax = 0.005" · ใช้สูตร d = 1/p ได้ d = ? และเป็นหน่วยอะไร?',
+    a:['200 pc · หน่วยระยะทาง (แปลงเป็นปีแสงได้)',
+       '200 ปี · หน่วยเวลา',
+       '0.005 pc · หน่วยมุม'],
+    c:0,
+  },
+];
+
+// CRI levels: 1=เดา · 2=ลังเล · 3=แน่ใจ
+const CRI_LABELS = [
+  { v:1, t:'🎲 เดา' },
+  { v:2, t:'🤔 ลังเล' },
+  { v:3, t:'💡 แน่ใจ' },
+];
+
+const state = {}; // { Q1: {ans, cri} }
+
+function render() {
+  document.getElementById('quiz').innerHTML = QUIZ.map((q,i)=>`
+    <div class="q-card" data-q="${q.id}">
+      <div><b>${i+1}.</b> ${q.q}</div>
+      <div class="tag-row"><span class="mtag">${q.m}</span></div>
+      <div class="choice-row" data-i="${i}">
+        ${q.a.map((c,ci)=>`<button class="choice-btn" onclick="pickAns(${i},${ci})">${c}</button>`).join('')}
+      </div>
+      <div class="cri-row" data-cri="${i}">
+        <span class="cri-label">มั่นใจ?</span>
+        ${CRI_LABELS.map(l=>`<button class="cri-btn" onclick="pickCri(${i},${l.v})">${l.t}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function pickAns(qi, ai) {
+  const qid = QUIZ[qi].id;
+  state[qid] = state[qid] || {};
+  state[qid].ans = ai;
+  document.querySelectorAll(`[data-i="${qi}"] .choice-btn`).forEach((b, bi) => {
+    b.classList.toggle('on', bi === ai);
+    b.style.borderColor = (bi === ai) ? '#64d8ff' : '';
+    b.style.background = (bi === ai) ? 'rgba(100,216,255,0.15)' : '';
+  });
+  updateProgress();
+}
+
+function pickCri(qi, val) {
+  const qid = QUIZ[qi].id;
+  state[qid] = state[qid] || {};
+  state[qid].cri = val;
+  document.querySelectorAll(`[data-cri="${qi}"] .cri-btn`).forEach((b, bi) => {
+    b.classList.toggle('on', CRI_LABELS[bi].v === val);
+  });
+  updateProgress();
+}
+
+let submitted = false;
+
+function updateProgress() {
+  const done = Object.values(state).filter(s => s.ans != null && s.cri != null).length;
+  document.getElementById('progress').textContent = `ตอบแล้ว ${done} / ${QUIZ.length}`;
+  document.getElementById('progress').style.color = done === QUIZ.length ? '#7effb2' : '#9aa3c0';
+  // Submit button arms when all 6 answered + CRI · stays disabled if not
+  const submitBtn = document.getElementById('submitBtn');
+  if (!submitted) {
+    if (done === QUIZ.length) {
+      submitBtn.disabled = false;
+      submitBtn.classList.add('armed');
+      submitBtn.textContent = '💾 ส่งคำตอบ (ครบแล้ว)';
+      document.getElementById('gateHint').textContent = '✓ ครบทุกข้อ · กด "ส่งคำตอบ" เพื่อปลดล็อกปุ่มต่อไป';
+    } else {
+      submitBtn.disabled = true;
+      submitBtn.classList.remove('armed');
+      submitBtn.textContent = `🔒 ตอบครบ ${QUIZ.length} ข้อก่อน (เหลือ ${QUIZ.length - done})`;
+      document.getElementById('gateHint').textContent = '🤫 ตอบ + เลือกความมั่นใจครบทุกข้อ · กดส่ง · แล้วจึงไปต่อได้';
+    }
+  }
+}
+
+function showCoinToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+render();
+updateProgress();
+
+// Manual wiring · enforce submit-before-next
+setTimeout(() => {
+  const submitBtn = document.getElementById('submitBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  submitBtn.onclick = () => {
+    if (submitted || submitBtn.disabled) return;
+    const done = Object.values(state).filter(s => s.ans != null && s.cri != null).length;
+    if (done < QUIZ.length) {
+      alert(`ตอบ + เลือกความมั่นใจครบ ${QUIZ.length} ข้อก่อน (ตอนนี้ ${done}/${QUIZ.length})`);
+      return;
+    }
+
+    // Compute payload
+    const items = QUIZ.map((q,i) => {
+      const s = state[q.id] || {};
+      const correct = s.ans === q.c;
+      return { id:q.id, m:q.m, ans:s.ans, cri:s.cri, correct };
+    });
+    const correctCount = items.filter(x => x.correct).length;
+    const byM = { M1:{n:0,correct:0,cri:[]}, M2:{n:0,correct:0,cri:[]}, M3:{n:0,correct:0,cri:[]} };
+    items.forEach(x => {
+      const b = byM[x.m];
+      b.n += 1;
+      if (x.correct) b.correct += 1;
+      b.cri.push(x.cri || 0);
+    });
+
+    Submit.record('p01', {
+      tag: 'pretest',
+      items,
+      correct: correctCount,
+      total: QUIZ.length,
+      byMisconception: byM,
+      answers: Object.fromEntries(items.map(x => [x.id, x.ans])),
+    });
+
+    // Reward · pre-test ไม่วัดถูกผิด · แค่ effort · +5 coin + +5 photon
+    if (typeof Coin !== 'undefined' && Coin.add) {
+      Coin.add(5, 'p01-pretest-effort');
+    }
+    if (typeof Photon !== 'undefined' && Photon.add) {
+      Photon.add(5, 'p01-pretest-effort');
+    }
+    showCoinToast('🪙 +5 · ✦ +5 · ขอบคุณที่ตอบจริง · pre-test เก็บแล้ว');
+
+    submitted = true;
+    submitBtn.disabled = true;
+    submitBtn.classList.remove('armed');
+    submitBtn.classList.add('done');
+    submitBtn.textContent = '✓ ส่งแล้ว';
+
+    // Unlock next button
+    nextBtn.disabled = false;
+    nextBtn.classList.add('armed');
+    nextBtn.textContent = '▶ ไปต่อ · เริ่มภารกิจ';
+    document.getElementById('gateHint').textContent = '✓ ส่งสำเร็จ · กด "ไปต่อ" เพื่อเริ่มภารกิจ';
+
+    // Wire next button to navigate
+    nextBtn.onclick = () => {
+      window.location.href = 'p02-sos.html';
+    };
+  };
+
+  // Next button initially does nothing but show hint
+  nextBtn.onclick = () => {
+    if (!submitted) {
+      alert('ส่งคำตอบ pre-test ก่อน · กดปุ่ม "ส่งคำตอบ" ด้านซ้าย');
+    }
+  };
+}, 200);
+</script>
+</body></html>

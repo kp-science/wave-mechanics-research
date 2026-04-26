@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P17b · BOSS สุดท้าย · 15 คลื่น</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  /* boss stage · cosmic VOID */
+  .boss-stage { position:relative; padding:20px; background:radial-gradient(ellipse at 50% 50%, rgba(255,92,122,0.18), rgba(3,4,12,0) 70%), linear-gradient(180deg, #200314, #050214); border:2px solid var(--accent-red); border-radius:14px; margin:12px 0; text-align:center; overflow:hidden; }
+  .boss-stage svg { display:inline-block; filter: drop-shadow(0 0 30px rgba(255,92,122,0.8)); }
+  .boss-stage.firing svg { animation: bossFireAnim .5s ease-out; }
+  @keyframes bossFireAnim {
+    0%   { filter: drop-shadow(0 0 30px rgba(255,92,122,0.8)); transform:scale(1); }
+    50%  { filter: drop-shadow(0 0 80px rgba(255,92,122,1)); transform:scale(1.08); }
+    100% { filter: drop-shadow(0 0 30px rgba(255,92,122,0.8)); transform:scale(1); }
+  }
+  .boss-name { font-family:'Orbitron',sans-serif; letter-spacing:0.2em; color:var(--accent-red); font-size:14px; margin-top:8px; }
+  .boss-hp-wrap { width:80%; max-width:480px; margin:8px auto; height:18px; background:rgba(0,0,0,0.5); border:1px solid var(--border); border-radius:9px; overflow:hidden; position:relative; }
+  .boss-hp-fill { height:100%; background:linear-gradient(90deg, #ff5c7a, #b980ff); transition:width .4s; }
+  .boss-hp-text { position:absolute; inset:0; text-align:center; font-family:'Orbitron',monospace; font-size:12px; color:#fff; text-shadow:0 0 4px #000; line-height:18px; }
+
+  .race-bar { display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; padding:10px 12px; background:rgba(255,92,122,0.10); border:2px solid var(--accent-red); border-radius:12px; margin:12px 0; font-family:'Orbitron',sans-serif; }
+  .race-bar .cell { text-align:center; }
+  .race-bar .cell .lbl { font-size:10px; letter-spacing:0.15em; color:var(--text-dim); }
+  .race-bar .cell .val { font-size:20px; color:var(--accent-gold); }
+  .race-bar.shake { animation: shakeX .3s; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  .void-charge { display:flex; align-items:center; gap:12px; padding:10px 14px; background:rgba(185,128,255,0.10); border:1px solid rgba(185,128,255,0.4); border-radius:10px; margin:10px 0; font-family:'Orbitron',monospace; font-size:13px; }
+  .void-charge .vc-label { color:var(--accent-2); font-weight:700; min-width:130px; }
+  .void-charge .vc-bar { flex:1; height:14px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:7px; overflow:hidden; }
+  .void-charge .vc-fill { height:100%; background:linear-gradient(90deg, var(--accent-2), var(--accent-red)); transition: width .9s linear; }
+  .void-charge .vc-num { color:var(--accent-gold); min-width:50px; text-align:right; }
+  .void-charge.firing { animation: vcFire .4s ease-out; }
+  @keyframes vcFire { 0%{box-shadow:0 0 0 0 rgba(255,92,122,0.9)} 100%{box-shadow:0 0 30px 10px rgba(255,92,122,0)} }
+  .shield-display { display:inline-flex; gap:4px; padding:6px 12px; background:rgba(100,216,255,0.08); border:1px solid var(--accent); border-radius:14px; font-family:'Orbitron',monospace; font-size:12px; color:var(--accent); margin-left:10px; }
+
+  .question-card { padding:16px; background:var(--bg-card); border:2px solid var(--border); border-radius:12px; margin:12px 0; }
+  .q-level { display:inline-block; padding:3px 10px; font-family:'Orbitron',sans-serif; font-size:10px; letter-spacing:0.15em; border-radius:100px; margin-bottom:8px; }
+  .q-level.L1 { color:#7effb2; border:1px solid #7effb2; }
+  .q-level.L2 { color:#64d8ff; border:1px solid #64d8ff; }
+  .q-level.L3 { color:#ffcb6b; border:1px solid #ffcb6b; }
+  .q-level.L4 { color:#ffa95c; border:1px solid #ffa95c; }
+  .q-level.L5 { color:#ff5c7a; border:1px solid #ff5c7a; }
+  .q-level.L6 { color:#b980ff; border:1px solid #b980ff; }
+  .question-card .q-text { font-size:16px; line-height:1.5; margin:8px 0 12px; }
+  .choice-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  @media (max-width:540px) { .choice-row { grid-template-columns:1fr; } }
+  .choice-btn { padding:14px 16px; background:rgba(100,216,255,0.06); border:2px solid var(--border); color:var(--text); border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit; text-align:left; transition: all .12s; }
+  .choice-btn:hover:not(:disabled) { border-color:var(--accent); transform: translateY(-2px); }
+  .choice-btn.correct { border-color:var(--accent-green); background:rgba(126,255,178,0.15); }
+  .choice-btn.wrong { border-color:var(--accent-red); background:rgba(255,92,122,0.15); }
+  .choice-btn:disabled { cursor:not-allowed; opacity:0.5; }
+
+  .boost-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin:8px 0; }
+  .boost-btn { padding:10px 12px; background:rgba(255,203,107,0.08); border:1px solid rgba(255,203,107,0.4); color:var(--accent-gold); border-radius:8px; cursor:pointer; font-family:inherit; font-size:12px; text-align:left; }
+  .boost-btn:hover:not(:disabled) { background:rgba(255,203,107,0.18); }
+  .boost-btn.armed { border-color:var(--accent-gold); background:rgba(255,203,107,0.25); box-shadow: 0 0 0 2px rgba(255,203,107,0.4); }
+  .boost-btn:disabled { opacity:0.35; cursor:not-allowed; }
+  .boost-btn .b-name { font-weight:700; }
+  .boost-btn .b-desc { font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+  .hero-support { display:flex; align-items:center; gap:14px; padding:14px 18px; background:linear-gradient(135deg, rgba(255,203,107,0.14), rgba(255,92,122,0.08)); border:2px solid var(--accent-gold); border-radius:12px; margin:10px 0; cursor:pointer; transition:all .15s; }
+  .hero-support:hover:not(.used):not(.active) { transform:translateY(-2px); box-shadow:0 6px 24px rgba(255,203,107,0.35); }
+  .hero-support.used { opacity:0.4; cursor:not-allowed; border-style:dashed; }
+  .hero-support.active { border-color:var(--accent-red); background:linear-gradient(135deg, rgba(255,92,122,0.20), rgba(255,203,107,0.15)); cursor:default; animation:heroPulse 0.9s ease-in-out infinite; }
+  @keyframes heroPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,92,122,0.7)} 50%{box-shadow:0 0 0 12px rgba(255,92,122,0)} }
+  .hero-support .hs-icon { font-size:34px; line-height:1; }
+  .hero-support .hs-body { flex:1; }
+  .hero-support .hs-title { font-family:'Orbitron',sans-serif; font-weight:700; color:var(--accent-gold); font-size:13px; letter-spacing:0.14em; }
+  .hero-support.active .hs-title { color:var(--accent-red); }
+  .hero-support .hs-desc { font-size:11px; color:var(--text-dim); margin-top:3px; line-height:1.4; }
+  .hero-support .hs-timer { font-family:'Orbitron',monospace; font-size:22px; color:var(--accent-red); min-width:72px; text-align:right; font-weight:700; }
+  .hero-support:not(.active):not(.used) .hs-timer { color:var(--accent-green); font-size:14px; }
+
+  .shot-feedback { padding:10px 14px; border-radius:10px; text-align:center; font-family:'Orbitron',sans-serif; letter-spacing:0.1em; margin:8px 0; min-height:22px; font-size:13px; }
+  .shot-feedback.hit { background:rgba(126,255,178,0.15); border:1px solid var(--accent-green); color:var(--accent-green); }
+  .shot-feedback.crit { background:rgba(255,203,107,0.18); border:2px solid var(--accent-gold); color:var(--accent-gold); font-size:16px; box-shadow:0 0 20px rgba(255,203,107,0.4); }
+  .shot-feedback.miss { background:rgba(255,92,122,0.15); border:1px solid var(--accent-red); color:var(--accent-red); }
+
+  .end-screen { padding:30px; background:linear-gradient(135deg, rgba(126,255,178,0.08), rgba(185,128,255,0.10)); border:2px solid var(--accent); border-radius:14px; text-align:center; margin:16px 0; }
+  .end-screen .ribbon { font-family:'Orbitron',sans-serif; letter-spacing:0.2em; color:var(--accent-gold); font-size:14px; margin-bottom:8px; }
+  .end-screen .medal { font-size:80px; margin:10px 0; }
+  .end-screen .title { font-family:'Orbitron',sans-serif; font-size:24px; color:var(--accent-green); margin:6px 0; }
+  .end-screen table { margin:16px auto; font-family:monospace; font-size:13px; color:var(--text-dim); }
+  .end-screen td { padding:3px 14px; text-align:left; }
+
+  .hook-card { padding:18px; background:linear-gradient(135deg, rgba(185,128,255,0.10), rgba(100,216,255,0.06)); border:2px dashed var(--accent-2); border-radius:12px; margin:14px 0; }
+  .hook-card .hk-label { font-family:'Orbitron',sans-serif; letter-spacing:0.18em; color:var(--accent-2); font-size:12px; }
+  .hook-card .hk-title { font-family:'Orbitron',sans-serif; font-size:20px; color:var(--accent); margin:8px 0; }
+  .hook-card .hk-quote { font-style:italic; color:#b980ff; padding:8px 12px; border-left:3px solid var(--accent-2); background:rgba(185,128,255,0.05); margin:10px 0; }
+</style>
+</head>
+<body data-page="p17b" data-type="mixed">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label mixed">องก์ 3 · Scene 17b · 🐉 FINAL BOSS · 15 WAVES</div>
+  <h1 class="page-title">VOID Prime · The Last Stand</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K1·K2·K3·K4 · บูรณาการ</span>
+    <span class="obj-tag p">P3·P4 · บูรณาการ</span>
+    <span class="obj-tag a">A2·A4 · จิตวิทยาศาสตร์</span>
+  </div>
+
+  <div id="introSection">
+    <div class="boss-stage">
+      <img src="./galaxy/Gemini_Generated_Image_5qkl6x5qkl6x5qkl.png" alt="VOID PRIME" style="max-width:380px;width:80%;height:auto;border-radius:12px;filter: drop-shadow(0 0 40px rgba(255,92,122,0.6));">
+      <div class="boss-name">👁️ VOID PRIME · ตัวจริง · ตัวสุดท้าย</div>
+    </div>
+
+    <div style="padding:14px;background:rgba(255,92,122,0.06);border:1px solid var(--accent-red);border-radius:10px;margin:12px 0">
+      <p style="margin:0">VOID Prime ปรากฏตัว · เลือดของจักรวาลเรืองทั้งตัว · "เกมจบที่นี่ · 15 คลื่นความรู้"</p>
+      <p style="color:var(--text-dim);font-size:13px;margin-top:6px">📋 <b>15 คลื่น</b> ครอบ Bloom L1-L6 · ตอบถูก = damage VOID · ตอบผิด = MISS<br>
+      ⚡ ค่ายิง -5 / -6 · 🪙 +1 ต่อ HIT · ⚡ VOID ชาร์จ 12s ยิง beam -10 · 🛡️ Shield จากตลาด</p>
+    </div>
+
+    <div style="text-align:center;margin:18px 0">
+      <button class="finish-btn" onclick="startBattle()">⚔ เริ่มสมรภูมิ · 15 คลื่น</button>
+    </div>
+
+    <details class="teacher-cue" open>
+      <summary>🎙️ Teacher Cue · P17b · 🎭 VOID PRIME</summary>
+      <div class="tc-body">
+        <b>เปิด:</b> เสียง VOID Prime · "เธอผ่านมาทั้งหมด · แต่ตัวฉันต่าง"<br>
+        <b>ระหว่าง:</b> 15 คำถาม Bloom 6 ระดับ · ห้ามใบ้ L1-L4 · ใบ้เฉพาะ L5-L6<br>
+        <b>ปิด:</b> "ระบบจะให้ medal Bronze/Silver/Gold ตาม HIT" + EP03 hook<br>
+        <b>เกณฑ์:</b> 5-7 hit Bronze · 8-11 Silver · 12+ Gold
+      </div>
+    </details>
+  </div>
+
+  <div id="battleSection" style="display:none">
+    <div class="boss-stage" id="bossStage">
+      <img id="bossImg" src="./galaxy/boss1.jpeg" alt="VOID PRIME" style="max-width:240px;width:60%;height:auto;border-radius:10px;filter: drop-shadow(0 0 30px rgba(255,92,122,0.7));transition:filter .6s, transform .6s;">
+      <div class="boss-name" id="bossNameLabel">👁️ VOID PRIME</div>
+      <div class="boss-hp-wrap"><div class="boss-hp-fill" id="bossHpFill" style="width:100%"></div><span class="boss-hp-text" id="bossHpText">300/300</span></div>
+    </div>
+
+    <div class="race-bar" id="raceBar">
+      <div class="cell"><div class="lbl">📋 WAVE</div><div class="val" id="bWave">1/15</div></div>
+      <div class="cell"><div class="lbl">🎯 HIT/🚫 MISS</div><div class="val" id="bShots" style="font-size:18px">0/0</div></div>
+      <div class="cell"><div class="lbl">💥 DAMAGE</div><div class="val" id="bDmg" style="color:var(--accent-green)">0</div></div>
+      <div class="cell"><div class="lbl">⚡ ENERGY</div><div class="val" id="bEnergy">0</div></div>
+    </div>
+
+    <div class="void-charge" id="voidCharge">
+      <div class="vc-label">⚡ VOID PRIME ชาร์จ</div>
+      <div class="vc-bar"><div class="vc-fill" id="vcFill" style="width:0%"></div></div>
+      <div class="vc-num" id="vcNum">12s</div>
+      <div class="shield-display" id="shieldDisp" title="โล่ที่เหลือ">🛡️ × <b id="shieldNum">0</b></div>
+    </div>
+
+    <div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">🎒 ไอเทม boost · กดก่อนยิงเพื่อ ×damage</div>
+      <div class="boost-row" id="boostRow"></div>
+    </div>
+
+    <div id="heroSupportBox" style="display:none"></div>
+
+    <div id="shotFeedback" class="shot-feedback" style="display:none"></div>
+    <div id="puzzleArea"></div>
+  </div>
+
+  <div id="endArea"></div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled style="margin-top:20px">🔒 จบ BOSS ก่อน · ไปต่อ</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/boss.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ============ Config ============ */
+  const BOSS_HP = 300;          // ตีตายได้ใน ~15 hits ถ้าใช้ boost
+  const VOID_CHARGE_SEC = 12;
+  const VOID_BEAM_DMG = 10;
+  const SHOT_COST = 5;
+  const WRONG_PCT = 0.20;
+  const BOOST_DEFS = {
+    decoder: { icon:'📡', name:'Decoder', mult:2.5 },
+    lens:    { icon:'🔍', name:'Lens',    mult:2.0 },
+    fuel:    { icon:'⏱️', name:'Fuel',    mult:1.5 },
+  };
+
+  /* ============ State ============ */
+  let bossHp = BOSS_HP;
+  let totalDmg = 0;
+  let hits = 0, misses = 0;
+  let waveIdx = 0;       // current wave 0-14
+  let shieldCount = 0;
+  let availBoosts = [];  // array of boost type strings (each = 1 use)
+  let armedBoost = null;
+  let answering = false;
+  let timerHandle = null;
+  let bossChargeT = VOID_CHARGE_SEC;
+  let voidBeamsAbsorbed = 0;
+  let voidBeamsHit = 0;
+  let battleEnded = false;
+
+  /* Hero Support (unlocked by heroTitle from P12) */
+  const HERO_DURATION_MS = 20000;
+  const HERO_MULT = 2;
+  let heroUnlocked = false;
+  let heroActive = false;
+  let heroUsed = false;
+  let heroEndT = 0;
+  let heroHandle = null;
+
+  /* ============ 15 Bloom questions ============ */
+  const QUESTIONS = [
+    { lv:'L1', q:'1 pc ≈ กี่ปีแสง?', opts:['1','3.26','10','100'], ans:1 },
+    { lv:'L1', q:'Edwin Hubble เสนอ classification ปีไหน?', opts:['1905','1926','1965','1998'], ans:1 },
+    { lv:'L1', q:'H₀ มีหน่วยอะไร?', opts:['km/s','Mpc','km/s/Mpc','ly'], ans:2 },
+    { lv:'L2', q:'กาแล็กซีรูปไข่ E0 ต่าง E7 ที่จุดไหน?', opts:['สี','ความกลม','มวล','อายุ'], ans:1 },
+    { lv:'L2', q:'Sc แขนหลวมกว่า Sa หมายความว่า?', opts:['มวลน้อยกว่า','แขนกระจายกว่า','อายุน้อยกว่า','ไม่มีแขน'], ans:1 },
+    { lv:'L2', q:'Milky Way จัดอยู่ในประเภทใด?', opts:['E','SBbc','Irr','S0'], ans:1 },
+    { lv:'L3', q:'v = 7,000 km/s · H₀=70 → D =?', opts:['50 Mpc','100 Mpc','200 Mpc','500 Mpc'], ans:1 },
+    { lv:'L3', q:'D = 200 Mpc · H₀=70 → v =?', opts:['7,000','14,000','70,000','140,000'], ans:1 },
+    { lv:'L3', q:'ระยะ 10 pc เทียบเป็น ly ≈?', opts:['3.26','10','32.6','100'], ans:2 },
+    { lv:'L4', q:'ถ้ากราฟความเร็วหมุนกาแล็กซีแบน · สื่อว่า?', opts:['มวลกระจุกใจกลาง','มีมวลที่มองไม่เห็น','ไม่มีดาว','ทฤษฎีผิด'], ans:1 },
+    { lv:'L4', q:'Sun อยู่แขน Orion 26,000 ly จากศูนย์ · สรุปอะไรได้?', opts:['เราอยู่ศูนย์กลาง','เราอยู่ชานเมือง','เราอยู่ขอบจักรวาล','ไม่ได้อยู่ใน MW'], ans:1 },
+    { lv:'L5', q:'คำกล่าว "parsec คือหน่วยเวลา" · ประเมินว่า?', opts:['ถูก','ผิด · เป็นระยะ','ถูกบางส่วน','วัดไม่ได้'], ans:1 },
+    { lv:'L5', q:'2 กาแล็กซี v ต่างกัน 10 เท่า · สรุปอะไรได้ดีที่สุด?', opts:['มวลต่างกัน','ระยะต่างกัน ~10 เท่า','อายุต่างกัน','ชนิดต่างกัน'], ans:1 },
+    { lv:'L6', q:'ออกแบบภารกิจวัดระยะกาแล็กซีใหม่ · ใช้ข้อมูลอะไรเป็นหลัก?', opts:['สีกาแล็กซี','อุณหภูมิ','redshift + H₀','รูปร่าง'], ans:2 },
+    { lv:'L6', q:'ออกแบบการทดลองหักล้าง VOID (MW=เมฆ) · ทำอะไร?', opts:['สังเกตด้วยตาเปล่า','ถ่ายภาพ infrared + วัด rotation','ถามผู้ใหญ่','ไม่ได้'], ans:1 },
+  ];
+
+  /* ============ Init ============ */
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Book.state.boss = null; Book.save();
+    Boss.init({ hp: BOSS_HP, phases:[{hp: BOSS_HP, claim:'VOID PRIME · The Last Stand'}] });
+    // Pull resources from shop + lingering inventory
+    shieldCount = (Book.state.boughtShields || 0)
+                + ((Items.has && Items.has('shield') && !Items.isUsed('shield')) ? 1 : 0);
+    if (Items.has && Items.has('shield') && !Items.isUsed('shield')) Items.use('shield', { on:'p17b' });
+    Book.state.boughtShields = 0; Book.save(); // ดึงเข้า counter หมด
+    availBoosts = [...(Book.state.boughtBoosts || [])];
+    // เพิ่ม legacy items ที่ยังไม่ใช้
+    ['decoder','hubbleLens','warpFuel'].forEach(id => {
+      if (Items.has && Items.has(id) && !Items.isUsed(id)) {
+        const map = { decoder:'decoder', hubbleLens:'lens', warpFuel:'fuel' };
+        availBoosts.push(map[id]);
+        Items.use(id, { on:'p17b' });
+      }
+    });
+    Book.state.boughtBoosts = []; Book.save();
+    heroUnlocked = (Book.state.inventory || []).some(it => it && it.id === 'heroTitle');
+    renderHUD();
+    renderBoosts();
+    renderHero();
+    renderVoidCharge();
+  }, 50);
+
+  function renderHero() {
+    const box = document.getElementById('heroSupportBox');
+    if (!box) return;
+    if (!heroUnlocked) { box.style.display = 'none'; return; }
+    box.style.display = '';
+    if (heroActive) {
+      const left = Math.max(0, Math.ceil((heroEndT - Date.now())/1000));
+      box.innerHTML = `<div class="hero-support active">
+        <div class="hs-icon">💥</div>
+        <div class="hs-body">
+          <div class="hs-title">🦸 HERO SUPPORT · ACTIVE</div>
+          <div class="hs-desc">damage ×${HERO_MULT} · ซ้อนกับ boost ปกติได้ · หมดเวลาแล้วใช้ซ้ำไม่ได้</div>
+        </div>
+        <div class="hs-timer">${left}s</div>
+      </div>`;
+      return;
+    }
+    if (heroUsed) {
+      box.innerHTML = `<div class="hero-support used">
+        <div class="hs-icon">🦸</div>
+        <div class="hs-body">
+          <div class="hs-title">HERO SUPPORT · ใช้ไปแล้ว</div>
+          <div class="hs-desc">เทพก็เหนื่อยเหมือนกัน · ใช้ได้ครั้งเดียวต่อศึก</div>
+        </div>
+        <div class="hs-timer">—</div>
+      </div>`;
+      return;
+    }
+    box.innerHTML = `<div class="hero-support" onclick="activateHero()">
+      <div class="hs-icon">🦸</div>
+      <div class="hs-body">
+        <div class="hs-title">HERO SUPPORT · พร้อมใช้</div>
+        <div class="hs-desc">ปลดล็อกจาก Title 🦸 Hero (บริจาค 50 ที่ P12) · กด 1 ครั้ง → damage ×${HERO_MULT} นาน ${HERO_DURATION_MS/1000} วินาที · ใช้ได้ครั้งเดียว</div>
+      </div>
+      <div class="hs-timer">READY</div>
+    </div>`;
+  }
+
+  function activateHero() {
+    if (!heroUnlocked || heroUsed || heroActive || battleEnded) return;
+    heroActive = true;
+    heroUsed = true;
+    heroEndT = Date.now() + HERO_DURATION_MS;
+    showFeedback(`🦸 HERO SUPPORT · ACTIVATED · damage ×${HERO_MULT} · ${HERO_DURATION_MS/1000}s`, 'crit');
+    if (heroHandle) clearInterval(heroHandle);
+    heroHandle = setInterval(() => {
+      if (heroActive && Date.now() >= heroEndT) {
+        heroActive = false;
+        clearInterval(heroHandle); heroHandle = null;
+        showFeedback('🦸 Hero Support · หมดเวลา · กลับสู่ damage ปกติ', 'miss');
+      }
+      renderHero();
+    }, 250);
+    renderHero();
+  }
+
+  function startBattle() {
+    document.getElementById('introSection').style.display = 'none';
+    document.getElementById('battleSection').style.display = '';
+    timerHandle = setInterval(() => {
+      if (battleEnded) { clearInterval(timerHandle); return; }
+      bossChargeT--;
+      if (bossChargeT <= 0) { bossFires(); bossChargeT = VOID_CHARGE_SEC; }
+      renderVoidCharge();
+    }, 1000);
+    nextWave();
+  }
+
+  /* ============ HUD ============ */
+  function renderHUD() {
+    document.getElementById('bossHpFill').style.width = ((bossHp/BOSS_HP)*100) + '%';
+    document.getElementById('bossHpText').textContent = `${bossHp}/${BOSS_HP}`;
+    document.getElementById('bWave').textContent = `${Math.min(waveIdx+1,15)}/15`;
+    document.getElementById('bShots').textContent = `${hits}/${misses}`;
+    document.getElementById('bDmg').textContent = totalDmg;
+    document.getElementById('bEnergy').textContent = Book.state.energy || 0;
+    document.getElementById('shieldNum').textContent = shieldCount;
+    document.getElementById('shieldDisp').style.opacity = shieldCount > 0 ? '1' : '0.4';
+  }
+  function renderVoidCharge() {
+    const pct = Math.round(((VOID_CHARGE_SEC - bossChargeT) / VOID_CHARGE_SEC) * 100);
+    document.getElementById('vcFill').style.width = pct + '%';
+    document.getElementById('vcNum').textContent = bossChargeT + 's';
+  }
+  function renderBoosts() {
+    const row = document.getElementById('boostRow');
+    if (availBoosts.length === 0) { row.innerHTML = '<div style="color:var(--text-faint);font-size:12px;padding:8px">— ไม่มี boost · ยิงปกติ damage ฐาน 10 —</div>'; return; }
+    // group by type for display
+    const counts = {};
+    availBoosts.forEach(b => counts[b] = (counts[b]||0)+1);
+    row.innerHTML = Object.entries(counts).map(([k,n]) => {
+      const b = BOOST_DEFS[k]; if (!b) return '';
+      const armed = (armedBoost === k) ? ' armed' : '';
+      return `<button class="boost-btn${armed}" data-k="${k}">
+        <div class="b-name">${b.icon} ${b.name} · ×${b.mult} <span style="color:var(--accent-gold)">×${n}</span></div>
+        <div class="b-desc">เหลือ ${n} ครั้ง</div>
+      </button>`;
+    }).join('');
+    row.querySelectorAll('.boost-btn').forEach(btn => btn.addEventListener('click', () => {
+      armedBoost = (armedBoost === btn.dataset.k) ? null : btn.dataset.k;
+      renderBoosts();
+    }));
+  }
+
+  function showFeedback(text, kind) {
+    const fb = document.getElementById('shotFeedback');
+    fb.style.display = 'block';
+    fb.className = 'shot-feedback ' + kind;
+    fb.textContent = text;
+  }
+
+  function nextWave() {
+    if (battleEnded) return;
+    if (waveIdx >= QUESTIONS.length) { endBattle('done-all'); return; }
+    if (bossHp <= 0) { endBattle('defeat'); return; }
+    if ((Book.state.energy || 0) < SHOT_COST + Math.round(SHOT_COST * WRONG_PCT)) { endBattle('no-energy'); return; }
+    answering = true;
+    const q = QUESTIONS[waveIdx];
+    document.getElementById('puzzleArea').innerHTML = `
+      <div class="question-card">
+        <div><span class="q-level ${q.lv}">${q.lv} · WAVE ${waveIdx+1}</span></div>
+        <div class="q-text">❓ <b>${q.q}</b></div>
+        <div class="choice-row">
+          ${q.opts.map((o,i) => `<button class="choice-btn" data-correct="${i===q.ans}">${o}</button>`).join('')}
+        </div>
+      </div>`;
+    document.querySelectorAll('.choice-btn').forEach(b => b.addEventListener('click', () => answer(b)));
+    renderHUD();
+  }
+
+  function answer(btn) {
+    if (!answering) return;
+    answering = false;
+    const isCorrect = btn.dataset.correct === 'true';
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'true') b.classList.add('correct');
+      else if (b === btn) b.classList.add('wrong');
+    });
+
+    const baseCost = SHOT_COST;
+    const cost = isCorrect ? baseCost : (baseCost + Math.round(baseCost * WRONG_PCT));
+    Book.addEnergy(-cost, isCorrect ? 'p17b-shot' : 'p17b-shot+wrong');
+
+    const q = QUESTIONS[waveIdx];
+    const objCode = q.lv === 'L1' ? 'K1' : q.lv === 'L2' ? 'K2' : q.lv === 'L3' ? 'K3' : q.lv === 'L4' ? 'K4' : q.lv === 'L5' ? 'K4' : 'K1';
+
+    if (isCorrect) {
+      hits++;
+      Book.addCoin(1, 'p17b-hit');
+      let dmg = 10;
+      let label = `🎯 HIT · -${dmg} HP · -${cost} ⚡ · +1 🪙`;
+      let kind = 'hit';
+      if (armedBoost) {
+        const b = BOOST_DEFS[armedBoost];
+        dmg = Math.round(dmg * b.mult);
+        label = `💥 ${b.icon} ${b.name} ×${b.mult} · -${dmg} HP · -${cost} ⚡`;
+        kind = 'crit';
+        // consume one boost of that type
+        const i = availBoosts.indexOf(armedBoost);
+        if (i >= 0) availBoosts.splice(i, 1);
+        armedBoost = null;
+        renderBoosts();
+      }
+      if (heroActive && Date.now() < heroEndT) {
+        dmg = dmg * HERO_MULT;
+        label = `🦸 HERO ×${HERO_MULT}${armedBoost===null && label.startsWith('🎯') ? '' : ' + '} ${label.replace(/^🎯 HIT · /, '').replace(/^💥 /, '')} · รวม -${dmg} HP`;
+        kind = 'crit';
+      }
+      bossHp = Math.max(0, bossHp - dmg);
+      totalDmg += dmg;
+      Boss.damage({ amount: dmg, reason: 'p17b-hit' });
+      Obj.hit(objCode, { page:'p17b' });
+      showFeedback(label, kind);
+    } else {
+      misses++;
+      Obj.miss(objCode, { page:'p17b' });
+      showFeedback(`❌ MISS · ผิด · damage 0 · -${cost} ⚡ (+20%)`, 'miss');
+      if (armedBoost) { armedBoost = null; renderBoosts(); }
+    }
+    renderHUD();
+    waveIdx++;
+    if (bossHp <= 0) { setTimeout(() => endBattle('defeat'), 1100); return; }
+    setTimeout(() => { if (!battleEnded) nextWave(); }, 1300);
+  }
+
+  function bossFires() {
+    if (battleEnded) return;
+    Book.playSound('beam', { volume: 0.55 });
+    const stage = document.getElementById('bossStage');
+    if (stage) { stage.classList.add('firing'); setTimeout(()=>stage.classList.remove('firing'), 500); }
+    const charge = document.getElementById('voidCharge');
+    if (charge) { charge.classList.add('firing'); setTimeout(()=>charge.classList.remove('firing'), 450); }
+    if (shieldCount > 0) {
+      shieldCount--;
+      voidBeamsAbsorbed++;
+      showFeedback(`🛡️ Shield ดูดซับ VOID PRIME beam · เหลือ ${shieldCount} ชิ้น`, 'hit');
+    } else {
+      voidBeamsHit++;
+      Book.addEnergy(-VOID_BEAM_DMG, 'void-beam');
+      showFeedback(`💢 VOID PRIME BEAM · -${VOID_BEAM_DMG} ⚡ · ไม่มีโล่กัน`, 'miss');
+      const rb = document.querySelector('.race-bar');
+      if (rb) { rb.classList.add('shake'); setTimeout(()=>rb.classList.remove('shake'), 400); }
+    }
+    renderHUD();
+    if ((Book.state.energy || 0) < SHOT_COST + Math.round(SHOT_COST * WRONG_PCT)) endBattle('no-energy');
+  }
+
+  /* ============ End ============ */
+  function endBattle(reason) {
+    if (battleEnded) return;
+    battleEnded = true;
+    if (timerHandle) clearInterval(timerHandle);
+    document.getElementById('puzzleArea').innerHTML = '';
+
+    let medal = '📘', mlbl = 'ลองอีกครั้งได้';
+    if (hits >= 12) { medal = '🥇'; mlbl = 'GOLD MASTER'; }
+    else if (hits >= 8) { medal = '🥈'; mlbl = 'SILVER'; }
+    else if (hits >= 5) { medal = '🥉'; mlbl = 'BRONZE'; }
+
+    const won = (bossHp <= 0);
+    if (won) Book.playSound('victory', { volume: 0.7 });
+    const bossImg = document.getElementById('bossImg');
+    if (bossImg) {
+      bossImg.src = './galaxy/Boss2.jpeg';
+      bossImg.style.filter = won
+        ? 'drop-shadow(0 0 40px rgba(126,255,178,0.8)) saturate(1.1)'
+        : 'drop-shadow(0 0 30px rgba(185,128,255,0.7)) grayscale(0.2)';
+      bossImg.style.transform = 'scale(1.03)';
+    }
+    const bossName = document.getElementById('bossNameLabel');
+    if (bossName && won) { bossName.textContent = '💫 VOID PRIME · DEFEATED'; bossName.style.color = 'var(--accent-green)'; }
+    const headTitle = won ? '✨ VOID PRIME พ่ายแพ้!'
+                      : reason === 'no-energy' ? '⚡ Energy หมด · จบสมรภูมิ'
+                      : reason === 'done-all' ? '📋 ครบ 15 คลื่น · จบสมรภูมิ'
+                      : 'จบสมรภูมิ';
+
+    Book.savePageData('p17b', { totalDmg, hits, misses, bossHp, won, reason, medal, voidBeamsAbsorbed, voidBeamsHit });
+    Book.completePage('p17b', { score: hits, max: 15, msg: `${medal} ${mlbl} · hit ${hits}/15 · ${won?'won':'survived'}` });
+    Obj.hit('A4', { page:'p17b' });
+    if (won) Obj.hit('A2', { page:'p17b' });
+    if (Book.state.teamId) Leaderboard.adjust(Book.state.teamId, totalDmg, 'p17b-final');
+
+    document.getElementById('endArea').innerHTML = `
+      <div class="end-screen">
+        <div class="ribbon">${headTitle}</div>
+        <div class="medal">${medal}</div>
+        <div class="title">${mlbl} · ${hits}/15 hits</div>
+        <table>
+          <tr><td>🎯 ตอบถูก</td><td><b>${hits}</b> / 15</td></tr>
+          <tr><td>🚫 ตอบผิด</td><td><b>${misses}</b></td></tr>
+          <tr><td>💥 Damage รวม</td><td><b>${totalDmg}</b></td></tr>
+          <tr><td>🛡️ Shield ดูดซับ</td><td><b>${voidBeamsAbsorbed}</b> ครั้ง</td></tr>
+          <tr><td>💢 VOID PRIME beam โดน</td><td><b>${voidBeamsHit}</b> ครั้ง</td></tr>
+          <tr><td>⚡ Energy เหลือ</td><td><b>${Book.state.energy}</b></td></tr>
+          <tr><td>🪙 เหรียญเหลือ</td><td><b>${Book.state.coins}</b></td></tr>
+        </table>
+      </div>
+
+      <div class="hook-card">
+        <div class="hk-label">📡 INCOMING SIGNAL · NEXT MISSION</div>
+        <div class="hk-title">EP03 · ดาวฤกษ์ · The Star Forge</div>
+        <div class="hk-quote">"คุณชนะรอบนี้... แต่เธอรู้ไหมว่า ดวงดาวเกิดมาจากอะไร? · ทำไมบางดวงถึงระเบิด?<br>
+        เก็บ medal นี้ไว้ · EP ต่อไป · เราจะไปดูเตาหลอมของดวงดาว"</div>
+        <p style="font-size:12px;color:var(--text-dim)">ตัวชี้วัด ว 7.1 ม.4-6/2 · stellar evolution · HR diagram · Misconceptions: ดาวคือก้อนไฟ · Sun เป็นดาวพิเศษ · supernova คือจุดจบเสมอ</p>
+        <p style="font-size:11px;color:var(--text-faint);margin-top:8px">📓 บันทึก Captain's Log ที่ P18 · สิ่งที่จะส่งต่อให้ทีมใน EP03</p>
+      </div>
+    `;
+    const fb = document.getElementById('finishBtn');
+    fb.disabled = false;
+    fb.textContent = '✓ ไปต่อ · เขียน Captain\'s Log';
+  }
+
+  function finishPage() { Book.next(); }
+</script>
+
+</body>
+</html>

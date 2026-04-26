@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F6 Four-tier Pre-test — Damping & Resonance (SHM แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.post{background:#dc2626}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.phase-select{background:#faf5ff;border:2px solid #7c3aed;padding:12px 16px;border-radius:10px;margin:12px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.phase-select label{font-weight:700;color:#4c1d95;cursor:pointer;padding:6px 16px;border:2px solid #7c3aed;border-radius:20px;transition:all .15s}
+.phase-select label:has(input:checked){background:#7c3aed;color:#fff}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px;transition:border .15s}
+.id-box input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.item{border:2px solid #ddd6fe;border-radius:12px;padding:16px 20px;margin:16px 0;background:#fdfcff}
+.item .no{display:inline-block;background:#7c3aed;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#2d3748;line-height:1.7}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.tier{margin:10px 0;background:#fafafa;border:1.5px dashed #c4b5fd;border-radius:10px;padding:12px 16px}
+.tier-lbl{font-weight:700;color:#4c1d95;font-size:14px;margin-bottom:8px}
+.tier.t2,.tier.t4{background:#fff8f5;border-color:#fed7aa}
+.tier.t2 .tier-lbl,.tier.t4 .tier-lbl{color:#c05621}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:6px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:14.5px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input[type=radio]{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+.cert{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0}
+.cert label{cursor:pointer;padding:5px 14px;border-radius:20px;border:1.5px solid #ddd6fe;font-size:14px;transition:all .15s}
+.cert label:hover{border-color:#7c3aed}
+.cert label:has(input:checked){background:#7c3aed;color:#fff;border-color:#7c3aed}
+.cert input{display:none}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:20px 24px;margin:24px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:12px 32px;border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-submit:hover:not(:disabled){background:#f5f3ff;transform:translateY(-1px)}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.context-box{background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px;color:#2d3748}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media(max-width:640px){.id-box{grid-template-columns:1fr 1fr}.grid-2{grid-template-columns:1fr}}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar,.phase-select,.warn-config{display:none !important}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔬 F6 Four-tier Diagnostic · SHM แผน 6 (Damping & Resonance)</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" id="phaseTag">Pre-test</span> 4 ข้อ · วัด M6.1–M6.3 · K6.1, K6.2</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 ส่งออนไลน์ผ่านปุ่มด้านล่าง</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — เปิดไฟล์ตั้งค่า Apps Script แล้ววาง URL</div>
+  <div class="info"><b>วิธีทำ Four-tier:</b> <strong>Tier 1</strong> เลือกคำตอบ · <strong>Tier 2</strong> ระดับความมั่นใจในคำตอบ · <strong>Tier 3</strong> เลือกเหตุผล · <strong>Tier 4</strong> ระดับความมั่นใจในเหตุผล · <em>ตอบทุก tier ทุกข้อ ก่อนส่ง</em></div>
+
+  <div class="phase-select">
+    <strong>เลือกช่วงเวลาทำ:</strong>
+    <label><input type="radio" name="phase" value="pre" checked onchange="updatePhase()"> 🟦 Pre-test (ก่อนเรียน)</label>
+    <label><input type="radio" name="phase" value="post" onchange="updatePhase()"> 🟥 Post-test (หลังเรียน)</label>
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" placeholder="ชื่อ สกุล" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="ftForm">
+
+  <!-- ข้อ 1 M6.1 — Damping เปลี่ยน f หรือไม่ -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="mis-tag">M6.1 ★</span></div>
+    <div class="stem">ลูกตุ้มแกว่งอยู่ในอากาศซึ่งมีความต้านทาน ทำให้แอมพลิจูดลดลงเรื่อย ๆ แต่ยังแกว่งต่อไป (Underdamped) · <strong>คาบการแกว่ง T จะเปลี่ยนแปลงอย่างไรเมื่อเวลาผ่านไป?</strong></div>
+    <div class="context-box">💡 บริบท: ลูกตุ้มเริ่มแกว่ง A₀ = 10 cm · หลัง 30 วินาที A = 4 cm · ยังแกว่งอยู่ (ไม่หยุด)</div>
+    <div class="tier"><div class="tier-lbl">Tier 1 — คำตอบของคุณ:</div>
+      <label class="opt"><input type="radio" name="q1t1" value="ก" required> ก. T เพิ่มขึ้นตามเวลา เพราะความเร็วลดลง</label>
+      <label class="opt"><input type="radio" name="q1t1" value="ข"> ข. T ลดลงตามเวลา เพราะพลังงานน้อยลงทำให้แกว่งเร็วขึ้น</label>
+      <label class="opt"><input type="radio" name="q1t1" value="ค"> ค. T คงที่ เพราะ T ขึ้นกับคุณสมบัติของระบบ ไม่ใช่ A</label>
+      <label class="opt"><input type="radio" name="q1t1" value="ง"> ง. T ไม่แน่นอน ขึ้นกับขนาดของแรงต้าน</label>
+    </div>
+    <div class="tier t2"><div class="tier-lbl">Tier 2 — ความมั่นใจในคำตอบ Tier 1:</div>
+      <div class="cert">
+        <label><input type="radio" name="q1t2" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q1t2" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+    <div class="tier"><div class="tier-lbl">Tier 3 — เหตุผลที่คุณเลือก:</div>
+      <label class="opt"><input type="radio" name="q1t3" value="1" required> 1. T ลดลงเพราะ F_net ลดลงเมื่อ A ลด จึงแกว่งเร็วขึ้น</label>
+      <label class="opt"><input type="radio" name="q1t3" value="2"> 2. T เพิ่มเพราะพลังงานน้อยลง ระบบ "เหนื่อย" จึงแกว่งช้าลง</label>
+      <label class="opt"><input type="radio" name="q1t3" value="3"> 3. T ≈ คงที่เมื่อ damping เล็กน้อย เพราะ ω_d = √(ω₀² − (b/2m)²) ≈ ω₀</label>
+      <label class="opt"><input type="radio" name="q1t3" value="4"> 4. T ขึ้นกับ A โดยตรง เมื่อ A ลด T จึงลดตาม</label>
+    </div>
+    <div class="tier t4"><div class="tier-lbl">Tier 4 — ความมั่นใจในเหตุผล Tier 3:</div>
+      <div class="cert">
+        <label><input type="radio" name="q1t4" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q1t4" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 2 M6.2 — Resonance ≠ สะท้อน -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="mis-tag">M6.2 ★</span></div>
+    <div class="stem">นักเรียนเห็นสะพาน Tacoma Narrows ถล่มในปี 1940 ครูบอกว่า "สะพานพังเพราะ <em>resonance</em>" · <strong>นักเรียนคนใดอธิบาย resonance ได้ถูกต้องที่สุด?</strong></div>
+    <div class="tier"><div class="tier-lbl">Tier 1 — คำตอบของคุณ:</div>
+      <label class="opt"><input type="radio" name="q2t1" value="ก" required> ก. "Resonance คือการที่คลื่นลมสะท้อนกลับมากระทบสะพานซ้ำ"</label>
+      <label class="opt"><input type="radio" name="q2t1" value="ข"> ข. "Resonance คือการสั่นพ้อง เมื่อ f_ลม = f_natural ของสะพาน ทำให้ A เพิ่มมากขึ้นเรื่อย ๆ"</label>
+      <label class="opt"><input type="radio" name="q2t1" value="ค"> ค. "Resonance คือลมแรงมาก ๆ กระทบสะพานแล้วแตก เหมือนแรงมากเกินไป"</label>
+      <label class="opt"><input type="radio" name="q2t1" value="ง"> ง. "Resonance เกิดเมื่อสะพานดูดซับคลื่นเสียงจากลม แล้วระเบิดภายใน"</label>
+    </div>
+    <div class="tier t2"><div class="tier-lbl">Tier 2 — ความมั่นใจในคำตอบ:</div>
+      <div class="cert">
+        <label><input type="radio" name="q2t2" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q2t2" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+    <div class="tier"><div class="tier-lbl">Tier 3 — เหตุผลที่คุณเลือก:</div>
+      <label class="opt"><input type="radio" name="q2t3" value="1" required> 1. คลื่นสะท้อนกลับมาซ้ำซ้อนจนพลังงานเพิ่มขึ้น เหมือน echo เสียง</label>
+      <label class="opt"><input type="radio" name="q2t3" value="2"> 2. ลม f_ลม ≈ f_natural สะพาน → พลังงานถ่ายเทสะสมสูงสุด → A ระเบิดใหญ่ แม้ลมจะเล็กน้อย</label>
+      <label class="opt"><input type="radio" name="q2t3" value="3"> 3. แรงลมใหญ่มากพอที่จะทำลายโครงสร้าง ไม่เกี่ยวกับความถี่</label>
+      <label class="opt"><input type="radio" name="q2t3" value="4"> 4. สะพานมีโพรงกลวงรับเสียงแล้วระเบิด เหมือนแก้วแตกจากเสียงดัง</label>
+    </div>
+    <div class="tier t4"><div class="tier-lbl">Tier 4 — ความมั่นใจในเหตุผล:</div>
+      <div class="cert">
+        <label><input type="radio" name="q2t4" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q2t4" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 3 M6.3 — Resonance = แรงมากสุด? -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="mis-tag">M6.3</span></div>
+    <div class="stem">ระบบ SHM มี f_natural = 2 Hz · ถ้าออกแรงขับ (driving force) เป็นคาบ ๆ ที่ f_drive ต่างกัน · <strong>เงื่อนไขที่ทำให้เกิด resonance (A เพิ่มสูงสุด) คืออะไร?</strong></div>
+    <div class="tier"><div class="tier-lbl">Tier 1 — คำตอบของคุณ:</div>
+      <label class="opt"><input type="radio" name="q3t1" value="ก" required> ก. ออกแรงขับให้มากที่สุด (แรง F สูงสุด) ไม่ว่า f_drive จะเป็นเท่าไร</label>
+      <label class="opt"><input type="radio" name="q3t1" value="ข"> ข. f_drive = 1 Hz (ครึ่งหนึ่งของ f_natural) เพื่อ "เติม" ทุกรอบสมบูรณ์</label>
+      <label class="opt"><input type="radio" name="q3t1" value="ค"> ค. f_drive = 4 Hz (สองเท่าของ f_natural) เพื่อผลักเร็วกว่าระบบ</label>
+      <label class="opt"><input type="radio" name="q3t1" value="ง"> ง. f_drive = f_natural = 2 Hz เพราะระบบรับพลังงานได้สูงสุดเมื่อ f ตรง</label>
+    </div>
+    <div class="tier t2"><div class="tier-lbl">Tier 2 — ความมั่นใจในคำตอบ:</div>
+      <div class="cert">
+        <label><input type="radio" name="q3t2" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q3t2" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+    <div class="tier"><div class="tier-lbl">Tier 3 — เหตุผลที่คุณเลือก:</div>
+      <label class="opt"><input type="radio" name="q3t3" value="1" required> 1. ขนาดแรงกำหนด A เสมอ แรงมาก A มาก · ความถี่ไม่เกี่ยว</label>
+      <label class="opt"><input type="radio" name="q3t3" value="2"> 2. ระบบต้องรับแรงสองครั้งต่อหนึ่งรอบจึงสะสมพลังงานได้สูง</label>
+      <label class="opt"><input type="radio" name="q3t3" value="3"> 3. การผลักเร็วกว่าระบบทำให้พลังงานสะสมมากกว่า</label>
+      <label class="opt"><input type="radio" name="q3t3" value="4"> 4. เมื่อ f_drive = f_natural แรงขับตรงเฟสกับการแกว่ง → ถ่ายพลังงานได้สูงสุดทุกรอบ แม้แรงน้อยก็ตาม</label>
+    </div>
+    <div class="tier t4"><div class="tier-lbl">Tier 4 — ความมั่นใจในเหตุผล:</div>
+      <div class="cert">
+        <label><input type="radio" name="q3t4" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q3t4" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- ข้อ 4 — บูรณาการ/ประยุกต์ -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="mis-tag">K6.1 + K6.2</span></div>
+    <div class="stem">วิศวกรออกแบบเครื่องซักผ้าพบว่าในรอบการปั่น เครื่องสั่นแรงมากในช่วง 800 rpm แต่เบาลงที่ 1200 rpm (rpm = รอบต่อนาที) · <strong>การสั่นหนักที่ 800 rpm เกิดจากอะไร?</strong></div>
+    <div class="context-box">💡 f_natural ของโครงสร้างเครื่องซักผ้า ≈ 13.3 Hz (= 800/60)</div>
+    <div class="tier"><div class="tier-lbl">Tier 1 — คำตอบของคุณ:</div>
+      <label class="opt"><input type="radio" name="q4t1" value="ก" required> ก. Resonance — f_drive (800 rpm) ตรงกับ f_natural ของโครงสร้าง ทำให้ A สูงสุด</label>
+      <label class="opt"><input type="radio" name="q4t1" value="ข"> ข. Damping — โครงสร้างดูดซับพลังงานสูงสุดที่ 800 rpm จึงสั่นมาก</label>
+      <label class="opt"><input type="radio" name="q4t1" value="ค"> ค. มอเตอร์มีกำลังสูงสุดที่ 800 rpm จึงส่งแรงสั่นสะเทือนมากสุด</label>
+      <label class="opt"><input type="radio" name="q4t1" value="ง"> ง. ที่ 800 rpm ผ้าในเครื่องหนักสุด ทำให้เครื่องเอียงและสั่น</label>
+    </div>
+    <div class="tier t2"><div class="tier-lbl">Tier 2 — ความมั่นใจในคำตอบ:</div>
+      <div class="cert">
+        <label><input type="radio" name="q4t2" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q4t2" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+    <div class="tier"><div class="tier-lbl">Tier 3 — เหตุผลที่คุณเลือก:</div>
+      <label class="opt"><input type="radio" name="q4t3" value="1" required> 1. f_drive = f_natural = 13.3 Hz → resonance → พลังงานสะสมสูงสุด → A ระเบิดใหญ่</label>
+      <label class="opt"><input type="radio" name="q4t3" value="2"> 2. Damping ทำให้โครงสร้างรับพลังงานสูงสุดในช่วง rpm นั้น</label>
+      <label class="opt"><input type="radio" name="q4t3" value="3"> 3. กำลังไฟฟ้าของมอเตอร์ถูกส่งออกมาเป็นการสั่นมากที่สุดในช่วงนั้น</label>
+      <label class="opt"><input type="radio" name="q4t3" value="4"> 4. น้ำหนักผ้าทำให้แรงเฉื่อยหมุนสูง ไม่สมดุลในรอบนั้น</label>
+    </div>
+    <div class="tier t4"><div class="tier-lbl">Tier 4 — ความมั่นใจในเหตุผล:</div>
+      <div class="cert">
+        <label><input type="radio" name="q4t4" value="sure" required> ✅ มั่นใจ</label>
+        <label><input type="radio" name="q4t4" value="unsure"> ❓ ไม่แน่ใจ</label>
+      </div>
+    </div>
+  </div>
+
+  </form>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งคำตอบ F6 Pre/Post-test</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">F6 Four-tier Diagnostic · SHM แผน 6 Damping & Resonance · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  Misconception Bank: M6.1 (Somroob & Wattanakasiwich) · M6.2 (Tongchai 2011) · M6.3 (Mufit) · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
+const SHEET = 'F6_SHM_Plan6';
+
+function updatePhase(){
+  const v = document.querySelector('[name=phase]:checked').value;
+  const tag = document.getElementById('phaseTag');
+  tag.textContent = v==='pre' ? 'Pre-test' : 'Post-test';
+  tag.className = 'tag' + (v==='post' ? ' post' : '');
+}
+
+const KEYS = {
+  q1:['q1t1','q1t2','q1t3','q1t4'],
+  q2:['q2t1','q2t2','q2t3','q2t4'],
+  q3:['q3t1','q3t2','q3t3','q3t4'],
+  q4:['q4t1','q4t2','q4t3','q4t4']
+};
+const ANSWERS = {q1t1:'ค',q1t3:'3', q2t1:'ข',q2t3:'2', q3t1:'ง',q3t3:'4', q4t1:'ก',q4t3:'1'};
+
+function collectData(){
+  const phase = document.querySelector('[name=phase]:checked').value;
+  const data = {
+    phase, name:document.getElementById('student_name').value,
+    no:document.getElementById('student_no').value,
+    room:document.getElementById('class').value,
+    date:document.getElementById('test_date').value,
+    timestamp: new Date().toISOString()
+  };
+  Object.values(KEYS).flat().forEach(k=>{
+    const el = document.querySelector(`[name=${k}]:checked`);
+    data[k] = el ? el.value : '';
+  });
+  // score t1+t3
+  let score = 0;
+  ['q1','q2','q3','q4'].forEach(q=>{
+    const t1ok = data[q+'t1']===ANSWERS[q+'t1'];
+    const t3ok = data[q+'t3']===ANSWERS[q+'t3'];
+    data[q+'_correct'] = (t1ok && t3ok) ? 'Sound' : (!t1ok && !t3ok) ? 'No-Knowledge' : t1ok ? 'Lucky-Guess' : 'Misconception';
+    if(t1ok && t3ok) score++;
+  });
+  data.score = score + '/4';
+  return data;
+}
+
+function showStatus(type, msg){
+  const el = document.getElementById('submitStatus');
+  el.className = 'status ' + type;
+  el.textContent = msg;
+}
+
+async function submitAll(){
+  const data = collectData();
+  if(!data.name || !data.no || !data.room){
+    alert('กรุณากรอกชื่อ เลขที่ และห้องก่อนส่ง'); return;
+  }
+  showStatus('loading','⏳ กำลังส่ง...');
+  document.querySelector('.btn-submit').disabled = true;
+
+  if(API_URL === 'YOUR_APPS_SCRIPT_URL'){
+    const blob = new Blob([JSON.stringify({sheet:SHEET,data},null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `F6_${data.phase}_${data.name || 'student'}_${Date.now()}.json`;
+    a.click();
+    showStatus('success','✅ ดาวน์โหลด JSON สำเร็จ (ยังไม่ได้ตั้งค่า API)');
+    document.querySelector('.btn-submit').disabled = false;
+    return;
+  }
+  try{
+    await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({sheet:SHEET,data})});
+    showStatus('success','✅ ส่งสำเร็จ! ขอบคุณ');
+  } catch(e){
+    showStatus('error','❌ ส่งไม่ได้ — ดาวน์โหลด JSON แทน');
+    const blob = new Blob([JSON.stringify({sheet:SHEET,data},null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `F6_${data.phase}_${data.name || 'student'}_${Date.now()}.json`;
+    a.click();
+  } finally{ document.querySelector('.btn-submit').disabled = false; }
+}
+
+// warn if not configured
+window.addEventListener('load',()=>{
+  if(API_URL==='YOUR_APPS_SCRIPT_URL') document.getElementById('configWarn').classList.add('show');
+  // set today's date
+  const d = document.getElementById('test_date');
+  if(!d.value) d.value = new Date().toISOString().split('T')[0];
+  // auto-save
+  const key = 'f6_fourtier_' + (document.querySelector('[name=phase]:checked').value);
+  const saved = localStorage.getItem(key);
+  if(saved){
+    try{
+      const d = JSON.parse(saved);
+      ['student_name','student_no','class','test_date'].forEach(id=>{
+        if(d[id]) document.getElementById(id).value = d[id];
+      });
+    } catch(e){}
+  }
+  // auto-save on input
+  document.querySelectorAll('input,select').forEach(el=>{
+    el.addEventListener('change',()=>{
+      const phase = document.querySelector('[name=phase]:checked').value;
+      const saveKey = 'f6_fourtier_' + phase;
+      localStorage.setItem(saveKey, JSON.stringify(collectData()));
+    });
+  });
+});
+</script>
+</body></html>

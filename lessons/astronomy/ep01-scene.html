@@ -1,0 +1,3700 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSMOS LOG · EP01 · Playable Scene</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #03040c;
+    --bg-1: #0a0d1f;
+    --bg-card: rgba(22, 27, 58, 0.65);
+    --border: rgba(120, 140, 220, 0.2);
+    --border-strong: rgba(140, 180, 255, 0.45);
+    --text: #e8ecf8;
+    --text-dim: #9aa3c0;
+    --text-faint: #6a7394;
+    --accent: #64d8ff;
+    --accent-2: #b980ff;
+    --accent-gold: #ffcb6b;
+    --accent-red: #ff5c7a;
+    --accent-green: #7effb2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Sarabun', system-ui, sans-serif;
+    background: var(--bg-0);
+    color: var(--text);
+    line-height: 1.65;
+    overflow: hidden;
+  }
+
+  /* STARRY BACKGROUND */
+  .stars, .stars-2, .stars-3 {
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+  }
+  .stars {
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, white, transparent),
+      radial-gradient(1px 1px at 150px 50px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 250px 180px, white, transparent),
+      radial-gradient(1px 1px at 400px 250px, white, transparent),
+      radial-gradient(1px 1px at 500px 60px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 120px 300px, white, transparent);
+    background-size: 550px 400px;
+    opacity: 0.4;
+    animation: twinkle 4s infinite ease-in-out;
+  }
+  .stars-2 {
+    background-image:
+      radial-gradient(1px 1px at 80px 120px, rgba(100,216,255,0.8), transparent),
+      radial-gradient(1px 1px at 300px 200px, rgba(185,128,255,0.6), transparent),
+      radial-gradient(2px 2px at 450px 350px, rgba(255,203,107,0.5), transparent);
+    background-size: 600px 450px;
+    opacity: 0.5;
+    animation: twinkle 6s infinite ease-in-out 1s;
+  }
+  .stars-3 {
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(100, 216, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(185, 128, 255, 0.1) 0%, transparent 50%);
+  }
+  @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+
+  /* HUD · TOP STATUS BAR */
+  .hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: rgba(3, 4, 12, 0.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 20px;
+    z-index: 50;
+    font-size: 13px;
+  }
+  .hud .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hud .pill {
+    display: flex; gap: 6px; align-items: center;
+    padding: 5px 12px;
+    background: rgba(100,216,255,0.06);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+  }
+  .hud .pill.team { color: var(--team-color, var(--accent)); border-color: var(--team-color, var(--border)); }
+  .hud .pill.energy { color: var(--accent-gold); border-color: rgba(255,203,107,0.3); }
+  .hud .pill.scene { color: var(--accent-green); }
+  .hud .spacer { flex: 1; }
+  .hud .teacher-btn {
+    padding: 6px 14px;
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-dim);
+    border-radius: 100px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.15em;
+    transition: all 0.2s;
+  }
+  .hud .teacher-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* STAGE */
+  .stage {
+    position: absolute;
+    top: 56px; left: 0; right: 0; bottom: 72px;
+    overflow-y: auto;
+    z-index: 1;
+  }
+  .scene {
+    display: none;
+    min-height: 100%;
+    padding: 40px 5vw 60px;
+    animation: fadeIn 0.6s ease;
+  }
+  .scene.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .scene-inner { max-width: 1100px; margin: 0 auto; }
+
+  /* FOOTER · SCENE CONTROL */
+  .footer {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 72px;
+    background: rgba(3, 4, 12, 0.9);
+    backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 24px;
+    z-index: 50;
+  }
+  .footer .scene-info {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+  }
+  .footer .scene-info b { color: var(--accent); }
+  .footer .spacer { flex: 1; }
+  .footer button {
+    padding: 10px 22px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .footer button:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 20px rgba(100,216,255,0.2);
+  }
+  .footer button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .footer button.primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    border: none;
+  }
+
+  /* HEADINGS */
+  .scene-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  h1.scene-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(28px, 5vw, 56px);
+    font-weight: 900;
+    line-height: 1.05;
+    background: linear-gradient(180deg, #fff 0%, #8ca0d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 14px;
+  }
+  h2.scene-sub {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(14px, 1.6vw, 18px);
+    color: var(--accent-gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 30px;
+  }
+
+  /* TYPEWRITER DIALOG */
+  .dialog-box {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--char-color, var(--accent));
+    border-radius: 12px;
+    padding: 20px 26px;
+    margin: 20px 0;
+    position: relative;
+  }
+  .dialog-box::before {
+    content: attr(data-speaker);
+    position: absolute;
+    top: -12px; left: 16px;
+    padding: 2px 10px;
+    background: var(--bg-0);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--char-color, var(--accent));
+  }
+  .dialog-box.lem { --char-color: #a0e8ff; }
+  .dialog-box.hubble { --char-color: #d4b8ff; }
+  .dialog-box.arya { --char-color: #64d8ff; }
+  .dialog-box.void { --char-color: #ff5c7a; }
+  .dialog-box.bolt { --char-color: #ffcb6b; }
+  .dialog-box .txt {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #d8dff0;
+  }
+  .dialog-box.terminal .txt {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: var(--accent-green);
+  }
+
+  /* BUTTON GRID */
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .choice-btn {
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+  }
+  .choice-btn:hover {
+    border-color: var(--accent);
+    background: rgba(100,216,255,0.08);
+    transform: translateY(-2px);
+  }
+  .choice-btn.selected { border-color: var(--accent-gold); background: rgba(255,203,107,0.1); }
+
+  /* ========== S0 TEAM SETUP ========== */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+  }
+  .team-tile {
+    aspect-ratio: 1;
+    border-radius: 16px;
+    border: 2px solid var(--team-color);
+    background: linear-gradient(160deg, rgba(22,27,58,0.8), rgba(8,10,24,0.9));
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .team-tile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, var(--team-color) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .team-tile:hover::before { opacity: 0.15; }
+  .team-tile.selected::before { opacity: 0.25; }
+  .team-tile.selected { box-shadow: 0 0 30px var(--team-color); }
+  .team-tile .team-icon { font-size: 40px; z-index: 1; }
+  .team-tile .team-name {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--team-color);
+    z-index: 1;
+  }
+
+  /* FORM ELEMENTS */
+  .form-row { margin: 18px 0; }
+  .form-row label {
+    display: block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  input[type="text"], input[type="number"], select, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14.5px;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  /* ========== DRAG AND DROP ========== */
+  .dnd-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 24px 0;
+  }
+  @media (max-width: 800px) { .dnd-wrap { grid-template-columns: 1fr; } }
+  .dnd-col h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent-gold);
+    margin-bottom: 14px;
+  }
+  .fragment-list, .meaning-list {
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+  .fragment {
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(100,216,255,0.1), rgba(185,128,255,0.1));
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    cursor: grab;
+    font-size: 14px;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .fragment:hover { transform: translateX(3px); }
+  .fragment.dragging { opacity: 0.3; }
+  .fragment.placed { opacity: 0.4; cursor: default; }
+  .meaning-slot {
+    padding: 14px 16px;
+    min-height: 60px;
+    background: rgba(0,0,0,0.3);
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    font-size: 13.5px;
+    color: var(--text-dim);
+    transition: all 0.25s;
+  }
+  .meaning-slot.drag-over {
+    border-color: var(--accent);
+    background: rgba(100,216,255,0.08);
+    transform: scale(1.02);
+  }
+  .meaning-slot.filled {
+    border-style: solid;
+    color: var(--text);
+  }
+  .meaning-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.08); }
+  .meaning-slot.wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.08); }
+  .meaning-slot .hint {
+    font-size: 11px;
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+    opacity: 0.6;
+  }
+
+  /* TIMER */
+  .timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(255,92,122,0.1);
+    border: 1px solid rgba(255,92,122,0.4);
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: var(--accent-red);
+    margin-bottom: 16px;
+  }
+  .timer.ok { color: var(--accent-green); background: rgba(126,255,178,0.1); border-color: rgba(126,255,178,0.4); }
+
+  /* CHECKBOX GROUP */
+  .chk-list { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+  .chk-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 14px;
+    background: rgba(22,27,58,0.4);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chk-item:hover { border-color: var(--border-strong); }
+  .chk-item input { margin-top: 3px; flex-shrink: 0; accent-color: var(--accent); width: 18px; height: 18px; }
+  .chk-item span { font-size: 14px; color: var(--text-dim); }
+  .chk-item.selected { border-color: var(--accent); background: rgba(100,216,255,0.05); }
+  .chk-item.chk-correct { border-color: var(--accent-green); background: rgba(126,255,178,0.05); }
+  .chk-item.chk-wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.05); }
+
+  /* ENERGY BURST ANIMATION */
+  .energy-burst {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 80px;
+    font-weight: 900;
+    color: var(--accent-gold);
+    text-shadow: 0 0 30px var(--accent-gold);
+    z-index: 999;
+    pointer-events: none;
+    animation: burst 1.4s ease-out forwards;
+  }
+  @keyframes burst {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+    30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(2.5); }
+  }
+
+  /* INFO CARDS */
+  .info-card {
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(100,216,255,0.06), rgba(185,128,255,0.06));
+    border: 1px solid var(--border-strong);
+    border-radius: 14px;
+    margin: 18px 0;
+  }
+  .info-card h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .info-card p { font-size: 14.5px; color: var(--text-dim); margin-bottom: 8px; }
+  .info-card b { color: var(--accent-gold); }
+
+  /* MEDIA PLACEHOLDER */
+  .media-placeholder {
+    aspect-ratio: 16/9;
+    background: repeating-linear-gradient(45deg, rgba(100,216,255,0.05), rgba(100,216,255,0.05) 10px, rgba(185,128,255,0.05) 10px, rgba(185,128,255,0.05) 20px);
+    border: 2px dashed var(--border-strong);
+    border-radius: 14px;
+    display: flex;
+    align-items: center; justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--text-faint);
+    margin: 18px 0;
+  }
+  .media-placeholder .icon { font-size: 48px; }
+  .media-placeholder .label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .media-placeholder .desc { font-size: 13px; }
+
+  /* BRANCH REVEAL */
+  .branch-reveal {
+    padding: 30px;
+    border-radius: 18px;
+    margin: 20px 0;
+    text-align: center;
+    animation: scaleIn 0.6s ease;
+  }
+  .branch-reveal.main {
+    background: linear-gradient(135deg, rgba(100,216,255,0.1), rgba(126,255,178,0.1));
+    border: 2px solid var(--accent-green);
+  }
+  .branch-reveal.asteroid {
+    background: linear-gradient(135deg, rgba(255,203,107,0.1), rgba(255,92,122,0.1));
+    border: 2px solid var(--accent-gold);
+  }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+  .branch-reveal h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  /* DATA TABLE FOR BALLOON */
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+  }
+  table.data-table th, table.data-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+  }
+  table.data-table th {
+    background: rgba(100,216,255,0.08);
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+  table.data-table input {
+    padding: 6px 8px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  /* CANVAS CONTAINER */
+  .canvas-wrap {
+    position: relative;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin: 14px 0;
+  }
+  canvas.graph {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(100,216,255,0.08) 24px, rgba(100,216,255,0.08) 25px),
+                repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(100,216,255,0.08) 24px, rgba(100,216,255,0.08) 25px);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: crosshair;
+  }
+  .canvas-toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 10px;
+  }
+  .canvas-toolbar button {
+    padding: 6px 14px;
+    background: rgba(100,216,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .canvas-toolbar button:hover { color: var(--accent); border-color: var(--accent); }
+  .canvas-toolbar button.active { background: var(--accent); color: var(--bg-0); }
+
+  /* JOURNEY MAP */
+  .journey-map-wrap {
+    background: linear-gradient(160deg, rgba(22,27,58,0.6), rgba(8,10,24,0.9));
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 30px;
+    margin: 20px 0;
+  }
+  .map-header {
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .map-header h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    color: var(--accent-gold);
+  }
+  .map-meta { font-size: 13px; color: var(--text-dim); font-family: 'Space Grotesk', sans-serif; }
+  .map-nodes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .map-node {
+    padding: 16px;
+    background: rgba(100,216,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    position: relative;
+  }
+  .map-node .idx {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 4px;
+  }
+  .map-node .name { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+  .map-node .detail { font-size: 12px; color: var(--text-faint); }
+  .map-section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin: 20px 0 10px;
+  }
+  .discoveries-list, .inventory-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag-item {
+    padding: 6px 14px;
+    background: rgba(255,203,107,0.08);
+    border: 1px solid rgba(255,203,107,0.3);
+    border-radius: 100px;
+    font-size: 12px;
+    color: var(--accent-gold);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .tag-item.inv { background: rgba(126,255,178,0.08); border-color: rgba(126,255,178,0.3); color: var(--accent-green); }
+
+  /* TEACHER PANEL */
+  .teacher-panel {
+    position: fixed;
+    top: 56px; right: 0;
+    width: 340px;
+    bottom: 72px;
+    background: rgba(3,4,12,0.97);
+    backdrop-filter: blur(14px);
+    border-left: 1px solid var(--border-strong);
+    padding: 24px;
+    z-index: 80;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s;
+  }
+  .teacher-panel.open { transform: translateX(0); }
+  .teacher-panel h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .teacher-panel .section {
+    padding: 14px 16px;
+    background: rgba(100,216,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .teacher-panel .section h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+  }
+  .teacher-panel .section ul { list-style: none; }
+  .teacher-panel .section li {
+    font-size: 12.5px;
+    padding: 4px 0;
+    color: var(--text-dim);
+    border-bottom: 1px dashed var(--border);
+  }
+  .teacher-panel .section li:last-child { border-bottom: none; }
+  .teacher-panel .export-btns {
+    display: flex; gap: 8px;
+    flex-direction: column;
+  }
+  .teacher-panel .export-btns button {
+    padding: 10px;
+    background: rgba(100,216,255,0.08);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .teacher-panel .export-btns button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* PEDAGOGY TAG */
+  .ped-tag-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+    margin: 10px 0;
+  }
+  .ped-tag {
+    padding: 2px 8px;
+    background: rgba(185,128,255,0.08);
+    border: 1px solid rgba(185,128,255,0.3);
+    border-radius: 4px;
+    font-size: 10px;
+    color: var(--accent-2);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ped-tag.k { background: rgba(100,216,255,0.08); border-color: rgba(100,216,255,0.3); color: var(--accent); }
+  .ped-tag.p { background: rgba(126,255,178,0.08); border-color: rgba(126,255,178,0.3); color: var(--accent-green); }
+  .ped-tag.a { background: rgba(255,203,107,0.08); border-color: rgba(255,203,107,0.3); color: var(--accent-gold); }
+
+  /* RESEARCH PANEL (S2a) */
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 14px 0 20px;
+  }
+  .research-btn {
+    padding: 20px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+    text-align: left;
+    color: var(--text);
+    font-family: inherit;
+  }
+  .research-btn:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(100,216,255,0.12);
+  }
+  .research-btn.selected {
+    border-color: var(--accent-gold);
+    background: rgba(255,203,107,0.08);
+    box-shadow: 0 0 20px rgba(255,203,107,0.15);
+  }
+  .research-btn .r-icon { font-size: 28px; margin-bottom: 8px; }
+  .research-btn .r-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .research-btn .r-desc { font-size: 12.5px; color: var(--text-dim); }
+
+  .source-wrap {
+    background: rgba(0,0,0,0.55);
+    border: 1px solid var(--accent-green);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin: 14px 0;
+    animation: fadeIn 0.5s ease;
+  }
+  .source-header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent-green);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(126,255,178,0.3);
+  }
+  .source-content {
+    font-family: 'VT323', monospace;
+    font-size: 17px;
+    color: #d8dff0;
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+
+  .decrypt-panel {
+    background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.04));
+    border: 1px solid rgba(185,128,255,0.45);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin: 18px 0;
+    animation: fadeIn 0.5s ease;
+  }
+  .decrypt-panel h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+  .decrypt-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 14px;
+    align-items: center;
+    margin: 10px 0;
+  }
+  @media (max-width: 600px) {
+    .decrypt-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+  .decrypt-row .lbl {
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+  .decrypt-row input, .decrypt-row select {
+    max-width: 320px;
+  }
+
+  /* PHASE TAGS (Before/Activity/After) */
+  .phase-tag {
+    display: inline-block;
+    margin: 28px 0 12px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+  }
+  .phase-before   { background: rgba(185,128,255,0.08); border: 1px solid rgba(185,128,255,0.4); color: var(--accent-2); }
+  .phase-activity { background: rgba(100,216,255,0.08); border: 1px solid rgba(100,216,255,0.4); color: var(--accent); }
+  .phase-after    { background: rgba(255,203,107,0.08); border: 1px solid rgba(255,203,107,0.4); color: var(--accent-gold); }
+
+  .before-panel {
+    background: linear-gradient(135deg, rgba(185,128,255,0.05), rgba(100,216,255,0.03));
+    border: 1px solid rgba(185,128,255,0.3);
+    border-radius: 14px;
+    padding: 22px 26px;
+    margin-bottom: 20px;
+  }
+  .before-panel h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: var(--accent-2);
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+  }
+  .predict-q {
+    padding: 14px 16px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  .predict-q .q {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .radio-opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px;
+    margin: 4px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 13.5px;
+    color: var(--text-dim);
+  }
+  .radio-opt:hover { background: rgba(100,216,255,0.05); }
+  .radio-opt input { accent-color: var(--accent-2); width: 18px; height: 18px; }
+
+  .after-panel {
+    background: linear-gradient(135deg, rgba(255,203,107,0.05), rgba(126,255,178,0.03));
+    border: 1px solid rgba(255,203,107,0.35);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .after-panel h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    color: var(--accent-gold);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+
+  /* SHIP CONSOLE · LOCK PANEL (S3 After) */
+  .ship-console {
+    background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(122,63,255,0.06)) !important;
+    border-color: rgba(100,216,255,0.45) !important;
+  }
+  .situation-card {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 14px 0;
+  }
+  .situation-card h5 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .situation-card ul { list-style: none; padding: 0; }
+  .situation-card li {
+    font-size: 13.5px;
+    color: var(--text-dim);
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .situation-card li:last-child { border-bottom: none; }
+  .situation-card b { color: var(--accent-gold); }
+
+  .lock-panel {
+    background: rgba(0,0,0,0.5);
+    border: 2px solid rgba(100,216,255,0.4);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin: 14px 0;
+  }
+  .lock-row {
+    display: grid;
+    grid-template-columns: 220px 1fr 160px;
+    gap: 12px;
+    align-items: center;
+    margin: 12px 0;
+  }
+  @media (max-width: 700px) {
+    .lock-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+  .lock-lbl {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+  .lock-hint {
+    font-family: 'VT323', monospace;
+    font-size: 16px;
+    color: var(--text-faint);
+  }
+  .lock-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.25em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .lock-btn:hover {
+    box-shadow: 0 0 30px rgba(100,216,255,0.4);
+    transform: translateY(-1px);
+  }
+  .lock-indicator {
+    margin-top: 14px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.2em;
+    padding: 12px;
+    border-radius: 8px;
+    color: var(--text-faint);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+  }
+  .lock-indicator.green {
+    color: var(--accent-green);
+    background: rgba(126,255,178,0.12);
+    border-color: var(--accent-green);
+    animation: pulse-green 1.4s infinite;
+  }
+  .lock-indicator.red {
+    color: var(--accent-red);
+    background: rgba(255,92,122,0.12);
+    border-color: var(--accent-red);
+  }
+  @keyframes pulse-green {
+    0%, 100% { box-shadow: 0 0 10px rgba(126,255,178,0.3); }
+    50%      { box-shadow: 0 0 30px rgba(126,255,178,0.75); }
+  }
+
+  /* CINEMATIC INTRO · 6-BEAT SEQUENTIAL REVEAL */
+  .cinematic-intro {
+    position: relative;
+    margin: 20px 0;
+    padding-top: 40px;
+  }
+  .intro-skip {
+    position: absolute;
+    top: 0; right: 0;
+    z-index: 2;
+  }
+  .intro-skip button {
+    padding: 6px 16px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-faint);
+    border-radius: 100px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.15em;
+    transition: all 0.2s;
+  }
+  .intro-skip button:hover { color: var(--accent); border-color: var(--accent); }
+  .intro-beat {
+    opacity: 0;
+    transform: translateY(30px) scale(0.98);
+    transition: opacity 1s ease, transform 1s cubic-bezier(0.2, 0.9, 0.3, 1);
+    padding: 30px 36px;
+    margin: 18px 0;
+    background: linear-gradient(135deg, rgba(100,216,255,0.06), rgba(185,128,255,0.04));
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .intro-beat::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(100,216,255,0.1) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .intro-beat.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .intro-beat.show::before { opacity: 1; }
+  .intro-visual {
+    font-size: 60px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 10px 35px rgba(100,216,255,0.5));
+    animation: slowFloat 3.5s ease-in-out infinite;
+    position: relative;
+    z-index: 1;
+  }
+  @keyframes slowFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  .intro-narrator {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    color: var(--accent-gold);
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .intro-text {
+    font-size: 17px;
+    color: var(--text);
+    line-height: 1.85;
+    max-width: 660px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .intro-text b { color: var(--accent); }
+
+  /* PER-BEAT COLOR RHYTHM */
+  .intro-beat[data-beat="1"] { background: linear-gradient(135deg, rgba(100,216,255,0.10), rgba(100,216,255,0.02)); }
+  .intro-beat[data-beat="1"] .intro-narrator { color: var(--accent); }
+  .intro-beat[data-beat="2"] { background: linear-gradient(135deg, rgba(185,128,255,0.10), rgba(185,128,255,0.02)); }
+  .intro-beat[data-beat="2"] .intro-narrator { color: var(--accent-2); }
+  .intro-beat[data-beat="3"] { background: linear-gradient(135deg, rgba(255,92,122,0.10), rgba(255,92,122,0.02)); border-color: rgba(255,92,122,0.3); }
+  .intro-beat[data-beat="3"] .intro-narrator { color: var(--accent-red); }
+  .intro-beat[data-beat="4"] { background: linear-gradient(135deg, rgba(255,203,107,0.10), rgba(255,203,107,0.02)); }
+  .intro-beat[data-beat="4"] .intro-narrator { color: var(--accent-gold); }
+  .intro-beat[data-beat="5"] { background: linear-gradient(135deg, rgba(126,255,178,0.10), rgba(126,255,178,0.02)); }
+  .intro-beat[data-beat="5"] .intro-narrator { color: var(--accent-green); }
+  .intro-beat[data-beat="6"] {
+    background: linear-gradient(135deg, rgba(100,216,255,0.14), rgba(185,128,255,0.10));
+    border-color: var(--accent);
+    box-shadow: 0 0 40px rgba(100,216,255,0.15);
+  }
+
+  /* STORY SCENE */
+  .story-scene .scene-inner { max-width: 900px; }
+  .story-panel {
+    background: linear-gradient(135deg, rgba(100,216,255,0.05), rgba(185,128,255,0.05));
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 40px 36px;
+    margin: 20px 0;
+    text-align: center;
+  }
+  .story-hero {
+    font-size: 84px;
+    margin-bottom: 24px;
+    filter: drop-shadow(0 10px 40px rgba(100,216,255,0.5));
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  .story-panel .dialog-box {
+    text-align: left;
+    max-width: 720px;
+    margin: 16px auto;
+  }
+
+  /* TEACHER CUE PANEL */
+  .teacher-cue {
+    background: linear-gradient(135deg, rgba(255,203,107,0.08), rgba(126,255,178,0.05));
+    border: 1px dashed rgba(255,203,107,0.45);
+    border-radius: 12px;
+    margin: 14px 0;
+    overflow: hidden;
+  }
+  .teacher-cue-head {
+    padding: 12px 18px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    color: var(--accent-gold);
+    background: rgba(255,203,107,0.05);
+    user-select: none;
+  }
+  .teacher-cue-head::after {
+    content: '▾';
+    margin-left: auto;
+    transition: transform 0.2s;
+  }
+  .teacher-cue.open .teacher-cue-head::after { transform: rotate(180deg); }
+  .teacher-cue-body {
+    display: none;
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.75;
+  }
+  .teacher-cue.open .teacher-cue-body { display: block; }
+  .teacher-cue-body .role-line {
+    display: flex; gap: 10px; align-items: baseline;
+    padding: 6px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .teacher-cue-body .role-line:last-child { border-bottom: none; }
+  .teacher-cue-body .role-line .tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    min-width: 70px;
+    text-align: center;
+  }
+  .teacher-cue-body .role-line .tag.do { background: rgba(126,255,178,0.1); color: var(--accent-green); border: 1px solid rgba(126,255,178,0.3); }
+  .teacher-cue-body .role-line .tag.dont { background: rgba(255,92,122,0.1); color: var(--accent-red); border: 1px solid rgba(255,92,122,0.3); }
+  .teacher-cue-body .role-line .tag.say { background: rgba(100,216,255,0.1); color: var(--accent); border: 1px solid rgba(100,216,255,0.3); }
+  .teacher-cue-body .role-line .tag.teach { background: rgba(185,128,255,0.12); color: var(--accent-2); border: 1px solid rgba(185,128,255,0.4); }
+  .teacher-cue-body .script-box {
+    background: rgba(0,0,0,0.35);
+    border-left: 3px solid var(--accent-2);
+    border-radius: 4px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    font-style: italic;
+    color: #d8dff0;
+    font-size: 14px;
+  }
+  .teacher-cue-body .script-box::before {
+    content: '🎙️ ครูพูด';
+    display: block;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--accent-2);
+    font-style: normal;
+    margin-bottom: 6px;
+  }
+  .teacher-cue-body .teaching-block {
+    background: linear-gradient(135deg, rgba(185,128,255,0.1), rgba(100,216,255,0.05));
+    border: 1px solid var(--accent-2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 12px 0;
+  }
+  .teacher-cue-body .teaching-block h5 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent-2);
+    margin-bottom: 10px;
+  }
+  .teacher-cue-body .teaching-block p {
+    margin: 8px 0;
+    color: var(--text);
+  }
+  .teacher-cue-body .teaching-block b { color: var(--accent-gold); }
+  .timing-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    background: rgba(100,216,255,0.08);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    color: var(--accent);
+    margin-left: 8px;
+  }
+
+  /* COSMIC TIMELINE · 6 ERAS */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin: 12px 0;
+  }
+  @media (max-width: 1100px) {
+    .timeline-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .era-card {
+    padding: 14px 12px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.2, 0.9, 0.3, 1);
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+  }
+  .era-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(100,216,255,0.15);
+  }
+  .era-card.revealed {
+    border-color: var(--accent-gold);
+    background: linear-gradient(160deg, rgba(255,203,107,0.08), rgba(100,216,255,0.04));
+  }
+  .era-time {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+  .era-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .era-temp {
+    font-size: 12px;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .era-detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease, opacity 0.4s ease;
+    text-align: left;
+  }
+  .era-detail b { color: var(--accent); }
+  .era-card.revealed .era-detail {
+    max-height: 300px;
+    opacity: 1;
+    margin-top: 6px;
+  }
+  .era-tap {
+    margin-top: auto;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-faint);
+    opacity: 0.6;
+  }
+  .era-card.revealed .era-tap { display: none; }
+  .timeline-progress {
+    margin-top: 14px;
+    padding: 10px 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .timeline-progress b { color: var(--accent); }
+
+  /* ERA SIMULATION MODAL */
+  .era-modal {
+    position: fixed; inset: 0;
+    background: rgba(3, 4, 12, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 200;
+    display: flex;
+    align-items: center; justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+  }
+  .era-modal-inner {
+    background: linear-gradient(160deg, rgba(12, 15, 35, 0.98), rgba(5, 6, 15, 0.98));
+    border: 1px solid var(--border-strong);
+    border-radius: 20px;
+    padding: 30px 34px;
+    max-width: 1200px;
+    width: 100%;
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(100,216,255,0.15);
+  }
+  .era-modal-close {
+    position: absolute; top: 18px; right: 18px;
+    padding: 8px 16px;
+    background: rgba(255,92,122,0.1);
+    border: 1px solid rgba(255,92,122,0.4);
+    border-radius: 100px;
+    color: var(--accent-red);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .era-modal-close:hover { background: rgba(255,92,122,0.2); }
+  .era-modal-head {
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .era-modal-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .era-modal-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(180deg, #fff, #8ca0d8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .era-modal-meta {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    color: var(--accent-gold);
+    margin-bottom: 8px;
+  }
+  .era-modal-event {
+    font-size: 14px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .era-modal-body {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .era-modal-body { grid-template-columns: 1fr; }
+  }
+  .era-sim-wrap { position: relative; }
+  #era-canvas {
+    width: 100%;
+    height: auto;
+    background: radial-gradient(ellipse at center, #0a0e1f 0%, #03040c 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: block;
+  }
+  .era-legend {
+    margin-top: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'Space Grotesk', sans-serif;
+    background: rgba(0,0,0,0.3);
+    border-radius: 6px;
+  }
+
+  .era-check-wrap {
+    background: rgba(100,216,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .era-check-wrap h5 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .particle-options {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 8px;
+  }
+  .particle-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    margin: 4px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .particle-option:hover { border-color: var(--accent); background: rgba(100,216,255,0.04); }
+  .particle-option input { width: 16px; height: 16px; accent-color: var(--accent); }
+  .particle-option .swatch {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+  .particle-option .lbl { flex: 1; color: var(--text); }
+  .particle-option.show-correct { background: rgba(126,255,178,0.08); border-color: var(--accent-green); }
+  .particle-option.show-wrong { background: rgba(255,92,122,0.08); border-color: var(--accent-red); }
+  .particle-option.show-missed { background: rgba(255,203,107,0.08); border-color: var(--accent-gold); }
+
+  /* ENTRY TICKET */
+  .entry-q {
+    padding: 16px 18px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 10px 0;
+  }
+  .entry-q .q {
+    font-weight: 600;
+    font-size: 14.5px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  /* SHAKE ANIMATION */
+  @keyframes shake {
+    0%, 100% { transform: translate(0,0); }
+    25% { transform: translate(-5px, 2px); }
+    50% { transform: translate(5px, -2px); }
+    75% { transform: translate(-3px, 1px); }
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  /* UTIL */
+  .center { text-align: center; }
+  .mt-20 { margin-top: 20px; }
+  .muted { color: var(--text-faint); font-size: 13px; }
+  .warn {
+    padding: 12px 16px;
+    background: rgba(255,92,122,0.08);
+    border: 1px solid rgba(255,92,122,0.4);
+    border-radius: 8px;
+    font-size: 13px;
+    color: #ffb0bf;
+  }
+</style>
+</head>
+<body>
+
+<div class="stars-3"></div>
+<div class="stars"></div>
+<div class="stars-2"></div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="logo">★ COSMOS LOG</div>
+  <div class="pill team" id="hud-team">ยังไม่ได้เลือกทีม</div>
+  <div class="pill energy" id="hud-energy">⚡ 0 Energy</div>
+  <div class="pill scene" id="hud-scene">S0</div>
+  <div class="spacer"></div>
+  <button class="teacher-btn" onclick="togglePanel()">⚙ TEACHER</button>
+</div>
+
+<!-- STAGE -->
+<div class="stage">
+
+<!-- ========== ENTRY · PRIOR KNOWLEDGE TICKET ========== -->
+<section class="scene active" data-scene="s-entry" data-title="Entry Ticket">
+  <div class="scene-inner">
+    <div class="scene-label">◤ PRE-MISSION · KNOWLEDGE CHECK</div>
+    <h1 class="scene-title">Entry Ticket</h1>
+    <h2 class="scene-sub">PRIOR KNOWLEDGE · 3 QUESTIONS</h2>
+
+    <p class="muted">ก่อนเริ่มภารกิจ · LEMAÎTRE ขอตรวจความรู้เดิม 3 ข้อ · ใช้แค่ความรู้ ม.4-5 ที่เรียนมาแล้ว · ไม่ต้องกังวลถ้าตอบผิด · เป็นแค่ baseline</p>
+
+    <div class="entry-q">
+      <div class="q">1 · อุณหภูมิ 2.725 K มีค่าประมาณกี่องศาเซลเซียส?</div>
+      <label class="radio-opt"><input type="radio" name="e1" value="wrong1"><span>+2.725 °C</span></label>
+      <label class="radio-opt"><input type="radio" name="e1" value="correct"><span>−270.4 °C (ใกล้ศูนย์สัมบูรณ์)</span></label>
+      <label class="radio-opt"><input type="radio" name="e1" value="wrong2"><span>+273.15 °C (อุณหภูมิห้อง)</span></label>
+    </div>
+
+    <div class="entry-q">
+      <div class="q">2 · เมื่อความยาวคลื่นแสงยาวขึ้น · สีจะเปลี่ยนไปทางใด?</div>
+      <label class="radio-opt"><input type="radio" name="e2" value="wrong1"><span>ทางสีน้ำเงิน / ม่วง</span></label>
+      <label class="radio-opt"><input type="radio" name="e2" value="correct"><span>ทางสีแดง / อินฟราเรด</span></label>
+      <label class="radio-opt"><input type="radio" name="e2" value="wrong2"><span>สีไม่เปลี่ยนแปลง</span></label>
+    </div>
+
+    <div class="entry-q">
+      <div class="q">3 · 2 ธาตุที่เบาที่สุดในเอกภพคืออะไร?</div>
+      <label class="radio-opt"><input type="radio" name="e3" value="wrong1"><span>คาร์บอน (C) และออกซิเจน (O)</span></label>
+      <label class="radio-opt"><input type="radio" name="e3" value="correct"><span>ไฮโดรเจน (H) และฮีเลียม (He)</span></label>
+      <label class="radio-opt"><input type="radio" name="e3" value="wrong2"><span>เหล็ก (Fe) และทอง (Au)</span></label>
+    </div>
+
+    <button class="choice-btn" style="max-width: 300px; margin-top: 18px;" onclick="submitEntry()">✓ ยืนยัน · เข้าสู่ภารกิจ</button>
+    <div id="entry-result" style="margin-top: 12px;"></div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag k">ทบทวน ม.4-5</span>
+      <span class="ped-tag">วPA 2 · เชื่อมประสบการณ์</span>
+      <span class="ped-tag">Research · Prior Knowledge Baseline</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 0 · TEAM SETUP ========== -->
+<section class="scene" data-scene="s0" data-title="S0 · Team Setup">
+  <div class="scene-inner">
+    <div class="scene-label">◤ MISSION LOG · ENTRY 000</div>
+    <h1 class="scene-title">เลือกยานของทีมคุณ</h1>
+    <h2 class="scene-sub">TEAM SELECTION · COSMOS ACADEMY</h2>
+    <p class="muted">แต่ละทีมจะได้รับยานประจำตัว · ชื่อทีม · และตัดสินใจร่วมกันเป็นกลุ่มตลอดภารกิจ</p>
+
+    <div class="team-grid" id="team-grid"></div>
+
+    <div class="form-row">
+      <label>⚡ ชื่อยาน / ชื่อทีม</label>
+      <input type="text" id="team-name" placeholder="เช่น · Stellar Nomads · Void Hunters · Andromeda 7">
+    </div>
+
+    <div class="form-row">
+      <label>🎭 บทบาทหลักของทีม (ใช้อำนาจพิเศษ 1 ครั้งต่อตอน)</label>
+      <select id="team-role">
+        <option value="">-- เลือกบทบาท --</option>
+        <option value="NAV">NAV · Navigator (ถนัดแผนที่กาแล็กซี)</option>
+        <option value="ENG">ENG · Spectral Engineer (ถนัดวิเคราะห์แสง)</option>
+        <option value="MED">MED · Astrobiologist (ถนัดระบบสุริยะ)</option>
+        <option value="MECH">MECH · Warp Mechanic (ถนัดจรวด-วงโคจร)</option>
+      </select>
+    </div>
+
+    <div class="info-card">
+      <h4>📋 กฎการเล่น</h4>
+      <p>• ทุกฉากมีภารกิจ · ทำเสร็จได้ <b>Energy</b> · ทีมเสร็จก่อน + ถูกต้อง ได้ Energy สูงสุด</p>
+      <p>• เลือก "ผิด" ไม่ใช่ล้มเหลว · ทีมจะไปผจญภัยในเส้นทางพิเศษ แล้วกลับมาเจอเพื่อน</p>
+      <p>• จบภารกิจ · ทุกทีมได้ <b>Journey Map</b> ของตัวเอง · เอาไปใช้ในตอนหน้า</p>
+    </div>
+    <div class="ped-tag-row">
+      <span class="ped-tag a">A1 แรงจูงใจ</span>
+      <span class="ped-tag a">A2 ทีมเวิร์ก</span>
+      <span class="ped-tag">วPA 4 · แรงจูงใจ</span>
+      <span class="ped-tag">วPA 7 · บรรยากาศ</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 1 · COLD OPEN ========== -->
+<section class="scene" data-scene="s1" data-title="S1 · Cold Open">
+  <div class="scene-inner">
+    <div class="scene-label">◤ EPISODE 01 · 2267 CE</div>
+    <h1 class="scene-title">การปะทะ</h1>
+    <h2 class="scene-sub">THE COLLISION · DEEP SPACE BEYOND NEPTUNE</h2>
+
+    <div class="media-placeholder">
+      <div class="icon">🎬</div>
+      <div class="label">VIDEO M1 · COLD OPEN CINEMATIC</div>
+      <div class="desc">90 วินาที · ยานเดินทาง → เซ็นเซอร์จับวัตถุ → ชน → หัวเรือแตก</div>
+    </div>
+
+    <div class="dialog-box terminal" data-speaker="T.H.E.O.S.-IX SYSTEM LOG">
+      <div class="txt" id="s1-log">&gt; กำลังโหลดบันทึก...</div>
+    </div>
+
+    <div class="dialog-box lem" data-speaker="LEMAÎTRE · AI COMPUTER" id="s1-lem" style="display:none">
+      <div class="txt">Cadets... นี่คือคอมพิวเตอร์ยาน T.H.E.O.S.-IX · เราชนวัตถุปริศนาที่ความเร็ว 0.15c · เซ็นเซอร์รายงานว่า <b>วัตถุนี้สะท้อนแสงอายุ 13.8 พันล้านปี</b> · เก่ากว่าดวงอาทิตย์ของเรา <b>3 เท่า</b></div>
+    </div>
+
+    <div class="dialog-box arya" data-speaker="กัปตัน อารยา" id="s1-arya" style="display:none">
+      <div class="txt">ทีม... รวมกำลังทันที · เราต้องเข้าใจว่ามัน <em>คืออะไร</em> ก่อนเงาดำในจอเรดาร์จะมาถึง · เหลือเวลาประมาณ 30 นาที</div>
+    </div>
+
+    <div class="info-card" id="s1-info" style="display:none">
+      <h4>🎯 ภารกิจแรกของทีม</h4>
+      <p>ห้องวิจัยเก็บ <b>ข้อมูลเซ็นเซอร์ 5 ชิ้น</b> จากการปะทะ · แต่ละชิ้นเป็นข้อสังเกตที่ยังไม่มีใครอธิบายได้ · ทีมต้อง <b>จัดกลุ่มข้อมูล</b> ตามลักษณะที่สังเกตเห็น (เช่น เรื่องแสง · อุณหภูมิ · ทิศทาง ฯลฯ) · เราจะยังไม่รู้ว่ามันคืออะไรในทางวิทยาศาสตร์ · แต่เราจะ <b>รวบรวมข้อมูลก่อน</b> เหมือนนักสืบรวบรวมหลักฐาน</p>
+    </div>
+
+    <div class="form-row" id="s1-hypothesis" style="display:none">
+      <label>💭 ก่อนเริ่มภารกิจ · ทีมคิดว่า "ศิลาต้นกำเนิด" คืออะไร?</label>
+      <textarea id="hypo-text" rows="2" placeholder="เขียนสั้น ๆ · ยังไม่ต้องถูกก็ได้ · เราจะกลับมาดูปลายคาบว่าทีมคิดเปลี่ยนไหม"></textarea>
+      <p class="muted" style="margin-top: 6px; font-size: 12px;">✦ บันทึกสมมติฐานเริ่มต้น · ใช้เปรียบเทียบกับความคิดหลังเรียน (baseline สำหรับวิจัย conceptual change)</p>
+    </div>
+
+    <div class="ped-tag-row" id="s1-peds" style="display:none">
+      <span class="ped-tag a">A1 แรงจูงใจ</span>
+      <span class="ped-tag">วPA 1 · เข้าถึงบทเรียน</span>
+      <span class="ped-tag">วPA 4 · แรงจูงใจ</span>
+      <span class="ped-tag">เนื้อหา: บริบทเอกภพ</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 2 · DEBRIS MATCH (BRANCHING POINT) ========== -->
+<section class="scene" data-scene="s2" data-title="S2 · Debris Match">
+  <div class="scene-inner">
+    <div class="scene-label">◤ MINIGAME 01 · DRAG TO MATCH</div>
+    <h1 class="scene-title">ซากปริศนา</h1>
+    <h2 class="scene-sub">FRAGMENT ANALYSIS · 5 PIECES, 5 MEANINGS</h2>
+
+    <div class="timer" id="s2-timer">⏱ 03:00</div>
+
+    <div class="dialog-box lem" data-speaker="LEMAÎTRE">
+      <div class="txt">ลากชิ้นซากทางซ้าย · วางในช่องความหมายทางขวา · ทุกคู่ที่จับถูก = +1 Energy · ครบ 4-5 คู่ → อยู่ในเส้นทางหลัก · ถ้าต่ำกว่านั้น ยานจะหลุดวงโคจร...</div>
+    </div>
+
+    <div class="dnd-wrap">
+      <div class="dnd-col">
+        <h4>◦ FRAGMENTS · ลากจากที่นี่</h4>
+        <div class="fragment-list" id="fragments"></div>
+      </div>
+      <div class="dnd-col">
+        <h4>◦ MEANINGS · วางลงช่องที่ถูกต้อง</h4>
+        <div class="meaning-list" id="meanings"></div>
+      </div>
+    </div>
+
+    <div class="center mt-20">
+      <button class="choice-btn" id="s2-check" style="display:inline-block; max-width:280px;" onclick="checkS2()">🔍 ตรวจคำตอบ</button>
+    </div>
+
+    <div id="s2-result" style="display:none"></div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag k">K3 หลักฐาน</span>
+      <span class="ped-tag p">P2 ตีความข้อมูล</span>
+      <span class="ped-tag">วPA 2 · เชื่อมประสบการณ์เดิม</span>
+      <span class="ped-tag">เนื้อหา: redshift, CMB, isotropy, อายุเอกภพ, การเย็นลง</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 2A · MAIN SHIP PATH ========== -->
+<section class="scene" data-scene="s2a" data-title="S2a · Main Ship Path">
+  <div class="scene-inner">
+    <div class="scene-label">◤ BRANCH A · MAIN SHIP</div>
+    <h1 class="scene-title">ยานเสถียร · เดินหน้าต่อ</h1>
+    <h2 class="scene-sub">HULL INTEGRITY RESTORED · 97%</h2>
+
+    <div class="branch-reveal main">
+      <h3>✓ PATH: MAIN SHIP</h3>
+      <p>ทีมอ่านข้อมูลได้ถูกต้อง · ยานกลับมาเสถียร · เซ็นเซอร์เริ่มสแกนรายละเอียดศิลาต้นกำเนิด</p>
+    </div>
+
+    <div class="dialog-box lem" data-speaker="LEMAÎTRE">
+      <div class="txt">ข้อมูลซากบอกว่า "ศิลาต้นกำเนิด" ส่งสัญญาณคล้ายกันทุกทิศทาง · สัญญาณแบบนี้มนุษย์เคยเจอมาก่อนในอดีต · แต่ <b>ไฟล์ข้อมูลในยานเสียหาย</b> · ทีมต้องเลือก <b>1 ใน 3 แหล่งสืบค้น</b> แล้วถอดรหัสข้อมูลด้วยตนเอง</div>
+    </div>
+
+    <h3 style="font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent); letter-spacing: 0.2em; margin: 20px 0 8px;">◦ เลือกวิธีสืบค้น · ข้อมูลปลายทางเหมือนกัน · มุมมองต่างกัน</h3>
+
+    <div class="research-grid">
+      <button class="research-btn" onclick="openSource('video', this)" data-src="video">
+        <div class="r-icon">📼</div>
+        <div class="r-name">VIDEO ARCHIVE</div>
+        <div class="r-desc">ดูคลิปข่าวปี 1965 · แบบบทสัมภาษณ์</div>
+      </button>
+      <button class="research-btn" onclick="openSource('database', this)" data-src="database">
+        <div class="r-icon">💾</div>
+        <div class="r-name">ACADEMY DATABASE</div>
+        <div class="r-desc">ค้นฐานข้อมูล · แบบเอกสารวิทยาศาสตร์</div>
+      </button>
+      <button class="research-btn" onclick="openSource('contact', this)" data-src="contact">
+        <div class="r-icon">📡</div>
+        <div class="r-name">CONTACT EARTH</div>
+        <div class="r-desc">ส่งข้อความขอข้อมูล · delay 4.2 ชม.</div>
+      </button>
+    </div>
+
+    <div id="s2a-source" style="display:none"></div>
+
+    <div id="s2a-decrypt" style="display:none" class="decrypt-panel">
+      <h4>🔐 DECRYPTION · เติมข้อมูลที่หายไป 7 ช่อง</h4>
+      <p class="muted" style="margin-bottom: 14px;">อ่านข้อมูลด้านบน · เติมคำตอบให้ครบ · เมื่อถูกทั้งหมด ระบบจะปลดล็อกให้เดินหน้าสู่ STATION A</p>
+
+      <div class="decrypt-row"><span class="lbl">1 · ปี ค.ศ. ที่ค้นพบ</span>
+        <input type="number" id="dec-year" placeholder="YYYY" min="1900" max="2000"></div>
+      <div class="decrypt-row"><span class="lbl">2 · ผู้ค้นพบคนที่หนึ่ง</span>
+        <select id="dec-who1">
+          <option value="">-- เลือก --</option>
+          <option>Penzias</option><option>Wilson</option>
+          <option>Hubble</option><option>Lemaitre</option>
+          <option>Einstein</option><option>Newton</option>
+        </select></div>
+      <div class="decrypt-row"><span class="lbl">3 · ผู้ค้นพบคนที่สอง</span>
+        <select id="dec-who2">
+          <option value="">-- เลือก --</option>
+          <option>Penzias</option><option>Wilson</option>
+          <option>Hubble</option><option>Lemaitre</option>
+          <option>Einstein</option><option>Newton</option>
+        </select></div>
+      <div class="decrypt-row"><span class="lbl">4 · สถาบันที่ทำงาน</span>
+        <select id="dec-lab">
+          <option value="">-- เลือก --</option>
+          <option>Bell Labs</option><option>MIT</option>
+          <option>NASA</option><option>Caltech</option>
+          <option>Princeton</option><option>CERN</option>
+        </select></div>
+      <div class="decrypt-row"><span class="lbl">5 · อุณหภูมิสัญญาณ (K)</span>
+        <input type="number" step="0.001" id="dec-temp" placeholder="เช่น 2.725"></div>
+      <div class="decrypt-row"><span class="lbl">6 · ชื่อย่อสัญญาณ (3 ตัว)</span>
+        <input type="text" id="dec-name" maxlength="4" placeholder="เช่น CMB" style="text-transform: uppercase;"></div>
+      <div class="decrypt-row"><span class="lbl">7 · ปีที่ได้รางวัลโนเบล</span>
+        <input type="number" id="dec-nobel" placeholder="YYYY" min="1960" max="2000"></div>
+
+      <button class="choice-btn" style="margin-top: 18px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; border: none; max-width: 260px;" onclick="checkDecryption()">🔓 ถอดรหัส</button>
+      <div id="decrypt-result" style="margin-top: 12px;"></div>
+    </div>
+
+    <div id="s2a-gate" style="display:none">
+      <div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+        <div class="txt">ยอดเยี่ยม · ทีมถอดรหัสข้อมูล <b>CMB</b> ได้แล้ว · แปลว่าศิลาต้นกำเนิดมาจากยุคที่เอกภพยังเด็กมาก · ไปที่ <b>STATION A</b> กัน · เราต้องเข้าใจว่าทำไมสัญญาณถึงอยู่ทุกทิศทาง</div>
+      </div>
+      <p class="muted center" style="margin-top: 10px;">✦ กดปุ่ม "ต่อไป →" ด้านล่างเพื่อเดินหน้าสู่ STATION A</p>
+    </div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag k">K3 CMB · Penzias-Wilson</span>
+      <span class="ped-tag">วPA 1 · เข้าถึงบทเรียน</span>
+      <span class="ped-tag">เนื้อหา: CMB 2.725 K, 1965</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 2B · ASTEROID DRIFT PATH ========== -->
+<section class="scene" data-scene="s2b" data-title="S2b · Asteroid Drift">
+  <div class="scene-inner">
+    <div class="scene-label">◤ BRANCH B · ASTEROID DRIFT</div>
+    <h1 class="scene-title">ยานลอยเข้าแถบดาวเคราะห์น้อย</h1>
+    <h2 class="scene-sub">ALTERNATE LOCATION · DRIFT OBSERVATION</h2>
+
+    <div class="branch-reveal asteroid">
+      <h3>⚠ PATH: ASTEROID DRIFT</h3>
+      <p>ยานสูญเสียการควบคุมชั่วคราว · ลอยเข้าสู่แถบดาวเคราะห์น้อย · แต่ที่นี่... ทีมได้เห็นสิ่งที่ Main Ship ไม่ได้เห็น</p>
+    </div>
+
+    <div class="dialog-box lem" data-speaker="LEMAÎTRE">
+      <div class="txt">สังเกตดี ๆ Cadets · ดาวเคราะห์น้อย 3 เม็ดใกล้ยาน · เมื่อก่อนอยู่ใกล้กันมาก · แต่ตอนนี้ห่างกันออก · ทั้งหมดเคลื่อนออกจากกัน <b>พร้อมกัน</b></div>
+    </div>
+
+    <p style="font-size: 15px; color: var(--text); margin: 16px 0;">
+      ✦ <b>ภารกิจรอง:</b> ทีมสังเกตการเคลื่อนที่ของดาวเคราะห์น้อย · <b>เลือกทุกข้อที่สังเกตเห็นจริง</b>
+    </p>
+
+    <div class="chk-list" id="s2b-chk">
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox" value="1">
+        <span>ดาวเคราะห์น้อยทุกเม็ดเคลื่อนออกจากกัน · ไม่มีเม็ดไหนเคลื่อนเข้าหา</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox" value="2">
+        <span>เห็นจุดศูนย์กลางที่ดาวทุกเม็ดเคลื่อนออก · อยู่ตรงหน้ายาน</span>
+      </label>
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox" value="3">
+        <span>ยิ่งดาวเม็ดไกล · ยิ่งเคลื่อนออกเร็วกว่าดาวใกล้</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox" value="4">
+        <span>ดาวที่ไกลออกไปเคลื่อนช้ากว่าดาวใกล้</span>
+      </label>
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox" value="5">
+        <span>ช่องว่างระหว่างดาวขยายขึ้นพร้อมกันทั่วทั้งแถบ · ไม่มีทิศใดพิเศษ</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox" value="6">
+        <span>ดาวเคลื่อนเข้าหายาน · ยานอยู่ที่ศูนย์กลาง</span>
+      </label>
+    </div>
+
+    <div class="center mt-20">
+      <button class="choice-btn" style="display:inline-block; max-width:280px;" onclick="checkS2b()">🔍 ยืนยันการสังเกต</button>
+    </div>
+
+    <div id="s2b-result" style="display:none"></div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag p">P1 สังเกต · สร้างแบบจำลอง</span>
+      <span class="ped-tag a">A3 กล้าสังเกต</span>
+      <span class="ped-tag">วPA 3 · สร้างความรู้เอง</span>
+      <span class="ped-tag">เนื้อหา: การขยายตัว · ไม่มีจุดศูนย์กลาง</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE 3 · BALLOON LAB (CONVERGENT) ========== -->
+<section class="scene" data-scene="s3" data-title="S3 · Balloon Lab">
+  <div class="scene-inner">
+    <div class="scene-label">◤ CONVERGENT POINT · STATION A</div>
+    <h1 class="scene-title">สถานี A · ลูกโป่งแห่งการเริ่มต้น</h1>
+    <h2 class="scene-sub">BALLOON LAB · EXPERIENCE BEFORE LABELING</h2>
+
+    <!-- 👩‍🏫 TEACHER CUE · บทครูในฉากนี้ -->
+    <div class="teacher-cue" onclick="this.classList.toggle('open')">
+      <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · บทครูใน S3 · คลิกเปิด/ปิด <span class="timing-badge">45–75 นาที (~30 นาที)</span></div>
+      <div class="teacher-cue-body" onclick="event.stopPropagation()">
+        <div class="role-line"><span class="tag say">นำเข้า</span><span>เปิดฉากให้เด็กดู Cinematic 6 บีท · ครูอ่านตามบทหรือปล่อยให้ไหลเอง</span></div>
+        <div class="role-line"><span class="tag do">คาดการณ์</span><span>Facilitate · ถามทีม "ลองเดาก่อน ไม่ผิดไม่ถูก" · ไม่บอกคำตอบ</span></div>
+        <div class="role-line"><span class="tag do">ลูกโป่ง</span><span>เดินดู · เช็คว่าทีมวัดระยะจริง · บันทึกตาราง · <b>ห้ามพูดคำว่า "การขยาย" หรือ "ฮับเบิล" ก่อนถึง Reveal</b></span></div>
+        <div class="role-line"><span class="tag dont">ห้าม</span><span>ให้นิยามศัพท์วิทยาศาสตร์ก่อนถึง Dr. Hubble Reveal · ทำลาย Experience Before Labeling</span></div>
+        <div class="role-line"><span class="tag teach">🌟 สอนเต็ม</span><span><b>Dr. Hubble Reveal (5 นาที)</b> · นี่คือจุดที่ครูอธิบายทฤษฎีเต็มที่ · ดูสคริปต์ด้านล่าง</span></div>
+
+        <div class="script-box">
+          "Cadets · สิ่งที่พวกเธอเพิ่งเห็นผ่านลูกโป่ง — ทุกจุดบนผิวลูกโป่งห่างกันออกพร้อมกัน ไม่มีจุดศูนย์กลาง — นี่คือแบบจำลองของสิ่งที่เรียกว่า <b>ทฤษฎีบิกแบง</b>"
+        </div>
+
+        <div class="teaching-block">
+          <h5>📚 สคริปต์ครูอธิบายบิกแบง (ใช้ประกอบ Dr. Hubble Reveal · ~5 นาที)</h5>
+          <p><b>① สาระสำคัญ</b> · เอกภพเริ่มเมื่อ 13.8 พันล้านปีก่อน จากสภาวะร้อน-หนาแน่นยิ่งยวด แล้วขยายตัวต่อเนื่อง · <b>ไม่ใช่การระเบิดในที่ว่าง</b> แต่เป็นการขยายของอวกาศเอง</p>
+          <p><b>② ลำดับวิวัฒนาการ 6 ยุค</b> (ใช้ Timeline ที่นักเรียนคลิกเปิด)
+            <br>• <b>10⁻⁴³ วิ</b> Planck Epoch · แรงพื้นฐาน 4 แบบรวมกัน
+            <br>• <b>10⁻⁶ วิ</b> Quark Era · ควาร์ก กลูออน เลปตอน เกิดอิสระ
+            <br>• <b>3 นาที</b> Nucleosynthesis · ควาร์ก→โปรตอน-นิวตรอน → <b>นิวเคลียส H 75% He 25%</b>
+            <br>• <b>380,000 ปี</b> Recombination · อะตอมเป็นกลาง โฟตอนหลุด = <b>CMB</b>
+            <br>• <b>1 พันล้านปี</b> กาแล็กซีและดาวแรกก่อตัว · ธาตุหนักเกิดในดาว
+            <br>• <b>13.8 พันล้านปี (ปัจจุบัน)</b> อุณหภูมิ 2.725 K · CMB ยังอยู่เป็นเสียงสะท้อน
+          </p>
+          <p><b>③ หลักฐาน 2 ประการ</b>
+            <br>• <b>Hubble-Lemaître (1927-1929)</b> กาแล็กซีไกลยิ่งเลื่อนทางแดง · v = H₀D
+            <br>• <b>Penzias-Wilson (1965)</b> พบ CMB 2.725 K ที่ Bell Labs · ได้โนเบลปี 1978
+          </p>
+          <p><b>④ ย้ำ Misconception ที่ต้องแก้</b>
+            <br>• บิกแบง ≠ ระเบิดกลางที่ว่าง (ใช้ลูกโป่งเทียบ · ผิวลูกโป่ง = อวกาศ)
+            <br>• เอกภพไม่มีศูนย์กลาง (ทุกจุดเห็นกาแล็กซีถอยห่างเหมือนกัน)
+            <br>• ธาตุหนักไม่ได้เกิดจากบิกแบง · เกิดในดาวฤกษ์
+          </p>
+          <p><b>⑤ เชื่อมสู่กิจกรรมถัดไป</b> · "รู้แล้วว่าเอกภพขยาย · กฎฮับเบิล v=H₀D บอกเราได้ว่ากาแล็กซี่เคยอยู่ที่ไหน · ไปตั้งคอร์สยานกัน"</p>
+        </div>
+
+        <div class="role-line"><span class="tag say">After · Calc</span><span>ถ้าทีมคำนวณ v=H₀D ไม่ได้ · ใบ้ "70 คูณ 100 เท่ากับ?" · อย่าบอกคำตอบ 7,000</span></div>
+        <div class="role-line"><span class="tag say">After · Lock</span><span>ถ้าไฟแดง · ถามว่า "ระยะปัจจุบันหารด้วยอัตราขยายเท่าไร?" · นำให้คิดเอง</span></div>
+      </div>
+    </div>
+
+    <!-- ═══ CINEMATIC INTRO · 6-BEAT STORY SETUP ═══ -->
+    <div id="s3-cinematic" class="cinematic-intro">
+      <div class="intro-skip"><button onclick="skipS3Intro()">⏭ SKIP INTRO</button></div>
+
+      <div class="intro-beat" data-beat="1">
+        <div class="intro-visual">📡</div>
+        <div class="intro-narrator">◦ SIGNAL DETECTED · 14:38 UTC</div>
+        <div class="intro-text">LEMAÎTRE จับสัญญาณใหม่จาก <b>Galaxy A</b> · กาแล็กซี่เคลื่อนที่ด้วยความเร็วสูงผิดปกติ · และเซ็นเซอร์รายงานว่ามันเคยอยู่ที่อื่นมาก่อน</div>
+      </div>
+
+      <div class="intro-beat" data-beat="2">
+        <div class="intro-visual">⏳</div>
+        <div class="intro-narrator">◦ THE MYSTERY</div>
+        <div class="intro-text">เมื่อ <b>10,000 ปีก่อน</b> · Galaxy A เคยอยู่ที่ตำแหน่งใดกันแน่? · ไม่มีข้อมูลใน Academy Archive · ไม่มีใครเคยคำนวณมาก่อน</div>
+      </div>
+
+      <div class="intro-beat" data-beat="3">
+        <div class="intro-visual">⚠️</div>
+        <div class="intro-narrator">◦ THE STAKES</div>
+        <div class="intro-text">ยานจะวาร์ปย้อนเวลาไปดูได้ · แต่ <b>ต้องตั้งคอร์สให้ถูก</b> · คำนวณพลาด = ยานหลุดเวลา · หาทางกลับโลกไม่ได้</div>
+      </div>
+
+      <div class="intro-beat" data-beat="4">
+        <div class="intro-visual">💡</div>
+        <div class="intro-narrator">◦ THE THEORY</div>
+        <div class="intro-text">ทฤษฎีบิกแบงบอกว่า <b>เอกภพขยายตัวตลอดเวลา</b> · ถ้าเราเข้าใจ "วิธีที่อวกาศขยาย" · เราจะคำนวณตำแหน่งของกาแล็กซี่ในอดีตได้</div>
+      </div>
+
+      <div class="intro-beat" data-beat="5">
+        <div class="intro-visual">🎈</div>
+        <div class="intro-narrator">◦ THE TOOL</div>
+        <div class="intro-text">LEMAÎTRE เสนอเครื่องมือง่ายที่สุด · <b>ลูกโป่ง 1 ใบ</b> · วาดจุดบนผิว · เป่า · สังเกต · ลูกโป่งจะกลายเป็นแบบจำลองเอกภพของทีม</div>
+      </div>
+
+      <div class="intro-beat" data-beat="6">
+        <div class="intro-visual">⚡</div>
+        <div class="intro-narrator">◦ BEFORE WE BEGIN</div>
+        <div class="intro-text">แต่ก่อนแตะลูกโป่ง · ทีมต้อง <b>คาดการณ์ 3 ข้อ</b> · เพื่อให้ระหว่างทดลอง เราจะรู้ว่า "ต้องสังเกตอะไรเป็นพิเศษ"</div>
+        <button id="start-predict-btn" class="choice-btn" style="margin-top: 20px; max-width: 300px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; border: none; display: none;" onclick="revealBeforePanel()">▶ เริ่มคาดการณ์ 3 ข้อ</button>
+      </div>
+    </div>
+
+    <!-- BEFORE · PREDICTION PHASE (hidden until intro completes) -->
+    <div id="s3-before-panel" style="display:none">
+    <div class="phase-tag phase-before">◤ BEFORE · คาดการณ์ก่อนลงมือ</div>
+    <div class="before-panel">
+      <h4>🔮 ทีมต้องคาดการณ์ 3 ข้อ ก่อนเริ่มลูกโป่ง</h4>
+      <p class="muted">การคาดการณ์จะถูกเปรียบเทียบกับผลจริงหลังทดลอง · ไม่ผิดไม่ถูก · ช่วยให้เรา "สังเกตสิ่งที่สำคัญ" ระหว่างทำ</p>
+
+      <div class="predict-q">
+        <div class="q">1 · การขยายตัวมี "จุดศูนย์กลาง" หรือไม่?</div>
+        <label class="radio-opt"><input type="radio" name="p1" value="center"><span>มี · จุดเดียวที่ทุกอย่างเคลื่อนออก</span></label>
+        <label class="radio-opt"><input type="radio" name="p1" value="no-center"><span>ไม่มี · ทุกจุดขยายพร้อมกัน</span></label>
+      </div>
+
+      <div class="predict-q">
+        <div class="q">2 · จุด "ไกล" กับ "ใกล้" เคลื่อนที่ต่างกันไหม?</div>
+        <label class="radio-opt"><input type="radio" name="p2" value="far-faster"><span>จุดไกลเคลื่อนเร็วกว่าจุดใกล้</span></label>
+        <label class="radio-opt"><input type="radio" name="p2" value="far-slower"><span>จุดไกลเคลื่อนช้ากว่าจุดใกล้</span></label>
+        <label class="radio-opt"><input type="radio" name="p2" value="same"><span>เคลื่อนเท่ากันหมด</span></label>
+      </div>
+
+      <div class="predict-q">
+        <div class="q">3 · ถ้าเราอยู่บนจุดในเอกภพ · จุดอื่นจะ "เข้าหา" หรือ "เคลื่อนออก" จากเรา?</div>
+        <label class="radio-opt"><input type="radio" name="p3" value="away"><span>เคลื่อนออกทุกทิศทาง</span></label>
+        <label class="radio-opt"><input type="radio" name="p3" value="toward"><span>เคลื่อนเข้าหาทุกทิศทาง</span></label>
+        <label class="radio-opt"><input type="radio" name="p3" value="mixed"><span>ผสมกัน บางอันเข้าบางอันออก</span></label>
+      </div>
+
+      <button class="choice-btn" style="margin-top: 14px; max-width: 320px;" id="save-pred-btn" onclick="savePredictions()">💾 บันทึกการคาดการณ์ · เริ่มทดลอง</button>
+    </div>
+    </div><!-- /s3-before-panel -->
+
+    <!-- ACTIVITY PHASE -->
+    <div class="phase-tag phase-activity">◤ ACTIVITY · ลงมือทดลองลูกโป่ง</div>
+    <div class="info-card">
+      <h4>🧪 ขั้นตอนการทดลอง · ทำที่โต๊ะกลุ่มพร้อมกัน</h4>
+      <p><b>1.</b> รับลูกโป่งแฟบ + ปากกามาร์กเกอร์ · วาดจุดเล็ก ๆ 5 จุด (A, B, C, D, E) บนผิวลูกโป่ง</p>
+      <p><b>2.</b> วัดระยะห่าง 3 คู่: A-B, B-C, C-D (เซนติเมตร) · บันทึกในตารางด้านล่าง <b>ช่อง "ก่อนเป่า"</b></p>
+      <p><b>3.</b> เป่า 1/3 · วัดซ้ำ 3 คู่ · บันทึก "รอบ 1"</p>
+      <p><b>4.</b> เป่า 2/3 · วัดซ้ำ · บันทึก "รอบ 2"</p>
+      <p><b>5.</b> เป่าเต็ม · วัดซ้ำ · บันทึก "รอบ 3"</p>
+    </div>
+
+    <div class="media-placeholder">
+      <div class="icon">🎈</div>
+      <div class="label">SIMULATION M4 · BACKUP (ถ้าไม่มีลูกโป่งจริง)</div>
+      <div class="desc">ลูกโป่งดิจิทัลที่ลากจุดและเป่าเองได้</div>
+    </div>
+
+    <h3 style="font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--accent); letter-spacing: 0.15em; margin: 20px 0 8px;">◦ BALLOON DATA INPUT · กรอกระยะห่างที่วัดได้</h3>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>คู่จุด</th>
+          <th>ก่อนเป่า (cm)</th>
+          <th>รอบ 1 · 1/3</th>
+          <th>รอบ 2 · 2/3</th>
+          <th>รอบ 3 · เต็ม</th>
+          <th>อัตราขยาย</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>A-B</td>
+          <td><input type="number" step="0.1" id="d-ab-0" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-ab-1" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-ab-2" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-ab-3" oninput="calcBalloon()"></td>
+          <td id="r-ab" style="color: var(--accent-gold)">—</td>
+        </tr>
+        <tr>
+          <td>B-C</td>
+          <td><input type="number" step="0.1" id="d-bc-0" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-bc-1" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-bc-2" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-bc-3" oninput="calcBalloon()"></td>
+          <td id="r-bc" style="color: var(--accent-gold)">—</td>
+        </tr>
+        <tr>
+          <td>C-D</td>
+          <td><input type="number" step="0.1" id="d-cd-0" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-cd-1" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-cd-2" oninput="calcBalloon()"></td>
+          <td><input type="number" step="0.1" id="d-cd-3" oninput="calcBalloon()"></td>
+          <td id="r-cd" style="color: var(--accent-gold)">—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 style="font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--accent); letter-spacing: 0.15em; margin: 24px 0 8px;">◦ GRAPH · พล็อตระยะ vs รอบเป่า (ใช้กราฟหรือวาดมือ)</h3>
+    <p class="muted">ลากเส้นกราฟของแต่ละคู่จุด · สีเส้นต่างกัน · เลือกสีด้านล่างก่อนลาก</p>
+
+    <div class="canvas-wrap">
+      <canvas class="graph" id="graph" width="800" height="400"></canvas>
+      <div class="canvas-toolbar">
+        <button onclick="setGraphColor('#64d8ff', this)" class="active">🔵 A-B</button>
+        <button onclick="setGraphColor('#ff8fa5', this)">🔴 B-C</button>
+        <button onclick="setGraphColor('#ffcb6b', this)">🟡 C-D</button>
+        <button onclick="clearGraph()">🗑 ล้างกราฟ</button>
+        <button onclick="undoGraph()">↶ ย้อน</button>
+      </div>
+    </div>
+
+    <h3 style="font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--accent); letter-spacing: 0.15em; margin: 24px 0 8px;">◦ OBSERVATION CHECKBOX · สิ่งที่ทีมสังเกตจากการทดลอง</h3>
+    <p class="muted">เลือกทุกข้อที่สังเกตเห็นจริงจากลูกโป่ง (ข้อถูกจะปรากฏสีเขียว · ข้อ misconception จะปรากฏสีแดงเมื่อกดตรวจ)</p>
+
+    <div class="chk-list" id="s3-chk">
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox"> <span>ทุกคู่จุดห่างกันมากขึ้นพร้อมกัน</span>
+      </label>
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox"> <span>อัตราส่วนการขยายของทุกคู่จุดใกล้เคียงกัน</span>
+      </label>
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox"> <span>ไม่มีจุดไหนเป็น "ศูนย์กลาง" ของการขยาย</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox"> <span>มีจุดกลางที่จุดอื่นเคลื่อนออกจาก</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox"> <span>จุดที่อยู่ใกล้กันเคลื่อนเร็วกว่าจุดไกล</span>
+      </label>
+      <label class="chk-item" data-correct="true">
+        <input type="checkbox"> <span>จุดที่ไกลกันมากขึ้นเคลื่อนด้วยความเร็วเชิงสัมพัทธ์มากกว่า</span>
+      </label>
+      <label class="chk-item" data-correct="false">
+        <input type="checkbox"> <span>ลูกโป่ง "ระเบิด" ในอากาศ · จุดกระจายออก</span>
+      </label>
+    </div>
+
+    <div class="form-row">
+      <label>✍ สรุปข้อสังเกต (เขียนเองของทีม · 1-2 ประโยค)</label>
+      <textarea id="s3-summary" rows="3" placeholder="เช่น · ทุกจุดดูเหมือนถอยห่างจากกัน · ไม่มีจุดไหนเป็นศูนย์กลางพิเศษ..."></textarea>
+    </div>
+
+    <div class="center mt-20">
+      <button class="choice-btn" style="display:inline-block; max-width:320px;" onclick="checkS3()">🔍 ส่งข้อมูลให้ LEMAÎTRE วิเคราะห์</button>
+    </div>
+
+    <div id="s3-reveal" style="display:none"></div>
+
+    <!-- AFTER · CONSOLIDATION PHASE (hidden until reveal done) -->
+    <div id="s3-after" style="display:none">
+      <div class="phase-tag phase-after">◤ AFTER · ปิดภารกิจ · 3 ขั้น</div>
+
+      <div class="after-panel">
+        <h4>🔮 ขั้นที่ 1 · เปรียบเทียบการคาดการณ์ vs ผลจริง</h4>
+        <p class="muted">ดูว่าทีมคาดเดาตรงกับผลทดลองไหม · ข้อที่ต่าง = พื้นที่เรียนรู้ใหม่</p>
+        <div id="predict-vs-actual"></div>
+      </div>
+
+      <div class="after-panel">
+        <h4>🧮 ขั้นที่ 2 · ใช้กฎฮับเบิลคำนวณ</h4>
+        <p class="muted">ถ้ากาแล็กซีอยู่ห่างจากโลก <b>D = 100 Mpc</b> และ <b>H₀ = 70 km/s/Mpc</b> · จงหาความเร็วที่กาแล็กซีเคลื่อนออกจากเรา (km/s)</p>
+        <div class="decrypt-row">
+          <span class="lbl">v = H₀ × D  (km/s)</span>
+          <input type="number" id="s3-calc" placeholder="ตอบเป็นตัวเลข">
+        </div>
+        <button class="choice-btn" style="max-width: 180px; margin-top: 10px;" onclick="checkS3Calc()">✓ ตรวจคำตอบ</button>
+        <div id="s3-calc-result" style="margin-top: 10px;"></div>
+      </div>
+
+      <div class="after-panel ship-console">
+        <h4>🚀 ขั้นที่ 3 · SHIP COORDINATE LOCK · ตั้งคอร์สยาน</h4>
+        <p class="muted">ใช้ความรู้ที่ได้ · คำนวณว่า <b>กาแล็กซี A</b> เคยอยู่ที่ระยะเท่าใด และเคลื่อนออกด้วยความเร็วเท่าไร · แล้วตั้งคอร์สยานให้ถูก · ถ้าไฟเขียว = ผ่าน · ไฟแดง = คำนวณใหม่</p>
+
+        <div class="situation-card">
+          <h5>📡 ข้อมูลจากเซ็นเซอร์ยาน</h5>
+          <ul>
+            <li>ระยะปัจจุบันของ Galaxy A · <b>D<sub>now</sub> = 100 Mpc</b></li>
+            <li>ค่าคงที่ฮับเบิล · <b>H₀ = 70 km/s/Mpc</b></li>
+            <li>อัตราขยายของเอกภพในช่วงเวลาที่พิจารณา · <b>2 เท่า</b> (ได้จากการทดลองลูกโป่ง)</li>
+          </ul>
+        </div>
+
+        <div class="lock-panel">
+          <div class="lock-row">
+            <span class="lock-lbl">① ระยะก่อนขยาย (Mpc)</span>
+            <input type="number" id="lock-past" placeholder="Mpc">
+            <span class="lock-hint">= D<sub>now</sub> ÷ ratio</span>
+          </div>
+          <div class="lock-row">
+            <span class="lock-lbl">② ความเร็วเคลื่อนออก (km/s)</span>
+            <input type="number" id="lock-vel" placeholder="km/s">
+            <span class="lock-hint">= H₀ × D<sub>now</sub></span>
+          </div>
+          <button class="lock-btn" onclick="checkShipLock()">🔐 LOCK COORDINATES</button>
+          <div class="lock-indicator" id="lock-light">⚪ STANDBY · รอตั้งค่า</div>
+        </div>
+
+        <div id="lock-result" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag k">K1 การขยายตัว</span>
+      <span class="ped-tag p">P1 แบบจำลอง · P3 ตั้งคำถาม</span>
+      <span class="ped-tag a">A2 ทีมเวิร์ก</span>
+      <span class="ped-tag">วPA 3 · สร้างความรู้เอง</span>
+      <span class="ped-tag">วPA 5 · พัฒนาทักษะ</span>
+      <span class="ped-tag">วPA 6 · Feedback ผ่าน Predict vs Actual</span>
+      <span class="ped-tag">เนื้อหา: Big Bang · การขยายตัวของอวกาศ · กฎฮับเบิล v=H₀D</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== STORY-C · WARP CUTSCENE (between S3 and Map) ========== -->
+<section class="scene story-scene" data-scene="s-warp" data-title="⚡ STORY · วาร์ปเปิดฉาก">
+  <div class="scene-inner">
+    <div class="scene-label">◤ STORY · BRIDGE CUTSCENE</div>
+    <h1 class="scene-title">วาร์ปเปิดฉาก</h1>
+    <h2 class="scene-sub">COORDINATES LOCKED · ENGAGING WARP</h2>
+
+    <div class="story-panel">
+      <div class="story-hero">🚀</div>
+
+      <div class="dialog-box terminal" data-speaker="T.H.E.O.S.-IX NAVIGATION">
+        <div class="txt">&gt; COORDINATE LOCK CONFIRMED<br>&gt; TARGET · Galaxy A · t = −10,000 yr<br>&gt; D (past) = 50 Mpc · v = 7,000 km/s<br>&gt; WARP ENGINE · SPINNING UP...</div>
+      </div>
+
+      <div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+        <div class="txt">ทีมคำนวณคอร์สได้เป๊ะ · ยานกำลังจะกระโดดผ่านเวลา ไปดู <b>Galaxy A เมื่อ 10,000 ปีก่อน</b> · นี่คือข้อมูลสำคัญที่จะตอบว่า "การขยายตัว" เริ่มต้นอย่างไร</div>
+      </div>
+
+      <div class="dialog-box lem" data-speaker="LEMAÎTRE">
+        <div class="txt">ข้อสังเกตทั้ง 5 ชิ้นของทีม + ข้อมูลจากลูกโป่ง + พิกัดที่ตั้งได้ · ทั้งหมดถูกบันทึกลง <b>Journey Map</b> · จะเป็นจุดเริ่มต้นของภารกิจต่อไป</div>
+      </div>
+
+      <div class="dialog-box void" data-speaker="??? · เสียงจากความมืด">
+        <div class="txt">Cadets น่าสนใจ... พวกแกใช้เวลาค้นคว้านานพอสมควร · แต่ข้อมูลที่พวกแกเก็บ... มันยังไม่ครบ · ตอนหน้า · ฉันจะเจอพวกแกเอง</div>
+      </div>
+    </div>
+
+    <p class="muted center" style="margin-top: 20px;">✦ กดต่อไปเพื่อบันทึก Journey Map ของวันนี้ · และเตรียมยานสำหรับ EP02</p>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag a">A1 แรงจูงใจต่อเนื่อง</span>
+      <span class="ped-tag">วPA 4 · แรงจูงใจ</span>
+      <span class="ped-tag">Narrative Bridge · Cliffhanger to EP02</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== SCENE MAP · JOURNEY MAP ========== -->
+<section class="scene" data-scene="map" data-title="🗺 Journey Map">
+  <div class="scene-inner">
+    <div class="scene-label">◤ END OF SESSION · JOURNEY MAP</div>
+    <h1 class="scene-title">แผนที่การเดินทางของทีม</h1>
+    <h2 class="scene-sub">TEAM JOURNEY · SAVE FILE FOR EP02</h2>
+
+    <div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+      <div class="txt">ทุกทีมทำได้ดีมาก · ก่อนเราพักภารกิจวันนี้ · ขอให้แต่ละทีม <b>สรุปแผนที่การเดินทาง</b> · บันทึกสิ่งที่พบ · สถานที่ที่ผ่าน · ข้อมูลที่เก็บได้ · เพราะตอนหน้า เราจะเริ่มจากจุดที่ทีมของคุณจบ</div>
+    </div>
+
+    <div class="journey-map-wrap" id="journey-map">
+      <!-- populated by JS -->
+    </div>
+
+    <h3 style="font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--accent); letter-spacing: 0.2em; margin: 24px 0 10px;">◦ CAPTAIN'S LOG · บันทึกของทีม (เขียนต่อเนื่อง · ใช้ในตอนหน้า)</h3>
+
+    <div class="form-row">
+      <label>📖 สรุปสิ่งที่เรียนรู้วันนี้ (3-5 บรรทัด)</label>
+      <textarea id="map-summary" rows="5" placeholder="เช่น · วันนี้ทีมเรียนรู้ว่าเอกภพไม่ได้ระเบิดในที่ว่าง แต่เป็นการขยายของอวกาศเอง · หลักฐานคือ CMB และการเลื่อนทางแดง..."></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>💭 คำถามที่ยังค้างคาใจ · จะไปหาคำตอบในตอนหน้า</label>
+      <textarea id="map-question" rows="3" placeholder="เช่น · ก่อนบิกแบงมีอะไร? ทำไมเอกภพถึงเริ่มขยายตัว?..."></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>🎯 สมาชิกทีมคนไหนเล่นบทบาทใดได้ดีที่สุดวันนี้</label>
+      <textarea id="map-mvp" rows="2" placeholder="เช่น · น้ำ (NAV) ถนัดมากเรื่องแผนที่ · หมี (MED) ถนัดสังเกต..."></textarea>
+    </div>
+
+    <div class="canvas-wrap" style="margin-top: 24px;">
+      <p class="muted" style="margin-bottom: 8px;">✏ <b>พื้นที่วาด</b> · สัญลักษณ์/ไอคอน/เส้นเดินทาง (วาดด้วยเมาส์หรือนิ้ว)</p>
+      <canvas class="graph" id="map-canvas" width="1000" height="400" style="cursor: crosshair;"></canvas>
+      <div class="canvas-toolbar">
+        <button onclick="setMapColor('#64d8ff', this)" class="active">🔵 Path</button>
+        <button onclick="setMapColor('#ffcb6b', this)">🟡 Discovery</button>
+        <button onclick="setMapColor('#ff5c7a', this)">🔴 Enemy/Danger</button>
+        <button onclick="setMapColor('#7effb2', this)">🟢 Ally/Safe</button>
+        <button onclick="clearMapCanvas()">🗑 ล้าง</button>
+      </div>
+    </div>
+
+    <div class="center mt-20" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+      <button class="choice-btn" style="max-width:260px;" onclick="saveJourneyMap()">💾 บันทึก Save File</button>
+      <button class="choice-btn" style="max-width:260px;" onclick="window.print()">🖨 พิมพ์แผนที่ใส่กระดาษ</button>
+      <button class="choice-btn" style="max-width:260px;" onclick="exportJSON()">📤 Export JSON (สำหรับครู/วิจัย)</button>
+    </div>
+
+    <div class="info-card mt-20">
+      <h4>🏆 รางวัลปลายคาบ</h4>
+      <p>ทีมที่สะสม Energy ≥ 15 · ปลดระดับ <b>CADET → PILOT</b></p>
+      <p>ทีมที่แก้ misconception ได้ทุกข้อ · ได้ Badge พิเศษ <b>🎈 Big Bang Witness</b></p>
+      <p>Save File นี้ใช้เริ่ม EP02 · ทีมต่างเส้นทางจะมีบทพูดต่างกัน</p>
+    </div>
+
+    <div class="ped-tag-row">
+      <span class="ped-tag p">P3 สรุป · สะท้อน</span>
+      <span class="ped-tag a">A3 ประเมินตนเอง</span>
+      <span class="ped-tag">วPA 6 · Feedback</span>
+      <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+      <span class="ped-tag">Research: Journey Map = Metacognition Artifact</span>
+    </div>
+  </div>
+</section>
+
+</div><!-- /stage -->
+
+<!-- ========== ERA SIMULATION MODAL (overlay) ========== -->
+<div id="era-modal" class="era-modal" style="display:none" onclick="if(event.target===this) closeEraSim()">
+  <div class="era-modal-inner">
+    <button class="era-modal-close" onclick="closeEraSim()">✕ ปิดและกลับ</button>
+    <div class="era-modal-head">
+      <div class="era-modal-label" id="era-m-label">◦ ERA</div>
+      <div class="era-modal-title" id="era-m-title"></div>
+      <div class="era-modal-meta" id="era-m-meta"></div>
+      <div class="era-modal-event" id="era-m-event"></div>
+    </div>
+    <div class="era-modal-body">
+      <div class="era-sim-wrap">
+        <canvas id="era-canvas" width="640" height="520"></canvas>
+        <div class="era-legend" id="era-legend"></div>
+      </div>
+      <div class="era-check-wrap">
+        <h5>🔎 สังเกตใน Simulation · ทีมเห็นอนุภาคใดบ้าง?</h5>
+        <p class="muted" style="font-size: 12px; margin-bottom: 10px;">กาถูกเฉพาะอนุภาคที่เห็นจริง · กดยืนยันเพื่อเทียบกับตารางสสวท.</p>
+        <div id="particle-options" class="particle-options"></div>
+        <button class="choice-btn" style="margin-top: 12px; max-width: 220px; background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; border: none;" onclick="checkEraAnswers()">✓ ยืนยันคำตอบ</button>
+        <div id="era-check-result" style="margin-top: 10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="scene-info">SCENE · <b id="footer-scene">S0</b> · <span id="footer-title">Team Setup</span></div>
+  <div class="spacer"></div>
+  <button id="btn-prev" onclick="prevScene()">← ย้อน</button>
+  <button class="primary" id="btn-next" onclick="nextScene()">ต่อไป →</button>
+</div>
+
+<!-- TEACHER PANEL -->
+<div class="teacher-panel" id="teacher-panel">
+  <h3>⚙ TEACHER CONSOLE</h3>
+
+  <div class="section">
+    <h4>◦ CURRENT SCENE</h4>
+    <div id="tp-current" style="font-family: 'Orbitron', sans-serif; font-size: 18px; color: var(--accent); margin: 4px 0;">S0</div>
+    <div id="tp-title" class="muted" style="font-size: 12px;">Team Setup</div>
+  </div>
+
+  <div class="section">
+    <h4>◦ OBJECTIVES · KPA</h4>
+    <ul id="tp-objectives">
+      <li>K · อธิบายบิกแบง</li>
+      <li>P · ตีความข้อมูล · สร้างแบบจำลอง</li>
+      <li>A · กล้าโต้แย้งด้วยหลักฐาน</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h4>◦ วPA COVERAGE</h4>
+    <ul id="tp-vpa">
+      <li>1 · เข้าถึงบทเรียน</li>
+      <li>2 · เชื่อมประสบการณ์เดิม</li>
+      <li>3 · สร้างความรู้เอง</li>
+      <li>4 · แรงจูงใจ</li>
+      <li>5 · พัฒนาทักษะ</li>
+      <li>6 · Feedback</li>
+      <li>7 · บรรยากาศ</li>
+      <li>8 · กำกับตนเอง</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h4>◦ TEAM STATE</h4>
+    <div id="tp-state" class="muted" style="font-size: 12px; line-height: 1.6;"></div>
+  </div>
+
+  <div class="section">
+    <h4>◦ TEACHER CONTROLS</h4>
+    <div class="export-btns">
+      <button onclick="addEnergyBtn(5)">+5 Energy (reward)</button>
+      <button onclick="addEnergyBtn(-3)">−3 Energy (penalty)</button>
+      <button onclick="jumpScene()">⏭ Jump to Scene…</button>
+      <button onclick="resetState()">⚠ Reset State</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h4>◦ EXPORT</h4>
+    <div class="export-btns">
+      <button onclick="exportJSON()">📤 Export Team Data (JSON)</button>
+      <button onclick="window.print()">🖨 Print Journey Map</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const TEAMS = [
+  { id: 1, name: 'Nebula',    color: '#64d8ff', icon: '🌌' },
+  { id: 2, name: 'Quasar',    color: '#b980ff', icon: '💫' },
+  { id: 3, name: 'Pulsar',    color: '#ff5c7a', icon: '⚡' },
+  { id: 4, name: 'Andromeda', color: '#7effb2', icon: '🌠' },
+  { id: 5, name: 'Horizon',   color: '#ffcb6b', icon: '🔭' },
+  { id: 6, name: 'Voyager',   color: '#ff8fa5', icon: '🚀' },
+];
+
+const SCENE_META = {
+  's-entry': { kpa: ['K-prior'], vpa: [2], title: 'Entry Ticket' },
+  's0':  { kpa: ['A1', 'A2'], vpa: [4, 7], title: 'Team Setup' },
+  's1':  { kpa: ['A1'], vpa: [1, 4], title: 'Cold Open' },
+  's2':  { kpa: ['K3', 'P2'], vpa: [2], title: 'Debris Match' },
+  's2a': { kpa: ['K3'], vpa: [1], title: 'Main Ship Path' },
+  's2b': { kpa: ['P1', 'A3'], vpa: [3], title: 'Asteroid Drift' },
+  's3':  { kpa: ['K1', 'P1', 'P3', 'A2'], vpa: [3, 5], title: 'Balloon Lab' },
+  's-warp': { kpa: ['A1'], vpa: [4], title: 'Warp Cutscene (STORY)' },
+  'map': { kpa: ['P3', 'A3'], vpa: [6, 8], title: 'Journey Map' },
+};
+
+const state = loadState() || {
+  teamId: null,
+  teamName: '',
+  role: '',
+  energy: 0,
+  path: ['s-entry'],
+  currentScene: 's-entry',
+  erasRevealed: [],
+  decisions: {},
+  discoveries: [],
+  inventory: [],
+  log: [],
+  balloon: {},
+  observations: {},
+  timestamps: {},
+  s2Correct: 0,
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('cosmosLog_state');
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+function saveState() {
+  localStorage.setItem('cosmosLog_state', JSON.stringify(state));
+}
+
+// ============================================================
+// TEAM SETUP
+// ============================================================
+function renderTeamGrid() {
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = TEAMS.map(t => `
+    <div class="team-tile" style="--team-color: ${t.color}" data-id="${t.id}" onclick="selectTeam(${t.id})">
+      <div class="team-icon">${t.icon}</div>
+      <div class="team-name">TEAM ${t.name.toUpperCase()}</div>
+    </div>
+  `).join('');
+  if (state.teamId) {
+    document.querySelector(`.team-tile[data-id="${state.teamId}"]`)?.classList.add('selected');
+    document.getElementById('team-name').value = state.teamName || '';
+    document.getElementById('team-role').value = state.role || '';
+  }
+}
+function selectTeam(id) {
+  state.teamId = id;
+  const team = TEAMS.find(t => t.id === id);
+  document.querySelectorAll('.team-tile').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`.team-tile[data-id="${id}"]`).classList.add('selected');
+  document.getElementById('team-name').placeholder = `เช่น · ${team.name} Strike`;
+  updateHUD();
+  saveState();
+}
+
+// ============================================================
+// HUD
+// ============================================================
+function updateHUD() {
+  const hudTeam = document.getElementById('hud-team');
+  if (state.teamId) {
+    const t = TEAMS.find(x => x.id === state.teamId);
+    hudTeam.textContent = `🚀 ${state.teamName || t.name}`;
+    hudTeam.style.setProperty('--team-color', t.color);
+    hudTeam.style.color = t.color;
+    hudTeam.style.borderColor = t.color;
+  }
+  document.getElementById('hud-energy').textContent = `⚡ ${state.energy} Energy`;
+  document.getElementById('hud-scene').textContent = state.currentScene.toUpperCase();
+  document.getElementById('footer-scene').textContent = state.currentScene.toUpperCase();
+  document.getElementById('footer-title').textContent = SCENE_META[state.currentScene]?.title || '';
+}
+
+// ============================================================
+// SCENE NAVIGATION
+// ============================================================
+const SCENE_ORDER = ['s0', 's1', 's2'];
+// Note: s2a/s2b/s3 handled by branching logic
+
+function goto(sceneId, pushPath = true) {
+  document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`.scene[data-scene="${sceneId}"]`);
+  if (!target) return;
+  target.classList.add('active');
+  state.currentScene = sceneId;
+  if (pushPath && state.path[state.path.length - 1] !== sceneId) {
+    state.path.push(sceneId);
+  }
+  state.timestamps[sceneId] = Date.now();
+  document.querySelector('.stage').scrollTop = 0;
+  updateHUD();
+  updateTeacherPanel();
+  saveState();
+  // Always (re-)initialize scene content that JS renders
+  if (sceneId === 's1') startS1();
+  if (sceneId === 's2' && document.getElementById('fragments').children.length === 0) initS2();
+  if (sceneId === 's3') initS3();
+  if (sceneId === 'map') renderJourneyMap();
+}
+
+function nextScene() {
+  const curr = state.currentScene;
+  if (curr === 's-entry') {
+    if (!state.entryTicket) {
+      alert('📝 กรุณาตอบ Entry Ticket 3 ข้อ และกด "ยืนยัน" ก่อน');
+      return;
+    }
+    goto('s0');
+    return;
+  }
+  if (curr === 's0') {
+    if (!state.teamId) { alert('กรุณาเลือกทีมก่อน'); return; }
+    state.teamName = document.getElementById('team-name').value || TEAMS.find(t => t.id === state.teamId).name;
+    state.role = document.getElementById('team-role').value || 'NAV';
+    goto('s1');
+    startS1();
+  } else if (curr === 's1') {
+    const hypo = document.getElementById('hypo-text');
+    if (hypo && hypo.value.trim()) {
+      state.decisions.hypothesis_pre = hypo.value.trim();
+    }
+    goto('s2');
+    initS2();
+  } else if (curr === 's2') {
+    alert('กรุณาตรวจคำตอบก่อน (ปุ่มตรวจคำตอบในฉาก)');
+  } else if (curr === 's2a' || curr === 's2b') {
+    if (curr === 's2a' && !state.s2aUnlocked) {
+      alert('🔐 กรุณาถอดรหัสข้อมูล CMB ให้สำเร็จก่อน · เลือกแหล่งสืบค้นและกรอกทั้ง 7 ช่องให้ถูกต้อง');
+      return;
+    }
+    goto('s3');
+    initS3();
+  } else if (curr === 's3') {
+    if (!state.s3SealDone) {
+      alert('🔒 กรุณา LOCK COORDINATES ให้ไฟเขียวก่อน · คำนวณทั้ง 2 ค่าจากข้อมูลเซ็นเซอร์ยาน');
+      return;
+    }
+    goto('s-warp');
+  } else if (curr === 's-warp') {
+    goto('map');
+    renderJourneyMap();
+  } else if (curr === 'map') {
+    alert('สิ้นสุดตอน EP01 · บันทึก Save File แล้ว export ได้เลยครับ');
+  }
+}
+function prevScene() {
+  if (state.path.length < 2) return;
+  state.path.pop();
+  goto(state.path[state.path.length - 1], false);
+}
+
+// ============================================================
+// S1 · COLD OPEN · TYPEWRITER
+// ============================================================
+function startS1() {
+  const logEl = document.getElementById('s1-log');
+  const lines = [
+    '> 2267.03.14 · 14:22:07 UTC',
+    '> YEAR 2267 · MISSION DAY 14',
+    '> LOCATION: 47 AU BEYOND NEPTUNE ORBIT',
+    '> SPEED: 0.15c · HEADING: GALACTIC NORTH',
+    '> ... SENSOR ANOMALY DETECTED ...',
+    '> ... COLLISION IMMINENT ...',
+    '> ⚠ IMPACT ⚠',
+    '> HULL INTEGRITY: 42% · EMERGENCY PROTOCOL ACTIVE'
+  ];
+  let i = 0, j = 0;
+  logEl.innerHTML = '';
+  function tick() {
+    if (i >= lines.length) {
+      document.getElementById('s1-lem').style.display = 'block';
+      setTimeout(() => document.getElementById('s1-arya').style.display = 'block', 2000);
+      setTimeout(() => {
+        document.getElementById('s1-info').style.display = 'block';
+        document.getElementById('s1-hypothesis').style.display = 'block';
+        document.getElementById('s1-peds').style.display = 'flex';
+      }, 4000);
+      return;
+    }
+    if (j <= lines[i].length) {
+      logEl.innerHTML = lines.slice(0, i).join('<br>') + (i > 0 ? '<br>' : '') + lines[i].slice(0, j) + '<span style="opacity:0.6">▮</span>';
+      j++;
+      setTimeout(tick, 30);
+    } else {
+      i++; j = 0;
+      setTimeout(tick, 200);
+    }
+  }
+  tick();
+}
+
+// ============================================================
+// S2 · DEBRIS MATCH (DRAG-DROP + BRANCHING)
+// ============================================================
+// ⚠ Experience Before Labeling: fragments & slots use plain observation language
+// ไม่ใช้ศัพท์วิชาการเลย · ศัพท์จริงจะถูกเผยใน S3 หลังทำการทดลองลูกโป่ง
+const FRAGMENTS = [
+  { id: 'f1', label: 'ชิ้น A · แสงสะท้อนเป็นสีแดงเข้ม · ยิ่งมาจากไกล ยิ่งแดง',   match: 'm1' },
+  { id: 'f2', label: 'ชิ้น B · เย็นจัด −270°C · แผ่พลังงานอ่อนคงที่',             match: 'm2' },
+  { id: 'f3', label: 'ชิ้น C · ปล่อยสัญญาณออกทุกทิศทาง · ไม่มีทิศใดแรงกว่าทิศอื่น', match: 'm3' },
+  { id: 'f4', label: 'ชิ้น D · ประกอบด้วยธาตุเบาเท่านั้น (H, He) · ไม่พบธาตุหนัก',  match: 'm4' },
+  { id: 'f5', label: 'ชิ้น E · ขนาดเพิ่มขึ้นต่อเนื่อง · พลังงานต่อปริมาตรลดลง',     match: 'm5' },
+];
+const MEANINGS = [
+  { id: 'm1', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · แสงและสี',                    hint: 'LIGHT / COLOR' },
+  { id: 'm2', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · อุณหภูมิและพลังงาน',            hint: 'TEMPERATURE' },
+  { id: 'm3', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · ทิศทางและการกระจาย',            hint: 'DIRECTION' },
+  { id: 'm4', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · สสารและองค์ประกอบ',             hint: 'MATERIAL' },
+  { id: 'm5', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · ขนาดและการเปลี่ยนแปลง',          hint: 'SIZE / CHANGE' },
+];
+
+let s2Start = null;
+
+function initS2() {
+  // Shuffle meaning order for drop zones
+  const shuffled = [...MEANINGS].sort(() => Math.random() - 0.5);
+
+  const fragEl = document.getElementById('fragments');
+  fragEl.innerHTML = FRAGMENTS.map(f => `
+    <div class="fragment" draggable="true" data-id="${f.id}">${f.label}</div>
+  `).join('');
+
+  const meanEl = document.getElementById('meanings');
+  meanEl.innerHTML = shuffled.map(m => `
+    <div class="meaning-slot" data-id="${m.id}">
+      <div class="hint">${m.hint}</div>
+      <div>${m.label}</div>
+    </div>
+  `).join('');
+
+  // Drag events
+  document.querySelectorAll('.fragment').forEach(el => {
+    el.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', el.dataset.id);
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.meaning-slot').forEach(el => {
+    el.addEventListener('dragover', (e) => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', (e) => {
+      e.preventDefault();
+      el.classList.remove('drag-over');
+      const fragId = e.dataTransfer.getData('text/plain');
+      const frag = FRAGMENTS.find(f => f.id === fragId);
+      const fragEl = document.querySelector(`.fragment[data-id="${fragId}"]`);
+      el.dataset.placed = fragId;
+      el.classList.add('filled');
+      el.innerHTML = `
+        <div class="hint">${MEANINGS.find(m => m.id === el.dataset.id).hint}</div>
+        <div style="color: var(--accent);">⇢ ${frag.label}</div>
+      `;
+      fragEl.classList.add('placed');
+      fragEl.draggable = false;
+    });
+  });
+
+  s2Start = Date.now();
+  startTimer();
+}
+
+function startTimer() {
+  const el = document.getElementById('s2-timer');
+  let t = 180; // 3 minutes
+  const iv = setInterval(() => {
+    t--;
+    if (t <= 0) { clearInterval(iv); el.textContent = '⏱ 00:00'; return; }
+    const m = Math.floor(t/60).toString().padStart(2,'0');
+    const s = (t%60).toString().padStart(2,'0');
+    el.textContent = `⏱ ${m}:${s}`;
+    if (t < 30) el.classList.remove('ok');
+    else if (t < 120) el.classList.add('ok');
+  }, 1000);
+}
+
+function checkS2() {
+  let correct = 0;
+  document.querySelectorAll('.meaning-slot').forEach(slot => {
+    const placed = slot.dataset.placed;
+    const correctFrag = FRAGMENTS.find(f => f.match === slot.dataset.id);
+    if (placed && placed === correctFrag.id) {
+      slot.classList.add('correct');
+      correct++;
+    } else if (placed) {
+      slot.classList.add('wrong');
+    }
+  });
+
+  const elapsed = Math.floor((Date.now() - s2Start) / 1000);
+  state.s2Correct = correct;
+  state.decisions.s2 = { correct, elapsed };
+
+  const reward = correct >= 4 ? 5 : correct >= 2 ? 3 : 1;
+  addEnergy(reward, `S2 Debris: ${correct}/5 correct in ${elapsed}s`);
+  state.discoveries.push(...FRAGMENTS.filter(f => {
+    const slot = document.querySelector(`.meaning-slot[data-id="${f.match}"]`);
+    return slot.dataset.placed === f.id;
+  }).map(f => MEANINGS.find(m => m.id === f.match).hint));
+
+  const resultEl = document.getElementById('s2-result');
+  const goToMain = correct >= 4;
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = `
+    <div class="branch-reveal ${goToMain ? 'main' : 'asteroid'}">
+      <h3>${goToMain ? '✓ จับถูก '+correct+'/5 · MAIN SHIP PATH' : '⚠ จับถูก '+correct+'/5 · ASTEROID DRIFT'}</h3>
+      <p>${goToMain
+        ? 'ยานกลับมาเสถียร · ทีมอ่านข้อมูลได้ถูกต้อง · เดินหน้าสู่การสำรวจศิลาต้นกำเนิด'
+        : 'ยานสูญเสียการควบคุม · ลอยเข้าแถบดาวเคราะห์น้อย · แต่เส้นทางนี้จะให้มุมมองใหม่ที่ทีมอื่นไม่เห็น'}</p>
+      <p style="color: var(--accent-gold); margin-top: 12px;">+${reward} Energy · เวลาที่ใช้ ${elapsed} วินาที</p>
+      <button class="choice-btn" style="max-width:280px; margin-top: 16px;" onclick="${goToMain ? "branchTo('s2a')" : "branchTo('s2b')"}">
+        ${goToMain ? '→ เดินหน้าสู่เส้นทางหลัก' : '→ สำรวจแถบดาวเคราะห์น้อย'}
+      </button>
+    </div>
+  `;
+  document.getElementById('s2-check').style.display = 'none';
+}
+
+function branchTo(sceneId) {
+  state.decisions.branch1 = sceneId;
+  if (sceneId === 's2a') state.inventory.push('📡 ข้อมูล CMB · Penzias-Wilson 1965');
+  if (sceneId === 's2b') state.inventory.push('🪨 ภาพการดริฟต์ของดาวเคราะห์น้อย · ไม่มีจุดศูนย์กลาง');
+  goto(sceneId);
+}
+
+// ============================================================
+// S2A · RESEARCH + DECRYPTION (Active Knowledge Retrieval)
+// ============================================================
+const SOURCES_S2A = {
+  video: {
+    wrapper: '📼 VIDEO ARCHIVE · 1965 · BELL LABS, HOLMDEL NJ',
+    content: `[REPORTER] "วันนี้เรามาที่ Bell Labs รัฐนิวเจอร์ซีย์"
+[REPORTER] "เพื่อสัมภาษณ์ Arno Penzias และ Robert Wilson"
+
+[PENZIAS] "เราใช้เสาอากาศฮอร์นขนาดใหญ่
+          พยายามตรวจจับสัญญาณจากดาวเทียม"
+
+[WILSON]  "แต่เราได้ยินเสียงรบกวนที่อุณหภูมิ
+          ประมาณ 2.725 K · อยู่ทุกทิศทาง"
+
+[REPORTER] "13 ปีต่อมา · ในปี 1978
+           ทั้งสองได้รับรางวัลโนเบลสาขาฟิสิกส์
+           สำหรับการค้นพบที่เรียกว่า
+           Cosmic Microwave Background (CMB)"
+
+[END OF TAPE]`,
+  },
+  database: {
+    wrapper: '💾 COSMOS ACADEMY DATABASE · ENTRY CMB-1965',
+    content: `> QUERY: cmb discovery
+> ENTRY FOUND:
+
+NAME .......... Cosmic Microwave Background
+ABBREV ........ CMB
+YEAR .......... 1965
+BY ............ Arno A. Penzias
+                Robert W. Wilson
+AFFILIATION ... Bell Labs (Holmdel, NJ)
+INSTRUMENT .... Horn antenna (15 m)
+TEMP .......... 2.725 K
+NOBEL_PRIZE ... Physics, 1978
+SIGNIFICANCE .. Evidence of Big Bang
+REFS .......... COBE (1992), Planck (2018)
+
+> END OF ENTRY`,
+  },
+  contact: {
+    wrapper: '📡 TRANSMISSION · EARTH ACADEMY · DELAY 4.2H',
+    content: `[INCOMING · DECRYPTING...]
+
+Cadets... ข้อมูลที่ขอมาถึงแล้ว:
+
+ปี 1965 · สองนักวิจัยที่ Bell Labs
+ชื่อ Penzias และ Wilson
+ได้ค้นพบสัญญาณประหลาด
+อุณหภูมิ 2.725 เคลวิน
+กระจายอยู่ทุกทิศทางบนท้องฟ้า
+
+นักวิทยาศาสตร์เรียกมันว่า CMB
+ย่อจาก Cosmic Microwave Background
+
+ปี 1978 พวกเขาได้รับ
+รางวัลโนเบลสาขาฟิสิกส์
+
+นี่คือหลักฐานสำคัญของ Big Bang
+
+[END · END · END]`,
+  },
+};
+
+function openSource(key, btn) {
+  const src = SOURCES_S2A[key];
+  if (!src) return;
+  document.querySelectorAll('.research-btn').forEach(b => b.classList.remove('selected'));
+  if (btn) btn.classList.add('selected');
+  const el = document.getElementById('s2a-source');
+  el.style.display = 'block';
+  el.innerHTML = `
+    <div class="source-wrap">
+      <div class="source-header">${src.wrapper}</div>
+      <pre class="source-content">${src.content}</pre>
+    </div>
+  `;
+  document.getElementById('s2a-decrypt').style.display = 'block';
+  state.decisions.s2a_source = key;
+  saveState();
+}
+
+function checkDecryption() {
+  const get = id => document.getElementById(id);
+  const year  = parseInt(get('dec-year').value);
+  const who1  = (get('dec-who1').value || '').toLowerCase();
+  const who2  = (get('dec-who2').value || '').toLowerCase();
+  const lab   = get('dec-lab').value;
+  const temp  = parseFloat(get('dec-temp').value);
+  const name  = (get('dec-name').value || '').toUpperCase().trim();
+  const nobel = parseInt(get('dec-nobel').value);
+
+  const errors = [];
+  if (year !== 1965) errors.push('dec-year');
+  const whos = new Set([who1, who2]);
+  if (!(whos.has('penzias') && whos.has('wilson'))) { errors.push('dec-who1'); errors.push('dec-who2'); }
+  if (lab !== 'Bell Labs') errors.push('dec-lab');
+  if (isNaN(temp) || Math.abs(temp - 2.725) > 0.1) errors.push('dec-temp');
+  if (name !== 'CMB') errors.push('dec-name');
+  if (nobel !== 1978) errors.push('dec-nobel');
+
+  ['dec-year','dec-who1','dec-who2','dec-lab','dec-temp','dec-name','dec-nobel'].forEach(id => {
+    const el = get(id); if (el) el.style.borderColor = '';
+  });
+
+  const result = document.getElementById('decrypt-result');
+
+  if (errors.length === 0) {
+    result.innerHTML = `
+      <div class="branch-reveal main" style="margin-top: 10px;">
+        <h3>🔓 DECRYPTION COMPLETE</h3>
+        <p>รหัสปลดล็อก · <b>CMB-1965-PW-2725-1978</b></p>
+        <p style="color: var(--accent-gold); margin-top: 8px;">+5 Energy · +3 Discoveries · 🔑 Decryption Key เพิ่มใน Inventory</p>
+      </div>
+    `;
+    document.getElementById('s2a-gate').style.display = 'block';
+    if (!state.s2aUnlocked) {
+      state.s2aUnlocked = true;
+      state.discoveries.push('CMB', 'PENZIAS_WILSON_1965', 'NOBEL_1978');
+      state.inventory.push('🔑 Decryption Key · CMB-1965');
+      addEnergy(5, 'S2a decryption complete');
+      saveState();
+    }
+  } else {
+    result.innerHTML = `
+      <div class="warn">⚠ ยังมี <b>${errors.length}</b> ช่องไม่ถูกต้อง · ลองอ่านข้อมูลจากแหล่งที่เลือกให้ละเอียด · ช่องที่ผิดจะขึ้นขอบแดง</div>
+    `;
+    errors.forEach(id => {
+      const el = get(id);
+      if (el) el.style.borderColor = 'var(--accent-red)';
+    });
+    const panel = document.getElementById('s2a-decrypt');
+    panel.classList.add('shake');
+    setTimeout(() => panel.classList.remove('shake'), 450);
+  }
+}
+
+// ============================================================
+// S2B · ASTEROID OBSERVATION
+// ============================================================
+function checkS2b() {
+  const items = document.querySelectorAll('#s2b-chk .chk-item');
+  let correct = 0, wrong = 0;
+  items.forEach(item => {
+    const checked = item.querySelector('input').checked;
+    const isCorrect = item.dataset.correct === 'true';
+    if (checked && isCorrect) { item.classList.add('chk-correct'); correct++; }
+    else if (checked && !isCorrect) { item.classList.add('chk-wrong'); wrong++; }
+    else if (!checked && isCorrect) { item.classList.add('chk-wrong'); }
+  });
+  const reward = Math.max(0, correct - wrong) + 2;
+  addEnergy(reward, `S2b observations: +${correct} correct, -${wrong} misconception`);
+  state.observations.asteroid = { correct, wrong };
+  document.getElementById('s2b-result').style.display = 'block';
+  document.getElementById('s2b-result').innerHTML = `
+    <div class="branch-reveal main">
+      <h3>✓ บันทึกการสังเกต · +${reward} Energy</h3>
+      <p>ทีมค้นพบว่า <b>ไม่มีจุดศูนย์กลาง</b> ของการขยายตัว · ทุกดาวห่างจากกันพร้อมกัน · และ<b>ยิ่งไกลยิ่งเร็ว</b> · เก็บข้อมูลนี้ไว้โต้แย้ง VOID ในตอนหน้า</p>
+      <p style="color: var(--accent-gold); margin-top: 10px;">📦 Inventory: "ภาพการดริฟต์ของดาวเคราะห์น้อย" ถูกเพิ่มแล้ว</p>
+    </div>
+  `;
+}
+
+// ============================================================
+// S3 · BALLOON LAB
+// ============================================================
+function initS3() {
+  initBalloonGraph();
+  playS3Intro();
+  if (state.s3BeforeRevealed) {
+    const panel = document.getElementById('s3-before-panel');
+    if (panel) panel.style.display = 'block';
+  }
+}
+
+// ============================================================
+// S3 CINEMATIC INTRO · Sequential 6-beat reveal
+// ============================================================
+let _s3IntroTimers = [];
+function playS3Intro() {
+  // If already played in a previous visit, show all beats immediately
+  if (state.s3IntroPlayed) { skipS3Intro(); return; }
+  const beats = document.querySelectorAll('#s3-cinematic .intro-beat');
+  if (beats.length === 0) return;
+  // Clear any previous timers (safety)
+  _s3IntroTimers.forEach(t => clearTimeout(t));
+  _s3IntroTimers = [];
+  beats.forEach((b, i) => {
+    const t = setTimeout(() => {
+      b.classList.add('show');
+      try { b.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+      if (i === beats.length - 1) {
+        const t2 = setTimeout(() => {
+          const btn = document.getElementById('start-predict-btn');
+          if (btn) btn.style.display = 'inline-block';
+        }, 900);
+        _s3IntroTimers.push(t2);
+      }
+    }, i * 2400);
+    _s3IntroTimers.push(t);
+  });
+  state.s3IntroPlayed = true;
+  saveState();
+}
+
+function skipS3Intro() {
+  _s3IntroTimers.forEach(t => clearTimeout(t));
+  _s3IntroTimers = [];
+  document.querySelectorAll('#s3-cinematic .intro-beat').forEach(b => b.classList.add('show'));
+  const btn = document.getElementById('start-predict-btn');
+  if (btn) btn.style.display = 'inline-block';
+  state.s3IntroPlayed = true;
+  saveState();
+}
+
+// ============================================================
+// COSMIC TIMELINE · 6 ERAS (click-to-reveal particle content)
+// ============================================================
+function revealEra(id) {
+  // Open simulation modal instead of just flipping card
+  openEraSim(id);
+}
+
+// ============================================================
+// ERA SIMULATION · Particle Canvas Engine
+// ============================================================
+const PARTICLE_STYLES = {
+  quark:         { color: '#ff5c7a', label: 'q',    size: 7,  name: 'ควาร์ก' },
+  antiquark:     { color: '#ff8fa5', label: 'q̄',    size: 7,  name: 'แอนติควาร์ก' },
+  electron:      { color: '#64d8ff', label: 'e⁻',   size: 6,  name: 'อิเล็กตรอน' },
+  positron:      { color: '#ffcb6b', label: 'e⁺',   size: 6,  name: 'โพซิตรอน' },
+  neutrino:      { color: '#9aa3c0', label: 'ν',    size: 4,  name: 'นิวทริโน' },
+  antineutrino:  { color: '#6a7394', label: 'ν̄',    size: 4,  name: 'แอนตินิวทริโน' },
+  photon:        { color: '#ffe09e', label: 'γ',    size: 5,  name: 'โฟตอน' },
+  neutron:       { color: '#b5bed6', label: 'n',    size: 11, name: 'นิวตรอน' },
+  proton:        { color: '#ff7a94', label: 'p⁺',   size: 11, name: 'โปรตอน (นิวเคลียส H)' },
+  helium_nuc:    { color: '#b980ff', label: 'He²⁺', size: 16, name: 'นิวเคลียสฮีเลียม' },
+  hydrogen_atom: { color: '#7effb2', label: 'H',    size: 14, name: 'อะตอมไฮโดรเจน' },
+  helium_atom:   { color: '#a0e8ff', label: 'He',   size: 18, name: 'อะตอมฮีเลียม' },
+  galaxy:        { color: '#d4b8ff', label: '🌀',   size: 48, name: 'กาแล็กซี' },
+};
+
+const ERA_DATA = {
+  1: {
+    label: '◦ ERA 1 · PLANCK / QUARK-LEPTON',
+    title: 'ยุคแรกสุดของเอกภพ',
+    meta: '10⁻⁴³ – 10⁻³² วินาที · 10³² – 10²⁷ เคลวิน',
+    event: 'มีพลังงานเกิดขึ้น · อนุภาคพื้นฐานก่อตัวครั้งแรก',
+    speed: 3.2,
+    particles: ['quark','antiquark','electron','positron','neutrino','antineutrino'],
+  },
+  2: {
+    label: '◦ ERA 2 · RADIATION',
+    title: 'ยุคโฟตอนเริ่มปรากฏ',
+    meta: '10⁻³² – 10⁻⁶ วินาที · 10²⁷ – 10¹³ เคลวิน',
+    event: 'พลังงานเปลี่ยนเป็นสสาร-ปฏิสสาร · ทำลายกันเกิดโฟตอน',
+    speed: 2.5,
+    particles: ['quark','antiquark','electron','positron','neutrino','antineutrino','photon'],
+  },
+  3: {
+    label: '◦ ERA 3 · NUCLEON',
+    title: 'ยุคโปรตอนและนิวตรอนเกิด',
+    meta: '10⁻⁶ วิ – 3 นาที · 10¹³ – 10⁹ เคลวิน',
+    event: 'ควาร์กรวมตัวเป็นโปรตอน (นิวเคลียสไฮโดรเจน) และนิวตรอน',
+    speed: 1.9,
+    particles: ['electron','positron','neutrino','antineutrino','photon','neutron','proton'],
+  },
+  4: {
+    label: '◦ ERA 4 · NUCLEOSYNTHESIS',
+    title: 'ยุคสังเคราะห์นิวเคลียสฮีเลียม',
+    meta: '3 นาที – 300,000 ปี · 10⁹ – 5,000 เคลวิน',
+    event: 'โปรตอน-นิวตรอนรวมตัวเป็นนิวเคลียสฮีเลียม',
+    speed: 1.3,
+    particles: ['electron','neutrino','photon','neutron','proton','helium_nuc'],
+  },
+  5: {
+    label: '◦ ERA 5 · RECOMBINATION',
+    title: 'ยุคอะตอมเป็นกลาง · CMB เกิด',
+    meta: '300,000 – 1,000 ล้านปี · 5,000 – 100 เคลวิน',
+    event: 'นิวเคลียสดึงอิเล็กตรอน → อะตอมเป็นกลาง · เอกภพโปร่งแสง · โฟตอนอิสระ (= CMB)',
+    speed: 0.8,
+    particles: ['neutrino','photon','hydrogen_atom','helium_atom'],
+  },
+  6: {
+    label: '◦ ERA 6 · PRESENT · GALAXY',
+    title: 'ยุคกาแล็กซี · ปัจจุบัน',
+    meta: '1,000 – 13,800 ล้านปี · 100 – 2.73 เคลวิน',
+    event: 'แรงโน้มถ่วงรวมสสาร → เนบิวลา → ดาวฤกษ์ → กาแล็กซี',
+    speed: 0.4,
+    particles: ['neutrino','photon','galaxy'],
+  },
+};
+
+const ALL_PARTICLE_ORDER = [
+  'quark','antiquark','electron','positron','neutrino','antineutrino',
+  'photon','neutron','proton','helium_nuc','hydrogen_atom','helium_atom','galaxy'
+];
+
+let _simParticles = [];
+let _simRAF = null;
+let _simEraId = null;
+
+function openEraSim(eraId) {
+  const data = ERA_DATA[eraId];
+  if (!data) return;
+  _simEraId = eraId;
+  document.getElementById('era-m-label').textContent = data.label;
+  document.getElementById('era-m-title').textContent = data.title;
+  document.getElementById('era-m-meta').textContent = data.meta;
+  document.getElementById('era-m-event').textContent = data.event;
+  document.getElementById('era-legend').textContent = `⚡ ความเร็วอนุภาค ~ ${data.speed.toFixed(1)}x (ยิ่งร้อนยิ่งเร็ว) · ลากกลางจอดู · อนุภาคจริงที่ยุคนี้มีอยู่ ${data.particles.length} ชนิด`;
+
+  // Render particle checklist
+  const opts = document.getElementById('particle-options');
+  opts.innerHTML = ALL_PARTICLE_ORDER.map(p => {
+    const s = PARTICLE_STYLES[p];
+    return `
+      <label class="particle-option">
+        <input type="checkbox" value="${p}">
+        <span class="swatch" style="background:${s.color}"></span>
+        <span class="lbl">${s.name} <span style="color:var(--text-faint); font-family:'Space Grotesk';">${s.label}</span></span>
+      </label>
+    `;
+  }).join('');
+  document.getElementById('era-check-result').innerHTML = '';
+
+  document.getElementById('era-modal').style.display = 'flex';
+
+  // Initialize particles
+  initSimParticles(data);
+  startSimLoop();
+}
+
+function closeEraSim() {
+  if (_simRAF) { cancelAnimationFrame(_simRAF); _simRAF = null; }
+  document.getElementById('era-modal').style.display = 'none';
+}
+
+function initSimParticles(data) {
+  const cv = document.getElementById('era-canvas');
+  _simParticles = [];
+  const isGalaxyEra = data.particles.includes('galaxy');
+  // Count per type · more for small particles, fewer for big
+  data.particles.forEach(type => {
+    const s = PARTICLE_STYLES[type];
+    let count = 15;
+    if (s.size > 13) count = 6;
+    if (type === 'galaxy') count = 4;
+    if (type === 'neutrino' || type === 'antineutrino') count = 20;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = data.speed * (0.5 + Math.random() * 0.8);
+      _simParticles.push({
+        type,
+        x: Math.random() * cv.width,
+        y: Math.random() * cv.height,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - 0.5) * 0.05,
+      });
+    }
+  });
+}
+
+function startSimLoop() {
+  const cv = document.getElementById('era-canvas');
+  const ctx = cv.getContext('2d');
+  function frame() {
+    ctx.fillStyle = 'rgba(3, 4, 12, 0.25)';  // trail effect
+    ctx.fillRect(0, 0, cv.width, cv.height);
+    _simParticles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > cv.width)  p.vx *= -1;
+      if (p.y < 0 || p.y > cv.height) p.vy *= -1;
+      p.rot += p.vr;
+      drawParticle(ctx, p);
+    });
+    _simRAF = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function drawParticle(ctx, p) {
+  const s = PARTICLE_STYLES[p.type];
+  if (p.type === 'galaxy') {
+    // spiral
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
+    for (let i = 0; i < 40; i++) {
+      const t = i / 40;
+      const r = t * s.size;
+      const a = t * Math.PI * 4;
+      ctx.beginPath();
+      ctx.arc(Math.cos(a) * r, Math.sin(a) * r, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(212, 184, 255, ${1 - t * 0.7})`;
+      ctx.fill();
+    }
+    ctx.restore();
+    return;
+  }
+  // glow
+  const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, s.size * 2.2);
+  grad.addColorStop(0, s.color + 'cc');
+  grad.addColorStop(1, s.color + '00');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, s.size * 2.2, 0, Math.PI * 2);
+  ctx.fill();
+  // core
+  ctx.fillStyle = s.color;
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, s.size, 0, Math.PI * 2);
+  ctx.fill();
+  // label
+  ctx.fillStyle = '#05060f';
+  ctx.font = `bold ${Math.max(8, s.size)}px 'Space Grotesk', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(s.label, p.x, p.y + 0.5);
+}
+
+function checkEraAnswers() {
+  const data = ERA_DATA[_simEraId];
+  const opts = document.querySelectorAll('.particle-option');
+  const correctSet = new Set(data.particles);
+  let hits = 0, misses = 0, extras = 0;
+  opts.forEach(opt => {
+    const val = opt.querySelector('input').value;
+    const checked = opt.querySelector('input').checked;
+    const shouldBe = correctSet.has(val);
+    opt.classList.remove('show-correct','show-wrong','show-missed');
+    if (checked && shouldBe) { opt.classList.add('show-correct'); hits++; }
+    else if (checked && !shouldBe) { opt.classList.add('show-wrong'); extras++; }
+    else if (!checked && shouldBe) { opt.classList.add('show-missed'); misses++; }
+  });
+  const el = document.getElementById('era-check-result');
+  const total = correctSet.size;
+  el.innerHTML = `
+    <div class="info-card" style="padding: 12px 14px; margin: 0;">
+      <div style="font-size: 13px; color: var(--text);">
+        ✓ ถูก <b style="color:var(--accent-green)">${hits}/${total}</b>
+        · ขาด <b style="color:var(--accent-gold)">${misses}</b>
+        · เกิน <b style="color:var(--accent-red)">${extras}</b>
+      </div>
+      <div class="muted" style="font-size: 11px; margin-top: 6px;">🟢 เขียว = ถูก · 🟡 เหลือง = พลาด (ควรเลือกแต่ไม่เลือก) · 🔴 แดง = ผิด (เลือกไม่ควร)</div>
+    </div>
+  `;
+  // Mark era as revealed/explored regardless of perfection
+  const card = document.querySelector(`.era-card[data-era="${_simEraId}"]`);
+  if (card) card.classList.add('revealed');
+  state.erasRevealed = state.erasRevealed || [];
+  if (!state.erasRevealed.includes(_simEraId)) {
+    state.erasRevealed.push(_simEraId);
+    const energy = hits === total && extras === 0 ? 3 : 1;
+    addEnergy(energy, `Era ${_simEraId} explored (${hits}/${total})`);
+  }
+  state.eraAnswers = state.eraAnswers || {};
+  state.eraAnswers[_simEraId] = { hits, misses, extras };
+  saveState();
+  updateTimelineProgress();
+}
+
+// Close modal on ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('era-modal')?.style.display === 'flex') {
+    closeEraSim();
+  }
+});
+
+function updateTimelineProgress() {
+  const count = state.erasRevealed?.length || 0;
+  const el = document.getElementById('timeline-progress');
+  if (!el) return;
+  if (count < 6) {
+    el.innerHTML = `เปิดแล้ว <b>${count}/6</b> ยุค · เหลืออีก <b>${6-count}</b> ยุคจึงจะตั้งคอร์สยานได้`;
+    el.style.color = 'var(--text-dim)';
+  } else {
+    el.innerHTML = '<b style="color: var(--accent-green)">✓ ครบทุกยุคแล้ว · พร้อมตั้งคอร์สยาน (Ship Lock ด้านล่าง)</b>';
+    state.timelineDone = true;
+    saveState();
+  }
+  // Restore revealed state when re-rendering
+  (state.erasRevealed || []).forEach(id => {
+    const c = document.querySelector(`.era-card[data-era="${id}"]`);
+    if (c) c.classList.add('revealed');
+  });
+}
+
+// ============================================================
+// ENTRY TICKET · prior knowledge baseline
+// ============================================================
+function submitEntry() {
+  const e1 = document.querySelector('input[name="e1"]:checked');
+  const e2 = document.querySelector('input[name="e2"]:checked');
+  const e3 = document.querySelector('input[name="e3"]:checked');
+  if (!e1 || !e2 || !e3) { alert('กรุณาตอบทั้ง 3 ข้อก่อน'); return; }
+  const correct = [e1.value === 'correct', e2.value === 'correct', e3.value === 'correct'];
+  const score = correct.filter(Boolean).length;
+  state.entryTicket = { e1: e1.value, e2: e2.value, e3: e3.value, score, at: Date.now() };
+  saveState();
+  const el = document.getElementById('entry-result');
+  el.innerHTML = `
+    <div class="branch-reveal main" style="padding: 14px;">
+      <h3 style="font-size: 18px;">✓ บันทึก Baseline แล้ว</h3>
+      <p>ตอบถูก <b>${score}/3</b> · ข้อมูลนี้จะเทียบกับหลังเรียนเพื่อวัด Conceptual Change</p>
+      <p class="muted" style="margin-top: 6px;">กด "ต่อไป →" เพื่อเริ่มภารกิจ</p>
+    </div>
+  `;
+  addEnergy(2, 'Entry Ticket submitted');
+}
+
+function revealBeforePanel() {
+  const panel = document.getElementById('s3-before-panel');
+  if (!panel) return;
+  panel.style.display = 'block';
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  state.s3BeforeRevealed = true;
+  saveState();
+}
+
+function calcBalloon() {
+  const pairs = ['ab','bc','cd'];
+  pairs.forEach(p => {
+    const v0 = parseFloat(document.getElementById(`d-${p}-0`).value);
+    const v3 = parseFloat(document.getElementById(`d-${p}-3`).value);
+    if (v0 > 0 && v3 > 0) {
+      const ratio = (v3 / v0).toFixed(2);
+      document.getElementById(`r-${p}`).textContent = `${ratio}×`;
+      state.balloon[p] = { v0, v3, ratio };
+    }
+  });
+  saveState();
+}
+
+let graphCtx, graphColor = '#64d8ff', graphHistory = [];
+function initBalloonGraph() {
+  if (graphCtx) return; // idempotent · already initialized
+  const cv = document.getElementById('graph');
+  if (!cv) return;
+  graphCtx = cv.getContext('2d');
+  drawGraphAxes();
+  let drawing = false, lastX = 0, lastY = 0;
+  cv.addEventListener('mousedown', (e) => { drawing = true; const r = cv.getBoundingClientRect(); lastX = (e.clientX - r.left) * (cv.width / r.width); lastY = (e.clientY - r.top) * (cv.height / r.height); graphHistory.push(graphCtx.getImageData(0,0,cv.width,cv.height)); });
+  cv.addEventListener('mousemove', (e) => {
+    if (!drawing) return;
+    const r = cv.getBoundingClientRect();
+    const x = (e.clientX - r.left) * (cv.width / r.width);
+    const y = (e.clientY - r.top) * (cv.height / r.height);
+    graphCtx.strokeStyle = graphColor;
+    graphCtx.lineWidth = 3;
+    graphCtx.lineCap = 'round';
+    graphCtx.beginPath();
+    graphCtx.moveTo(lastX, lastY);
+    graphCtx.lineTo(x, y);
+    graphCtx.stroke();
+    lastX = x; lastY = y;
+  });
+  cv.addEventListener('mouseup', () => drawing = false);
+  cv.addEventListener('mouseleave', () => drawing = false);
+  // touch
+  cv.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; const r = cv.getBoundingClientRect(); const t = e.touches[0]; lastX = (t.clientX - r.left) * (cv.width / r.width); lastY = (t.clientY - r.top) * (cv.height / r.height); graphHistory.push(graphCtx.getImageData(0,0,cv.width,cv.height)); });
+  cv.addEventListener('touchmove', (e) => { e.preventDefault(); if (!drawing) return; const r = cv.getBoundingClientRect(); const t = e.touches[0]; const x = (t.clientX - r.left) * (cv.width / r.width); const y = (t.clientY - r.top) * (cv.height / r.height); graphCtx.strokeStyle = graphColor; graphCtx.lineWidth = 3; graphCtx.lineCap = 'round'; graphCtx.beginPath(); graphCtx.moveTo(lastX, lastY); graphCtx.lineTo(x, y); graphCtx.stroke(); lastX = x; lastY = y; });
+  cv.addEventListener('touchend', () => drawing = false);
+}
+function drawGraphAxes() {
+  if (!graphCtx) return;
+  const cv = graphCtx.canvas;
+  graphCtx.strokeStyle = 'rgba(100,216,255,0.5)';
+  graphCtx.lineWidth = 1.5;
+  graphCtx.beginPath();
+  graphCtx.moveTo(50, 20); graphCtx.lineTo(50, cv.height - 30);
+  graphCtx.lineTo(cv.width - 20, cv.height - 30);
+  graphCtx.stroke();
+  graphCtx.fillStyle = 'rgba(232,236,248,0.7)';
+  graphCtx.font = '12px Sarabun';
+  graphCtx.fillText('ระยะ (cm)', 10, 15);
+  graphCtx.fillText('รอบเป่า', cv.width - 70, cv.height - 10);
+  for (let i = 0; i <= 4; i++) {
+    const x = 50 + i * ((cv.width - 70) / 4);
+    graphCtx.fillText(i, x - 3, cv.height - 15);
+  }
+}
+function setGraphColor(c, btn) {
+  graphColor = c;
+  document.querySelectorAll('.canvas-toolbar button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function clearGraph() {
+  if (!graphCtx) return;
+  graphCtx.clearRect(0,0,graphCtx.canvas.width, graphCtx.canvas.height);
+  drawGraphAxes();
+  graphHistory = [];
+}
+function undoGraph() {
+  if (!graphCtx || graphHistory.length === 0) return;
+  graphCtx.putImageData(graphHistory.pop(), 0, 0);
+}
+
+function checkS3() {
+  const items = document.querySelectorAll('#s3-chk .chk-item');
+  let correct = 0, wrong = 0, missedCorrect = 0;
+  items.forEach(item => {
+    const checked = item.querySelector('input').checked;
+    const isCorrect = item.dataset.correct === 'true';
+    if (checked && isCorrect) { item.classList.add('chk-correct'); correct++; }
+    else if (checked && !isCorrect) { item.classList.add('chk-wrong'); wrong++; }
+    else if (!checked && isCorrect) { missedCorrect++; }
+  });
+  const summary = document.getElementById('s3-summary').value.trim();
+  state.observations.balloon = { correct, wrong, missedCorrect, summary };
+  const bonus = summary.length > 30 ? 2 : 0;
+  const reward = correct + bonus - wrong;
+  addEnergy(Math.max(2, reward), `S3 Balloon: ${correct} correct, ${wrong} misconception, summary ${summary.length}ch`);
+
+  state.discoveries.push('EXPANSION', 'NO_CENTER', 'HUBBLE_LAW');
+  state.inventory.push('🎈 Balloon Data · อัตราขยายจากการวัด');
+
+  const revEl = document.getElementById('s3-reveal');
+  revEl.style.display = 'block';
+  revEl.innerHTML = `
+    <div class="branch-reveal main">
+      <h3>✓ การวิเคราะห์ของ LEMAÎTRE</h3>
+      <p>ข้อมูลลูกโป่งของทีมรวมกับข้อสังเกต 5 ชิ้นจากต้นคาบ · พอจะอธิบายวัตถุปริศนาได้แล้ว</p>
+    </div>
+
+    <div class="dialog-box hubble" data-speaker="ดร.ฮับเบิล · LABELING PHASE">
+      <div class="txt">Cadets · สิ่งที่พวกคุณเพิ่งสังเกตผ่านลูกโป่ง <b>ไม่ใช่การระเบิดในที่ว่าง</b> · มันคือ <b>การขยายตัวของอวกาศเอง (Expansion of Space)</b> · ทุกจุดห่างกันพร้อมกัน · ไม่มี "ศูนย์กลาง" · ตอนนี้ · ผมจะบอกชื่อวิทยาศาสตร์ของสิ่งที่พวกคุณสังเกตในตอนต้น...</div>
+    </div>
+
+    <div class="info-card" style="border-color: rgba(212,184,255,0.4); background: linear-gradient(135deg, rgba(212,184,255,0.08), rgba(100,216,255,0.05));">
+      <h4 style="color: #d4b8ff;">📚 ตั้งชื่อสิ่งที่คุณเคยสังเกต · Experience → Label</h4>
+      <p>• <b>ชิ้น A</b> (แสงแดงเข้ม · ยิ่งไกลยิ่งแดง) = <b style="color: var(--accent-gold);">การเลื่อนทางแดง (Redshift)</b> → ตามกฎฮับเบิล-เลอเมตร์ <b>v = H₀D</b> (H₀ ≈ 70 km/s/Mpc)</p>
+      <p>• <b>ชิ้น B</b> (เย็น −270°C · พลังงานอ่อนคงที่) = <b style="color: var(--accent-gold);">รังสีไมโครเวฟพื้นหลัง (CMB) 2.725 K</b> → Penzias &amp; Wilson ค้นพบปี 1965 · Nobel 1978</p>
+      <p>• <b>ชิ้น C</b> (สัญญาณทุกทิศ) = <b style="color: var(--accent-gold);">Isotropy</b> · เอกภพดูเหมือนกันทุกทิศทาง = หลักฐานไม่มีศูนย์กลาง</p>
+      <p>• <b>ชิ้น D</b> (ธาตุเบา H, He) = <b style="color: var(--accent-gold);">Big Bang Nucleosynthesis</b> · ธาตุเบาเกิดขึ้นภายใน 3 นาทีแรกที่อุณหภูมิ 10⁹ K</p>
+      <p>• <b>ชิ้น E</b> (ขยาย · พลังงานลด) = <b style="color: var(--accent-gold);">Expansion &amp; Cooling</b> · เอกภพเย็นลงเมื่อขยาย จาก 10³² K → 2.725 K ใน 13.8 พันล้านปี</p>
+    </div>
+
+    <div class="info-card" style="border-color: rgba(100,216,255,0.5); background: linear-gradient(135deg, rgba(100,216,255,0.05), rgba(185,128,255,0.04));">
+      <h4 style="color: var(--accent);">🕰️ Cosmic Timeline · คลิกแต่ละยุคเพื่อดูอนุภาคและเหตุการณ์</h4>
+      <p class="muted" style="margin-bottom: 12px;">เอกภพผ่าน 6 ยุคสำคัญ · คลิกการ์ดเพื่อเผยว่ามีอนุภาคใดเกิดและที่อุณหภูมิเท่าไร · เปิดครบ 6 ยุคก่อนตั้งคอร์สยาน</p>
+
+      <div class="timeline-grid" id="timeline-grid">
+        <div class="era-card" data-era="1" onclick="revealEra(1)">
+          <div class="era-time">10⁻⁴³ วิ</div>
+          <div class="era-name">PLANCK EPOCH</div>
+          <div class="era-temp">~10³² K</div>
+          <div class="era-detail">แรงพื้นฐาน 4 แบบ (โน้มถ่วง · แม่เหล็กไฟฟ้า · อ่อน · แข็ง) <b>รวมเป็นแรงเดียว</b> · ฟิสิกส์ปัจจุบันยังอธิบายช่วงนี้ไม่ได้</div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+        <div class="era-card" data-era="2" onclick="revealEra(2)">
+          <div class="era-time">10⁻⁶ วิ</div>
+          <div class="era-name">QUARK ERA</div>
+          <div class="era-temp">~10¹³ K</div>
+          <div class="era-detail"><b>ควาร์ก · กลูออน · เลปตอน</b> ก่อตัวอย่างอิสระ · ยังไม่มีโปรตอน-นิวตรอน · สสารและปฏิสสารทำลายกันจนสสารเหลือเล็กน้อย</div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+        <div class="era-card" data-era="3" onclick="revealEra(3)">
+          <div class="era-time">3 นาที</div>
+          <div class="era-name">NUCLEOSYNTHESIS</div>
+          <div class="era-temp">~10⁹ K</div>
+          <div class="era-detail">ควาร์กรวมเป็น <b>โปรตอน-นิวตรอน</b> · เกิดนิวเคลียส <b>H ≈ 75% และ He ≈ 25%</b> · ยังไม่เป็นอะตอม (อิเล็กตรอนยังอิสระ ฉนวนโฟตอน)</div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+        <div class="era-card" data-era="4" onclick="revealEra(4)">
+          <div class="era-time">380,000 ปี</div>
+          <div class="era-name">RECOMBINATION</div>
+          <div class="era-temp">~3,000 K</div>
+          <div class="era-detail"><b>อะตอมเป็นกลางเกิดครั้งแรก</b> · อิเล็กตรอนจับนิวเคลียส · โฟตอนเริ่มเดินทางอิสระ = <b style="color: var(--accent-gold);">CMB ที่เราเห็นทุกวันนี้</b></div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+        <div class="era-card" data-era="5" onclick="revealEra(5)">
+          <div class="era-time">~1 พันล้านปี</div>
+          <div class="era-name">FIRST GALAXIES</div>
+          <div class="era-temp">~30 K</div>
+          <div class="era-detail">แรงโน้มถ่วงรวมก๊าซ H และ He เป็น <b>ดาวฤกษ์แรก</b> · กาแล็กซีแรก · <b>ธาตุหนัก</b> (C, O, Fe, ...) เริ่มเกิดในดาวฤกษ์</div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+        <div class="era-card" data-era="6" onclick="revealEra(6)">
+          <div class="era-time">13.8 พันล้านปี</div>
+          <div class="era-name">PRESENT</div>
+          <div class="era-temp">2.725 K</div>
+          <div class="era-detail">เอกภพยังขยายตัวและเย็นลงต่อเนื่อง · <b>CMB ยังคงอยู่</b> เป็นเสียงสะท้อนจากยุคที่ 4 · ดวงอาทิตย์ของเราเกิดเมื่อ 4,600 ล้านปีก่อน</div>
+          <div class="era-tap">▼ คลิกเพื่อเปิด</div>
+        </div>
+      </div>
+
+      <div id="timeline-progress" class="timeline-progress">เปิดแล้ว <b>0/6</b> ยุค · คลิกการ์ดด้านบนทั้งหมดเพื่อทำความเข้าใจ</div>
+    </div>
+
+    <div class="info-card">
+      <h4>🔬 แหล่งข้อมูลวิทยาศาสตร์</h4>
+      <p>• อายุเอกภพ 13.8 พันล้านปี (Planck Collaboration 2018)</p>
+      <p>• อุณหภูมิ CMB = 2.725 K (COBE/FIRAS, Mather et al. 1994)</p>
+      <p>• H₀: ค่าใช้สอน 70 km/s/Mpc (IPST ม.6) · ค่าจริงวัดได้ 67.4 (Planck) ถึง 73.0 (SH0ES) — ยังมีงานวิจัยอยู่</p>
+      <p>• ทฤษฎี: Georges Lemaître (1927), Edwin Hubble (1929), IAU ปรับชื่อเป็น "Hubble-Lemaître Law" ปี 2018</p>
+    </div>
+
+    <div class="form-row" style="margin-top: 20px;">
+      <label>💭 หลังเรียน · ทีมคิดว่า "ศิลาต้นกำเนิด" คืออะไร? (เทียบกับตอน S1)</label>
+      <textarea id="hypo-post" rows="2" placeholder="เขียนสั้น ๆ · สังเกตไหมว่าความคิดเปลี่ยนไปอย่างไร"></textarea>
+      <p class="muted" style="margin-top: 6px; font-size: 12px;">✦ เปรียบเทียบกับสมมติฐานตอนต้น · วัด Conceptual Change (pre → post)</p>
+    </div>
+
+    <p class="muted mt-20">⚠ VOID กำลังจะปรากฏในตอนหน้า... ข้อมูลการทดลอง + ข้อสังเกตทั้ง 5 ของทีมจะกลายเป็นอาวุธโต้แย้งข้อคิดผิดของมัน</p>
+  `;
+
+  // Capture post-hypothesis on blur for research
+  setTimeout(() => {
+    const post = document.getElementById('hypo-post');
+    if (post) post.addEventListener('blur', () => {
+      state.decisions.hypothesis_post = post.value.trim();
+      saveState();
+    });
+  }, 100);
+
+  // Open AFTER phase · Predict vs Actual + Calc + Seal
+  const afterEl = document.getElementById('s3-after');
+  if (afterEl) {
+    afterEl.style.display = 'block';
+    renderPredictVsActual();
+  }
+}
+
+// ============================================================
+// S3 BEFORE/AFTER · PREDICT · CALC · SEAL
+// ============================================================
+function savePredictions() {
+  const p1 = document.querySelector('input[name="p1"]:checked');
+  const p2 = document.querySelector('input[name="p2"]:checked');
+  const p3 = document.querySelector('input[name="p3"]:checked');
+  if (!p1 || !p2 || !p3) { alert('กรุณาคาดการณ์ทั้ง 3 ข้อก่อน · ไม่ผิดไม่ถูก แค่บันทึกความคิดของทีม'); return; }
+  state.predictions = { p1: p1.value, p2: p2.value, p3: p3.value, at: Date.now() };
+  saveState();
+  const btn = document.getElementById('save-pred-btn');
+  btn.textContent = '✓ บันทึกแล้ว · เริ่มทดลองลูกโป่งได้เลย';
+  btn.style.opacity = '0.6';
+  btn.disabled = true;
+  addEnergy(2, 'S3 Predictions saved');
+}
+
+function renderPredictVsActual() {
+  const actual = { p1: 'no-center', p2: 'far-faster', p3: 'away' };
+  const lbl = {
+    'center': 'มีจุดศูนย์กลาง',
+    'no-center': 'ไม่มีจุดศูนย์กลาง',
+    'far-faster': 'จุดไกลเคลื่อนเร็วกว่า',
+    'far-slower': 'จุดไกลเคลื่อนช้ากว่า',
+    'same': 'เคลื่อนเท่ากัน',
+    'away': 'ออกทุกทิศ',
+    'toward': 'เข้าหาทุกทิศ',
+    'mixed': 'ผสม',
+  };
+  const rows = [
+    { q: '1 · มีจุดศูนย์กลาง?',  pred: state.predictions?.p1, actual: actual.p1 },
+    { q: '2 · ใกล้/ไกล เคลื่อนต่างกันไหม?', pred: state.predictions?.p2, actual: actual.p2 },
+    { q: '3 · เห็นเข้า/ออก?',   pred: state.predictions?.p3, actual: actual.p3 },
+  ];
+  let matchCount = 0;
+  const html = `
+    <table class="data-table">
+      <thead><tr><th style="text-align:left">คำถาม</th><th>คาดการณ์</th><th>ผลจริง</th><th>ตรง?</th></tr></thead>
+      <tbody>
+        ${rows.map(r => {
+          const match = r.pred === r.actual;
+          if (match) matchCount++;
+          return `
+            <tr>
+              <td style="text-align:left">${r.q}</td>
+              <td>${lbl[r.pred] || '—'}</td>
+              <td style="color: var(--accent-green)">${lbl[r.actual]}</td>
+              <td style="color: ${match ? 'var(--accent-green)' : 'var(--accent-red)'}; font-weight:600">${match ? '✓' : '✗'}</td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <p class="muted" style="margin-top:10px; font-size:13px;">
+      ทีมคาดเดาตรง <b style="color: var(--accent-gold)">${matchCount}/3</b> ข้อ · ข้อที่ต่างคือ <b>พื้นที่เรียนรู้ใหม่ของทีม</b>
+    </p>
+  `;
+  document.getElementById('predict-vs-actual').innerHTML = html;
+  if (!state.predictCompareDone) {
+    state.predictCompareDone = true;
+    state.decisions.predict_match = matchCount;
+    saveState();
+  }
+}
+
+function checkS3Calc() {
+  const v = parseFloat(document.getElementById('s3-calc').value);
+  const target = 7000;  // 70 × 100
+  const el = document.getElementById('s3-calc-result');
+  if (!isNaN(v) && Math.abs(v - target) < 50) {
+    el.innerHTML = '<div class="branch-reveal main" style="padding:16px;"><h3 style="font-size:18px;">✓ ถูกต้อง · 7,000 km/s</h3><p style="color:var(--accent-gold)">+3 Energy · กฎฮับเบิล v = H₀D ใช้ได้แล้ว</p></div>';
+    if (!state.s3CalcDone) {
+      state.s3CalcDone = true;
+      addEnergy(3, 'S3 Hubble calc correct');
+      saveState();
+    }
+  } else {
+    el.innerHTML = '<div class="warn">⚠ ลองใหม่ · v = H₀ × D = 70 × 100 = ? · ตอบเป็นตัวเลขในหน่วย km/s</div>';
+  }
+}
+
+function checkShipLock() {
+  const past = parseFloat(document.getElementById('lock-past').value);
+  const vel  = parseFloat(document.getElementById('lock-vel').value);
+  const light = document.getElementById('lock-light');
+  const el = document.getElementById('lock-result');
+
+  const correctPast = 50;    // 100 Mpc / 2
+  const correctVel  = 7000;  // 70 × 100
+
+  const pastOk = !isNaN(past) && Math.abs(past - correctPast) < 5;
+  const velOk  = !isNaN(vel)  && Math.abs(vel  - correctVel)  < 50;
+
+  // Soft gate: warn (not block) if timeline not fully explored
+  if ((state.erasRevealed?.length || 0) < 6 && !state.s3WarnedTimeline) {
+    state.s3WarnedTimeline = true;
+    saveState();
+    const ok = confirm('💡 ทีมยังไม่ได้เปิด Cosmic Timeline ครบ 6 ยุค · แนะนำให้เปิดดูอนุภาคแต่ละยุคก่อน เพื่อเข้าใจที่มาของ CMB และการขยายตัว\n\nกด OK = ดำเนินการ Ship Lock ต่อ\nกด Cancel = ไปเปิด Timeline ก่อน');
+    if (!ok) return;
+  }
+
+  if (pastOk && velOk) {
+    light.className = 'lock-indicator green';
+    light.innerHTML = '🟢 GREEN · COORDINATES LOCKED';
+    el.innerHTML = `
+      <div class="branch-reveal main" style="padding:18px;">
+        <h3 style="font-size:20px;">✓ COORDINATE LOCK CONFIRMED</h3>
+        <p>Galaxy A · ระยะอดีต <b>50 Mpc</b> · ความเร็ว <b>7,000 km/s</b></p>
+        <p style="color:var(--accent-gold); margin-top:10px;">+5 Energy · 🏅 Badge: Coordinate Master · 🚀 Ship Course พร้อม</p>
+      </div>
+    `;
+    if (!state.s3SealDone) {
+      state.s3SealDone = true;
+      state.inventory.push('🏅 Badge · Coordinate Master');
+      state.inventory.push('🚀 Ship Course · Galaxy A @ 50 Mpc');
+      state.decisions.s3_lock = { past, vel };
+      addEnergy(5, 'S3 Ship Coordinate Lock');
+      saveState();
+    }
+  } else {
+    light.className = 'lock-indicator red';
+    light.innerHTML = '🔴 RED · MISMATCH · คำนวณใหม่';
+    let hint = '';
+    if (!pastOk) hint += '<div>① ระยะก่อนขยาย · คำนวณจาก D<sub>now</sub> ÷ อัตราขยาย = 100 ÷ 2 = ?</div>';
+    if (!velOk)  hint += '<div>② ความเร็วเคลื่อนออก · คำนวณจาก H₀ × D<sub>now</sub> = 70 × 100 = ?</div>';
+    el.innerHTML = `<div class="warn">⚠ พิกัดไม่ตรง · ลองคำนวณใหม่${hint}</div>`;
+    const panel = document.querySelector('.lock-panel');
+    if (panel) {
+      panel.classList.add('shake');
+      setTimeout(() => panel.classList.remove('shake'), 450);
+    }
+  }
+}
+
+// ============================================================
+// JOURNEY MAP
+// ============================================================
+function renderJourneyMap() {
+  const el = document.getElementById('journey-map');
+  const team = TEAMS.find(t => t.id === state.teamId) || { name: '?', color: '#64d8ff' };
+  el.innerHTML = `
+    <div class="map-header">
+      <div>
+        <h3>🚀 TEAM ${(state.teamName || team.name).toUpperCase()}</h3>
+        <div class="map-meta">บทบาทหลัก: ${state.role} · ทีม ${team.name}</div>
+      </div>
+      <div style="text-align: right;">
+        <div style="font-family: 'Orbitron'; font-size: 24px; color: var(--accent-gold);">⚡ ${state.energy}</div>
+        <div class="map-meta">Total Energy</div>
+      </div>
+    </div>
+
+    <div class="map-section-title">◦ PATH · ลำดับการเดินทาง</div>
+    <div class="map-nodes">
+      ${state.path.map((p, i) => `
+        <div class="map-node">
+          <div class="idx">STOP ${i+1}</div>
+          <div class="name">${SCENE_META[p]?.title || p}</div>
+          <div class="detail">${p.toUpperCase()}</div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="map-section-title">◦ DISCOVERIES · ความรู้ที่ค้นพบ</div>
+    <div class="discoveries-list">
+      ${[...new Set(state.discoveries)].map(d => `<span class="tag-item">🏷 ${d}</span>`).join('') || '<span class="muted">ยังไม่มี</span>'}
+    </div>
+
+    <div class="map-section-title">◦ INVENTORY · ของที่เก็บได้ (ใช้ใน EP02)</div>
+    <div class="inventory-list">
+      ${state.inventory.map(i => `<span class="tag-item inv">${i}</span>`).join('') || '<span class="muted">กระเป๋าว่าง</span>'}
+    </div>
+
+    <div class="map-section-title">◦ DECISIONS · เส้นทางที่เลือก</div>
+    <div class="discoveries-list">
+      ${Object.entries(state.decisions).map(([k,v]) => `<span class="tag-item">${k}: ${typeof v === 'object' ? JSON.stringify(v) : v}</span>`).join('') || '<span class="muted">ยังไม่มี</span>'}
+    </div>
+
+    <div class="map-section-title">◦ MISCONCEPTION SHIFTS · ข้อคิดผิดที่แก้ได้</div>
+    <div class="discoveries-list">
+      ${state.observations.balloon ? `<span class="tag-item">Balloon: ${state.observations.balloon.correct - state.observations.balloon.wrong} shift</span>` : ''}
+      ${state.observations.asteroid ? `<span class="tag-item">Asteroid: ${state.observations.asteroid.correct - state.observations.asteroid.wrong} shift</span>` : ''}
+    </div>
+  `;
+  initMapCanvas();
+}
+
+let mapCtx, mapColor = '#64d8ff';
+function initMapCanvas() {
+  const cv = document.getElementById('map-canvas');
+  if (!cv) return;
+  mapCtx = cv.getContext('2d');
+  let drawing = false, lastX = 0, lastY = 0;
+  function getPos(e) {
+    const r = cv.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: (t.clientX - r.left) * (cv.width/r.width), y: (t.clientY - r.top) * (cv.height/r.height) };
+  }
+  const start = (e) => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; };
+  const move = (e) => { e.preventDefault(); if (!drawing) return; const p = getPos(e); mapCtx.strokeStyle = mapColor; mapCtx.lineWidth = 3; mapCtx.lineCap = 'round'; mapCtx.beginPath(); mapCtx.moveTo(lastX, lastY); mapCtx.lineTo(p.x, p.y); mapCtx.stroke(); lastX = p.x; lastY = p.y; };
+  const end = () => drawing = false;
+  cv.addEventListener('mousedown', start);
+  cv.addEventListener('mousemove', move);
+  cv.addEventListener('mouseup', end);
+  cv.addEventListener('mouseleave', end);
+  cv.addEventListener('touchstart', start);
+  cv.addEventListener('touchmove', move);
+  cv.addEventListener('touchend', end);
+}
+function setMapColor(c, btn) {
+  mapColor = c;
+  document.querySelectorAll('#map-canvas').forEach(()=>{});
+  document.querySelectorAll('.canvas-wrap .canvas-toolbar button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
+function clearMapCanvas() {
+  if (!mapCtx) return;
+  mapCtx.clearRect(0,0,mapCtx.canvas.width, mapCtx.canvas.height);
+}
+
+function saveJourneyMap() {
+  state.log.push({
+    type: 'journey_map_saved',
+    at: Date.now(),
+    summary: document.getElementById('map-summary').value,
+    question: document.getElementById('map-question').value,
+    mvp: document.getElementById('map-mvp').value,
+  });
+  saveState();
+  alert('✓ บันทึก Save File แล้ว · ข้อมูลจะถูกเรียกใช้อัตโนมัติในตอน EP02');
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function addEnergy(amount, reason) {
+  state.energy += amount;
+  state.log.push({ type: 'energy', amount, reason, at: Date.now() });
+  saveState();
+  updateHUD();
+  const burst = document.createElement('div');
+  burst.className = 'energy-burst';
+  burst.textContent = (amount > 0 ? '+' : '') + amount;
+  burst.style.color = amount > 0 ? 'var(--accent-gold)' : 'var(--accent-red)';
+  document.body.appendChild(burst);
+  setTimeout(() => burst.remove(), 1400);
+}
+function addEnergyBtn(v) { addEnergy(v, 'Teacher manual'); }
+
+function exportJSON() {
+  const data = { ...state, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cosmoslog_ep01_team${state.teamId||'X'}_${Date.now()}.json`;
+  a.click();
+}
+
+function resetState() {
+  if (!confirm('ล้างข้อมูลทั้งหมด เริ่มใหม่?')) return;
+  localStorage.removeItem('cosmosLog_state');
+  location.reload();
+}
+
+function jumpScene() {
+  const s = prompt('ไปฉากไหน? (s0, s1, s2, s2a, s2b, s3, map)');
+  if (s && SCENE_META[s]) {
+    goto(s);
+    if (s === 's1') startS1();
+    if (s === 's2') initS2();
+    if (s === 's3') initS3();
+    if (s === 'map') renderJourneyMap();
+  }
+}
+
+function togglePanel() {
+  document.getElementById('teacher-panel').classList.toggle('open');
+  updateTeacherPanel();
+}
+
+function updateTeacherPanel() {
+  const meta = SCENE_META[state.currentScene];
+  if (!meta) return;
+  document.getElementById('tp-current').textContent = state.currentScene.toUpperCase();
+  document.getElementById('tp-title').textContent = meta.title;
+  document.getElementById('tp-state').innerHTML = `
+    Team: ${state.teamName || '—'} (ID: ${state.teamId || '—'})<br>
+    Role: ${state.role || '—'}<br>
+    Energy: ${state.energy}<br>
+    Path: ${state.path.join(' → ')}<br>
+    Discoveries: ${state.discoveries.length}<br>
+    Inventory: ${state.inventory.length}
+  `;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderTeamGrid();
+updateHUD();
+updateTeacherPanel();
+if (state.currentScene !== 's0') goto(state.currentScene, false);
+</script>
+
+</body>
+</html>

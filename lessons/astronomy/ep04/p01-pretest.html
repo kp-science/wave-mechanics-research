@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P01 · Pre-test</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .quiz-q { margin:14px 0; }
+  .opt-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  @media(max-width:540px) { .opt-row { grid-template-columns:1fr; } }
+  .opt-btn {
+    padding:14px; min-height:64px;
+    background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.4); color:#e8ecf8;
+    border-radius:12px; cursor:pointer; text-align:left; font-size:14.5px; line-height:1.5;
+    font-family:inherit; transition:all .12s;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+    display:flex; align-items:center; gap:10px;
+  }
+  .opt-btn .letter { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; min-width:24px; }
+  .opt-btn:hover:not(:disabled) { border-color:#64d8ff; transform:translateY(-2px); }
+  .opt-btn.selected { border-color:#ffcb6b; background:rgba(255,203,107,0.12); }
+  .opt-btn.selected .letter { color:#fff; }
+  .progress-bar { height:6px; background:rgba(0,0,0,0.4); border-radius:3px; overflow:hidden; margin:14px 0; }
+  .progress-bar .fill { height:100%; background:linear-gradient(90deg,#ffcb6b,#ff8fa5); transition:width .4s; }
+</style>
+</head>
+<body data-page="p01" data-type="reflection">
+<div class="page">
+
+  <span class="lbl puzzle">📋 PRE-TEST · STAR DECODER AUDIT</span>
+  <h1>วัดความรู้ก่อนเริ่ม</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1-K4</span><span class="kpa-chip m">M1-M5</span>
+  </div>
+
+  <div class="card">
+    <div class="narrative">
+      ก่อนภารกิจ — LEMAÎTRE ขอตรวจ <b class="key">ความรู้พื้นฐาน 5 ข้อ · ตัวเลือก 4 ข้อ</b><br>
+      <b>ตอบตามที่คิด</b> · ไม่มีผิดถูก · ไม่หักคะแนน · ใช้วัด baseline เพื่อเทียบ post-test
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="fill" id="progFill" style="width:0%"></div></div>
+  <div style="text-align:center; font-size:12px; color:#9aa3c0; margin-bottom:14px;">
+    ตอบแล้ว <b id="progNum">0</b>/5
+  </div>
+
+  <div id="quiz"></div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P01</summary>
+    <div class="body">
+      <b>วัตถุประสงค์:</b> วัด baseline misconception M1-M5 · ใช้เทียบ P19 (post-test) → คำนวณ Normalized Gain<br>
+      <b>4 ตัวเลือก/ข้อ:</b> 1 correct · 1 strong distractor (M ตรง) · 2 weak distractors<br>
+      <b>ไม่ต้องเฉลย:</b> ครูสังเกต distractor ที่นักเรียนเลือกบ่อย → เป็น clue ว่าติด M ตัวไหน
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งคำตอบทั้งหมด</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ตอบครบ 5 ข้อ → กดส่ง → ปุ่ม "ไปต่อ" จะปลดล็อก</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const QUIZ = [
+  { id:'M1', mis:'M1', topic:'สี ↔ อุณหภูมิ',
+    q:'สีของดาวบอกอะไรเกี่ยวกับดาวมากที่สุด?',
+    opts:[
+      'อายุของดาว',                                          // M1 trap
+      'ระยะห่างจากโลก',                                       // weak
+      'อุณหภูมิผิวของดาว',                                    // ✓
+      'มวลและขนาดของดาว',                                     // M3 trap
+    ], c:2 },
+
+  { id:'M2', mis:'M2', topic:'แดง = เย็น = ปลอดภัย?',
+    q:'ดาวสีแดง 2 ดวงที่อุณหภูมิใกล้กัน · ข้อใดถูกที่สุด?',
+    opts:[
+      'จะมีมวลใกล้กันและจุดจบเหมือนกัน',                       // M2 trap
+      'อาจเป็น Red dwarf หรือ Red Supergiant ก็ได้ · ต่างกันที่มวล',  // ✓
+      'ดวงที่ใหญ่กว่าจะร้อนกว่าเสมอ',                          // M3 trap
+      'ดวงที่แดงกว่าจะอายุยืนกว่า',                            // M1 trap
+    ], c:1 },
+
+  { id:'M3', mis:'M3', topic:'ขนาด vs อุณหภูมิ',
+    q:'Red Supergiant มีขนาดใหญ่กว่าดวงอาทิตย์ ~1,000 เท่า · อุณหภูมิผิวของมันเทียบกับดวงอาทิตย์เป็นอย่างไร?',
+    opts:[
+      'ร้อนกว่ามาก เพราะใหญ่กว่า',                            // M3 trap
+      'เท่ากันเพราะเป็นดาวฤกษ์เหมือนกัน',                     // weak
+      'เย็นกว่า · ผิว ~3,500 K (สีแดง)',                     // ✓
+      'ไม่มีอุณหภูมิเพราะไม่ใช่ดาวจริง',                      // weak
+    ], c:2 },
+
+  { id:'M4', mis:'M4', topic:'มวล vs อายุ',
+    q:'ดาวมวล 25 M☉ เทียบกับดาวมวล 1 M☉ (ดวงอาทิตย์) · อายุดาวเป็นอย่างไร?',
+    opts:[
+      'ดาว 25 M☉ อายุยืนกว่า เพราะมีเชื้อเพลิงมาก',           // M4 trap
+      'อายุเท่ากันเพราะเป็นดาวฤกษ์เหมือนกัน',                 // weak
+      'ดาว 25 M☉ อายุสั้นกว่ามาก (~10 ล้านปี vs 10 พันล้านปี)', // ✓
+      'ดาว 25 M☉ ไม่มีอายุเพราะระเบิดทันที',                  // weak
+    ], c:2 },
+
+  { id:'M5', mis:'M5', topic:'G-type คงสภาพ?',
+    q:'ดวงอาทิตย์ (G-type · เหลือง) ในอนาคตจะเป็นอย่างไร?',
+    opts:[
+      'คงเป็นดาวเหลือง G-type ตลอดอายุจนตาย',                 // M5 trap
+      'ระเบิดเป็นซูเปอร์โนวา → หลุมดำ',                       // M2/M4 trap
+      'ขยายเป็น Red giant → Planetary nebula → White dwarf',   // ✓
+      'ค่อย ๆ เย็นเป็น Black dwarf โดยตรง',                   // weak
+    ], c:2 },
+];
+
+const answers = {};
+const host = document.getElementById('quiz');
+host.innerHTML = QUIZ.map((q, i) => `
+  <div class="quiz-q card" data-qid="${q.id}">
+    <div class="q-prompt"><b>ข้อ ${i+1}.</b> ${q.q}</div>
+    <div style="font-size:11px; color:#9aa3c0; margin-top:4px;">หัวข้อ: ${q.topic}</div>
+    <div class="opt-row">
+      ${q.opts.map((opt, j) => `
+        <button class="opt-btn" data-q="${i}" data-c="${j}" onclick="pick(${i},${j})">
+          <span class="letter">${'ABCD'[j]}.</span>
+          <span class="text">${opt}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+`).join('');
+
+function pick(qi, ci) {
+  answers[qi] = ci;
+  document.querySelectorAll(`.opt-btn[data-q="${qi}"]`).forEach(b => {
+    b.classList.toggle('selected', +b.dataset.c === ci);
+  });
+  if (window.SFX) SFX.play('tap');
+  const n = Object.keys(answers).length;
+  document.getElementById('progNum').textContent = n;
+  document.getElementById('progFill').style.width = (n/QUIZ.length*100) + '%';
+  document.getElementById('submitBtn').disabled = (n < QUIZ.length);
+}
+
+Submit.wirePair({
+  page: 'p01',
+  nextHref: 'p02-arrival.html',
+  getPayload: () => {
+    const arr = QUIZ.map((q, i) => ({ id:q.id, mis:q.mis, picked:answers[i], correct:answers[i]===q.c }));
+    const nCorrect = arr.filter(x => x.correct).length;
+    return { answers: arr, nCorrect, total: QUIZ.length };
+  },
+  isPerfect: (p) => p.nCorrect === QUIZ.length,
+  onSubmit: (status, n) => {
+    const r = document.getElementById('result');
+    const last = JSON.parse(localStorage.getItem('cosmosLog_ep04_submit_p01')||'{}');
+    r.style.display = 'block';
+    r.innerHTML = `<span class="star">📋</span> บันทึกคำตอบแล้ว · ${last.nCorrect||0}/${last.total||5} (post-test จะวัด gain หลังจบบท)`;
+    if (window.SFX) SFX.play('snap');
+  },
+});
+</script>
+</body></html>

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P17 · Exit Ticket · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.section-321 {
+  padding: 22px 26px;
+  border-radius: 16px;
+  margin: 18px 0;
+  position: relative;
+}
+.section-321::before {
+  content: attr(data-num);
+  position: absolute;
+  top: -18px; left: 20px;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px; font-weight: 900;
+  color: var(--section-color); background: var(--bg-0);
+  border: 2px solid var(--section-color);
+  box-shadow: 0 0 20px var(--section-color);
+}
+.section-3 {
+  --section-color: #7effb2;
+  background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(126,255,178,0.35);
+}
+.section-2 {
+  --section-color: #b980ff;
+  background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(185,128,255,0.35);
+}
+.section-1 {
+  --section-color: #ffcb6b;
+  background: linear-gradient(135deg, rgba(255,203,107,0.06), rgba(255,92,122,0.03));
+  border: 1px solid rgba(255,203,107,0.35);
+}
+.section-321 h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 0.2em;
+  color: var(--section-color); margin-bottom: 4px;
+  padding-left: 54px;
+}
+.section-321 .s-sub {
+  font-size: 13px; color: var(--text-dim);
+  padding-left: 54px; margin-bottom: 16px;
+}
+
+/* 3 · Checkbox grid */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+.cpt-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer; font-size: 13.5px;
+  transition: all 0.2s;
+}
+.cpt-item:hover { border-color: var(--border-strong); }
+.cpt-item input { accent-color: var(--accent-green); width: 18px; height: 18px; flex-shrink: 0; }
+.cpt-item.selected { border-color: var(--accent-green); background: rgba(126,255,178,0.08); }
+.cpt-count {
+  margin-top: 10px; padding: 8px 14px;
+  background: rgba(0,0,0,0.3); border-radius: 100px;
+  font-size: 12px; display: inline-block;
+}
+.cpt-count b { color: var(--accent-green); }
+
+/* 2 · Scene drag pool + 2 drop zones */
+.scene-layout {
+  display: grid; grid-template-columns: 2fr 1fr;
+  gap: 16px; margin: 16px 0;
+}
+@media (max-width: 800px) { .scene-layout { grid-template-columns: 1fr; } }
+.scene-src {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  padding: 14px; background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.scene-src-card {
+  padding: 10px; text-align: center;
+  background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.06));
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  cursor: grab; font-size: 11px; color: var(--text);
+  user-select: none;
+}
+.scene-src-card:hover { transform: translateY(-2px); border-color: var(--accent-2); }
+.scene-src-card.picked { opacity: 0.3; cursor: not-allowed; }
+.scene-src-card .icon { font-size: 22px; margin-bottom: 4px; }
+.fav-zones { display: flex; flex-direction: column; gap: 12px; }
+.fav-zone {
+  padding: 14px; min-height: 140px;
+  background: rgba(185,128,255,0.05);
+  border: 2px dashed rgba(185,128,255,0.4);
+  border-radius: 12px; text-align: center;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; gap: 6px;
+  justify-content: center;
+}
+.fav-zone.drag-over { border-color: var(--accent-2); background: rgba(185,128,255,0.1); }
+.fav-zone.filled {
+  border-style: solid; border-color: var(--accent-2);
+  justify-content: flex-start;
+}
+.fav-zone .zone-lbl { font-family: 'Orbitron'; font-size: 10px; color: var(--accent-2); letter-spacing: 0.2em; }
+.fav-zone .picked-card { font-size: 12px; color: var(--text); }
+.fav-zone .picked-card .icon { font-size: 24px; display: block; }
+.fav-zone textarea { margin-top: 6px; min-height: 44px; font-size: 12px; }
+
+/* 1 · Dropdown + text */
+.q-row {
+  display: grid; grid-template-columns: 1fr; gap: 10px;
+  margin: 14px 0;
+}
+.q-row select, .q-row textarea { width: 100%; }
+
+/* BONUS · emoji + stars + slider */
+.bonus-wrap {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px; margin: 18px 0;
+}
+@media (max-width: 800px) { .bonus-wrap { grid-template-columns: 1fr; } }
+.bonus-card {
+  padding: 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.bonus-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--accent); margin-bottom: 10px;
+}
+.emoji-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.emoji-btn {
+  flex: 1; min-width: 50px;
+  padding: 10px 6px;
+  background: rgba(22,27,58,0.4);
+  border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: center;
+  font-size: 24px;
+  transition: all 0.2s;
+}
+.emoji-btn:hover { transform: translateY(-2px); }
+.emoji-btn.active {
+  border-color: var(--accent-gold);
+  background: rgba(255,203,107,0.1);
+  box-shadow: 0 0 15px rgba(255,203,107,0.3);
+}
+.emoji-btn .label {
+  display: block; font-size: 9px;
+  color: var(--text-faint); margin-top: 4px;
+  font-family: 'Sarabun', sans-serif;
+}
+.star-row { display: flex; gap: 4px; }
+.star {
+  font-size: 28px; cursor: pointer;
+  color: rgba(255,203,107,0.2);
+  transition: all 0.15s;
+}
+.star:hover, .star.on { color: var(--accent-gold); transform: scale(1.1); }
+.slider-wrap { margin: 10px 0; }
+.slider-wrap input[type="range"] {
+  width: 100%; accent-color: var(--accent);
+  -webkit-appearance: none; height: 6px;
+  background: rgba(100,216,255,0.2); border-radius: 100px;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+}
+.slider-val {
+  text-align: center; font-family: 'Orbitron', sans-serif;
+  font-size: 24px; color: var(--accent); margin: 4px 0;
+}
+.slider-val::after { content: '%'; font-size: 14px; margin-left: 2px; }
+</style>
+</head>
+<body data-page="p18">
+<main class="page"><div class="page-inner">
+
+<div class="page-label">◤ PAGE 18 / 19 · EXIT TICKET · 5 นาที</div>
+<h1 class="page-title">3-2-1 Journal</h1>
+<h2 class="page-sub">EXIT TICKET · REFLECTION &amp; RESEARCH DATA</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · เก็บข้อมูลวิจัย</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">นำเข้า</span><span>"ก่อนจบ · ทบทวนสั้น ๆ แบบ 3-2-1 · บอก 3 สิ่งที่เรียน · 2 ฉากประทับใจ · 1 คำถามที่อยากรู้ต่อ"</span></div>
+    <div class="role"><span class="tag do">ทำ</span><span>ปล่อยให้ทีมตอบเอง · Export JSON ใน P18 จะเก็บคำตอบทั้งหมด</span></div>
+    <div class="role"><span class="tag teach">วิจัย</span><span>Data ที่เก็บ: frequency ของ concept ที่จำได้ · preference ของฉาก · direction ของความอยากรู้ · affective · self-rating · confidence · ใช้วิเคราะห์ conceptual change ได้ละเอียดกว่า pre/post</span></div>
+  </div>
+</div>
+
+<div class="dialog-box lem" data-speaker="LEMAÎTRE">
+  <div class="txt">Cadets · ก่อนกลับ ขอบันทึกสั้น ๆ · <b>3 · สิ่งที่เรียน · 2 · ฉากที่ประทับใจ · 1 · คำถามที่อยากรู้ต่อ</b> · ข้อมูลจะถูกส่งไปยัง EP02 และเก็บเพื่อการวิจัย</div>
+</div>
+
+<!-- SECTION 3 · CONTENT -->
+<div class="section-321 section-3" data-num="3">
+  <h3>สิ่งที่เรียนรู้วันนี้ (เนื้อหา)</h3>
+  <div class="s-sub">กาถูก <b>3 ข้อ</b> ที่ทีมจำได้มากที่สุด · จากเนื้อหาทั้งหมดใน EP01</div>
+
+  <div class="concept-grid" id="concept-grid">
+    <label class="cpt-item" data-id="c1"><input type="checkbox" value="c1"><span>เอกภพขยายตัว · ไม่มีจุดศูนย์กลาง</span></label>
+    <label class="cpt-item" data-id="c2"><input type="checkbox" value="c2"><span>อายุเอกภพ 13.8 พันล้านปี</span></label>
+    <label class="cpt-item" data-id="c3"><input type="checkbox" value="c3"><span>CMB 2.725 K · หลักฐานบิกแบง</span></label>
+    <label class="cpt-item" data-id="c4"><input type="checkbox" value="c4"><span>กฎฮับเบิล · v = H₀D</span></label>
+    <label class="cpt-item" data-id="c5"><input type="checkbox" value="c5"><span>6 ยุค · ควาร์ก→โปรตอน→นิวเคลียส→อะตอม→กาแล็กซี</span></label>
+    <label class="cpt-item" data-id="c6"><input type="checkbox" value="c6"><span>Penzias-Wilson 1965 · Nobel 1978</span></label>
+    <label class="cpt-item" data-id="c7"><input type="checkbox" value="c7"><span>ธาตุหนักเกิดในดาวฤกษ์ · ไม่ใช่จากบิกแบง</span></label>
+    <label class="cpt-item" data-id="c8"><input type="checkbox" value="c8"><span>BBN · H 75% · He 25% (ยุค 4)</span></label>
+  </div>
+  <div class="cpt-count">เลือกแล้ว · <b id="cpt-n">0</b> / 3</div>
+
+  <div class="form-row mt-20">
+    <label>✍ ถ้ามีความรู้อื่นที่ไม่อยู่ในรายการ · เขียนที่นี่</label>
+    <textarea id="extra-concept" rows="2" placeholder="optional · เช่น 'สเปกตรัม OBAFGKM' · ฯลฯ"></textarea>
+  </div>
+</div>
+
+<!-- SECTION 2 · STORY FAVORITE -->
+<div class="section-321 section-2" data-num="2">
+  <h3>ฉากที่ประทับใจ (เรื่อง)</h3>
+  <div class="s-sub">ลาก <b>2 ฉาก</b> ที่ทีมชอบที่สุดจากซ้ายไปวางในกล่องขวา · แล้วเขียนเหตุผลสั้น ๆ</div>
+
+  <div class="scene-layout">
+    <div class="scene-src" id="scene-src"></div>
+    <div class="fav-zones">
+      <div class="fav-zone" data-slot="fav1">
+        <div class="zone-lbl">◦ FAVORITE 1</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+      <div class="fav-zone" data-slot="fav2">
+        <div class="zone-lbl">◦ FAVORITE 2</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1 · QUESTION -->
+<div class="section-321 section-1" data-num="1">
+  <h3>คำถามที่อยากรู้ต่อ (ต่อยอด)</h3>
+  <div class="s-sub">เลือก 1 คำถามจาก dropdown หรือเขียนเอง · จะไปต่อใน EP02</div>
+
+  <div class="q-row">
+    <select id="q-preset" onchange="onPresetChange()">
+      <option value="">-- เลือกคำถาม หรือเลือก "อื่นๆ" เพื่อเขียนเอง --</option>
+      <option value="q1">ก่อนบิกแบง มีอะไร?</option>
+      <option value="q2">เอกภพจะจบอย่างไร?</option>
+      <option value="q3">ทำไม H₀ จึงวัดได้ค่าต่างกัน (67 vs 73)?</option>
+      <option value="q4">มี multiverse จริงไหม?</option>
+      <option value="q5">ดวงอาทิตย์ของเราจะเป็นอย่างไรต่อ?</option>
+      <option value="q6">ถ้าไม่มีจุดศูนย์กลาง แล้วเอกภพ "ขยายเข้าสู่อะไร"?</option>
+      <option value="q7">ดาวฤกษ์สร้างธาตุหนักได้อย่างไร?</option>
+      <option value="q8">Dark matter · Dark energy คืออะไร?</option>
+      <option value="other">อื่นๆ (เขียนเอง)</option>
+    </select>
+    <textarea id="q-text" rows="2" placeholder="เขียนคำถามของทีม"></textarea>
+  </div>
+</div>
+
+<!-- BONUS · AFFECTIVE + SELF-RATING + CONFIDENCE -->
+<h3 style="font-family:'Orbitron'; font-size:12px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 8px;">🎨 BONUS · เก็บข้อมูลเพิ่มเติม</h3>
+
+<div class="bonus-wrap">
+  <div class="bonus-card">
+    <h5>😊 ความรู้สึกวันนี้</h5>
+    <div class="emoji-row" id="emoji-row">
+      <button class="emoji-btn" data-v="love">😍<span class="label">สนุก</span></button>
+      <button class="emoji-btn" data-v="think">🤔<span class="label">คิดเยอะ</span></button>
+      <button class="emoji-btn" data-v="mind">🤯<span class="label">ทึ่ง</span></button>
+      <button class="emoji-btn" data-v="tired">🥱<span class="label">เหนื่อย</span></button>
+      <button class="emoji-btn" data-v="lost">😵<span class="label">งง</span></button>
+    </div>
+  </div>
+
+  <div class="bonus-card">
+    <h5>⭐ ทีมเข้าใจบิกแบง</h5>
+    <div class="star-row" id="star-row">
+      <div class="star" data-v="1">★</div>
+      <div class="star" data-v="2">★</div>
+      <div class="star" data-v="3">★</div>
+      <div class="star" data-v="4">★</div>
+      <div class="star" data-v="5">★</div>
+    </div>
+    <p class="muted" style="font-size: 11px; margin-top: 4px;" id="star-lbl">เลือกระดับ 1-5</p>
+  </div>
+
+  <div class="bonus-card">
+    <h5>🎯 ความมั่นใจสอบผ่าน</h5>
+    <div class="slider-wrap">
+      <div class="slider-val" id="slider-val">50</div>
+      <input type="range" id="confidence" min="0" max="100" step="5" value="50" oninput="updSlider()">
+    </div>
+    <p class="muted" style="font-size: 11px; text-align: center;">ถ้าสอบตอนนี้ · ได้กี่ %</p>
+  </div>
+</div>
+
+<div class="center mt-20">
+  <button class="btn primary" onclick="submit()">✓ ยืนยัน · ส่ง Exit Ticket</button>
+</div>
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag p">P · สะท้อนคิด · Metacognition</span>
+  <span class="ped-tag a">A · ประเมินตนเอง</span>
+  <span class="ped-tag">วPA 6 · Feedback</span>
+  <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+  <span class="ped-tag">Research · 3-2-1 Journal Data</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+// SECTION 3 · checkbox limit 3
+let selected3 = [];
+document.querySelectorAll('.cpt-item input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const item = inp.closest('.cpt-item');
+    if (inp.checked) {
+      if (selected3.length >= 3) { inp.checked = false; alert('เลือกได้มากสุด 3 ข้อ'); return; }
+      selected3.push(inp.value); item.classList.add('selected');
+    } else {
+      selected3 = selected3.filter(v => v !== inp.value); item.classList.remove('selected');
+    }
+    document.getElementById('cpt-n').textContent = selected3.length;
+  });
+});
+
+// SECTION 2 · drag-drop scene favorites
+const SCENES = [
+  { id: 's1', icon: '💥', name: 'ยานชน' },
+  { id: 's2', icon: '🔍', name: 'วิจัยซาก 5 ชิ้น' },
+  { id: 's3', icon: '📚', name: 'ค้น CMB · Penzias-Wilson' },
+  { id: 's4', icon: '🎈', name: 'ลูกโป่งเอกภพ' },
+  { id: 's5', icon: '🎓', name: 'Dr.Hubble เฉลย' },
+  { id: 's6', icon: '🕰', name: '6 ยุคอนุภาค' },
+  { id: 's7', icon: '🚀', name: 'Ship Lock คำนวณ' },
+  { id: 's8', icon: '⚔️', name: 'VOID โผล่' },
+];
+function renderSceneSrc() {
+  document.getElementById('scene-src').innerHTML = SCENES.map(s => `
+    <div class="scene-src-card" draggable="true" data-id="${s.id}">
+      <div class="icon">${s.icon}</div>
+      <div>${s.name}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.scene-src-card').forEach(c => {
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.id); c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+}
+const favs = { fav1: null, fav2: null };
+document.querySelectorAll('.fav-zone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const id = e.dataTransfer.getData('text/plain');
+    if (Object.values(favs).includes(id)) { alert('ฉากนี้ถูกเลือกแล้ว'); return; }
+    const slot = zone.dataset.slot;
+    favs[slot] = id;
+    const s = SCENES.find(x => x.id === id);
+    zone.classList.add('filled');
+    zone.innerHTML = `
+      <div class="zone-lbl">◦ ${slot.toUpperCase()}</div>
+      <div class="picked-card"><span class="icon">${s.icon}</span>${s.name}</div>
+      <textarea placeholder="เพราะอะไร? (1 ประโยค)" data-slot="${slot}"></textarea>
+    `;
+    document.querySelector(`.scene-src-card[data-id="${id}"]`).classList.add('picked');
+  });
+});
+renderSceneSrc();
+
+// SECTION 1 · dropdown
+function onPresetChange() {
+  const v = document.getElementById('q-preset').value;
+  const txt = document.getElementById('q-text');
+  const presetText = {
+    q1: 'ก่อนบิกแบง มีอะไร?',
+    q2: 'เอกภพจะจบอย่างไร?',
+    q3: 'ทำไม H₀ จึงวัดได้ค่าต่างกัน (67 vs 73)?',
+    q4: 'มี multiverse จริงไหม?',
+    q5: 'ดวงอาทิตย์ของเราจะเป็นอย่างไรต่อ?',
+    q6: 'ถ้าไม่มีจุดศูนย์กลาง แล้วเอกภพขยายเข้าสู่อะไร?',
+    q7: 'ดาวฤกษ์สร้างธาตุหนักได้อย่างไร?',
+    q8: 'Dark matter · Dark energy คืออะไร?',
+    other: '',
+  };
+  if (v && v !== 'other') txt.value = presetText[v];
+  else txt.focus();
+}
+
+// BONUS · emoji
+let emoji = null;
+document.querySelectorAll('.emoji-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    emoji = b.dataset.v;
+  });
+});
+
+// BONUS · stars
+let stars = 0;
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    stars = parseInt(s.dataset.v);
+    document.querySelectorAll('.star').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= stars));
+    document.getElementById('star-lbl').textContent = `ระดับ ${stars} / 5`;
+  });
+});
+
+// BONUS · slider
+function updSlider() {
+  const v = document.getElementById('confidence').value;
+  document.getElementById('slider-val').textContent = v;
+}
+
+// SUBMIT
+function submit() {
+  if (selected3.length !== 3) { alert('กาถูก 3 ข้อในส่วน "3 สิ่งที่เรียน" ก่อน'); return; }
+  if (!favs.fav1 || !favs.fav2) { alert('ลาก 2 ฉากมาวางในช่อง Favorite'); return; }
+  const q = (document.getElementById('q-text').value || '').trim();
+  if (!q) { alert('เขียน 1 คำถามในส่วน "คำถามที่อยากรู้ต่อ"'); return; }
+  if (!emoji) { alert('เลือกอารมณ์'); return; }
+  if (stars === 0) { alert('ให้ดาวระดับความเข้าใจ'); return; }
+
+  const favReasons = {};
+  document.querySelectorAll('textarea[data-slot]').forEach(t => { favReasons[t.dataset.slot] = t.value.trim(); });
+
+  const data = {
+    concepts: selected3,
+    concepts_extra: document.getElementById('extra-concept').value.trim(),
+    fav_scenes: favs,
+    fav_reasons: favReasons,
+    question: q,
+    question_preset: document.getElementById('q-preset').value,
+    emoji,
+    stars,
+    confidence: parseInt(document.getElementById('confidence').value),
+    at: Date.now(),
+  };
+  Book.savePageData('p17', data);
+  Book.addEnergy(3, 'Exit Ticket submitted');
+  Book.addInventory('📒 3-2-1 Journal complete');
+  Book.completePage('p17');
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main" style="padding: 22px;">
+      <h3>✓ EXIT TICKET บันทึกแล้ว</h3>
+      <p>ข้อมูลของทีมพร้อมส่งต่อ EP02 และใช้ในงานวิจัย</p>
+      <p class="mt-10" style="color: var(--accent-gold)">+3 Energy · 📒 3-2-1 Journal</p>
+      <p class="muted mt-10">กด "ต่อไป →" ไปสรุป Journey Map</p>
+    </div>`;
+}
+</script>
+</body>
+</html>

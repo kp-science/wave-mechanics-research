@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P04 · จำแนก 12 กาแล็กซี</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .classify-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 16px 0; }
+  .gal-tile {
+    padding: 6px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px;
+    text-align: center; cursor: grab; user-select: none;
+    transition: all 0.15s; overflow: hidden;
+  }
+  .gal-tile img { width: 100%; height: 100px; object-fit: cover; border-radius: 6px; display: block; pointer-events: none; }
+  .dz .dz-items img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+  .gal-tile.placed { opacity: 0.3; cursor: default; }
+  .gal-tile:hover:not(.placed) { border-color: var(--accent); transform: scale(1.05); }
+  .drop-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 20px 0; }
+  .dz {
+    min-height: 140px; padding: 12px; background: rgba(100,216,255,0.04);
+    border: 2px dashed var(--border); border-radius: 12px;
+  }
+  .dz.over { border-color: var(--accent-gold); background: rgba(255,203,107,0.08); }
+  .dz .dz-label { font-family: 'Orbitron', sans-serif; font-size: 12px; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 8px; text-align: center; }
+  .dz .dz-items { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; font-size: 26px; }
+  .gal-desc { font-size: 11px; color: var(--text-faint); margin-top: 4px; text-align: center; }
+  .timer-bar { position: sticky; top: 70px; z-index: 10; padding: 8px 14px; background: rgba(3,4,12,0.9); border: 1px solid var(--border); border-radius: 100px; display: inline-block; font-family: 'Orbitron', sans-serif; font-size: 13px; color: var(--accent-gold); margin-bottom: 12px; }
+</style>
+</head>
+<body data-page="p04" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 1 · Scene 4 · REFUSAL / TRIAL</div>
+  <h1 class="page-title">จำแนก 12 กาแล็กซี</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K1 · จำแนก</span>
+    <span class="obj-tag p">P1 · สังเกต·จัดกลุ่ม</span>
+    <span class="obj-tag a">A1 · ทำทีม</span>
+  </div>
+
+  <div class="narrative">
+    <p>"เราตามทั้ง 12 จุดไม่ได้ · ต้องคัด" · ลาก <b>กาแล็กซีทั้ง 12</b> เข้า 4 กลุ่มตามรูปร่าง</p>
+    <p style="color:var(--text-dim)">⚠️ ยัง<b>ไม่ต้องรู้ชื่อวิทยาศาสตร์</b> · ใช้สายตาอย่างเดียว · ใครถูก 10/12 ขึ้น ได้ <b>🔍 Hubble Lens</b></p>
+  </div>
+
+  <div class="timer-bar" id="timerBar">⏱ 4:00</div>
+
+  <div id="betMount"></div>
+
+  <h3 style="font-family:Orbitron,sans-serif;font-size:13px;letter-spacing:0.15em;color:var(--accent);margin:16px 0 8px">ลากกาแล็กซีเข้ากลุ่ม</h3>
+  <div class="classify-grid" id="galPool">
+    <!-- 12 tiles · data-group เป็นคำตอบจริง -->
+    <div class="gal-tile" draggable="true" data-id="g1"  data-group="E"><img src="./galaxy/E.jpg" alt="Elliptical 1"></div>
+    <div class="gal-tile" draggable="true" data-id="g2"  data-group="E"><img src="./galaxy/E2.jpg" alt="Elliptical 2"></div>
+    <div class="gal-tile" draggable="true" data-id="g3"  data-group="E"><img src="./galaxy/E3.jpg" alt="Elliptical 3"></div>
+    <div class="gal-tile" draggable="true" data-id="g4"  data-group="S"><img src="./galaxy/S1.jpg" alt="Spiral 1"></div>
+    <div class="gal-tile" draggable="true" data-id="g5"  data-group="S"><img src="./galaxy/s2.jpg" alt="Spiral 2"></div>
+    <div class="gal-tile" draggable="true" data-id="g6"  data-group="S"><img src="./galaxy/S3.jpg" alt="Spiral 3"></div>
+    <div class="gal-tile" draggable="true" data-id="g7"  data-group="SB"><img src="./galaxy/b2.jpg" alt="Barred 1"></div>
+    <div class="gal-tile" draggable="true" data-id="g8"  data-group="SB"><img src="./galaxy/b3.jpg" alt="Barred 2"></div>
+    <div class="gal-tile" draggable="true" data-id="g9"  data-group="SB"><img src="./galaxy/b4.jpg" alt="Barred 3"></div>
+    <div class="gal-tile" draggable="true" data-id="g10" data-group="Irr"><img src="./galaxy/Irregular_galaxy_NGC_1427A_(captured_by_the_Hubble_Space_Telescope).jpg" alt="Irregular NGC 1427A"></div>
+    <div class="gal-tile" draggable="true" data-id="g11" data-group="Irr"><img src="./galaxy/irr%20M82_Chandra_HST_Spitzer-98ad247c47a24d0284aed82e246d442b.jpg" alt="Irregular M82"></div>
+    <div class="gal-tile" draggable="true" data-id="g12" data-group="Irr"><img src="./galaxy/irr%20noao-ngc4214.jpg" alt="Irregular NGC 4214"></div>
+  </div>
+
+  <div class="drop-zones">
+    <div class="dz" data-group="E">
+      <div class="dz-label">รูปไข่</div>
+      <div class="gal-desc">กลม · ไม่มีแขน</div>
+      <div class="dz-items"></div>
+    </div>
+    <div class="dz" data-group="S">
+      <div class="dz-label">กังหัน</div>
+      <div class="gal-desc">มีแขนหมุน · ไม่มีคาน</div>
+      <div class="dz-items"></div>
+    </div>
+    <div class="dz" data-group="SB">
+      <div class="dz-label">กังหันมีคาน</div>
+      <div class="gal-desc">มีแท่งตรงกลาง</div>
+      <div class="dz-items"></div>
+    </div>
+    <div class="dz" data-group="Irr">
+      <div class="dz-label">ไม่มีรูป</div>
+      <div class="gal-desc">เบี้ยว · ไม่สมมาตร</div>
+      <div class="dz-items"></div>
+    </div>
+  </div>
+
+  <div id="result" style="margin-top:10px;font-family:monospace;color:var(--accent-green);"></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P04 · บทบาท: Socratic + Timer</summary>
+    <div class="tc-body">
+      <b>เปิด demo:</b> หยิบ 1 ภาพขึ้นจอรวม · "ดูภาพนี้ · เห็นอะไร · รูปร่างเหมือนอะไร"<br>
+      <b>ระหว่าง (4 นาที):</b> เดินดู · ถามนำ "ทำไมจัดกลุ่มนี้" "ทีมอื่นจัดเหมือนกันไหม"<br>
+      <b>⛔ ห้ามพูด:</b> Elliptical · Spiral · Barred · Irregular (เก็บไว้ P10)<br>
+      <b>✅ ให้ใช้:</b> "รูปไข่" "กังหัน" "กังหันมีคาน" "ไม่มีรูป"<br>
+      <b>ปิด:</b> "ทุกทีมจัดคล้าย ๆ กันไหม · ของพวกนี้มีชื่อเรียกทีหลัง"<br>
+      <b>🎴 DM card:</b> Rival ให้ 2 ทีมแข่งสด · Silent ตัด noise
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled>✓ ส่งคำตอบ</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Game.mountBetPanel('#betMount', { page:'p04', qid:'classify-overall' });
+    shuffleTiles();
+    startTimer();
+  }, 50);
+
+  function shuffleTiles() {
+    const pool = document.getElementById('galPool');
+    const tiles = [...pool.children];
+    for (let i = tiles.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
+    }
+    tiles.forEach(t => pool.appendChild(t));
+  }
+
+  /* ---------- Drag & Drop ---------- */
+  let placed = {}; // { g1: 'E', g2: 'S', ... }
+  document.querySelectorAll('.gal-tile').forEach(tile => {
+    tile.addEventListener('dragstart', e => e.dataTransfer.setData('text', tile.dataset.id));
+  });
+  document.querySelectorAll('.dz').forEach(dz => {
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault(); dz.classList.remove('over');
+      const id = e.dataTransfer.getData('text');
+      const tile = document.querySelector(`.gal-tile[data-id="${id}"]`);
+      if (!tile || tile.classList.contains('placed')) return;
+      const clone = tile.cloneNode(true);
+      clone.classList.remove('placed');
+      clone.removeAttribute('draggable');
+      clone.style.cursor = 'default';
+      dz.querySelector('.dz-items').appendChild(clone);
+      tile.classList.add('placed');
+      placed[id] = dz.dataset.group;
+      if (Object.keys(placed).length === 12) document.getElementById('finishBtn').disabled = false;
+    });
+  });
+
+  /* ---------- Timer 4 นาที ---------- */
+  let timeLeft = 240;
+  function startTimer() {
+    const el = document.getElementById('timerBar');
+    const iv = setInterval(() => {
+      timeLeft--;
+      const m = Math.floor(timeLeft/60), s = timeLeft%60;
+      el.textContent = `⏱ ${m}:${String(s).padStart(2,'0')}`;
+      if (timeLeft <= 30) el.style.color = 'var(--accent-red)';
+      if (timeLeft <= 0) { clearInterval(iv); el.textContent = '⏱ หมดเวลา'; document.getElementById('finishBtn').disabled = false; }
+    }, 1000);
+  }
+
+  function finishPage() {
+    // ใช้ placed map ตรง ๆ · นับเฉพาะ original tile (ไม่นับ clone ใน dropzone)
+    let correct = 0;
+    for (const id in placed) {
+      const tile = document.querySelector(`#galPool .gal-tile[data-id="${id}"]`);
+      if (tile && placed[id] === tile.dataset.group) correct++;
+    }
+    const total = 12;
+    document.getElementById('result').textContent = `📊 ถูก ${correct}/${total}`;
+
+    // ✅ set gate ก่อน · ถ้ามี error ด้านล่าง ก็ยังผ่านไปได้
+    Book.savePageData('p04', { placed, correct });
+    Book.completePage('p04', { score: correct, max: total });
+
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว · กด "ต่อไป →"';
+
+    // ให้คะแนน (แยกจาก gate · ถ้าล้มก็ไม่เป็นไร)
+    try {
+      const timeUsed = (240 - timeLeft) * 1000;
+      if (correct >= 8) {
+        Game.award({ base: correct * 3, timeMs: timeUsed, page:'p04', objective:'K1' });
+        Obj.hit('P1', { page:'p04' });
+      } else {
+        Game.penalty({ amount: 5, page:'p04', objective:'K1' });
+        Obj.miss('P1', { page:'p04' });
+      }
+      if (correct >= 10) { Items.grant('hubbleLens', { from:'p04' }); Book.addCoin(10, 'p04-perfect-classify'); }
+      else if (correct >= 8) Book.addCoin(5, 'p04-good-classify');
+    } catch (err) {
+      console.warn('Scoring failed (gate still OK):', err);
+    }
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P17 · Bloom 15 ข้อ</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .medal { text-align:center; padding:20px; margin:14px 0; border-radius:14px; font-family:Orbitron,sans-serif; }
+  .medal.bronze { background:rgba(205,127,50,0.15); border:2px solid #cd7f32; color:#cd7f32; }
+  .medal.silver { background:rgba(192,192,192,0.15); border:2px solid #c0c0c0; color:#c0c0c0; }
+  .medal.gold   { background:rgba(255,215,0,0.15); border:2px solid #ffd700; color:#ffd700; box-shadow:0 0 30px rgba(255,215,0,0.3); }
+</style>
+</head>
+<body data-page="p17" data-type="puzzle">
+<div class="page">
+  <div class="lbl puzzle">RESOLUTION 2</div>
+  <h1>Bloom 15 ข้อ</h1>
+  <div class="tags"><span class="tag k">K1-K4</span></div>
+
+  <div class="card">
+    <div class="narrative">ทดสอบครบ · 15 ข้อ · bronze 9/15 · silver 12/15 · gold 14/15</div>
+  </div>
+
+  <div id="quiz"></div>
+  <div id="medalHost"></div>
+
+  <details class="tc" open>
+    <summary>🎙️ Teacher Cue · P17 · คุมเวลา · เงียบ</summary>
+    <div class="body">
+      <b>เปิด:</b> "15 ข้อ · 10 นาที · ทำคนเดียว · ใช้ตารางได้"<br>
+      <b>ระหว่าง:</b> เงียบ · ห้ามเฉลย<br>
+      <b>ปิด:</b> "เหรียญคือของคุณ · ไป P18 Log"<br>
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ ไป P18 · Log</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+// 15 questions · mix of L1-L6
+const Q = [
+  // L1 Remember
+  { q:'Sirius มี m เท่าไร?', a:['0','-1.46','1.98','−26.74'], c:1 },
+  { q:'parsec ย่อมาจาก?', a:['parallel-second','parallax-second','parsec-time','particle-sec'], c:1 },
+  { q:'1 pc ≈ กี่ ly?', a:['1','3.26','10','100'], c:1 },
+  // L2 Understand
+  { q:'m=5, M=0 → d?', a:['10 pc','100 pc','1 pc','1000 pc'], c:1 },
+  { q:'ยิ่ง m น้อย = ?', a:['หรี่','สว่าง','ไกล','ใกล้'], c:1 },
+  { q:'parallax p=0.5" → d?', a:['0.5 pc','2 pc','5 pc','0.2 pc'], c:1 },
+  // L3 Apply
+  { q:'Deneb M=-8.4 vs Sirius M=1.4 · ใครสว่างจริงกว่า?', a:['Sirius','Deneb','เท่ากัน','ไม่รู้'], c:1 },
+  { q:'ดาว m=10, M=0 → d?', a:['100 pc','1000 pc','10 pc','10000 pc'], c:1 },
+  { q:'Proxima p=0.77" → d?', a:['~1.3 pc','~10 pc','~0.77 pc','~100 pc'], c:0 },
+  // L4 Analyze
+  { q:'ดาว A m=1, d=100 pc vs B m=3, d=5 pc · ใครสว่างจริงกว่า?', a:['A','B','เท่ากัน'], c:0 },
+  { q:'ทำไม Deneb ดูหรี่กว่า Sirius?', a:['M ต่ำ','ใกล้กว่า','ไกลกว่า 300 เท่า','ไม่จริง'], c:2 },
+  // L5 Evaluate
+  { q:'VOID: "parsec = เวลา" · ผิดเพราะ?', a:['parsec = เวลาจริง','parsec = หน่วยระยะ','ใช้ในหนังเท่านั้น','VOID ถูก'], c:1 },
+  { q:'การวัดระยะด้วย parallax เหมาะกับดาวอะไร?', a:['ไกลมาก','ใกล้มาก (<100 pc)','ทุกดาว','ดาวสว่างเท่านั้น'], c:1 },
+  // L6 Create
+  { q:'ถ้าอยากรู้ M ของดาวต้องมี?', a:['m','d','m+d','p เท่านั้น'], c:2 },
+  { q:'parallax p=0.001" → d?', a:['1 pc','100 pc','1000 pc','10 pc'], c:2 },
+];
+let ans = {}, score = 0;
+function render() {
+  document.getElementById('quiz').innerHTML = Q.map((q,i)=>`
+    <div class="q-card">
+      <div><b>${i+1}.</b> ${q.q}</div>
+      <div class="choice-row" data-i="${i}">
+        ${q.a.map((c,ci)=>`<button class="choice-btn" onclick="pick(${i},${ci})">${c}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+function pick(i, ci) {
+  if (ans[i] != null) return;
+  ans[i] = ci;
+  const ok = ci === Q[i].c;
+  const row = document.querySelector(`.choice-row[data-i="${i}"]`);
+  row.querySelectorAll('.choice-btn').forEach((b,bi) => {
+    b.disabled = true;
+    if (bi === Q[i].c) b.classList.add('correct');
+    if (bi === ci && !ok) b.classList.add('wrong');
+  });
+  if (ok) { score++; Photon.add(5, 'bloom'); }
+  if (Object.keys(ans).length === Q.length) showMedal();
+}
+function showMedal() {
+  const host = document.getElementById('medalHost');
+  let medal = 'bronze', name = 'BRONZE';
+  if (score >= 14) { medal = 'gold'; name = 'GOLD 🥇'; Photon.add(80, 'gold'); }
+  else if (score >= 12) { medal = 'silver'; name = 'SILVER 🥈'; Photon.add(50, 'silver'); }
+  else if (score >= 9) { medal = 'bronze'; name = 'BRONZE 🥉'; Photon.add(30, 'bronze'); }
+  else { medal = 'bronze'; name = 'ยังไม่ผ่าน · ลองทบทวน'; }
+  host.innerHTML = '<div class="medal '+medal+'">🏅 ' + name + '<br><span style="font-size:16px;">คะแนน: ' + score + '/15</span></div>';
+  Sync.recordDecision({ tag:'🏅 Bloom', note:'score '+score+'/15 · '+name });
+}
+function finishPage() {
+  const btn = document.getElementById('finishBtn');
+  btn.classList.add('done'); btn.disabled = true;
+  location.href = 'p18-log.html';
+}
+render();
+</script>
+</body></html>

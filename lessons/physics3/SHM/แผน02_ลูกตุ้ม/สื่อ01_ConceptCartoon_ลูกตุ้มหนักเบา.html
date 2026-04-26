@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Concept Cartoon — "ลูกตุ้มหนัก-เบา" · Interactive (SHM แผน 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:24px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.scene{background:linear-gradient(135deg,#ccfbf1,#a7f3d0);border-radius:14px;padding:22px;margin:16px 0}
+.scene .title{font-size:20px;font-weight:800;color:#115e59;margin-bottom:6px;text-align:center}
+.scene .story{font-size:15.5px;color:#134e4a;margin:8px 0}
+.scene svg{max-width:640px;width:100%;height:auto;display:block;margin:8px auto}
+.chars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+@media(max-width:760px){.chars{grid-template-columns:1fr}}
+.char{background:#fff;border:2px solid #cfd8e3;border-radius:14px;padding:12px;position:relative}
+.char.a{border-color:#c62828;background:#fff5f5}
+.char.b{border-color:#ef6c00;background:#fff3e0}
+.char.c{border-color:#0d9488;background:#ccfbf1}
+.char .avatar{font-size:38px;text-align:center;margin-bottom:4px}
+.char .name{font-weight:800;text-align:center;margin-bottom:6px;color:#134e4a;font-size:15px}
+.char .say{background:#fff;border:1px dashed #999;border-radius:10px;padding:10px;font-size:14px;min-height:110px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:14px 18px;border-radius:10px;margin:16px 0}
+.q b{color:#7a5800}
+.predict{background:#ccfbf1;border-left:6px solid #0d9488;padding:14px 18px;border-radius:10px;margin-top:14px}
+.predict b{color:#115e59}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.opts label{background:#fff;border:1.5px solid #5eead4;border-radius:10px;padding:6px 14px;cursor:pointer;font-size:14px;transition:all .15s}
+.opts label:has(input:checked){background:#0d9488;color:#fff;border-color:#0d9488;font-weight:700}
+.chk-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:760px){.chk-bank{grid-template-columns:1fr}}
+.chk{display:flex;gap:8px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;align-items:flex-start;transition:all .15s}
+.chk:hover{border-color:#0d9488;background:#f0fdfa}
+.chk:has(input:checked){background:#ccfbf1;border-color:#0d9488;font-weight:600}
+.chk input{margin-top:3px;flex-shrink:0}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:6px}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:#fff}
+select.ans-in{border:1.5px solid #5eead4;border-radius:6px;padding:6px 10px;background:#fff;width:auto;min-width:140px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f0fdfa 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.submit-bar{background:linear-gradient(135deg,#115e59,#0d9488);border-radius:12px;padding:16px 20px;margin:16px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#115e59;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:10px 24px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:20px;border-top:1px solid #eee;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-cc">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎭 Concept Cartoon — "ลูกตุ้มหนัก-เบา" · Interactive</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag">CC-02 · E1 Engage</span> 15 นาที · POE-P · ส่งออนไลน์ได้</div>
+    </div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ API ยังไม่ตั้งค่า — download .json แทน</div>
+
+  <div class="id-box">
+    <label>ชื่อ <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>กลุ่ม <input type="text" id="group"></label>
+  </div>
+
+  <div class="scene">
+    <div class="title">🏫 สนามเด็กเล่นของโรงเรียน · นักเรียน 3 คนมองชิงช้าข้างสนาม</div>
+    <div class="story">เอ · บี · ซี เห็นเด็ก 2 คน (ตัวเล็กกับตัวใหญ่) แกว่งชิงช้าพร้อมกัน · เชือกยาวเท่ากัน · ปล่อยจากจุดเดียวกัน (มุม 10°) · พวกเขาถกเถียงว่า <b>"ใครจะแกว่งเร็วกว่ากัน?"</b></div>
+    <svg viewBox="0 0 620 180">
+      <line x1="60" y1="20" x2="560" y2="20" stroke="#115e59" stroke-width="3"/>
+      <line x1="200" y1="20" x2="160" y2="140" stroke="#0d9488" stroke-width="2"/>
+      <circle cx="160" cy="140" r="10" fill="#10b981"/>
+      <text x="145" y="165" font-size="11" fill="#065f46">เด็กเล็ก (20 kg)</text>
+      <line x1="420" y1="20" x2="380" y2="140" stroke="#0d9488" stroke-width="2"/>
+      <circle cx="380" cy="140" r="18" fill="#0d9488"/>
+      <text x="355" y="170" font-size="11" fill="#065f46">เด็กใหญ่ (50 kg)</text>
+      <path d="M 200,50 A 30,30 0 0,0 180,80" stroke="#dc2626" stroke-width="1.5" fill="none"/>
+      <text x="205" y="70" font-size="10" fill="#dc2626">θ = 10°</text>
+      <path d="M 420,50 A 30,30 0 0,0 400,80" stroke="#dc2626" stroke-width="1.5" fill="none"/>
+      <text x="425" y="70" font-size="10" fill="#dc2626">θ = 10°</text>
+    </svg>
+  </div>
+
+  <div class="chars">
+    <div class="char a">
+      <div class="avatar">👦</div>
+      <div class="name">เอ (A)</div>
+      <div class="say">"แน่นอนเด็กใหญ่ต้องแกว่ง <b>เร็วกว่า</b> เพราะน้ำหนักมากแรงโน้มถ่วงดึงแรงกว่า · ยิ่งหนักยิ่งแกว่งเร็ว!"</div>
+    </div>
+    <div class="char b">
+      <div class="avatar">👧</div>
+      <div class="name">บี (B)</div>
+      <div class="say">"ไม่ใช่นะ · ถ้าเราให้เด็กใหญ่แกว่ง<b>กว้างกว่า</b> เค้าจะใช้เวลามากกว่าเพราะวิ่งไกลกว่า · แอมพลิจูดใหญ่ T มากกว่า"</div>
+    </div>
+    <div class="char c">
+      <div class="avatar">🧒</div>
+      <div class="name">ซี (C)</div>
+      <div class="say">"ผมคิดว่า<b>เท่ากัน</b>! เพราะเชือกยาวเท่ากัน · มุมเล็กเท่ากัน · ไม่ว่าหนักเบายังไงก็แกว่งคาบเท่ากัน"</div>
+    </div>
+  </div>
+
+  <form id="ccForm">
+
+  <!-- Q1: เห็นด้วยกับใคร -->
+  <div class="q">
+    <b>Q1 · คุณเห็นด้วยกับใคร และเพราะอะไร?</b>
+    <div class="opts">
+      <label class="opt"><input type="radio" name="q1" value="A"> เอ (หนักกว่าแกว่งเร็ว)</label>
+      <label class="opt"><input type="radio" name="q1" value="B"> บี (แอมพลิจูดใหญ่ T มากกว่า)</label>
+      <label class="opt"><input type="radio" name="q1" value="C"> ซี (เท่ากันทั้งหมด)</label>
+      <label class="opt"><input type="radio" name="q1" value="mix"> ผสม / ไม่แน่ใจ</label>
+    </div>
+  </div>
+
+  <!-- Q2: checkbox bank วิเคราะห์คำพูด -->
+  <div class="q">
+    <b>Q2 · ติ๊ก ✔ ข้อความใน "คำพูด" ที่เป็น Misconception</b> (K2.1 · M2.1/M2.2 · ระวังตัวลวง · ถูก 5 / ลวง 3)
+    <div class="chk-bank">
+      <label class="chk"><input type="checkbox" name="q2" value="a" data-correct="true"> ① "หนักกว่าแกว่งเร็วกว่า" (เอ)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="b" data-correct="true"> ② "น้ำหนักมาก → แรงโน้มถ่วงดึงแรง → เร็วกว่า" (เอ)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="c" data-correct="false"> ③ "มุมเล็กเท่ากัน" (บี/ซี)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="d" data-correct="true"> ④ "แอมพลิจูดใหญ่ใช้เวลามากกว่า" (บี)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="e" data-correct="false"> ⑤ "เชือกยาวเท่ากัน" (ทุกคน)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="f" data-correct="true"> ⑥ "ลูกตุ้มกว้าง T มากกว่าเพราะวิ่งไกล" (บี)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="g" data-correct="true"> ⑦ "เบา → แกว่งช้า · หนัก → แกว่งเร็ว" (สรุปของเอ)</label>
+      <label class="chk"><input type="checkbox" name="q2" value="h" data-correct="false"> ⑧ "ไม่ว่าหนักเบา แกว่งคาบเท่ากัน" (ซี)</label>
+    </div>
+  </div>
+
+  <!-- Q3: checkbox bank ทำนาย -->
+  <div class="q">
+    <b>Q3 · ติ๊ก ✔ ทุกข้อที่ "ถูกต้องตามทฤษฎี"</b> (K2.1 · ถูก 4 · ลวง 4)
+    <div class="chk-bank">
+      <label class="chk"><input type="checkbox" name="q3" value="a" data-correct="true"> ① T ของลูกตุ้มมุมเล็ก = 2π√(l/g)</label>
+      <label class="chk"><input type="checkbox" name="q3" value="b" data-correct="false"> ② T ∝ m (มวลยิ่งมากคาบยิ่งยาว)</label>
+      <label class="chk"><input type="checkbox" name="q3" value="c" data-correct="true"> ③ T ไม่ขึ้นกับมวล m</label>
+      <label class="chk"><input type="checkbox" name="q3" value="d" data-correct="false"> ④ T ∝ A (แอมพลิจูดใหญ่ T ใหญ่)</label>
+      <label class="chk"><input type="checkbox" name="q3" value="e" data-correct="true"> ⑤ T ∝ √l (ความยาวเชือกเป็นกรณฑ์)</label>
+      <label class="chk"><input type="checkbox" name="q3" value="f" data-correct="false"> ⑥ ลูกตุ้มบนดวงจันทร์ T สั้นกว่าบนโลก</label>
+      <label class="chk"><input type="checkbox" name="q3" value="g" data-correct="true"> ⑦ ที่มุมเล็ก T ไม่ขึ้นกับแอมพลิจูด</label>
+      <label class="chk"><input type="checkbox" name="q3" value="h" data-correct="false"> ⑧ ลูกตุ้มแกว่ง 45° ยังใช้สูตร T = 2π√(l/g) ได้ตรง</label>
+    </div>
+  </div>
+
+  <!-- Q4: dropdown สิ่งที่ขาด -->
+  <div class="q">
+    <b>Q4 · คำพูดของ "เอ" ขาดแนวคิดใดทำให้เข้าใจผิด?</b>
+    <select name="q4" class="ans-in" style="min-width:320px">
+      <option value="">-- เลือก --</option>
+      <option value="1">1) แรงคืนตัวของลูกตุ้ม F = −(mg/l)x · เมื่อนำเข้าสมการการเคลื่อนที่ a = F/m = −(g/l)x · มวล m ตัดออกทั้งซ้ายขวา · T ไม่ขึ้นกับ m</option>
+      <option value="2">2) แรงโน้มถ่วงยิ่งมากยิ่งดึงแรง ลูกตุ้มยิ่งเร็ว</option>
+      <option value="3">3) ลูกตุ้มหนักพลังงานมากจึงแกว่งนานกว่า</option>
+      <option value="4">4) น้ำหนักไม่เกี่ยวกับการเคลื่อนที่แบบแกว่ง</option>
+    </select>
+  </div>
+
+  <!-- Predict -->
+  <div class="predict">
+    <b>🔮 Predict (P ของ POE-02):</b>
+    <div style="margin-top:6px"><b>(ก)</b> ถ้าให้ทดลอง SIM02 เทียบลูกตุ้ม 3 ลูก (m = 0.5, 1.0, 2.0 kg, l เท่ากัน) — คาดว่า T จะเป็น
+      <select name="p-T" class="ans-in" style="min-width:220px">
+        <option value="">-- เลือก --</option>
+        <option value="eq">เท่ากันทั้ง 3</option>
+        <option value="heavy">หนักสุดช้าที่สุด</option>
+        <option value="heavy-fast">หนักสุดเร็วที่สุด</option>
+        <option value="light-fast">เบาสุดเร็วที่สุด</option>
+      </select>
+    </div>
+    <div style="margin-top:6px"><b>(ข)</b> ถ้า l × 4 · T จะเปลี่ยนเป็น
+      <select name="p-l" class="ans-in" style="min-width:180px">
+        <option value="">-- เลือก --</option>
+        <option value="2">2 เท่า (√4)</option>
+        <option value="4">4 เท่า (เชิงเส้น)</option>
+        <option value="16">16 เท่า (ยกกำลัง 2)</option>
+        <option value="0.5">ครึ่ง (0.5 เท่า)</option>
+      </select>
+    </div>
+    <div style="margin-top:8px"><b>(ค) วาดทำนายกราฟ T² vs l บน canvas (ถ้าทำนายถูก ต้องเป็นเส้นตรง):</b></div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" id="tb1p" onclick="setTool('cc1','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" id="tb1e" onclick="setTool('cc1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cc1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('cc1','#0d9488',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cc1','#dc2626',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cc1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cc1" data-bg="lined" width="980" height="260"></canvas>
+    <textarea class="ans-ta" id="p-exp" rows="3" placeholder="เพราะอะไรถึงคิดแบบนั้น... (อ้างสูตร T = 2π√(l/g) ถ้ารู้)"></textarea>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ ส่งคำตอบ Predict</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  </form>
+
+  <div class="foot">CC-02 · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}});
+
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='CC_SHM_Plan2';
+document.getElementById('ccForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้อง';return;}
+  const ans={};
+  ans.q1=(document.querySelector('input[name="q1"]:checked')||{}).value||'';
+  ['q2','q3'].forEach(q=>{let sc=0,mx=0;document.querySelectorAll(`input[name="${q}"]`).forEach(cb=>{mx++;const ok=cb.dataset.correct==='true';if(ok===cb.checked)sc++;});ans[q+'_sel']=Array.from(document.querySelectorAll(`input[name="${q}"]:checked`)).map(c=>c.value);ans[q+'_score']=sc+'/'+mx;});
+  ans.q4=document.querySelector('select[name="q4"]').value;
+  ans.p_T=document.querySelector('select[name="p-T"]').value;
+  ans.p_l=document.querySelector('select[name="p-l"]').value;
+  ans.p_exp=document.getElementById('p-exp').value;
+  try{ans.cc1_img=document.getElementById('cc1').toDataURL('image/png');}catch(e){}
+  const payload={plan:'SHM-2',type:'CC-02',student_name:name,student_no:Number(no),class:cls,group:document.getElementById('group').value,test_date:new Date().toISOString().split('T')[0],...ans};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){status.className='status error';status.innerHTML='⚠️ API ยังไม่ตั้งค่า · <a href="#" onclick="downloadJSON();return false;" style="color:#115e59">Download .json</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ ส่งสำเร็จ 🎉';btn.textContent='✅ ส่งแล้ว';}catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`CC_SHM2_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

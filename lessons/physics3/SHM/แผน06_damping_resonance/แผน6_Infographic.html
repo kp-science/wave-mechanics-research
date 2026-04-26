@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 6 — Damping, Resonance และการประยุกต์</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: #faf5ff; color: #1a202c; font-size: 15px; line-height: 1.6; }
+
+  .hero { background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a78bfa 100%); color: white; padding: 36px 40px 28px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%); border-radius: 50%; }
+  .hero-wave { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; overflow: hidden; }
+  .hero-top { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  .hero-badge { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); border-radius: 16px; padding: 10px 20px; text-align: center; min-width: 110px; }
+  .hero-badge .plan-num { font-size: 36px; font-weight: 800; line-height: 1; }
+  .hero-badge .plan-label { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .hero-info { flex: 1; }
+  .hero-info h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+  .hero-info .subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { background: rgba(255,255,255,0.18); border-radius: 20px; padding: 3px 12px; font-size: 13px; white-space: nowrap; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2); }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 14px; opacity: 0.92; }
+  .meta-icon { font-size: 18px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 40px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+  .card-icon { font-size: 22px; }
+  .card-title { font-size: 17px; font-weight: 700; color: #1a202c; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #718096; margin-bottom: 4px; }
+
+  .concept-box { background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-left: 5px solid #7c3aed; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; font-size: 15px; line-height: 1.75; }
+
+  .con-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 760px) { .con-grid { grid-template-columns: 1fr; } }
+  .con-card { border-radius: 12px; padding: 16px; }
+  .con-card.a { background: #ede9fe; border-left: 4px solid #7c3aed; }
+  .con-card.b { background: #ddd6fe; border-left: 4px solid #5b21b6; }
+  .con-card.c { background: #f5f3ff; border-left: 4px solid #8b5cf6; }
+  .con-card-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .con-card-sub { font-size: 13px; color: #4a5568; }
+  .con-card-note { font-size: 12.5px; color: #718096; margin-top: 6px; }
+  .con-svg-box { background: white; border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center; }
+  .formula { background: white; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 15px; text-align: center; color: #4c1d95; font-weight: 600; }
+
+  .timeline-wrap { margin-top: 6px; }
+  .phase { display: flex; gap: 14px; margin-bottom: 16px; position: relative; }
+  .phase::before { content: ''; position: absolute; left: 24px; top: 52px; bottom: -16px; width: 2px; background: #e2e8f0; }
+  .phase:last-child::before { display: none; }
+  .phase-dot { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; z-index: 1; }
+  .phase-dot.tlc { background: #7e57c2; }
+  .phase-dot.ft { background: #7c3aed; }
+  .phase-dot.engage { background: #2e7d32; }
+  .phase-dot.explore { background: #5b21b6; }
+  .phase-dot.explain { background: #c62828; }
+  .phase-dot.elaborate { background: #8d6e63; }
+  .phase-dot.mj { background: #4e342e; }
+  .phase-dot.et { background: #059669; }
+  .phase-dot.pbl { background: #0d9488; }
+  .phase-dot.deb { background: #dc2626; }
+  .phase-dot.gw { background: #0891b2; }
+  .phase-dot.act { background: #0ea5e9; }
+  .phase-name.act { color: #075985; }
+  .prior-box { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 10px; padding: 12px; margin: 8px 0; }
+  .prior-box h5 { color: #075985; font-size: 13px; margin-bottom: 6px; }
+  .prior-box .src-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .prior-box .src-tag { background: white; border: 1px solid #7dd3fc; border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #0369a1; font-weight: 600; }
+  .phase-dot.goal { background: #16a34a; }
+  .phase-name.goal { color: #166534; }
+  .goal-box { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 10px; padding: 12px; margin: 8px 0; }
+  .goal-box h5 { color: #166534; font-size: 13px; margin-bottom: 6px; }
+  .goal-box .goal-item { background: white; border-left: 3px solid #16a34a; padding: 6px 10px; margin: 4px 0; font-size: 13px; border-radius: 4px; }
+  .activity-badge.goal { background: #dcfce7; color: #166534; }
+  .activity-badge.act { background: #e0f2fe; color: #075985; }
+  .mindmap-box { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 10px; padding: 14px; margin-top: 8px; }
+  .mindmap-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; }
+  @media (max-width: 760px) { .mindmap-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .mm-node { background: white; border-radius: 8px; padding: 8px 6px; text-align: center; font-size: 11.5px; border-top: 3px solid #0ea5e9; }
+  .mm-node h5 { color: #0369a1; font-size: 12px; margin-bottom: 2px; }
+  .mm-center { background: linear-gradient(135deg,#0284c7,#0ea5e9); color: white; font-weight: 700; text-align: center; padding: 10px; border-radius: 8px; margin: 8px auto; max-width: 400px; }
+  .phase-body { flex: 1; }
+  .phase-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .phase-name { font-size: 17px; font-weight: 700; }
+  .phase-name.tlc { color: #5e35b1; }
+  .phase-name.ft { color: #4c1d95; }
+  .phase-name.engage { color: #1b5e20; }
+  .phase-name.explore { color: #4c1d95; }
+  .phase-name.explain { color: #b71c1c; }
+  .phase-name.elaborate { color: #5d4037; }
+  .phase-name.mj { color: #3e2723; }
+  .phase-name.et { color: #047857; }
+  .phase-name.pbl { color: #115e59; }
+  .phase-name.deb { color: #991b1b; }
+  .phase-name.gw { color: #0e7490; }
+  .phase-time { background: #edf2f7; border-radius: 20px; padding: 2px 10px; font-size: 12.5px; color: #4a5568; font-weight: 600; }
+  .vpa-badge { background: #ede9fe; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #4c1d95; font-weight: 600; }
+  .obj-badge { background: #fff4cc; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #8a6d00; font-weight: 700; }
+  .misc-badge { background: #ffe4d6; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #b53c00; font-weight: 700; }
+  .activity-badge { background: #ccfbf1; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #115e59; font-weight: 700; }
+  .activity-badge.deb { background: #fee2e2; color: #991b1b; }
+  .activity-badge.gw { background: #cffafe; color: #0e7490; }
+  .phase-activities { list-style: none; }
+  .phase-activities li { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: start; padding: 6px 0; border-bottom: 1px dashed #edf2f7; font-size: 14px; color: #2d3748; }
+  .phase-activities li:last-child { border-bottom: none; }
+  .li-tool { justify-self: end; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .li-text { position: relative; padding-left: 18px; }
+  .li-text::before { content: '▸'; position: absolute; left: 0; color: #a0aec0; }
+
+  .tool-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1.5px solid #c4b5fd; color: #4c1d95; border-radius: 8px; padding: 2px 8px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .tool-chip.sim { border-color: #9f7aea; color: #553c9a; background: #faf5ff; }
+  .tool-chip.cc { border-color: #ed8936; color: #9c4221; background: #fffaf0; }
+  .tool-chip.tl { border-color: #805ad5; color: #553c9a; background: #faf5ff; }
+  .tool-chip.mj { border-color: #8b5a2b; color: #744210; background: #fffbeb; }
+  .tool-chip.ft { border-color: #7c3aed; color: #4c1d95; background: #ede9fe; }
+  .tool-chip.work { border-color: #48bb78; color: #276749; background: #f0fff4; }
+  .tool-chip.hook { border-color: #ef4444; color: #991b1b; background: #fef2f2; }
+  .tool-chip.cmap { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+  .tool-chip.et { border-color: #059669; color: #047857; background: #d1fae5; }
+  .tool-chip.pbl { border-color: #0d9488; color: #115e59; background: #ccfbf1; }
+  .tool-chip.vid { border-color: #dc2626; color: #991b1b; background: #fef2f2; }
+  .tool-chip.deb { border-color: #dc2626; color: #991b1b; background: #fee2e2; }
+  .tool-chip.gw { border-color: #0891b2; color: #0e7490; background: #cffafe; }
+
+  .comp-badge { display: inline-flex; align-items: center; gap: 3px; background: #ede9fe; color: #4c1d95; border: 1px solid #c4b5fd; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+  .char-badge { display: inline-flex; align-items: center; gap: 3px; background: #fefcbf; color: #744210; border: 1px solid #ecc94b; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+
+  .misc-box { background: #fff5f5; border: 1.5px solid #fc8181; border-radius: 12px; padding: 14px; margin-top: 14px; }
+  .misc-title { font-weight: 700; color: #c53030; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .misc-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .misc-id { background: #c53030; color: white; border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+  .misc-id.star { background: #9c4221; }
+  .misc-text { font-size: 13.5px; color: #2d3748; }
+  .misc-correct { font-size: 13px; color: #276749; font-weight: 600; margin-top: 3px; }
+
+  .assess-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .assess-table th { background: #7c3aed; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .assess-table td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .assess-table tr:nth-child(even) td { background: #faf5ff; }
+
+  .vpa-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .vpa-table th { background: #4c1d95; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .vpa-table td { padding: 8px 10px; border-bottom: 1px solid #ddd6fe; vertical-align: top; }
+  .vpa-table tr:nth-child(even) td { background: #faf5ff; }
+  .vpa-num { background: #7c3aed; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .e5-tag { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 11.5px; font-weight: 600; color: white; }
+  .e5-tlc { background: #7e57c2; }
+  .e5-ft { background: #7c3aed; }
+  .e5-engage { background: #2e7d32; }
+  .e5-explore { background: #5b21b6; }
+  .e5-explain { background: #c62828; }
+  .e5-elaborate { background: #8d6e63; }
+  .e5-mj { background: #4e342e; }
+  .e5-et { background: #059669; }
+  .e5-pbl { background: #0d9488; }
+  .e5-deb { background: #dc2626; }
+  .e5-gw { background: #0891b2; }
+
+  .tool-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 14px; }
+  .tool-item:last-child { border-bottom: none; }
+  .tool-num { background: #7c3aed; color: white; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .tool-item.core { background: #faf5ff; border-radius: 6px; padding: 8px 10px; margin: 2px 0; border-bottom: none; }
+  .tool-item.plus { background: #f0fdf4; border-radius: 6px; padding: 8px 10px; margin: 2px 0; border-bottom: none; border-left: 3px solid #059669; }
+  .tool-item.plus .tool-num { background: #059669; }
+
+  .obj-group { margin-bottom: 14px; }
+  .obj-group:last-child { margin-bottom: 0; }
+  .obj-type { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px; }
+  .obj-type.k { background: #ddd6fe; color: #4c1d95; }
+  .obj-type.p { background: #c6f6d5; color: #1c4532; }
+  .obj-type.a { background: #feebc8; color: #652b19; }
+  .obj-list { list-style: none; }
+  .obj-list li { padding: 4px 0 4px 26px; position: relative; font-size: 14px; color: #2d3748; }
+  .obj-list li::before { content: '✓'; position: absolute; left: 0; color: #38a169; font-weight: 700; }
+  .obj-code { display: inline-block; background: #4c1d95; color: #fff; border-radius: 4px; font-size: 11px; padding: 1px 6px; margin-right: 4px; font-weight: 700; }
+  .obj-code.p { background: #1c4532; }
+  .obj-code.a { background: #652b19; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .comp-item { background: #f7fafc; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+  .comp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .rubric-strip { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .rubric-score { flex: 1; min-width: 80px; border-radius: 10px; padding: 10px; text-align: center; border: 2px solid transparent; }
+  .rubric-score .score-num { font-size: 26px; font-weight: 800; line-height: 1; }
+  .rubric-score .score-desc { font-size: 12px; margin-top: 4px; }
+  .rubric-score:nth-child(1) { background: #fff5f5; border-color: #fc8181; color: #c53030; }
+  .rubric-score:nth-child(2) { background: #fffaf0; border-color: #f6ad55; color: #c05621; }
+  .rubric-score:nth-child(3) { background: #f0fff4; border-color: #9ae6b4; color: #276749; }
+  .rubric-score:nth-child(4) { background: #ede9fe; border-color: #c4b5fd; color: #4c1d95; }
+
+  .footer { text-align: center; padding: 20px; color: #a0aec0; font-size: 13px; border-top: 1px solid #e2e8f0; margin-top: 10px; }
+
+  .section-heading { font-size: 20px; font-weight: 800; color: #1a202c; margin: 28px 0 14px; padding-left: 14px; border-left: 5px solid #7c3aed; }
+
+  .sim-banner { background: linear-gradient(90deg, #4c1d95, #a78bfa); border-radius: 12px; padding: 14px 18px; margin: 14px 0; color: white; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sim-banner-icon { font-size: 28px; }
+  .sim-banner-title { font-weight: 700; font-size: 15px; }
+  .sim-banner-sub { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+  .sim-badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 4px 12px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+
+  .svg-label { font-family: 'Sarabun', sans-serif; font-size: 9.5px; font-weight: 700; }
+
+  .pbl-box { background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 14px; margin: 10px 0; }
+  .pbl-title { color: #065f46; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .pbl-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  @media (max-width: 760px) { .pbl-grid { grid-template-columns: 1fr 1fr; } }
+  .pbl-card { background: white; border-radius: 8px; padding: 10px; border-top: 3px solid #10b981; font-size: 12.5px; }
+  .pbl-card h5 { color: #065f46; font-size: 13px; margin-bottom: 4px; }
+
+  .debate-box { background: #fef2f2; border: 2px solid #ef4444; border-radius: 12px; padding: 14px; margin: 10px 0; }
+  .debate-title { color: #991b1b; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .debate-sides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 760px) { .debate-sides { grid-template-columns: 1fr; } }
+  .debate-side { background: white; border-radius: 8px; padding: 10px; font-size: 12.5px; }
+  .debate-side.pro { border-top: 3px solid #10b981; }
+  .debate-side.con { border-top: 3px solid #ef4444; }
+  .debate-side h5 { font-size: 13px; margin-bottom: 4px; }
+  .debate-side.pro h5 { color: #065f46; }
+  .debate-side.con h5 { color: #991b1b; }
+
+  .final-banner { background: linear-gradient(90deg, #7c3aed, #a78bfa); color: white; padding: 16px 18px; border-radius: 12px; margin: 14px 0; }
+  .final-banner h3 { font-size: 16px; margin-bottom: 6px; }
+  .final-banner p { font-size: 13.5px; opacity: 0.95; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">6</div>
+      <div class="plan-label">แผนสุดท้าย</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px; opacity:0.75; margin-bottom:4px; font-weight:600; letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 8 การเคลื่อนที่แบบ SHM · ม.5</p>
+      <h1>Damping, Resonance และการประยุกต์</h1>
+      <div class="subtitle">หน่วย SHM · แผน 6/6 · คาบที่ 11–12 · <strong>บูรณาการและสรุปหน่วย</strong></div>
+      <div class="hero-tags">
+        <span class="tag">🎯 5E + PBL</span>
+        <span class="tag">🎬 Video Analysis</span>
+        <span class="tag">⚖️ Debate</span>
+        <span class="tag">🖼 Gallery Walk</span>
+        <span class="tag">🧠 วPA ด้าน 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ M6.1–M6.3</span>
+        <span class="tag">💻 SIM06 Resonance Lab</span>
+        <span class="tag">📦 10 ชิ้น (6+4)</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-icon">⏱</span> <strong>คาบ 11–12 · 100 นาที</strong></div>
+    <div class="meta-item"><span class="meta-icon">👨‍🏫</span> นายโกเมน ปาปะโถ</div>
+    <div class="meta-item"><span class="meta-icon">📚</span> สสวท. ฟิสิกส์ เล่ม 3 · 8.6</div>
+    <div class="meta-item"><span class="meta-icon">🎯</span> ตัวชี้วัด ว2.3 ม.5/5</div>
+    <div class="meta-item"><span class="meta-icon">🏫</span> โรงเรียนสตรีวิทยา</div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C200,0 400,40 600,20 C800,0 1000,40 1200,20 L1200,40 L0,40 Z" fill="#faf5ff"/></svg>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="final-banner">
+    <h3>🏁 แผนสุดท้ายของหน่วย SHM — บูรณาการและประยุกต์</h3>
+    <p>แผนนี้เชื่อมความรู้ทั้ง 5 แผนก่อนหน้าสู่การประยุกต์จริง: Tacoma Narrows, Taipei 101, MRI, นาฬิกาลูกตุ้ม · ใช้ PBL + Debate สร้างการคิดขั้นสูง</p>
+  </div>
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    ใน<strong>โลกจริง</strong> SHM มักไม่สมบูรณ์ — มีแรงเสียดทานทำให้<strong>แอมพลิจูดลดลงเรื่อย ๆ</strong> (damping) และถูก<strong>แรงขับจากภายนอก</strong>กลายเป็น forced oscillation<br>
+    • <strong>Damped SHM:</strong> A(t) = A₀e^(−bt/2m) · <strong>A ลด แต่ f ≈ คงที่</strong> (แก้ M6.1)<br>
+    • <strong>Resonance:</strong> เกิดเมื่อ <strong>f_drive = f_natural</strong> · A เพิ่มสูงสุด · แตกต่างจากการสะท้อน (แก้ M6.2)<br>
+    • <strong>เงื่อนไข Resonance ไม่ใช่แรงมากสุด</strong> · แต่เป็น f ที่ตรง (แก้ M6.3)<br>
+    • <strong>ประเภท Damping:</strong> Underdamped (แกว่งค่อยๆ ตาย) · Critically damped (ตายเร็วสุดไม่แกว่ง) · Overdamped (ตายช้า)<br>
+    • <strong>ประโยชน์:</strong> นาฬิกา, MRI, คลื่นวิทยุ · <strong>โทษ:</strong> Tacoma Narrows, ตึกถล่มจากแผ่นดินไหว
+  </div>
+
+  <div class="con-grid">
+    <div class="con-card a">
+      <div class="con-card-title">📉 Damped SHM</div>
+      <div class="con-card-sub">A ลดตามเวลา · <strong>f ไม่เปลี่ยน</strong></div>
+      <div class="con-svg-box">
+        <svg viewBox="0 0 220 90" width="210" height="85">
+          <line x1="10" y1="45" x2="210" y2="45" stroke="#cbd5e0" stroke-width="1"/>
+          <path d="M10,45 Q20,10 30,45 T50,45 Q60,22 70,45 T90,45 Q100,34 110,45 T130,45 Q140,40 150,45 T170,45 Q180,43 190,45" stroke="#7c3aed" stroke-width="2" fill="none"/>
+          <path d="M10,10 Q110,25 210,42" stroke="#dc2626" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+          <path d="M10,80 Q110,65 210,48" stroke="#dc2626" stroke-width="1" fill="none" stroke-dasharray="3,2"/>
+          <text x="200" y="18" class="svg-label" fill="#dc2626">envelope</text>
+          <text x="210" y="50" class="svg-label" fill="#7c3aed" text-anchor="end">y(t)</text>
+        </svg>
+      </div>
+      <div class="con-card-note"><strong>แก้ M6.1</strong> · A ลดเรื่อย ๆ · แต่ระยะรอบ T เท่าเดิม</div>
+    </div>
+    <div class="con-card b">
+      <div class="con-card-title">🎯 Resonance Curve</div>
+      <div class="con-card-sub">A สูงสุดที่ <strong>f = f_natural</strong></div>
+      <div class="con-svg-box">
+        <svg viewBox="0 0 220 90" width="210" height="85">
+          <line x1="20" y1="80" x2="210" y2="80" stroke="#cbd5e0" stroke-width="1"/>
+          <line x1="20" y1="10" x2="20" y2="80" stroke="#cbd5e0" stroke-width="1"/>
+          <path d="M25,78 Q60,72 90,55 Q110,15 115,10 Q120,15 140,55 Q170,72 205,78" stroke="#5b21b6" stroke-width="2" fill="none"/>
+          <line x1="115" y1="10" x2="115" y2="80" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="115" y="8" class="svg-label" fill="#dc2626" text-anchor="middle">f_natural</text>
+          <text x="115" y="88" class="svg-label" fill="#dc2626" text-anchor="middle">A max</text>
+          <text x="25" y="88" class="svg-label" fill="#64748b">f_drive</text>
+        </svg>
+      </div>
+      <div class="con-card-note"><strong>แก้ M6.2, M6.3</strong> · Resonance ≠ สะท้อน · f ตรงไม่ใช่แรงมาก</div>
+    </div>
+    <div class="con-card c">
+      <div class="con-card-title">📐 สูตร</div>
+      <div class="formula">A(t) = A₀e^(−bt/2m)</div>
+      <div class="formula">ω_d = √(ω₀² − (b/2m)²)</div>
+      <div class="formula">Resonance: f_drive = f_natural</div>
+      <div class="con-card-note">b = สัมประสิทธิ์แรงหน่วง · ω_d ≈ ω₀ เมื่อ b เล็ก</div>
+    </div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 3 ตัวในแผน 6 (อิง Somroob & Wattanakasiwich · Tongchai 2011 · Mufit)</div>
+    <div class="misc-item">
+      <span class="misc-id star">M6.1 ★</span>
+      <div>
+        <div class="misc-text">❌ <em>"Damping ทำให้ f ลดลง (เพราะแกว่งช้าลง)"</em> <span style="font-size:11px;color:#718096;">[Somroob & Wattanakasiwich]</span></div>
+        <div class="misc-correct">✅ Damping ทำให้ <strong>A ลด · แต่ f คงที่</strong> (ที่ damping เล็ก) · SIM06 แสดง graph A-t พร้อมวัด T เห็นระยะรอบไม่เปลี่ยน</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id star">M6.2 ★</span>
+      <div>
+        <div class="misc-text">❌ <em>"Resonance = การสะท้อน"</em> <span style="font-size:11px;color:#718096;">[สับสนคำ · Tongchai 2011]</span></div>
+        <div class="misc-correct">✅ Resonance คือ <strong>การสั่นพ้อง</strong> เมื่อ f_drive = f_natural → A เพิ่มสูงสุด · <strong>ไม่ใช่การสะท้อน (reflection)</strong> · Tacoma Narrows = Resonance ไม่ใช่สะท้อน</div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M6.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"Resonance เกิดเมื่อแรงกระทำมากที่สุด"</em> <span style="font-size:11px;color:#718096;">[Mufit]</span></div>
+        <div class="misc-correct">✅ Resonance เกิดที่ <strong>f_drive ตรงกับ f_natural</strong> ไม่ใช่ขนาดแรง · แรงเล็ก ๆ แต่ f ตรง → A ระเบิดใหญ่ได้ (เช่น ชิงช้า ผลักเบา ๆ ตามจังหวะ)</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><span class="card-title">KPA</span></div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K6.1</span>อธิบาย Damped SHM: A ลดตามเวลา · f คงที่ (M6.1) · F6 ≥ 80%</li>
+          <li><span class="obj-code">K6.2</span>อธิบายเงื่อนไข Resonance (f_drive = f_natural) และยกตัวอย่างในชีวิตจริง (M6.2, M6.3) · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P6.1</span>วิเคราะห์ case study (Tacoma, Taipei 101, แผ่นดินไหว) + ใช้ SIM06 · Rubric ≥ 3/4</li>
+          <li><span class="obj-code p">P6.2</span>ออกแบบ PBL mini: "ป้องกันตึกจาก resonance" หรือ "ใช้ resonance ทำประโยชน์" · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A6.1</span>Higher-order thinking — Debate + PBL + วิเคราะห์ · OB-01</li>
+          <li><span class="obj-code a">A6.2</span>ตระหนักถึงการประยุกต์ฟิสิกส์ในวิศวกรรม/ความปลอดภัย · MJ-06 ≥ 70%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">💪</span><span class="card-title">สมรรถนะ & รูปแบบสอน</span></div>
+      <div class="comp-grid">
+        <div class="comp-item"><span class="comp-dot" style="background:#3182ce"></span>การสื่อสาร</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#805ad5"></span>การคิด</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#e53e3e"></span>การแก้ปัญหา</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#dd6b20"></span>ทักษะชีวิต</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#7c3aed"></span>การใช้เทคโนโลยี</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#1e88e5"></span>รวมพลัง/ทีม</div>
+      </div>
+      <div class="pbl-box" style="margin-top:14px;">
+        <div class="pbl-title">🔧 รูปแบบหลัก: PBL + Video Analysis + Debate + Gallery Walk</div>
+        <div style="font-size:12.5px; color:#4a5568;">ใช้ <strong>case-based + project-based</strong> สร้างการคิดขั้นสูงและเชื่อมโยงกับชีวิตจริง · เหมาะกับแผนสุดท้ายที่เป็นการบูรณาการ</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + PBL + Debate + Gallery Walk · 11 ขั้น)</h2>
+  <div class="card">
+    <div class="timeline-wrap">
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name tlc">TLC ก่อนเรียน</span><span class="phase-time">⏱ 0–5</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">ครูถามเชื่อมแผน 5: "SHM ในจริงพลังงานหายไหนได้บ้าง? แกว่งหยุดได้อย่างไร? · วันนี้เราจะเชื่อมทุกแผนสู่ของจริง"</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot act">ACT</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name act">🧠 Activate — ทบทวนความรู้เดิม (Mind Map Reconstruction ทั้งหน่วย SHM)</span><span class="phase-time">⏱ 5–12 นาที</span><span class="obj-badge">A6.2</span><span class="vpa-badge">วPA <strong>2</strong> ★</span><span class="activity-badge act">🗺 Mind Map Reconstruction</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">
+              <div class="prior-box">
+                <h5>🔗 แผนสุดท้ายของหน่วย — ต้องทบทวน<strong>ทั้ง 5 แผนก่อนหน้า</strong>เพื่อบูรณาการ</h5>
+                <div style="font-size:13px;color:#0c4a6e;">เนื้อหาทั้งหมดที่ต้องเชื่อมเข้าสู่ damping/resonance (แผน 6):</div>
+                <div class="src-row">
+                  <span class="src-tag">📘 แผน 1 · นิยาม SHM</span>
+                  <span class="src-tag">📘 แผน 2 · ลูกตุ้ม T=2π√(l/g)</span>
+                  <span class="src-tag">📘 แผน 3 · สปริง T=2π√(m/k)</span>
+                  <span class="src-tag">📘 แผน 4 · y, v, a, เฟส</span>
+                  <span class="src-tag">📘 แผน 5 · E = ½kA² คงที่</span>
+                </div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">🗺 <strong>Mind Map Reconstruction เป็นกลุ่ม (7')</strong> · กลุ่ม 4 คน รับกระดาษ A3 · ใช้ Jamboard/Miro หรือกระดาษจริง · สร้าง Mind Map สรุปหน่วย SHM ทั้งหมด:
+              <div class="mindmap-box">
+                <div class="mm-center">💎 SHM (Simple Harmonic Motion)</div>
+                <div class="mindmap-grid">
+                  <div class="mm-node"><h5>แผน 1</h5>F=−kx<br>f, T, ω</div>
+                  <div class="mm-node"><h5>แผน 2</h5>ลูกตุ้ม<br>T=2π√(l/g)</div>
+                  <div class="mm-node"><h5>แผน 3</h5>สปริง<br>T=2π√(m/k)</div>
+                  <div class="mm-node"><h5>แผน 4</h5>y,v,a<br>เฟสต่าง 90°</div>
+                  <div class="mm-node"><h5>แผน 5</h5>KE+PE=E<br>E=½kA²</div>
+                  <div class="mm-node" style="border-top-color:#7c3aed;background:#ede9fe;"><h5>แผน 6 ?</h5>Damping<br>Resonance<br><em>วันนี้!</em></div>
+                </div>
+                <div style="font-size:12px; color:#075985; margin-top:8px; text-align:center;"><em>นักเรียนเขียนโยงลูกศรความสัมพันธ์ + สูตร + misconception ที่เคยมี</em></div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">🖼 <strong>Quick Gallery (3')</strong> · ติด Mind Map บนผนัง · เดินดู 1 นาที · ให้คะแนนเพื่อน 1-5 · ครูรวบรวม pattern ที่เห็น</span></li>
+            <li><span class="li-tool"></span><span class="li-text">✨ ครูเปิด <em>"แผน 1-5 เราเรียน SHM แบบอุดมคติ · วันนี้แผน 6 เราจะเข้าสู่โลกจริงที่มี damping + resonance"</em> (<strong>เชื่อม 5 แผน → แผนสุดท้าย</strong>)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F6</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name ft">Pre-test — Four-tier F6 <span style="font-size:12px;color:#718096;font-weight:400;">① ใบกิจกรรม</span></span><span class="phase-time">⏱ 5–12</span><span class="misc-badge">M6.1–M6.3</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 01_Pretest</span></span><span class="li-text">Four-tier 4 ข้อ · เน้น M6.1 "Damping ทำให้ f เปลี่ยนไหม?" + M6.2 "Resonance คือการสะท้อนหรือไม่?"</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot engage">E1</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name engage">Engage — 🎬 Video Analysis "Tacoma Narrows 1940" <span style="font-size:12px;color:#718096;font-weight:400;">⑦ ใบกิจกรรม</span></span><span class="phase-time">⏱ 12–22</span><span class="activity-badge">🎬 Video Analysis</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip vid">🎬 02_Engage</span></span><span class="li-text">🎬 <strong>ดู Tacoma Narrows Bridge Collapse 1940</strong> (2:30) · ตามด้วยวิดีโอชิงช้าเติมจังหวะและแก้วไวน์แตกด้วยเสียงโอเปร่า · ตั้งคำถาม "อะไรเหมือนกัน? อะไรต่างกัน?"</span></li>
+            <li><span class="li-tool"></span><span class="li-text">✍️ <strong>Driving Question:</strong> "สะพาน Tacoma พังเพราะลมแรงมาก หรือเพราะอะไร?" (trap M6.3) · เขียน Predict ส่วนตัว 2'</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot explore">E2</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name explore">Explore — SIM06 Resonance Lab <span style="font-size:12px;color:#718096;font-weight:400;">③ ใบกิจกรรม</span></span><span class="phase-time">⏱ 22–40</span><span class="misc-badge">M6.1–M6.3</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip sim">🚀 SIM06</span></span><span class="li-text">⚡ <strong>ฐาน A — Damping (6')</strong> · ปรับ b = 0, 0.1, 0.5, 1.0 · สังเกต A(t) ลด · <strong>วัด T ของแต่ละค่า</strong> → ยืนยัน f คงที่ (แก้ M6.1)</span></li>
+            <li><span class="li-tool"><span class="tool-chip sim">🚀 SIM06</span></span><span class="li-text">⚡ <strong>ฐาน B — Resonance Sweep (8')</strong> · เลื่อน f_drive จาก 0.1 Hz → 3 Hz · สังเกต A · sketch resonance curve → เห็น peak ที่ f_natural (แก้ M6.3)</span></li>
+            <li><span class="li-tool"><span class="tool-chip sim">🚀 SIM06</span></span><span class="li-text">⚡ <strong>ฐาน C — Preset Cases (4')</strong> · คลิก preset: Tacoma · แก้วไวน์ · ชิงช้า · MRI · ดูว่าแต่ละเคส f_drive ตรง f_natural อย่างไร</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot deb">DEB</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name deb">Explain — ⚖️ Debate "Resonance: ประโยชน์หรือภัย?" <span style="font-size:12px;color:#718096;font-weight:400;">④ ใบกิจกรรม</span></span><span class="phase-time">⏱ 40–55</span><span class="activity-badge deb">⚖️ Debate</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip deb">⚖️ Deb-06</span></span><span class="li-text">
+              <div class="debate-box">
+                <div class="debate-title">⚖️ Mini Debate (15 นาที) — แบ่งกลุ่ม 2 ฝ่าย · เตรียม 5' · นำเสนอ 2' × 2 · โต้แย้ง 3' · สรุป 2'</div>
+                <div class="debate-sides">
+                  <div class="debate-side pro">
+                    <h5>✅ ฝ่ายสนับสนุน: "Resonance มีประโยชน์มากกว่า"</h5>
+                    หลักฐาน: MRI (NMR resonance), คลื่นวิทยุ, นาฬิกาควอตซ์ 32768 Hz, เครื่องดนตรี, เตาอบไมโครเวฟ, ดนตรี, เครื่องดักจับคลื่นความโน้มถ่วง
+                  </div>
+                  <div class="debate-side con">
+                    <h5>❌ ฝ่ายค้าน: "Resonance มีโทษมากกว่า"</h5>
+                    หลักฐาน: Tacoma Narrows 1940, แผ่นดินไหวถล่มตึก, เครื่องยนต์สั่นพัง, ทหารเดินเข้าจังหวะบนสะพาน, เรือโคลงจาก resonance คลื่น
+                  </div>
+                </div>
+                <div style="font-size:12px; color:#991b1b; margin-top:8px;">ครูประเมินการโต้แย้ง + คุณภาพหลักฐาน · ไม่มีฝ่ายแพ้-ชนะ · สรุปร่วมกัน "resonance เป็นกลาง · ขึ้นกับการประยุกต์"</div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"><span class="tool-chip cmap">🗺 04_ConceptMap</span></span><span class="li-text">🗺 หลัง debate · นักเรียนทำ <strong>Concept Map สรุปหน่วย SHM</strong> · โยง 6 แผน (นิยาม → ลูกตุ้ม → สปริง → y,v,a → พลังงาน → damping/resonance)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot pbl">PBL</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name pbl">Elaborate — 🔧 PBL Mini Project <span style="font-size:12px;color:#718096;font-weight:400;">⑤ ใบกิจกรรม</span></span><span class="phase-time">⏱ 55–75</span><span class="activity-badge">🔧 PBL</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip pbl">🔧 PBL-06</span></span><span class="li-text">
+              <div class="pbl-box">
+                <div class="pbl-title">🔧 PBL Mini (20 นาที) — เลือก 1 ใน 4 โจทย์จริง · ทำเป็นกลุ่ม 4 คน</div>
+                <div class="pbl-grid">
+                  <div class="pbl-card"><h5>P1: ออกแบบ TMD</h5>ออกแบบ Tuned Mass Damper สำหรับตึกสูง 100 ม. รับแผ่นดินไหว f = 0.5 Hz · หา m และ k</div>
+                  <div class="pbl-card"><h5>P2: สะพานใหม่</h5>ออกแบบสะพานแขวนไม่ให้เกิดเคส Tacoma · f_natural ควรห่างจาก f ลมเท่าไร</div>
+                  <div class="pbl-card"><h5>P3: เครื่อง MRI</h5>อธิบายการใช้ resonance ใน NMR ที่ 63.87 MHz · ทำไมต้อง f เฉพาะ</div>
+                  <div class="pbl-card"><h5>P4: นาฬิกาเพนดุลัม</h5>ปรับ damping อย่างไรให้นาฬิกาเดินแม่นพอดี (critical damping ไม่ดีเพราะอะไร)</div>
+                </div>
+                <div style="font-size:12px; color:#065f46; margin-top:8px;">ส่งผลเป็น <strong>infographic 1 หน้า</strong> บนผนังห้อง · ใช้ความรู้จากทุก 6 แผน</div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"><span class="tool-chip work">📄 05_Exercise</span></span><span class="li-text">📐 <strong>แบบฝึก 7 ข้อ</strong> — (1) damping ไม่เปลี่ยน f (M6.1) (2) หา Q-factor (3) resonance condition (4) Tacoma คำนวณ (5) เลือก b ให้เหมาะ (6) Case critical vs over damping (7) PBL continuation</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot gw">GW</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name gw">Elaborate 2 — 🖼 Gallery Walk <span style="font-size:12px;color:#718096;font-weight:400;">⑥ ใบกิจกรรม</span></span><span class="phase-time">⏱ 75–85</span><span class="activity-badge gw">🖼 Gallery Walk</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip gw">🖼 GW-06</span></span><span class="li-text">🖼 <strong>Gallery Walk</strong> · ติด infographic PBL บนผนัง · เวียนดู 4 ชิ้น · แต่ละคนมี sticky note 3 สี: 🟢 ดีมาก · 🟡 สงสัย · 🔴 ต้องแก้ · ครูช่วย moderate · กลุ่มปรับปรุงจาก feedback</span></li>
+            <li><span class="li-tool"><span class="tool-chip work">📄 06_CaseStudy</span></span><span class="li-text">🔍 Case ปิด: <strong>Millennium Bridge ลอนดอน 2000</strong> (สะพานสั่น 2 วันหลังเปิด) · วิเคราะห์ด้วยกรอบ resonance</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot et">ET</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name et">Exit Ticket <span style="font-size:12px;color:#718096;font-weight:400;">⑨ ใบกิจกรรม</span></span><span class="phase-time">⏱ 85–88</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip et">🎟 07_ExitTicket</span></span><span class="li-text">3 ข้อ — (1) "Damping เปลี่ยน f หรือไม่?" (2) "Resonance ≠ สะท้อน เพราะ?" (3) ยกตัวอย่าง resonance 1 ประโยชน์ + 1 โทษ</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name tlc">TLC หลังเรียน (สรุปหน่วย)</span><span class="phase-time">⏱ 88–92</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">ยกบัตร 🟢🟡🔴 · สำรวจภาพรวมหน่วย SHM ทั้งหมด · นักเรียนแชร์ "อะไรที่ชอบที่สุดในหน่วย?"</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F6</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name ft">Post-test — Four-tier F6 + Unit Test <span style="font-size:12px;color:#718096;font-weight:400;">⑥ ใบกิจกรรม</span></span><span class="phase-time">⏱ 92–97</span><span class="misc-badge">M6.1–M6.3</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 09_Posttest</span></span><span class="li-text">Four-tier 4 ข้อซ้ำ + <strong>Unit Post-test สรุป</strong> ครอบคลุม M1.1–M6.3 · คำนวณ ⟨g⟩ ทั้งหน่วย · เฉลย <strong>10_AnswerKey</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot mj">MJ</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name mj">Journal สรุปหน่วย 3-2-1 <span style="font-size:12px;color:#718096;font-weight:400;">⑧ ใบกิจกรรม</span></span><span class="phase-time">⏱ 97–100</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip mj">📓 08_Journal</span></span><span class="li-text"><strong>3</strong> สิ่งที่เรียนรู้จาก<strong>ทั้งหน่วย SHM</strong> (ไม่ใช่แค่แผนนี้) · <strong>2</strong> การประยุกต์ที่ประทับใจ · <strong>1</strong> คำถามที่อยากเรียนต่อไปในคลื่น</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🎉 <strong>สรุปหน่วย:</strong> SHM เป็นรากฐานของคลื่น → เชื่อมสู่หน่วยคลื่นกล 10 แผน</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+      <!-- Goal Setting -->
+      <div class="phase">
+        <div class="phase-dot goal">GOAL</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name goal">🎯 Goal — เป้าหมายการเรียนวันนี้ (SMART Goals + Unit-level Mastery)</span>
+            <span class="phase-time">⏱ 2–5 นาที</span>
+            <span class="vpa-badge">วPA 1, 4</span>
+            <span class="activity-badge goal">🎯 SMART Goals + Unit-level Mastery</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">
+              <div class="goal-box">
+                <h5>🎯 เป้าหมาย SMART + สรุปหน่วย 🏁</h5>
+                <div class="goal-item">🎯 <strong>S</strong>pecific · <strong>M</strong>easurable: อธิบายเงื่อนไข resonance (f_drive = f_natural) + คำนวณ Q-factor</div>
+                <div class="goal-item">🎯 <strong>A</strong>chievable · <strong>R</strong>elevant: วิเคราะห์ case Tacoma/Taipei 101 ได้ — เชื่อม PBL project</div>
+                <div class="goal-item">🎯 <strong>T</strong>ime-bound: ใน 100 นาทีนี้ · จบหน่วย SHM + ⟨g⟩ ทั้งหน่วย ≥ 0.35</div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">🎯 แผนสุดท้าย 🏁 ใช้ SMART framework · ครูแสดง Unit-level dashboard (pretest→posttest ทั้ง 6 แผน) · นักเรียนเห็น growth ของตัวเอง · <strong>สรุปหน่วย SHM ก่อนขึ้นหน่วยคลื่น</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อและแหล่งการเรียนรู้ — ใบกิจกรรม 10 ชิ้น (6+4)</h2>
+  <div class="sim-banner">
+    <div class="sim-banner-icon">🚀</div>
+    <div style="flex:1;">
+      <div class="sim-banner-title">Simulation หลัก — KP Science SIM06 Damping & Resonance Lab</div>
+      <div class="sim-banner-sub">Slider b + f_drive · กราฟ A(t) + A vs f_drive · Preset cases (Tacoma, MRI, แก้วไวน์, ชิงช้า, MRI) · วิดีโอฝังในแต่ละ preset</div>
+    </div>
+    <span class="sim-badge">SIM06 · Damping & Resonance</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📦</span><span class="card-title">Core 6</span></div>
+      <div class="tool-item core"><span class="tool-num">1</span><strong>01_Pretest_4tier.html</strong> — Four-tier 4 ข้อ</div>
+      <div class="tool-item core"><span class="tool-num">2</span><strong>แผน6_Infographic.html</strong> — Hub (ไฟล์นี้)</div>
+      <div class="tool-item core"><span class="tool-num">3</span><strong>03_SIM06_Worksheet.html</strong> — 3 ฐาน SIM + Debate prep</div>
+      <div class="tool-item core"><span class="tool-num">4</span><strong>05_Exercise_PBL.html</strong> — แบบฝึก 7 ข้อ + PBL 4 โจทย์</div>
+      <div class="tool-item core"><span class="tool-num">5</span><strong>08_Journal_321.html</strong> — MJ-06 สรุปหน่วย</div>
+      <div class="tool-item core"><span class="tool-num">6</span><strong>09_Posttest_Unit.html</strong> — Four-tier + Unit Test สรุป ⟨g⟩ ทั้งหน่วย</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">➕</span><span class="card-title">+4 เสริม</span></div>
+      <div class="tool-item plus"><span class="tool-num">7</span><strong>02_Engage_VideoAnalysis.html</strong> — Tacoma + ชิงช้า + แก้วไวน์ + Driving Q</div>
+      <div class="tool-item plus"><span class="tool-num">8</span><strong>04_Debate_ConceptMap.html</strong> — Debate brief + Concept Map สรุปหน่วย</div>
+      <div class="tool-item plus"><span class="tool-num">9</span><strong>07_ExitTicket.html</strong> — 3 ข้อ + Gallery Walk sticky</div>
+      <div class="tool-item plus"><span class="tool-num">10</span><strong>10_AnswerKey_UnitReview.html</strong> — เฉลย + สรุปทั้ง 6 แผน + Master misconception table 18 ตัว</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header"><span class="card-icon">⭐</span><span class="card-title">Enrichment + สรุปหน่วย</span></div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+      <div style="background:#ede9fe; border:1.5px solid #c4b5fd; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#4c1d95; font-size:14px; margin-bottom:8px;">🌍 Damping + Resonance ในชีวิตจริง</div>
+        <div style="display:grid; gap:8px;">
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #7c3aed;">
+            <div style="font-weight:700; color:#4c1d95; font-size:13px;">🌉 Tacoma Narrows 1940 + Millennium 2000</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">2 กรณี resonance ทางวิศวกรรม · บทเรียนสำคัญของสะพานแขวน</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #5b21b6;">
+            <div style="font-weight:700; color:#5b21b6; font-size:13px;">🏥 MRI Scanner (NMR)</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">ใช้ nuclear magnetic resonance ที่ 63.87 MHz ถ่ายภาพอวัยวะภายใน</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #8b5cf6;">
+            <div style="font-weight:700; color:#6d28d9; font-size:13px;">🌊 LIGO Gravitational Wave</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">เครื่องวัดคลื่นโน้มถ่วง · damping ต้องต่ำมาก · SHM ระดับ 10^−18 m</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#faf5ff; border:1.5px solid #c4b5fd; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#4c1d95; font-size:14px; margin-bottom:6px;">🎯 สรุปหน่วย SHM (6 แผน)</div>
+        <div style="font-size:13px; color:#2d3748; line-height:1.8;">
+          <strong>แผน 1:</strong> นิยาม SHM · F=−kx<br>
+          <strong>แผน 2:</strong> ลูกตุ้ม · T=2π√(l/g)<br>
+          <strong>แผน 3:</strong> สปริง · T=2π√(m/k)<br>
+          <strong>แผน 4:</strong> y, v, a เฟสต่าง 90°<br>
+          <strong>แผน 5:</strong> E = ½kA² คงที่<br>
+          <strong>แผน 6:</strong> Damping + Resonance (ปัจจุบัน)<br>
+          <strong>🔗 ต่อ:</strong> หน่วยคลื่นกล 10 แผน (SHM → คลื่นเสียง คลื่นน้ำ)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📏 การวัดและประเมินผล</h2>
+  <div class="card">
+    <table class="assess-table">
+      <thead><tr><th>วัตถุประสงค์</th><th>ตัวแปรที่วัด</th><th>เครื่องมือ</th><th>เกณฑ์ผ่าน</th></tr></thead>
+      <tbody>
+        <tr><td><strong>K6.1 · K6.2</strong></td><td>Damped SHM · Resonance · ตัวอย่างประยุกต์</td><td>01_Pretest · 09_Posttest · Unit Test</td><td>Sound ≥ 80% · M6.1 ลด ≥ 20% · Unit ⟨g⟩ ≥ 0.35</td></tr>
+        <tr><td><strong>P6.1 · P6.2</strong></td><td>วิเคราะห์ case · PBL design</td><td>PBL Rubric · Gallery sticky · SIM06 worksheet</td><td>Rubric ≥ 3/4 · PBL complete</td></tr>
+        <tr><td><strong>A6.1</strong></td><td>Higher-order (Debate + PBL)</td><td>OB-01 · Debate rubric</td><td>≥ 80% "ดี"</td></tr>
+        <tr><td><strong>A6.2</strong></td><td>ตระหนักการประยุกต์</td><td>08_Journal สรุปหน่วย</td><td>≥ 70% บันทึก transfer</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section-heading">🔗 วPA ด้านที่ 1 (8 ตัวชี้วัด)</h2>
+  <div class="card">
+    <table class="vpa-table">
+      <thead><tr><th style="width:40px;">#</th><th>ตัวชี้วัด</th><th>หลักฐาน</th><th style="width:130px;">ขั้น</th></tr></thead>
+      <tbody>
+        <tr><td><span class="vpa-num">1</span></td><td><strong>เข้าถึง/เข้าใจ</strong></td><td>Tacoma video · SIM06 · ภาษาเหมาะ ม.5</td><td><span class="e5-tag e5-engage">E1</span></td></tr>
+        <tr style="background:#e0f2fe;"><td><span class="vpa-num">2</span> ⭐</td><td><strong>เชื่อมโยงความรู้เดิม</strong></td><td><strong>🧠 ACT · ทบทวนชัดเจน:</strong> Mind Map Reconstruction กลุ่ม (A3/Jamboard) สรุปทั้งหน่วย SHM 5 แผน + Quick Gallery · ครูเชื่อม "แผน 1-5 อุดมคติ · แผน 6 = โลกจริง"</td><td><span class="e5-tag" style="background:#0ea5e9;">ACT</span> <span class="e5-tag e5-ft">F6</span></td></tr>
+        <tr><td><span class="vpa-num">3</span></td><td><strong>สร้างความรู้เอง</strong></td><td>SIM06 3 ฐาน · Debate · PBL · Gallery Walk · Video Analysis</td><td><span class="e5-tag e5-deb">DEB</span> <span class="e5-tag e5-pbl">PBL</span> <span class="e5-tag e5-gw">GW</span></td></tr>
+        <tr><td><span class="vpa-num">4</span></td><td><strong>กระตุ้นแรงจูงใจ</strong></td><td>Tacoma collapse · Driving Q · Preset cases ใน SIM06</td><td><span class="e5-tag e5-engage">E1</span></td></tr>
+        <tr><td><span class="vpa-num">5</span></td><td><strong>พัฒนาทักษะ/นวัตกรรม</strong></td><td>SIM06 + Debate + PBL (higher-order) + Gallery feedback</td><td><span class="e5-tag e5-deb">DEB</span> <span class="e5-tag e5-pbl">PBL</span></td></tr>
+        <tr><td><span class="vpa-num">6</span></td><td><strong>ข้อมูลป้อนกลับ</strong></td><td>Gallery sticky feedback · 07_ExitTicket · Unit ⟨g⟩ · 10_AnswerKey</td><td><span class="e5-tag e5-gw">GW</span> <span class="e5-tag e5-et">ET</span></td></tr>
+        <tr><td><span class="vpa-num">7</span></td><td><strong>SRL</strong></td><td>PBL เลือกโจทย์เอง · Debate เตรียมเอง · Gallery ปรับปรุงจาก feedback</td><td><span class="e5-tag e5-pbl">PBL</span></td></tr>
+        <tr><td><span class="vpa-num">8</span></td><td><strong>ต่อยอด/ประยุกต์</strong></td><td>PBL 4 โจทย์จริง · MJ-06 สรุปหน่วย · Millennium Bridge</td><td><span class="e5-tag e5-pbl">PBL</span> <span class="e5-tag e5-mj">MJ</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    แผน 6/6 · Damping, Resonance & บูรณาการ · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569<br>
+    <span style="color:#7c3aed; font-weight:700;">Theme: Deep Purple (ม่วงเข้ม) 🏁</span> · รูปแบบหลัก: <strong>PBL + Video Analysis + Debate + Gallery Walk</strong> · งานวิจัย: Somroob · Tongchai (2011) · Mufit · Krajcik (PBL)<br>
+    🎉 <strong>จบหน่วย SHM — ต่อด้วยหน่วยคลื่นกล 10 แผน</strong>
+  </div>
+
+</div>
+</body>
+</html>

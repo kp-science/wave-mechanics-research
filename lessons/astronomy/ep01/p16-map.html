@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P16 · Journey Map · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin: 20px 0; }
+.badge {
+  padding: 20px 16px; background: linear-gradient(160deg, rgba(255,203,107,0.08), rgba(100,216,255,0.05));
+  border: 1px solid var(--accent-gold); border-radius: 14px;
+  text-align: center; transition: all 0.3s;
+  animation: badgePop 0.6s ease;
+}
+@keyframes badgePop { 0% { opacity: 0; transform: scale(0.6) rotate(-10deg); } 100% { opacity: 1; transform: scale(1) rotate(0); } }
+.badge .icon { font-size: 40px; margin-bottom: 8px; filter: drop-shadow(0 0 20px var(--accent-gold)); }
+.badge .name { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 0.15em; color: var(--accent-gold); }
+.map-nodes { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin: 14px 0; }
+.map-node { padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; text-align: center; }
+.map-node .idx { font-family: 'Orbitron'; font-size: 10px; color: var(--accent); letter-spacing: 0.15em; }
+.map-node .name { font-size: 12px; color: var(--text); margin-top: 4px; }
+.shift-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+@media (max-width: 700px) { .shift-compare { grid-template-columns: 1fr; } }
+.shift-card { padding: 16px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; }
+.shift-card h6 { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.2em; margin-bottom: 8px; }
+.shift-card.pre h6 { color: var(--accent-2); }
+.shift-card.post h6 { color: var(--accent-green); }
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-item { padding: 6px 14px; background: rgba(255,203,107,0.08); border: 1px solid rgba(255,203,107,0.3); border-radius: 100px; font-size: 12px; color: var(--accent-gold); }
+.tag-item.inv { background: rgba(126,255,178,0.08); border-color: rgba(126,255,178,0.3); color: var(--accent-green); }
+</style>
+</head>
+<body data-page="p19">
+<main class="page"><div class="page-inner">
+
+<div class="page-label">◤ PAGE 19 / 19 · REFLECTION · 10 นาที · FINAL</div>
+<h1 class="page-title">Journey Map · EP01</h1>
+<h2 class="page-sub">SAVE FILE FOR EP02</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · จบคาบ</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag teach">ให้รางวัล</span><span>ประกาศ Badge ของแต่ละทีม · มอบสติกเกอร์หรือประกาศในห้อง</span></div>
+    <div class="role"><span class="tag do">Post-test</span><span>ให้ทำ Post-test 3 ข้อ (เดียวกับ Entry Ticket) · เทียบ pre/post = ข้อมูลวิจัย</span></div>
+    <div class="role"><span class="tag say">Debrief</span><span>ถามว่า "ความคิดเรื่องบิกแบงของทีมเปลี่ยนไปอย่างไร?" · บันทึก conceptual change</span></div>
+    <div class="role"><span class="tag do">Side Quest</span><span>มอบหมายภารกิจนอกห้อง · ส่งภาพดวงจันทร์ · เขียนบันทึก 1 หน้า</span></div>
+    <div class="role"><span class="tag do">Export</span><span>กด Export JSON ของทีม · เก็บเข้า Google Drive เพื่อใช้ใน EP02</span></div>
+  </div>
+</div>
+
+<div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+  <div class="txt">ทำได้ดีมากทุกคน · ก่อนพักภารกิจวันนี้ · ขอให้แต่ละทีม <b>สรุปแผนที่การเดินทาง</b> · บันทึกสิ่งที่พบ · คำถามที่ยังค้าง · เพราะตอนหน้าเราจะเริ่มจากจุดที่ทีมจบ</div>
+</div>
+
+<!-- BADGES -->
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent-gold); letter-spacing:0.2em; margin:24px 0 10px;">🏆 BADGES ของทีม</h3>
+<div class="badge-grid" id="badge-grid"></div>
+
+<!-- JOURNEY -->
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 10px;">🗺 เส้นทางที่ผ่านมา</h3>
+<div class="map-nodes" id="map-nodes"></div>
+
+<!-- ENERGY + DISCOVERIES -->
+<div class="info-card">
+  <h4>⚡ สถิติของทีม</h4>
+  <p><b>Energy รวม</b> · <span id="total-energy" style="font-size: 18px; color: var(--accent-gold); font-family: 'Orbitron';">0</span></p>
+  <p><b>Discoveries</b> (ความรู้ที่ค้นพบ):</p>
+  <div class="tag-list" id="discoveries"></div>
+  <p class="mt-10"><b>Inventory</b> (ของที่เก็บได้ · ใช้ใน EP02):</p>
+  <div class="tag-list" id="inventory"></div>
+</div>
+
+<!-- POST-TEST -->
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent-green); letter-spacing:0.2em; margin:24px 0 10px;">📊 POST-TEST · เทียบกับความคิดเริ่มต้น</h3>
+<div class="info-card">
+  <p class="muted">ตอบคำถามเดิมอีกครั้ง · เพื่อดูว่าความคิดเปลี่ยนไปไหม (ข้อมูลวิจัย conceptual change)</p>
+
+  <div class="entry-q" style="padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">1 · ข้อใดอธิบาย "บิกแบง" ได้ <b>ถูกต้องที่สุด</b>?</div>
+    <label class="radio-opt"><input type="radio" name="post1" value="w1"><span>การระเบิดของสสารออกจากจุดศูนย์กลางในอวกาศที่ว่างเปล่า</span></label>
+    <label class="radio-opt"><input type="radio" name="post1" value="c"><span>การขยายตัวของอวกาศเองในทุกทิศทาง · ไม่มีจุดศูนย์กลาง</span></label>
+    <label class="radio-opt"><input type="radio" name="post1" value="w2"><span>การรวมตัวของดวงดาวขนาดใหญ่ในยุคแรกของเอกภพ</span></label>
+    <label class="radio-opt"><input type="radio" name="post1" value="w3"><span>การชนกันของกาแล็กซีที่ทำให้เกิดสสารใหม่</span></label>
+  </div>
+
+  <div class="entry-q" style="padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">2 · หลักฐานใด <b>สนับสนุน</b> ทฤษฎีบิกแบงได้ชัดเจนที่สุด?</div>
+    <label class="radio-opt"><input type="radio" name="post2" value="w1"><span>ดาวเคราะห์โคจรรอบดวงอาทิตย์เป็นวงรี</span></label>
+    <label class="radio-opt"><input type="radio" name="post2" value="c"><span>การเลื่อนทางแดงของกาแล็กซีไกล + รังสี CMB 2.725 K ทุกทิศทาง</span></label>
+    <label class="radio-opt"><input type="radio" name="post2" value="w2"><span>อุณหภูมิบนโลกเปลี่ยนตามฤดูกาล</span></label>
+    <label class="radio-opt"><input type="radio" name="post2" value="w3"><span>ดาวหางฮัลเลย์โคจรกลับมาทุก 76 ปี</span></label>
+  </div>
+
+  <div class="entry-q" style="padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">3 · เรียงลำดับเหตุการณ์หลังบิกแบง <b>จากเร็วไปช้า</b> · ข้อใดถูกต้อง?</div>
+    <label class="radio-opt"><input type="radio" name="post3" value="w1"><span>กาแล็กซี → อะตอมเป็นกลาง → โปรตอน → ควาร์ก</span></label>
+    <label class="radio-opt"><input type="radio" name="post3" value="c"><span>ควาร์ก → โปรตอน/นิวตรอน → นิวเคลียสฮีเลียม → อะตอมเป็นกลาง → กาแล็กซี</span></label>
+    <label class="radio-opt"><input type="radio" name="post3" value="w2"><span>อะตอมเป็นกลาง → ควาร์ก → กาแล็กซี → โปรตอน</span></label>
+    <label class="radio-opt"><input type="radio" name="post3" value="w3"><span>กาแล็กซี → โปรตอน → ควาร์ก → อะตอมเป็นกลาง</span></label>
+  </div>
+
+  <div class="center">
+    <button class="btn primary" onclick="submitPost()">📊 ส่ง Post-test</button>
+  </div>
+  <div id="shift-result"></div>
+</div>
+
+<!-- REFLECTION -->
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 10px;">📖 Captain's Log · บันทึกของทีม</h3>
+<div class="form-row">
+  <label>สิ่งที่เรียนรู้วันนี้ (3-5 บรรทัด)</label>
+  <textarea id="log-learned" rows="4" placeholder="เช่น · เอกภพขยายตัว · ไม่มีศูนย์กลาง · CMB คือหลักฐาน..."></textarea>
+</div>
+<div class="form-row">
+  <label>คำถามที่ยังค้างคาใจ · จะหาคำตอบในตอนต่อไป</label>
+  <textarea id="log-question" rows="3" placeholder="เช่น · ก่อนบิกแบงมีอะไร?..."></textarea>
+</div>
+
+<!-- SIDE QUEST -->
+<div class="info-card" style="border-color: var(--accent-2);">
+  <h4 style="color: var(--accent-2);">🌙 SIDE QUEST · ภารกิจนอกห้อง (1 สัปดาห์)</h4>
+  <p>เลือกทำ 1 ข้อ · ส่งภายในคาบหน้า · ได้ Energy bonus เริ่ม EP02</p>
+  <p>• 📸 ถ่ายภาพดวงจันทร์ / ดาวเรียงแนว / ทางช้างเผือก (+3 Energy)</p>
+  <p>• 📰 หาข่าวกล้อง JWST 1 ข่าว · เขียนสรุปว่าเกี่ยวกับบิกแบงยังไง (+3 Energy)</p>
+  <p>• 🎥 ทำคลิป 60 วินาที · อธิบายบิกแบงด้วยลูกโป่งของทีมเอง (+5 Energy)</p>
+  <p>• ✉ เขียนจดหมายถึง VOID · โน้มน้าวด้วยหลักฐาน 3 อย่าง (+4 Energy)</p>
+</div>
+
+<div class="center mt-20" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+  <button class="btn" onclick="saveLog()">💾 บันทึก Save File</button>
+  <button class="btn" onclick="exportJSON()">📤 Export JSON (สำหรับ EP02 / วิจัย)</button>
+  <button class="btn" onclick="window.print()">🖨 พิมพ์</button>
+</div>
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag p">P · สะท้อน · Metacognition</span>
+  <span class="ped-tag a">A · ประเมินตนเอง</span>
+  <span class="ped-tag">วPA 6 · Feedback</span>
+  <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+  <span class="ped-tag">Research · Conceptual Change (pre/post)</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+function renderMap() {
+  // Badges from inventory
+  const bGrid = document.getElementById('badge-grid');
+  const badges = (Book.state.inventory || []).filter(i => i.includes('Badge'));
+  if (badges.length === 0) badges.push('🏅 Badge · Mission Complete');
+  bGrid.innerHTML = badges.map(b => {
+    const icon = b.match(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u)?.[0] || '🏅';
+    const name = b.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '').replace('Badge ·', '').trim();
+    return `<div class="badge"><div class="icon">${icon}</div><div class="name">${name}</div></div>`;
+  }).join('');
+
+  // Path
+  const mapNodes = document.getElementById('map-nodes');
+  mapNodes.innerHTML = PAGES.map((p, i) => {
+    const done = Book.state.gates[p.id];
+    return `<div class="map-node" style="opacity: ${done ? 1 : 0.4}; border-color: ${done ? 'var(--accent-green)' : 'var(--border)'}">
+      <div class="idx">P${String(i+1).padStart(2,'0')} ${done ? '✓' : ''}</div>
+      <div class="name">${p.title}</div>
+    </div>`;
+  }).join('');
+
+  // Stats
+  document.getElementById('total-energy').textContent = '⚡ ' + Book.state.energy;
+  const dEl = document.getElementById('discoveries');
+  dEl.innerHTML = (Book.state.discoveries || []).map(d => `<span class="tag-item">🏷 ${d}</span>`).join('') || '<span class="muted">ยังไม่มี</span>';
+  const iEl = document.getElementById('inventory');
+  iEl.innerHTML = (Book.state.inventory || []).map(i => `<span class="tag-item inv">${i}</span>`).join('') || '<span class="muted">ว่าง</span>';
+}
+
+function submitPost() {
+  const p1 = document.querySelector('input[name="post1"]:checked');
+  const p2 = document.querySelector('input[name="post2"]:checked');
+  const p3 = document.querySelector('input[name="post3"]:checked');
+  if (!p1 || !p2 || !p3) { alert('ตอบ 3 ข้อให้ครบ'); return; }
+  const post = [p1,p2,p3].filter(a => a.value === 'c').length;
+  const pre = Book.state.data.p01?.score ?? 0;
+  const shift = post - pre;
+  Book.savePageData('p16', { post, pre, shift });
+
+  let shiftColor = shift > 0 ? 'var(--accent-green)' : shift === 0 ? 'var(--accent-gold)' : 'var(--accent-red)';
+  document.getElementById('shift-result').innerHTML = `
+    <div class="shift-compare mt-20">
+      <div class="shift-card pre"><h6>◦ PRE-TEST (Entry · P01)</h6><div style="font-size:22px; color:var(--accent-2); font-family:'Orbitron';">${pre} / 3</div></div>
+      <div class="shift-card post"><h6>◦ POST-TEST (P16)</h6><div style="font-size:22px; color:var(--accent-green); font-family:'Orbitron';">${post} / 3</div></div>
+    </div>
+    <div class="info-card" style="border-color: ${shiftColor}; text-align: center;">
+      <h4 style="color: ${shiftColor};">CONCEPTUAL SHIFT · ${shift > 0 ? '+' : ''}${shift} ข้อ</h4>
+      <p>${shift > 0 ? 'ทีมเข้าใจเพิ่มขึ้น · เก่งมาก!' : shift === 0 ? 'คงเดิม · ลองทบทวนอีกครั้ง' : 'คิดก่อนตอบ'}</p>
+    </div>`;
+  Book.addEnergy(Math.max(2, post + shift), 'Post-test shift');
+  Book.completePage('p16');
+}
+
+function saveLog() {
+  const data = Book.getPageData('p16') || {};
+  data.learned = document.getElementById('log-learned').value;
+  data.question = document.getElementById('log-question').value;
+  Book.savePageData('p16', data);
+  alert('✓ บันทึก Save File แล้ว · ข้อมูลจะถูกเรียกใช้ใน EP02');
+}
+
+function exportJSON() {
+  const exp = { ...Book.state, exportedAt: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(exp, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cosmoslog_ep01_team${Book.state.teamId || 'X'}_${Date.now()}.json`;
+  a.click();
+}
+
+renderMap();
+</script>
+</body>
+</html>

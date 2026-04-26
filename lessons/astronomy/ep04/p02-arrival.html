@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P02 · ถึง local star · พบ SOS</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .star-map { background:radial-gradient(ellipse at center,#000814 0%,#000 80%); border:1.5px solid #2a3050; border-radius:14px; padding:16px; margin:12px 0; min-height:420px; position:relative; overflow:hidden; }
+  .map-star { position:absolute; transform:translate(-50%,-50%); pointer-events:none; }
+  .map-star .orb { border-radius:50%; box-shadow:0 0 16px currentColor; }
+  .map-star .label { position:absolute; left:50%; top:100%; transform:translate(-50%,4px); white-space:nowrap; }
+  .map-star .nm { font-family:Orbitron,sans-serif; font-size:9px; color:#e8ecf8; letter-spacing:0.05em; text-shadow:0 0 4px #000, 0 0 4px #000; }
+  .map-star .mass { font-family:monospace; font-size:10px; color:#ffcb6b; text-shadow:0 0 4px #000, 0 0 4px #000; display:block; margin-top:1px; }
+  .map-bh { position:absolute; transform:translate(-50%,-50%); pointer-events:none; }
+  .map-bh .core { width:24px; height:24px; border-radius:50%; background:#000; box-shadow:0 0 0 3px #b980ff, 0 0 28px #b980ff; }
+  .map-bh .ring { position:absolute; inset:-14px; border-radius:50%; border:2px dashed #ff5c7a; animation:bhSpin 4s linear infinite; }
+  @keyframes bhSpin { 100% { transform:rotate(360deg); } }
+  .map-bh .label { position:absolute; left:50%; top:100%; transform:translate(-50%,14px); white-space:nowrap; }
+  .map-bh .nm { font-family:Orbitron; font-size:11px; color:#ff5c7a; letter-spacing:0.1em; text-shadow:0 0 4px #000, 0 0 4px #000; font-weight:700; }
+  .map-bh .mass { font-family:monospace; font-size:10px; color:#ff5c7a; display:block; margin-top:1px; text-shadow:0 0 4px #000; }
+  .ship-icon, .sos-icon { position:absolute; transform:translate(-50%,-50%); font-size:28px; z-index:5; }
+  .sos-icon { animation:sosBlink 1.4s infinite; }
+  @keyframes sosBlink { 50% { transform:translate(-50%,-50%) scale(1.3); } }
+  .ship-label, .sos-label { position:absolute; transform:translate(-50%, 22px); font-family:Orbitron; font-size:10px; letter-spacing:0.1em; text-shadow:0 0 4px #000; }
+  .ship-label { color:#7effb2; }
+  .sos-label { color:#ff5c7a; }
+  .map-legend { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; justify-content:center; }
+  .legend-chip { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:14px; font-size:11px; color:#e8ecf8; }
+  .legend-chip .dot { width:10px; height:10px; border-radius:50%; box-shadow:0 0 6px currentColor; }
+</style>
+</head>
+<body data-page="p02" data-type="story">
+<div class="page">
+
+  <span class="lbl story">🌌 ACT A · ARRIVAL</span>
+  <h1>ถึงพื้นที่ดาวฤกษ์ใกล้เคียง</h1>
+
+  <div class="card">
+    <div class="narrative">
+      ยานออกจาก warp drive · เครื่อง LEMAÎTRE ตรวจพบ
+      <b class="key">ดาวฤกษ์หลายดวง</b>กระจายอยู่รอบ ๆ · มีตั้งแต่
+      <b style="color:#9bb8ff;">น้ำเงินจัด</b> ไปจนถึง <b style="color:#ff7a55;">แดงสลัว</b>
+    </div>
+  </div>
+
+  <div class="map-legend">
+    <span class="legend-chip"><span class="dot" style="background:#9bb8ff;color:#9bb8ff;"></span>O · น้ำเงิน</span>
+    <span class="legend-chip"><span class="dot" style="background:#bcd0ff;color:#bcd0ff;"></span>B</span>
+    <span class="legend-chip"><span class="dot" style="background:#ffffff;color:#ffffff;"></span>A · ขาว</span>
+    <span class="legend-chip"><span class="dot" style="background:#fff4d8;color:#fff4d8;"></span>F</span>
+    <span class="legend-chip"><span class="dot" style="background:#ffd96b;color:#ffd96b;"></span>G · เหลือง</span>
+    <span class="legend-chip"><span class="dot" style="background:#ffaa55;color:#ffaa55;"></span>K</span>
+    <span class="legend-chip"><span class="dot" style="background:#ff7a55;color:#ff7a55;"></span>M · แดง</span>
+  </div>
+
+  <div class="star-map" id="starMap">
+    <!-- background stars -->
+  </div>
+
+  <div class="callout">
+    <span class="star">📡</span> <b>สัญญาณ SOS!</b> · จาก<b style="color:#ff5c7a;">จุดกระพริบสีแดง</b>กลางแผนที่<br>
+    <span style="font-size:14px; color:#ffd88a; font-weight:400;">
+      LEMAÎTRE ยืนยัน: เป็น<b style="color:#fff;">เสียงพ่ออารยา</b> · ส่งจากดาวที่อยู่ไกลออกไป
+    </span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "พิกัด SOS ตรงกับสัญญาณที่ EP03 จับได้ · พ่ออารยายังอยู่ ·
+      <b style="color:#fff;">เราต้องไปรับเขา</b> · แต่เพื่อไปถึง ต้อง<b>เดินทางผ่านดาวเหล่านี้</b>"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🗣️ บทสนทนาในยาน</h3>
+    <div class="narrative" style="padding-left:14px; border-left:3px solid #ffcb6b;">
+      <b style="color:#a0e8ff;">อารยา:</b> "พ่อ! · เราจะไปแล้ว · เดินทางกันเถอะ"<br>
+      <b style="color:#ffd88a;">โบลท์:</b> "เครื่องยนต์พร้อม · ตั้งทิศไป SOS เลยใช่มั้ย?"
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P02</summary>
+    <div class="body">
+      <b>เซ็ตอารมณ์:</b> ดาวกระจายเต็มจอ · ทุกดวงเป็นทาง "ผ่าน" ไม่ใช่จุดหมาย<br>
+      <b>คำถามนำ:</b> "ก่อนเดินทาง เราควรรู้อะไรบ้างเกี่ยวกับดาวพวกนี้?" → ดึงสู่ p03 (วางแผน)<br>
+      <b>ห้าม:</b> ยังไม่บอกว่ามีอันตรายเฉพาะอะไร · ให้ p03 เป็นตัว reveal
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ เดินทาง · แต่เดี๋ยวก่อน...</button>
+  </div>
+  <div class="gate-hint">หน้าเปิดเส้นทาง · ครูคุมจังหวะ</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+/* ----- Same 8 obstacles + ship + SOS as p20 (no paths) ----- */
+const ROUTE = (EP_CONFIG.routeStars || []);
+const POS = {
+  r1:{x:28,y:18}, r2:{x:52,y:18}, r3:{x:78,y:20},
+  bh:{x:48,y:40},
+  r4:{x:30,y:55}, r5:{x:72,y:55},
+  r6:{x:22,y:80}, r7:{x:78,y:80}
+};
+const START = { x:5, y:50 };
+const END = { x:92, y:50 };
+
+const map = document.getElementById('starMap');
+ROUTE.forEach(s => {
+  const o = POS[s.id];
+  const size = Math.max(14, Math.min(48, 14 + Math.sqrt(s.mass)*3));
+  const d = document.createElement('div');
+  d.className = 'map-star';
+  d.style.left = o.x + '%'; d.style.top = o.y + '%';
+  d.innerHTML = `
+    <div class="orb" style="width:${size}px; height:${size}px; background:${s.hex}; color:${s.hex};"></div>
+    <div class="label">
+      <div class="nm">${s.label}·${s.type}</div>
+      <span class="mass">${s.mass} M☉</span>
+    </div>
+  `;
+  map.appendChild(d);
+});
+// Black hole
+const bh = document.createElement('div');
+bh.className = 'map-bh';
+bh.style.left = POS.bh.x + '%';
+bh.style.top = POS.bh.y + '%';
+bh.innerHTML = `
+  <div class="core"></div>
+  <div class="ring"></div>
+  <div class="label">
+    <div class="nm">⚫ BLACK HOLE</div>
+    <span class="mass">50 M☉</span>
+  </div>
+`;
+map.appendChild(bh);
+// Ship
+const ship = document.createElement('div');
+ship.className = 'ship-icon';
+ship.style.left = START.x + '%'; ship.style.top = START.y + '%';
+ship.textContent = '🚀';
+map.appendChild(ship);
+const shipLab = document.createElement('div');
+shipLab.className = 'ship-label';
+shipLab.style.left = START.x + '%'; shipLab.style.top = START.y + '%';
+shipLab.textContent = 'ยานเรา';
+map.appendChild(shipLab);
+// SOS
+const sos = document.createElement('div');
+sos.className = 'sos-icon';
+sos.style.left = END.x + '%'; sos.style.top = END.y + '%';
+sos.textContent = '📡';
+map.appendChild(sos);
+const sosLab = document.createElement('div');
+sosLab.className = 'sos-label';
+sosLab.style.left = END.x + '%'; sosLab.style.top = END.y + '%';
+sosLab.textContent = '👨 SOS · พ่อ';
+map.appendChild(sosLab);
+
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p03-plan.html');
+  if (window.PaceClient) Gate.wireButton('p02', btn, 'p03-plan.html');
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P06 · ค้น CMB · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.research-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 14px 0 20px; }
+.research-btn {
+  padding: 20px 18px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 12px; cursor: pointer; transition: all 0.25s; text-align: left;
+  color: var(--text); font-family: inherit;
+}
+.research-btn:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(100,216,255,0.12); }
+.research-btn.selected { border-color: var(--accent-gold); background: rgba(255,203,107,0.08); box-shadow: 0 0 20px rgba(255,203,107,0.15); }
+.research-btn .r-icon { font-size: 28px; margin-bottom: 8px; }
+.research-btn .r-name { font-family: 'Orbitron'; font-size: 13px; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 4px; }
+.research-btn .r-desc { font-size: 12.5px; color: var(--text-dim); }
+
+.source-wrap {
+  background: rgba(0,0,0,0.55); border: 1px solid var(--accent-green);
+  border-radius: 12px; padding: 18px 22px; margin: 14px 0;
+}
+.source-header { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.2em; color: var(--accent-green); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dashed rgba(126,255,178,0.3); }
+.source-content { font-family: 'VT323', monospace; font-size: 17px; color: #d8dff0; white-space: pre-wrap; line-height: 1.7; }
+
+.decrypt-panel {
+  background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.04));
+  border: 1px solid rgba(185,128,255,0.45); border-radius: 14px; padding: 22px 26px; margin: 18px 0;
+}
+.decrypt-panel h4 { font-family: 'Orbitron'; font-size: 14px; letter-spacing: 0.2em; color: var(--accent-2); margin-bottom: 8px; }
+.decrypt-row { display: grid; grid-template-columns: 220px 1fr; gap: 14px; align-items: center; margin: 10px 0; }
+@media (max-width: 600px) { .decrypt-row { grid-template-columns: 1fr; } }
+.decrypt-row .lbl { font-size: 13px; color: var(--text-dim); }
+.decrypt-row input, .decrypt-row select { max-width: 320px; }
+</style>
+</head>
+<body data-page="p06">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ PAGE 06 / 16 · PUZZLE · 8 นาที</div>
+<h1 class="page-title">ค้นประวัติศาสตร์ CMB</h1>
+<h2 class="page-sub">ACTIVE RESEARCH · DECRYPT 7 FIELDS</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag do">อำนวย</span><span>ถามว่าทีมอยากใช้วิธีไหน (Video/Database/Contact) · ไม่ต้องบังคับ</span></div>
+    <div class="role"><span class="tag dont">ห้าม</span><span>เฉลย 7 ช่องให้ · ให้นักเรียนอ่านเอง</span></div>
+    <div class="role"><span class="tag say">ใบ้</span><span>ถ้าติด · ใบ้ทีละช่อง · "ลองหาคำว่า 'Bell Labs' ในข้อความ"</span></div>
+  </div>
+</div>
+
+<div class="dialog-box lem" data-speaker="LEMAÎTRE">
+  <div class="txt">ข้อมูล CMB ของปี 1965 ในยานเสียหาย · ทีมต้องเลือก <b>1 ใน 3 แหล่งสืบค้น</b> แล้ว <b>ถอดรหัส 7 ช่อง</b> เพื่อปลดล็อกข้อมูล</div>
+</div>
+
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ เลือกวิธีสืบค้น</h3>
+<div class="research-grid">
+  <button class="research-btn" onclick="openSource('video', this)">
+    <div class="r-icon">📼</div><div class="r-name">VIDEO ARCHIVE</div>
+    <div class="r-desc">ดูคลิปข่าวปี 1965</div>
+  </button>
+  <button class="research-btn" onclick="openSource('database', this)">
+    <div class="r-icon">💾</div><div class="r-name">DATABASE</div>
+    <div class="r-desc">ค้นฐานข้อมูลวิทยาศาสตร์</div>
+  </button>
+  <button class="research-btn" onclick="openSource('contact', this)">
+    <div class="r-icon">📡</div><div class="r-name">CONTACT EARTH</div>
+    <div class="r-desc">ส่งข้อความขอข้อมูลจากโลก</div>
+  </button>
+</div>
+
+<div id="source" style="display:none"></div>
+
+<div id="decrypt" style="display:none" class="decrypt-panel">
+  <h4>🔐 DECRYPTION · เติม 7 ช่อง</h4>
+  <p class="muted" style="margin-bottom: 14px;">อ่านข้อมูลด้านบน · กรอกคำตอบ · เมื่อถูกทั้งหมด ประตูปลดล็อก</p>
+
+  <div class="decrypt-row"><span class="lbl">1 · ปี ค.ศ. ที่ค้นพบ</span>
+    <input type="number" id="d-year" placeholder="YYYY" min="1900" max="2000"></div>
+  <div class="decrypt-row"><span class="lbl">2 · ผู้ค้นพบคนที่ 1</span>
+    <select id="d-who1">
+      <option value="">-- เลือก --</option>
+      <option>Penzias</option><option>Wilson</option><option>Hubble</option>
+      <option>Lemaitre</option><option>Einstein</option><option>Newton</option>
+    </select></div>
+  <div class="decrypt-row"><span class="lbl">3 · ผู้ค้นพบคนที่ 2</span>
+    <select id="d-who2">
+      <option value="">-- เลือก --</option>
+      <option>Penzias</option><option>Wilson</option><option>Hubble</option>
+      <option>Lemaitre</option><option>Einstein</option><option>Newton</option>
+    </select></div>
+  <div class="decrypt-row"><span class="lbl">4 · สถาบันที่ทำงาน</span>
+    <select id="d-lab">
+      <option value="">-- เลือก --</option>
+      <option>Bell Labs</option><option>MIT</option><option>NASA</option>
+      <option>Caltech</option><option>Princeton</option><option>CERN</option>
+    </select></div>
+  <div class="decrypt-row"><span class="lbl">5 · อุณหภูมิสัญญาณ (K)</span>
+    <input type="number" step="0.001" id="d-temp" placeholder="เช่น 2.725"></div>
+  <div class="decrypt-row"><span class="lbl">6 · ชื่อย่อสัญญาณ (3 ตัว)</span>
+    <input type="text" id="d-name" maxlength="4" placeholder="CMB" style="text-transform: uppercase;"></div>
+  <div class="decrypt-row"><span class="lbl">7 · ปีได้รางวัลโนเบล</span>
+    <input type="number" id="d-nobel" placeholder="YYYY" min="1960" max="2000"></div>
+
+  <div class="center mt-20">
+    <button class="btn primary" onclick="decrypt()">🔓 ถอดรหัส</button>
+  </div>
+  <div id="result"></div>
+</div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag k">K3 CMB · Penzias-Wilson</span>
+  <span class="ped-tag p">P3 สืบค้น</span>
+  <span class="ped-tag">วPA 8 · กำกับการเรียนรู้</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+const SOURCES = {
+  video: {
+    wrap: '📼 VIDEO ARCHIVE · 1965 · BELL LABS',
+    content: `[REPORTER] "วันนี้เรามาที่ Bell Labs นิวเจอร์ซีย์"
+[REPORTER] "สัมภาษณ์ Arno Penzias และ Robert Wilson"
+
+[PENZIAS] "เราใช้เสาอากาศฮอร์นขนาดใหญ่"
+[WILSON]  "แต่ได้ยินเสียงรบกวน 2.725 K
+          อยู่ทุกทิศทาง"
+
+[REPORTER] "13 ปีต่อมา · ปี 1978
+           ได้รับโนเบลสาขาฟิสิกส์
+           สำหรับ Cosmic Microwave Background (CMB)"
+
+[END OF TAPE]`,
+  },
+  database: {
+    wrap: '💾 ACADEMY DATABASE · ENTRY CMB-1965',
+    content: `> QUERY: cmb discovery
+> ENTRY FOUND:
+
+NAME .......... Cosmic Microwave Background
+ABBREV ........ CMB
+YEAR .......... 1965
+BY ............ Arno A. Penzias
+                Robert W. Wilson
+AFFILIATION ... Bell Labs
+INSTRUMENT .... Horn antenna (15 m)
+TEMP .......... 2.725 K
+NOBEL ......... Physics, 1978
+
+> END`,
+  },
+  contact: {
+    wrap: '📡 TRANSMISSION · EARTH ACADEMY · DELAY 4.2H',
+    content: `[INCOMING · DECRYPTING...]
+
+ข้อมูลที่ขอ:
+
+ปี 1965 · Bell Labs
+Penzias กับ Wilson
+วัดได้ 2.725 เคลวิน
+ทุกทิศทาง
+
+เรียก CMB (Cosmic Microwave Background)
+
+ปี 1978 ได้โนเบลฟิสิกส์
+
+[END]`,
+  },
+};
+function openSource(key, btn) {
+  const s = SOURCES[key];
+  document.querySelectorAll('.research-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('source').style.display = 'block';
+  document.getElementById('source').innerHTML = `
+    <div class="source-wrap">
+      <div class="source-header">${s.wrap}</div>
+      <pre class="source-content">${s.content}</pre>
+    </div>`;
+  document.getElementById('decrypt').style.display = 'block';
+  Book.savePageData('p06', { source: key });
+}
+function decrypt() {
+  const g = id => document.getElementById(id);
+  const year = parseInt(g('d-year').value);
+  const who1 = (g('d-who1').value || '').toLowerCase();
+  const who2 = (g('d-who2').value || '').toLowerCase();
+  const lab = g('d-lab').value;
+  const temp = parseFloat(g('d-temp').value);
+  const name = (g('d-name').value || '').toUpperCase().trim();
+  const nobel = parseInt(g('d-nobel').value);
+  const errors = [];
+  if (year !== 1965) errors.push('d-year');
+  const whos = new Set([who1, who2]);
+  if (!(whos.has('penzias') && whos.has('wilson'))) { errors.push('d-who1'); errors.push('d-who2'); }
+  if (lab !== 'Bell Labs') errors.push('d-lab');
+  if (isNaN(temp) || Math.abs(temp - 2.725) > 0.1) errors.push('d-temp');
+  if (name !== 'CMB') errors.push('d-name');
+  if (nobel !== 1978) errors.push('d-nobel');
+  ['d-year','d-who1','d-who2','d-lab','d-temp','d-name','d-nobel'].forEach(id => g(id).style.borderColor = '');
+  const r = document.getElementById('result');
+  if (errors.length === 0) {
+    Book.addEnergy(5, 'P06 Decryption');
+    Book.addDiscovery('CMB · 1965 · Penzias-Wilson');
+    Book.addInventory('🔑 Decryption Key · CMB-1965');
+    Book.completePage('p06');
+    r.innerHTML = `<div class="branch-reveal main">
+      <h3>🔓 DECRYPTION COMPLETE</h3>
+      <p>รหัสปลดล็อก · <b>CMB-1965-PW-2725-1978</b></p>
+      <p style="color:var(--accent-gold)">+5 Energy · 🔑 Decryption Key · +1 Discovery</p>
+    </div>`;
+  } else {
+    errors.forEach(id => g(id).style.borderColor = 'var(--accent-red)');
+    r.innerHTML = `<div class="warn">⚠ ยังมี ${errors.length} ช่องผิด · อ่านข้อมูลอีกครั้ง</div>`;
+    document.querySelector('.decrypt-panel').classList.add('shake');
+    setTimeout(() => document.querySelector('.decrypt-panel').classList.remove('shake'), 450);
+  }
+}
+</script>
+</body>
+</html>

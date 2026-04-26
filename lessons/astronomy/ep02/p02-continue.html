@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P02 · โหลดทีม</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .powerup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+  .pu-card { padding: 16px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center; }
+  .pu-card:hover { border-color: var(--accent); }
+  .pu-card.active { border-color: var(--accent-gold); background: rgba(255,203,107,0.08); }
+  .pu-card .pu-icon { font-size: 36px; }
+  .pu-card .pu-name { font-family: 'Orbitron', sans-serif; font-size: 14px; letter-spacing: 0.15em; color: var(--accent); margin: 8px 0 4px; }
+  .pu-card .pu-desc { font-size: 12px; color: var(--text-dim); }
+  .team-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0; }
+  .team-form input { padding: 10px 14px; background: rgba(3,4,12,0.5); border: 1px solid var(--border); color: var(--text); border-radius: 6px; font-family: inherit; }
+</style>
+</head>
+<body data-page="p02" data-type="setup">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label mixed">องก์ 1 · Scene 2 · INTRODUCING WORLD</div>
+  <h1 class="page-title">โหลดทีม · ยืนยันบทบาท</h1>
+  <div class="obj-tags"><span class="obj-tag a">A1 · ทำงานเป็นทีม</span></div>
+
+  <div class="narrative">
+    <p>ยานหยุดนิ่งชั่วคราว · ทีมที่รอด EP01 ด้วยกันกลับมารวมตัว · Badge <b>🛰️ CMB Pioneer</b> จาก EP ที่แล้วเรืองแสงเหนือโต๊ะบังคับการ</p>
+    <p style="color:var(--text-dim)">วันนี้มีภารกิจใหม่ · แต่ก่อนไปต่อ ต้อง <b>ตั้งชื่อทีม</b> และ <b>เลือก Power-up เริ่มต้น</b> 1 อย่าง</p>
+  </div>
+
+  <div class="team-form">
+    <input id="teamName" placeholder="ชื่อทีม (เช่น Nebula)">
+    <input id="teamId" placeholder="รหัสทีม (A, B, C...)">
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;letter-spacing:0.15em;color:var(--accent-gold);margin-top:20px">เลือก Power-up 1 อย่าง</h3>
+  <div class="powerup-grid">
+    <div class="pu-card" data-pu="speed" onclick="selectPU(this)">
+      <div class="pu-icon">⚡</div>
+      <div class="pu-name">SPEED</div>
+      <div class="pu-desc">time bonus ×1.5 ทั้งคาบ</div>
+    </div>
+    <div class="pu-card" data-pu="shield" onclick="selectPU(this)">
+      <div class="pu-icon">🛡️</div>
+      <div class="pu-name">SHIELD</div>
+      <div class="pu-desc">เริ่มด้วย Shield item (ใช้ใน BOSS)</div>
+    </div>
+    <div class="pu-card" data-pu="insight" onclick="selectPU(this)">
+      <div class="pu-icon">🔮</div>
+      <div class="pu-name">INSIGHT</div>
+      <div class="pu-desc">เห็น bet outcome ล่วงหน้า 1 ครั้ง</div>
+    </div>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P02 · บทบาท: จัดทีม</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "จำกันได้ไหม · ครั้งที่แล้วเราเจอ CMB ด้วยกัน · วันนี้ครูขอให้ทุกทีมยืนยันบทบาทอีกครั้ง"<br>
+      <b>ระหว่าง:</b> เดินเช็คว่าทุกทีมมีกัปตัน · ช่วยเลือก power-up ถ้าเถียงนาน (บังคับเคาะ)<br>
+      <b>ปิด:</b> "พร้อมไหม · วันนี้ศัตรูตัวเดิมกลับมา"<br>
+      <b>🎴 DM card แนะนำ:</b> Spark ถ้าทีมเงียบ · Insight ถ้ามีทีมเลือกแบบมีเหตุผล
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled>✓ พร้อมปฏิบัติภารกิจ</button>
+  <div id="status" style="margin-top:10px;color:var(--text-dim);font-size:12px;"></div>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  let chosenPU = null;
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); validate(); }, 50);
+
+  function selectPU(el) {
+    document.querySelectorAll('.pu-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    chosenPU = el.dataset.pu;
+    validate();
+  }
+
+  function validate() {
+    const name = document.getElementById('teamName').value.trim();
+    const tid = document.getElementById('teamId').value.trim();
+    document.getElementById('finishBtn').disabled = !(name && tid && chosenPU);
+  }
+  document.getElementById('teamName').addEventListener('input', validate);
+  document.getElementById('teamId').addEventListener('input', validate);
+
+  function finishPage() {
+    const name = document.getElementById('teamName').value.trim();
+    const tid = document.getElementById('teamId').value.trim();
+    Book.state.teamId = tid;
+    Book.state.teamName = name;
+    // start energy 50 ตาม config (ถ้ายังไม่มี energy)
+    if ((Book.state.energy || 0) < EP_CONFIG.balance.startEnergy) {
+      Book.state.energy = EP_CONFIG.balance.startEnergy;
+    }
+    Book.save();
+
+    // Register in leaderboard
+    Leaderboard.ensureTeam(tid, name);
+
+    // Apply power-up
+    if (chosenPU === 'shield') Items.grant('shield', { from:'p02' });
+    Book.savePageData('p02', { teamName:name, teamId:tid, powerup:chosenPU });
+    Obj.hit('A1', { page:'p02' });
+    Book.addCoin(5, 'p02-team-setup'); // 🪙 รางวัลตั้งทีม
+
+    Book.completePage();
+    Book.updateHUD();
+    document.getElementById('status').textContent = `✓ ทีม ${name} · พร้อม ${chosenPU.toUpperCase()} · กด "ต่อไป →"`;
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ เสร็จแล้ว';
+  }
+</script>
+
+</body>
+</html>

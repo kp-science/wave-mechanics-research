@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>MJ-03 Journal 3-2-1 · SHM แผน 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#ea580c;box-shadow:0 0 0 3px rgba(234,88,12,.15)}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfffd}
+.item .no{display:inline-block;background:#ea580c;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.item .skill.reflect{background:#ede9fe;color:#4c1d95}
+.item .skill.chip{background:#fce7f3;color:#831843}
+.item .skill.goal{background:#d1fae5;color:#064e3b}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#9a3412}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #fdba74}
+.sub b{color:#9a3412}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:4px;background:#fffbf5}
+.ans-ta:focus{outline:none;border-color:#ea580c}
+select.ans-in{border:1.5px solid #fdba74;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;width:auto;min-width:200px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600}
+.c-btn.active{background:#ea580c;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #ea580c}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+/* 3-2-1 grid */
+.grid321{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin:10px 0}
+@media(max-width:760px){.grid321{grid-template-columns:1fr}}
+.col321{background:#fff7ed;border:2px solid #fdba74;border-radius:10px;padding:14px 16px}
+.col321 .badge{font-size:2rem;font-weight:800;color:#ea580c;margin-bottom:4px}
+.col321 h3{font-size:.95rem;font-weight:700;color:#9a3412;margin-bottom:6px}
+/* Chip bank */
+.chip-bank{display:flex;flex-wrap:wrap;gap:7px;padding:10px;background:#fff7ed;border:2px dashed #fdba74;border-radius:8px;min-height:46px;margin:8px 0}
+.chip{padding:6px 14px;border-radius:18px;font-size:.86rem;cursor:pointer;font-weight:700;user-select:none;transition:all .15s;border:2px solid #ea580c;background:#fff;color:#9a3412}
+.chip.ok{background:#16a34a;border-color:#16a34a;color:#fff}
+.chip.bad{background:#dc2626;border-color:#dc2626;color:#fff}
+.check-btn{background:#ea580c;color:#fff;border:none;border-radius:7px;padding:6px 15px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px}
+.score-tag{display:inline-block;margin-left:8px;font-weight:800;font-size:.92rem}
+.reveal-box{margin-top:8px;padding:8px 14px;border-radius:7px;font-size:13.5px;display:none;line-height:1.6}
+.reveal-box.ok{background:#dcfce7;color:#166534;border:1.5px solid #16a34a}
+.reveal-box.bad{background:#fee2e2;color:#991b1b;border:1.5px solid #dc2626}
+/* Misconception table */
+.mis-tbl{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+.mis-tbl th{background:#ea580c;color:#fff;padding:7px 10px}
+.mis-tbl td{border:1.5px solid #fdba74;padding:7px 10px;vertical-align:top}
+.mis-tbl td textarea{width:100%;border:1.5px solid #fdba74;border-radius:5px;padding:5px 8px;font-family:inherit;font-size:13px;resize:vertical;min-height:52px;background:#fffbf5}
+.mis-tbl select{border:1.5px solid #fdba74;border-radius:5px;padding:4px 7px;font-family:inherit;font-size:13px}
+/* Goal grid */
+.goal-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:760px){.goal-grid{grid-template-columns:1fr}}
+.goal-card{background:#fff7ed;border:2px solid #fdba74;border-radius:9px;padding:12px 14px}
+.goal-card .lv{font-size:.8rem;font-weight:700;color:#ea580c;margin-bottom:3px}
+/* Submit */
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+</style></head>
+<body data-ws-id="shm-plan3-journal">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📓 MJ-03 Metacognitive Journal 3-2-1 · ระบบมวล-สปริง</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">สะท้อนการเรียนรู้</span> บันทึกความเข้าใจและตั้งเป้าหมาย</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">💾 บันทึกทุกส่วนแล้วกดส่ง</div>
+  </div>
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b></div>
+  <div class="info"><b>วิธีทำ:</b> ส่วน ก–ช ตามลำดับ · วาดบน canvas · คลิกชิปเพื่อระบุถูก/ผิด · กรอกข้อมูล · <b>เกณฑ์:</b> บันทึกครบทุกส่วน</div>
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="exForm">
+
+  <!-- PART A: 3-2-1 -->
+  <div class="item">
+    <div><span class="no">ส่วน ก</span> <span class="skill reflect">3-2-1 · สิ่งที่เรียนรู้วันนี้</span></div>
+    <div class="stem">บันทึกสิ่งที่ได้เรียนรู้จากแผน 3 ระบบมวล-สปริง</div>
+    <div class="grid321">
+      <div class="col321">
+        <div class="badge">3</div>
+        <h3>สิ่งที่เรียนรู้ 3 อย่าง</h3>
+        <textarea class="ans-ta" id="learn3" rows="6" placeholder="1.&#10;2.&#10;3."></textarea>
+      </div>
+      <div class="col321">
+        <div class="badge">2</div>
+        <h3>ตัวอย่าง 2 สถานการณ์จริง</h3>
+        <textarea class="ans-ta" id="apply2" rows="6" placeholder="1.&#10;2."></textarea>
+      </div>
+      <div class="col321">
+        <div class="badge">1</div>
+        <h3>คำถาม 1 ข้อที่ยังสงสัย</h3>
+        <textarea class="ans-ta" id="wonder1" rows="6" placeholder="ฉันยังสงสัยว่า..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PART B: Chip bank -->
+  <div class="item">
+    <div><span class="no">ส่วน ข</span> <span class="skill chip">จัดกลุ่มแนวคิด (Chip Bank)</span></div>
+    <div class="stem">คลิกชิปที่ถูกต้องสำหรับ SHM มวล-สปริง · <span style="color:#16a34a;font-weight:700">เขียว = ถูก</span> · <span style="color:#dc2626;font-weight:700">แดง = ผิด (Misconception)</span></div>
+    <div class="hint">💡 คลิกเพื่อสลับ: ปกติ → เขียว (✅) → แดง (❌) → ปกติ</div>
+    <div class="chip-bank" id="chipBank">
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">T = 2π√(m/k)</span>
+      <span class="chip" data-correct="false" onclick="toggleChip(this)">T เพิ่มขึ้นเมื่อ A เพิ่ม (M3.1)</span>
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">แรงคืนรูป F = −kx</span>
+      <span class="chip" data-correct="false" onclick="toggleChip(this)">k_eff อนุกรม &gt; k แต่ละตัว (M3.2)</span>
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">ω = √(k/m)</span>
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">สปริงแนวดิ่ง T = T แนวระดับ</span>
+      <span class="chip" data-correct="false" onclick="toggleChip(this)">g ส่งผลต่อ T สปริงแนวดิ่ง (M3.3)</span>
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">k_eff ขนาน = Σkᵢ</span>
+      <span class="chip" data-correct="false" onclick="toggleChip(this)">มวลมาก → T น้อย (M3.4)</span>
+      <span class="chip" data-correct="true" onclick="toggleChip(this)">1/k_eff = Σ(1/kᵢ) (อนุกรม)</span>
+      <span class="chip" data-correct="false" onclick="toggleChip(this)">v_max ขึ้นกับ k เท่านั้น</span>
+    </div>
+    <button type="button" class="check-btn" onclick="chkChips()">ตรวจ ส่วน ข</button>
+    <span class="score-tag" id="chipFb"></span>
+    <div class="reveal-box ok" id="chipOk">✅ เข้าใจแนวคิด SHM ได้ถูกต้องทั้งหมด</div>
+    <div class="reveal-box bad" id="chipBad">❌ บางชิปยังคลาดเคลื่อน — เขียว = ถูก | แดง = Misconception ที่ต้องแก้ไข</div>
+  </div>
+
+  <!-- PART C: Canvas สูตร -->
+  <div class="item">
+    <div><span class="no">ส่วน ค</span> <span class="skill reflect">วาดแผนผังสูตรและความสัมพันธ์</span></div>
+    <div class="stem">เขียนสรุปสูตรและความสัมพันธ์ระหว่าง k, m, T, ω, f ในรูปแบบของคุณเอง</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cC','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cC','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cC','#1a202c',this)"></div>
+      <div class="c-color" style="background:#ea580c" onclick="setColor('cC','#ea580c',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('cC','#e53e3e',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cC')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cC" data-bg="lined" width="980" height="240"></canvas>
+  </div>
+
+  <!-- PART D: Misconception reflection -->
+  <div class="item">
+    <div><span class="no">ส่วน ง</span> <span class="skill chip">สะท้อน Misconception ของตัวเอง</span></div>
+    <div class="stem">ตรวจสอบว่าก่อนเรียนคุณมีความเข้าใจที่คลาดเคลื่อนใดบ้าง และตอนนี้เข้าใจถูกต้องแล้วหรือยัง</div>
+    <table class="mis-tbl">
+      <tr><th>Misconception</th><th>เคยคิดแบบนี้ไหม?</th><th>ตอนนี้เข้าใจว่า...</th></tr>
+      <tr>
+        <td>M3.1: T ขึ้นกับ A</td>
+        <td><select id="m31"><option value="">--</option><option>เคย</option><option>ไม่เคย</option></select></td>
+        <td><textarea placeholder="T = 2π√(m/k) ไม่มี A..."></textarea></td>
+      </tr>
+      <tr>
+        <td>M3.2: k_eff อนุกรม &gt; k แต่ละตัว</td>
+        <td><select id="m32"><option value="">--</option><option>เคย</option><option>ไม่เคย</option></select></td>
+        <td><textarea placeholder="1/k_eff = Σ(1/kᵢ) → k_eff &lt; k ทุกตัว..."></textarea></td>
+      </tr>
+      <tr>
+        <td>M3.3: g ส่งผลต่อ T สปริงแนวดิ่ง</td>
+        <td><select id="m33"><option value="">--</option><option>เคย</option><option>ไม่เคย</option></select></td>
+        <td><textarea placeholder="SHM รอบ x₀ ใหม่ → T ไม่มี g..."></textarea></td>
+      </tr>
+      <tr>
+        <td>M3.4: มวลมาก → T น้อย</td>
+        <td><select id="m34"><option value="">--</option><option>เคย</option><option>ไม่เคย</option></select></td>
+        <td><textarea placeholder="T ∝ √m → มวลมาก T มาก..."></textarea></td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- PART E: เชื่อมความรู้ canvas -->
+  <div class="item">
+    <div><span class="no">ส่วน จ</span> <span class="skill reflect">เชื่อมความรู้ใหม่กับที่เรียนมา</span></div>
+    <div class="stem">วาดแผนผังหรือตารางเปรียบเทียบระบบมวล-สปริง กับ ลูกตุ้มนาฬิกา</div>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" onclick="setTool('cE','pencil',this)">✏️</button>
+      <button type="button" class="c-btn" onclick="setTool('cE','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cE','#1a202c',this)"></div>
+      <div class="c-color" style="background:#ea580c" onclick="setColor('cE','#ea580c',this)"></div>
+      <div class="c-color" style="background:#16a34a" onclick="setColor('cE','#16a34a',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cE')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cE" data-bg="lined" width="980" height="220"></canvas>
+  </div>
+
+  <!-- PART F: วิธีทบทวน -->
+  <div class="item">
+    <div><span class="no">ส่วน ฉ</span> <span class="skill reflect">วิธีทบทวนที่ได้ผลสำหรับฉัน</span></div>
+    <div class="stem">เลือกวิธีทบทวนและเหตุผล</div>
+    <div class="sub">
+      <b>วิธีทบทวนที่เลือก:</b>
+      <select class="ans-in" id="reviewMethod">
+        <option value="">-- เลือกวิธี --</option>
+        <option>ฝึกคำนวณซ้ำ</option><option>ท่องสูตรและ concept</option>
+        <option>อธิบายให้เพื่อนฟัง</option><option>ทำ mind map / concept map</option>
+        <option>ดู simulation ซ้ำ</option><option>ทำแบบทดสอบ</option><option>อ่านตำราเพิ่มเติม</option>
+      </select>
+    </div>
+    <div class="sub"><b>เหตุผลที่เลือก:</b></div>
+    <textarea class="ans-ta" id="reviewReason" rows="3" placeholder="เพราะ..."></textarea>
+  </div>
+
+  <!-- PART G: Goal Setting -->
+  <div class="item">
+    <div><span class="no">ส่วน ช</span> <span class="skill goal">ตั้งเป้าหมายการเรียนรู้ครั้งต่อไป</span></div>
+    <div class="stem">ระบุเป้าหมาย 3 ระดับ</div>
+    <div class="goal-grid">
+      <div class="goal-card">
+        <div class="lv">🟢 ระดับพื้นฐาน</div>
+        <p style="font-size:.84rem;margin-bottom:5px">สิ่งที่ต้องทำได้แน่ๆ</p>
+        <textarea class="ans-ta" id="goal1" rows="4" placeholder="เช่น คำนวณ T จาก m และ k ได้..."></textarea>
+      </div>
+      <div class="goal-card">
+        <div class="lv">🟡 ระดับกลาง</div>
+        <p style="font-size:.84rem;margin-bottom:5px">สิ่งที่อยากพัฒนา</p>
+        <textarea class="ans-ta" id="goal2" rows="4" placeholder="เช่น เข้าใจ k_eff อนุกรม/ขนาน..."></textarea>
+      </div>
+      <div class="goal-card">
+        <div class="lv">🔵 ระดับท้าทาย</div>
+        <p style="font-size:.84rem;margin-bottom:5px">สิ่งที่อยากสำรวจเพิ่ม</p>
+        <textarea class="ans-ta" id="goal3" rows="4" placeholder="เช่น ศึกษา damped oscillation..."></textarea>
+      </div>
+    </div>
+    <div class="sub" style="margin-top:10px">
+      <b>ความมั่นใจหลังเรียน (1 = ไม่เข้าใจ … 5 = เข้าใจมาก):</b><br>
+      <div style="display:flex;gap:12px;margin-top:6px">
+        <label style="font-size:.9rem"><input type="radio" name="confidence" value="1" style="accent-color:#ea580c"> 1</label>
+        <label style="font-size:.9rem"><input type="radio" name="confidence" value="2" style="accent-color:#ea580c"> 2</label>
+        <label style="font-size:.9rem"><input type="radio" name="confidence" value="3" style="accent-color:#ea580c"> 3</label>
+        <label style="font-size:.9rem"><input type="radio" name="confidence" value="4" style="accent-color:#ea580c"> 4</label>
+        <label style="font-size:.9rem"><input type="radio" name="confidence" value="5" style="accent-color:#ea580c"> 5</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ บันทึกครบทุกส่วนแล้ว กดส่ง</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 บันทึก Journal</button>
+    <div class="status" id="status"></div>
+  </div>
+  </form>
+  <div class="foot">MJ-03 Metacognitive Journal · SHM แผน 3 · 2569</div>
+</div>
+
+<script>
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='MJ3_SHM_Plan3';
+
+// Canvas
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);}
+
+// Chip toggle (3 states: neutral→ok→bad→neutral)
+const chipStates={};
+function toggleChip(el){const k=el.dataset.key=el.dataset.key||Math.random().toString(36).slice(2);chipStates[k]=(chipStates[k]||0+1)%3;const st=((chipStates[k]||0)+1)%3;chipStates[k]=st;el.classList.remove('ok','bad');if(st===1)el.classList.add('ok');else if(st===2)el.classList.add('bad');}
+function chkChips(){
+  const chips=document.querySelectorAll('#chipBank .chip');let sc=0;
+  chips.forEach(el=>{const correct=el.dataset.correct==='true';const st=chipStates[el.dataset.key]||0;if((correct&&st===1)||(!correct&&st===2))sc++;});
+  const t=chips.length,fb=document.getElementById('chipFb'),ok=document.getElementById('chipOk'),bad=document.getElementById('chipBad');
+  fb.textContent=sc===t?`✅ ${sc}/${t}`:`❌ ${sc}/${t}`;fb.style.color=sc===t?'#16a34a':'#dc2626';
+  if(sc===t){ok.style.display='block';bad.style.display='none';}else{bad.style.display='block';ok.style.display='none';}
+}
+
+function collectAnswers(){
+  const ans={};
+  ans.learn3=document.getElementById('learn3').value;ans.apply2=document.getElementById('apply2').value;ans.wonder1=document.getElementById('wonder1').value;
+  ans.chips=Array.from(document.querySelectorAll('#chipBank .chip')).map(el=>({text:el.textContent.trim(),state:chipStates[el.dataset.key]||0}));
+  ans.mis={m31:document.getElementById('m31').value,m32:document.getElementById('m32').value,m33:document.getElementById('m33').value,m34:document.getElementById('m34').value};
+  ans.reviewMethod=document.getElementById('reviewMethod').value;ans.reviewReason=document.getElementById('reviewReason').value;
+  ans.goal1=document.getElementById('goal1').value;ans.goal2=document.getElementById('goal2').value;ans.goal3=document.getElementById('goal3').value;
+  ans.confidence=document.querySelector('input[name="confidence"]:checked')?.value||'';
+  ['cC','cE'].forEach(id=>{const c=document.getElementById(id);if(c)try{ans[id+'_img']=c.toDataURL('image/png');}catch(e){}});
+  return ans;
+}
+
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้องก่อน';return;}
+  const payload={plan:'SHM-3',type:'Journal-3-2-1',student_name:name,student_no:Number(no),class:cls,test_date:document.getElementById('test_date').value,...collectAnswers()};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'){status.className='status error';status.innerHTML='⚠️ ยังไม่ได้ตั้งค่า API · <a href="#" onclick="dlJSON();return false;" style="color:#9a3412">Download JSON</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ บันทึกสำเร็จ! 🎉';btn.textContent='✅ บันทึกแล้ว';}
+  catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function dlJSON(){if(!window._lastPayload)return;const b=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`Journal3_${window._lastPayload.student_name}.json`;a.click();}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('canvas[data-bg]').forEach(c=>initCanvas(c.id));
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  // Assign keys to chips
+  document.querySelectorAll('#chipBank .chip').forEach((el,i)=>el.dataset.key='chip'+i);
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE')document.getElementById('configWarn').classList.add('show');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

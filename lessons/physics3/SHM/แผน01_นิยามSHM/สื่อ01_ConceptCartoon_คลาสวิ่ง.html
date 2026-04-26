@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Concept Cartoon — "คลาสวิ่ง" · Interactive (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:24px;color:#312e81}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.scene{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border-radius:14px;padding:22px;margin:16px 0}
+.scene .title{font-size:20px;font-weight:800;color:#3730a3;margin-bottom:6px;text-align:center}
+.scene .story{font-size:15.5px;color:#1e1b4b;margin:8px 0}
+.scene svg{max-width:640px;width:100%;height:auto;display:block;margin:8px auto}
+.chars{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
+@media(max-width:760px){.chars{grid-template-columns:repeat(2,1fr)}}
+.char{background:#fff;border:2px solid #cfd8e3;border-radius:14px;padding:12px;position:relative}
+.char.a{border-color:#2e7d32;background:#f1f8e9}
+.char.b{border-color:#ef6c00;background:#fff3e0}
+.char.c{border-color:#4f46e5;background:#eef2ff}
+.char.d{border-color:#c026d3;background:#fdf4ff}
+.char .avatar{font-size:38px;text-align:center;margin-bottom:4px}
+.char .name{font-weight:800;text-align:center;margin-bottom:6px;color:#1a365d;font-size:15px}
+.char .say{background:#fff;border:1px dashed #999;border-radius:10px;padding:10px;font-size:14px;min-height:110px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:14px 18px;border-radius:10px;margin:16px 0}
+.q b{color:#7a5800}
+.predict{background:#eef2ff;border-left:6px solid #4f46e5;padding:14px 18px;border-radius:10px;margin-top:14px}
+.predict b{color:#3730a3}
+.opts{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.opts label{background:#fff;border:1.5px solid #c7d2fe;border-radius:10px;padding:6px 14px;cursor:pointer;font-size:14px;transition:all .15s}
+.opts label:has(input:checked){background:#4f46e5;color:#fff;border-color:#4f46e5;font-weight:700}
+.chk-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:760px){.chk-bank{grid-template-columns:1fr}}
+.chk{display:flex;gap:8px;padding:8px 12px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;cursor:pointer;font-size:14px;align-items:flex-start;transition:all .15s}
+.chk:hover{border-color:#4f46e5;background:#f5f7ff}
+.chk:has(input:checked){background:#eef2ff;border-color:#4f46e5;font-weight:600}
+.chk input{margin-top:3px;flex-shrink:0}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#eef2ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #4f46e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5}
+.submit-bar{background:linear-gradient(135deg,#1b5e20,#2e7d32);border-radius:12px;padding:16px 20px;margin:16px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#1b5e20;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:10px 24px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:20px;border-top:1px solid #eee;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-cc">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎭 Concept Cartoon — "คลาสวิ่ง" · Interactive</h1>
+      <div class="meta"><span class="tag">SHM แผน 1</span><span class="tag">CC-01 · E1 Engage</span> 15 นาที · ส่งออนไลน์ได้</div>
+    </div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ API ยังไม่ตั้งค่า — download .json แทน</div>
+
+  <div class="id-box">
+    <label>ชื่อ <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>กลุ่ม <input type="text" id="group"></label>
+  </div>
+
+  <div class="scene">
+    <div class="title">🏫 สถานการณ์: ห้องเรียนฟิสิกส์ 5/1 ถกเถียงกันว่า "อะไรคือ SHM"</div>
+    <div class="story">ครูเปิดคลิป 4 ปรากฏการณ์: <strong>พัดลมเพดานหมุน · ลูกบอลเด้งบนพื้น · ลูกตุ้มนาฬิกาแกว่ง · เข็มวินาทีเดิน</strong> แล้วถามว่า "<em>อันไหนเป็น SHM บ้าง?</em>" นักเรียน 4 คนเถียงกันไม่จบ</div>
+    <svg viewBox="0 0 640 140" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="640" height="140" fill="#eef2ff" rx="8"/>
+      <g transform="translate(90,70)"><circle r="26" fill="#c7d2fe" stroke="#4f46e5" stroke-width="1.5"/><path d="M0,-22 Q8,-10 0,0 Q-8,-10 0,-22" fill="#4f46e5"/><path d="M22,0 Q10,8 0,0 Q10,-8 22,0" fill="#4f46e5"/><path d="M0,22 Q-8,10 0,0 Q8,10 0,22" fill="#4f46e5"/><path d="M-22,0 Q-10,-8 0,0 Q-10,8 -22,0" fill="#4f46e5"/><circle r="4" fill="#1e1b4b"/></g>
+      <text x="90" y="120" font-size="12" text-anchor="middle" fill="#312e81" font-weight="700">พัดลมหมุน</text>
+      <g transform="translate(230,50)"><circle cx="0" cy="0" r="12" fill="#dd6b20"/><circle cx="0" cy="30" r="12" fill="#dd6b20" opacity=".5"/><line x1="-20" y1="50" x2="20" y2="50" stroke="#64748b" stroke-width="1.5"/><path d="M0,-10 v20" stroke="#c05621" stroke-dasharray="2,2"/></g>
+      <text x="230" y="120" font-size="12" text-anchor="middle" fill="#312e81" font-weight="700">ลูกบอลเด้ง</text>
+      <g transform="translate(380,35)"><line x1="0" y1="0" x2="-22" y2="55" stroke="#4a5568" stroke-width="1.5"/><line x1="0" y1="0" x2="22" y2="55" stroke="#4a5568" stroke-width="1" opacity=".4"/><circle cx="-22" cy="55" r="10" fill="#2e7d32"/><path d="M-30,60 A30,30 0 0,1 30,60" stroke="#64748b" stroke-dasharray="2,2" fill="none"/></g>
+      <text x="380" y="120" font-size="12" text-anchor="middle" fill="#312e81" font-weight="700">ลูกตุ้ม</text>
+      <g transform="translate(530,70)"><circle r="28" fill="#fff" stroke="#4f46e5" stroke-width="1.5"/><line x1="0" y1="0" x2="0" y2="-22" stroke="#c53030" stroke-width="2"/><line x1="0" y1="0" x2="14" y2="-8" stroke="#1a202c" stroke-width="2"/><circle r="2.5" fill="#1a202c"/></g>
+      <text x="530" y="120" font-size="12" text-anchor="middle" fill="#312e81" font-weight="700">เข็มวินาที</text>
+    </svg>
+  </div>
+
+  <div class="chars">
+    <div class="char a"><div class="avatar">👦</div><div class="name">เอ</div><div class="say">"<strong>พัดลมเพดานหมุน</strong>เป็น SHM เพราะมัน<strong>เคลื่อนที่ซ้ำทางเดิม</strong>รอบแกน ทุกรอบเท่ากันเป๊ะ"</div></div>
+    <div class="char b"><div class="avatar">🧒</div><div class="name">บี</div><div class="say">"<strong>ลูกบอลเด้งบนพื้น</strong>เป็น SHM เพราะมันขึ้น-ลงซ้ำไปมา และมีแรงโน้มถ่วงดึงกลับตลอดเวลา"</div></div>
+    <div class="char c"><div class="avatar">👧</div><div class="name">ซี</div><div class="say">"<strong>ลูกตุ้มนาฬิกา</strong>เป็น SHM เพราะแกว่งกลับไปกลับมารอบตำแหน่งสมดุล และมี<strong>แรงคืนตัว</strong>"</div></div>
+    <div class="char d"><div class="avatar">👨‍🎓</div><div class="name">ดี</div><div class="say">"<strong>เข็มวินาที</strong>เป็น SHM เพราะมันเดินทุก 1 วินาทีเหมือนกันทุกรอบ คาบเท่ากันถึงเป็น SHM"</div></div>
+  </div>
+
+  <div class="q">
+    <b>🎯 คำถามหลัก:</b> ทั้ง 4 เป็น SHM จริงหรือ? ถ้าไม่ เพราะอะไร?<br>
+    <b>คำถามย่อย:</b> (1) periodic ≠ SHM ต่างอย่างไร? (2) SHM ต้องมีอะไรบ้าง? (3) แนวระดับ/ดิ่งมีผลหรือไม่?
+  </div>
+
+  <form id="ccForm">
+
+  <!-- 1. เห็นด้วยใคร -->
+  <div class="predict">
+    <b>📝 (1) ฉันเห็นด้วยกับใครมากที่สุด?</b>
+    <div class="opts">
+      <label><input type="radio" name="agree" value="A"> เอ (พัดลม)</label>
+      <label><input type="radio" name="agree" value="B"> บี (ลูกบอล)</label>
+      <label><input type="radio" name="agree" value="C"> ซี (ลูกตุ้ม)</label>
+      <label><input type="radio" name="agree" value="D"> ดี (เข็มนาฬิกา)</label>
+      <label><input type="radio" name="agree" value="none"> ไม่เห็นด้วยกับใครเลย</label>
+    </div>
+  </div>
+
+  <!-- 2. Checkbox bank: ใครพูดถูก ใครพูดผิด + เหตุผล -->
+  <div class="predict">
+    <b>📝 (2) วิเคราะห์คำพูดของแต่ละคน · ติ๊ก ✔ ข้อความที่เป็นเหตุผลที่ "ถูกต้อง" (เตือน: มีทั้งถูกและลวง)</b>
+    <div class="chk-bank">
+      <label class="chk" data-correct="false"><input type="checkbox" name="reason" value="a"> ① เอถูก · การซ้ำรอบเดิมคือนิยามของ SHM</label>
+      <label class="chk" data-correct="true"><input type="checkbox" name="reason" value="b"> ② เอผิด · พัดลมหมุนเป็น periodic แต่ F เข้าศูนย์กลางไม่ ∝ x จึงไม่ใช่ SHM (M1.1)</label>
+      <label class="chk" data-correct="false"><input type="checkbox" name="reason" value="c"> ③ บีถูก · มี mg ดึงกลับ = SHM</label>
+      <label class="chk" data-correct="true"><input type="checkbox" name="reason" value="d"> ④ บีผิด · ลูกบอลเด้งมีแรงกระแทกที่ไม่ ∝ −x (M1.2)</label>
+      <label class="chk" data-correct="true"><input type="checkbox" name="reason" value="e"> ⑤ ซีถูก · ลูกตุ้มมุมเล็กมี F ∝ −sin θ ≈ −θ จึงเป็น SHM</label>
+      <label class="chk" data-correct="false"><input type="checkbox" name="reason" value="f"> ⑥ ซีผิด · แรงโน้มถ่วงคงที่ทำให้ไม่เป็น SHM</label>
+      <label class="chk" data-correct="false"><input type="checkbox" name="reason" value="g"> ⑦ ดีถูก · คาบเท่ากันเป็นเงื่อนไขเพียงพอของ SHM</label>
+      <label class="chk" data-correct="true"><input type="checkbox" name="reason" value="h"> ⑧ ดีผิด · คาบเท่ากันเป็นเงื่อนไขของ periodic ไม่ใช่ SHM (M1.1)</label>
+    </div>
+    <div style="margin-top:6px;font-size:13px;color:#64748b;font-style:italic">💡 คำตอบที่ถูกต้องมี 4 ข้อ (ข้อ ②, ④, ⑤, ⑧) · ระวังตัวลวง</div>
+  </div>
+
+  <!-- 3. ทำนายว่าอะไรเป็น SHM (checkbox) -->
+  <div class="predict">
+    <b>📝 (3) จาก 4 ปรากฏการณ์ · ข้อใดเป็น SHM จริง? (ติ๊กได้หลายข้อ)</b>
+    <div class="chk-bank">
+      <label class="chk" data-correct="false"><input type="checkbox" name="isshm" value="fan"> พัดลมเพดานหมุน</label>
+      <label class="chk" data-correct="false"><input type="checkbox" name="isshm" value="ball"> ลูกบอลเด้งบนพื้น</label>
+      <label class="chk" data-correct="true"><input type="checkbox" name="isshm" value="pendulum"> ลูกตุ้มนาฬิกา (มุมเล็ก)</label>
+      <label class="chk" data-correct="false"><input type="checkbox" name="isshm" value="second"> เข็มวินาทีเดิน</label>
+    </div>
+  </div>
+
+  <!-- 4. Dropdown: เงื่อนไขที่ขาด -->
+  <div class="predict">
+    <b>📝 (4) สิ่งที่ทั้ง 4 คนพลาดคือ:</b>
+    <select id="missing" style="margin-left:6px;padding:6px 12px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14px">
+      <option value="">-- เลือก --</option>
+      <option value="a">การเคลื่อนที่ต้องเร็วมาก</option>
+      <option value="b">ต้องมีแรงคืนตัว F = −kx ∝ การกระจัด (ไม่ใช่แค่ซ้ำรอบ/ดึงกลับ/คาบเท่ากัน)</option>
+      <option value="c">ต้องเกิดในแนวระดับเท่านั้น</option>
+      <option value="d">ต้องไม่มีแรงเสียดทาน</option>
+    </select>
+  </div>
+
+  <!-- 5. Canvas ใหญ่ + textarea อธิบาย -->
+  <div class="predict">
+    <b>📝 (5) อธิบายเหตุผลของฉัน (วาดกราฟ/ภาพ + เขียน):</b>
+    <div class="canvas-toolbar">
+      <button type="button" class="c-btn active" id="tbp" onclick="setTool('cc','pencil',this)">✏️ ดินสอ</button>
+      <button type="button" class="c-btn" id="tbe" onclick="setTool('cc','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cc','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('cc','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('cc','#e53e3e',this)"></div>
+      <div class="c-color" style="background:#16a34a" onclick="setColor('cc','#16a34a',this)"></div>
+      <button type="button" class="c-btn" onclick="clearCanvas('cc')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="cc" data-bg="lined" width="980" height="220"></canvas>
+    <textarea class="ans-ta" id="reasoning" rows="3" placeholder="เหตุผลของฉันคือ... (เชื่อมกับ F = −kx ถ้าทำได้)"></textarea>
+  </div>
+
+  <!-- ความมั่นใจ -->
+  <div class="predict">
+    <b>📝 (6) ระดับความมั่นใจ:</b>
+    <div class="opts">
+      <label><input type="radio" name="conf" value="high"> 🟢 มั่นใจมาก</label>
+      <label><input type="radio" name="conf" value="mid"> 🟡 ปานกลาง</label>
+      <label><input type="radio" name="conf" value="low"> 🔴 ไม่มั่นใจ</label>
+    </div>
+  </div>
+
+  <div style="margin-top:14px;background:#fff5f5;border:1.5px solid #fc8181;border-radius:10px;padding:12px 14px;font-size:14px">
+    <b style="color:#c53030">⚠️ Misconception เป้าหมาย:</b>
+    <span style="background:#c53030;color:#fff;padding:2px 8px;border-radius:6px;font-size:12px;margin:0 4px">M1.1</span> periodic ≠ SHM ·
+    <span style="background:#c53030;color:#fff;padding:2px 8px;border-radius:6px;font-size:12px;margin:0 4px">M1.2</span> ต้องมีแรงคืนตัว F = −kx ·
+    <span style="background:#c53030;color:#fff;padding:2px 8px;border-radius:6px;font-size:12px;margin:0 4px">M1.3</span> ไม่จำกัดทิศ
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ กดส่งคำตอบก่อนเข้าขั้น E2 Explore (SIM01)</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+
+  <div class="foot">CC-01 Interactive · SHM แผน 1 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}});
+
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='CC_SHM_Plan1';
+document.getElementById('ccForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้อง';return;}
+  // Scoring
+  let reasonScore=0;document.querySelectorAll('input[name="reason"]').forEach(cb=>{const lbl=cb.closest('.chk');const correct=lbl.dataset.correct==='true';if(correct===cb.checked)reasonScore++;});
+  let isshmScore=0;document.querySelectorAll('input[name="isshm"]').forEach(cb=>{const lbl=cb.closest('.chk');const correct=lbl.dataset.correct==='true';if(correct===cb.checked)isshmScore++;});
+  const payload={plan:'SHM-1',type:'ConceptCartoon',student_name:name,student_no:Number(no),class:cls,group:document.getElementById('group').value,
+    agree:(document.querySelector('input[name="agree"]:checked')||{}).value||'',
+    reason_selected:Array.from(document.querySelectorAll('input[name="reason"]:checked')).map(c=>c.value),reason_score:reasonScore+'/8',
+    isshm_selected:Array.from(document.querySelectorAll('input[name="isshm"]:checked')).map(c=>c.value),isshm_score:isshmScore+'/4',
+    missing:document.getElementById('missing').value,
+    reasoning:document.getElementById('reasoning').value,
+    conf:(document.querySelector('input[name="conf"]:checked')||{}).value||'',
+    cc_img:document.getElementById('cc').toDataURL('image/png')
+  };
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){status.className='status error';status.innerHTML='⚠️ API ยังไม่ตั้งค่า · <a href="#" onclick="downloadJSON();return false;" style="color:#3730a3">Download .json</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ ส่งสำเร็จ 🎉';btn.textContent='✅ ส่งแล้ว';}catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`CC_SHM1_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

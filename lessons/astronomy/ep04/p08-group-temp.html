@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P08 · Group by Temperature</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .star-pool-real { display:flex; flex-wrap:wrap; gap:8px; padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; min-height:80px; justify-content:center; }
+  .star-real { padding:8px 12px; min-height:54px; min-width:130px; background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9)); border:2px solid rgba(120,140,220,0.5); border-radius:10px; color:#e8ecf8; cursor:grab; user-select:none; -webkit-tap-highlight-color:transparent; touch-action:none; transition:all .15s; display:flex; align-items:center; gap:8px; }
+  .star-real .orb { width:18px; height:18px; border-radius:50%; box-shadow:0 0 10px currentColor; }
+  .star-real .nm { font-weight:700; font-size:13px; }
+  .star-real .tk { font-family:monospace; font-size:10px; color:#9aa3c0; }
+  .star-real:active, .star-real.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .star-real.placed { opacity:0.3; pointer-events:none; }
+
+  .temp-buckets { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:14px 0; }
+  @media(max-width:560px){ .temp-buckets { grid-template-columns:1fr; } }
+  .bucket {
+    padding:14px; min-height:160px;
+    background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:12px;
+    transition:all .15s;
+  }
+  .bucket.over { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .bucket.cool { border-color:#ff7a55; }
+  .bucket.warm { border-color:#ffd96b; }
+  .bucket.hot  { border-color:#9bb8ff; }
+  .bucket h4 { font-family:Orbitron,sans-serif; font-size:12px; letter-spacing:0.15em; margin-bottom:8px; text-align:center; }
+  .bucket.cool h4 { color:#ff7a55; }
+  .bucket.warm h4 { color:#ffd96b; }
+  .bucket.hot h4 { color:#9bb8ff; }
+  .bucket .desc { font-size:11px; color:#9aa3c0; text-align:center; margin-bottom:10px; }
+  .bucket .placed-host { display:flex; flex-direction:column; gap:5px; }
+  .placed-mini-r { padding:5px 8px; background:rgba(100,216,255,0.12); border:1px solid #64d8ff; border-radius:6px; font-size:11.5px; }
+  .placed-mini-r.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); color:#bcffd6; }
+  .placed-mini-r.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); color:#ffb5c2; }
+</style>
+</head>
+<body data-page="p08" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🌡️ ACT B · CONSOLIDATION 2</span>
+  <h1>Group by Temperature · จัดกลุ่มอุณหภูมิ</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ดาวเดิมที่เพิ่งจัด · ครั้งนี้จัดใหม่ตาม <b>ช่วงอุณหภูมิ 3 ช่วง</b>: เย็น · อบอุ่น · ร้อน ·
+      ดาวต่างชนิดอาจอุณหภูมิใกล้กันได้"
+    </span>
+  </div>
+
+  <div class="star-pool-real" id="starPool"></div>
+
+  <div class="temp-buckets" id="buckets"></div>
+
+  <div class="status" id="hint">💡 ลากครบ <b id="leftCnt">11</b> ดวง</div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P08</summary>
+    <div class="body">
+      <b>วัตถุประสงค์:</b> ทบทวนช่วงอุณหภูมิ · เห็นว่า "ดาวประเภทใกล้กัน อุณหภูมิอาจคล้ายกัน"<br>
+      <b>วPA:</b> นักเรียนเลือกช่วงโดยใช้เลขจริง · ไม่ใช่จำสี
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ลากครบ → กดส่ง → ปลดล็อกสรุป</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const STARS = (EP_CONFIG.stars || []).map((s,i) => ({...s, id:'rt'+i,
+  hex: s.type==='O'?'#9bb8ff':(s.type==='B'?'#bcd0ff':(s.type==='A'?'#fff':(s.type==='F'?'#fff4d8':(s.type==='G'?'#ffd96b':(s.type==='K'?'#ffaa55':'#ff7a55')))))
+}));
+function bucketOf(t) { if (t < 5000) return 'cool'; if (t < 10000) return 'warm'; return 'hot'; }
+const BUCKETS = [
+  { id:'cool', name:'เย็น', desc:'< 5,000 K', },
+  { id:'warm', name:'อบอุ่น', desc:'5,000 – 10,000 K' },
+  { id:'hot',  name:'ร้อน', desc:'> 10,000 K' },
+];
+
+const placed = {};
+const pool = document.getElementById('starPool');
+pool.innerHTML = STARS.sort(()=>Math.random()-0.5).map(s=>`
+  <div class="star-real" id="rt-${s.id}" data-id="${s.id}" draggable="true">
+    <div class="orb" style="background:${s.hex}; color:${s.hex};"></div>
+    <div>
+      <div class="nm">${s.name}</div>
+      <div class="tk">${s.tempK.toLocaleString()} K</div>
+    </div>
+  </div>
+`).join('');
+
+const host = document.getElementById('buckets');
+host.innerHTML = BUCKETS.map(b => `
+  <div class="bucket ${b.id}" id="bk-${b.id}">
+    <h4>${b.name}</h4>
+    <div class="desc">${b.desc}</div>
+    <div class="placed-host" id="bk-${b.id}-placed"></div>
+  </div>
+`).join('');
+
+function setupDrag() {
+  STARS.forEach(s => {
+    const tile = document.getElementById('rt-' + s.id);
+    if (!tile) return;
+    tile.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', s.id);
+      ev.dataTransfer.setData('text/plain', s.id);
+      tile.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(tile, () => s.id);
+  });
+  BUCKETS.forEach(b => {
+    const el = document.getElementById('bk-' + b.id);
+    el.addEventListener('dragover', ev => { ev.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', ev => {
+      ev.preventDefault(); el.classList.remove('over');
+      const sid = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(sid, b.id);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(el, sid => tryPlace(sid, b.id));
+  });
+}
+
+function tryPlace(sid, bid) {
+  if (!sid || placed[sid]) return;
+  const s = STARS.find(x=>x.id===sid);
+  if (!s) return;
+  placed[sid] = bid;
+  const correct = (bucketOf(s.tempK) === bid);
+  const ph = document.getElementById('bk-' + bid + '-placed');
+  const m = document.createElement('div');
+  m.className = 'placed-mini-r ' + (correct?'correct':'wrong');
+  m.innerHTML = (correct?'✓':'✗') + ' ' + s.name + ' · ' + s.tempK.toLocaleString() + ' K';
+  ph.appendChild(m);
+  document.getElementById('rt-' + sid).classList.add('placed');
+  if (window.SFX) SFX.play(correct?'correct':'wrong');
+  const left = STARS.length - Object.keys(placed).length;
+  document.getElementById('leftCnt').textContent = left;
+  if (left === 0) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('hint').className = 'status ok';
+    document.getElementById('hint').innerHTML = '✓ ลากครบ · กดส่ง';
+  }
+}
+
+setTimeout(setupDrag, 300);
+
+Submit.wirePair({
+  page:'p08',
+  nextHref:'p09-color-summary.html',
+  getPayload:()=>{
+    const correct = STARS.filter(s=>placed[s.id]===bucketOf(s.tempK)).length;
+    return { placed, correct, total:STARS.length };
+  },
+  isPerfect:(p)=>p.correct===p.total,
+  onSubmit:(status,n)=>{
+    const p = JSON.parse(localStorage.getItem('cosmosLog_ep04_submit_p08')||'{}');
+    document.getElementById('result').style.display='block';
+    document.getElementById('result').innerHTML =
+      `<span class="star">✓</span> จัดถูก ${p.correct||0}/${p.total||11} · ดาวอุณหภูมิใกล้กันสามารถมีสเปกตรัมต่างได้`;
+    if (window.Photon && Photon.add) Photon.add(15);
+  }
+});
+</script>
+</body></html>

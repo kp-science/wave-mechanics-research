@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P07 · Group by Code + Black Dwarf</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .star-pool-real { display:flex; flex-wrap:wrap; gap:8px; padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; min-height:80px; justify-content:center; }
+  .star-real {
+    padding:8px 12px; min-height:54px; min-width:120px;
+    background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9));
+    border:2px solid rgba(120,140,220,0.5); border-radius:10px;
+    color:#e8ecf8; cursor:grab; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none;
+    transition:all .15s; display:flex; align-items:center; gap:8px;
+  }
+  .star-real .orb { width:18px; height:18px; border-radius:50%; box-shadow:0 0 10px currentColor; }
+  .star-real .nm { font-weight:700; font-size:13px; }
+  .star-real .tk { font-family:monospace; font-size:10px; color:#9aa3c0; }
+  .star-real:active, .star-real.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .star-real.placed { opacity:0.3; pointer-events:none; }
+
+  .obafgkm-bins { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin:14px 0; }
+  @media(max-width:680px){ .obafgkm-bins { grid-template-columns:repeat(4,1fr); } }
+  .obin {
+    padding:8px; min-height:130px;
+    background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:10px;
+    text-align:center; transition:all .15s;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .obin.over { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .obin .ll { font-family:Orbitron; font-size:18px; font-weight:700; }
+  .obin .placed-host { display:flex; flex-direction:column; gap:3px; width:100%; }
+  .placed-mini-r { padding:3px 4px; background:rgba(100,216,255,0.12); border:1px solid #64d8ff; border-radius:5px; font-size:10.5px; }
+  .placed-mini-r.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); color:#bcffd6; }
+  .placed-mini-r.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); color:#ffb5c2; }
+
+  /* Hidden Black Dwarf — appears top-right after some placements */
+  .bd-secret {
+    position:fixed; top:80px; right:14px; z-index:30;
+    width:54px; height:54px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,#3a3050 0%,#1a1226 60%,#000 100%);
+    box-shadow:0 0 30px rgba(60,40,90,0.7);
+    display:none; align-items:center; justify-content:center;
+    cursor:pointer; animation:bdPulse 1.6s infinite; -webkit-tap-highlight-color:transparent;
+  }
+  .bd-secret.show { display:flex; }
+  .bd-secret::before { content:'?'; color:#bcd0ff; font-family:Orbitron; font-size:28px; }
+  @keyframes bdPulse { 50% { box-shadow:0 0 50px rgba(60,40,90,0.9); transform:scale(1.08); } }
+</style>
+</head>
+<body data-page="p07" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🎁 ACT B · CONSOLIDATION</span>
+  <h1>Group by Code · จัดกลุ่มดาวจริง</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ใช้รหัส OBAFGKM ที่เพิ่งเรียน · <b>ลากดาวจริง 11 ดวง</b>ในตารางลงช่องที่ถูกต้อง ·
+      ระวัง! · ระหว่างทาง<b style="color:#fff;">อาจมีของมีค่าซ่อนอยู่</b> · กดเก็บได้!"
+    </span>
+  </div>
+
+  <div class="star-pool-real" id="starPool"></div>
+
+  <div class="obafgkm-bins" id="bins"></div>
+
+  <div class="status" id="hint">💡 ลากครบ <b id="leftCnt">11</b> ดวง</div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P07</summary>
+    <div class="body">
+      <b>วัตถุประสงค์:</b> ใช้ OBAFGKM กับดาวจริง · ผูก theory ↔ ดาวที่นักเรียนเห็นในท้องฟ้า<br>
+      <b>Black Dwarf:</b> ปรากฏหลังจัดถูก ≥ 6 ดวง · นักเรียนกดเก็บได้ · ใช้ใน Boss<br>
+      <b>วPA:</b> เก็บลำดับการลาก + ครั้งที่กดเก็บ Black Dwarf
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ลากครบ → กดส่ง → เปิด Mystery Box</div>
+</div>
+
+<!-- Hidden Black Dwarf -->
+<div class="bd-secret" id="bdSecret" onclick="collectBD()" title="กดเก็บ"></div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const STARS = (EP_CONFIG.stars || []).map((s,i) => ({...s, id:'rs'+i,
+  hex: s.type==='O'?'#9bb8ff':(s.type==='B'?'#bcd0ff':(s.type==='A'?'#fff':(s.type==='F'?'#fff4d8':(s.type==='G'?'#ffd96b':(s.type==='K'?'#ffaa55':'#ff7a55')))))
+}));
+const TYPES = ['O','B','A','F','G','K','M'];
+const COLORS = ['#9bb8ff','#bcd0ff','#fff','#fff4d8','#ffd96b','#ffaa55','#ff7a55'];
+
+const placed = {};
+let bdCollected = false;
+
+const pool = document.getElementById('starPool');
+pool.innerHTML = STARS.sort(()=>Math.random()-0.5).map(s=>`
+  <div class="star-real" id="rt-${s.id}" data-id="${s.id}" draggable="true">
+    <div class="orb" style="background:${s.hex}; color:${s.hex};"></div>
+    <div>
+      <div class="nm">${s.name}</div>
+      <div class="tk">${s.tempK.toLocaleString()} K</div>
+    </div>
+  </div>
+`).join('');
+
+const bins = document.getElementById('bins');
+bins.innerHTML = TYPES.map((t,i) => `
+  <div class="obin" data-type="${t}" id="ob-${t}">
+    <div class="ll" style="color:${COLORS[i]}">${t}</div>
+    <div class="placed-host" id="ob-${t}-placed"></div>
+  </div>
+`).join('');
+
+function setupDrag() {
+  STARS.forEach(s => {
+    const tile = document.getElementById('rt-' + s.id);
+    if (!tile) return;
+    tile.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', s.id);
+      ev.dataTransfer.setData('text/plain', s.id);
+      tile.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(tile, () => s.id);
+  });
+  TYPES.forEach(t => {
+    const b = document.getElementById('ob-'+t);
+    b.addEventListener('dragover', ev => { ev.preventDefault(); b.classList.add('over'); });
+    b.addEventListener('dragleave', () => b.classList.remove('over'));
+    b.addEventListener('drop', ev => {
+      ev.preventDefault(); b.classList.remove('over');
+      const sid = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(sid, t);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(b, sid => tryPlace(sid, t));
+  });
+}
+
+function tryPlace(sid, type) {
+  if (!sid || placed[sid]) return;
+  const s = STARS.find(x=>x.id===sid);
+  if (!s) return;
+  placed[sid] = type;
+  const correct = (s.type === type);
+  const host = document.getElementById('ob-' + type + '-placed');
+  const m = document.createElement('div');
+  m.className = 'placed-mini-r ' + (correct?'correct':'wrong');
+  m.innerHTML = (correct?'✓':'✗') + ' ' + s.name;
+  host.appendChild(m);
+  document.getElementById('rt-' + sid).classList.add('placed');
+  if (window.SFX) SFX.play(correct?'correct':'wrong');
+  const left = STARS.length - Object.keys(placed).length;
+  document.getElementById('leftCnt').textContent = left;
+  // Reveal Black Dwarf when 6+ placed
+  if (Object.keys(placed).length >= 6 && !bdCollected) {
+    document.getElementById('bdSecret').classList.add('show');
+  }
+  if (left === 0) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('hint').className='status ok';
+    document.getElementById('hint').innerHTML='✓ ลากครบ · กดส่งเพื่อเปิด Mystery Box';
+  }
+}
+
+function collectBD() {
+  if (bdCollected) return;
+  bdCollected = true;
+  document.getElementById('bdSecret').classList.remove('show');
+  Chain.set('blackDwarf.owned', true);
+  if (window.SFX) SFX.play('snap');
+  const t = document.createElement('div');
+  t.className = 'coin-toast';
+  t.innerHTML = '⚫ เก็บ Black Dwarf Shell แล้ว!';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2400);
+}
+window.collectBD = collectBD;
+
+setTimeout(setupDrag, 300);
+
+Submit.wirePair({
+  page:'p07',
+  nextHref:'p08-group-temp.html',
+  getPayload:()=>{
+    const correct = STARS.filter(s=>placed[s.id]===s.type).length;
+    return { placed, correct, total:STARS.length, bdCollected };
+  },
+  isPerfect:(p)=>p.correct===p.total,
+  onSubmit:(status,n)=>{
+    document.getElementById('result').style.display='block';
+    const p = JSON.parse(localStorage.getItem('cosmosLog_ep04_submit_p07')||'{}');
+    document.getElementById('result').innerHTML =
+      `<span class="star">✓</span> จัดถูก ${p.correct||0}/${p.total||11} · ` +
+      (bdCollected ? '⚫ Black Dwarf Shell ในกระเป๋า · ใช้ใน Boss ได้' : '⚠ ไม่ได้เก็บ Black Dwarf · ending A+ จะยากขึ้น');
+    setTimeout(()=>{
+      const wrongs = STARS.length - (p.correct||0);
+      if (window.MysteryBox) MysteryBox.roll({ wrongs, page:'p07' });
+    }, 1200);
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

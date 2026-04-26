@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P16 · Movie Recap</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .scenes-pool { padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; min-height: 120px; margin: 10px 0; display: flex; flex-direction: column; gap: 6px; }
+  .scene-card { padding: 10px 14px; background: rgba(3,4,12,0.5); border: 1px solid var(--border); border-radius: 8px; cursor: grab; user-select: none; font-size: 14px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .scene-card.dragging { opacity: 0.4; }
+  .scene-card.trap { border-color: rgba(185,128,255,0.5); }
+  .scene-card.trap::before { content: '💀 '; }
+  .scene-card.correct { border-color: var(--accent-green); background: rgba(107,230,168,0.08); }
+  .scene-card.wrong { border-color: var(--accent-red); background: rgba(255,106,106,0.08); }
+
+  /* Journal-style timeline: 8 numbered slots */
+  .journal {
+    margin: 10px 0;
+    padding: 18px 14px;
+    background:
+      repeating-linear-gradient(transparent, transparent 47px, rgba(255,203,107,0.08) 47px, rgba(255,203,107,0.08) 48px),
+      rgba(255,203,107,0.03);
+    border: 1px solid var(--accent-gold);
+    border-radius: 10px;
+    position: relative;
+  }
+  .journal::before {
+    content: '';
+    position: absolute; left: 38px; top: 0; bottom: 0;
+    border-left: 1px dashed rgba(255,106,106,0.35);
+  }
+  .slot {
+    display: flex; align-items: center; gap: 12px;
+    min-height: 48px; margin-bottom: 6px;
+  }
+  .slot:last-child { margin-bottom: 0; }
+  .slot-num {
+    flex: 0 0 28px;
+    width: 28px; height: 28px; line-height: 28px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--accent-gold);
+    background: rgba(3,4,12,0.7);
+    border: 1px solid var(--accent-gold);
+    border-radius: 50%;
+    z-index: 1;
+  }
+  .slot-drop {
+    flex: 1;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px dashed rgba(255,203,107,0.4);
+    border-radius: 8px;
+    background: rgba(3,4,12,0.25);
+    display: flex; align-items: center;
+    font-size: 13px; color: var(--text-dim);
+    transition: all 0.15s;
+  }
+  .slot-drop.hover { border-color: var(--accent-gold); background: rgba(255,203,107,0.1); border-style: solid; }
+  .slot-drop.filled { border-style: solid; color: var(--text); background: rgba(3,4,12,0.5); }
+  .slot-drop .scene-card { flex: 1; margin: 0; cursor: grab; }
+  .slot-hint { font-size: 11px; color: var(--text-dim); opacity: 0.6; }
+
+  /* Trap drawer */
+  .trap-drawer {
+    padding: 12px;
+    background: rgba(185,128,255,0.04);
+    border: 1px dashed rgba(185,128,255,0.5);
+    border-radius: 10px;
+    min-height: 70px;
+    margin: 10px 0;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .trap-drawer.hover { background: rgba(185,128,255,0.1); border-style: solid; }
+</style>
+</head>
+<body data-page="p16" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 3 · Scene 16 · RESOLUTION 1</div>
+  <h1 class="page-title">Movie Recap · เรียง 8 ฉาก</h1>
+  <div class="obj-tags">
+    <span class="obj-tag p">P3 · ลำดับ + trap detection</span>
+  </div>
+
+  <div class="narrative">
+    <p>ในห้องนักบิน · อารยาเปิดบันทึก · "ถ้าจะเล่าให้พ่อแม่ฟังคืนนี้ · จะเล่ายังไง"</p>
+    <p style="color:var(--text-dim)">⚠️ มี <b>2 ฉากปลอม</b>ที่ VOID ใส่มาในกอง · ห้ามลงใน timeline · ถ้าลงถูกกอง trap = +10 bonus</p>
+    <p style="color:var(--text-dim);font-size:12px">💡 ลากการ์ดจากกองด้านล่าง → วางในช่อง 1–8 · ดับเบิลคลิกช่องเพื่อเอาการ์ดกลับ · ฉากปลอม ลากลง "กอง Trap"</p>
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent);letter-spacing:0.15em;margin-top:14px">🎞️ กองฉากทั้งหมด (ลากไปเรียง)</h3>
+  <div class="scenes-pool" id="pool">
+    <!-- 8 real + 2 trap = 10 cards -->
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent-gold);letter-spacing:0.15em;margin-top:14px">📽️ Journal Timeline · ลากฉากลงช่อง 1→8</h3>
+  <div class="journal" id="journal">
+    <div class="slot" data-slot="1"><div class="slot-num">1</div><div class="slot-drop" data-slot="1"><span class="slot-hint">ลากฉากแรกมาตรงนี้</span></div></div>
+    <div class="slot" data-slot="2"><div class="slot-num">2</div><div class="slot-drop" data-slot="2"><span class="slot-hint">ฉากที่ 2</span></div></div>
+    <div class="slot" data-slot="3"><div class="slot-num">3</div><div class="slot-drop" data-slot="3"><span class="slot-hint">ฉากที่ 3</span></div></div>
+    <div class="slot" data-slot="4"><div class="slot-num">4</div><div class="slot-drop" data-slot="4"><span class="slot-hint">ฉากที่ 4</span></div></div>
+    <div class="slot" data-slot="5"><div class="slot-num">5</div><div class="slot-drop" data-slot="5"><span class="slot-hint">ฉากที่ 5</span></div></div>
+    <div class="slot" data-slot="6"><div class="slot-num">6</div><div class="slot-drop" data-slot="6"><span class="slot-hint">ฉากที่ 6</span></div></div>
+    <div class="slot" data-slot="7"><div class="slot-num">7</div><div class="slot-drop" data-slot="7"><span class="slot-hint">ฉากที่ 7</span></div></div>
+    <div class="slot" data-slot="8"><div class="slot-num">8</div><div class="slot-drop" data-slot="8"><span class="slot-hint">ฉากสุดท้าย</span></div></div>
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent-2);letter-spacing:0.15em;margin-top:14px">💀 กอง Trap · ลากฉากปลอมมาที่นี่</h3>
+  <div class="trap-drawer" id="trap"></div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ ตรวจเรียงและ trap</button>
+  <div id="result" style="margin-top:10px;font-family:monospace;color:var(--accent-green);"></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P16 · บทบาท: facilitator + ใบ้ trap</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "ถ้าจะเล่าให้พ่อแม่ฟัง · จะเล่ายังไง"<br>
+      <b>ระหว่าง:</b> ใบ้ "VOID ใส่ของปลอม 2 อย่าง · อย่าใส่ timeline"<br>
+      <b>ปิด:</b> "เรียงถูกกี่ข้อ · จับ trap ได้ไหม"
+    </div>
+  </details>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); build(); }, 50);
+
+  const SCENES = [
+    { id:1, order:1, real:true,  text:'สัญญาณ VOID · 12 พิกัดในอวกาศ' },
+    { id:2, order:2, real:true,  text:'จำแนกกาแล็กซี 12 แบบ (Hubble sequence)' },
+    { id:3, order:3, real:true,  text:'Council โหวตเหลือ 3 เป้าหมาย' },
+    { id:4, order:4, real:true,  text:'หาบ้านเราที่แขน Orion ใน Milky Way' },
+    { id:5, order:5, real:true,  text:'พบ Dr.Hubble · Tuning Fork Lab (Midpoint)' },
+    { id:6, order:6, real:true,  text:'Galaxy Rotation · ปริศนา Dark Matter' },
+    { id:7, order:7, real:true,  text:'Bolt พบ Warp Drive · Chase ด้วย v = H₀D' },
+    { id:8, order:8, real:true,  text:'สู้ VOID 3 Phase · Warp หนี (cliffhanger)' },
+    { id:9, order:0, real:false, text:'ทีมเจอมนุษย์ต่างดาวมอบแผนที่กาแล็กซี' },
+    { id:10, order:0, real:false, text:'VOID ยึดดวงอาทิตย์ · Milky Way ถูกกลืน' },
+  ];
+
+  function makeCard(s) {
+    const el = document.createElement('div');
+    el.className = 'scene-card' + (s.real ? '' : ' trap');
+    el.draggable = true;
+    el.dataset.id = s.id;
+    el.innerHTML = `<span>${s.text}</span>`;
+    el.addEventListener('dragstart', e => { e.dataTransfer.setData('text', s.id); el.classList.add('dragging'); });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    return el;
+  }
+
+  function sendBack(card) {
+    // If the card was in a slot, restore the hint placeholder
+    const parent = card.parentElement;
+    document.getElementById('pool').appendChild(card);
+    if (parent && parent.classList.contains('slot-drop')) {
+      parent.classList.remove('filled');
+      parent.innerHTML = `<span class="slot-hint">ฉากที่ ${parent.dataset.slot}</span>`;
+    }
+  }
+
+  function build() {
+    const pool = document.getElementById('pool');
+    const arr = [...SCENES].sort(() => Math.random() - 0.5);
+    arr.forEach(s => pool.appendChild(makeCard(s)));
+
+    // Pool accepts returned cards
+    pool.addEventListener('dragover', e => e.preventDefault());
+    pool.addEventListener('drop', e => {
+      e.preventDefault();
+      const id = +e.dataTransfer.getData('text');
+      const card = document.querySelector(`.scene-card[data-id="${id}"]`);
+      if (card) sendBack(card);
+    });
+
+    // Each slot accepts exactly one card
+    document.querySelectorAll('.slot-drop').forEach(slot => {
+      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('hover'); });
+      slot.addEventListener('dragleave', () => slot.classList.remove('hover'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        slot.classList.remove('hover');
+        const id = +e.dataTransfer.getData('text');
+        const card = document.querySelector(`.scene-card[data-id="${id}"]`);
+        if (!card) return;
+        // If slot already has a card, bounce it back to pool
+        const existing = slot.querySelector('.scene-card');
+        if (existing) sendBack(existing);
+        slot.innerHTML = '';
+        slot.appendChild(card);
+        slot.classList.add('filled');
+      });
+      // Click card inside slot → return to pool
+      slot.addEventListener('dblclick', e => {
+        const card = slot.querySelector('.scene-card');
+        if (card) sendBack(card);
+      });
+    });
+
+    // Trap drawer
+    const trap = document.getElementById('trap');
+    trap.addEventListener('dragover', e => { e.preventDefault(); trap.classList.add('hover'); });
+    trap.addEventListener('dragleave', () => trap.classList.remove('hover'));
+    trap.addEventListener('drop', e => {
+      e.preventDefault();
+      trap.classList.remove('hover');
+      const id = +e.dataTransfer.getData('text');
+      const card = document.querySelector(`.scene-card[data-id="${id}"]`);
+      if (!card) return;
+      const parent = card.parentElement;
+      trap.appendChild(card);
+      if (parent && parent.classList.contains('slot-drop')) {
+        parent.classList.remove('filled');
+        parent.innerHTML = `<span class="slot-hint">ฉากที่ ${parent.dataset.slot}</span>`;
+      }
+    });
+  }
+
+  function finishPage() {
+    const slots = [...document.querySelectorAll('.slot-drop')];
+    const trap = [...document.querySelectorAll('#trap .scene-card')];
+
+    let orderCorrect = 0;
+    slots.forEach(slot => {
+      const card = slot.querySelector('.scene-card');
+      if (!card) return;
+      const id = +card.dataset.id;
+      const s = SCENES.find(x => x.id === id);
+      const slotNum = +slot.dataset.slot;
+      const right = s.real && s.order === slotNum;
+      card.classList.add(right ? 'correct' : 'wrong');
+      if (right) orderCorrect++;
+    });
+
+    let trapCaught = 0;
+    trap.forEach(card => {
+      const id = +card.dataset.id;
+      const s = SCENES.find(x => x.id === id);
+      const right = !s.real;
+      card.classList.add(right ? 'correct' : 'wrong');
+      if (right) trapCaught++;
+    });
+
+    const total = 8;
+    const bonus = trapCaught * 10;
+    document.getElementById('result').textContent = `📊 เรียงถูก ${orderCorrect}/${total} · trap ${trapCaught}/2 · bonus +${bonus}`;
+
+    if (orderCorrect >= 5) {
+      Game.award({ base: orderCorrect * 4 + bonus, page:'p16', objective:'P3' });
+    } else {
+      Game.penalty({ amount: 3, page:'p16', objective:'P3' });
+    }
+
+    // 🎁 First-try perfect → loot box
+    const wasFirstTry = !Book.getPageData('p16');
+    const isPerfect = (orderCorrect === total && trapCaught === 2);
+    Book.savePageData('p16', { orderCorrect, trapCaught, firstTry: wasFirstTry, perfect: isPerfect });
+    Book.completePage('p16', {
+      score: orderCorrect + trapCaught, max: 10,
+      msg: `เรียงถูก ${orderCorrect}/${total} · จับ trap ${trapCaught}/2${isPerfect && wasFirstTry ? ' · 🎁 PERFECT FIRST TRY!' : ''}`
+    });
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ Recap เสร็จ';
+    if (isPerfect && wasFirstTry) {
+      setTimeout(() => Book.openLootBox({ title: 'Recap Perfect · First Try!' }), 700);
+    }
+  }
+</script>
+
+</body>
+</html>

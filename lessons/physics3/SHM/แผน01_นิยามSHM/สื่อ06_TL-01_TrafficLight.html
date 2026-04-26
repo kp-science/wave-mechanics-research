@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>TL-01 Traffic Light Card · Interactive (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #7e57c2;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#4527a0}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7e57c2;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.plan{background:#4f46e5}
+.info{background:#ede7f6;border-left:6px solid #5e35b1;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.phase-block{border:2px solid #cfd8e3;border-radius:14px;padding:18px;margin:14px 0;background:#fafafa}
+.phase-block h2{font-size:17px;color:#4527a0;margin-bottom:6px}
+.phase-block .q{font-size:14.5px;color:#333;margin-bottom:10px}
+.picks{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:10px 0}
+@media(max-width:700px){.picks{grid-template-columns:1fr}}
+.pick{border-radius:12px;padding:16px;text-align:center;color:#fff;cursor:pointer;border:3px solid transparent;transition:all .2s;position:relative;user-select:none}
+.pick.g{background:linear-gradient(135deg,#43a047,#2e7d32)}
+.pick.y{background:linear-gradient(135deg,#fdd835,#f9a825);color:#5c4000}
+.pick.r{background:linear-gradient(135deg,#e53935,#c62828)}
+.pick .ico{font-size:40px;line-height:1}
+.pick .lbl{font-size:17px;font-weight:800;margin:4px 0}
+.pick .mean{font-size:12.5px;opacity:.95}
+.pick input{display:none}
+.pick.selected{border-color:#1a202c;box-shadow:0 0 0 4px rgba(26,32,44,.2);transform:translateY(-2px)}
+.note{margin-top:10px}
+.note label{font-size:13.5px;font-weight:700;color:#4527a0}
+.note textarea{width:100%;margin-top:4px;padding:8px 10px;border:1.5px solid #c4b5fd;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;min-height:60px}
+.submit-bar{background:linear-gradient(135deg,#4527a0,#7e57c2);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4527a0;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+.cut{width:220px;height:140px;border:2px dashed #999;border-radius:12px;display:inline-block;margin:8px}
+.cut-band{height:100%;width:100%;display:inline-block;text-align:center;font-weight:800;color:#fff;padding-top:55px;border-radius:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar,.phase-block{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-tl">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🚦 TL-01 — Traffic Light (Interactive · แผน 1)</h1>
+      <div class="meta"><span class="tag plan">SHM แผน 1</span><span class="tag">TLC</span> ก่อนเรียน + หลังเรียน · เลือกสี + กดส่ง</div>
+    </div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — ข้อมูลจะ download .json แทน</div>
+  <div class="info"><b>วัตถุประสงค์:</b> A1.1 (Role Responsibility) · <b>วPA:</b> 4, 6, 7 · <b>เกณฑ์:</b> บัตรเขียวหลังเรียน ≥ 60% · <b>หัวข้อ:</b> นิยาม SHM + ปริมาณพื้นฐาน (f, T, ω)</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="tlForm">
+
+    <!-- TLC Pre -->
+    <div class="phase-block">
+      <h2>⏱ TLC Pre · ก่อนเรียน (0–5 นาที)</h2>
+      <div class="q"><b>คำถาม:</b> ฉันพร้อมและเข้าใจเรื่อง <b>"SHM เป็นอะไร · ปริมาณ f, T, ω"</b> แค่ไหน?</div>
+      <div class="picks" data-group="pre">
+        <label class="pick g"><input type="radio" name="pre" value="green"><div class="ico">🟢</div><div class="lbl">เขียว</div><div class="mean">เข้าใจ · มั่นใจ · พร้อมเรียน</div></label>
+        <label class="pick y"><input type="radio" name="pre" value="yellow"><div class="ico">🟡</div><div class="lbl">เหลือง</div><div class="mean">เข้าใจบ้าง · ต้องการคำอธิบายเพิ่ม</div></label>
+        <label class="pick r"><input type="radio" name="pre" value="red"><div class="ico">🔴</div><div class="lbl">แดง</div><div class="mean">ยังไม่เข้าใจ · ต้องการความช่วยเหลือ</div></label>
+      </div>
+      <div class="note"><label>💬 สิ่งที่อยากบอกครู (ก่อนเรียน):</label>
+        <textarea id="pre-note" placeholder="เช่น ยังไม่เข้าใจว่าทำไมวงกลมสม่ำเสมอไม่ใช่ SHM · หรือยังงง f, T, ω"></textarea>
+      </div>
+    </div>
+
+    <!-- TLC Post -->
+    <div class="phase-block" style="background:#fff7f7;border-color:#fecaca">
+      <h2>⏱ TLC Post · หลังเรียน (85–90 นาที)</h2>
+      <div class="q"><b>คำถาม:</b> หลังทำ POE + SIM01 + คำนวณ f, T, ω แล้ว ฉันเข้าใจและจำแนก SHM / ไม่-SHM ได้แค่ไหน?</div>
+      <div class="picks" data-group="post">
+        <label class="pick g"><input type="radio" name="post" value="green"><div class="ico">🟢</div><div class="lbl">เขียว</div><div class="mean">เข้าใจ · จำแนก SHM ได้ · อธิบาย F = −kx ได้</div></label>
+        <label class="pick y"><input type="radio" name="post" value="yellow"><div class="ico">🟡</div><div class="lbl">เหลือง</div><div class="mean">เข้าใจส่วนใหญ่ · ยังงง 1 จุด</div></label>
+        <label class="pick r"><input type="radio" name="post" value="red"><div class="ico">🔴</div><div class="lbl">แดง</div><div class="mean">ยังไม่เข้าใจ · ต้องการทบทวน</div></label>
+      </div>
+      <div class="note"><label>💬 สิ่งที่อยากบอกครู (หลังเรียน · จุดที่สงสัย):</label>
+        <textarea id="post-note" placeholder="เช่น ยังงงเรื่อง M1.3 สปริงแนวดิ่ง · หรืออยากรู้เพิ่มเรื่องส้อมเสียง"></textarea>
+      </div>
+    </div>
+
+    <div class="submit-bar">
+      <h3>✅ เลือกสีครบ 2 ช่วงแล้ว กดส่ง</h3>
+      <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+      <div class="status" id="status"></div>
+    </div>
+
+  </form>
+
+  <div class="foot">TL-01 Interactive · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<!-- แผ่นพิมพ์ตัด (ทางเลือก) -->
+<div class="page">
+  <div class="head"><div><h1>✂️ บัตรสีสำหรับตัด (ทางเลือก · พิมพ์บนกระดาษ A4)</h1><div class="meta">กรณีไม่มีอุปกรณ์ · ใช้บัตรกระดาษแทน · ใช้ต่อเนื่องได้ทั้ง 6 แผน SHM</div></div></div>
+  <div style="text-align:center">
+    <div class="cut"><div class="cut-band" style="background:#43a047">🟢 เขียว<br><small style="font-weight:400;font-size:13px">พร้อม/เข้าใจ</small></div></div>
+    <div class="cut"><div class="cut-band" style="background:#fdd835;color:#5c4000">🟡 เหลือง<br><small style="font-weight:400;font-size:13px">กังวลบางส่วน</small></div></div>
+    <div class="cut"><div class="cut-band" style="background:#e53935">🔴 แดง<br><small style="font-weight:400;font-size:13px">ต้องการช่วย</small></div></div>
+  </div>
+  <div style="margin-top:14px;background:#fff8e1;border-left:6px solid #f9a825;padding:10px 14px;border-radius:8px;font-size:14px"><b>💡 เทคนิค:</b> พิมพ์กระดาษการ์ดสี · เคลือบ · เก็บในกระเป๋านักเรียน</div>
+  <div class="foot">TL-01 Print Template · SHM แผน 1</div>
+</div>
+
+<script>
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='TL_SHM_Plan1';
+
+document.querySelectorAll('.picks').forEach(group=>{
+  group.addEventListener('change',()=>{
+    group.querySelectorAll('.pick').forEach(p=>p.classList.toggle('selected',p.querySelector('input').checked));
+  });
+});
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}
+});
+
+document.getElementById('tlForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();
+  const no=document.getElementById('student_no').value.trim();
+  const cls=document.getElementById('class').value.trim();
+  const date=document.getElementById('test_date').value;
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้องก่อน';return;}
+  const pre=(document.querySelector('input[name="pre"]:checked')||{}).value||'';
+  const post=(document.querySelector('input[name="post"]:checked')||{}).value||'';
+  if(!pre){status.className='status error';status.textContent='❌ ยังไม่เลือกสีช่วง "ก่อนเรียน"';return;}
+  const payload={plan:'SHM-1',type:'TL-01',student_name:name,student_no:Number(no),class:cls,test_date:date,
+    pre_color:pre,post_color:post,
+    pre_note:document.getElementById('pre-note').value,
+    post_note:document.getElementById('post-note').value};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){
+    status.className='status error';status.innerHTML='⚠️ ครูยังไม่ได้ตั้งค่า API URL · <a href="#" onclick="downloadJSON();return false;" style="color:#4527a0;text-decoration:underline">Download .json</a>';
+    window._lastPayload=payload;return;
+  }
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});
+    status.className='status success';status.innerHTML='✅ ส่งสำเร็จ 🎉 · ขอบคุณที่สะท้อนตนเอง';btn.textContent='✅ ส่งแล้ว';
+  }catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`TL_SHM1_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

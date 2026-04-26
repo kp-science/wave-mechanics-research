@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P20 · Path Selection</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .map-area { background:radial-gradient(ellipse at center,#000814 0%,#000 80%); border:1.5px solid #ffcb6b; border-radius:14px; padding:18px; min-height:420px; position:relative; overflow:hidden; margin:14px 0; }
+  .map-star { position:absolute; transform:translate(-50%,-50%); pointer-events:none; }
+  .map-star .orb { border-radius:50%; box-shadow:0 0 16px currentColor; position:relative; }
+  .map-star .label { position:absolute; left:50%; top:100%; transform:translate(-50%,4px); white-space:nowrap; }
+  .map-star .nm { font-family:Orbitron; font-size:9px; color:#e8ecf8; letter-spacing:0.05em; text-shadow:0 0 4px #000, 0 0 4px #000; }
+  .map-star .mass { font-family:monospace; font-size:10px; color:#ffcb6b; text-shadow:0 0 4px #000, 0 0 4px #000; display:block; margin-top:1px; }
+
+  .map-bh { position:absolute; transform:translate(-50%,-50%); pointer-events:none; }
+  .map-bh .core { width:24px; height:24px; border-radius:50%; background:#000; box-shadow:0 0 0 3px #b980ff, 0 0 28px #b980ff; }
+  .map-bh .ring { position:absolute; inset:-14px; border-radius:50%; border:2px dashed #ff5c7a; animation:bhSpin 4s linear infinite; }
+  @keyframes bhSpin { 100% { transform:rotate(360deg); } }
+  .map-bh .label { position:absolute; left:50%; top:100%; transform:translate(-50%, 14px); white-space:nowrap; }
+  .map-bh .nm { font-family:Orbitron; font-size:11px; color:#ff5c7a; letter-spacing:0.1em; text-shadow:0 0 4px #000, 0 0 4px #000; font-weight:700; }
+  .map-bh .mass { font-family:monospace; font-size:10px; color:#ff5c7a; display:block; margin-top:1px; text-shadow:0 0 4px #000; }
+
+  .ship-icon, .sos-icon { position:absolute; transform:translate(-50%,-50%); font-size:28px; z-index:5; }
+  .sos-icon { animation:sosBlink 1.4s infinite; }
+  @keyframes sosBlink { 50% { transform:translate(-50%,-50%) scale(1.3); } }
+  .ship-label, .sos-label { position:absolute; transform:translate(-50%, 22px); font-family:Orbitron; font-size:10px; letter-spacing:0.1em; text-shadow:0 0 4px #000; }
+  .ship-label { color:#7effb2; }
+  .sos-label { color:#ff5c7a; }
+
+  .path-svg { position:absolute; inset:0; pointer-events:none; }
+
+  .path-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0; }
+  @media(max-width:680px){ .path-cards { grid-template-columns:repeat(2,1fr); } }
+  .pcard {
+    padding:14px 10px; min-height:80px;
+    background:rgba(0,0,0,0.4); border:2px solid; border-radius:12px;
+    cursor:pointer; -webkit-tap-highlight-color:transparent; transition:all .15s;
+    text-align:center; position:relative;
+  }
+  .pcard:hover { transform:translateY(-2px); }
+  .pcard.selected { box-shadow:0 0 22px currentColor; transform:scale(1.05); }
+  .pcard h4 { font-family:Orbitron; font-size:14px; letter-spacing:0.15em; }
+  .pcard .desc { font-size:11px; color:#9aa3c0; margin-top:4px; }
+</style>
+</head>
+<body data-page="p20" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🎁 ACT D · PATH SELECTION</span>
+  <h1>เลือกเส้นทาง · 4 ตัวเลือก</h1>
+  <div class="tags">
+    <span class="kpa-chip a">A2</span><span class="kpa-chip p">P3</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "AI สร้าง 4 เส้นทางจากยานเรา (🚀) ไปดาว SOS ของพ่อ (📡) ·
+      <b>ใช้ความรู้ของเจ้าวิเคราะห์เอง</b>ว่าเส้นไหนปลอดภัย ·
+      <b style="color:#fff;">เลือกถูก = กล่องสุ่มมูลค่ามากที่สุด</b>"
+    </span>
+  </div>
+
+  <div class="card gold">
+    <h3>💡 หลักคิด · จากที่เรียนมา</h3>
+    <ul style="padding-left:18px; line-height:1.8; font-size:13.5px;">
+      <li>ดาว <b>O / B</b> (น้ำเงิน) ร้อนเกิน 10,000 K → ละลายเกราะ</li>
+      <li>ดาว <b>มวลมาก</b> (> 9 M☉) → แรงโน้มถ่วงสูง</li>
+      <li><b style="color:#ff5c7a;">หลุมดำ</b> (Black Hole) → อันตรายที่สุด</li>
+    </ul>
+  </div>
+
+  <div class="map-area" id="mapArea">
+    <svg class="path-svg" id="pathSvg" viewBox="0 0 400 300" preserveAspectRatio="none"></svg>
+  </div>
+
+  <div class="path-cards" id="pathCards"></div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P20</summary>
+    <div class="body">
+      <b>ไม่บอกคำตอบ:</b> เด็กต้องวิเคราะห์เอง · ครูสังเกตว่านักเรียนคำนวณอย่างไร<br>
+      <b>วPA:</b> เก็บการเลือก + ลำดับการกด · ใครได้ Mystery Box tier 1 = วิเคราะห์เป็น<br>
+      <b>เฉลย:</b> เส้น <b>C</b> ปลอดภัยที่สุด (เลี่ยง O, B, มวลมาก, หลุมดำ ทั้งหมด)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ยืนยันเส้นทาง</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ยืนยันก่อน</button>
+  </div>
+  <div class="gate-hint">เลือก 1 เส้นทาง → กดยืนยัน → เปิด Mystery Box (ปลอดภัยสุดได้รางวัลใหญ่สุด)</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+/* ----- 8 obstacles spread across map ----- */
+const ROUTE = (EP_CONFIG.routeStars || []);  // 7 stars from config
+const OBSTACLES = {};
+// Take 7 route stars + 1 black hole
+const POS = {
+  r1: { x:28, y:18 },   // O · 30 M☉ · top-left
+  r2: { x:52, y:18 },   // B · 12 M☉ · top-mid
+  r3: { x:78, y:20 },   // A · 2.5 M☉ · top-right
+  bh: { x:48, y:40 },   // Black Hole · 50 M☉ · upper-center (only D passes)
+  r4: { x:30, y:55 },   // F · 1.5 M☉ · mid-left
+  r5: { x:72, y:55 },   // G · 1.0 M☉ · mid-right
+  r6: { x:22, y:80 },   // K · 0.7 M☉ · bot-left
+  r7: { x:78, y:80 },   // M · 0.3 M☉ · bot-right
+};
+ROUTE.forEach(s => { OBSTACLES[s.id] = { ...s, ...POS[s.id], isBH:false }; });
+OBSTACLES.bh = { id:'bh', label:'BH', tempK:0, mass:50, type:'BH', hex:'#b980ff', ...POS.bh, isBH:true };
+
+const START = { x:5, y:50 };
+const END = { x:92, y:50 };
+
+/* ----- 4 paths · each through 4 obstacles ----- */
+const PATHS = [
+  { id:'A', name:'เส้น A', color:'#64d8ff', stars:['r1','r2','r3','r5'] },        // top arch · ผ่าน O+B (ร้อน+มวลมาก)
+  { id:'B', name:'เส้น B', color:'#ffcb6b', stars:['r2','r4','r6','r7'] },        // left-zigzag · ผ่าน B
+  { id:'C', name:'เส้น C', color:'#7effb2', stars:['r6','r4','r5','r7'] },        // bottom curve · เย็น+มวลน้อยทั้งหมด
+  { id:'D', name:'เส้น D', color:'#ff8fa5', stars:['r1','bh','r5','r7'] },        // diagonal through BH
+];
+
+/* compute danger (hidden from user · used to award mystery box) */
+function computeDanger(stars) {
+  let d = 0;
+  stars.forEach(id => {
+    const o = OBSTACLES[id];
+    if (o.isBH) { d += 8; return; }
+    if (o.tempK > 10000) d += 2;
+    if (o.mass > 9) d += 2;
+  });
+  return d;
+}
+PATHS.forEach(p => p.danger = computeDanger(p.stars));
+const SAFEST = PATHS.reduce((a,b) => a.danger < b.danger ? a : b);
+
+/* ----- Render obstacles on map ----- */
+const map = document.getElementById('mapArea');
+ROUTE.forEach(s => {
+  const o = OBSTACLES[s.id];
+  const size = Math.max(14, Math.min(48, 14 + Math.sqrt(s.mass)*3));
+  const d = document.createElement('div');
+  d.className = 'map-star';
+  d.style.left = o.x + '%'; d.style.top = o.y + '%';
+  d.innerHTML = `
+    <div class="orb" style="width:${size}px; height:${size}px; background:${s.hex}; color:${s.hex};"></div>
+    <div class="label">
+      <div class="nm">${s.label}·${s.type}</div>
+      <span class="mass">${s.mass} M☉</span>
+    </div>
+  `;
+  map.appendChild(d);
+});
+// Black hole
+const bh = document.createElement('div');
+bh.className = 'map-bh';
+bh.style.left = OBSTACLES.bh.x + '%';
+bh.style.top = OBSTACLES.bh.y + '%';
+bh.innerHTML = `
+  <div class="core"></div>
+  <div class="ring"></div>
+  <div class="label">
+    <div class="nm">⚫ BLACK HOLE</div>
+    <span class="mass">50 M☉</span>
+  </div>
+`;
+map.appendChild(bh);
+// Ship at start
+const ship = document.createElement('div');
+ship.className = 'ship-icon';
+ship.style.left = START.x + '%'; ship.style.top = START.y + '%';
+ship.textContent = '🚀';
+map.appendChild(ship);
+const shipLab = document.createElement('div');
+shipLab.className = 'ship-label';
+shipLab.style.left = START.x + '%'; shipLab.style.top = START.y + '%';
+shipLab.textContent = 'ยานเรา';
+map.appendChild(shipLab);
+// SOS at end
+const sos = document.createElement('div');
+sos.className = 'sos-icon';
+sos.style.left = END.x + '%'; sos.style.top = END.y + '%';
+sos.textContent = '📡';
+map.appendChild(sos);
+const sosLab = document.createElement('div');
+sosLab.className = 'sos-label';
+sosLab.style.left = END.x + '%'; sosLab.style.top = END.y + '%';
+sosLab.textContent = '👨 พ่อ';
+map.appendChild(sosLab);
+
+/* ----- Build smooth SVG path through points ----- */
+function buildSmoothPath(stars, archDir = -10) {
+  // Convert percent → svg viewBox (400x300)
+  const pts = [
+    [START.x*4, START.y*3],
+    ...stars.map(id => [OBSTACLES[id].x*4, OBSTACLES[id].y*3]),
+    [END.x*4, END.y*3]
+  ];
+  let d = `M ${pts[0][0]},${pts[0][1]}`;
+  for (let i = 1; i < pts.length; i++) {
+    const [x0,y0] = pts[i-1];
+    const [x1,y1] = pts[i];
+    const mx = (x0+x1)/2;
+    const my = (y0+y1)/2 + archDir;
+    d += ` Q ${mx},${my} ${x1},${y1}`;
+  }
+  return d;
+}
+
+/* Arch direction: negative = bow up · positive = bow down */
+/* C ใช้ +25 เพื่อโค้งลงล่าง · ห่างจาก BH ที่อยู่บน-กลาง */
+const ARCH_DIRS = { A:-25, B:-15, C:25, D:0 };
+function renderPaths(selected = null) {
+  const svg = document.getElementById('pathSvg');
+  svg.innerHTML = '';
+  PATHS.forEach(p => {
+    const d = buildSmoothPath(p.stars, ARCH_DIRS[p.id]);
+    const isSel = (selected === p.id);
+    // Outer glow path
+    if (isSel) {
+      const glow = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      glow.setAttribute('d', d);
+      glow.setAttribute('fill', 'none');
+      glow.setAttribute('stroke', p.color);
+      glow.setAttribute('stroke-width', '12');
+      glow.setAttribute('stroke-opacity', '0.3');
+      glow.style.filter = 'blur(4px)';
+      svg.appendChild(glow);
+    }
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', p.color);
+    path.setAttribute('stroke-width', isSel ? 4 : 2);
+    path.setAttribute('stroke-opacity', isSel ? 0.95 : 0.5);
+    path.setAttribute('stroke-dasharray', isSel ? '0' : '6,4');
+    path.setAttribute('stroke-linecap', 'round');
+    svg.appendChild(path);
+  });
+}
+renderPaths();
+
+/* ----- Path cards (no danger info shown) ----- */
+const cards = document.getElementById('pathCards');
+cards.innerHTML = PATHS.map(p => `
+  <div class="pcard" id="pc-${p.id}" data-id="${p.id}" style="border-color:${p.color}; color:${p.color};" onclick="select('${p.id}')">
+    <h4>${p.name}</h4>
+    <div class="desc">ผ่านดาว ${p.stars.length} ดวง</div>
+  </div>
+`).join('');
+
+let chosen = null;
+function select(id) {
+  chosen = id;
+  document.querySelectorAll('.pcard').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+  renderPaths(id);
+  document.getElementById('submitBtn').disabled = false;
+  if (window.SFX) SFX.play('tap');
+}
+window.select = select;
+
+Submit.wirePair({
+  page:'p20',
+  nextHref:'p21-posttest.html',
+  getPayload:()=>{
+    const p = PATHS.find(x=>x.id===chosen);
+    Chain.set('chosenPath', { id:chosen, danger:p.danger, isSafest:p===SAFEST });
+    return { chosen, danger:p.danger, isSafest:(p===SAFEST) };
+  },
+  isPerfect:(p)=>p.isSafest,
+  onSubmit:(status,n)=>{
+    const r = document.getElementById('result');
+    r.style.display='block';
+    const p = PATHS.find(x=>x.id===chosen);
+    const isSafest = (p === SAFEST);
+    r.innerHTML = `<span class="star">${isSafest?'🏆':'📌'}</span> เลือกเส้น <b>${chosen}</b> ` +
+      (isSafest
+        ? '· <b style="color:#7effb2;">ปลอดภัยที่สุด!</b> เลี่ยงทั้งดาวร้อน · มวลมาก · หลุมดำ'
+        : `· เส้นที่ปลอดภัยที่สุดคือเส้น <b style="color:#7effb2;">${SAFEST.id}</b>`);
+    setTimeout(()=>{
+      // wrongs scaled by danger: 0=perfect, 4=good, 8+=pass
+      const wrongs = isSafest ? 0 : (p.danger <= 5 ? 2 : (p.danger <= 9 ? 3 : 5));
+      if (window.MysteryBox) MysteryBox.roll({ wrongs, page:'p20' });
+    }, 1200);
+    if (window.Photon && Photon.add) Photon.add(25);
+  }
+});
+</script>
+</body></html>

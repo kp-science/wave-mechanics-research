@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P16 · Mini-game วิวัฒนาการ</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .timer-big { font-family:Orbitron,monospace; font-size:46px; text-align:center; padding:14px; color:#ffcb6b; text-shadow:0 0 26px #ffcb6b; }
+  .timer-big.urgent { color:#ff5c7a; text-shadow:0 0 30px #ff5c7a; animation:pT 0.5s infinite; }
+  @keyframes pT { 50% { transform:scale(1.06); } }
+
+  .star-card-big { padding:20px 14px; min-height:140px; background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9)); border:2px solid rgba(120,140,220,0.5); border-radius:14px; text-align:center; margin:14px 0; transition:all .3s; }
+  .star-card-big.fc { border-color:#7effb2; background:rgba(126,255,178,0.15); }
+  .star-card-big.fw { border-color:#ff5c7a; background:rgba(255,92,122,0.15); animation:shake 0.4s; }
+  @keyframes shake { 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+  .star-card-big .nm { font-family:Orbitron; font-size:18px; color:#ffcb6b; letter-spacing:0.1em; }
+  .star-card-big .mass { font-family:monospace; font-size:30px; color:#ff8fa5; margin:8px 0; }
+  .star-card-big .info { color:#9aa3c0; font-size:12px; }
+
+  .bin-row { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:14px 0; }
+  @media(max-width:560px){ .bin-row { grid-template-columns:repeat(3,1fr); } }
+  .mbin { padding:14px 6px; min-height:80px; background:rgba(0,0,0,0.4); border:2px solid; border-radius:10px; cursor:pointer; text-align:center; -webkit-tap-highlight-color:transparent; transition:all .15s; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px; }
+  .mbin .lbl { font-family:Orbitron; font-size:10px; letter-spacing:0.1em; }
+  .mbin .ic { font-size:22px; }
+  .mbin:active { transform:scale(0.95); }
+  .mbin:disabled { opacity:0.5; pointer-events:none; }
+
+  .pip { display:inline-block; width:14px; height:14px; border-radius:50%; margin:2px; background:rgba(0,0,0,0.4); border:2px solid #2a3050; }
+  .pip.c { background:#7effb2; border-color:#7effb2; }
+  .pip.w { background:#ff5c7a; border-color:#ff5c7a; }
+</style>
+</head>
+<body data-page="p16" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🎮 ACT C · MINI-GAME</span>
+  <h1>Evolution Race · 30 วินาที</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K3</span><span class="kpa-chip p">P3</span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ทดสอบความเร็ว · ดาว 6 ดวงจะปรากฏทีละดวง · <b>tap ปลายทางที่ถูกต้อง</b>ภายใน 30 วินาที"
+    </span>
+  </div>
+
+  <div class="timer-big" id="timer">30</div>
+  <div style="text-align:center; color:#9aa3c0; font-size:13px;">
+    ดาว <b id="prog">1</b>/6 · ผิด <b id="wrongs" style="color:#ff5c7a;">0</b>
+  </div>
+  <div style="text-align:center;" id="pips"></div>
+
+  <div class="star-card-big" id="starCard">
+    <div class="nm" id="sName">—</div>
+    <div class="mass" id="sMass">—</div>
+    <div class="info" id="sInfo">—</div>
+  </div>
+
+  <div class="bin-row">
+    <button class="mbin" onclick="answer('bn')" id="b-bn" style="border-color:#8b6645; color:#8b6645;">
+      <div class="ic">🟫</div><div class="lbl">BROWN</div>
+    </button>
+    <button class="mbin" onclick="answer('rd')" id="b-rd" style="border-color:#cc4422; color:#cc4422;">
+      <div class="ic">🔴</div><div class="lbl">BLACK DWARF</div>
+    </button>
+    <button class="mbin" onclick="answer('wd')" id="b-wd" style="border-color:#bcd0ff; color:#bcd0ff;">
+      <div class="ic">⚪</div><div class="lbl">WHITE DWARF</div>
+    </button>
+    <button class="mbin" onclick="answer('ns')" id="b-ns" style="border-color:#ffcb6b; color:#ffcb6b;">
+      <div class="ic">⭐</div><div class="lbl">NEUTRON</div>
+    </button>
+    <button class="mbin" onclick="answer('bh')" id="b-bh" style="border-color:#b980ff; color:#b980ff;">
+      <div class="ic">⚫</div><div class="lbl">BLACK HOLE</div>
+    </button>
+  </div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P16</summary>
+    <div class="body">
+      <b>วัด:</b> ความเร็ว + ความแม่น = สมรรถนะการจัดการตนเอง · ตัดสินใจ<br>
+      <b>วPA:</b> เก็บเวลาแต่ละข้อ + จำนวนผิด → fluency
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div data-mission-brief></div>
+  <div class="gate-hint">จบ 6 ข้อหรือเวลาหมด → กดส่ง</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const STARS = [
+  { nm:'Sun (1 M☉)',          mass:1,    info:'G-type · 5,780 K',   end:'wd' },
+  { nm:'Massive O (40)',      mass:40,   info:'O-type · ระเบิดใหญ่',  end:'bh' },
+  { nm:'Mid-mass (12)',       mass:12,   info:'High-mass',          end:'ns' },
+  { nm:'Brown (0.05)',        mass:0.05, info:'ไม่จุดฟิวชัน',          end:'bn' },
+  { nm:'Red dwarf (0.3)',     mass:0.3,  info:'อายุยืนสุด',            end:'rd' },
+  { nm:'High-mass (25)',      mass:25,   info:'พอดีเกณฑ์',            end:'ns' },
+];
+const SHUFFLED = STARS.slice().sort(()=>Math.random()-0.5);
+let idx = 0, log = [], wrongs = 0, timer = 30, started = false, qStart = 0, ti = null;
+
+function showStar() {
+  if (idx >= SHUFFLED.length) { endGame(); return; }
+  const s = SHUFFLED[idx];
+  document.getElementById('sName').textContent = s.nm;
+  document.getElementById('sMass').textContent = s.mass + ' M☉';
+  document.getElementById('sInfo').textContent = s.info;
+  document.getElementById('starCard').className = 'star-card-big';
+  document.getElementById('prog').textContent = (idx+1);
+  qStart = Date.now();
+}
+function answer(c) {
+  if (!started) startGame();
+  if (idx >= SHUFFLED.length) return;
+  const s = SHUFFLED[idx];
+  const correct = (c === s.end);
+  log.push({ star:s.nm, mass:s.mass, picked:c, correct, dt:Date.now()-qStart });
+  if (!correct) wrongs++;
+  document.getElementById('wrongs').textContent = wrongs;
+  document.getElementById('starCard').classList.add(correct?'fc':'fw');
+  if (window.SFX) SFX.play(correct?'correct':'wrong');
+  const pip = document.createElement('span');
+  pip.className = 'pip ' + (correct?'c':'w');
+  document.getElementById('pips').appendChild(pip);
+  idx++;
+  setTimeout(showStar, 600);
+}
+window.answer = answer;
+function startGame() {
+  started = true;
+  ti = setInterval(()=>{
+    timer = Math.max(0, timer-1);
+    document.getElementById('timer').textContent = timer;
+    if (timer <= 8) document.getElementById('timer').classList.add('urgent');
+    if (timer === 0) endGame();
+  }, 1000);
+}
+function endGame() {
+  if (ti) clearInterval(ti);
+  ['bn','rd','wd','ns','bh'].forEach(id=>document.getElementById('b-'+id).disabled=true);
+  document.getElementById('starCard').style.display='none';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('result').style.display='block';
+  document.getElementById('result').innerHTML = `<span class="star">⏱</span> จบ · ตอบถูก ${log.filter(x=>x.correct).length}/${log.length} · เหลือ ${timer} วิ`;
+}
+showStar();
+
+Submit.wirePair({
+  page:'p16',
+  nextHref:'p17-fatherlab.html',
+  getPayload:()=>{
+    const c = log.filter(x=>x.correct).length;
+    return { log, correct:c, total:SHUFFLED.length, wrongs, timeLeft:timer };
+  },
+  isPerfect:(p)=>p.wrongs===0 && p.correct===6,
+  onSubmit:(status,n)=>{
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P13 · 5 เส้นทางวิวัฒนาการ</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .track-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0; }
+  .track-tab {
+    flex:1; min-width:120px; padding:10px 6px;
+    background:rgba(0,0,0,0.4); border:2px solid;
+    border-radius:10px; cursor:pointer; text-align:center;
+    -webkit-tap-highlight-color:transparent; transition:all .15s;
+    font-family:Orbitron; font-size:11px; letter-spacing:0.08em;
+  }
+  .track-tab:hover { transform:translateY(-2px); }
+  .track-tab.active { box-shadow:0 0 18px currentColor; transform:scale(1.04); }
+  .track-tab.visited::after { content:' ✓'; color:#7effb2; }
+
+  .track-detail {
+    padding:18px; background:rgba(0,0,0,0.4); border:2px solid; border-radius:14px; margin:14px 0;
+  }
+  .track-detail h3 { font-family:Orbitron; font-size:16px; letter-spacing:0.12em; margin-bottom:10px; }
+  .track-detail .stages-flow { display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; margin:14px 0; justify-content:center; }
+  .track-detail .stage-cell { display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .track-detail .stage-vis { display:flex; align-items:center; justify-content:center; height:90px; min-width:90px; }
+  .track-detail .stage-pill { padding:8px 12px; background:rgba(0,0,0,0.5); border:1.5px solid; border-radius:14px; font-size:12px; text-align:center; }
+  .track-detail .stage-arrow { color:#9aa3c0; font-size:22px; padding:0 4px; align-self:center; margin-bottom:30px; }
+
+  /* Star visualization */
+  .star-vis { border-radius:50%; box-shadow:0 0 18px currentColor; position:relative; }
+  .star-vis.proto { background:radial-gradient(circle at 35% 35%, #d8a888, #5a3a18 70%, transparent); color:#aa6644; opacity:0.5; }
+  .star-vis.brown { background:radial-gradient(circle at 35% 35%, #b08866, #5a3a18 70%); color:#8b6645; }
+  .star-vis.m-ms { background:radial-gradient(circle at 35% 35%, #ff9e7a, #cc4422); color:#ff7a55; }
+  .star-vis.k-ms { background:radial-gradient(circle at 35% 35%, #ffc488, #aa5522); color:#ffaa55; }
+  .star-vis.g-ms { background:radial-gradient(circle at 35% 35%, #fff8c8, #ffd96b 50%, #aa6622); color:#ffd96b; }
+  .star-vis.o-ms { background:radial-gradient(circle at 35% 35%, #d4e0ff, #6a8aff 50%, #2a3a7a); color:#9bb8ff; }
+  .star-vis.red-giant { background:radial-gradient(circle at 35% 35%, #ffaa66, #ff5530 60%, #5a1a08); color:#ff7a55; }
+  .star-vis.supergiant { background:radial-gradient(circle at 35% 35%, #ffaa66, #ff3818 60%, #5a1a08); color:#ff5c3a; box-shadow:0 0 30px #ff5c3a, inset 0 0 8px #ff8888; }
+  .star-vis.nebula { background:radial-gradient(circle, rgba(212,184,255,0.7), rgba(255,143,165,0.5), transparent); color:#d4b8ff; filter:blur(2px); animation:nebPulse 3s infinite; }
+  @keyframes nebPulse { 50% { transform:scale(1.1); } }
+  .star-vis.supernova { background:radial-gradient(circle, #fff, #ffcb6b 30%, #ff5c7a 60%, transparent); color:#fff; box-shadow:0 0 40px #fff, 0 0 70px #ffcb6b; animation:novaPulse 1.4s infinite; }
+  .star-vis.hypernova { background:radial-gradient(circle, #fff, #b980ff 30%, #ff5c7a 60%, transparent); color:#fff; box-shadow:0 0 50px #fff, 0 0 90px #b980ff; animation:novaPulse 1s infinite; }
+  @keyframes novaPulse { 50% { transform:scale(1.15); box-shadow:0 0 60px #fff, 0 0 100px #ffcb6b; } }
+  .star-vis.white-dwarf { background:radial-gradient(circle, #fff, #ddeeff 60%, #aabbdd); color:#fff; box-shadow:0 0 16px #fff; }
+  .star-vis.black-dwarf { background:radial-gradient(circle at 35% 35%, #4a3a5a, #1a1226 70%, #000); color:#3a3050; box-shadow:0 0 8px rgba(60,40,90,0.4); }
+  .star-vis.neutron { background:radial-gradient(circle, #fff8c8, #ffcb6b 50%, #aa6622); color:#ffcb6b; box-shadow:0 0 20px #ffcb6b; }
+  .star-vis.blackhole { background:#000; color:#000; box-shadow:0 0 0 2px #b980ff, 0 0 28px #b980ff; }
+  .star-vis.blackhole::before { content:''; position:absolute; inset:-12px; border-radius:50%; border:2px dashed #ff5c7a; animation:bhSpin 4s linear infinite; }
+  @keyframes bhSpin { 100% { transform:rotate(360deg); } }
+  .vis-label { font-family:monospace; font-size:9px; color:#9aa3c0; margin-top:2px; }
+  .track-detail .end-pill { padding:10px 16px; background:rgba(0,0,0,0.6); border:2px solid; border-radius:10px; font-family:Orbitron; font-size:13px; font-weight:700; letter-spacing:0.1em; display:inline-block; margin-top:10px; }
+  .track-detail .time-pill { padding:6px 12px; background:rgba(0,0,0,0.5); border-radius:10px; font-family:monospace; font-size:12px; color:#9aa3c0; display:inline-block; margin-left:10px; }
+  .track-detail .note { font-size:13px; color:#9aa3c0; margin-top:10px; line-height:1.7; padding:8px 12px; background:rgba(0,0,0,0.3); border-left:3px solid currentColor; border-radius:0 6px 6px 0; }
+</style>
+</head>
+<body data-page="p13" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🔬 LAB 2 · 5 MASS TRACKS</span>
+  <h1>5 เส้นทางวิวัฒนาการตามมวล</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K2</span><span class="kpa-chip k">K3</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "<b>กดดูทีละเส้นทาง</b> · ดูว่ามวลแต่ละช่วงเดินทางผ่านอะไรบ้าง · จบที่ไหน · ใช้เวลานานแค่ไหน"
+    </span>
+  </div>
+
+  <div class="track-tabs" id="tabs"></div>
+
+  <div id="trackDetail"></div>
+
+  <div class="callout success" id="result" style="display:none;">
+    <span class="star">📚</span> <b>สรุปสิ่งที่ค้นพบ:</b><br>
+    <span style="font-size:14px; color:#bcffd6; font-weight:400;">
+      • มวล <b>< 0.08</b> = ไม่ติดไฟ (Brown dwarf)<br>
+      • มวล <b>0.08-9</b> = จบเป็น <b>White dwarf</b> (อยู่นาน) → Black dwarf<br>
+      • มวล <b>9-25</b> = จบเป็น <b style="color:#ffcb6b;">Neutron star</b><br>
+      • มวล <b>> 25</b> = จบเป็น <b style="color:#ff5c7a;">Black hole</b><br>
+    </span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P13</summary>
+    <div class="body">
+      <b>หัวใจ:</b> มวลเริ่มต้น = ตัดสิน "เส้นทางและปลายทาง" · กฎไม่เปลี่ยน<br>
+      <b>เกณฑ์ที่ต้องจำ:</b> 0.08 · 9 · 25 (3 จุดตัด สำหรับ 4 เขต)<br>
+      <b>ปลดล็อกกล่องสุ่ม:</b> เมื่อกดดูครบทั้ง 5 เส้นทาง
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ดูครบ 5 เส้นทาง → กดส่ง → เปิด Mystery Box</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const TRACKS = (EP_CONFIG.massTracks || []);
+const visited = new Set();
+
+const tabs = document.getElementById('tabs');
+tabs.innerHTML = TRACKS.map((t,i) => `
+  <div class="track-tab" id="tab-${i}" data-i="${i}" style="border-color:${t.color}; color:${t.color};" onclick="show(${i})">
+    ${t.icon} ${t.track}<br>
+    <span style="font-family:monospace; font-size:9px; opacity:0.8;">${t.range}</span>
+  </div>
+`).join('');
+
+/* Map stage name → visual class + size px (visualization only) */
+function stageVisual(stageName) {
+  const s = stageName.toLowerCase();
+  // Ordered checks · most specific first
+  if (s.includes('proto')) return { cls:'proto', size:30 };
+  if (s.includes('cool brown') || s.includes('brown')) return { cls:'brown', size:22 };
+  if (s.includes('red dwarf')) return { cls:'m-ms', size:24 };
+  if (s.includes('main sequence (m')) return { cls:'m-ms', size:30 };
+  if (s.includes('main sequence (g/k') || s.includes('main sequence (g')) return { cls:'g-ms', size:36 };
+  if (s.includes('main sequence (o/b') || s.includes('main sequence (o')) return { cls:'o-ms', size:40 };
+  if (s.includes('main sequence')) return { cls:'g-ms', size:36 };
+  if (s.includes('red giant')) return { cls:'red-giant', size:64 };
+  if (s.includes('supergiant')) return { cls:'supergiant', size:80 };
+  if (s.includes('planetary nebula')) return { cls:'nebula', size:70 };
+  if (s.includes('hypernova')) return { cls:'hypernova', size:78 };
+  if (s.includes('supernova')) return { cls:'supernova', size:72 };
+  if (s.includes('white dwarf')) return { cls:'white-dwarf', size:14 };
+  if (s.includes('black dwarf')) return { cls:'black-dwarf', size:14 };
+  if (s.includes('neutron')) return { cls:'neutron', size:12 };
+  if (s.includes('black hole')) return { cls:'blackhole', size:20 };
+  return { cls:'g-ms', size:30 };
+}
+
+function show(i) {
+  visited.add(i);
+  const t = TRACKS[i];
+  const host = document.getElementById('trackDetail');
+  host.style.borderColor = t.color;
+  host.style.color = t.color;
+  host.className = 'track-detail';
+  host.innerHTML = `
+    <h3 style="color:${t.color};">${t.icon} ${t.track} · ${t.range}</h3>
+    <div class="stages-flow">
+      ${t.stages.map((s,j) => {
+        const v = stageVisual(s);
+        return `
+          <div class="stage-cell">
+            <div class="stage-vis"><div class="star-vis ${v.cls}" style="width:${v.size}px; height:${v.size}px;"></div></div>
+            <span class="stage-pill" style="border-color:${t.color}; color:#e8ecf8;">${s}</span>
+          </div>
+          ${j<t.stages.length-1?'<span class="stage-arrow">→</span>':''}
+        `;
+      }).join('')}
+    </div>
+    <div>
+      <span class="end-pill" style="border-color:${t.color}; color:${t.color};">จุดจบ: ${t.end}</span>
+      <span class="time-pill">⏱ ${t.time}</span>
+    </div>
+    <div class="note" style="color:${t.color};">${t.note}</div>
+  `;
+  document.querySelectorAll('.track-tab').forEach((el,j)=>el.classList.toggle('active', j===i));
+  document.querySelectorAll('.track-tab').forEach((el,j)=>{ if (visited.has(j)) el.classList.add('visited'); });
+  if (window.SFX) SFX.play('tap');
+  if (visited.size >= 5) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('result').style.display = 'block';
+  }
+}
+window.show = show;
+show(2); // start at Sun-like
+
+Submit.wirePair({
+  page:'p13',
+  nextHref:'p14-evo-order.html',
+  getPayload:()=>({ visited:[...visited] }),
+  isPerfect:(p)=>p.visited.length === 5,
+  onSubmit:(status,n)=>{
+    setTimeout(()=>{
+      if (window.MysteryBox) MysteryBox.roll({ wrongs:0, page:'p13' });
+    }, 800);
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

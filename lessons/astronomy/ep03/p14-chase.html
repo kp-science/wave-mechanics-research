@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P14 · TEACH Triangulation</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p14" data-type="story">
+<div class="page">
+  <div class="lbl">🎓 TEACH · รวมทุกเครื่องมือ</div>
+  <h1>Triangulation · หนีให้รอด</h1>
+
+  <div class="teach-pod">
+    <div class="avatar">🎩</div>
+    <div class="teacher-name">Dr.Hubble</div>
+    <div style="color:#c8cde0;line-height:1.7;">
+      *"ก่อน WARP RUN ผมต้องแน่ใจว่าพวกคุณ<b>ใช้ทุกเครื่องมือได้</b>"*<br>
+      *"VOIDHUNTER จะยิง 3 ชุด: Scale · Distance · Unit"*<br>
+      *"ทีมต้องตอบถูก — <b>พลังงานที่เก็บมาจะเป็นอาวุธ</b>"*
+    </div>
+
+    <div class="key-idea">
+      💡 3 คำถามที่เจอแน่ใน WARP RUN:<br>
+      1. "m น้อย = สว่าง?" (ใช้ <b>P07</b>)<br>
+      2. "สว่างปรากฎ = สว่างจริง?" (ใช้ <b>P09</b>)<br>
+      3. "1 pc = 1 ly?" (ใช้ <b>P11</b>)
+    </div>
+
+    <div class="try-it">
+      🎯 <b>ลอง 1 ข้อ</b> · ทวนความเชื่อมั่น
+      <div style="margin-bottom:8px;">parsec คือหน่วย?</div>
+      <div class="choice-row">
+        <button class="choice-btn" onclick="t(0)">เวลา</button>
+        <button class="choice-btn" onclick="t(1)">ระยะทาง</button>
+        <button class="choice-btn" onclick="t(2)">ความสว่าง</button>
+      </div>
+      <div id="tout" class="status"></div>
+    </div>
+
+    <div class="narrative" style="color:#ffd88a;margin-top:14px;">
+      Dr.Hubble: "เอาของที่ได้มาทั้งหมด · ไปช้อปที่ตลาด · แล้วเจอผมที่ WARP RUN"
+    </div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.3;">(ไม่ต้องส่ง)</button>
+    <button class="next-btn" id="nextBtn">▶ Stellar Maze ก่อนช้อป</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+function t(i) {
+  const ok = i === 1;
+  document.getElementById('tout').innerHTML = ok ? '<div class="ok">✓ ระยะทาง · parsec = parallax-second</div>' : '<div class="bad">✗ ไม่ใช่เวลา · ลองอีก</div>';
+}
+setTimeout(() => {
+  const nb = document.getElementById('nextBtn');
+  Gate.soloMode(nb, 'p15-payoff.html');
+  if (window.PaceClient) Gate.wireButton('p14', nb, 'p15-payoff.html');
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined') Transition.wireNext(nb, 'p14-to-p15', 'p15-payoff.html');
+  }, 100);
+}, 200);
+</script>
+</body></html>

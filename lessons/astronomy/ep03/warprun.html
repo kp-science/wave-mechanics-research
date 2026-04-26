@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · WARP RUN · FINAL CLIMAX</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:#02030a; color:#e8ecf8; overflow-x:hidden; position:relative; }
+  body.shake { animation:bodyShake .35s; }
+  @keyframes bodyShake { 0%,100%{transform:translateX(0)} 20%{transform:translate(-7px,2px)} 40%{transform:translate(6px,-3px)} 60%{transform:translate(-4px,3px)} 80%{transform:translate(3px,-2px)} }
+  body.flash-red::before { content:''; position:fixed; inset:0; background:radial-gradient(ellipse at center, rgba(255,30,80,0.35), transparent 70%); pointer-events:none; z-index:25; animation:flashFade .4s; }
+  @keyframes flashFade { from{opacity:1;} to{opacity:0;} }
+
+  /* === Starfield canvas === */
+  #starfield { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  /* === All page content above starfield (exclude FX layers · they need position:fixed) === */
+  body > *:not(#starfield):not(canvas):not(.projectile):not(.projectile-trail):not(.beam-fx):not(.dmg-pop):not(.phase-intro) { position:relative; z-index:2; }
+
+  /* === Climax bar === */
+  .climax-bar { position:sticky; top:0; z-index:30; padding:10px 14px; background:rgba(5,0,10,0.95); border-bottom:1px solid #ff5c7a; backdrop-filter:blur(10px); }
+  .climax-bar .row1 { display:flex; justify-content:space-between; align-items:center; }
+  .energy-hud { margin-top:8px; display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; }
+  .eh-label { font-family:Orbitron,sans-serif; font-size:10px; letter-spacing:0.18em; color:#7effb2; text-shadow:0 0 6px rgba(126,255,178,0.5); }
+  .eh-bar { height:14px; background:rgba(0,0,0,0.6); border:1px solid #2a3050; border-radius:7px; overflow:hidden; box-shadow:inset 0 0 8px rgba(0,0,0,0.6); }
+  .eh-fill { height:100%; background:linear-gradient(90deg, #7effb2 0%, #ffcb6b 60%, #ff5c7a 100%); transition:width .35s cubic-bezier(.2,.7,.3,1); box-shadow:0 0 10px rgba(126,255,178,0.5); position:relative; }
+  .eh-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); animation:hpShine 2s linear infinite; }
+  .eh-text { font-family:Orbitron,monospace; font-size:14px; color:#fff; letter-spacing:0.1em; min-width:80px; text-align:right; }
+  .eh-text.danger { color:#ff5c7a; animation:pulse 0.8s infinite; }
+  .supernova-timer { font-family:Orbitron,monospace; font-size:22px; color:#ff5c7a; letter-spacing:0.15em; text-shadow:0 0 10px rgba(255,92,122,0.5); }
+  .supernova-timer.warn { animation:pulse 1s infinite; }
+  @keyframes pulse { 50% { text-shadow:0 0 24px #ff5c7a, 0 0 40px #ff5c7a; transform:scale(1.06); } }
+
+  /* === Boss arena === */
+  .arena { position:relative; padding:24px 12px 12px; margin:8px 12px; min-height:340px;
+    background:radial-gradient(ellipse at 50% 30%, rgba(185,128,255,0.18), rgba(2,3,10,0) 70%);
+    border:2px solid #b980ff; border-radius:18px; overflow:hidden;
+    box-shadow:inset 0 0 80px rgba(185,128,255,0.15), 0 0 30px rgba(185,128,255,0.1); }
+  .arena.firing { animation:arenaFire .5s; }
+  @keyframes arenaFire { 0%,100%{box-shadow:inset 0 0 80px rgba(185,128,255,0.15);} 50%{box-shadow:inset 0 0 120px rgba(255,92,122,0.6), 0 0 60px rgba(255,92,122,0.4);} }
+
+  .arena-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .boss-name { font-family:Orbitron,sans-serif; font-size:18px; letter-spacing:0.2em; color:#b980ff; text-shadow:0 0 10px rgba(185,128,255,0.5); }
+  .phase-tag { padding:4px 12px; background:rgba(185,128,255,0.18); border:1px solid #b980ff; border-radius:14px; font-size:11px; color:#d4b8ff; font-family:Orbitron,sans-serif; letter-spacing:0.15em; }
+
+  /* === Boss eye centerpiece === */
+  .boss-eye-wrap { position:relative; display:flex; justify-content:center; align-items:center; height:160px; margin:8px 0; }
+  .boss-eye { position:relative; width:140px; height:140px; }
+  .boss-eye .ring {
+    position:absolute; inset:0; border-radius:50%; border:2px solid rgba(185,128,255,0.45);
+    animation:ringSpin 18s linear infinite;
+  }
+  .boss-eye .ring.r2 { inset:14px; border-style:dashed; border-color:rgba(255,92,122,0.4); animation-duration:9s; animation-direction:reverse; }
+  .boss-eye .ring.r3 { inset:28px; border-color:rgba(212,184,255,0.6); animation-duration:6s; }
+  @keyframes ringSpin { to { transform:rotate(360deg); } }
+
+  .boss-eye .iris {
+    position:absolute; inset:38px; border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #ffd6e8 0%, #ff5c7a 25%, #b980ff 60%, #2a0d3a 100%);
+    box-shadow:0 0 40px rgba(255,92,122,0.7), inset 0 0 20px rgba(0,0,0,0.6);
+    animation:irisPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes irisPulse { 0%,100% { transform:scale(1); } 50% { transform:scale(1.08); box-shadow:0 0 60px rgba(255,92,122,0.9), inset 0 0 25px rgba(0,0,0,0.6); } }
+  .boss-eye .pupil {
+    position:absolute; top:50%; left:50%; width:24px; height:48px; transform:translate(-50%,-50%);
+    background:#000; border-radius:50%; box-shadow:0 0 12px rgba(0,0,0,0.8) inset;
+  }
+  .boss-eye .glow {
+    position:absolute; inset:-30px; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,92,122,0.35), transparent 65%);
+    animation:glowPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes glowPulse { 50% { opacity:0.4; } }
+
+  /* charge visual: outer ring fills around eye */
+  .boss-eye .charge-arc {
+    position:absolute; inset:-12px; border-radius:50%;
+    background:conic-gradient(from -90deg, #ff5c7a 0%, transparent 0%);
+    -webkit-mask:radial-gradient(circle, transparent 65%, #000 67%);
+            mask:radial-gradient(circle, transparent 65%, #000 67%);
+    transition:background 0.1s linear;
+  }
+  /* danger state when ≥80% */
+  .boss-eye.danger .iris { animation:irisDanger 0.5s infinite; }
+  @keyframes irisDanger { 50% { transform:scale(1.18); box-shadow:0 0 80px #ff1e50, inset 0 0 30px rgba(0,0,0,0.7); filter:hue-rotate(-20deg); } }
+  .boss-eye.hit .iris { animation:irisHit 0.4s; }
+  @keyframes irisHit { 0%{transform:scale(1.2); filter:brightness(2.5) hue-rotate(60deg);} 100%{transform:scale(1);} }
+
+  /* === HP bar === */
+  .hp-wrap { padding:0 8px; }
+  .hp-bar { height:24px; background:rgba(0,0,0,0.6); border:1px solid #444; border-radius:12px; overflow:hidden; margin:8px 0 4px; position:relative;
+    box-shadow:inset 0 0 10px rgba(0,0,0,0.6); }
+  .hp-fill { height:100%; background:linear-gradient(90deg,#7effb2 0%,#ffcb6b 50%,#ff5c7a 100%); transition:width .5s cubic-bezier(.2,.7,.3,1);
+    box-shadow:0 0 14px rgba(255,92,122,0.5); position:relative; overflow:hidden; }
+  .hp-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    animation:hpShine 2.4s linear infinite; }
+  @keyframes hpShine { from{transform:translateX(-100%);} to{transform:translateX(100%);} }
+  .hp-text { position:absolute; inset:0; text-align:center; font-family:Orbitron,monospace; font-size:13px; color:#fff; line-height:24px; letter-spacing:0.15em; text-shadow:0 1px 2px #000; }
+
+  .charge-label { font-size:10px; color:#9aa3c0; font-family:monospace; margin-top:4px; }
+  .charge-label.danger { color:#ff5c7a; animation:pulse 0.8s infinite; }
+
+  .void-claim { padding:10px 14px; background:rgba(255,92,122,0.12); border-left:3px solid #ff5c7a; color:#ffb5c2; font-style:italic; margin:8px 0 0; border-radius:0 10px 10px 0; font-size:14px;
+    text-shadow:0 0 6px rgba(255,92,122,0.3); }
+
+  /* === Stats === */
+  .stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:10px 12px; margin:12px; background:rgba(22,27,58,0.8); border-radius:10px;
+    border:1px solid rgba(120,140,220,0.25); }
+  .stat { text-align:center; position:relative; padding:4px; }
+  .stat .lbl { font-size:10px; color:#6a7394; font-family:Orbitron,sans-serif; letter-spacing:0.18em; }
+  .stat .val { font-family:Orbitron,monospace; font-size:20px; color:#ffcb6b; transition:color .2s, transform .2s, text-shadow .2s; }
+  .stat .val.danger { color:#ff5c7a; text-shadow:0 0 12px #ff5c7a; }
+  .stat .val.flash { animation:valFlash .6s; }
+  @keyframes valFlash { 0% { color:#ff5c7a; transform:scale(1.5); text-shadow:0 0 24px #ff5c7a; } 60% { transform:scale(1.1); } 100% { transform:scale(1); } }
+  .stat .e-bar { height:6px; background:rgba(0,0,0,0.6); border-radius:4px; margin-top:6px; overflow:hidden; border:1px solid #2a3050; }
+  .stat .e-fill { height:100%; background:linear-gradient(90deg, #7effb2, #ffcb6b, #ff5c7a); transition:width .4s ease-out;
+    box-shadow:0 0 8px rgba(126,255,178,0.4); }
+
+  /* Floating popups */
+  .dmg-pop { position:fixed; pointer-events:none; z-index:9999; font-family:Orbitron,sans-serif; font-weight:900; font-size:32px;
+    color:#ff5c7a; text-shadow:0 0 16px #ff5c7a, 0 2px 4px #000; animation:dmgFloat 1.1s ease-out forwards; }
+  .dmg-pop.boss { color:#ffcb6b; text-shadow:0 0 16px #ffcb6b, 0 2px 4px #000; }
+  .dmg-pop.crit { color:#ffd700; font-size:42px; text-shadow:0 0 20px #ffd700, 0 0 40px #ff5c7a, 0 2px 4px #000; }
+  @keyframes dmgFloat { 0%{opacity:0;transform:scale(0.5);} 18%{opacity:1;transform:scale(1.3);} 100%{opacity:0;transform:translateY(-70px) scale(1);} }
+
+  /* === Projectile (us → boss) === */
+  .projectile { position:fixed; pointer-events:none; z-index:60; width:18px; height:18px;
+    border-radius:50%; background:radial-gradient(circle, #fff 20%, #7effb2 50%, transparent 80%);
+    box-shadow:0 0 20px #7effb2, 0 0 40px #7effb2; }
+  .projectile.crit { background:radial-gradient(circle, #fff 20%, #ffd700 50%, transparent 80%); box-shadow:0 0 25px #ffd700, 0 0 50px #ffcb6b; }
+  .projectile-trail { position:fixed; pointer-events:none; z-index:59; width:6px; height:6px; border-radius:50%;
+    background:#7effb2; box-shadow:0 0 10px #7effb2; opacity:0.6;
+    animation:trailFade 0.4s ease-out forwards; }
+  @keyframes trailFade { to { opacity:0; transform:scale(0.2); } }
+
+  /* === VH beam (boss → us) === */
+  .beam-fx { position:fixed; pointer-events:none; z-index:55; transform-origin:0 50%;
+    height:6px; background:linear-gradient(90deg, transparent, #ff1e50 30%, #fff 50%, #ff5c7a 70%, transparent);
+    box-shadow:0 0 20px #ff1e50, 0 0 40px #ff5c7a; opacity:0;
+    animation:beamFire 0.45s ease-out forwards; }
+  @keyframes beamFire { 0%{opacity:0; transform:scaleX(0);} 30%{opacity:1; transform:scaleX(1);} 100%{opacity:0; transform:scaleX(1);} }
+
+  /* === Question card === */
+  .question { padding:18px; margin:12px; background:linear-gradient(160deg, rgba(10,15,30,0.9), rgba(22,27,58,0.85));
+    border:1px solid rgba(120,140,220,0.4); border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.4); }
+  .question .q-text { font-size:16px; line-height:1.7; margin-bottom:14px; color:#fff; font-weight:500; }
+  .choices { display:grid; grid-template-columns:1fr; gap:10px; }
+  @media(min-width:500px) { .choices { grid-template-columns:1fr 1fr; } }
+  .choice { padding:16px; background:linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.05));
+    border:2px solid rgba(120,140,220,0.4); color:#e8ecf8; border-radius:12px; cursor:pointer; text-align:left;
+    font-size:14.5px; font-family:inherit; transition:all .2s; position:relative; overflow:hidden; }
+  .choice:hover:not(:disabled) { border-color:#64d8ff; transform:translateY(-3px); box-shadow:0 6px 20px rgba(100,216,255,0.25); }
+  .choice.correct { border-color:#7effb2; background:rgba(126,255,178,0.22); animation:flashGreen .5s; box-shadow:0 0 25px rgba(126,255,178,0.5); }
+  .choice.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.22); animation:shake .35s; }
+  @keyframes flashGreen { 50% { box-shadow:0 0 30px #7effb2; } }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+  .choice:disabled { cursor:not-allowed; opacity:0.6; }
+
+  /* === Boosts === */
+  .boosts { display:flex; gap:8px; flex-wrap:wrap; padding:8px 12px; background:rgba(255,203,107,0.05); margin:8px 12px; border-radius:10px; min-height:40px; align-items:center; }
+  .boost-chip { padding:7px 14px; background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; border-radius:20px; cursor:pointer; font-size:12px; font-family:inherit; transition:all .15s; }
+  .boost-chip:hover:not(:disabled) { background:#ffcb6b; color:#000; transform:translateY(-2px); box-shadow:0 4px 14px rgba(255,203,107,0.4); }
+  .boost-chip.armed { background:#ffcb6b; color:#000; box-shadow:0 0 18px #ffcb6b; animation:boostPulse 1s infinite; }
+  @keyframes boostPulse { 50% { box-shadow:0 0 28px #ffcb6b; } }
+  .boost-chip:disabled { opacity:0.3; cursor:not-allowed; }
+
+  /* === Feedback bar === */
+  .feedback { text-align:center; padding:12px; margin:8px 12px; border-radius:10px; font-family:Orbitron,sans-serif; letter-spacing:0.1em; min-height:22px; font-size:14px; transition:all .25s; }
+  .feedback.hit { background:rgba(126,255,178,0.18); border:1px solid #7effb2; color:#7effb2; }
+  .feedback.crit { background:rgba(255,203,107,0.22); border:2px solid #ffcb6b; color:#ffcb6b; font-size:18px; animation:critPulse .6s; box-shadow:0 0 25px rgba(255,203,107,0.4); }
+  @keyframes critPulse { 50% { transform:scale(1.1); box-shadow:0 0 40px #ffcb6b; } }
+  .feedback.miss { background:rgba(255,92,122,0.18); border:1px solid #ff5c7a; color:#ff5c7a; }
+
+  /* === Phase intro overlay === */
+  .phase-intro { position:fixed; inset:0; z-index:9000; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at center, rgba(185,128,255,0.3), rgba(2,3,10,0.95) 70%);
+    backdrop-filter:blur(8px); animation:phaseIn 0.4s; }
+  @keyframes phaseIn { from{opacity:0;} }
+  .phase-intro.out { animation:phaseOut 0.5s forwards; }
+  @keyframes phaseOut { to{opacity:0; transform:scale(1.2);} }
+  .phase-intro .card { text-align:center; padding:30px 50px; border:3px solid #b980ff; border-radius:18px;
+    background:rgba(10,5,20,0.85); box-shadow:0 0 60px rgba(185,128,255,0.6); animation:phaseCard 0.6s; }
+  @keyframes phaseCard { 0%{transform:scale(0.5) rotateY(180deg); opacity:0;} 100%{transform:scale(1) rotateY(0); opacity:1;} }
+  .phase-intro h1 { font-family:Orbitron,sans-serif; font-size:18px; color:#9aa3c0; letter-spacing:0.3em; margin:0 0 6px; }
+  .phase-intro h2 { font-family:Orbitron,sans-serif; font-size:34px; color:#fff; letter-spacing:0.18em; margin:0;
+    background:linear-gradient(90deg, #b980ff, #ff5c7a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+    text-shadow:0 0 30px rgba(185,128,255,0.5); }
+  .phase-intro .claim { margin-top:14px; font-style:italic; color:#ffb5c2; font-size:15px; }
+
+  /* === Ending gate === */
+  /* === Reward banner (top of arena) === */
+  .reward-banner { display:flex; align-items:center; gap:10px; padding:8px 12px; margin:10px 12px 0;
+    background:linear-gradient(135deg, rgba(255,215,0,0.08), rgba(126,255,178,0.06));
+    border:1px dashed rgba(255,215,0,0.5); border-radius:10px; font-size:12px; color:#ffd; }
+  .reward-banner .gift { font-size:22px; filter:drop-shadow(0 0 8px rgba(255,215,0,0.6)); animation:giftBob 1.8s ease-in-out infinite; }
+  @keyframes giftBob { 50% { transform:translateY(-3px) rotate(-5deg); } }
+  .reward-banner b.t1 { color:#7effb2; }
+  .reward-banner b.t2 { color:#ffcb6b; }
+  .reward-banner b.t3 { color:#ff8fa5; }
+
+  /* === Reward box modal === */
+  .reward-modal { position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at center, rgba(255,215,0,0.18), rgba(2,3,10,0.94) 70%); backdrop-filter:blur(8px); animation:phaseIn 0.4s; }
+  .reward-card { width:90%; max-width:480px; padding:30px 24px; background:rgba(10,5,20,0.95); border:3px solid #ffd700;
+    border-radius:20px; box-shadow:0 0 80px rgba(255,215,0,0.5); text-align:center; animation:phaseCard 0.6s; }
+  .reward-card h2 { font-family:Orbitron,sans-serif; font-size:24px; color:#ffd700; letter-spacing:0.18em; margin:0 0 6px;
+    text-shadow:0 0 20px rgba(255,215,0,0.6); }
+  .reward-card .tier-tag { display:inline-block; padding:4px 14px; border-radius:14px; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.2em; margin-bottom:16px; }
+  .reward-card .tier-tag.t1 { background:rgba(126,255,178,0.18); border:1px solid #7effb2; color:#7effb2; }
+  .reward-card .tier-tag.t2 { background:rgba(255,203,107,0.18); border:1px solid #ffcb6b; color:#ffcb6b; }
+  .reward-card .tier-tag.t3 { background:rgba(255,92,122,0.18); border:1px solid #ff8fa5; color:#ff8fa5; }
+
+  .mystery-box { width:140px; height:140px; margin:10px auto 18px; position:relative; cursor:pointer;
+    background:linear-gradient(135deg, #6a4c93, #b980ff); border:3px solid #ffd700; border-radius:18px;
+    box-shadow:0 0 40px rgba(255,215,0,0.5); display:flex; align-items:center; justify-content:center; font-size:64px;
+    animation:boxFloat 2s ease-in-out infinite; transition:transform .3s; }
+  .mystery-box:hover { transform:scale(1.05); }
+  .mystery-box.opened { animation:boxOpen 0.6s forwards; pointer-events:none; }
+  @keyframes boxFloat { 50% { transform:translateY(-8px); box-shadow:0 12px 50px rgba(255,215,0,0.7); } }
+  @keyframes boxOpen { 50% { transform:scale(1.4) rotate(15deg); filter:brightness(2);} 100% { transform:scale(0); opacity:0; } }
+
+  .reward-slots { display:grid; gap:10px; margin-top:18px; }
+  .reward-slot { padding:14px; background:rgba(0,0,0,0.4); border:2px solid #2a3050; border-radius:12px;
+    display:flex; align-items:center; gap:14px; opacity:0; transform:translateY(20px); transition:all .4s; }
+  .reward-slot.show { opacity:1; transform:translateY(0); }
+  .reward-slot.coin { border-color:#ffcb6b; box-shadow:0 0 20px rgba(255,203,107,0.3); }
+  .reward-slot.energy { border-color:#7effb2; box-shadow:0 0 20px rgba(126,255,178,0.3); }
+  .reward-slot.item { border-color:#d4b8ff; box-shadow:0 0 20px rgba(212,184,255,0.3); }
+  .reward-slot .ricon { font-size:36px; flex-shrink:0; }
+  .reward-slot .rname { font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.18em; color:#9aa3c0; }
+  .reward-slot .rval { font-family:Orbitron,monospace; font-size:20px; color:#fff; font-weight:700; }
+  .reward-slot.coin .rval { color:#ffcb6b; }
+  .reward-slot.energy .rval { color:#7effb2; }
+  .reward-slot.item .rval { color:#d4b8ff; }
+  .reward-slot .rdesc { font-size:11px; color:#9aa3c0; margin-top:2px; }
+
+  .reward-close { margin-top:18px; padding:12px 26px; background:rgba(126,255,178,0.18); border:2px solid #7effb2;
+    color:#7effb2; border-radius:10px; cursor:pointer; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.15em; }
+  .reward-close:hover { background:rgba(126,255,178,0.3); }
+  .reward-close:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .reward-stats-line { font-size:12px; color:#9aa3c0; margin-top:8px; }
+  .reward-stats-line b { color:#fff; }
+
+  .ending-gate { padding:24px; margin:16px 12px; background:linear-gradient(135deg, rgba(255,203,107,0.12), rgba(255,92,122,0.12));
+    border:2px solid #ffcb6b; border-radius:16px; text-align:center; box-shadow:0 0 40px rgba(255,203,107,0.2); }
+  .ending-gate h2 { font-family:Orbitron,sans-serif; color:#ffcb6b; letter-spacing:0.18em; margin-bottom:12px; font-size:22px; }
+  .ending-gate .opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+  .ending-gate button { padding:14px; border-radius:10px; font-family:Orbitron,sans-serif; font-size:14px; font-weight:700; cursor:pointer; border:2px solid; letter-spacing:0.1em; }
+  .ending-gate button.send { background:rgba(255,203,107,0.18); border-color:#ffcb6b; color:#ffcb6b; }
+  .ending-gate button.send:hover:not(:disabled) { background:rgba(255,203,107,0.35); }
+  .ending-gate button.skip { background:rgba(100,216,255,0.12); border-color:#64d8ff; color:#64d8ff; }
+  .ending-gate button.skip:hover { background:rgba(100,216,255,0.25); }
+
+  .finish-wrap { padding:14px 12px; }
+  .finish-btn, .next-btn { display:block; width:100%; padding:16px; border-radius:12px; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.12em; cursor:pointer; font-size:14px; }
+  .submit-btn { background:rgba(126,255,178,0.18); border:2px solid #7effb2; color:#7effb2; margin-bottom:8px; }
+  .submit-btn.done { opacity:0.5; cursor:not-allowed; }
+  .next-btn { background:rgba(100,216,255,0.12); border:2px dashed #64d8ff; color:#64d8ff; }
+  .next-btn:disabled { opacity:0.4; cursor:not-allowed; }
+</style>
+</head>
+<body data-page="p18" data-type="mixed">
+
+<canvas id="starfield"></canvas>
+
+<div class="climax-bar">
+  <div class="row1">
+    <div><span style="font-size:11px;color:#9aa3c0;font-family:Orbitron,sans-serif;letter-spacing:0.2em;">SUPERNOVA</span> <span class="supernova-timer" id="svTimer">3:00</span></div>
+    <div style="font-size:12px;color:#9aa3c0;">EP03 · WARP RUN · <span id="phaseName">PHASE 1</span></div>
+  </div>
+  <div class="energy-hud">
+    <div class="eh-label">⚡ ENERGY (พลังยานเรา)</div>
+    <div class="eh-bar"><div class="eh-fill" id="ehFill" style="width:100%"></div></div>
+    <div class="eh-text"><span id="ehVal">300</span> / <span id="ehMax">300</span></div>
+  </div>
+</div>
+
+<div class="reward-banner" id="rewardBanner">
+  <div class="gift">🎁</div>
+  <div>
+    <b>กล่องสุ่มท้ายเกม</b> · ผิด 0 → <b class="t1">เต็ม 3 ชิ้น</b> (🪙+⚡+🎁) · ผิด 1-3 → <b class="t2">2 ชิ้น</b> (จำนวนลด) · ผิด 4+ → <b class="t3">1 ชิ้น</b>
+  </div>
+</div>
+
+<div class="arena" id="arena">
+  <div class="arena-head">
+    <div class="boss-name">👁 VOIDHUNTER</div>
+    <div class="phase-tag" id="phaseTag">PHASE 1 / 3 · SCALE INVERTER</div>
+  </div>
+
+  <div class="boss-eye-wrap">
+    <div class="boss-eye" id="bossEye">
+      <div class="glow"></div>
+      <div class="ring"></div>
+      <div class="ring r2"></div>
+      <div class="ring r3"></div>
+      <div class="iris"></div>
+      <div class="pupil"></div>
+      <div class="charge-arc" id="chargeArc"></div>
+    </div>
+  </div>
+
+  <div class="hp-wrap">
+    <div class="hp-bar">
+      <div class="hp-fill" id="hpFill" style="width:100%"></div>
+      <div class="hp-text" id="hpText">300 / 300</div>
+    </div>
+    <div class="charge-label" id="chargeLbl">⚡ ชาร์จยิง... (เต็ม = ยิงเรา)</div>
+  </div>
+
+  <div class="void-claim" id="voidClaim">VOID: "เลขน้อย = หรี่ใช่ไหม?"</div>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="lbl">ENERGY</div>
+    <div class="val" id="energyVal">300</div>
+    <div class="e-bar"><div class="e-fill" id="energyFill" style="width:100%;"></div></div>
+  </div>
+  <div class="stat">
+    <div class="lbl">PHOTON</div>
+    <div class="val" id="photonVal">0</div>
+  </div>
+  <div class="stat">
+    <div class="lbl">METER</div>
+    <div class="val" id="meterVal">60%</div>
+  </div>
+</div>
+
+<div class="question" id="questionBox">
+  <div class="q-text" id="qText">loading...</div>
+  <div class="choices" id="choices"></div>
+</div>
+
+<div class="boosts" id="boosts"></div>
+<div class="feedback" id="feedback"></div>
+
+<div id="endingGate"></div>
+
+<div class="finish-wrap" id="finishWrap" style="display:none;">
+  <button class="submit-btn" id="submitBtn" onclick="submitResults()">💾 ส่งผลงาน</button>
+  <button class="next-btn" id="nextBtn" onclick="goNext()" disabled>▶ ไปต่อ · รอประตูเปิด</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== STATE ==================== */
+const cfg = EP_CONFIG.warpRun;
+const ATTACK_COST = cfg.attackCost || 8;
+const WRONG_PENALTY = cfg.wrongPenalty || 18;
+
+function shuffleIndices(n) {
+  const arr = Array.from({length:n}, (_,i) => i);
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const qOrder = cfg.phases.map(p => shuffleIndices(p.questions.length));
+
+const state = {
+  phase: 0,
+  hpLeft: cfg.totalHP,
+  phaseHp: cfg.phases[0].hp,
+  energy: 300,
+  energyMax: 300,
+  streak: 0,
+  chargeStart: Date.now(),
+  chargeSec: cfg.vhChargeSec,
+  svStart: Date.now(),
+  svTotal: 180,
+  qIdx: 0,
+  armedBoost: null,
+  log: [],
+  finished: false,
+};
+
+const owned = ShopItems.load();
+if (owned.chronos) state.chargeSec = 15;
+
+/* ==================== STARFIELD ==================== */
+(function starfield() {
+  const c = document.getElementById('starfield');
+  const ctx = c.getContext('2d');
+  let w, h, stars = [], shootingStars = [];
+  function resize() {
+    w = c.width = window.innerWidth;
+    h = c.height = window.innerHeight;
+    stars = Array.from({length:140}, () => ({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      r: Math.random() * 1.4 + 0.3,
+      a: Math.random() * 0.7 + 0.2,
+      v: Math.random() * 0.05 + 0.02,
+      twinkle: Math.random() * Math.PI * 2,
+    }));
+  }
+  resize(); window.addEventListener('resize', resize);
+
+  function spawnShoot() {
+    if (Math.random() > 0.012) return;
+    shootingStars.push({
+      x: Math.random() * w * 0.7,
+      y: Math.random() * h * 0.4,
+      vx: 6 + Math.random() * 4,
+      vy: 2 + Math.random() * 2,
+      life: 1.0,
+    });
+  }
+
+  function tick() {
+    ctx.fillStyle = 'rgba(2,3,10,0.35)';
+    ctx.fillRect(0, 0, w, h);
+    // stars
+    for (const s of stars) {
+      s.twinkle += s.v;
+      const a = s.a * (0.6 + 0.4 * Math.sin(s.twinkle));
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(200,210,255,' + a + ')';
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // shooting stars
+    spawnShoot();
+    for (let i = shootingStars.length - 1; i >= 0; i--) {
+      const s = shootingStars[i];
+      ctx.strokeStyle = 'rgba(255,220,180,' + s.life + ')';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(s.x, s.y);
+      ctx.lineTo(s.x - s.vx * 6, s.y - s.vy * 6);
+      ctx.stroke();
+      s.x += s.vx; s.y += s.vy;
+      s.life -= 0.02;
+      if (s.life <= 0 || s.x > w || s.y > h) shootingStars.splice(i, 1);
+    }
+  }
+  setInterval(tick, 33);
+})();
+
+/* ==================== RENDER ==================== */
+function renderAll() {
+  document.getElementById('hpFill').style.width = (state.hpLeft/cfg.totalHP*100) + '%';
+  document.getElementById('hpText').textContent = state.hpLeft + ' / ' + cfg.totalHP;
+  document.getElementById('phaseTag').textContent = 'PHASE ' + (state.phase+1) + ' / 3 · ' + cfg.phases[state.phase].name;
+  document.getElementById('phaseName').textContent = 'PHASE ' + (state.phase+1);
+  document.getElementById('voidClaim').textContent = 'VOID: "' + cfg.phases[state.phase].voidClaim + '"';
+  document.getElementById('energyVal').textContent = state.energy;
+  document.getElementById('energyVal').className = 'val' + (state.energy < 80 ? ' danger' : '');
+  const fill = document.getElementById('energyFill');
+  if (fill) fill.style.width = Math.max(0, Math.min(100, state.energy / state.energyMax * 100)) + '%';
+  // Top sticky energy HUD
+  const ehFill = document.getElementById('ehFill');
+  const ehVal  = document.getElementById('ehVal');
+  const ehMax  = document.getElementById('ehMax');
+  if (ehFill) ehFill.style.width = Math.max(0, Math.min(100, state.energy / state.energyMax * 100)) + '%';
+  if (ehVal)  ehVal.textContent  = state.energy;
+  if (ehMax)  ehMax.textContent  = state.energyMax;
+  const ehText = document.querySelector('.eh-text');
+  if (ehText) ehText.classList.toggle('danger', state.energy < 80);
+  document.getElementById('photonVal').textContent = Photon.get();
+  document.getElementById('meterVal').textContent = VoidHunter.get() + '%';
+  renderQuestion();
+  renderBoosts();
+}
+
+function renderQuestion() {
+  const phase = cfg.phases[state.phase];
+  const order = qOrder[state.phase];
+  const q = phase.questions[order[state.qIdx % order.length]];
+  document.getElementById('qText').innerHTML = '❓ ' + q.q;
+  document.getElementById('choices').innerHTML = q.a.map((c, i) =>
+    '<button class="choice" data-i="' + i + '" onclick="answer(' + i + ',' + q.c + ',\''+q.cat+'\')">' + c + '</button>'
+  ).join('');
+}
+
+function renderBoosts() {
+  const items = EP_CONFIG.shop.items;
+  const owned = ShopItems.load();
+  const chips = items.filter(it => owned[it.id] && it.type !== 'passive' && owned[it.id].uses > 0).map(it => {
+    const armed = state.armedBoost === it.id;
+    return '<button class="boost-chip ' + (armed?'armed':'') + '" onclick="toggleBoost(\''+it.id+'\')">' +
+           it.icon + ' ' + it.name.split(' ')[0] + ' <span class="count">(' + owned[it.id].uses + ')</span></button>';
+  });
+  document.getElementById('boosts').innerHTML = chips.length ? chips.join('') : '<span style="color:#666;font-size:11px;">ไม่มี boost</span>';
+}
+
+/* ==================== ANSWER ==================== */
+function answer(idx, correct, cat) {
+  if (state.finished) return;
+  const buttons = document.querySelectorAll('.choice');
+  buttons.forEach(b => b.disabled = true);
+  const isCorrect = idx === correct;
+  const chosen = buttons[idx];
+
+  // Energy cost on EVERY answer (action cost · sees energy drop)
+  const cost = isCorrect ? ATTACK_COST : (ATTACK_COST + WRONG_PENALTY);
+  loseEnergy(cost, isCorrect ? '⚡ −' + cost + ' (ยิง)' : '❌ MISS · ⚡ −' + cost, false);
+
+  let damage = cfg.baseDamage;
+  let crit = false;
+  if (isCorrect) {
+    state.streak++;
+    const sMult = state.streak >= 5 ? 2.0 : state.streak >= 3 ? 1.5 : 1.0;
+    damage *= sMult;
+    if (state.armedBoost) {
+      const item = EP_CONFIG.shop.items.find(x => x.id === state.armedBoost);
+      if (item && item.type === 'boost') {
+        if (item.cat === 'any' || item.cat === cat) {
+          damage *= item.mult;
+          crit = true;
+          ShopItems.use(item.id);
+        }
+      }
+      state.armedBoost = null;
+    }
+    damage = Math.round(damage);
+    chosen.classList.add('correct');
+    spawnProjectile(chosen, crit, () => applyDamage(damage, crit));
+    state.log.push({ phase: state.phase, q: state.qIdx, correct: true, damage, crit, streak: state.streak });
+  } else {
+    state.streak = 0;
+    chosen.classList.add('wrong');
+    if (buttons[correct]) buttons[correct].classList.add('correct');
+    state.log.push({ phase: state.phase, q: state.qIdx, correct: false, loss: cost });
+  }
+
+  state.qIdx++;
+  setTimeout(() => {
+    if (state.finished) return;
+    renderAll();
+  }, 1100);
+}
+
+function applyDamage(d, crit) {
+  state.hpLeft = Math.max(0, state.hpLeft - d);
+  state.phaseHp = Math.max(0, state.phaseHp - d);
+  showFeedback(crit ? 'crit' : 'hit', (crit ? '💥 CRIT!' : '✓ HIT') + ' −' + d + ' HP' + (state.streak>=3?' · 🔥×'+(state.streak>=5?'2.0':'1.5'):''));
+  // boss eye flash + arena fire
+  const eye = document.getElementById('bossEye');
+  eye.classList.remove('hit'); void eye.offsetWidth; eye.classList.add('hit');
+  const arena = document.getElementById('arena');
+  arena.classList.add('firing');
+  setTimeout(() => arena.classList.remove('firing'), 500);
+  // damage number floating from boss eye
+  const eyeRect = eye.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'dmg-pop boss' + (crit ? ' crit' : '');
+  pop.textContent = '−' + d;
+  pop.style.left = (eyeRect.left + eyeRect.width/2 - 20 + (Math.random()*30-15)) + 'px';
+  pop.style.top = (eyeRect.top + 20) + 'px';
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1100);
+  // hp bar update
+  document.getElementById('hpFill').style.width = (state.hpLeft/cfg.totalHP*100) + '%';
+  document.getElementById('hpText').textContent = state.hpLeft + ' / ' + cfg.totalHP;
+  if (state.phaseHp <= 0) nextPhase();
+}
+
+/* ==================== PROJECTILE (us → boss) ==================== */
+function spawnProjectile(fromBtn, crit, onHit) {
+  const fromRect = fromBtn.getBoundingClientRect();
+  const eye = document.getElementById('bossEye');
+  const toRect = eye.getBoundingClientRect();
+  const startX = fromRect.left + fromRect.width/2;
+  const startY = fromRect.top + fromRect.height/2;
+  const endX = toRect.left + toRect.width/2;
+  const endY = toRect.top + toRect.height/2;
+  const proj = document.createElement('div');
+  proj.className = 'projectile' + (crit ? ' crit' : '');
+  proj.style.left = (startX - 9) + 'px';
+  proj.style.top  = (startY - 9) + 'px';
+  document.body.appendChild(proj);
+  const dur = 380;
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    const t = Math.min(1, (Date.now() - t0) / dur);
+    const ease = t * (2 - t);
+    const x = startX + (endX - startX) * ease;
+    const y = startY + (endY - startY) * ease - Math.sin(ease * Math.PI) * 60;
+    proj.style.left = (x - 9) + 'px';
+    proj.style.top  = (y - 9) + 'px';
+    if (Math.random() < 0.6) {
+      const tr = document.createElement('div');
+      tr.className = 'projectile-trail';
+      tr.style.left = (x - 3) + 'px';
+      tr.style.top  = (y - 3) + 'px';
+      if (crit) tr.style.background = '#ffd700';
+      document.body.appendChild(tr);
+      setTimeout(() => tr.remove(), 420);
+    }
+    if (t >= 1) {
+      clearInterval(timer);
+      proj.remove();
+      onHit && onHit();
+    }
+  }, 16);
+}
+
+/* ==================== NEXT PHASE ==================== */
+function nextPhase() {
+  if (state.phase >= 2) { victory(); return; }
+  state.phase++;
+  state.phaseHp = cfg.phases[state.phase].hp;
+  state.chargeStart = Date.now();
+  state.qIdx = 0;
+  showPhaseIntro();
+}
+
+function showPhaseIntro() {
+  const ph = cfg.phases[state.phase];
+  const overlay = document.createElement('div');
+  overlay.className = 'phase-intro';
+  overlay.innerHTML = `
+    <div class="card">
+      <h1>PHASE ${state.phase+1} / 3</h1>
+      <h2>${ph.name}</h2>
+      <div class="claim">VOID: "${ph.voidClaim}"</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.classList.add('out'), 1400);
+  setTimeout(() => overlay.remove(), 1900);
+  setTimeout(() => renderAll(), 200);
+}
+
+/* ==================== VH CHARGE TIMER ==================== */
+function tickCharge() {
+  if (state.finished) return;
+  const elapsed = (Date.now() - state.chargeStart) / 1000;
+  const pct = Math.min(100, (elapsed / state.chargeSec) * 100);
+  // charge arc
+  document.getElementById('chargeArc').style.background =
+    'conic-gradient(from -90deg, #ff5c7a 0%, #ff5c7a ' + pct + '%, transparent ' + pct + '%)';
+  // danger glow at >75%
+  const eye = document.getElementById('bossEye');
+  const lbl = document.getElementById('chargeLbl');
+  if (pct >= 75) {
+    eye.classList.add('danger');
+    lbl.classList.add('danger');
+    lbl.textContent = '⚠ VOIDHUNTER กำลังจะยิง!';
+  } else {
+    eye.classList.remove('danger');
+    lbl.classList.remove('danger');
+    lbl.textContent = '⚡ ชาร์จยิง... ' + Math.floor(pct) + '%';
+  }
+  if (pct >= 100) vhShoot();
+}
+
+function vhShoot() {
+  state.chargeStart = Date.now();
+  const owned = ShopItems.load();
+  if (owned.shieldPlus && owned.shieldPlus.uses > 0) {
+    ShopItems.use('shieldPlus');
+    showFeedback('crit', '🛡️ SHIELD BLOCKED!');
+    document.body.classList.add('flash-red');
+    setTimeout(() => document.body.classList.remove('flash-red'), 300);
+    renderBoosts();
+    return;
+  }
+  // beam from boss eye to energy stat
+  spawnBeam();
+  loseEnergy(cfg.vhDamage, '💥 VOIDHUNTER ยิงเรา! ⚡ −' + cfg.vhDamage, true);
+  VoidHunter.change(-cfg.vhMeterPenalty, 'vh-shoot');
+  document.body.classList.add('shake', 'flash-red');
+  setTimeout(() => document.body.classList.remove('shake', 'flash-red'), 350);
+  document.getElementById('bossEye').classList.remove('danger');
+}
+
+function spawnBeam() {
+  const eye = document.getElementById('bossEye');
+  const target = document.getElementById('energyVal').parentElement;
+  const a = eye.getBoundingClientRect();
+  const b = target.getBoundingClientRect();
+  const x1 = a.left + a.width/2, y1 = a.top + a.height/2;
+  const x2 = b.left + b.width/2, y2 = b.top + b.height/2;
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.sqrt(dx*dx + dy*dy);
+  const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+  const beam = document.createElement('div');
+  beam.className = 'beam-fx';
+  beam.style.left = x1 + 'px';
+  beam.style.top  = y1 + 'px';
+  beam.style.width = len + 'px';
+  beam.style.transform = 'rotate(' + ang + 'deg)';
+  document.body.appendChild(beam);
+  setTimeout(() => beam.remove(), 500);
+}
+
+/* ==================== ENERGY ==================== */
+function loseEnergy(amount, feedbackText, isHit) {
+  state.energy = Math.max(0, state.energy - amount);
+  if (feedbackText) showFeedback(isHit ? 'miss' : 'hit', feedbackText);
+  const valEl = document.getElementById('energyVal');
+  valEl.classList.remove('flash'); void valEl.offsetWidth; valEl.classList.add('flash');
+  // floating −X near energy
+  const stat = valEl.parentElement.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'dmg-pop';
+  pop.textContent = '−' + amount;
+  pop.style.left = (stat.left + stat.width/2 - 20) + 'px';
+  pop.style.top = (stat.top + 6) + 'px';
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1100);
+  // update fill bar
+  document.getElementById('energyFill').style.width = Math.max(0, Math.min(100, state.energy / state.energyMax * 100)) + '%';
+  valEl.textContent = state.energy;
+  valEl.className = 'val flash' + (state.energy < 80 ? ' danger' : '');
+  // Top sticky energy HUD update + flash
+  const ehFill = document.getElementById('ehFill');
+  const ehVal  = document.getElementById('ehVal');
+  if (ehFill) ehFill.style.width = Math.max(0, Math.min(100, state.energy / state.energyMax * 100)) + '%';
+  if (ehVal)  ehVal.textContent  = state.energy;
+  const ehText = document.querySelector('.eh-text');
+  if (ehText) {
+    ehText.classList.toggle('danger', state.energy < 80);
+    ehText.classList.remove('flash'); void ehText.offsetWidth; ehText.classList.add('flash');
+  }
+  // Floating −X near the top energy bar too
+  const ehBar = document.querySelector('.eh-bar');
+  if (ehBar) {
+    const r = ehBar.getBoundingClientRect();
+    const pop2 = document.createElement('div');
+    pop2.className = 'dmg-pop';
+    pop2.textContent = '−' + amount;
+    pop2.style.left = (r.right - 60) + 'px';
+    pop2.style.top  = (r.top - 6) + 'px';
+    pop2.style.fontSize = '20px';
+    document.body.appendChild(pop2);
+    setTimeout(() => pop2.remove(), 1100);
+  }
+  if (state.energy <= 0 && !state.finished) {
+    state.finished = true;
+    showFeedback('miss', '⚡ ENERGY HMOD · ระบบดับ');
+    Sync.recordDecision({ tag:'🎬 ending', note:'D · energy depleted' });
+    showEndingGate('D');
+  }
+}
+
+/* ==================== SUPERNOVA COUNTDOWN ==================== */
+function tickSupernova() {
+  if (state.finished) return;
+  const remain = Math.max(0, state.svTotal - Math.floor((Date.now() - state.svStart)/1000));
+  const m = Math.floor(remain/60), s = remain%60;
+  const el = document.getElementById('svTimer');
+  el.textContent = m + ':' + String(s).padStart(2,'0');
+  el.className = 'supernova-timer' + (remain <= 30 ? ' warn' : '');
+  if (remain <= 0) supernovaFail();
+}
+
+function supernovaFail() {
+  if (state.finished) return;
+  state.finished = true;
+  showFeedback('miss', '💥💥 SUPERNOVA · ช้าเกินไป · Ending C');
+  Sync.recordDecision({ tag:'🎬 ending', note:'C · supernova before victory' });
+  showEndingGate('C');
+}
+
+/* ==================== BOOSTS ==================== */
+function toggleBoost(id) {
+  state.armedBoost = state.armedBoost === id ? null : id;
+  renderBoosts();
+  showFeedback('hit', '🎯 Boost armed: ' + id + ' · ตอบข้อถัดไปจะ ×2');
+}
+
+/* ==================== VICTORY → ENDING GATE ==================== */
+function victory() {
+  state.finished = true;
+  showFeedback('crit', '🌟 VOIDHUNTER DOWN · เหลือ beacon choice!');
+  Sync.recordDecision({ tag:'⚔️ boss', note:'VOIDHUNTER defeated · energy='+state.energy });
+  showEndingGate('live');
+}
+
+function showEndingGate(mode) {
+  const owned = ShopItems.load();
+  const beaconCost = owned.beaconAmp ? 200 : 300;
+  const canSend = Photon.get() >= beaconCost;
+  const hasShield = owned.shieldPlus && owned.shieldPlus.uses > 0;
+  let title, body;
+  if (mode === 'C') {
+    title = 'SUPERNOVA';
+    body = '<div style="color:#ff5c7a;">ดาวระเบิดก่อนคุณชนะ · ยังส่ง beacon ได้ไหม?</div>';
+  } else if (mode === 'D') {
+    title = 'ENERGY DEPLETED';
+    body = '<div style="color:#ff5c7a;">⚡ หมด · ระบบ life support ดับ</div>';
+  } else {
+    title = 'FINAL CHOICE';
+    body = 'VOIDHUNTER หยุด · ดาวจะระเบิดใน <b>' + Math.max(0, state.svTotal - Math.floor((Date.now()-state.svStart)/1000)) + ' วิ</b>';
+  }
+  document.getElementById('endingGate').innerHTML = `
+    <div class="ending-gate">
+      <h2>💫 ${title}</h2>
+      <div style="color:#c8cde0;line-height:1.7;">${body}</div>
+      <div style="margin:14px 0;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;">
+        💌 Beacon cost: <b style="color:#ffcb6b;">${beaconCost}✦</b> · คุณมี: <b style="color:${canSend?'#7effb2':'#ff5c7a'};">${Photon.get()}✦</b>
+      </div>
+      <div class="opts">
+        <button class="send" onclick="endWith('A')" ${canSend?'':'disabled'}>ส่ง BEACON (Ending ${hasShield?'A+':'A'})</button>
+        <button class="skip" onclick="endWith('B')">ไม่ส่ง · หนี (Ending B)</button>
+      </div>
+    </div>
+  `;
+}
+
+function endWith(code) {
+  const final = code === 'A' && ShopItems.load().shieldPlus ? 'A+' : code;
+  Sync.recordDecision({ tag:'🎬 ending', note: final });
+  if (code === 'A') Photon.spend(ShopItems.load().beaconAmp ? 200 : 300, 'beacon');
+  state.ending = final;
+  document.getElementById('endingGate').innerHTML = `
+    <div class="ending-gate" style="border-color:${final==='A+'?'#7effb2':final==='A'?'#ffcb6b':'#64d8ff'};">
+      <h2>🎬 ENDING ${final}</h2>
+      <div style="color:#c8cde0;line-height:1.8;">${endingText(final)}</div>
+    </div>
+  `;
+  // Show reward box modal · finishWrap จะปรากฏหลังปิด box
+  setTimeout(() => showRewardBox(), 800);
+}
+
+/* ==================== REWARD BOX ==================== */
+function computeWrongCount() {
+  return state.log.filter(l => !l.correct).length;
+}
+
+function rewardTier(wrong) {
+  if (wrong === 0) return { tier:1, slots:3, label:'PERFECT · เต็มที่!', cls:'t1',
+    coin:[40, 70], energy:[60, 100], itemPool:'all' };
+  if (wrong <= 3) return { tier:2, slots:2, label:'GOOD · ลดจำนวน', cls:'t2',
+    coin:[15, 35], energy:[25, 55], itemPool:'all' };
+  return { tier:3, slots:1, label:'PASS · 1 ชิ้น', cls:'t3',
+    coin:[10, 20], energy:[15, 30], itemPool:'cheap' };
+}
+
+function rollReward(tier) {
+  const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  // Pick which slot types to roll
+  const allSlots = ['coin','energy','item'];
+  // Shuffle copy
+  const pool = [...allSlots].sort(() => Math.random()-0.5);
+  const picked = pool.slice(0, tier.slots);
+  const rewards = [];
+  picked.forEach(type => {
+    if (type === 'coin') {
+      rewards.push({ type, icon:'🪙', name:'COIN', value:rand(tier.coin[0], tier.coin[1]), desc:'เงินสำหรับ EP ต่อไป' });
+    } else if (type === 'energy') {
+      rewards.push({ type, icon:'⚡', name:'PHOTON', value:rand(tier.energy[0], tier.energy[1]), desc:'พลังงาน · ใช้ส่ง beacon' });
+    } else if (type === 'item') {
+      const items = (EP_CONFIG.shop && EP_CONFIG.shop.items) || [];
+      const pool = tier.itemPool === 'cheap' ? items.filter(it => it.cost <= 60) : items;
+      const it = pool[rand(0, pool.length-1)] || items[0];
+      rewards.push({ type, icon:it ? it.icon : '🎁', name:'ITEM', value:it ? it.name : '???', itemId:it && it.id, desc:it ? it.desc : '' });
+    }
+  });
+  return rewards;
+}
+
+function applyRewards(rewards) {
+  rewards.forEach(r => {
+    if (r.type === 'coin' && typeof Coin !== 'undefined') Coin.add(r.value, 'warprun-reward');
+    else if (r.type === 'energy' && typeof Photon !== 'undefined') Photon.add(r.value, 'warprun-reward');
+    else if (r.type === 'item' && r.itemId && typeof ShopItems !== 'undefined' && ShopItems.grant) {
+      ShopItems.grant(r.itemId);
+    } else if (r.type === 'item' && r.itemId) {
+      // Fallback: add to localStorage if no grant API
+      try {
+        const owned = ShopItems.load();
+        if (!owned[r.itemId]) owned[r.itemId] = { uses: 1 };
+        else owned[r.itemId].uses = (owned[r.itemId].uses || 0) + 1;
+        localStorage.setItem('cosmosLog_ep03_shopItems', JSON.stringify(owned));
+      } catch {}
+    }
+  });
+}
+
+function showRewardBox() {
+  const wrong = computeWrongCount();
+  const total = state.log.length;
+  const tier = rewardTier(wrong);
+  const rewards = rollReward(tier);
+  state.rewards = rewards;
+  state.rewardTier = tier.tier;
+
+  const overlay = document.createElement('div');
+  overlay.className = 'reward-modal';
+  overlay.id = 'rewardModal';
+  overlay.innerHTML = `
+    <div class="reward-card">
+      <h2>🎁 MYSTERY BOX</h2>
+      <div class="tier-tag ${tier.cls}">TIER ${tier.tier} · ${tier.label}</div>
+      <div class="reward-stats-line">ตอบทั้งหมด <b>${total}</b> ข้อ · ผิด <b style="color:${wrong===0?'#7effb2':wrong<=3?'#ffcb6b':'#ff8fa5'};">${wrong}</b> ข้อ → ได้ <b>${tier.slots}</b> ชิ้น</div>
+      <div class="mystery-box" id="mysteryBox" title="คลิกเปิด!">📦</div>
+      <div style="font-size:12px;color:#9aa3c0;" id="boxHint">▼ คลิกกล่องเพื่อเปิด ▼</div>
+      <div class="reward-slots" id="rewardSlots"></div>
+      <button class="reward-close" id="rewardClose" disabled onclick="closeRewardBox()">ปิด · ดู ending</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  document.getElementById('mysteryBox').onclick = () => openMysteryBox(rewards);
+}
+
+function openMysteryBox(rewards) {
+  const box = document.getElementById('mysteryBox');
+  if (box.classList.contains('opened')) return;
+  box.classList.add('opened');
+  document.getElementById('boxHint').style.display = 'none';
+  // Apply rewards (so persist immediately)
+  applyRewards(rewards);
+  // Reveal slots one by one
+  const host = document.getElementById('rewardSlots');
+  rewards.forEach((r, i) => {
+    setTimeout(() => {
+      const slot = document.createElement('div');
+      slot.className = 'reward-slot ' + r.type;
+      slot.innerHTML = `
+        <div class="ricon">${r.icon}</div>
+        <div style="text-align:left;flex:1;">
+          <div class="rname">${r.name}</div>
+          <div class="rval">${r.type === 'item' ? r.value : '+' + r.value}</div>
+          ${r.desc ? '<div class="rdesc">'+r.desc+'</div>' : ''}
+        </div>
+      `;
+      host.appendChild(slot);
+      // trigger animation
+      void slot.offsetWidth;
+      slot.classList.add('show');
+    }, 300 + i * 500);
+  });
+  // Enable close button after all slots revealed
+  setTimeout(() => {
+    document.getElementById('rewardClose').disabled = false;
+  }, 300 + rewards.length * 500 + 200);
+}
+
+function closeRewardBox() {
+  const m = document.getElementById('rewardModal');
+  if (m) m.remove();
+  document.getElementById('finishWrap').style.display = 'block';
+}
+
+function endingText(code) {
+  if (code === 'A+') return '🌟 ส่ง beacon + shield ซับ supernova · เสียงพ่อตอบ 20 วิ · <b>Arya arc resolve · เต็มสูง</b>';
+  if (code === 'A')  return '💌 ส่ง beacon · เสียงพ่อตอบ 10 วิ · <b>Arya arc resolve</b>';
+  if (code === 'B')  return '🌑 ไม่ส่ง · รอดไว · <b>Arya เงียบ · ค้าง EP08</b>';
+  return '💥 ดาวระเบิดก่อน · ไม่ทันส่ง · Arya ร้องไห้';
+}
+
+/* ==================== FEEDBACK ==================== */
+function showFeedback(cls, msg) {
+  const el = document.getElementById('feedback');
+  el.className = 'feedback ' + cls;
+  el.textContent = msg;
+  clearTimeout(window._fbT);
+  window._fbT = setTimeout(() => { el.textContent = ''; el.className = 'feedback'; }, 1700);
+}
+
+/* ==================== SUBMIT + NEXT ==================== */
+function submitResults() {
+  const payload = {
+    page: 'warprun',
+    ending: state.ending,
+    hpLeft: state.hpLeft,
+    energy: state.energy,
+    log: state.log,
+    wrongCount: computeWrongCount(),
+    rewards: state.rewards || [],
+    rewardTier: state.rewardTier || null,
+    at: Date.now(),
+  };
+  try { localStorage.setItem('cosmosLog_ep03_warprun', JSON.stringify(payload)); } catch {}
+  Sync.recordDecision({ tag:'💾 warprun', note:'submit ending='+state.ending });
+  document.getElementById('submitBtn').classList.add('done');
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = '✓ ส่งแล้ว';
+  Gate.markSubmitted();
+  showFeedback('hit', '✓ ส่งผลเข้าฐานข้อมูล');
+}
+
+function goNext() {
+  location.href = 'p19b-journal.html';
+}
+
+/* ==================== PACE WATCH ==================== */
+function watchGate() {
+  const nb = document.getElementById('nextBtn');
+  if (!nb) return;
+  Gate.wireButton('p18', nb, 'p19b-journal.html', { requireSubmit: true });
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined') Transition.wireNext(nb, 'p18-to-p19b', 'p19b-journal.html');
+  }, 100);
+}
+
+/* ==================== INIT ==================== */
+setTimeout(() => {
+  if (Photon.get() === 0) Photon.add(240, 'warprun-init');
+  renderAll();
+  state.chargeStart = Date.now();
+  state.svStart = Date.now();
+  setInterval(tickCharge, 100);
+  setInterval(tickSupernova, 500);
+  watchGate();
+  // Phase 1 intro
+  showPhaseIntro();
+}, 150);
+</script>
+
+</body>
+</html>

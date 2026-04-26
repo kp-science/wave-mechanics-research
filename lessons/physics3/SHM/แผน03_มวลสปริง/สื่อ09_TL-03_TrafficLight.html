@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>TL-03 Traffic Light Goals · SHM แผน 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#ea580c;box-shadow:0 0 0 3px rgba(234,88,12,.15)}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfffd}
+.item .no{display:inline-block;background:#ea580c;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px;background:#fde68a;color:#78350f}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#9a3412}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #fdba74}
+.sub b{color:#9a3412}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:4px;background:#fffbf5}
+.ans-ta:focus{outline:none;border-color:#ea580c}
+select.ans-in{border:1.5px solid #fdba74;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;min-width:160px}
+/* Traffic light card */
+.tl-card{border:2px solid #e2e8f0;border-radius:10px;padding:12px 16px;margin:8px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:14px;transition:border-color .2s,background .2s}
+.tl-card.sel-green{border-color:#16a34a;background:#f0fdf4}
+.tl-card.sel-yellow{border-color:#ca8a04;background:#fefce8}
+.tl-card.sel-red{border-color:#dc2626;background:#fef2f2}
+.tl-info{flex:1}
+.tl-code{font-size:.78rem;font-weight:700;color:#ea580c;margin-bottom:2px}
+.tl-desc{font-size:.9rem;font-weight:600;color:#1a202c;line-height:1.5}
+.tl-sub{font-size:.8rem;color:#78350f;margin-top:2px}
+.tl-btns{display:flex;gap:7px;flex-shrink:0;margin-top:2px}
+.tl-btn{width:34px;height:34px;border-radius:50%;border:2.5px solid transparent;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;transition:transform .12s,box-shadow .12s;background:transparent}
+.tl-btn:hover{transform:scale(1.12)}
+.tl-btn.g{background:#16a34a;border-color:#14532d;color:#fff}
+.tl-btn.y{background:#ca8a04;border-color:#713f12;color:#fff}
+.tl-btn.r{background:#dc2626;border-color:#7f1d1d;color:#fff}
+.tl-btn.ring{box-shadow:0 0 0 3px #1a202c}
+.tl-note{margin-top:8px;display:none}
+.tl-note textarea{width:100%;border:1.5px solid #fdba74;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:13px;background:#fffbf5;resize:vertical}
+/* Summary bar */
+.sum-bar{display:flex;gap:16px;background:#fff7ed;border:2px solid #fdba74;border-radius:10px;padding:14px 18px;margin:12px 0;flex-wrap:wrap;align-items:center}
+.sum-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;color:#fff;flex-shrink:0}
+.sum-label{font-size:.78rem;color:#78350f;text-align:center;margin-top:2px}
+.sum-item{text-align:center}
+/* Goal plan */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:700px){.plan-grid{grid-template-columns:1fr}}
+.plan-card{background:#fff7ed;border:2px solid #fdba74;border-radius:9px;padding:11px 14px}
+.plan-card .lv{font-size:.8rem;font-weight:700;color:#ea580c;margin-bottom:3px}
+/* Submit */
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+.sec-title{font-size:1rem;font-weight:700;color:#9a3412;margin:18px 0 8px;padding-bottom:4px;border-bottom:2px dashed #fdba74}
+</style></head>
+<body data-ws-id="shm-plan3-trafficlight">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🚦 TL-03 Traffic Light Goals · ระบบมวล-สปริง</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">ประเมินตนเอง</span> ก่อนและหลังเรียน · K3.1, K3.2, P3.1, P3.2, A3.1</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">🟢 เขียว / 🟡 เหลือง / 🔴 แดง</div>
+  </div>
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b></div>
+  <div class="info">
+    <b>วิธีใช้:</b> กดปุ่มสัญญาณไฟตามระดับความเข้าใจของคุณ<br>
+    <span style="color:#16a34a;font-weight:700">🟢 เขียว</span> = เข้าใจดี ทำได้แน่นอน &nbsp;|&nbsp;
+    <span style="color:#ca8a04;font-weight:700">🟡 เหลือง</span> = เข้าใจบางส่วน ยังไม่แน่ใจ &nbsp;|&nbsp;
+    <span style="color:#dc2626;font-weight:700">🔴 แดง</span> = ยังไม่เข้าใจ ต้องการความช่วยเหลือ
+  </div>
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="exForm">
+
+  <!-- PRE -->
+  <div class="item">
+    <div><span class="no">ก่อนเรียน</span> <span class="skill">Pre-assessment</span></div>
+    <div class="stem">ประเมินระดับความเข้าใจก่อนเรียน · กดปุ่มสัญญาณไฟแต่ละตัวบ่งชี้</div>
+    <div id="preGrid"></div>
+  </div>
+
+  <!-- Summary -->
+  <div class="sum-bar" id="sumBar">
+    <div class="sum-item"><div class="sum-dot" style="background:#16a34a" id="cntG">0</div><div class="sum-label">เขียว</div></div>
+    <div class="sum-item"><div class="sum-dot" style="background:#ca8a04" id="cntY">0</div><div class="sum-label">เหลือง</div></div>
+    <div class="sum-item"><div class="sum-dot" style="background:#dc2626" id="cntR">0</div><div class="sum-label">แดง</div></div>
+    <div style="flex:1;font-size:.88rem;color:#78350f"><b>สรุป:</b> ตัวบ่งชี้สีแดงและเหลือง = จุดที่ต้องพัฒนาในแผนถัดไป</div>
+  </div>
+
+  <!-- POST -->
+  <div class="item">
+    <div><span class="no">หลังเรียน</span> <span class="skill">Post-assessment</span></div>
+    <div class="stem">ประเมินระดับความเข้าใจหลังเรียน · กดปุ่มสัญญาณไฟอีกครั้ง</div>
+    <div id="postGrid"></div>
+  </div>
+
+  <!-- Goal plan -->
+  <div class="item">
+    <div><span class="no">เป้าหมาย</span> <span class="skill">แผนการพัฒนา</span></div>
+    <div class="stem">เขียนสิ่งที่จะทำเพื่อพัฒนาตัวบ่งชี้ที่ยังเป็นสีเหลือง/แดง</div>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="lv">🟡 สิ่งที่จะทบทวน</div>
+        <textarea class="ans-ta" id="planYellow" rows="4" placeholder="เช่น จะฝึกคำนวณ k_eff อนุกรมเพิ่มอีก 5 ข้อ..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="lv">🔴 ขอความช่วยเหลือเรื่อง</div>
+        <textarea class="ans-ta" id="planRed" rows="4" placeholder="เช่น ขอให้อาจารย์อธิบาย M3.2 เพิ่มเติม..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="lv">🟢 จุดแข็งที่จะต่อยอด</div>
+        <textarea class="ans-ta" id="planGreen" rows="4" placeholder="เช่น ใช้ความเข้าใจ F=−kx ช่วยอธิบายเพื่อน..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="lv">📅 เป้าหมายภายใน</div>
+        <select class="ans-in" id="deadline" style="width:100%">
+          <option value="">-- เลือกกรอบเวลา --</option>
+          <option>ก่อนสอบครั้งต่อไป</option><option>ภายในสัปดาห์นี้</option>
+          <option>ภายใน 2 สัปดาห์</option><option>ก่อนสิ้นภาคเรียน</option>
+        </select>
+      </div>
+    </div>
+    <div class="sub" style="margin-top:10px"><b>บันทึกเพิ่มเติม / ความรู้สึกหลังเรียน:</b></div>
+    <textarea class="ans-ta" id="note" rows="3" placeholder="ข้อสังเกต คำถาม หรือความรู้สึก..."></textarea>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ ประเมินครบแล้ว กดส่ง</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งการประเมิน</button>
+    <div class="status" id="status"></div>
+  </div>
+  </form>
+  <div class="foot">TL-03 Traffic Light Goals · SHM แผน 3 · 2569</div>
+</div>
+
+<script>
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='TL3_SHM_Plan3';
+
+const OBJECTIVES=[
+  {code:'K3.1a',desc:'อธิบายแรงคืนรูป F = −kx และความหมายของ k',sub:'กฎฮุก · ค่าคงที่สปริง'},
+  {code:'K3.1b',desc:'คำนวณคาบ T = 2π√(m/k) จากค่า m และ k ที่กำหนด',sub:'แทนค่าสูตรได้ถูกต้อง'},
+  {code:'K3.1c',desc:'อธิบาย T ∝ √m และ T ∝ 1/√k · ระบุตัวแปรที่ส่งผล/ไม่ส่งผล',sub:'isochronism · A ไม่ส่งผล'},
+  {code:'K3.2a',desc:'คำนวณ k_eff สปริงอนุกรม: 1/k_eff = Σ(1/kᵢ)',sub:'k_eff อนุกรม &lt; k แต่ละตัว'},
+  {code:'K3.2b',desc:'คำนวณ k_eff สปริงขนาน: k_eff = Σkᵢ',sub:'k_eff ขนาน &gt; k แต่ละตัว'},
+  {code:'K3.2c',desc:'เปรียบเทียบ T เมื่อเปลี่ยนการต่อสปริง (อนุกรม vs ขนาน)',sub:'k_eff ต่างกัน → T ต่างกัน'},
+  {code:'P3.1',desc:'วาดกราฟ F–x และหา k จาก slope',sub:'กราฟเส้นตรงผ่านจุดกำเนิด'},
+  {code:'P3.2',desc:'แก้ปัญหา SHM แนวดิ่ง: หา x₀ = mg/k แล้วหา T',sub:'g ไม่ส่งผลต่อ T'},
+  {code:'A3.1',desc:'ระบุ misconception M3.1–M3.4 และอธิบายที่ถูกต้อง',sub:'T≠f(A), k_eff อนุกรม&lt;k, g ไม่ส่งผล, T∝√m'},
+];
+
+const preState={}, postState={};
+
+function buildGrid(containerId, stateObj, prefix){
+  const container=document.getElementById(containerId);
+  OBJECTIVES.forEach((obj,i)=>{
+    const id=`${prefix}_${i}`;stateObj[id]='';
+    const card=document.createElement('div');card.className='tl-card';card.id=`card_${id}`;
+    card.innerHTML=`<div class="tl-info"><div class="tl-code">${obj.code}</div><div class="tl-desc">${obj.desc}</div><div class="tl-sub">${obj.sub}</div></div>
+      <div class="tl-btns">
+        <button type="button" class="tl-btn g" onclick="setTL('${id}','green',this)" title="เขียว">🟢</button>
+        <button type="button" class="tl-btn y" onclick="setTL('${id}','yellow',this)" title="เหลือง">🟡</button>
+        <button type="button" class="tl-btn r" onclick="setTL('${id}','red',this)" title="แดง">🔴</button>
+      </div>
+      <div class="tl-note" id="note_${id}"><textarea placeholder="บันทึกเพิ่มเติม..." rows="2"></textarea></div>`;
+    // Note: tl-card needs to be grid, fix layout
+    card.style.display='flex';card.style.flexWrap='wrap';
+    container.appendChild(card);
+  });
+}
+
+function setTL(id,color,btn){
+  const sObj=id.startsWith('pre_')?preState:postState;sObj[id]=color;
+  const card=document.getElementById(`card_${id}`);
+  card.classList.remove('sel-green','sel-yellow','sel-red');card.classList.add(`sel-${color}`);
+  card.querySelectorAll('.tl-btn').forEach(b=>b.classList.remove('ring'));btn.classList.add('ring');
+  const noteEl=document.getElementById(`note_${id}`);noteEl.style.display=(color==='yellow'||color==='red')?'block':'none';
+  if(id.startsWith('pre_'))updateSummary();
+}
+
+function updateSummary(){
+  const vals=Object.values(preState);
+  document.getElementById('cntG').textContent=vals.filter(v=>v==='green').length;
+  document.getElementById('cntY').textContent=vals.filter(v=>v==='yellow').length;
+  document.getElementById('cntR').textContent=vals.filter(v=>v==='red').length;
+}
+
+function collectNotes(prefix,stateObj){
+  const out={};
+  OBJECTIVES.forEach((_,i)=>{const id=`${prefix}_${i}`;const ta=document.querySelector(`#note_${id} textarea`);out[id]={color:stateObj[id]||'',note:ta?.value||''};});
+  return out;
+}
+
+function collectAnswers(){
+  return{pre:collectNotes('pre',preState),post:collectNotes('post',postState),planYellow:document.getElementById('planYellow').value,planRed:document.getElementById('planRed').value,planGreen:document.getElementById('planGreen').value,deadline:document.getElementById('deadline').value,note:document.getElementById('note').value};
+}
+
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้องก่อน';return;}
+  const payload={plan:'SHM-3',type:'TrafficLight',student_name:name,student_no:Number(no),class:cls,test_date:document.getElementById('test_date').value,...collectAnswers()};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'){status.className='status error';status.innerHTML='⚠️ ยังไม่ได้ตั้งค่า API · <a href="#" onclick="dlJSON();return false;" style="color:#9a3412">Download JSON</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ ส่งสำเร็จ! 🎉';btn.textContent='✅ ส่งแล้ว';}
+  catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function dlJSON(){if(!window._lastPayload)return;const b=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`TL3_${window._lastPayload.student_name}.json`;a.click();}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  buildGrid('preGrid',preState,'pre');buildGrid('postGrid',postState,'post');
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE')document.getElementById('configWarn').classList.add('show');
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,202 @@
+<!-- Reflection Page Template (post-test + 3-2-1 journal)
+     Use for: p19-map.html (post-test + badge), p19b-journal.html (final reflection)
+     Reference: lessons/astronomy/ep03/p19-map.html, p19b-journal.html
+-->
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP<NN> · Post-test + Badge</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background: #04050d; }
+
+  /* Cert / Badge */
+  .cert { padding:26px; background:radial-gradient(ellipse at center, rgba(255,203,107,0.12), #0a0420);
+    border:3px solid #ffcb6b; border-radius:16px; text-align:center; margin:14px 0; }
+  .cert .badge { font-size:72px; filter:drop-shadow(0 0 24px rgba(255,203,107,0.5)); }
+  .cert h2 { font-family:Orbitron,sans-serif; color:#ffcb6b; font-size:24px; letter-spacing:0.15em; margin:10px 0; }
+
+  /* Captain's log textareas */
+  .log-field { width:100%; min-height:70px; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #444;
+    color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:14px; box-sizing:border-box; resize:vertical; margin:6px 0; }
+  .log-field:focus { border-color:#64d8ff; outline:none; }
+
+  /* Misconception tag */
+  .mtag { padding:1px 8px; font-size:10px; border-radius:10px; background:rgba(255,92,122,0.1); color:#ff8fa5;
+    border:1px solid rgba(255,92,122,0.3); font-family:Orbitron,sans-serif; letter-spacing:0.1em; }
+
+  /* CRI buttons */
+  .cri-row { display:flex; gap:6px; margin-top:10px; padding:8px; background:rgba(0,0,0,0.25);
+    border-radius:8px; border:1px dashed rgba(212,184,255,0.4); }
+  .cri-label { font-size:11px; color:#d4b8ff; letter-spacing:0.12em; font-family:Orbitron,sans-serif;
+    align-self:center; margin-right:4px; }
+  .cri-btn { flex:1; padding:8px; background:rgba(212,184,255,0.06); border:1px solid rgba(212,184,255,0.3);
+    color:#c8cde0; border-radius:6px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .cri-btn.on { background:rgba(212,184,255,0.2); border-color:#d4b8ff; color:#fff; }
+
+  /* Misconception breakdown grid (in cert) */
+  .mgrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:14px 0; }
+  @media(max-width:540px) { .mgrid { grid-template-columns:1fr; } }
+  .mcell { padding:10px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; border-radius:10px;
+    text-align:left; font-size:12px; color:#c8cde0; }
+  .mcell b { color:#ffcb6b; font-family:Orbitron,sans-serif; letter-spacing:0.08em; }
+  .mcell .big { font-size:22px; color:#7effb2; font-family:Orbitron,monospace; display:block; margin-top:4px; }
+  .mcell .big.neg { color:#ff5c7a; }
+  .mcell .flag { font-size:11px; display:block; margin-top:4px; color:#9aa3c0; }
+  .mcell .flag.persist { color:#ff8fa5; }
+  .mcell .flag.resolved { color:#7effb2; }
+</style>
+</head>
+<body data-page="p19" data-type="reflection">
+<div class="page">
+  <div class="lbl">📝 END · TRANSFORMATION</div>
+  <h1>ปิดภารกิจ</h1>
+
+  <div class="card">
+    <h3>📝 Post-test · <N> ข้อ (คู่ขนานกับ Pre-test)</h3>
+    <div class="narrative" style="font-size:13px;margin:6px 0 10px;">
+      ข้อคล้าย pre-test แต่ตัวเลขต่างกัน · ตอบ + เลือก<b>ความมั่นใจ</b>ด้วยนะ
+    </div>
+    <div id="quiz"></div>
+    <div class="progress-line" id="progress" style="font-size:12px;color:#9aa3c0;text-align:center;margin:8px 0;">ตอบแล้ว 0 / <N></div>
+  </div>
+
+  <div class="card">
+    <h3>📜 Captain's Log · 2 ช่อง (คนเดียว · เขียนตามใจ)</h3>
+    <div>ถึง <NPC>:</div>
+    <textarea class="log-field" id="f1" placeholder="เขียนถึง..."></textarea>
+    <div>ฉันเปลี่ยนไปยังไงหลัง EP<NN>:</div>
+    <textarea class="log-field" id="f2" placeholder="ฉันรู้ว่า..."></textarea>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Post-test</summary>
+    <div class="body">
+      <b>ใช้ทำอะไร</b>: คำนวณ gain ต่อ misconception · ไม่ใช่แค่คะแนนรวม<br>
+      <b>อ่าน cert</b>: 🟢 = แก้ misconception ได้ · 🔴 = ยังติด<br>
+      <b>CRI matrix</b>:<br>
+      · ผิด + มั่นใจ → misconception ฝังลึก (สอนใหม่)<br>
+      · ผิด + ลังเล/เดา → ไม่รู้ (เติมความรู้พอ)<br>
+      · ถูก + ลังเล/เดา → ลัคกี้ (ต้องทบทวน)<br>
+      · ถูก + มั่นใจ → เข้าใจจริง<br>
+    </div>
+  </details>
+
+  <div class="cert" id="cert" style="display:none;">
+    <div class="badge">✨</div>
+    <h2><BADGE NAME></h2>
+    <div style="color:#c8cde0;font-size:14px;">EP<NN> · <SUBTITLE></div>
+    <div id="certBody" style="margin-top:10px;color:#9aa3c0;font-size:13px;"></div>
+    <div class="mgrid" id="mgrid"></div>
+    <div id="criBreakdown" style="text-align:left;color:#c8cde0;font-size:12px;margin-top:8px;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn" onclick="exportJSON()">💾 Export JSON</button>
+      <button class="btn" onclick="exportPNG()">📸 Certificate PNG</button>
+    </div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn">💾 ส่งผลทั้งหมด</button>
+    <button class="next-btn" id="nextBtn">▶ <next>...</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep<NN>-boot.js?v=2"></script>
+<script>
+// Post-test · parallel form to pre-test (p01)
+// Each Q has same M-code as p01's corresponding Q
+const QS = [
+  { id:'Q1', m:'M1', q:'<question 1 · same M-code as p01.Q1>',
+    a:['<choice A>', '<choice B>', '<choice C>'], c:0 },
+  { id:'Q2', m:'M1', q:'<question 2>', a:['...'], c:0 },
+  { id:'Q3', m:'M2', q:'<question 3>', a:['...'], c:0 },
+  // ...same number as pre-test
+];
+
+const CRI_LABELS = [
+  { v:1, t:'🎲 เดา' },
+  { v:2, t:'🤔 ลังเล' },
+  { v:3, t:'💡 แน่ใจ' },
+];
+
+const state = {}; // { Q1: {ans, cri} }
+
+function render() {
+  document.getElementById('quiz').innerHTML = QS.map((q,i)=>`
+    <div class="q-card" data-q="${q.id}">
+      <div><b>${i+1}.</b> ${q.q}</div>
+      <div style="display:flex;gap:6px;margin-top:6px;"><span class="mtag">${q.m}</span></div>
+      <div class="choice-row" data-i="${i}">
+        ${q.a.map((c,ci)=>`<button class="choice-btn" onclick="pickAns(${i},${ci})">${c}</button>`).join('')}
+      </div>
+      <div class="cri-row" data-cri="${i}">
+        <span class="cri-label">มั่นใจ?</span>
+        ${CRI_LABELS.map(l=>`<button class="cri-btn" onclick="pickCri(${i},${l.v})">${l.t}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+window.pickAns = (qi, ai) => { /* ... */ };
+window.pickCri = (qi, ci) => { /* ... */ };
+
+function computePost() {
+  const items = QS.map(q => ({
+    id: q.id, m: q.m, ans: state[q.id]?.ans, cri: state[q.id]?.cri,
+    correct: state[q.id]?.ans === q.c
+  }));
+  const correctCount = items.filter(x => x.correct).length;
+  const byM = {};
+  items.forEach(x => {
+    byM[x.m] = byM[x.m] || { pre:0, post:0, total:0 };
+    byM[x.m].total++;
+    if (x.correct) byM[x.m].post++;
+  });
+  // Compare with pre-test
+  const pre = Submit.load('p01') || {};
+  Object.keys(byM).forEach(m => {
+    byM[m].pre = pre.byMisconception?.[m]?.post || 0;
+    byM[m].gain = byM[m].post - byM[m].pre;
+    byM[m].resolved = byM[m].gain >= 1;
+  });
+  return { items, correctCount, byM };
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p19',
+    nextHref: '<next>.html',  // either shop.html OR p19b-journal.html depending on order
+    getPayload: () => {
+      const done = Object.values(state).filter(s => s.ans != null && s.cri != null).length;
+      if (done < QS.length) { alert(`ตอบ + ความมั่นใจครบ ${QS.length} ข้อก่อน`); throw new Error('incomplete'); }
+      const post = computePost();
+      const pre = Submit.load('p01') || {};
+      return {
+        tag: 'posttest',
+        items: post.items,
+        correct: post.correctCount,
+        total: QS.length,
+        byMisconception: post.byM,
+        pretest: pre,
+        log: { toFather: document.getElementById('f1').value, toSelf: document.getElementById('f2').value },
+        gain: post.correctCount - (pre.correct || 0),
+      };
+    },
+    onSubmit: () => {
+      const post = computePost();
+      // ... render cert with gain breakdown · M-code resolution flags ...
+      document.getElementById('cert').style.display = 'block';
+    },
+  });
+}, 200);
+
+render();
+</script>
+</body></html>

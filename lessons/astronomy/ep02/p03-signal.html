@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P03 · สัญญาณ VOID</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .radar {
+    position: relative;
+    width: 100%; max-width: 640px; aspect-ratio: 1;
+    margin: 20px auto;
+    background: radial-gradient(circle at 50% 50%, rgba(100,216,255,0.08), rgba(3,4,12,0.8));
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .radar::before, .radar::after {
+    content:''; position:absolute; inset:0; border-radius:50%;
+    border: 1px dashed rgba(100,216,255,0.15);
+  }
+  .radar::after { inset: 15%; }
+  .radar .crosshair {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(to right, transparent 49.5%, rgba(100,216,255,0.2) 49.5% 50.5%, transparent 50.5%),
+      linear-gradient(to bottom, transparent 49.5%, rgba(100,216,255,0.2) 49.5% 50.5%, transparent 50.5%);
+  }
+  .radar .dot {
+    position: absolute; width: 12px; height: 12px;
+    background: var(--accent-red);
+    border-radius: 50%;
+    transform: translate(-50%,-50%);
+    box-shadow: 0 0 12px var(--accent-red);
+    animation: radarPulse 1.5s infinite;
+  }
+  @keyframes radarPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .radar .sweep {
+    position: absolute; inset: 0;
+    background: conic-gradient(from 0deg, rgba(100,216,255,0.25), transparent 30%);
+    animation: sweep 4s linear infinite;
+    border-radius: 50%;
+  }
+  @keyframes sweep { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body data-page="p03" data-type="story">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label story">องก์ 1 · Scene 3 · INCITING INCIDENT</div>
+  <h1 class="page-title">สัญญาณที่ไม่ควรมี</h1>
+
+  <div class="narrative">
+    <p>🚨 สัญญาณเตือนดังขึ้นทั่วยาน · ไฟฉุกเฉินแดงวาบ · จอหลักปรากฏคลื่นประหลาดที่ไม่ใช่คลื่น CMB</p>
+    <span class="void-voice">"แผนที่ของพวกแกไม่มีบ้านฉัน · มาหาสิ ถ้ากล้า · ฉันฝาก 12 พิกัดไว้ให้เลือก"</span>
+  </div>
+
+  <div class="radar">
+    <div class="sweep"></div>
+    <div class="crosshair"></div>
+    <!-- 12 จุดสุ่มในรัศมี -->
+    <div class="dot" style="top:28%;left:35%"></div>
+    <div class="dot" style="top:42%;left:72%"></div>
+    <div class="dot" style="top:55%;left:58%"></div>
+    <div class="dot" style="top:18%;left:62%"></div>
+    <div class="dot" style="top:68%;left:30%"></div>
+    <div class="dot" style="top:78%;left:50%"></div>
+    <div class="dot" style="top:35%;left:20%"></div>
+    <div class="dot" style="top:50%;left:85%"></div>
+    <div class="dot" style="top:62%;left:75%"></div>
+    <div class="dot" style="top:72%;left:65%"></div>
+    <div class="dot" style="top:24%;left:80%"></div>
+    <div class="dot" style="top:45%;left:42%"></div>
+  </div>
+
+  <div class="narrative">
+    <p style="color:var(--text-dim)">🎙️ ครู: "12 จุดนี้ · ถ้าเราไม่ตัดให้เหลือน้อยลง · เราจะไปทันไหม?"</p>
+    <p>ทีมมองหน้ากัน · คำตอบเดียวคือ <b>ต้องคัด</b></p>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P03 · บทบาท: ผู้บรรยาย · นักแสดง VOID</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> อ่าน "แผนที่ของพวกแก..." ด้วยเสียงต่ำ · ช้า · ขู่<br>
+      <b>ระหว่าง:</b> ชี้ radar · "12 จุดนี้ต้องเลือก 1 · ถ้าพลาด VOID ชนะ"<br>
+      <b>ปิด (30 วิ):</b> "งั้น... เรามาจำแนกก่อน · ไปต่อ"<br>
+      <b>🖼️ ต้องเจน:</b> [IMG-P03] VOID hologram สีม่วงเข้ม + 12 radar dots sci-fi cockpit
+    </div>
+  </details>
+
+  <button class="finish-btn" onclick="finishPage()">⚠ รับภารกิจ · ไปต่อ</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); }, 50);
+  function finishPage() {
+    Book.completePage();
+    const btn = document.querySelector('.finish-btn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ รับภารกิจแล้ว';
+  }
+</script>
+
+</body>
+</html>

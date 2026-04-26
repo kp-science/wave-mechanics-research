@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exit Ticket + Gallery Walk — Damping & Resonance (SHM แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#7c3aed}
+.section-title{font-size:18px;font-weight:800;color:#4c1d95;margin:22px 0 10px;padding-left:12px;border-left:5px solid #7c3aed}
+.item{border:2px solid #ddd6fe;border-radius:12px;padding:16px 20px;margin:14px 0;background:#fdfcff}
+.item .no{display:inline-block;background:#7c3aed;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.stem{font-size:16px;margin:10px 0;font-weight:600;color:#2d3748;line-height:1.7}
+.sub{margin:10px 0 6px;padding-left:12px;border-left:3px solid #a78bfa;font-size:15px}
+.sub b{color:#4c1d95}
+.ans-ta{width:100%;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;margin-top:4px;min-height:80px}
+.ans-ta:focus{outline:none;border-color:#7c3aed}
+.ans-in{border:none;border-bottom:1.5px solid #a78bfa;padding:3px 8px;font-family:inherit;font-size:15px;width:120px;text-align:center;background:transparent}
+select.drop{border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer;min-width:160px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:15px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:640px){.checkbox-bank{grid-template-columns:1fr}.id-box{grid-template-columns:1fr 1fr}}
+/* Sticky notes */
+.sticky-area{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+@media(max-width:640px){.sticky-area{grid-template-columns:1fr}}
+.sticky{border-radius:10px;padding:14px;min-height:120px;display:flex;flex-direction:column;gap:8px}
+.sticky.green{background:#dcfce7;border-top:4px solid #16a34a}
+.sticky.yellow{background:#fef9c3;border-top:4px solid #ca8a04}
+.sticky.red{background:#fee2e2;border-top:4px solid #dc2626}
+.sticky h4{font-size:14px;font-weight:700}
+.sticky.green h4{color:#166534}
+.sticky.yellow h4{color:#854d0e}
+.sticky.red h4{color:#991b1b}
+.sticky textarea{flex:1;border:none;background:transparent;font-family:inherit;font-size:14px;resize:none;min-height:80px;padding:4px}
+.sticky textarea:focus{outline:none}
+/* Rating */
+.rating-bar{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+.r-chip{flex:1;min-width:80px;border-radius:10px;padding:10px;text-align:center;cursor:pointer;border:2px solid transparent;transition:all .15s;font-size:14px}
+.r-chip.g{background:#dcfce7;border-color:#86efac}
+.r-chip.y{background:#fef9c3;border-color:#fde047}
+.r-chip.r{background:#fee2e2;border-color:#fca5a5}
+.r-chip:has(input:checked){border-width:3px;transform:scale(1.05)}
+.r-chip.g:has(input:checked){border-color:#16a34a;background:#bbf7d0}
+.r-chip.y:has(input:checked){border-color:#ca8a04;background:#fef08a}
+.r-chip.r:has(input:checked){border-color:#dc2626;background:#fecaca}
+.r-chip input{display:none}
+.r-chip .emoji{font-size:24px}
+.r-chip .label{font-weight:700;font-size:13px}
+/* Gallery */
+.gallery-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+@media(max-width:640px){.gallery-grid{grid-template-columns:1fr}}
+.gallery-card{border:2px solid #ddd6fe;border-radius:12px;padding:14px;background:#fdfcff}
+.gallery-card h4{color:#4c1d95;font-size:14px;margin-bottom:8px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #7c3aed;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600}
+.c-btn.active{background:#7c3aed;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4c1d95}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f5f3ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.hint{font-size:13px;color:#6b7280;font-style:italic;margin-top:4px}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:18px 22px;margin:22px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:17px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:11px 28px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#f5f3ff}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎟️ Exit Ticket + 🖼️ Gallery Walk Feedback</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" style="background:#059669">ใบกิจกรรม 07</span> Exit Ticket 3 ข้อ + Gallery Walk · 6 นาที</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 บันทึกอัตโนมัติ</div>
+  </div>
+
+  <div class="info">🎯 <b>จุดประสงค์:</b> ตรวจสอบความเข้าใจสุดท้ายก่อนปิดคาบ · M6.1, M6.2, M6.3 · Gallery Walk feedback แก่เพื่อน</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <h2 class="section-title">🎟️ ส่วน 1 · Exit Ticket 3 ข้อ (3 นาที)</h2>
+
+  <!-- ET1: M6.1 -->
+  <div class="item">
+    <div><span class="no">ET ข้อ 1</span></div>
+    <div class="stem">Damping เปลี่ยนความถี่ (f) ของการสั่นหรือไม่? เพราะเหตุใด?</div>
+    <label class="opt"><input type="radio" name="et1" value="yes" required> ✅ เปลี่ยน — A ลดทำให้สั่นช้าลง f จึงลด</label>
+    <label class="opt"><input type="radio" name="et1" value="no"> ❌ ไม่เปลี่ยน (ที่ damping น้อย) — f ขึ้นกับ ω₀ = √(k/m) ไม่ใช่ A</label>
+    <label class="opt"><input type="radio" name="et1" value="depends"> ⚠️ ขึ้นกับ — ถ้า b ใหญ่มาก f จะเปลี่ยนได้บ้าง แต่ถ้า b เล็ก f ≈ คงที่</label>
+    <div class="sub"><b>อธิบายเพิ่มเติม (1–2 ประโยค):</b></div>
+    <textarea class="ans-ta" id="et1-exp" rows="2" placeholder="ω_d = √(ω₀²−(b/2m)²) ซึ่ง... ดังนั้นเมื่อ b เล็ก..."></textarea>
+  </div>
+
+  <!-- ET2: M6.2 -->
+  <div class="item">
+    <div><span class="no">ET ข้อ 2</span></div>
+    <div class="stem">Resonance แตกต่างจาก "การสะท้อน (Reflection)" อย่างไร? อธิบายด้วยตัวอย่าง</div>
+    <textarea class="ans-ta" id="et2-exp" rows="3" placeholder="Resonance คือ... ในขณะที่ Reflection คือ... ตัวอย่าง Resonance เช่น Tacoma Narrows... ตัวอย่าง Reflection เช่น..."></textarea>
+    <div class="sub"><b>ระบุ keyword สำคัญของ Resonance (ติ๊กทุกข้อที่ถูก):</b></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="et2kw" value="a" data-correct="true"> ① f_drive = f_natural</label>
+      <label class="opt"><input type="checkbox" name="et2kw" value="b" data-correct="false"> ② คลื่นกระทบผิวและสะท้อนกลับ</label>
+      <label class="opt"><input type="checkbox" name="et2kw" value="c" data-correct="true"> ③ A เพิ่มสูงสุด (A_max)</label>
+      <label class="opt"><input type="checkbox" name="et2kw" value="d" data-correct="false"> ④ ต้องมีตัวกลาง (medium) สะท้อน</label>
+      <label class="opt"><input type="checkbox" name="et2kw" value="e" data-correct="true"> ⑤ พลังงานถ่ายเทสูงสุดจากแหล่งขับสู่ระบบ</label>
+      <label class="opt"><input type="checkbox" name="et2kw" value="f" data-correct="false"> ⑥ ต้องใช้แรงมากที่สุดเพื่อเกิด Resonance</label>
+    </div>
+  </div>
+
+  <!-- ET3: M6.3 ประยุกต์ -->
+  <div class="item">
+    <div><span class="no">ET ข้อ 3</span></div>
+    <div class="stem">ยกตัวอย่าง Resonance <strong>1 ประโยชน์</strong> และ <strong>1 โทษ</strong> ที่ไม่ซ้ำกับตัวอย่างในชั้นเรียนวันนี้</div>
+    <div class="sub"><b>ประโยชน์ (Applications):</b></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0">
+      <select class="drop" id="et3-pro-cat"><option value="">-- หมวดหมู่ --</option><option value="tech">เทคโนโลยี/วิทยาศาสตร์</option><option value="music">ดนตรี/เสียง</option><option value="medical">การแพทย์</option><option value="daily">ชีวิตประจำวัน</option><option value="other">อื่นๆ</option></select>
+      <input class="ans-in" id="et3-pro-name" style="width:200px" placeholder="ชื่อตัวอย่าง...">
+    </div>
+    <textarea class="ans-ta" id="et3-pro-exp" rows="2" placeholder="อธิบาย: ตัวอย่างนี้ใช้ resonance โดย f_drive ≈ f_natural ของ... ทำให้..."></textarea>
+
+    <div class="sub"><b>โทษ (Hazards):</b></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:6px 0">
+      <select class="drop" id="et3-con-cat"><option value="">-- หมวดหมู่ --</option><option value="civil">วิศวกรรมโยธา</option><option value="mech">เครื่องจักรกล</option><option value="natural">ธรรมชาติ</option><option value="other">อื่นๆ</option></select>
+      <input class="ans-in" id="et3-con-name" style="width:200px" placeholder="ชื่อตัวอย่าง...">
+    </div>
+    <textarea class="ans-ta" id="et3-con-exp" rows="2" placeholder="อธิบาย: ตัวอย่างนี้เกิด resonance ที่ไม่ต้องการ เมื่อ..."></textarea>
+  </div>
+
+  <!-- ส่วน 2: การประเมินตนเอง -->
+  <h2 class="section-title">🟢🟡🔴 ส่วน 2 · ประเมินความเข้าใจ</h2>
+
+  <div class="item">
+    <div class="stem" style="margin-bottom:14px">ประเมินความเข้าใจของคุณในประเด็นต่าง ๆ หลังเรียนแผน 6:</div>
+    <div style="margin:10px 0">
+      <div style="font-size:14px;color:#555;margin-bottom:6px">🔸 Damped SHM — A ลดเรื่อย ๆ แต่ f ≈ คงที่:</div>
+      <div class="rating-bar">
+        <label class="r-chip g"><input type="radio" name="r1" value="green">
+          <div class="emoji">🟢</div><div class="label">เข้าใจดี</div><div style="font-size:11px">อธิบายได้</div>
+        </label>
+        <label class="r-chip y"><input type="radio" name="r1" value="yellow">
+          <div class="emoji">🟡</div><div class="label">พอเข้าใจ</div><div style="font-size:11px">ยังงง บ้าง</div>
+        </label>
+        <label class="r-chip r"><input type="radio" name="r1" value="red">
+          <div class="emoji">🔴</div><div class="label">ยังไม่เข้าใจ</div><div style="font-size:11px">ต้องทบทวน</div>
+        </label>
+      </div>
+    </div>
+    <div style="margin:10px 0">
+      <div style="font-size:14px;color:#555;margin-bottom:6px">🔸 Resonance — f_drive = f_natural → A_max:</div>
+      <div class="rating-bar">
+        <label class="r-chip g"><input type="radio" name="r2" value="green"><div class="emoji">🟢</div><div class="label">เข้าใจดี</div><div style="font-size:11px">อธิบายได้</div></label>
+        <label class="r-chip y"><input type="radio" name="r2" value="yellow"><div class="emoji">🟡</div><div class="label">พอเข้าใจ</div><div style="font-size:11px">ยังงงบ้าง</div></label>
+        <label class="r-chip r"><input type="radio" name="r2" value="red"><div class="emoji">🔴</div><div class="label">ยังไม่เข้าใจ</div><div style="font-size:11px">ต้องทบทวน</div></label>
+      </div>
+    </div>
+    <div style="margin:10px 0">
+      <div style="font-size:14px;color:#555;margin-bottom:6px">🔸 Case Study (Tacoma, MRI, ชิงช้า):</div>
+      <div class="rating-bar">
+        <label class="r-chip g"><input type="radio" name="r3" value="green"><div class="emoji">🟢</div><div class="label">เข้าใจดี</div><div style="font-size:11px">อธิบายได้</div></label>
+        <label class="r-chip y"><input type="radio" name="r3" value="yellow"><div class="emoji">🟡</div><div class="label">พอเข้าใจ</div><div style="font-size:11px">ยังงงบ้าง</div></label>
+        <label class="r-chip r"><input type="radio" name="r3" value="red"><div class="emoji">🔴</div><div class="label">ยังไม่เข้าใจ</div><div style="font-size:11px">ต้องทบทวน</div></label>
+      </div>
+    </div>
+    <div class="sub"><b>สิ่งที่ยังสงสัยหรืออยากให้ครูอธิบายเพิ่ม:</b></div>
+    <textarea class="ans-ta" id="still-confused" rows="2" placeholder="ฉันยังไม่เข้าใจเรื่อง... อยากให้ครูอธิบายเรื่อง..."></textarea>
+  </div>
+
+  <!-- ส่วน 3: Gallery Walk Sticky Notes -->
+  <h2 class="section-title">🖼️ ส่วน 3 · Gallery Walk Feedback</h2>
+
+  <div class="info">📌 <b>วิธีทำ:</b> ดูงาน PBL ของกลุ่มอื่น 4 กลุ่ม · เขียน sticky note 3 สี ต่อ 1 กลุ่ม · กรอกชื่อกลุ่มที่ดู → ให้ feedback</div>
+
+  <div class="gallery-grid">
+    <div class="gallery-card">
+      <h4>🖼️ กลุ่มที่ดู: <input class="ans-in" id="gw1-group" style="width:120px" placeholder="ชื่อกลุ่ม..."></h4>
+      <div class="sticky-area" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="sticky green"><h4>🟢 ดีมาก</h4><textarea id="gw1-green" placeholder="สิ่งที่ทำได้ดี..."></textarea></div>
+        <div class="sticky yellow"><h4>🟡 สงสัย</h4><textarea id="gw1-yellow" placeholder="อยากรู้เพิ่มเติมว่า..."></textarea></div>
+        <div class="sticky red"><h4>🔴 แนะนำ</h4><textarea id="gw1-red" placeholder="ควรปรับปรุง..."></textarea></div>
+      </div>
+    </div>
+    <div class="gallery-card">
+      <h4>🖼️ กลุ่มที่ดู: <input class="ans-in" id="gw2-group" style="width:120px" placeholder="ชื่อกลุ่ม..."></h4>
+      <div class="sticky-area" style="grid-template-columns:1fr 1fr 1fr">
+        <div class="sticky green"><h4>🟢 ดีมาก</h4><textarea id="gw2-green" placeholder="สิ่งที่ทำได้ดี..."></textarea></div>
+        <div class="sticky yellow"><h4>🟡 สงสัย</h4><textarea id="gw2-yellow" placeholder="อยากรู้เพิ่มเติมว่า..."></textarea></div>
+        <div class="sticky red"><h4>🔴 แนะนำ</h4><textarea id="gw2-red" placeholder="ควรปรับปรุง..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="item">
+    <div class="stem">จากการดู Gallery Walk ทั้งหมด — งาน PBL กลุ่มใดที่คุณคิดว่า<strong>เชื่อมโยงฟิสิกส์ได้ดีที่สุด</strong>?</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0">
+      <span>กลุ่ม:</span>
+      <input class="ans-in" id="best-group" style="width:180px" placeholder="ชื่อกลุ่ม...">
+      <span>โจทย์:</span>
+      <select class="drop" id="best-pbl"><option value="">--</option><option value="P1">P1 TMD</option><option value="P2">P2 สะพาน</option><option value="P3">P3 MRI</option><option value="P4">P4 นาฬิกา</option></select>
+    </div>
+    <div class="sub"><b>เหตุผล:</b></div>
+    <textarea class="ans-ta" id="best-reason" rows="2" placeholder="กลุ่มนี้ดีเพราะ... เชื่อมโยง SHM โดย..."></textarea>
+  </div>
+
+  <!-- ส่วน 4: บันทึกเพิ่มเติม Canvas -->
+  <h2 class="section-title">✍️ ส่วน 4 · บันทึกส่วนตัว</h2>
+  <div class="item">
+    <div class="stem">เขียน/วาดสิ่งที่จำจากวันนี้ (Free note · ไม่มีถูกผิด)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cNote','pencil',this)">✏️ เขียน</button>
+      <button class="c-btn" onclick="setTool('cNote','eraser',this)">⬜ ลบ</button>
+      <div class="c-color active" style="background:#4c1d95" onclick="setColor('cNote','#4c1d95',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('cNote','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cNote','#dc2626',this)"></div>
+      <div class="c-color" style="background:#16a34a" onclick="setColor('cNote','#16a34a',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cNote','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cNote')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="cNote" data-bg="lined" width="980" height="220"></canvas>
+    <div class="hint">💡 เขียน keyword · สูตร · ลูกศรเชื่อมโยง · หรือ sketch อะไรก็ได้ที่จะช่วยให้จำ</div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่ง Exit Ticket + Gallery Walk</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">Exit Ticket + Gallery Walk · SHM แผน 6 Damping & Resonance · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  วPA ตัวชี้วัด 6 (ข้อมูลป้อนกลับ) · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL';const SHEET='ExitTicket_SHM_Plan6';
+const tools={},colors={};
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');tools[id]='pencil';colors[id]='#4c1d95';
+  let drawing=false,lx=0,ly=0;
+  const pos=e=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};};
+  const down=e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pos(e);
+    ctx.beginPath();ctx.strokeStyle=tools[id]==='eraser'?'#fff':colors[id];
+    ctx.lineWidth=tools[id]==='eraser'?20:2.5;ctx.lineCap='round';
+    ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  const up=()=>{drawing=false;saveCanvas(id);};
+  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
+  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',up);
+}
+function setTool(id,t,btn){tools[id]=t;const tb=btn.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,c,el){colors[id]=c;tools[id]='pencil';const tb=el.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-color').forEach(e=>e.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);localStorage.removeItem('canvas6_'+id);}
+function saveCanvas(id){try{localStorage.setItem('canvas6_'+id,document.getElementById(id).toDataURL());}catch(e){}}
+function loadCanvas(id){const data=localStorage.getItem('canvas6_'+id);if(!data)return;const c=document.getElementById(id),ctx=c.getContext('2d');const img=new Image();img.src=data;img.onload=()=>ctx.drawImage(img,0,0);}
+async function submitAll(){
+  const name=document.getElementById('student_name').value;
+  if(!name){alert('กรุณากรอกชื่อ');return;}
+  const data={sheet:SHEET,name,no:document.getElementById('student_no').value,room:document.getElementById('class').value,date:document.getElementById('test_date').value,timestamp:new Date().toISOString(),
+    et1:document.querySelector('[name=et1]:checked')?.value||'',et1_exp:document.getElementById('et1-exp').value,
+    et2_exp:document.getElementById('et2-exp').value,
+    et3_pro_cat:document.getElementById('et3-pro-cat').value,et3_pro_name:document.getElementById('et3-pro-name').value,et3_pro_exp:document.getElementById('et3-pro-exp').value,
+    et3_con_cat:document.getElementById('et3-con-cat').value,et3_con_name:document.getElementById('et3-con-name').value,et3_con_exp:document.getElementById('et3-con-exp').value,
+    r1:document.querySelector('[name=r1]:checked')?.value||'',r2:document.querySelector('[name=r2]:checked')?.value||'',r3:document.querySelector('[name=r3]:checked')?.value||'',
+    still_confused:document.getElementById('still-confused').value,
+    best_group:document.getElementById('best-group').value,best_reason:document.getElementById('best-reason').value,
+    canvas_note:document.getElementById('cNote').toDataURL('image/png')
+  };
+  const statusEl=document.getElementById('submitStatus');
+  statusEl.className='status loading';statusEl.textContent='⏳ กำลังส่ง...';
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ExitTicket6_${name}_${Date.now()}.json`;a.click();
+    statusEl.className='status success';statusEl.textContent='✅ ดาวน์โหลด JSON สำเร็จ';return;
+  }
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});statusEl.className='status success';statusEl.textContent='✅ ส่งสำเร็จ!';}
+  catch(e){statusEl.className='status error';statusEl.textContent='❌ ส่งไม่ได้';}
+}
+window.addEventListener('load',()=>{
+  initCanvas('cNote');loadCanvas('cNote');
+  const d=document.getElementById('test_date');if(!d.value)d.value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body></html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P05 · ลากดาว 7 สี</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .pool-wrap { padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; min-height:80px; }
+  .pool-wrap h4 { font-family:Orbitron; font-size:11px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; }
+  .star-pool { display:flex; flex-wrap:wrap; gap:10px; min-height:60px; justify-content:center; }
+  .star-tile {
+    padding:10px 14px; min-height:64px; min-width:120px;
+    background:linear-gradient(160deg, rgba(22,27,58,0.9), rgba(8,10,24,0.9));
+    border:2px solid rgba(120,140,220,0.5); border-radius:14px;
+    color:#e8ecf8; cursor:grab; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none;
+    transition:all .15s; text-align:center;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .star-tile .orb { width:30px; height:30px; border-radius:50%; box-shadow:0 0 16px currentColor; }
+  .star-tile .lab { font-family:Orbitron,sans-serif; font-size:11px; color:#ffcb6b; }
+  .star-tile:active, .star-tile.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .star-tile.placed { opacity:0.3; pointer-events:none; }
+  .star-tile.locked { cursor:default; }
+  .star-tile.placed .code-badge {
+    display:block; padding:2px 8px; background:#7effb2; color:#000; border-radius:10px;
+    font-family:Orbitron; font-size:11px; font-weight:700; margin-top:2px;
+  }
+
+  .temp-bins { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin:14px 0; }
+  @media(max-width:680px) { .temp-bins { grid-template-columns:repeat(4,1fr); } }
+  .temp-bin {
+    padding:10px 4px; min-height:120px;
+    background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:10px;
+    text-align:center; transition:all .15s;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .temp-bin.over { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .temp-bin .temp-lbl { font-family:monospace; font-size:11px; color:#9aa3c0; line-height:1.4; }
+  .temp-bin .swatch-mini { width:30px; height:14px; border-radius:4px; box-shadow:0 0 8px currentColor; }
+  .temp-bin .placed-host { display:flex; flex-direction:column; gap:3px; width:100%; margin-top:4px; }
+  .placed-mini {
+    padding:3px 4px; background:rgba(100,216,255,0.12); border:1px solid #64d8ff; border-radius:5px;
+    font-size:10px; color:#e8ecf8;
+  }
+  .placed-mini.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+  .placed-mini.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); }
+
+  .compare-btn {
+    width:100%; padding:18px; min-height:60px;
+    background:linear-gradient(135deg, rgba(255,203,107,0.18), rgba(126,255,178,0.18));
+    border:2px solid #ffcb6b; color:#ffe2a8;
+    border-radius:14px; font-family:Orbitron; font-size:16px; font-weight:700; letter-spacing:0.12em; cursor:pointer;
+  }
+  .compare-btn:hover:not(:disabled) { background:rgba(255,203,107,0.3); }
+  .compare-btn:disabled { opacity:0.4; cursor:not-allowed; }
+</style>
+</head>
+<body data-page="p05" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🔬 LAB 1.2 · ลากดาว 7 ดวง</span>
+  <h1>จับคู่ดาวกับช่วงอุณหภูมิ</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1</span><span class="kpa-chip p">P1</span><span class="kpa-chip a">A1</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "นี่คือดาว 7 ดวงที่จะอยู่บนเส้นทางเดินทาง · <b>ลากแต่ละดวงไปในช่องอุณหภูมิ</b>ที่เธอคิดว่าใช่ ·
+      เสร็จแล้วกด <b style="color:#fff;">เปรียบเทียบ</b> · ถ้ายังไม่ตรง ให้ลองอีกครั้งจนถูกหมด"
+    </span>
+  </div>
+
+  <div class="pool-wrap">
+    <h4>🌟 ดาวบนเส้นทาง · ลากลงช่อง</h4>
+    <div class="star-pool" id="starPool"></div>
+  </div>
+
+  <div class="temp-bins" id="tempBins"></div>
+
+  <button class="compare-btn" id="cmpBtn" onclick="compare()" disabled>🔍 เปรียบเทียบ</button>
+
+  <div class="status" id="hint" style="margin-top:8px;">💡 ลากครบ 7 ดวง → กด "เปรียบเทียบ"</div>
+
+  <div class="callout success" id="result" style="display:none;">
+    <span class="star">✓</span> <b>ครบทุกดวง · คอมพิวเตอร์ใส่รหัสสี OBAFGKM ให้แล้ว!</b><br>
+    <span style="font-size:14px; color:#bcffd6; font-weight:400;">
+      สังเกตการเรียงลำดับ · จาก<b>ร้อนสุด → เย็นสุด</b> · O B A F G K M
+    </span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P05</summary>
+    <div class="body">
+      <b>กลไก:</b> ลากผิดได้ · กด "เปรียบเทียบ" → ระบบบอกถูก/ผิด · ปลดปุ่ม submit เมื่อถูกครบ 7<br>
+      <b>วPA:</b> เก็บจำนวนครั้งที่กด "เปรียบเทียบ" → indicator ของการลองและเรียนรู้ (trial-and-error)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ลาก-เปรียบเทียบจนถูกครบ → ส่ง → ปลดล็อกทฤษฎี</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const ROUTE = (EP_CONFIG.routeStars || []).slice();
+// Shuffle for display
+const SHUFFLED = ROUTE.slice().sort(()=>Math.random()-0.5);
+
+// 7 temperature bins (from M cool to O hot)
+const BINS = [
+  { type:'M', range:'2,500-3,500', tmin:2500, tmax:3500, color:'#ff7a55' },
+  { type:'K', range:'3,500-4,900', tmin:3500, tmax:4900, color:'#ffaa55' },
+  { type:'G', range:'4,900-6,000', tmin:4900, tmax:6000, color:'#ffd96b' },
+  { type:'F', range:'6,000-7,500', tmin:6000, tmax:7500, color:'#fff4d8' },
+  { type:'A', range:'7,500-10,000', tmin:7500, tmax:10000, color:'#ffffff' },
+  { type:'B', range:'10,000-30,000', tmin:10000, tmax:30000, color:'#bcd0ff' },
+  { type:'O', range:'>30,000', tmin:30000, tmax:50000, color:'#9bb8ff' },
+];
+
+const placed = {}; // {starId: binType}
+let attempts = 0;
+
+const pool = document.getElementById('starPool');
+pool.innerHTML = SHUFFLED.map(s=>`
+  <div class="star-tile" id="tile-${s.id}" data-id="${s.id}" draggable="true">
+    <div class="orb" style="background:${s.hex}; color:${s.hex};"></div>
+    <div class="lab">${s.label}</div>
+    <div style="font-family:monospace; font-size:11px; color:#ffcb6b;">${s.tempK.toLocaleString()} K</div>
+  </div>
+`).join('');
+
+const binsHost = document.getElementById('tempBins');
+binsHost.innerHTML = BINS.map(b=>`
+  <div class="temp-bin" data-type="${b.type}" id="bin-${b.type}">
+    <div class="swatch-mini" style="background:${b.color}; color:${b.color};"></div>
+    <div class="temp-lbl">${b.range} K</div>
+    <div class="placed-host" id="bin-${b.type}-placed"></div>
+  </div>
+`).join('');
+
+function setupDrag() {
+  ROUTE.forEach(s => {
+    const tile = document.getElementById('tile-' + s.id);
+    if (!tile) return;
+    tile.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', s.id);
+      ev.dataTransfer.setData('text/plain', s.id);
+      tile.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(tile, () => s.id);
+  });
+  BINS.forEach(b => {
+    const bin = document.getElementById('bin-' + b.type);
+    if (!bin) return;
+    bin.addEventListener('dragover', ev => { ev.preventDefault(); bin.classList.add('over'); });
+    bin.addEventListener('dragleave', () => bin.classList.remove('over'));
+    bin.addEventListener('drop', ev => {
+      ev.preventDefault();
+      bin.classList.remove('over');
+      const sid = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(sid, b.type);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(bin, (sid) => tryPlace(sid, b.type));
+  });
+}
+
+function tryPlace(sid, type) {
+  if (!sid || placed[sid]) return;
+  const star = ROUTE.find(s=>s.id===sid);
+  if (!star) return;
+  placed[sid] = type;
+  const host = document.getElementById('bin-' + type + '-placed');
+  const mini = document.createElement('div');
+  mini.className = 'placed-mini';
+  mini.id = 'mini-' + sid;
+  mini.textContent = star.label + ' · ' + star.tempK.toLocaleString() + ' K';
+  host.appendChild(mini);
+  document.getElementById('tile-' + sid).classList.add('placed');
+  // Show on tile if needed
+  if (Object.keys(placed).length === ROUTE.length) {
+    document.getElementById('cmpBtn').disabled = false;
+    document.getElementById('hint').className = 'status warn';
+    document.getElementById('hint').innerHTML = '✓ ลากครบ · กด <b>เปรียบเทียบ</b> เพื่อตรวจ';
+  }
+}
+
+let allCorrect = false;
+function compare() {
+  attempts++;
+  let nCorrect = 0;
+  Object.entries(placed).forEach(([sid, type]) => {
+    const star = ROUTE.find(s=>s.id===sid);
+    const correct = (star.type === type);
+    const mini = document.getElementById('mini-' + sid);
+    mini.classList.remove('correct','wrong');
+    mini.classList.add(correct ? 'correct' : 'wrong');
+    if (correct) nCorrect++;
+    else {
+      // Move it back to pool
+      setTimeout(() => {
+        delete placed[sid];
+        mini.remove();
+        const tile = document.getElementById('tile-' + sid);
+        tile.classList.remove('placed');
+      }, 1200);
+    }
+  });
+  if (window.SFX) SFX.play(nCorrect === ROUTE.length ? 'correct' : 'wrong');
+  if (nCorrect === ROUTE.length) {
+    allCorrect = true;
+    // Display code badges on each tile
+    ROUTE.forEach(s => {
+      const tile = document.getElementById('tile-' + s.id);
+      tile.classList.add('locked');
+      const badge = document.createElement('div');
+      badge.className = 'code-badge';
+      badge.textContent = s.type;
+      tile.appendChild(badge);
+    });
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('cmpBtn').textContent = '✓ ถูกครบทั้ง 7 ดวง!';
+    document.getElementById('cmpBtn').disabled = true;
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('hint').className = 'status ok';
+    document.getElementById('hint').innerHTML = `✓ ถูกหมดในความพยายามครั้งที่ ${attempts}`;
+  } else {
+    document.getElementById('hint').className = 'status bad';
+    document.getElementById('hint').innerHTML = `✗ ผิด ${ROUTE.length-nCorrect} ดวง · ดวงที่ผิดถูกย้ายกลับ · ลองใหม่`;
+    setTimeout(()=>{
+      document.getElementById('cmpBtn').disabled = (Object.keys(placed).length !== ROUTE.length);
+    }, 1300);
+  }
+}
+window.compare = compare;
+
+setTimeout(setupDrag, 300);
+
+Submit.wirePair({
+  page:'p05',
+  nextHref:'p06-obafgkm.html',
+  getPayload:()=>({ placed, attempts, allCorrect }),
+  isPerfect:(p)=>p.allCorrect && p.attempts===1,
+  onSubmit:(status,n)=>{
+    if (window.Photon && Photon.add) Photon.add(20);
+    if (status==='perfect' && n) {
+      const t=document.createElement('div'); t.className='coin-toast'; t.textContent=`🎉 PERFECT (try 1) · +${n} 🪙`;
+      document.body.appendChild(t); setTimeout(()=>t.remove(),2400);
+    }
+  }
+});
+</script>
+</body></html>

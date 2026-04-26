@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debate Brief + Concept Map สรุปหน่วย SHM (แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#7c3aed}
+.section-title{font-size:18px;font-weight:800;color:#4c1d95;margin:22px 0 10px;padding-left:12px;border-left:5px solid #7c3aed}
+.sub{margin:10px 0 6px;padding-left:12px;border-left:3px solid #a78bfa;font-size:15px}
+.sub b{color:#4c1d95}
+.ans-ta{width:100%;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;margin-top:4px;min-height:80px}
+.ans-ta:focus{outline:none;border-color:#7c3aed}
+.ans-in{border:none;border-bottom:1.5px solid #a78bfa;padding:3px 8px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:transparent}
+select.drop{border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer;min-width:160px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:15px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+
+/* Debate */
+.debate-setup{background:#fff5f5;border:2px solid #ef4444;border-radius:14px;padding:18px 20px;margin:14px 0}
+.debate-setup h3{color:#991b1b;font-size:16px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.debate-timer{background:#991b1b;color:#fff;border-radius:8px;padding:4px 14px;font-size:14px;font-weight:700}
+.debate-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px}
+@media(max-width:640px){.debate-grid{grid-template-columns:1fr}}
+.debate-side{border-radius:12px;padding:14px}
+.debate-side.pro{background:#e8f5e9;border:2px solid #4caf50}
+.debate-side.con{background:#ffebee;border:2px solid #ef4444}
+.debate-side h4{font-size:15px;margin-bottom:8px}
+.debate-side.pro h4{color:#1b5e20}
+.debate-side.con h4{color:#991b1b}
+.evidence-row{display:flex;gap:6px;margin:4px 0;align-items:flex-start}
+.ev-chip{display:inline-block;background:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap;flex-shrink:0;margin-top:2px}
+.ev-chip.pro{border:1.5px solid #4caf50;color:#1b5e20}
+.ev-chip.con{border:1.5px solid #ef4444;color:#991b1b}
+.evidence-input{flex:1;border:none;border-bottom:1px solid #ccc;font-family:inherit;font-size:14px;background:transparent;padding:2px 6px}
+.evidence-input:focus{outline:none;border-color:#7c3aed}
+.my-side-box{background:#ede9fe;border:2px solid #7c3aed;border-radius:12px;padding:14px 16px;margin:14px 0}
+.my-side-box h3{color:#4c1d95;font-size:15px;margin-bottom:10px}
+.side-select{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.side-card{border-radius:10px;padding:12px;cursor:pointer;border:2px solid transparent;transition:all .2s;font-size:14px}
+.side-card.pro{background:#e8f5e9;border-color:#a5d6a7}
+.side-card.con{background:#ffebee;border-color:#ef9a9a}
+.side-card:has(input:checked){border-width:3px;font-weight:700;transform:scale(1.02)}
+.side-card.pro:has(input:checked){border-color:#2e7d32}
+.side-card.con:has(input:checked){border-color:#c62828}
+.side-card input{display:none}
+.refute-table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+.refute-table th{background:#7c3aed;color:#fff;padding:8px 10px;text-align:left}
+.refute-table td{padding:8px 10px;border:1.5px solid #ddd6fe;vertical-align:top}
+.refute-table td textarea{width:100%;border:none;font-family:inherit;font-size:13.5px;resize:vertical;min-height:50px;background:transparent}
+
+/* Concept Map */
+.cmap-area{position:relative;background:#fdfcff;border:2px solid #c4b5fd;border-radius:14px;margin:10px 0;overflow:hidden}
+.cmap-nodes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}
+@media(max-width:640px){.cmap-nodes{grid-template-columns:1fr}}
+.cmap-node{background:white;border:2px solid #7c3aed;border-radius:10px;padding:10px;text-align:center}
+.cmap-node.center{background:linear-gradient(135deg,#4c1d95,#7c3aed);color:white;border:none;grid-column:2;font-weight:800;font-size:15px}
+.cmap-node h4{font-size:13px;color:#4c1d95;margin-bottom:4px}
+.cmap-node input{width:100%;border:none;border-bottom:1px solid #c4b5fd;font-family:inherit;font-size:13px;text-align:center;background:transparent;padding:2px}
+.cmap-link{background:#f5f3ff;border-radius:8px;padding:6px 10px;font-size:12.5px;color:#4c1d95;text-align:center;margin:4px 0}
+.cmap-link input{width:100%;border:none;border-bottom:1px solid #c4b5fd;font-family:inherit;font-size:12.5px;text-align:center;background:transparent;padding:2px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #7c3aed;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600}
+.c-btn.active{background:#7c3aed;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4c1d95}
+canvas[data-bg="cmap"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:#fdfcff;touch-action:none;cursor:crosshair;margin-top:6px}
+.hint{font-size:13px;color:#6b7280;font-style:italic;margin-top:4px}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:640px){.id-box{grid-template-columns:1fr 1fr}.checkbox-bank{grid-template-columns:1fr}}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:18px 22px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:17px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:11px 28px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#f5f3ff}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>⚖️ Debate Brief + 🗺️ Concept Map สรุปหน่วย SHM</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" style="background:#dc2626">ใบกิจกรรม 04</span> Explain · Debate + Concept Map · คาบ 11–12</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 บันทึกอัตโนมัติ</div>
+  </div>
+
+  <div class="info">🎯 <b>จุดประสงค์:</b> เตรียมหลักฐาน Debate "Resonance: ประโยชน์หรือภัย?" · สร้าง Concept Map เชื่อมโยง 6 แผน SHM ทั้งหน่วย · วPA ตัวชี้วัด 3, 5, 7</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <!-- ส่วน 1: กฎ Debate -->
+  <h2 class="section-title">⚖️ ส่วน 1 · Mini Debate — "Resonance: ประโยชน์หรือภัย?"</h2>
+
+  <div class="debate-setup">
+    <h3>⚖️ กติกา Debate <span class="debate-timer">⏱ 15 นาที</span></h3>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px;font-size:14px">
+      <div style="background:#fff;border-radius:8px;padding:8px;text-align:center"><strong>เตรียม</strong><br>5 นาที</div>
+      <div style="background:#fff;border-radius:8px;padding:8px;text-align:center"><strong>นำเสนอ</strong><br>2' × 2 ฝ่าย</div>
+      <div style="background:#fff;border-radius:8px;padding:8px;text-align:center"><strong>โต้แย้ง</strong><br>3 นาที</div>
+      <div style="background:#fff;border-radius:8px;padding:8px;text-align:center"><strong>สรุป</strong><br>2 นาที</div>
+    </div>
+    <div class="debate-grid">
+      <div class="debate-side pro">
+        <h4>✅ ฝ่ายสนับสนุน: "Resonance มีประโยชน์มากกว่า"</h4>
+        <div style="font-size:13px;color:#1b5e20;margin-bottom:8px">หลักฐานที่ใช้ได้:</div>
+        <div class="evidence-row"><span class="ev-chip pro">🏥 MRI</span><span style="font-size:13px">NMR resonance 63.87 MHz ถ่ายภาพอวัยวะ</span></div>
+        <div class="evidence-row"><span class="ev-chip pro">📻 วิทยุ</span><span style="font-size:13px">ปรับช่องตาม f_natural ของ LC circuit</span></div>
+        <div class="evidence-row"><span class="ev-chip pro">⌚ นาฬิกา</span><span style="font-size:13px">Quartz 32768 Hz resonance ± 15s/เดือน</span></div>
+        <div class="evidence-row"><span class="ev-chip pro">🎵 ดนตรี</span><span style="font-size:13px">สาย กล่องเสียง ห้องดนตรีใช้ resonance</span></div>
+        <div class="evidence-row"><span class="ev-chip pro">🔬 LIGO</span><span style="font-size:13px">ตรวจคลื่นโน้มถ่วงผ่านความไวสูง</span></div>
+      </div>
+      <div class="debate-side con">
+        <h4>❌ ฝ่ายค้าน: "Resonance มีโทษมากกว่า"</h4>
+        <div style="font-size:13px;color:#991b1b;margin-bottom:8px">หลักฐานที่ใช้ได้:</div>
+        <div class="evidence-row"><span class="ev-chip con">🌉 Tacoma</span><span style="font-size:13px">สะพานพัง 1940 f_wind = f_natural สะพาน</span></div>
+        <div class="evidence-row"><span class="ev-chip con">🏢 แผ่นดินไหว</span><span style="font-size:13px">ตึกสั่นพังเมื่อ f คลื่น = f_natural ตึก</span></div>
+        <div class="evidence-row"><span class="ev-chip con">⚙️ เครื่องยนต์</span><span style="font-size:13px">ชิ้นส่วนสั่นพังที่ rpm วิกฤต</span></div>
+        <div class="evidence-row"><span class="ev-chip con">🌊 เรือ</span><span style="font-size:13px">เรือโคลงจาก resonance คลื่นทะเล</span></div>
+        <div class="evidence-row"><span class="ev-chip con">🪖 ทหาร</span><span style="font-size:13px">Napoleon บนสะพาน — เดินเข้าจังหวะ</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- เตรียมหลักฐาน -->
+  <h2 class="section-title">📋 ส่วน 2 · เตรียมหลักฐานของกลุ่มคุณ</h2>
+
+  <div style="border:2px solid #ddd6fe;border-radius:12px;padding:16px 18px;margin:14px 0;background:#fdfcff">
+    <div class="sub"><b>กลุ่มของคุณอยู่ฝ่ายใด?</b></div>
+    <div class="side-select">
+      <label class="side-card pro">
+        <input type="radio" name="my-side" value="pro">
+        <div style="font-size:15px;font-weight:700;color:#1b5e20;margin-bottom:4px">✅ ฝ่ายสนับสนุน</div>
+        <div style="font-size:13px">Resonance มีประโยชน์มากกว่า</div>
+      </label>
+      <label class="side-card con">
+        <input type="radio" name="my-side" value="con">
+        <div style="font-size:15px;font-weight:700;color:#991b1b;margin-bottom:4px">❌ ฝ่ายค้าน</div>
+        <div style="font-size:13px">Resonance มีโทษมากกว่า</div>
+      </label>
+    </div>
+
+    <div class="sub"><b>หลักฐาน 3 ข้อที่กลุ่มเลือกใช้ (เขียนให้ละเอียด):</b></div>
+    <div style="margin:8px 0">
+      <div style="font-size:13px;color:#555;margin-bottom:4px">หลักฐาน 1 — กรณีจริง + ข้อมูลตัวเลข:</div>
+      <textarea class="ans-ta" id="ev1" rows="2" placeholder="เช่น MRI ใช้ resonance ที่ f = 63.87 MHz (1.5 Tesla) ถ่ายภาพ proton ใน soft tissue..."></textarea>
+    </div>
+    <div style="margin:8px 0">
+      <div style="font-size:13px;color:#555;margin-bottom:4px">หลักฐาน 2:</div>
+      <textarea class="ans-ta" id="ev2" rows="2" placeholder="อีกกรณีที่สนับสนุนฝ่ายของคุณ..."></textarea>
+    </div>
+    <div style="margin:8px 0">
+      <div style="font-size:13px;color:#555;margin-bottom:4px">หลักฐาน 3:</div>
+      <textarea class="ans-ta" id="ev3" rows="2" placeholder="กรณีที่ 3..."></textarea>
+    </div>
+
+    <div class="sub"><b>ประโยคเปิด Debate ของกลุ่มคุณ (Opening Statement ~30 วินาที):</b></div>
+    <textarea class="ans-ta" id="opening" rows="3" placeholder="กลุ่มของเราเชื่อว่า resonance... เพราะ... ตัวอย่างชัดเจนที่สุดคือ..."></textarea>
+
+    <div class="sub"><b>โต้แย้งฝ่ายตรงข้าม — คาดว่าพวกเขาจะพูดว่าอะไร และจะตอบอย่างไร?</b></div>
+    <table class="refute-table">
+      <thead><tr><th>ฝ่ายตรงข้ามอาจพูดว่า</th><th>เราจะโต้แย้งด้วย</th></tr></thead>
+      <tbody>
+        <tr><td><textarea id="ref1-q" placeholder="พวกเขาอาจพูดว่า..."></textarea></td><td><textarea id="ref1-a" placeholder="เราจะตอบว่า..."></textarea></td></tr>
+        <tr><td><textarea id="ref2-q" placeholder="..."></textarea></td><td><textarea id="ref2-a" placeholder="..."></textarea></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- สรุปหลัง Debate -->
+  <div style="border:2px solid #ddd6fe;border-radius:12px;padding:16px 18px;margin:14px 0;background:#fdfcff">
+    <div class="sub"><b>📝 สรุปหลัง Debate — บันทึกหลังทำกิจกรรม:</b></div>
+    <div class="sub"><b>ข้อโต้แย้งที่ดีที่สุดจากฝ่ายตรงข้าม (ที่คุณยอมรับว่าน่าฟัง):</b></div>
+    <textarea class="ans-ta" id="best-opp" rows="2" placeholder="ฝ่ายตรงข้ามพูดว่า... ซึ่งน่าฟังเพราะ..."></textarea>
+    <div class="sub"><b>ข้อสรุปร่วม — Resonance เป็น "กลาง" ขึ้นกับ:</b></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="conclusion" value="a" data-correct="true"> ① บริบทการใช้งาน (controlled vs uncontrolled)</label>
+      <label class="opt"><input type="checkbox" name="conclusion" value="b" data-correct="true"> ② การออกแบบ f_natural ของโครงสร้าง</label>
+      <label class="opt"><input type="checkbox" name="conclusion" value="c" data-correct="false"> ③ ขนาดของแรงขับเป็นหลัก</label>
+      <label class="opt"><input type="checkbox" name="conclusion" value="d" data-correct="true"> ④ ความตั้งใจ (ใช้งานตั้งใจ vs เกิดโดยไม่คาดคิด)</label>
+      <label class="opt"><input type="checkbox" name="conclusion" value="e" data-correct="false"> ⑤ วัสดุที่ใช้สร้างเป็นหลัก ไม่เกี่ยวกับความถี่</label>
+      <label class="opt"><input type="checkbox" name="conclusion" value="f" data-correct="true"> ⑥ ระบบการควบคุม Damping เพื่อป้องกันอันตราย</label>
+    </div>
+  </div>
+
+  <!-- ส่วน 3: Concept Map -->
+  <h2 class="section-title">🗺️ ส่วน 3 · Concept Map สรุปหน่วย SHM ทั้ง 6 แผน</h2>
+
+  <div style="border:2px solid #ddd6fe;border-radius:12px;padding:16px 18px;margin:14px 0;background:#fdfcff">
+    <div class="info" style="margin:0 0 14px">🗺️ <b>เติม Concept Map:</b> โยงแนวคิดจากแผน 1–6 เข้าด้วยกัน · เขียนคำเชื่อม (linking word) ระหว่างโหนด</div>
+
+    <!-- Nodes row 1 -->
+    <div class="cmap-nodes">
+      <div class="cmap-node"><h4>📘 แผน 1</h4><input id="n1-key" placeholder="F = −kx · SHM"><br><small style="color:#7c3aed;font-size:11px">สูตรหลัก:</small><br><input id="n1-eq" placeholder="ω = √(k/m)"></div>
+      <div class="cmap-node center">💎 SHM<br>Simple Harmonic Motion<br><small style="font-size:12px;opacity:.85">รากฐานของ Physics 3</small></div>
+      <div class="cmap-node"><h4>📘 แผน 2</h4><input id="n2-key" placeholder="ลูกตุ้ม Pendulum"><br><small style="color:#7c3aed;font-size:11px">สูตรหลัก:</small><br><input id="n2-eq" placeholder="T = 2π√(l/g)"></div>
+      <div class="cmap-node"><h4>📘 แผน 3</h4><input id="n3-key" placeholder="มวล-สปริง"><br><small style="color:#7c3aed;font-size:11px">สูตรหลัก:</small><br><input id="n3-eq" placeholder="T = 2π√(m/k)"></div>
+      <div class="cmap-node" style="border-color:#dc2626"><h4 style="color:#991b1b">📗 แผน 6 (วันนี้)</h4><input id="n6-key" placeholder="Damping + Resonance"><br><small style="color:#991b1b;font-size:11px">สูตรหลัก:</small><br><input id="n6-eq" placeholder="f_drive = f_natural"></div>
+      <div class="cmap-node"><h4>📘 แผน 4</h4><input id="n4-key" placeholder="เฟส x, v, a"><br><small style="color:#7c3aed;font-size:11px">ความสัมพันธ์:</small><br><input id="n4-eq" placeholder="v และ a ต่างเฟส 90°"></div>
+    </div>
+    <div style="text-align:center;margin:8px 0">
+      <div class="cmap-node" style="display:inline-block;min-width:300px;text-align:left"><h4>📘 แผน 5</h4><input id="n5-key" style="width:100%" placeholder="พลังงาน SHM"><br><small style="color:#7c3aed;font-size:11px">สมการพลังงาน:</small><br><input id="n5-eq" style="width:100%" placeholder="E = KE + PE = ½kA² = คงที่"></div>
+    </div>
+
+    <div class="sub" style="margin-top:14px"><b>คำเชื่อม (Linking Words) — เขียนสิ่งที่เชื่อมโยงระหว่างแนวคิด:</b></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0">
+      <div class="cmap-link">แผน 1 → แผน 2, 3: <input id="link-1-23" placeholder="ทั้งหมดใช้หลัก F=−kx ที่..."></div>
+      <div class="cmap-link">แผน 2, 3 → แผน 4: <input id="link-23-4" placeholder="เมื่อรู้ T แล้วหา x(t), v(t)..."></div>
+      <div class="cmap-link">แผน 4 → แผน 5: <input id="link-4-5" placeholder="จาก v(t) หาพลังงานจลน์..."></div>
+      <div class="cmap-link">แผน 5 → แผน 6: <input id="link-5-6" placeholder="ใน Damping พลังงานจะ..."></div>
+      <div class="cmap-link">แผน 6 → คลื่น: <input id="link-6-wave" placeholder="SHM เป็นต้นกำเนิดของ..."></div>
+      <div class="cmap-link">ทั้งหน่วย → ชีวิตจริง: <input id="link-all" placeholder="ตัวอย่างประยุกต์ที่ครอบคลุมทั้งหน่วย..."></div>
+    </div>
+
+    <div class="sub" style="margin-top:14px"><b>วาด Concept Map ของคุณเอง (ลูกศรเชื่อมโยงอิสระ):</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cCmap','pencil',this)">✏️ วาด</button>
+      <button class="c-btn" onclick="setTool('cCmap','eraser',this)">⬜ ลบ</button>
+      <div class="c-color active" style="background:#4c1d95" onclick="setColor('cCmap','#4c1d95',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('cCmap','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cCmap','#dc2626',this)"></div>
+      <div class="c-color" style="background:#16a34a" onclick="setColor('cCmap','#16a34a',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cCmap','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cCmap')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="cCmap" data-bg="cmap" width="980" height="360"></canvas>
+    <div class="hint">💡 วาดลูกศรเชื่อมโยง · เขียนคำ linking word บนลูกศร · ใส่สีต่าง ๆ เพื่อแสดงความสัมพันธ์ที่ต่างกัน</div>
+
+    <div class="sub" style="margin-top:14px"><b>แนวคิดสำคัญที่สุดจากหน่วย SHM ทั้งหมด ในมุมมองของคุณ:</b></div>
+    <textarea class="ans-ta" id="key-takeaway" rows="3" placeholder="สิ่งที่สำคัญที่สุดจาก SHM 6 แผน คือ... เพราะ..."></textarea>
+  </div>
+
+  <!-- Case Study: Millennium Bridge -->
+  <h2 class="section-title">🌉 ส่วน 4 · Case Study ปิด — Millennium Bridge ลอนดอน 2000</h2>
+  <div style="border:2px solid #ddd6fe;border-radius:12px;padding:16px 18px;margin:14px 0;background:#fdfcff">
+    <div class="info" style="margin:0 0 12px;background:#fff8f5;border-color:#f97316">🏙️ <b>Millennium Bridge</b> เปิดใช้งานวันที่ 10 มิ.ย. 2000 · หลังเพียง 2 วัน ต้องปิดซ่อม 2 ปี เพราะสะพานสั่น! · ไม่ใช่สถาปนิกออกแบบผิด แต่เป็นเรื่องของฟิสิกส์ที่ไม่คาดคิด</div>
+    <div style="font-size:14px;color:#4a5568;margin-bottom:14px;line-height:1.8">📌 <strong>ข้อมูล:</strong> คนเดินบนสะพาน → สะพานสั่นเล็กน้อย → คนปรับจังหวะเดินตามสะพาน → f_คน ≈ f_natural สะพาน → <strong>Positive Feedback Resonance!</strong> · คนพร้อมเพรียงโดยไม่ตั้งใจ (Synchronisation)</div>
+    <div class="sub"><b>วิเคราะห์ด้วยกรอบ Resonance:</b></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:8px 0">
+      <div>f_natural สะพาน: <input class="ans-in" id="mill-fn"> Hz</div>
+      <div>f_drive จากคน: <input class="ans-in" id="mill-fd"> Hz</div>
+      <div>ประเภท: <select class="drop" id="mill-type"><option value="">--</option><option value="resonance">Resonance</option><option value="damping">Damping</option><option value="other">Other</option></select></div>
+    </div>
+    <div class="sub"><b>ทำไม Millennium Bridge ต่างจาก Tacoma Narrows?</b></div>
+    <textarea class="ans-ta" id="mill-diff" rows="2" placeholder="Tacoma เกิดจาก... แต่ Millennium เกิดจาก... ความต่างคือ..."></textarea>
+    <div class="sub"><b>วิศวกรแก้ปัญหา Millennium Bridge อย่างไร? (เลือกทุกข้อที่ถูก)</b></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="mill-fix" value="a" data-correct="true"> ① ติดตั้ง Tuned Mass Damper (TMD) 37 ตัว ทั่วสะพาน</label>
+      <label class="opt"><input type="checkbox" name="mill-fix" value="b" data-correct="false"> ② รื้อสะพานและสร้างใหม่จากวัสดุอื่น</label>
+      <label class="opt"><input type="checkbox" name="mill-fix" value="c" data-correct="true"> ③ ติดตั้ง Fluid Viscous Damper เพิ่ม damping</label>
+      <label class="opt"><input type="checkbox" name="mill-fix" value="d" data-correct="false"> ④ ห้ามคนเดินพร้อมกันมากกว่า 10 คน</label>
+      <label class="opt"><input type="checkbox" name="mill-fix" value="e" data-correct="true"> ⑤ เปลี่ยน f_natural สะพานให้ห่างจาก f การเดินของคน</label>
+      <label class="opt"><input type="checkbox" name="mill-fix" value="f" data-correct="false"> ⑥ ใช้แม่เหล็กดูดคนไม่ให้เดินตามจังหวะ</label>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งใบ Debate + Concept Map</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">Debate Brief + Concept Map · SHM แผน 6 · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  วPA ตัวชี้วัด 3 (สร้างความรู้เอง) · 5 (ทักษะ/นวัตกรรม) · 7 (SRL) · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL';
+const SHEET='Debate_SHM_Plan6';
+const tools={},colors={};
+
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  ctx.fillStyle='#fdfcff';ctx.fillRect(0,0,c.width,c.height);
+  tools[id]='pencil';colors[id]='#4c1d95';
+  let drawing=false,lx=0,ly=0;
+  const pos=e=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};};
+  const down=e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pos(e);
+    ctx.beginPath();ctx.strokeStyle=tools[id]==='eraser'?'#fdfcff':colors[id];
+    ctx.lineWidth=tools[id]==='eraser'?20:2;ctx.lineCap='round';
+    ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  const up=()=>{drawing=false;saveCanvas(id);};
+  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
+  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});
+  c.addEventListener('touchend',up);
+}
+function setTool(id,t,btn){tools[id]=t;const tb=btn.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,c,el){colors[id]=c;tools[id]='pencil';const tb=el.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-color').forEach(e=>e.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);localStorage.removeItem('canvas6_'+id);}
+function saveCanvas(id){try{localStorage.setItem('canvas6_'+id,document.getElementById(id).toDataURL());}catch(e){}}
+function loadCanvas(id){const data=localStorage.getItem('canvas6_'+id);if(!data)return;const c=document.getElementById(id),ctx=c.getContext('2d');const img=new Image();img.src=data;img.onload=()=>ctx.drawImage(img,0,0);}
+
+async function submitAll(){
+  const name=document.getElementById('student_name').value;
+  if(!name){alert('กรุณากรอกชื่อ');return;}
+  const data={sheet:SHEET,name,no:document.getElementById('student_no').value,room:document.getElementById('class').value,date:document.getElementById('test_date').value,timestamp:new Date().toISOString(),
+    my_side:document.querySelector('[name=my-side]:checked')?.value||'',
+    ev1:document.getElementById('ev1').value,ev2:document.getElementById('ev2').value,ev3:document.getElementById('ev3').value,
+    opening:document.getElementById('opening').value,
+    best_opp:document.getElementById('best-opp').value,
+    key_takeaway:document.getElementById('key-takeaway').value,
+    cmap:document.getElementById('cCmap').toDataURL('image/png')
+  };
+  const statusEl=document.getElementById('submitStatus');
+  statusEl.className='status loading';statusEl.textContent='⏳ กำลังส่ง...';
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Debate6_${name}_${Date.now()}.json`;a.click();
+    statusEl.className='status success';statusEl.textContent='✅ ดาวน์โหลด JSON สำเร็จ';return;
+  }
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});statusEl.className='status success';statusEl.textContent='✅ ส่งสำเร็จ!';}
+  catch(e){statusEl.className='status error';statusEl.textContent='❌ ส่งไม่ได้';}
+}
+window.addEventListener('load',()=>{
+  initCanvas('cCmap');loadCanvas('cCmap');
+  const d=document.getElementById('test_date');if(!d.value)d.value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body></html>

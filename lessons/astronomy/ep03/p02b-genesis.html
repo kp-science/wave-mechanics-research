@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P02B · MISSION GENESIS</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:radial-gradient(ellipse at top, #0a0a20 0%, #02030a 60%); }
+
+  /* Log entry header */
+  .log-head { padding:14px 18px; background:linear-gradient(135deg, rgba(255,203,107,0.1), rgba(120,80,40,0.04));
+    border:1px solid #ffcb6b; border-radius:12px; margin:8px 0 14px; }
+  .log-head .tag { font-family:Orbitron,sans-serif; font-size:10px; color:#ffcb6b; letter-spacing:0.2em; }
+  .log-head .title { font-family:Orbitron,sans-serif; font-size:20px; color:#ffd88a; margin:6px 0; }
+  .log-head .meta { font-size:12px; color:#9aa3c0; }
+
+  /* Captain's log narrative */
+  .captain-log { padding:18px 22px; background:#1a0f0a; border:1px solid #5a4530; border-radius:8px;
+    color:#d8c8a8; line-height:1.9; font-family:'Sarabun',serif; font-size:15px; margin:10px 0;
+    background-image:repeating-linear-gradient(0deg, transparent 0, transparent 28px, rgba(180,150,100,0.08) 28px 29px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.5); }
+  .captain-log .hand { color:#ffd88a; font-style:italic; }
+  .captain-log .hand b { color:#ffe8b5; font-weight:700; }
+  .captain-log .stamp { display:inline-block; padding:1px 8px; background:rgba(255,92,122,0.15); border:1px dashed #ff5c7a; color:#ffaaa0; border-radius:4px; font-family:monospace; font-size:13px; }
+
+  /* Status bar */
+  .status-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin:10px 0; }
+  @media(max-width:540px){ .status-grid { grid-template-columns:1fr; } }
+  .status-cell { padding:10px 14px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; }
+  .status-cell .lbl { font-family:Orbitron,sans-serif; font-size:9px; color:#9aa3c0; letter-spacing:0.15em; }
+  .status-cell .val { font-family:monospace; font-size:14px; color:#7effb2; margin-top:2px; }
+  .status-cell .val.warn { color:#ff5c7a; }
+
+  /* Candidate stars · 3 unknown */
+  .candidates-section { margin:18px 0; }
+  .section-title { font-family:Orbitron,sans-serif; font-size:13px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; }
+  .candidate-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+  @media(max-width:540px){ .candidate-grid { grid-template-columns:1fr; } }
+  .candidate { padding:14px; background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:10px; text-align:center; transition:all .3s; }
+  .candidate .star-glyph { font-size:28px; filter:grayscale(0.7); margin-bottom:4px; }
+  .candidate .star-name { font-family:Orbitron,sans-serif; font-size:13px; color:#9aa3c0; letter-spacing:0.1em; }
+  .candidate .star-data { font-family:monospace; font-size:11px; color:#6a7394; margin-top:6px; }
+  .candidate .corruption { color:#ff5c7a; font-style:italic; }
+
+  /* Tool discovery cards */
+  .tools-section { margin:18px 0; }
+  .tools-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+  @media(max-width:540px){ .tools-grid { grid-template-columns:1fr; } }
+  .tool-card { padding:14px; background:rgba(0,0,0,0.4); border:2px solid #2a3050; border-radius:10px;
+    cursor:pointer; transition:all .3s; position:relative; overflow:hidden; }
+  .tool-card:hover { border-color:#64d8ff; transform:translateY(-3px); box-shadow:0 6px 20px rgba(100,216,255,0.2); }
+  .tool-card.discovered { border-color:#7effb2; background:rgba(126,255,178,0.08); cursor:default; }
+  .tool-card .lock-glyph { font-size:32px; text-align:center; margin-bottom:6px; transition:all .3s; }
+  .tool-card.discovered .lock-glyph { animation:toolReveal 0.6s ease-out; }
+  @keyframes toolReveal { 0%{transform:rotate(-180deg) scale(0.5);} 100%{transform:rotate(0) scale(1);} }
+  .tool-card .tool-name { font-family:Orbitron,sans-serif; font-size:12px; color:#ffcb6b; letter-spacing:0.1em; text-align:center; margin-bottom:8px; }
+  .tool-card.discovered .tool-name { color:#7effb2; }
+  .tool-card .tool-desc { font-size:12px; color:#c8cde0; line-height:1.6; min-height:60px; }
+  .tool-card .tool-desc.hidden { color:#444; font-style:italic; }
+  .tool-card .tool-formula { font-family:monospace; font-size:13px; color:#ffcb6b; padding:6px 10px; background:rgba(255,203,107,0.08); border-radius:6px; margin-top:8px; text-align:center; }
+  .tool-card .tool-coverage { font-size:11px; color:#9aa3c0; padding-top:6px; border-top:1px dashed #2a3050; margin-top:8px; }
+
+  /* Mission roadmap */
+  .roadmap-section { padding:14px; background:rgba(212,184,255,0.04); border:1px dashed #d4b8ff; border-radius:10px; margin:14px 0; }
+  .roadmap { display:flex; gap:6px; align-items:center; flex-wrap:wrap; padding:8px 0; overflow-x:auto; }
+  .road-step { padding:6px 10px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; font-size:11px; color:#9aa3c0; white-space:nowrap; min-width:fit-content; }
+  .road-step.lab { border-color:#64d8ff; color:#64d8ff; }
+  .road-step.story { border-color:#ffcb6b; color:#ffcb6b; }
+  .road-step.climax { border-color:#ff5c7a; color:#ff5c7a; }
+  .road-arrow { color:#666; font-size:14px; }
+
+  /* Accept button */
+  .accept-area { padding:24px; text-align:center; margin:14px 0; }
+  .accept-btn { padding:18px 40px; background:linear-gradient(135deg, #7effb2, #64d8ff);
+    border:none; color:#0a0420; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px;
+    letter-spacing:0.2em; border-radius:12px; cursor:pointer; box-shadow:0 8px 28px rgba(126,255,178,0.4);
+    transition:all .2s; }
+  .accept-btn:disabled { opacity:0.4; cursor:not-allowed; box-shadow:none; }
+  .accept-btn:hover:not(:disabled) { transform:translateY(-3px); box-shadow:0 12px 36px rgba(126,255,178,0.6); }
+  .accept-hint { font-size:12px; color:#9aa3c0; margin-top:12px; }
+
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px;
+    background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999;
+    box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px); opacity:0; } }
+</style>
+</head>
+<body data-page="p02b" data-type="story">
+<div class="page">
+
+  <div class="log-head">
+    <div class="tag">📓 CAPTAIN'S LOG · ENTRY #001</div>
+    <div class="title">MISSION GENESIS · จุดเริ่ม</div>
+    <div class="meta">⏱ 7,200 ms after ARYA decoded · ship computer online</div>
+  </div>
+
+  <!-- Captain's log narrative -->
+  <div class="captain-log">
+    <span class="hand">
+      <b>บันทึก #001 · กัปตัน Arya</b><br><br>
+      ฉันยืนนิ่ง · มือฉันยังสั่นจากการเคาะมอร์ส · "ARYA"<br>
+      ชื่อของ<b>ตัวเอง</b> · กลับมาจากความมืด<br><br>
+      ระบบยานเริ่มกลับมาออนไลน์ · จอเรืองแสงแดง:<br>
+      <span class="stamp">⚠ DATABASE: 67% CORRUPTED</span> ·
+      <span class="stamp">⚠ NAVIGATION: OFFLINE</span><br><br>
+      มีคนกำลังรอ · ส่งสัญญาณ SOS มา 1,300 ปี<br>
+      ฉันต้องหาว่า · ดาวดวงไหนคือต้นทาง · ก่อนสัญญาณจะเงียบไป<b>ตลอดกาล</b>
+    </span>
+  </div>
+
+  <!-- Ship status -->
+  <div class="status-grid">
+    <div class="status-cell">
+      <div class="lbl">🛰 NAVIGATION</div>
+      <div class="val warn">UNCALIBRATED</div>
+    </div>
+    <div class="status-cell">
+      <div class="lbl">📚 STAR CATALOG</div>
+      <div class="val warn">3 CANDIDATES · UNVERIFIED</div>
+    </div>
+    <div class="status-cell">
+      <div class="lbl">⏱ TIME LEFT</div>
+      <div class="val warn">UNKNOWN · supernova soon</div>
+    </div>
+  </div>
+
+  <!-- 3 Candidate stars -->
+  <div class="candidates-section">
+    <div class="section-title">🎯 SOS CANDIDATES · 3 ดวงต้องสงสัย</div>
+    <div class="candidate-grid">
+      <div class="candidate">
+        <div class="star-glyph">✦</div>
+        <div class="star-name">CANDIDATE 1</div>
+        <div class="star-data">d = <span class="corruption">[CORRUPTED]</span><br>m = <span class="corruption">[CORRUPTED]</span></div>
+      </div>
+      <div class="candidate">
+        <div class="star-glyph">✦</div>
+        <div class="star-name">CANDIDATE 2</div>
+        <div class="star-data">d = <span class="corruption">[CORRUPTED]</span><br>m = <span class="corruption">[CORRUPTED]</span></div>
+      </div>
+      <div class="candidate">
+        <div class="star-glyph">✦</div>
+        <div class="star-name">CANDIDATE 3 · STAR X</div>
+        <div class="star-data">d = <span class="corruption">[CORRUPTED]</span><br>m = <span class="corruption">[CORRUPTED]</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;font-size:12px;color:#9aa3c0;margin-top:10px;">
+      ⚠ ข้อมูลเสียหาย · ต้อง<b>ใช้เครื่องมือ</b>วัดเอง
+    </div>
+  </div>
+
+  <!-- 3 Lab tools - click to discover -->
+  <div class="tools-section">
+    <div class="section-title">🔧 STELLAR LAB TOOLS · คลิกเพื่อปลดล็อก</div>
+    <div class="tools-grid">
+      <div class="tool-card" data-tool="parallax" onclick="discoverTool('parallax')">
+        <div class="lock-glyph" id="glyph-parallax">🔒</div>
+        <div class="tool-name">TOOL 1 · LOCKED</div>
+        <div class="tool-desc hidden">click to discover...</div>
+      </div>
+      <div class="tool-card" data-tool="magnitude" onclick="discoverTool('magnitude')">
+        <div class="lock-glyph" id="glyph-magnitude">🔒</div>
+        <div class="tool-name">TOOL 2 · LOCKED</div>
+        <div class="tool-desc hidden">click to discover...</div>
+      </div>
+      <div class="tool-card" data-tool="absolute" onclick="discoverTool('absolute')">
+        <div class="lock-glyph" id="glyph-absolute">🔒</div>
+        <div class="tool-name">TOOL 3 · LOCKED</div>
+        <div class="tool-desc hidden">click to discover...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mission roadmap -->
+  <div class="roadmap-section">
+    <div class="section-title" style="color:#d4b8ff;">🗺 MISSION ROADMAP</div>
+    <div class="roadmap">
+      <div class="road-step">P03 · Bridge</div><span class="road-arrow">→</span>
+      <div class="road-step lab">P04-05 · Parallax</div><span class="road-arrow">→</span>
+      <div class="road-step story">P06 · Reveal</div><span class="road-arrow">→</span>
+      <div class="road-step lab">P07-08 · Magnitude</div><span class="road-arrow">→</span>
+      <div class="road-step lab">P09 · m vs M</div><span class="road-arrow">→</span>
+      <div class="road-step story">P09B · Decode</div><span class="road-arrow">→</span>
+      <div class="road-step story">P10-12 · Father's Box</div><span class="road-arrow">→</span>
+      <div class="road-step climax">P13-15 · Triangulation</div><span class="road-arrow">→</span>
+      <div class="road-step climax">P16-18 · Final Run</div>
+    </div>
+    <div style="font-size:11px;color:#9aa3c0;margin-top:8px;text-align:center;">
+      ทาง 20 หน้า · 100 นาที · จบที่ <b style="color:#7effb2;">beacon ส่งถึงพ่อ</b>
+    </div>
+  </div>
+
+  <!-- Accept mission -->
+  <div class="accept-area">
+    <button class="accept-btn" id="acceptBtn" disabled onclick="acceptMission()">
+      🚀 ACCEPT MISSION
+    </button>
+    <div class="accept-hint" id="acceptHint">⚠ ปลด tool ครบ 3 อย่างก่อน · กดที่การ์ดด้านบน</div>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · MISSION GENESIS (P02B)</summary>
+    <div class="body">
+      <b>หน้านี้คือ kickoff ของทั้ง EP</b> · setup ปัญหา · เผย tool · commit ภารกิจ<br>
+      <b>3 tool</b> ที่นักเรียนจะใช้ปลดอนาคต:<br>
+      · 🔭 <b>Parallax</b> (P04-05) → หาระยะ d<br>
+      · 👁 <b>Magnitude</b> (P07-08) → หาความสว่างปรากฎ m<br>
+      · ⚡ <b>Absolute</b> (P09) → หาความสว่างจริง M<br>
+      <b>Roadmap</b> · เด็กเห็นทางทั้งหมด · ลด anxiety + เพิ่ม motivation<br>
+      <b>🪙 Coin reward</b>:<br>
+      · ปลด tool · 1 coin/ชิ้น (3 รวม)<br>
+      · Accept mission · +5 commitment bonus<br>
+      <b>Chain</b>: Chain.set('mission_accepted', true) · sets up rest of EP
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+const TOOLS = {
+  parallax: {
+    glyph: '🔭',
+    name: 'PARALLAX',
+    desc: 'วัดมุมที่ดาวขยับเมื่อโลกโคจร · ใช้หา<b>ระยะทาง d</b>',
+    formula: 'd = 1 / p',
+    coverage: 'ใช้ใน · P04 (สอน) · P05 (วัด 3 ดาว)',
+  },
+  magnitude: {
+    glyph: '👁',
+    name: 'APPARENT MAG (m)',
+    desc: 'วัด<b>อันดับความสว่างปรากฎ (m)</b> · ระบบของ Hipparchus',
+    formula: 'm < 0 = สว่าง',
+    coverage: 'ใช้ใน · P07 (สอน) · P08 (วัด)',
+  },
+  absolute: {
+    glyph: '⚡',
+    name: 'ABSOLUTE MAG (M)',
+    desc: 'แปลง m + d → <b>ความสว่างจริง M</b> · ดาวร้อน/อายุยืน',
+    formula: 'M = m − 5×log(d/10)',
+    coverage: 'ใช้ใน · P09 (lab) · P09B (decode)',
+  },
+};
+
+const state = {
+  discovered: {},
+  acceptedAt: null,
+  toolCoins: 0,
+};
+
+window.discoverTool = function(id) {
+  if (state.discovered[id]) return;
+  state.discovered[id] = true;
+  const t = TOOLS[id];
+  const card = document.querySelector('.tool-card[data-tool="' + id + '"]');
+  card.classList.add('discovered');
+  document.getElementById('glyph-' + id).textContent = t.glyph;
+  card.querySelector('.tool-name').textContent = t.name;
+  const desc = card.querySelector('.tool-desc');
+  desc.classList.remove('hidden');
+  desc.innerHTML = t.desc;
+  // Append formula and coverage
+  if (!card.querySelector('.tool-formula')) {
+    const f = document.createElement('div');
+    f.className = 'tool-formula';
+    f.textContent = t.formula;
+    card.appendChild(f);
+    const c = document.createElement('div');
+    c.className = 'tool-coverage';
+    c.textContent = t.coverage;
+    card.appendChild(c);
+  }
+  // Coin reward
+  state.toolCoins++;
+  if (typeof Coin !== 'undefined') Coin.add(1, 'p02b-tool-' + id);
+  showCoinToast('🪙 +1 · ปลด ' + t.glyph + ' ' + t.name);
+  updateAcceptGate();
+};
+
+function updateAcceptGate() {
+  const allDiscovered = Object.keys(TOOLS).every(id => state.discovered[id]);
+  const btn = document.getElementById('acceptBtn');
+  const hint = document.getElementById('acceptHint');
+  btn.disabled = !allDiscovered;
+  if (allDiscovered) {
+    hint.innerHTML = '✓ พร้อมแล้ว · กด <b style="color:#7effb2;">ACCEPT MISSION</b> เริ่มภารกิจ';
+  } else {
+    const left = 3 - Object.keys(state.discovered).length;
+    hint.innerHTML = '⚠ ปลด tool อีก <b>' + left + '</b> อันก่อน';
+  }
+}
+
+window.acceptMission = function() {
+  if (state.acceptedAt) return;
+  state.acceptedAt = Date.now();
+  // Final commitment bonus
+  if (typeof Coin !== 'undefined') Coin.add(5, 'p02b-accept');
+  if (typeof Photon !== 'undefined') Photon.add(10, 'p02b-accept');
+  if (typeof Chain !== 'undefined') {
+    Chain.set('mission_accepted', true);
+    Chain.set('genesis_at', state.acceptedAt);
+  }
+  showCoinToast('🪙 +5 · ✦ +10 · MISSION ACCEPTED');
+
+  // Save record
+  Submit.record('p02b', {
+    tag: 'mission-genesis',
+    discoveredTools: Object.keys(state.discovered),
+    coinTotal: state.toolCoins + 5,
+    acceptedAt: state.acceptedAt,
+  });
+
+  // Navigate to P03 with transition
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined' && Transition.play) {
+      Transition.play('p02-to-p03', () => location.href = 'p03-join.html');
+    } else {
+      location.href = 'p03-join.html';
+    }
+  }, 800);
+};
+
+function showCoinToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+</script>
+</body></html>

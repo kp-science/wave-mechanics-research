@@ -8,21 +8,34 @@
 
 <!-- ═══════════════════════════════════════════════════════════════
      Content Pack (subject-specific data)
-     รองรับ ?course=physics3 | astronomy  (default = physics3)
-     Content ต่อวิชาอยู่ใน content/{course}/ — ดู content/README.md
+     รองรับ:
+       ?course=physics3 | astronomy                     (default = physics3)
+       ?course=physics3&unit=shm                        (sub-unit ใต้วิชา)
+     Content:
+       - config.js โหลดจาก content/{course}/config.js (course identity)
+       - ถ้ามี ?unit= → plans/tools/media/questions/worksheets โหลดจาก
+         content/{course}/units/{unit}/ (subfolder)
+       - ถ้าไม่มี ?unit= → โหลดจาก content/{course}/ (top-level · เดิม)
      ═══════════════════════════════════════════════════════════════ -->
 <script>
   // อ่าน ?course= จาก URL · ถ้าไม่มี → default physics3
-  window.KP_COURSE = new URLSearchParams(location.search).get('course') || 'physics3';
-  const base = 'content/' + window.KP_COURSE;
+  const _params = new URLSearchParams(location.search);
+  window.KP_COURSE = _params.get('course') || 'physics3';
+  window.KP_UNIT   = _params.get('unit')   || null;
+  const courseBase = 'content/' + window.KP_COURSE;
+  // packBase = ที่อยู่ของ plans/tools/media/questions/worksheets
+  // ถ้ามี unit → subfolder · ถ้าไม่มี → top-level (waves เดิมอยู่ที่ top-level)
+  const packBase = window.KP_UNIT
+    ? courseBase + '/units/' + window.KP_UNIT
+    : courseBase;
   document.write(
     '<script src="content/subjects.js"><\/script>' +
-    '<script src="'+base+'/config.js"><\/script>' +
-    '<script src="'+base+'/plans.js"><\/script>' +
-    '<script src="'+base+'/tools.js"><\/script>' +
-    '<script src="'+base+'/media.js"><\/script>' +
-    '<script src="'+base+'/questions.js"><\/script>' +
-    '<script src="'+base+'/worksheets.js"><\/script>'
+    '<script src="'+courseBase+'/config.js"><\/script>' +
+    '<script src="'+packBase+'/plans.js"><\/script>' +
+    '<script src="'+packBase+'/tools.js"><\/script>' +
+    '<script src="'+packBase+'/media.js"><\/script>' +
+    '<script src="'+packBase+'/questions.js"><\/script>' +
+    '<script src="'+packBase+'/worksheets.js"><\/script>'
   );
 </script>
 <style>
@@ -779,6 +792,13 @@ const DB = {
     // Route ไปที่ dbUrl ของ topic (ถ้ามี) · ไม่งั้น fallback API_URL (ของวิชา)
     const targetUrl = getTopicDbUrl() || API_URL;
     if (!targetUrl) return Promise.resolve();
+    // Guard: ถ้า dbUrl ของ topic ยังเป็น placeholder (TODO_DEPLOY_*) → แจ้งและไม่ส่ง
+    // ป้องกันส่งข้อมูลไปยัง URL ที่ไม่ valid (no-cors mode = ส่งสำเร็จเทียม)
+    if (typeof targetUrl !== 'string' || !targetUrl.startsWith('https://script.google.com/')){
+      alert('⚠️ หน่วยนี้ยังไม่ได้เปิดให้ส่งข้อมูล\n(ผู้ดูแลยังไม่ได้ deploy backend)\n\nข้อมูลของคุณยังไม่ถูกบันทึก');
+      console.warn('submit aborted · targetUrl invalid:', targetUrl);
+      return Promise.resolve();
+    }
     return fetch(targetUrl, {
       method: 'POST',
       mode: 'no-cors',
@@ -1101,15 +1121,22 @@ function selectTopic(subjectId, topicId){
   state.topic = topicId;
   try { localStorage.setItem(LS_NAV, JSON.stringify({subject: subjectId, topic: topicId})); } catch(_){}
 
-  // ถ้า content pack ปัจจุบันตรงกับ subject นี้และเป็น topic current → แสดงบ้านตรงๆ
-  if (topic.current && window.KP_COURSE === subjectId){
+  // ถ้า content pack ปัจจุบันตรงกับ subject + unit นี้ → แสดงบ้านตรงๆ ไม่ต้อง reload
+  // เงื่อนไข: subject ตรง · unit ตรง (ทั้งสองฝั่งเป็น null = waves เดิม)
+  const wantUnit = topic.unit || null;
+  const sameSubject = window.KP_COURSE === subjectId;
+  const sameUnit    = (window.KP_UNIT || null) === wantUnit;
+  if (topic.current && sameSubject && sameUnit){
     showHome();
     return;
   }
-  // ถ้าไม่ใช่ content pack ปัจจุบัน · reload ไปที่ ?course=<subjectId>
-  // (ภายหลังจะรองรับ subfolder เช่น physics3/shm · ตอนนี้ยังมีแค่ course เดียวต่อ subject)
+  // ไม่งั้น reload ไป URL ที่ตรงกับ topic
+  // - มี unit → ?course=<subject>&unit=<unit>  (สำหรับ subfolder เช่น physics3/shm)
+  // - ไม่มี unit → ?course=<subject>           (top-level content pack เช่น waves)
   const params = new URLSearchParams(location.search);
   params.set('course', subjectId);
+  if (wantUnit) params.set('unit', wantUnit);
+  else params.delete('unit');
   location.search = params.toString();
 }
 

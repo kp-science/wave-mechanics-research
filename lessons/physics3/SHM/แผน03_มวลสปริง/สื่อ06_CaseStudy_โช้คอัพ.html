@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Case Study โช้คอัพรถยนต์ · SHM แผน 3</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px}
+.head h1{font-size:21px;color:#9a3412}
+.meta{font-size:13px;color:#555;margin-top:4px}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.id-row label{font-size:13px;font-weight:600;color:#555;display:flex;gap:6px;align-items:center}
+.id-row input{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;width:155px}
+.id-row input.short{width:70px}
+.hero-case{background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:14px;padding:18px 22px;color:white;margin:14px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.hero-case .icon{font-size:48px}
+.hero-case h2{font-size:19px;font-weight:800;margin-bottom:6px}
+.hero-case p{font-size:14px;opacity:.9;line-height:1.6}
+.sec-title{font-size:18px;font-weight:800;color:#9a3412;margin:18px 0 10px;padding-left:12px;border-left:5px solid #ea580c}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:10px 0;font-size:14px}
+.step{border:2px solid #fed7aa;border-radius:12px;margin:14px 0;overflow:hidden}
+.step-head{background:linear-gradient(90deg,#9a3412,#ea580c);color:white;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.step-num{background:rgba(255,255,255,.2);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0}
+.step-body{padding:14px 16px}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #fdba74;padding:3px 6px;font-family:inherit;font-size:15px;width:110px;text-align:center}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:5px 0 3px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600;transition:all .15s}
+.c-btn:hover,.c-btn.active{background:#ea580c;color:#fff}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:6px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.opt:hover{border-color:#ea580c;background:#fff7ed}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#ea580c}
+.cb-opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14px;padding:6px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.cb-opt:hover{border-color:#fdba74}
+.cb-opt:has(input:checked){background:#ffedd5;border-color:#ea580c}
+.cb-opt input{margin-top:3px;flex-shrink:0;accent-color:#ea580c}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:6px}
+.next-box{background:linear-gradient(135deg,#4e342e,#8d6e63);border-radius:12px;padding:14px 18px;color:white;margin:16px 0}
+.next-box h4{font-size:16px;margin-bottom:8px}
+.next-box p{font-size:14px;opacity:.9}
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:16px 20px;margin:16px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:10px 24px;border-radius:10px;cursor:pointer}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <h1>🚗 Case Study — โช้คอัพรถยนต์กับระบบมวล-สปริง</h1>
+    <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">E4 Elaborate</span> วPA 5, 8 · เชื่อมแผน 6 Damping</div>
+  </div>
+  <div class="id-row">
+    <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อนักเรียน"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short" placeholder="1"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+  </div>
+
+  <div class="hero-case">
+    <div class="icon">🚗</div>
+    <div>
+      <h2>โจทย์: ออกแบบโช้คอัพรถยนต์นักเรียน</h2>
+      <p>รถยนต์นักเรียนมีมวลตัวถัง 1200 kg · มีโช้คอัพ 4 ตัว (ขนาน) ·<br>
+      วิศวกรต้องการให้ T การสั่นของตัวถัง ≈ 1.0 s เพื่อให้นุ่มนวลสบาย ·<br>
+      จงช่วยวิศวกรหาค่า k ที่เหมาะสม และวิเคราะห์ระบบ</p>
+    </div>
+  </div>
+
+  <div class="info">⚙️ ข้อมูลที่กำหนด: m_รถ = 1200 kg · จำนวนโช้คอัพ = 4 ตัว (ต่อขนาน) · T_เป้าหมาย = 1.0 s · g = 10 m/s²</div>
+
+  <div class="sec-title">📐 ขั้นที่ 1 — วิเคราะห์ระบบ</div>
+  <div class="step">
+    <div class="step-head"><div class="step-num">1</div><div>กำหนดมวลที่รองรับต่อโช้คอัพ 1 ตัว</div></div>
+    <div class="step-body">
+      <div style="font-size:14.5px;margin-bottom:10px">รถมีโช้คอัพ 4 ตัว รับน้ำหนักเท่ากัน มวลรองรับต่อตัว m_eff = m_รถ / 4 = ?</div>
+      <div style="font-size:15px">m_eff = 1200 / 4 = <input class="ans-in" id="meff" placeholder="?"> kg</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="sm('c1','pen')">✏️</button><button class="c-btn" onclick="sm('c1','eraser')">🧹</button>
+        <input type="range" min="1" max="14" value="3" oninput="sz['c1']=this.value" style="width:70px">
+        <button class="c-btn" onclick="clr('c1')">🗑️</button>
+        <span style="font-size:12.5px;color:#666">วาด FBD ระบบโช้คอัพ</span>
+      </div>
+      <canvas id="c1" data-bg="lined" width="960" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><div class="step-num">2</div><div>คำนวณ k_eff รวม (ขนาน 4 ตัว) ที่ต้องการ</div></div>
+    <div class="step-body">
+      <div style="font-size:14.5px;margin-bottom:8px">จาก T = 2π√(m/k_eff) → k_eff = 4π²m/T²</div>
+      <div style="font-size:15px;line-height:2.2">
+        k_eff รวม = 4π² × <input class="ans-in" id="m_total" placeholder="1200"> / (<input class="ans-in" id="T_val" placeholder="1.0">)²<br>
+        k_eff รวม ≈ <input class="ans-in" id="keff_total" placeholder="?"> N/m
+      </div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="sm('c2','pen')">✏️</button><button class="c-btn" onclick="sm('c2','eraser')">🧹</button>
+        <input type="range" min="1" max="14" value="3" oninput="sz['c2']=this.value" style="width:70px">
+        <button class="c-btn" onclick="clr('c2')">🗑️</button>
+      </div>
+      <canvas id="c2" data-bg="lined" width="960" height="220"></canvas>
+      <div class="hint">💡 k_eff = 4π²×1200/1.0 ≈ 47370 N/m ≈ 4.74×10⁴ N/m</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><div class="step-num">3</div><div>หา k ของโช้คอัพแต่ละตัว</div></div>
+    <div class="step-body">
+      <div style="font-size:14.5px;margin-bottom:8px">เนื่องจากต่อขนาน: k_eff = 4 × k_each → k_each = k_eff / 4</div>
+      <div style="font-size:15px">k_each = <input class="ans-in" id="keff_each" placeholder="?"> N/m ต่อตัว</div>
+      <div class="hint">💡 k_each ≈ 47370/4 ≈ 11842 N/m ≈ 1.18×10⁴ N/m</div>
+    </div>
+  </div>
+
+  <div class="sec-title">🔍 ขั้นที่ 2 — วิเคราะห์ผลกระทบ</div>
+  <div class="step">
+    <div class="step-head"><div class="step-num">4</div><div>ถ้าโช้คอัพ 1 ตัวพัง (เหลือ 3 ตัว) T จะเปลี่ยนอย่างไร?</div></div>
+    <div class="step-body">
+      <div class="opt"><label><input type="radio" name="q4" value="A"> ก. T เพิ่มขึ้น เพราะ k_eff ลดลง</label></div>
+      <div class="opt"><label><input type="radio" name="q4" value="B"> ข. T ลดลง เพราะสปริงน้อยลง</label></div>
+      <div class="opt"><label><input type="radio" name="q4" value="C"> ค. T ไม่เปลี่ยน เพราะมวลเท่าเดิม</label></div>
+      <div class="opt"><label><input type="radio" name="q4" value="D"> ง. ขึ้นกับมวลรถ ไม่แน่ใจ</label></div>
+      <textarea class="ans-ta" rows="2" id="q4_reason" placeholder="อธิบายเหตุผล..." style="margin-top:8px"></textarea>
+      <div class="hint">💡 เหลือ 3 ตัว k_eff=3k_each → ลดลง → T = 2π√(m/k_eff) เพิ่มขึ้น</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head"><div class="step-num">5</div><div>เปรียบเทียบ: สปริง k สูงหรือต่ำ ให้การสั่นแบบใด?</div></div>
+    <div class="step-body">
+      <div style="font-size:14.5px;margin-bottom:10px">กรอกตารางเปรียบเทียบ:</div>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <thead><tr><th style="background:#9a3412;color:#fff;padding:8px">สถานการณ์</th><th style="background:#ea580c;color:#fff;padding:8px">k_eff</th><th style="background:#ea580c;color:#fff;padding:8px">T</th><th style="background:#ea580c;color:#fff;padding:8px">ความรู้สึก</th></tr></thead>
+        <tbody>
+          <tr><td style="border:1.5px solid #fed7aa;padding:7px">สปริงแข็ง (k สูง)</td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_k1" placeholder="สูง/ต่ำ"></td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_T1" placeholder="มาก/น้อย"></td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_feel1" placeholder="กระด้าง/นุ่ม"></td></tr>
+          <tr style="background:#fff7ed"><td style="border:1.5px solid #fed7aa;padding:7px">สปริงอ่อน (k ต่ำ)</td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_k2" placeholder="สูง/ต่ำ"></td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_T2" placeholder="มาก/น้อย"></td>
+            <td style="border:1.5px solid #fed7aa;padding:7px"><input style="width:90%;border:1px solid #fdba74;border-radius:4px;padding:3px;font-family:inherit;font-size:13px;text-align:center" id="t5_feel2" placeholder="กระด้าง/นุ่ม"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec-title">✅ ขั้นที่ 3 — สรุปและเชื่อมโยง</div>
+  <div style="margin:10px 0">
+    <div style="font-weight:700;color:#9a3412;margin-bottom:8px">เลือกข้อความที่ถูกต้องเกี่ยวกับโช้คอัพและ SHM (เลือกได้หลายข้อ)</div>
+    <div class="cb-opt"><label><input type="checkbox" data-correct="true"> โช้คอัพรถยนต์ทำงานเป็น SHM ในอุดมคติ แต่มี damping ทำให้การสั่นลดลงในชีวิตจริง</label></div>
+    <div class="cb-opt"><label><input type="checkbox" data-correct="true"> k ของโช้คอัพถูกออกแบบตามมวลรถเพื่อให้ T ธรรมชาติเหมาะสม</label></div>
+    <div class="cb-opt"><label><input type="checkbox" data-correct="true"> ต่อขนาน 4 ตัว k_eff = 4k_each ทำให้รับมวลรถได้</label></div>
+    <div class="cb-opt"><label><input type="checkbox" data-correct="false"> เพิ่มจำนวนโช้คอัพโดยไม่เปลี่ยน k_each จะทำให้รถสั่นเร็วขึ้น (T น้อยลง)</label></div>
+    <div class="cb-opt"><label><input type="checkbox" data-correct="false"> k_eff ของโช้คอัพขนานใช้สูตร 1/k_eff = 1/k₁+1/k₂+1/k₃+1/k₄</label></div>
+  </div>
+
+  <div style="margin-top:12px;font-weight:700;color:#9a3412;margin-bottom:8px">สรุปบทเรียนจาก Case Study (เขียนด้วยตัวเอง):</div>
+  <textarea class="ans-ta" rows="4" id="summary" placeholder="จาก Case Study นี้ ฉันได้เรียนรู้ว่า..."></textarea>
+
+  <div class="next-box">
+    <h4>🔗 เชื่อมสู่แผนถัดไป</h4>
+    <p>
+      • <strong>แผน 4:</strong> เมื่อรู้ ω = √(k/m) แล้ว สมการ x(t), v(t), a(t) ของโช้คอัพเป็นอย่างไร?<br>
+      • <strong>แผน 5:</strong> พลังงานศักย์สปริง ½kx² เก็บ-ปล่อยพลังงานอย่างไรขณะรถวิ่งบนถนนขรุขระ?<br>
+      • <strong>แผน 6:</strong> โช้คอัพจริงมี damping (ความหน่วง) — ทำให้การสั่นลดลงเร็วขึ้น · underdamped vs overdamped
+    </p>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่ง Case Study โช้คอัพ</h3>
+    <button class="btn-submit" onclick="submitCS()">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="foot">Case Study โช้คอัพ · SHM แผน 3 · ว30203 ฟิสิกส์ 3 ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET='CaseStudy3_SHM_Plan3';
+const cvs={},ctxs={},modes={},sz={};
+function initC(id){
+  const c=document.getElementById(id);if(!c)return;
+  cvs[id]=c;const ct=c.getContext('2d');ct.lineCap='round';ct.lineJoin='round';ctxs[id]=ct;
+  modes[id]='pen';sz[id]=3;
+  let drawing=false,last=null;
+  const gp=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();drawing=true;last=gp(e);};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=gp(e);
+    ct.globalCompositeOperation=modes[id]==='eraser'?'destination-out':'source-over';
+    ct.strokeStyle='#1a202c';ct.lineWidth=sz[id]||3;
+    ct.beginPath();ct.moveTo(last.x,last.y);ct.lineTo(p.x,p.y);ct.stroke();last=p;};
+  const end=()=>{drawing=false;last=null;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);
+  c.addEventListener('mouseup',end);c.addEventListener('mouseleave',end);
+  c.addEventListener('touchstart',start,{passive:false});
+  c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+}
+function sm(id,m){modes[id]=m;}
+function clr(id){if(ctxs[id])ctxs[id].clearRect(0,0,cvs[id].width,cvs[id].height);}
+function gv(id){return document.getElementById(id)?.value||'';}
+function gr(name){return document.querySelector(`input[name="${name}"]:checked`)?.value||'';}
+function submitCS(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){alert('กรุณากรอกชื่อ');return;}
+  const payload={sheet:SHEET,student_name:name,student_no:gv('s-num'),class:gv('s-room'),
+    meff:gv('meff'),m_total:gv('m_total'),T_val:gv('T_val'),keff_total:gv('keff_total'),keff_each:gv('keff_each'),
+    q4:gr('q4'),q4_reason:gv('q4_reason'),summary:gv('summary'),
+    canvas_1:cvs['c1']?cvs['c1'].toDataURL('image/png'):'',
+    canvas_2:cvs['c2']?cvs['c2'].toDataURL('image/png'):''};
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`CS3_${name}.json`;a.click();
+    showStatus('success','💾 บันทึก .json แล้ว');return;
+  }
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ'));
+}
+function showStatus(t,m){const el=document.getElementById('status');el.className='status '+t;el.textContent=m;}
+['c1','c2'].forEach(initC);
+</script>
+</body></html>

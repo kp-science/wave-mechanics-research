@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P15 · Match Mass → Endpoint</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .star-pool-mass { display:flex; flex-wrap:wrap; gap:8px; padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; min-height:80px; justify-content:center; }
+  .mass-tile {
+    padding:10px 14px; min-height:60px; min-width:140px;
+    background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9));
+    border:2px solid rgba(120,140,220,0.5); border-radius:12px;
+    color:#e8ecf8; cursor:grab; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none;
+    transition:all .15s; text-align:center;
+  }
+  .mass-tile:active, .mass-tile.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .mass-tile.placed { opacity:0.3; pointer-events:none; }
+  .mass-tile .nm { font-family:Orbitron; font-size:13px; color:#ffcb6b; }
+  .mass-tile .m { font-family:monospace; font-size:18px; color:#fff; margin-top:4px; }
+
+  .endpoint-bins { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:14px 0; }
+  @media(max-width:680px){ .endpoint-bins { grid-template-columns:repeat(2,1fr); } }
+  .ep-bin {
+    padding:14px 8px; min-height:140px;
+    background:rgba(0,0,0,0.4); border:2px dashed; border-radius:10px;
+    text-align:center; transition:all .15s;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .ep-bin.over { border-style:solid; box-shadow:0 0 16px currentColor; }
+  .ep-bin .ic { font-size:30px; }
+  .ep-bin .nm { font-family:Orbitron; font-size:11px; letter-spacing:0.1em; }
+  .ep-bin .rng { font-family:monospace; font-size:10px; color:#9aa3c0; }
+  .ep-bin .placed-host { display:flex; flex-direction:column; gap:3px; width:100%; margin-top:4px; }
+  .placed-mini-m { padding:3px 5px; background:rgba(100,216,255,0.12); border:1px solid #64d8ff; border-radius:5px; font-size:10px; }
+  .placed-mini-m.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+  .placed-mini-m.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); }
+</style>
+</head>
+<body data-page="p15" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">⚫ ACT C · MATCH</span>
+  <h1>มวล → วาระสุดท้าย</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K3</span><span class="kpa-chip k">K4</span><span class="kpa-chip p">P3</span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ลากดาวที่ระบุมวล · ไปจับคู่กับ <b>วาระสุดท้าย</b>ที่ถูกต้อง · ใช้เกณฑ์ <b style="color:#fff;">0.08 · 0.5 · 9 · 25</b>"
+    </span>
+  </div>
+
+  <div class="star-pool-mass" id="starPool"></div>
+
+  <div class="endpoint-bins" id="bins"></div>
+
+  <div class="status" id="hint">💡 ลากครบ <b id="leftCnt">8</b> ดวง</div>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P15</summary>
+    <div class="body">
+      <b>เกณฑ์ที่ฝึก:</b> 0.08 (Brown dwarf) · 0.5 (Red dwarf cutoff) · 9 (Neutron) · 25 (Black hole)<br>
+      <b>วPA:</b> ถ้านักเรียนตอบถูกแม้ผ่านดาว 27 M☉ แสดงว่าเข้าใจ "เกิน 25 = หลุมดำ"
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">ลากครบ → กดส่ง</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const STARS = [
+  { id:'m1', nm:'Sun (1 M☉)',       mass:1.0,  end:'wd' },
+  { id:'m2', nm:'Red dwarf (0.3)',  mass:0.3,  end:'rd' },
+  { id:'m3', nm:'Neutron-ish (12)', mass:12,   end:'ns' },
+  { id:'m4', nm:'BH-ish (27)',      mass:27,   end:'bh' },
+  { id:'m5', nm:'Brown (0.05)',     mass:0.05, end:'bn' },
+  { id:'m6', nm:'WD-ish (8)',       mass:8,    end:'wd' },
+  { id:'m7', nm:'Massive (25)',     mass:25,   end:'ns' },
+  { id:'m8', nm:'Hyper (40)',       mass:40,   end:'bh' },
+];
+const BINS = [
+  { id:'bn', nm:'Brown Dwarf',  ic:'🟫', range:'< 0.08 M☉',     color:'#8b6645' },
+  { id:'rd', nm:'Black Dwarf',  ic:'🔴', range:'0.08–0.5 (Red→Black)', color:'#cc4422' },
+  { id:'wd', nm:'White Dwarf',  ic:'⚪', range:'0.5–9 M☉',     color:'#bcd0ff' },
+  { id:'ns', nm:'Neutron Star', ic:'⭐', range:'9–25 M☉',      color:'#ffcb6b' },
+  { id:'bh', nm:'Black Hole',   ic:'⚫', range:'> 25 M☉',       color:'#b980ff' },
+];
+
+const placed = {};
+
+const pool = document.getElementById('starPool');
+pool.innerHTML = STARS.sort(()=>Math.random()-0.5).map(s=>`
+  <div class="mass-tile" id="mt-${s.id}" data-id="${s.id}" draggable="true">
+    <div class="nm">${s.nm}</div>
+    <div class="m">${s.mass} M☉</div>
+  </div>
+`).join('');
+
+const binsHost = document.getElementById('bins');
+binsHost.innerHTML = BINS.map(b => `
+  <div class="ep-bin" id="eb-${b.id}" style="border-color:${b.color}; color:${b.color};">
+    <div class="ic">${b.ic}</div>
+    <div class="nm">${b.nm}</div>
+    <div class="rng">${b.range}</div>
+    <div class="placed-host" id="eb-${b.id}-placed"></div>
+  </div>
+`).join('');
+
+function setupDrag() {
+  STARS.forEach(s => {
+    const tile = document.getElementById('mt-' + s.id);
+    if (!tile) return;
+    tile.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', s.id);
+      ev.dataTransfer.setData('text/plain', s.id);
+      tile.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    tile.addEventListener('dragend', () => tile.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(tile, () => s.id);
+  });
+  BINS.forEach(b => {
+    const el = document.getElementById('eb-' + b.id);
+    el.addEventListener('dragover', ev => { ev.preventDefault(); el.classList.add('over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('over'));
+    el.addEventListener('drop', ev => {
+      ev.preventDefault(); el.classList.remove('over');
+      const sid = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(sid, b.id);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(el, sid => tryPlace(sid, b.id));
+  });
+}
+
+function tryPlace(sid, bid) {
+  if (!sid || placed[sid]) return;
+  const s = STARS.find(x=>x.id===sid);
+  if (!s) return;
+  placed[sid] = bid;
+  const correct = (s.end === bid);
+  const ph = document.getElementById('eb-' + bid + '-placed');
+  const m = document.createElement('div');
+  m.className = 'placed-mini-m ' + (correct?'correct':'wrong');
+  m.textContent = (correct?'✓':'✗') + ' ' + s.nm;
+  ph.appendChild(m);
+  document.getElementById('mt-' + sid).classList.add('placed');
+  if (window.SFX) SFX.play(correct?'correct':'wrong');
+  const left = STARS.length - Object.keys(placed).length;
+  document.getElementById('leftCnt').textContent = left;
+  if (left === 0) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('hint').className='status ok';
+    document.getElementById('hint').innerHTML = '✓ ลากครบ · กดส่ง';
+  }
+}
+
+setTimeout(setupDrag, 300);
+
+Submit.wirePair({
+  page:'p15',
+  nextHref:'p16-evo-game.html',
+  getPayload:()=>{
+    const correct = STARS.filter(s=>placed[s.id]===s.end).length;
+    return { placed, correct, total:STARS.length };
+  },
+  isPerfect:(p)=>p.correct===p.total,
+  onSubmit:(status,n)=>{
+    const p = JSON.parse(localStorage.getItem('cosmosLog_ep04_submit_p15')||'{}');
+    document.getElementById('result').style.display='block';
+    document.getElementById('result').innerHTML =
+      `<span class="star">✓</span> จับคู่ถูก ${p.correct||0}/${p.total||8}`;
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

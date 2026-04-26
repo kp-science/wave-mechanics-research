@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Posttest F5 · พลังงาน SHM (แผน 5)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fffbeb;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:900px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 32px}
+.head{border-bottom:3px solid #d97706;padding-bottom:12px;margin-bottom:18px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#78350f}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#d97706;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.progress-bar{height:8px;background:#fef3c7;border-radius:4px;margin-bottom:18px;overflow:hidden}
+.progress-fill{height:100%;background:#d97706;border-radius:4px;transition:.4s;width:0%}
+.q-card{border:2px solid #fcd34d;border-radius:14px;padding:22px 24px;margin:16px 0;background:#fffbeb}
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.q-num{background:#d97706;color:#fff;border-radius:50%;min-width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex-shrink:0}
+.q-title{font-size:17px;font-weight:700;color:#1a202c;flex:1}
+.misc-tag{background:#ffe4d6;color:#b53c00;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;margin-left:6px}
+.tier-label{font-size:13px;font-weight:700;color:#78350f;background:#fef3c7;border-radius:6px;padding:2px 10px;border:1px solid #fcd34d;margin:12px 0 6px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;font-size:15px;margin:4px 0;border:1.5px solid transparent;transition:.15s}
+.opt:hover{background:#fef3c7;border-color:#fcd34d}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#d97706}
+.opt.reveal-correct{background:#d1fae5;border-color:#6ee7b7}
+.opt.reveal-wrong{background:#fee2e2;border-color:#fca5a5}
+.conf-row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.conf-btn{padding:7px 16px;border-radius:20px;border:2px solid #fcd34d;background:#fff;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#78350f;transition:.15s}
+.conf-btn:hover{background:#fef3c7}
+.conf-btn.selected{background:#d97706;color:#fff;border-color:#d97706}
+.svg-wrap{background:#fff;border:1.5px solid #fcd34d;border-radius:10px;padding:12px;margin:12px 0;text-align:center}
+.ans-in{border:none;border-bottom:2px solid #d97706;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:transparent}
+.submit-btn{background:#d97706;color:#fff;border:none;border-radius:10px;padding:12px 36px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+.submit-btn:hover{background:#b45309}
+.reveal-btn{background:#78350f;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;margin-left:10px}
+.reveal-btn:hover{background:#451a03}
+.score-box{background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:14px 18px;margin-top:14px;display:none}
+.score-num{font-size:32px;font-weight:800;color:#78350f}
+.key-box{background:#d1fae5;border:2px solid #6ee7b7;border-radius:10px;padding:12px 16px;margin-top:10px;font-size:14px;display:none}
+.key-box b{color:#065f46}
+@media print{.submit-btn,.reveal-btn,.conf-row,.progress-bar{display:none}body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}}
+</style></head>
+<body data-ws-id="shm-plan5-post">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 Posttest F5-POST · พลังงาน SHM</h1>
+      <div class="meta"><span class="tag">SHM แผน 5</span><span class="tag">4-Tier · หลังเรียน</span> วัดผลหลังเรียน · M5.1–M5.4</div>
+    </div>
+    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+  <div style="text-align:right;font-size:13px;color:#78350f;margin-bottom:16px" id="prog-label">ตอบแล้ว 0/5 ข้อ</div>
+
+  <!-- Q1 M5.1 ★ — ตำแหน่งกลาง -->
+  <div class="q-card">
+    <div class="q-header">
+      <span class="q-num">1</span>
+      <span class="q-title">ลูกตุ้มนาฬิกาแกว่งผ่าน <strong>จุดต่ำสุด</strong> (ตำแหน่งสมดุล) ข้อใดถูก?<span class="misc-tag">M5.1 ★</span></span>
+    </div>
+    <div class="svg-wrap">
+      <svg width="300" height="130" viewBox="0 0 300 130">
+        <line x1="150" y1="10" x2="80" y2="110" stroke="#92400e" stroke-width="2"/>
+        <circle cx="80" cy="110" r="12" fill="#d97706"/>
+        <line x1="150" y1="10" x2="150" y2="110" stroke="#92400e" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="150" y="125" text-anchor="middle" font-size="11" fill="#78350f">จุดต่ำสุด (equilibrium)</text>
+        <text x="65" y="108" text-anchor="middle" font-size="11" fill="#b45309">m</text>
+        <path d="M150,50 Q115,80 80,110" stroke="#16a34a" stroke-width="1.5" fill="none" stroke-dasharray="3,3"/>
+        <text x="105" y="75" font-size="10" fill="#16a34a">กำลังแกว่ง</text>
+      </svg>
+    </div>
+    <div class="tier-label">ระดับ 1 · คำตอบ</div>
+    <label class="opt"><input type="radio" name="q1a" value="a" onchange="updateProg()"> ก. KE = 0, PE = E</label>
+    <label class="opt"><input type="radio" name="q1a" value="b" onchange="updateProg()"> ข. KE = E (สูงสุด), PE = 0</label>
+    <label class="opt"><input type="radio" name="q1a" value="c" onchange="updateProg()"> ค. KE = PE = ½E</label>
+    <label class="opt"><input type="radio" name="q1a" value="d" onchange="updateProg()"> ง. KE = E, PE = E (รวมกัน = 2E)</label>
+    <div class="tier-label">ระดับ 2 · ความมั่นใจ</div>
+    <div class="conf-row" id="q1c">
+      <button class="conf-btn" onclick="selectConf('q1c',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q1c',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q1c',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q1c',this,'เดา')">เดา</button>
+    </div>
+    <div class="tier-label">ระดับ 3 · เหตุผล</div>
+    <label class="opt"><input type="radio" name="q1r" value="r1"> ที่จุดสมดุล ความเร็วมากที่สุด → KE สูงสุด, การกระจัดเป็น 0 → PE = 0</label>
+    <label class="opt"><input type="radio" name="q1r" value="r2"> ที่จุดสมดุล มวลหยุดชั่วขณะ จึง KE = 0</label>
+    <label class="opt"><input type="radio" name="q1r" value="r3"> KE และ PE เท่ากันเสมอ ณ ทุกตำแหน่ง</label>
+    <label class="opt"><input type="radio" name="q1r" value="r4"> E รวมเพิ่มเป็นสองเท่าที่จุดสมดุล</label>
+    <div class="tier-label">ระดับ 4 · ความมั่นใจในเหตุผล</div>
+    <div class="conf-row" id="q1rc">
+      <button class="conf-btn" onclick="selectConf('q1rc',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q1rc',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q1rc',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q1rc',this,'เดา')">เดา</button>
+    </div>
+    <div class="key-box" id="key1"><b>เฉลย:</b> <b>ข.</b> KE = E (สูงสุด), PE = 0 · เหตุผล: <b>ร1</b> — ที่ y=0 ความเร็วสูงสุด (v_max=ωA) ทำให้ KE = ½mv²_max = ½kA² = E; ไม่มีการกระจัดแบบยืด/หดสปริง PE = ½ky² = 0</div>
+  </div>
+
+  <!-- Q2 M5.2 — พลังงานในระบบไร้แรงเสียดทาน -->
+  <div class="q-card">
+    <div class="q-header">
+      <span class="q-num">2</span>
+      <span class="q-title">สปริง-มวลไร้แรงเสียดทาน หลังปล่อยเคลื่อนที่ 100 รอบ E รวมของระบบเป็นอย่างไร?<span class="misc-tag">M5.2</span></span>
+    </div>
+    <div class="tier-label">ระดับ 1 · คำตอบ</div>
+    <label class="opt"><input type="radio" name="q2a" value="a" onchange="updateProg()"> ก. E เพิ่มขึ้น เพราะมวลเคลื่อนที่ทำให้เกิด KE เพิ่ม</label>
+    <label class="opt"><input type="radio" name="q2a" value="b" onchange="updateProg()"> ข. E ลดลง เพราะแต่ละรอบใช้พลังงาน</label>
+    <label class="opt"><input type="radio" name="q2a" value="c" onchange="updateProg()"> ค. E คงเดิม เพราะไม่มีแรงเสียดทานดูดพลังงาน</label>
+    <label class="opt"><input type="radio" name="q2a" value="d" onchange="updateProg()"> ง. E เป็น 0 เพราะ KE กับ PE หักล้างกัน</label>
+    <div class="tier-label">ระดับ 2 · ความมั่นใจ</div>
+    <div class="conf-row" id="q2c">
+      <button class="conf-btn" onclick="selectConf('q2c',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q2c',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q2c',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q2c',this,'เดา')">เดา</button>
+    </div>
+    <div class="tier-label">ระดับ 3 · เหตุผล</div>
+    <label class="opt"><input type="radio" name="q2r" value="r1"> กฎอนุรักษ์พลังงาน: KE+PE = E = ½kA² = ค่าคงที่ ตราบที่ไม่มีแรงนอกมากระทำ</label>
+    <label class="opt"><input type="radio" name="q2r" value="r2"> มวลเคลื่อนที่อยู่ตลอดจึงใช้พลังงานไปเรื่อยๆ</label>
+    <label class="opt"><input type="radio" name="q2r" value="r3"> KE และ PE เท่ากันเสมอทุกรอบ ทำให้ผลรวมเป็น 0</label>
+    <label class="opt"><input type="radio" name="q2r" value="r4"> E เพิ่มเพราะสปริงสะสมพลังงานแต่ละรอบ</label>
+    <div class="tier-label">ระดับ 4 · ความมั่นใจในเหตุผล</div>
+    <div class="conf-row" id="q2rc">
+      <button class="conf-btn" onclick="selectConf('q2rc',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q2rc',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q2rc',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q2rc',this,'เดา')">เดา</button>
+    </div>
+    <div class="key-box" id="key2"><b>เฉลย:</b> <b>ค.</b> E คงเดิม · เหตุผล: <b>ร1</b> — กฎอนุรักษ์พลังงาน: ตราบที่ไม่มีแรงเสียดทาน E = KE + PE = ½kA² = ค่าคงที่ ไม่ว่าจะผ่านไปกี่รอบ</div>
+  </div>
+
+  <!-- Q3 M5.3 — E ∝ A² -->
+  <div class="q-card">
+    <div class="q-header">
+      <span class="q-num">3</span>
+      <span class="q-title">ระบบ SHM แอมพลิจูดเดิม A₁ ถ้าเพิ่มเป็น A₂ = 2A₁ พลังงานรวม E₂ เปลี่ยนอย่างไร?<span class="misc-tag">M5.3</span></span>
+    </div>
+    <div class="tier-label">ระดับ 1 · คำตอบ</div>
+    <label class="opt"><input type="radio" name="q3a" value="a" onchange="updateProg()"> ก. E₂ = 2E₁ (เพิ่มสองเท่า เพราะ E ∝ A)</label>
+    <label class="opt"><input type="radio" name="q3a" value="b" onchange="updateProg()"> ข. E₂ = 4E₁ (เพิ่มสี่เท่า เพราะ E ∝ A²)</label>
+    <label class="opt"><input type="radio" name="q3a" value="c" onchange="updateProg()"> ค. E₂ = √2 E₁</label>
+    <label class="opt"><input type="radio" name="q3a" value="d" onchange="updateProg()"> ง. E₂ = E₁ (ไม่เปลี่ยน เพราะ E ขึ้นกับ k เท่านั้น)</label>
+    <div style="margin-top:10px;font-size:14px;background:#fff;border:1.5px solid #fcd34d;border-radius:8px;padding:10px">
+      <b>ยืนยันการคำนวณ:</b> E₁ = ½k(A₁)² = <input class="ans-in" id="q3e1"> · E₂ = ½k(2A₁)² = <input class="ans-in" id="q3e2"> · อัตราส่วน = <input class="ans-in" id="q3rat">
+    </div>
+    <div class="tier-label">ระดับ 2 · ความมั่นใจ</div>
+    <div class="conf-row" id="q3c">
+      <button class="conf-btn" onclick="selectConf('q3c',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q3c',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q3c',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q3c',this,'เดา')">เดา</button>
+    </div>
+    <div class="tier-label">ระดับ 3 · เหตุผล</div>
+    <label class="opt"><input type="radio" name="q3r" value="r1"> E = ½kA² ดังนั้น E ∝ A²; ถ้า A เพิ่ม 2 เท่า E เพิ่ม 4 เท่า</label>
+    <label class="opt"><input type="radio" name="q3r" value="r2"> E ∝ A เส้นตรง จึงเพิ่ม 2 เท่าตามแอมพลิจูด</label>
+    <label class="opt"><input type="radio" name="q3r" value="r3"> E ไม่ขึ้นกับ A ขึ้นกับ k และ m เท่านั้น</label>
+    <label class="opt"><input type="radio" name="q3r" value="r4"> E ∝ √A ดังนั้นเพิ่ม √2 เท่า</label>
+    <div class="tier-label">ระดับ 4 · ความมั่นใจในเหตุผล</div>
+    <div class="conf-row" id="q3rc">
+      <button class="conf-btn" onclick="selectConf('q3rc',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q3rc',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q3rc',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q3rc',this,'เดา')">เดา</button>
+    </div>
+    <div class="key-box" id="key3"><b>เฉลย:</b> <b>ข.</b> E₂ = 4E₁ · เหตุผล: <b>ร1</b> — E = ½kA²; E₂/E₁ = (2A₁)²/A₁² = 4 · ข้อผิดพลาดที่พบบ่อย (M5.3): นักเรียนคิดว่า E ∝ A แบบเส้นตรง</div>
+  </div>
+
+  <!-- Q4 M5.4 — สปริงแนวดิ่ง -->
+  <div class="q-card">
+    <div class="q-header">
+      <span class="q-num">4</span>
+      <span class="q-title">สปริงแนวดิ่ง: ถ้าวัด PE ของสปริง (½ky²) ไว้แล้ว ต้องนับ PE โน้มถ่วง (mgh) อีกไหม?<span class="misc-tag">M5.4</span></span>
+    </div>
+    <div class="svg-wrap">
+      <svg width="260" height="140" viewBox="0 0 260 140">
+        <line x1="130" y1="5" x2="130" y2="25" stroke="#555" stroke-width="3"/>
+        <path d="M115,25 Q122,33 130,25 Q138,17 145,25 Q152,33 160,25 Q167,17 175,25 Q182,33 130,85" stroke="#d97706" stroke-width="2" fill="none"/>
+        <rect x="110" y="85" width="40" height="25" rx="4" fill="#d97706"/>
+        <text x="130" y="102" text-anchor="middle" font-size="11" fill="#fff">m</text>
+        <text x="130" y="130" text-anchor="middle" font-size="11" fill="#78350f">สมดุล</text>
+        <text x="55" y="55" font-size="11" fill="#2563eb">½ky²</text>
+        <text x="160" y="55" font-size="11" fill="#16a34a">mgh ?</text>
+        <line x1="75" y1="58" x2="105" y2="75" stroke="#2563eb" stroke-width="1" stroke-dasharray="3,2"/>
+        <line x1="165" y1="58" x2="150" y2="75" stroke="#16a34a" stroke-width="1" stroke-dasharray="3,2"/>
+      </svg>
+    </div>
+    <div class="tier-label">ระดับ 1 · คำตอบ</div>
+    <label class="opt"><input type="radio" name="q4a" value="a" onchange="updateProg()"> ก. ต้องนับทั้งสอง เพราะมี PE สองประเภท</label>
+    <label class="opt"><input type="radio" name="q4a" value="b" onchange="updateProg()"> ข. ถ้าวัด y จากตำแหน่งสมดุลใหม่ ½ky² ครอบคลุมทั้งสองแล้ว ไม่ต้องนับซ้ำ</label>
+    <label class="opt"><input type="radio" name="q4a" value="c" onchange="updateProg()"> ค. ไม่ต้องนับ PE ใดเลย เพราะมันหักล้างกัน</label>
+    <label class="opt"><input type="radio" name="q4a" value="d" onchange="updateProg()"> ง. นับ mgh เท่านั้น ½ky² ใช้ไม่ได้กับแนวดิ่ง</label>
+    <div class="tier-label">ระดับ 2 · ความมั่นใจ</div>
+    <div class="conf-row" id="q4c">
+      <button class="conf-btn" onclick="selectConf('q4c',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q4c',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q4c',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q4c',this,'เดา')">เดา</button>
+    </div>
+    <div class="tier-label">ระดับ 3 · เหตุผล</div>
+    <label class="opt"><input type="radio" name="q4r" value="r1"> เมื่อย้ายจุดอ้างอิงมาที่สมดุลใหม่ PE ของแรงโน้มถ่วงถูกรวมอยู่ใน ½ky² โดยอัตโนมัติ</label>
+    <label class="opt"><input type="radio" name="q4r" value="r2"> สปริงแนวดิ่งต่างจากแนวนอน ต้องนับ PE ทุกประเภทเสมอ</label>
+    <label class="opt"><input type="radio" name="q4r" value="r3"> PE โน้มถ่วงและ PE สปริงหักล้างกันเสมอ</label>
+    <label class="opt"><input type="radio" name="q4r" value="r4"> ½ky² ใช้ได้เฉพาะแนวนอน ต้องใช้ mgy สำหรับแนวดิ่ง</label>
+    <div class="tier-label">ระดับ 4 · ความมั่นใจในเหตุผล</div>
+    <div class="conf-row" id="q4rc">
+      <button class="conf-btn" onclick="selectConf('q4rc',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q4rc',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q4rc',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q4rc',this,'เดา')">เดา</button>
+    </div>
+    <div class="key-box" id="key4"><b>เฉลย:</b> <b>ข.</b> ไม่ต้องนับซ้ำ · เหตุผล: <b>ร1</b> — ถ้าวัด y จากตำแหน่งสมดุลใหม่ (mg = kδ) PE รวม = ½ky² (ครอบคลุม PE สปริงบวก PE โน้มถ่วงเทียบกับสมดุลใหม่แล้ว) ข้อผิดพลาด M5.4: นับซ้ำทำให้ E ผิด</div>
+  </div>
+
+  <!-- Q5 M5.1 — กราฟ KE-y -->
+  <div class="q-card">
+    <div class="q-header">
+      <span class="q-num">5</span>
+      <span class="q-title">กราฟ KE เทียบกับการกระจัด y ของระบบ SHM ไร้แรงเสียดทาน มีรูปร่างอย่างไร?<span class="misc-tag">M5.1 ★</span></span>
+    </div>
+    <div class="tier-label">ระดับ 1 · คำตอบ</div>
+    <label class="opt"><input type="radio" name="q5a" value="a" onchange="updateProg()"> ก. เส้นตรงเพิ่มขึ้น (KE ∝ y)</label>
+    <label class="opt"><input type="radio" name="q5a" value="b" onchange="updateProg()"> ข. พาราโบลาคว่ำ (สูงสุดที่ y=0, ศูนย์ที่ y=±A)</label>
+    <label class="opt"><input type="radio" name="q5a" value="c" onchange="updateProg()"> ค. พาราโบลาหงาย (สูงสุดที่ y=±A, ศูนย์ที่ y=0)</label>
+    <label class="opt"><input type="radio" name="q5a" value="d" onchange="updateProg()"> ง. เส้นตรงแนวนอน (KE คงที่ทุกตำแหน่ง)</label>
+    <div class="tier-label">ระดับ 2 · ความมั่นใจ</div>
+    <div class="conf-row" id="q5c">
+      <button class="conf-btn" onclick="selectConf('q5c',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q5c',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q5c',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q5c',this,'เดา')">เดา</button>
+    </div>
+    <div class="tier-label">ระดับ 3 · เหตุผล</div>
+    <label class="opt"><input type="radio" name="q5r" value="r1"> KE = E − PE = ½kA² − ½ky² = ½k(A²−y²) รูปพาราโบลาคว่ำใน y</label>
+    <label class="opt"><input type="radio" name="q5r" value="r2"> KE เพิ่มเมื่อ y เพิ่ม เส้นตรงเส้นเดียว</label>
+    <label class="opt"><input type="radio" name="q5r" value="r3"> KE สูงสุดที่ปลายสุด y=±A เพราะมวลหยุดจึงสะสมพลังงาน</label>
+    <label class="opt"><input type="radio" name="q5r" value="r4"> KE ไม่ขึ้นกับตำแหน่ง จึงเป็นเส้นตรงแนวนอน</label>
+    <div class="tier-label">ระดับ 4 · ความมั่นใจในเหตุผล</div>
+    <div class="conf-row" id="q5rc">
+      <button class="conf-btn" onclick="selectConf('q5rc',this,'มั่นใจมาก')">มั่นใจมาก</button>
+      <button class="conf-btn" onclick="selectConf('q5rc',this,'มั่นใจพอสมควร')">มั่นใจพอสมควร</button>
+      <button class="conf-btn" onclick="selectConf('q5rc',this,'ไม่แน่ใจ')">ไม่แน่ใจ</button>
+      <button class="conf-btn" onclick="selectConf('q5rc',this,'เดา')">เดา</button>
+    </div>
+    <div class="key-box" id="key5"><b>เฉลย:</b> <b>ข.</b> พาราโบลาคว่ำ · เหตุผล: <b>ร1</b> — KE = ½k(A²−y²) ฟังก์ชัน y² ที่มีเครื่องหมายลบ → พาราโบลาคว่ำ; max ที่ y=0, เป็น 0 ที่ y=±A; PE = ½ky² พาราโบลาหงาย; ผลรวม = E = ½kA² = เส้นตรงแนวนอน</div>
+  </div>
+
+  <!-- Submit + Reveal -->
+  <div style="background:#fef3c7;border:2px dashed #fcd34d;border-radius:12px;padding:14px;text-align:center;margin-top:16px">
+    <button class="submit-btn" onclick="submitPost()">📤 ส่ง Posttest</button>
+    <button class="reveal-btn" onclick="revealAll()">🔍 ดูเฉลย</button>
+    <div style="margin-top:8px" id="post-msg"></div>
+    <div class="score-box" id="score-box">
+      <div>คะแนนระดับ 1 (คำตอบ): <span class="score-num" id="sc1">—</span>/5</div>
+      <div style="margin-top:4px;font-size:14px;color:#555">คะแนนระดับ 3 (เหตุผล): <span id="sc3">—</span>/5</div>
+      <div style="margin-top:8px;font-size:13px;color:#78350f" id="sc-msg"></div>
+    </div>
+  </div>
+
+  <div style="text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #fde68a;padding-top:8px">
+    F5-POST · SHM แผน 5 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+  </div>
+</div>
+
+<script>
+const ANS={q1a:'b',q2a:'c',q3a:'b',q4a:'b',q5a:'b'};
+const RKEY={q1r:'r1',q2r:'r1',q3r:'r1',q4r:'r1',q5r:'r1'};
+const confState={};
+
+function selectConf(groupId,btn,val){
+  const row=document.getElementById(groupId);
+  row.querySelectorAll('.conf-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  confState[groupId]=val;
+}
+
+function updateProg(){
+  let ans=0;
+  [1,2,3,4,5].forEach(q=>{if(document.querySelector(`[name="q${q}a"]:checked`))ans++;});
+  const pct=ans/5*100;
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`ตอบแล้ว ${ans}/5 ข้อ`;
+}
+
+function revealAll(){
+  let s1=0,s3=0;
+  [1,2,3,4,5].forEach(q=>{
+    const selA=document.querySelector(`[name="q${q}a"]:checked`);
+    const corrA=ANS[`q${q}a`];
+    document.querySelectorAll(`[name="q${q}a"]`).forEach(r=>{
+      const lbl=r.closest('label');
+      if(!lbl)return;
+      if(r.value===corrA)lbl.classList.add('reveal-correct');
+      else if(r.checked)lbl.classList.add('reveal-wrong');
+    });
+    if(selA&&selA.value===corrA)s1++;
+    const selR=document.querySelector(`[name="q${q}r"]:checked`);
+    const corrR=RKEY[`q${q}r`];
+    document.querySelectorAll(`[name="q${q}r"]`).forEach(r=>{
+      const lbl=r.closest('label');
+      if(!lbl)return;
+      if(r.value===corrR)lbl.classList.add('reveal-correct');
+      else if(r.checked)lbl.classList.add('reveal-wrong');
+    });
+    if(selR&&selR.value===corrR)s3++;
+    const kb=document.getElementById(`key${q}`);if(kb)kb.style.display='block';
+  });
+  document.getElementById('sc1').textContent=s1;
+  document.getElementById('sc3').textContent=s3;
+  const total=s1+s3;
+  let msg='';
+  if(total>=9)msg='ยอดเยี่ยม! เข้าใจพลังงาน SHM อย่างถ่องแท้ 🏆';
+  else if(total>=7)msg='ดีมาก! มีบางแนวคิดที่ควรทบทวนเพิ่ม 👍';
+  else if(total>=5)msg='พอใช้ได้ ควรทบทวนสมการและกราฟ KE-y อีกครั้ง 📚';
+  else msg='ต้องทบทวนเนื้อหาแผน 5 ใหม่อย่างละเอียด 🔄';
+  document.getElementById('sc-msg').textContent=msg;
+  document.getElementById('score-box').style.display='block';
+}
+
+const API_URL='https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+function submitPost(){
+  const d={sheet:'F5_SHM_Plan5_Post',payload:{}};
+  ['s-name','s-num','s-room'].forEach(id=>{d.payload[id]=document.getElementById(id)?.value||'';});
+  [1,2,3,4,5].forEach(q=>{
+    const a=document.querySelector(`[name="q${q}a"]:checked`);d.payload[`q${q}a`]=a?a.value:'';
+    const r=document.querySelector(`[name="q${q}r"]:checked`);d.payload[`q${q}r`]=r?r.value:'';
+    d.payload[`q${q}c2`]=confState[`q${q}c`]||'';
+    d.payload[`q${q}c4`]=confState[`q${q}rc`]||'';
+  });
+  d.payload.calc_e1=document.getElementById('q3e1')?.value||'';
+  d.payload.calc_e2=document.getElementById('q3e2')?.value||'';
+  d.payload.calc_rat=document.getElementById('q3rat')?.value||'';
+  d.payload.timestamp=new Date().toISOString();
+  if(API_URL.includes('YOUR_DEPLOYMENT')){
+    const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`F5Post_${d.payload['s-name']||'student'}.json`;a.click();
+    document.getElementById('post-msg').innerHTML='<span style="color:#d97706">💾 บันทึก JSON แล้ว</span>';return;
+  }
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(d)})
+    .then(()=>{document.getElementById('post-msg').innerHTML='<span style="color:#059669">✅ ส่งสำเร็จ!</span>';})
+    .catch(()=>{document.getElementById('post-msg').innerHTML='<span style="color:#dc2626">❌ ส่งไม่สำเร็จ</span>';});
+}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

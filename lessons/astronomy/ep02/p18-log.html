@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P18 · Journal 3-2-1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  /* 3-2-1 sections (style จาก EP01 p17-exit) */
+  .section-321 {
+    padding: 22px 26px;
+    border-radius: 16px;
+    margin: 22px 0;
+    position: relative;
+  }
+  .section-321::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -18px; left: 20px;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px; font-weight: 900;
+    color: var(--section-color); background: var(--bg-0, #0a0a18);
+    border: 2px solid var(--section-color);
+    box-shadow: 0 0 20px var(--section-color);
+  }
+  .section-3 {
+    --section-color: #7effb2;
+    background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.03));
+    border: 1px solid rgba(126,255,178,0.35);
+  }
+  .section-2 {
+    --section-color: #b980ff;
+    background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.03));
+    border: 1px solid rgba(185,128,255,0.35);
+  }
+  .section-1 {
+    --section-color: #ffcb6b;
+    background: linear-gradient(135deg, rgba(255,203,107,0.06), rgba(255,92,122,0.03));
+    border: 1px solid rgba(255,203,107,0.35);
+  }
+  .section-321 h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px; letter-spacing: 0.2em;
+    color: var(--section-color); margin: 0 0 4px;
+    padding-left: 54px;
+  }
+  .section-321 .s-sub {
+    font-size: 13px; color: var(--text-dim);
+    padding-left: 54px; margin-bottom: 16px;
+  }
+
+  /* 3 · concept checkbox grid */
+  .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+  .cpt-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+    border-radius: 10px; cursor: pointer; font-size: 13.5px; transition: all .15s;
+  }
+  .cpt-item:hover { border-color: var(--border-strong, #555); }
+  .cpt-item input { accent-color: #7effb2; width: 18px; height: 18px; flex-shrink: 0; }
+  .cpt-item.selected { border-color: #7effb2; background: rgba(126,255,178,0.10); }
+  .cpt-count { margin-top: 10px; padding: 8px 14px; background: rgba(0,0,0,0.3); border-radius: 100px; font-size: 12px; display: inline-block; }
+  .cpt-count b { color: #7effb2; }
+
+  /* 2 · scene drag/drop */
+  .scene-pool { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; padding: 14px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 12px; margin: 8px 0; }
+  .sc-card { padding: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; cursor: grab; user-select: none; font-size: 13px; text-align: center; transition: all .15s; }
+  .sc-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .sc-card.placed { opacity: 0.3; cursor: default; }
+  .scene-drop {
+    min-height: 100px; padding: 14px; margin-top: 10px;
+    background: rgba(185,128,255,0.05); border: 2px dashed rgba(185,128,255,0.4); border-radius: 12px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .scene-drop.over { background: rgba(185,128,255,0.12); border-color: #b980ff; }
+  .scene-pick {
+    padding: 10px 14px; background: rgba(185,128,255,0.10); border: 1px solid #b980ff; border-radius: 8px; font-size: 13px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .scene-pick textarea { flex: 1; min-height: 40px; padding: 6px 8px; background: rgba(3,4,12,0.6); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-family: inherit; font-size: 12px; resize: vertical; }
+  .scene-pick .rm { background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-size: 16px; }
+
+  /* 1 · question textarea */
+  .question-area textarea {
+    width: 100%; min-height: 90px; padding: 14px;
+    background: rgba(3,4,12,0.5); border: 1px solid var(--border);
+    color: var(--text); border-radius: 8px; font-family: inherit; font-size: 14px; line-height: 1.6;
+  }
+
+  .safe-badge { display: inline-block; padding: 4px 12px; background: rgba(126,255,178,0.15); border: 1px solid var(--accent-green); border-radius: 100px; color: var(--accent-green); font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: 0.15em; }
+  .progress-bar { padding: 10px 14px; background: var(--bg-card); border: 1px dashed var(--border); border-radius: 8px; margin: 10px 0; font-family: monospace; font-size: 13px; color: var(--accent); }
+  .progress-bar.ok { color: var(--accent-green); border-color: var(--accent-green); }
+</style>
+</head>
+<body data-page="p18" data-type="reflection">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label story">องก์ 3 · Scene 18 · GROWTH · JOURNAL 3-2-1</div>
+  <div class="safe-badge">🛡️ SAFE HAVEN · เงียบ · เขียน</div>
+  <h1 class="page-title" style="margin-top:10px">Journal 3-2-1 · บันทึกหลังจบ EP02</h1>
+  <div class="obj-tags">
+    <span class="obj-tag a">A3 · มุ่งมั่น · A4 · จิตวิทยาศาสตร์ · Reflection</span>
+  </div>
+
+  <div class="narrative">
+    <p>ก่อนปิดเล่ม · ทบทวนสั้น ๆ แบบ <b>3-2-1</b> · บอก <b>3 สิ่งที่เรียน</b> · <b>2 ฉากประทับใจ</b> · <b>1 คำถามอยากรู้ต่อ</b></p>
+    <p style="color:var(--text-dim);font-size:13px">ข้อมูลนี้จะถูกเก็บเพื่อ EP03 และการวิจัย · ไม่มีคะแนนผิด-ถูก</p>
+  </div>
+
+  <!-- ===== SECTION 3 · CONCEPTS LEARNED ===== -->
+  <div class="section-321 section-3" data-num="3">
+    <h3>สิ่งที่เรียนรู้ใน EP นี้</h3>
+    <div class="s-sub">ติ๊ก <b>3 ข้อ</b> ที่ทีมจำได้มากที่สุด · จากเนื้อหาทั้งหมดใน EP02</div>
+    <div class="concept-grid" id="conceptGrid"></div>
+    <div class="cpt-count">เลือกแล้ว <b id="cptCount">0</b> / 3</div>
+  </div>
+
+  <!-- ===== SECTION 2 · FAVORITE SCENES ===== -->
+  <div class="section-321 section-2" data-num="2">
+    <h3>ฉากที่ประทับใจ (เรื่อง)</h3>
+    <div class="s-sub">ลาก <b>2 ฉาก</b> ที่ทีมชอบที่สุดจากกองด้านบน → กล่องด้านล่าง · เขียนเหตุผลสั้น ๆ</div>
+    <div class="scene-pool" id="scenePool"></div>
+    <div class="scene-drop" id="sceneDrop">
+      <div style="color:var(--text-faint);text-align:center;font-size:12px" id="sceneDropEmpty">— ลากฉากมาวางที่นี่ (สูงสุด 2 ฉาก) —</div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1 · QUESTION ===== -->
+  <div class="section-321 section-1" data-num="1">
+    <h3>คำถามที่อยากรู้ต่อ</h3>
+    <div class="s-sub">เขียน <b>1 คำถาม</b> ที่ EP02 ยังไม่ตอบ · ทีมอยากตามต่อใน EP ถัดไปหรือชีวิตจริง</div>
+    <div class="question-area" style="padding-left:54px"><textarea id="oneQ" placeholder="เช่น Dark Matter คืออะไรกันแน่ · ทำไมกาแล็กซีถึงชนกัน · มีจักรวาลอื่นไหม"></textarea></div>
+  </div>
+
+  <div class="progress-bar" id="progBar">📝 ทำครบ 0/3 ส่วน · ทำครบทั้ง 3 ส่วนถึงปิดผนึกได้</div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P18 · Journal 3-2-1 · พื้นที่เงียบ</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "ปิดคุย · เขียนเงียบ ๆ 4 นาที · ทบทวนแบบ 3-2-1"<br>
+      <b>ระหว่าง:</b> ไม่เดินรบกวน · ให้พื้นที่ · ห้ามถามว่าใครจำอะไร<br>
+      <b>ปิด:</b> ขอบคุณที่แชร์ · ไม่เรียกอ่าน (ความลับ)<br>
+      <b>วิจัย:</b> 3 = concept frequency · 2 = scene preference · 1 = direction of curiosity · ใช้วิเคราะห์ conceptual change ละเอียดกว่า pre/post<br>
+      <b>🎴 DM card:</b> Silent 60s ก่อนเขียนถ้าทีมยังคุย
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled>🔒 ทำครบ 3 ส่วน · ปิดผนึก</button>
+  <div id="status" style="margin-top:10px;color:var(--text-dim);font-size:12px;"></div>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ============ Concept pool (จากเนื้อหา EP02) ============ */
+  const CONCEPTS = [
+    { id:'c1',  text:'ทางช้างเผือกเป็นกาแล็กซีกังหันมีคาน · เราอยู่แขน Orion' },
+    { id:'c2',  text:'1 parsec ≈ 3.26 ปีแสง · เป็นหน่วยระยะทาง · ไม่ใช่เวลา' },
+    { id:'c3',  text:'กฎฮับเบิล v = H₀ × D · H₀ ≈ 70 km/s/Mpc' },
+    { id:'c4',  text:'จำแนกกาแล็กซี: รูปไข่ (E) · กังหัน (S) · กังหันมีคาน (SB) · ไม่มีรูป (Irr)' },
+    { id:'c5',  text:'Edwin Hubble ทำ tuning fork (1926) · เปลี่ยนความเข้าใจจักรวาล' },
+    { id:'c6',  text:'Sun อยู่ 26,000 ปีแสงจากใจกลาง MW · MW มีดาว 200-400 พันล้านดวง' },
+    { id:'c7',  text:'กราฟ rotation curve แบน → มี dark matter ที่มองไม่เห็น' },
+    { id:'c8',  text:'Mpc = mega-parsec = 1 ล้าน pc · ใช้วัดระยะกาแล็กซี' },
+    { id:'c9',  text:'misconceptions: MW ไม่ใช่เมฆ · parsec ไม่ใช่เวลา · Sun ไม่ใช่ใจกลาง' },
+  ];
+
+  /* ============ Scenes (จากฉาก EP02 ที่ประทับใจ) ============ */
+  const SCENES = [
+    { id:'s1', text:'P03 · สัญญาณ VOID ครั้งแรก' },
+    { id:'s2', text:'P04 · จำแนก 12 กาแล็กซีในเวลา 4 นาที' },
+    { id:'s3', text:'P06 · พบบ้านเราในแขน Orion' },
+    { id:'s4', text:'P09 · Tuning Fork Lab · debate กับทีมอื่น' },
+    { id:'s5', text:'P10 · Dr.Hubble สอน · ค้นพบหน่วย parsec' },
+    { id:'s6', text:'P13 · Chase · 3 นาที · ใช้ v=H₀D' },
+    { id:'s7', text:'P14 · BOSS damage race · ทุกทีมยิงพร้อมกัน' },
+    { id:'s8', text:'P17 · ตลาด Quartermaster · loot box' },
+    { id:'s9', text:'P17b · BOSS สุดท้าย · VOID PRIME' },
+  ];
+
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); buildConcepts(); buildScenes(); updateProgress(); }, 50);
+
+  /* ============ Section 3: Concepts ============ */
+  function buildConcepts() {
+    const host = document.getElementById('conceptGrid');
+    host.innerHTML = CONCEPTS.map(c => `
+      <label class="cpt-item" data-id="${c.id}">
+        <input type="checkbox" data-id="${c.id}"> ${c.text}
+      </label>
+    `).join('');
+    host.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+      const checked = host.querySelectorAll('input:checked').length;
+      if (checked > 3) { cb.checked = false; return; }
+      cb.closest('.cpt-item').classList.toggle('selected', cb.checked);
+      document.getElementById('cptCount').textContent = host.querySelectorAll('input:checked').length;
+      updateProgress();
+    }));
+  }
+
+  /* ============ Section 2: Scenes ============ */
+  let pickedScenes = []; // [{id, reason}]
+  function buildScenes() {
+    const pool = document.getElementById('scenePool');
+    pool.innerHTML = SCENES.map(s => `<div class="sc-card" draggable="true" data-id="${s.id}">${s.text}</div>`).join('');
+    pool.querySelectorAll('.sc-card').forEach(card => {
+      card.addEventListener('dragstart', e => e.dataTransfer.setData('text', card.dataset.id));
+    });
+    const drop = document.getElementById('sceneDrop');
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault(); drop.classList.remove('over');
+      const id = e.dataTransfer.getData('text');
+      addScene(id);
+    });
+    // also support click-to-add (mobile)
+    pool.addEventListener('click', e => {
+      const card = e.target.closest('.sc-card');
+      if (card && !card.classList.contains('placed')) addScene(card.dataset.id);
+    });
+  }
+  function addScene(id) {
+    if (pickedScenes.length >= 2) return;
+    if (pickedScenes.some(p => p.id === id)) return;
+    pickedScenes.push({ id, reason: '' });
+    document.querySelector(`.sc-card[data-id="${id}"]`)?.classList.add('placed');
+    renderPicked();
+    updateProgress();
+  }
+  function removeScene(id) {
+    pickedScenes = pickedScenes.filter(p => p.id !== id);
+    document.querySelector(`.sc-card[data-id="${id}"]`)?.classList.remove('placed');
+    renderPicked();
+    updateProgress();
+  }
+  function renderPicked() {
+    const drop = document.getElementById('sceneDrop');
+    if (pickedScenes.length === 0) {
+      drop.innerHTML = '<div style="color:var(--text-faint);text-align:center;font-size:12px" id="sceneDropEmpty">— ลากฉากมาวางที่นี่ (สูงสุด 2 ฉาก) —</div>';
+      return;
+    }
+    drop.innerHTML = pickedScenes.map(p => {
+      const s = SCENES.find(x => x.id === p.id);
+      return `<div class="scene-pick">
+        <button class="rm" data-id="${p.id}" title="ลบ">×</button>
+        <div style="min-width:140px"><b>${s.text}</b></div>
+        <textarea data-id="${p.id}" placeholder="เหตุผลที่ชอบฉากนี้...">${p.reason}</textarea>
+      </div>`;
+    }).join('');
+    drop.querySelectorAll('.rm').forEach(btn => btn.addEventListener('click', () => removeScene(btn.dataset.id)));
+    drop.querySelectorAll('textarea').forEach(t => t.addEventListener('input', () => {
+      const p = pickedScenes.find(x => x.id === t.dataset.id);
+      if (p) { p.reason = t.value; updateProgress(); }
+    }));
+  }
+
+  /* ============ Section 1: Question + typewriter sound ============ */
+  document.getElementById('oneQ').addEventListener('input', updateProgress);
+  // 🔊 typewriter sound เมื่อพิมพ์ใน textarea (throttled 200ms)
+  let _lastType = 0;
+  document.addEventListener('input', (e) => {
+    if (!(e.target && e.target.matches && e.target.matches('textarea'))) return;
+    const now = Date.now();
+    if (now - _lastType < 200) return;
+    _lastType = now;
+    Book.playSound('typewriter', { volume: 0.3 });
+  });
+
+  /* ============ Progress / finish ============ */
+  function updateProgress() {
+    const concepts = document.querySelectorAll('#conceptGrid input:checked').length;
+    const scenes = pickedScenes.length;
+    const q = document.getElementById('oneQ').value.trim();
+    let done = 0;
+    if (concepts === 3) done++;
+    if (scenes === 2) done++;
+    if (q.length >= 5) done++;
+    const bar = document.getElementById('progBar');
+    bar.textContent = `📝 ทำครบ ${done}/3 ส่วน · ${done===3?'พร้อมปิดผนึก':'ทำให้ครบ'}`;
+    bar.classList.toggle('ok', done === 3);
+    const fb = document.getElementById('finishBtn');
+    fb.disabled = (done < 3);
+    fb.textContent = (done < 3) ? `🔒 ทำครบ ${done}/3 ส่วน` : '✉️ ปิดผนึก · ส่งต่อ EP03';
+  }
+
+  function finishPage() {
+    const concepts = [...document.querySelectorAll('#conceptGrid input:checked')].map(cb => cb.dataset.id);
+    const scenes = pickedScenes.map(p => ({ id: p.id, reason: p.reason }));
+    const oneQuestion = document.getElementById('oneQ').value.trim();
+    const log = { concepts, scenes, oneQuestion, at: Date.now() };
+    localStorage.setItem('cosmosLog_captainLog_ep02', JSON.stringify(log));
+    Book.savePageData('p18', log);
+    Book.addEnergy(+20, 'journal-321');
+    Obj.hit('A3', { page:'p18' });
+    Obj.hit('A4', { page:'p18' });
+    Book.completePage('p18', { score: 3, max: 3, msg: 'Journal 3-2-1 · เก็บข้ามไป EP03' });
+    document.getElementById('status').textContent = '✉️ ปิดผนึก 3-2-1 แล้ว · เปิดอ่านใน EP03 P01';
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว';
+  }
+</script>
+
+</body>
+</html>

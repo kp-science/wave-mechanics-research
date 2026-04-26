@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P06 · หา Sun ใน Milky Way</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .mw-map { position: relative; width: 100%; max-width: 640px; aspect-ratio: 1; margin: 20px auto;
+    background: #0a0d1f url('./galaxy/milkyway 1.png') center/cover no-repeat;
+    border-radius: 50%; border: 1px solid var(--border-strong);
+    box-shadow: 0 0 60px rgba(100,216,255,0.3), inset 0 0 40px rgba(0,0,0,0.5);
+  }
+  .mw-slot {
+    position: absolute; width: 44px; height: 44px;
+    border: 3px solid #ffffff; border-style: dashed;
+    border-radius: 50%; transform: translate(-50%,-50%);
+    cursor: pointer; background: rgba(0,0,0,0.35);
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.5), 0 0 12px rgba(100,216,255,0.7);
+    display:flex; align-items:center; justify-content:center;
+    font-size: 10px; line-height: 1.1; text-align: center; padding: 2px;
+    color: #fff; font-weight: 700; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .mw-slot:hover { transform: translate(-50%,-50%) scale(1.15); box-shadow: 0 0 0 2px rgba(0,0,0,0.6), 0 0 18px rgba(100,216,255,1); }
+  .mw-slot:not(.filled) { animation: mw-pulse 1.6s ease-in-out infinite; }
+  @keyframes mw-pulse {
+    0%,100% { box-shadow: 0 0 0 2px rgba(0,0,0,0.5), 0 0 10px rgba(100,216,255,0.5); }
+    50%     { box-shadow: 0 0 0 2px rgba(0,0,0,0.5), 0 0 22px rgba(100,216,255,1);   }
+  }
+  .mw-slot.filled { border-style: solid; border-color: var(--accent-gold); background: rgba(255,203,107,0.75); color:#0a0a18; animation: none; }
+  .mw-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.75); color:#0a0a18; }
+  .mw-slot.wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.7); color:#fff; }
+  .mw-slot.trap { border-color: var(--accent-2); }
+  .mw-slot.trap:not(.filled) { border-style: dashed; }
+  .labels { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 16px 0; }
+  .lbl-chip { padding: 8px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; text-align: center; user-select: none; transition: all 0.15s; }
+  .lbl-chip.used { opacity: 0.35; border-style: dashed; }
+  .lbl-chip.used::after { content: ' (วางแล้ว · คลิกเพื่อคืน)'; font-size: 10px; color: var(--text-faint); }
+  .lbl-chip.selected { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(255,203,107,0.08); box-shadow: 0 0 10px rgba(255,203,107,0.3); }
+</style>
+</head>
+<body data-page="p06" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 2 · Scene 6 · RISING ACTION 1</div>
+  <h1 class="page-title">หาบ้านเราใน Milky Way</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K2 · โครงสร้าง</span>
+    <span class="obj-tag p">P3 · วิเคราะห์ trap</span>
+  </div>
+
+  <div class="narrative">
+    <p>ก่อนตามล่าบ้านศัตรู · ทีมพบว่า<b>ตัวเองไม่รู้ว่า Sun อยู่ตรงไหน</b>ของทางช้างเผือก!</p>
+    <p style="color:var(--text-dim)">🧠 ลาก 7 ตำแหน่ง → ใส่ช่องบนแผนที่ · <b>ระวัง VOID แอบใส่ตำแหน่งปลอมไว้</b></p>
+  </div>
+
+  <div id="betMount"></div>
+
+  <div class="mw-map" id="mwMap">
+    <!-- 7 slots · data-ans = ป้ายที่ถูกต้อง · data-trap = VOID ปลอม -->
+    <div class="mw-slot" data-id="s1" data-ans="ใจกลาง (Galactic Center)"          style="top:50%;left:50%"></div>
+    <div class="mw-slot" data-id="s2" data-ans="แขน Sagittarius"                   style="top:50%;left:32%"></div>
+    <div class="mw-slot" data-id="s3" data-ans="แขน Orion (บ้านเรา · Sun)"         style="top:44%;left:68%"></div>
+    <div class="mw-slot" data-id="s4" data-ans="แขน Perseus"                       style="top:25%;left:70%"></div>
+    <div class="mw-slot" data-id="s5" data-ans="Halo (ขอบนอก)"                     style="top:18%;left:28%"></div>
+    <div class="mw-slot trap" data-id="s6" data-ans="TRAP" data-trap="true"        style="top:78%;left:68%"></div>
+    <div class="mw-slot trap" data-id="s7" data-ans="TRAP" data-trap="true"        style="top:75%;left:30%"></div>
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;font-size:13px;letter-spacing:0.15em;color:var(--accent);">ลากป้ายมาวางบนแผนที่</h3>
+  <div class="labels" id="labelPool">
+    <div class="lbl-chip" data-lbl="ใจกลาง (Galactic Center)">ใจกลาง</div>
+    <div class="lbl-chip" data-lbl="แขน Sagittarius">แขน Sagittarius</div>
+    <div class="lbl-chip" data-lbl="แขน Orion (บ้านเรา · Sun)">⭐ แขน Orion (Sun)</div>
+    <div class="lbl-chip" data-lbl="แขน Perseus">แขน Perseus</div>
+    <div class="lbl-chip" data-lbl="Halo (ขอบนอก)">Halo</div>
+    <div class="lbl-chip" data-lbl="TRAP-quasar">💀 Quasar กลาง MW</div>
+    <div class="lbl-chip" data-lbl="TRAP-edge">💀 ขอบจักรวาล</div>
+  </div>
+
+  <p style="color:var(--text-dim);font-size:13px">💡 คลิกป้าย → คลิกช่องบนแผนที่ · <b>ต้องวางครบ 7 ช่อง (5 ของจริง + 2 trap)</b> ถึงกดส่งได้ · trap ถ้าเลือกถูก = +20 bonus<br>
+  🔄 วางผิด? คลิกช่องที่วางแล้วเพื่อล้าง · หรือคลิกป้าย "วางแล้ว" เพื่อคืนกลับ</p>
+
+  <div id="progressHint" style="margin-top:12px; padding:10px 14px; background:var(--bg-card); border:1px dashed var(--border); border-radius:8px; font-family:'Orbitron',monospace; font-size:13px; color:var(--accent);">
+    📍 วางแล้ว <b id="progressCount">0</b>/7 ช่อง · เหลืออีก <b id="progressLeft">7</b> ช่อง
+  </div>
+
+  <div id="result" style="margin-top:10px;font-family:monospace;color:var(--accent-green);"></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P06 · บทบาท: Socratic · ไม่เฉลย trap</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "ก่อนตามล่าบ้านศัตรู · ถามตัวเองก่อน บ้านเราอยู่ไหน"<br>
+      <b>ระหว่าง:</b> ไม่บอกว่ามี trap · ให้สงสัยเอง · แนะแหล่งสืบค้น (infrared image · สสวท.)<br>
+      <b>ปิด:</b> "ครบ 7 ช่องแล้ว · ไปต่อ"<br>
+      <b>🖼️ เจน:</b> [IMG-P06] Milky Way top-down infrared · ชื่อแขนหลัก
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled>✓ ยืนยัน · ไปต่อ</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Game.mountBetPanel('#betMount', { page:'p06', qid:'milkyway-overall' });
+  }, 50);
+
+  let activeLabel = null;
+  let placements = {}; // { s1: 'ใจกลาง ...' }
+  let hintUsed = false;
+
+  /* สั้นลงให้ใส่ในวงกลมเล็ก */
+  function shortLabel(lbl) {
+    const L = String(lbl);
+    if (L.startsWith('TRAP')) return '💀 TRAP';
+    if (L.startsWith('ใจกลาง'))      return 'ใจกลาง';
+    if (L.startsWith('แขน Orion'))   return 'Orion⭐';
+    if (L.startsWith('แขน Sagit'))   return 'Sagit';
+    if (L.startsWith('แขน Perseus')) return 'Perseus';
+    if (L.startsWith('Halo'))        return 'Halo';
+    return L.slice(0, 6);
+  }
+
+  function updateProgress() {
+    const placed = Object.keys(placements).length;
+    const pc = document.getElementById('progressCount');
+    const pl = document.getElementById('progressLeft');
+    const hint = document.getElementById('progressHint');
+    if (pc) pc.textContent = placed;
+    if (pl) pl.textContent = Math.max(0, 7 - placed);
+    const btn = document.getElementById('finishBtn');
+    if (placed >= 7) {
+      if (btn) btn.disabled = false;
+      if (hint) { hint.style.color = 'var(--accent-green)'; hint.style.borderColor = 'var(--accent-green)'; }
+    } else {
+      if (btn) btn.disabled = true;
+      if (hint) { hint.style.color = 'var(--accent)'; hint.style.borderColor = 'var(--border)'; }
+    }
+  }
+
+  /* คลิกป้ายอีกครั้งเพื่อ deselect · หรือคลิก used เพื่อหาช่องที่ตัวเองวางไว้ */
+  document.querySelectorAll('.lbl-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      if (chip.classList.contains('used')) {
+        // คืนป้ายนี้กลับสู่ pool · ล้าง slot ที่ผูกไว้
+        const lbl = chip.dataset.lbl;
+        for (const sid of Object.keys(placements)) {
+          if (placements[sid] === lbl) {
+            delete placements[sid];
+            const s = document.querySelector('.mw-slot[data-id="' + sid + '"]');
+            if (s) { s.classList.remove('filled','correct','wrong'); s.textContent = ''; }
+          }
+        }
+        chip.classList.remove('used','selected');
+        activeLabel = null;
+        updateProgress();
+        return;
+      }
+      if (chip.classList.contains('selected')) {
+        chip.classList.remove('selected');
+        activeLabel = null;
+        return;
+      }
+      document.querySelectorAll('.lbl-chip').forEach(c => c.classList.remove('selected'));
+      chip.classList.add('selected');
+      activeLabel = chip.dataset.lbl;
+    });
+  });
+
+  document.querySelectorAll('.mw-slot').forEach(slot => {
+    slot.addEventListener('click', () => {
+      const id = slot.dataset.id;
+      // ถ้าไม่มี chip ที่ active · คลิกช่องที่วางไว้ = ล้างคืน
+      if (!activeLabel) {
+        if (placements[id]) {
+          const oldLbl = placements[id];
+          delete placements[id];
+          slot.classList.remove('filled','correct','wrong');
+          slot.textContent = '';
+          const oldChip = document.querySelector('.lbl-chip[data-lbl="' + CSS.escape(oldLbl) + '"]');
+          if (oldChip) oldChip.classList.remove('used');
+          updateProgress();
+        }
+        return;
+      }
+      // ถ้าช่องนี้เคยถูกวางไว้ด้วยป้ายอื่น · ปล่อยป้ายเก่าออกก่อน
+      if (placements[id] && placements[id] !== activeLabel) {
+        const oldLbl = placements[id];
+        const oldChip = document.querySelector('.lbl-chip[data-lbl="' + CSS.escape(oldLbl) + '"]');
+        if (oldChip) oldChip.classList.remove('used');
+      }
+      placements[id] = activeLabel;
+      slot.classList.add('filled');
+      slot.textContent = shortLabel(activeLabel);
+      // mark chip used (clean selected state too)
+      const chip = document.querySelector('.lbl-chip[data-lbl="' + CSS.escape(activeLabel) + '"]');
+      if (chip) { chip.classList.add('used'); chip.classList.remove('selected'); }
+      activeLabel = null;
+      document.querySelectorAll('.lbl-chip').forEach(c => c.classList.remove('selected'));
+      updateProgress();
+    });
+  });
+
+  function finishPage() {
+    let correct = 0, trapsCaught = 0;
+    document.querySelectorAll('.mw-slot').forEach(slot => {
+      const id = slot.dataset.id;
+      const placed = placements[id];
+      const ans = slot.dataset.ans;
+      const isTrap = slot.dataset.trap === 'true';
+      if (isTrap) {
+        // ถูกถ้า placed ป้าย TRAP · ผิดถ้าใส่ป้ายจริงลงช่อง trap
+        if (placed && placed.startsWith('TRAP')) { trapsCaught++; slot.classList.add('correct'); }
+        else slot.classList.add('wrong');
+      } else {
+        if (placed === ans) { correct++; slot.classList.add('correct'); }
+        else slot.classList.add('wrong');
+      }
+    });
+
+    const realCorrect = correct;
+    const bonus = trapsCaught * 10;
+    const total = 5; // 5 real slots
+
+    document.getElementById('result').textContent = `📊 ถูก ${realCorrect}/${total} · จับ trap ได้ ${trapsCaught}/2 · bonus +${bonus}`;
+
+    // 🔑 ตั้ง gate ก่อน scoring · กันโยนแล้ว gate ไม่ติด
+    const totalScore = realCorrect + trapsCaught;
+    const trapMsg = trapsCaught === 2 ? ' · จับ trap ครบ!' : (trapsCaught === 1 ? ' · จับ trap ได้ 1/2' : '');
+    Book.completePage('p06', { score: totalScore, max: 7, msg: `ถูก ${realCorrect}/5${trapMsg}` });
+
+    try {
+      if (realCorrect >= 4) {
+        Game.award({ base: realCorrect * 5 + bonus, page:'p06', objective:'K2' });
+        Obj.hit('P3', { page:'p06' });
+        if (!hintUsed && trapsCaught === 2) { Items.grant('decoder', { from:'p06' }); Book.addCoin(10, 'p06-no-hint-trap'); }
+        else if (trapsCaught >= 1) Book.addCoin(5, 'p06-trap-caught');
+      } else {
+        Game.penalty({ amount: 5, page:'p06', objective:'K2' });
+        Obj.miss('P3', { page:'p06' });
+      }
+      Book.savePageData('p06', { placements, correct:realCorrect, trapsCaught, hintUsed });
+    } catch(e){ console.warn('p06 scoring failed', e); }
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · Smoke Test · Game Layer</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .page { padding: 30px 5vw; }
+  .page-inner { max-width: 1100px; margin: 0 auto; }
+  h1.page-title { font-family: Orbitron, sans-serif; font-size: 32px; margin-bottom: 20px; }
+  .test-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-top: 20px; }
+  .test-card {
+    padding: 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .test-card h3 {
+    font-family: Orbitron, sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .test-card .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .test-card button {
+    padding: 6px 12px;
+    background: rgba(100,216,255,0.08);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .test-card button:hover { border-color: var(--accent); color: var(--accent); }
+  .test-card button.danger { color: var(--accent-red); border-color: rgba(255,92,122,0.3); }
+  .test-card button.success { color: var(--accent-green); border-color: rgba(126,255,178,0.3); }
+  .test-card .note { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
+  #stateDump {
+    background: #000; color: #7effb2;
+    font-family: monospace; font-size: 11px;
+    padding: 14px; border-radius: 6px;
+    max-height: 300px; overflow: auto;
+    white-space: pre;
+  }
+  #sampleQ {
+    padding: 14px; background: rgba(185,128,255,0.05);
+    border: 1px dashed var(--border); border-radius: 8px;
+    margin-top: 12px;
+  }
+</style>
+</head>
+<body data-page="p-test" data-type="test" data-objectives="K1,P1,A1">
+
+<div class="page">
+  <div class="page-inner">
+    <div class="page-label puzzle">SMOKE TEST · EP02 GAME LAYER</div>
+    <h1 class="page-title">🧪 ทดสอบระบบเกม · Sprint 1</h1>
+    <p style="color:var(--text-dim)">หน้านี้ไว้กดปุ่มทดสอบ Game · Items · Corruption · Leaderboard · Boss · Teacher — ไม่ใช่หน้าบทเรียนจริง</p>
+
+    <div class="test-grid">
+
+      <!-- ========== GAME · Energy / Streak / Bet ========== -->
+      <div class="test-card">
+        <h3>🎮 Game · Energy & Streak</h3>
+        <div class="row">
+          <button onclick="Book.addEnergy(+10,'test')">+10 energy</button>
+          <button onclick="Book.addEnergy(-5,'test')" class="danger">-5 energy</button>
+          <button onclick="Game.bumpStreak()">🔥 streak +1</button>
+          <button onclick="Game.resetStreak()" class="danger">reset streak</button>
+        </div>
+        <div class="note">streak ≥3 = ×1.5 · ≥5 = ×2.0 · HUD บนแสดงอัตโนมัติ</div>
+
+        <div id="sampleQ">
+          <b>คำถามทดสอบ:</b> 1 parsec ≈ กี่ปีแสง?
+          <div id="betMount" style="margin-top:10px"></div>
+          <div style="margin-top:10px">
+            <button onclick="answerQ(true)" class="success">ตอบถูก (3.26)</button>
+            <button onclick="answerQ(false)" class="danger">ตอบผิด (100)</button>
+          </div>
+          <div id="answerResult" style="margin-top:8px; font-family:monospace; font-size:11px;"></div>
+        </div>
+      </div>
+
+      <!-- ========== ITEMS ========== -->
+      <div class="test-card">
+        <h3>🎒 Items</h3>
+        <div class="row">
+          <button onclick="Items.grant('hubbleLens',{from:'p-test'})">grant 🔍 Lens</button>
+          <button onclick="Items.grant('decoder',{from:'p-test'})">grant 📡 Decoder</button>
+          <button onclick="Items.grant('warpFuel',{from:'p-test'})">grant ⏱️ Fuel</button>
+          <button onclick="Items.grant('shield',{from:'p-test'})">grant 🛡️ Shield</button>
+        </div>
+        <div class="note">ดู HUD บน → 🎒 · ของที่ใช้แล้วจะเทา</div>
+        <div id="itemPicker" style="margin-top:10px"></div>
+        <div class="row" style="margin-top:8px">
+          <button onclick="Items.mountPicker('#itemPicker',{useOn:'p14'})">mount picker (use on P14)</button>
+        </div>
+      </div>
+
+      <!-- ========== CORRUPTION ========== -->
+      <div class="test-card">
+        <h3>🦠 Corruption Meter</h3>
+        <div class="row">
+          <button onclick="Corruption.add(+10)">+10%</button>
+          <button onclick="Corruption.add(+30)">+30%</button>
+          <button onclick="Corruption.set(75)">set 75%</button>
+          <button onclick="Corruption.set(95)" class="danger">set 95% (critical)</button>
+          <button onclick="Corruption.reset()" class="success">reset 0%</button>
+          <button onclick="Corruption.safeHaven()">safe haven</button>
+        </div>
+        <div class="note">≥20 = tint อ่อน · ≥70 = glitch · ≥95 = hue shift · ดูพื้นหลัง + HUD</div>
+      </div>
+
+      <!-- ========== LEADERBOARD ========== -->
+      <div class="test-card">
+        <h3>📊 Leaderboard</h3>
+        <div class="row">
+          <button onclick="Leaderboard.ensureTeam('A','Nebula')">add Nebula</button>
+          <button onclick="Leaderboard.ensureTeam('B','Quasar')">add Quasar</button>
+          <button onclick="Leaderboard.ensureTeam('C','Pulsar')">add Pulsar</button>
+        </div>
+        <div class="row">
+          <button onclick="Leaderboard.adjust('A',+20,'test')">A +20</button>
+          <button onclick="Leaderboard.adjust('B',+30,'test')">B +30</button>
+          <button onclick="Leaderboard.switchActive('A')">switch→A</button>
+          <button onclick="Leaderboard.switchActive('B')">switch→B</button>
+          <button onclick="Leaderboard.toggle()">🔀 toggle panel</button>
+        </div>
+        <div class="note">Panel เปิดจากขวา · หรือกด 📊 TEAMS บน HUD</div>
+      </div>
+
+      <!-- ========== BOSS ========== -->
+      <div class="test-card">
+        <h3>👁️ Boss Fight</h3>
+        <div id="boss-hud"></div>
+        <div class="row" style="margin-top:10px">
+          <button onclick="initBoss()">⚔️ init BOSS</button>
+          <button onclick="Boss.damage({amount:30,reason:'test'})" class="success">-30 HP</button>
+          <button onclick="Boss.damage({amount:60,reason:'test'})" class="success">-60 HP</button>
+          <button onclick="Boss.resolveClaim({correct:true,evidenceCount:2})" class="success">claim ถูก</button>
+          <button onclick="Boss.resolveClaim({correct:false})" class="danger">claim ผิด</button>
+        </div>
+        <div class="note">HP 300 · 3 phase · phase เปลี่ยนเมื่อ HP ทะลุ threshold</div>
+      </div>
+
+      <!-- ========== TEACHER ========== -->
+      <div class="test-card">
+        <h3>🎴 Teacher Cards</h3>
+        <div class="row">
+          <button onclick="Teacher.toggle()">🔀 toggle panel</button>
+          <button onclick="Teacher.play('spark')">spark</button>
+          <button onclick="Teacher.play('twist')">twist</button>
+          <button onclick="Teacher.play('mercy')">mercy</button>
+          <button onclick="Teacher.play('silent')">silent 60s</button>
+        </div>
+        <div class="note">ต้องมีทีมใน Leaderboard ก่อน card ถึงจะมีผล</div>
+      </div>
+
+      <!-- ========== OBJECTIVES ========== -->
+      <div class="test-card">
+        <h3>🎯 Objectives · K · P · A</h3>
+        <div class="row">
+          <button onclick="Obj.hit('K1',{page:'p-test'})">K1 hit</button>
+          <button onclick="Obj.miss('K1',{page:'p-test'})">K1 miss</button>
+          <button onclick="Obj.hit('A2',{page:'p-test'})">A2 hit</button>
+          <button onclick="showObj()">📋 show report</button>
+        </div>
+        <div id="objReport" style="font-family:monospace;font-size:11px;color:var(--text-dim);margin-top:8px;"></div>
+      </div>
+
+      <!-- ========== RESET ========== -->
+      <div class="test-card">
+        <h3>⚙️ Utilities</h3>
+        <div class="row">
+          <button onclick="refreshDump()">🔄 dump state</button>
+          <button onclick="localStorage.clear();location.reload()" class="danger">🧹 clear all + reload</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- State dump -->
+    <h3 style="margin-top:30px; font-family:Orbitron,sans-serif; font-size:13px; letter-spacing:0.15em; color:var(--accent-gold);">📦 Book.state (live)</h3>
+    <pre id="stateDump">{ ...loading }</pre>
+  </div>
+</div>
+
+<!-- Load order · book.js → config → game layer -->
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/boss.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+
+<script>
+  // ensure state has ep:'ep02' for this test
+  setTimeout(() => {
+    Book.state.ep = 'ep02';
+    Book.save();
+
+    // mount bet panel
+    Game.mountBetPanel('#betMount', { page:'p-test', qid:'parsec-q' });
+
+    refreshDump();
+    setInterval(refreshDump, 1000);
+  }, 100);
+
+  function answerQ(correct) {
+    const out = document.getElementById('answerResult');
+    if (correct) {
+      const d = Game.award({ base:10, timeMs:15000, page:'p-test', objective:'K4' });
+      out.textContent = `✅ award = +${d} · streak=${Game.getStreak()} · mult=×${Game.getMultiplier()}`;
+    } else {
+      const d = Game.penalty({ amount:3, page:'p-test', objective:'K4' });
+      out.textContent = `❌ penalty = ${d} · streak=${Game.getStreak()}`;
+    }
+    // remount bet panel สำหรับคำถามถัดไป
+    Game.mountBetPanel('#betMount', { page:'p-test', qid:'parsec-q-'+Date.now() });
+  }
+
+  function initBoss() {
+    Book.state.boss = null;
+    Book.save();
+    Boss.init(EP_CONFIG.boss);
+  }
+
+  function showObj() {
+    document.getElementById('objReport').textContent =
+      JSON.stringify(Obj.report(), null, 2);
+  }
+
+  function refreshDump() {
+    const s = Book.state;
+    const dump = {
+      ep: s.ep,
+      energy: s.energy,
+      streak: s.streak,
+      multiplier: Game.getMultiplier(),
+      corruption: s.corruption,
+      bet: s.bet,
+      inventory: s.inventory?.map(i => i.icon+i.id),
+      itemsUsed: s.itemsUsed,
+      objectives: s.objectives,
+      retries: s.retries,
+      boss: s.boss ? { hp:s.boss.hp, phase:s.boss.phase, won:s.boss.won } : null,
+      leaderboard: Leaderboard.load().teams?.map(t => `${t.name}:${t.energy}`)
+    };
+    document.getElementById('stateDump').textContent = JSON.stringify(dump, null, 2);
+  }
+
+  document.addEventListener('corruption:max', () => {
+    alert('💀 VOID Corruption = 100% · Game Over event fired');
+  });
+  document.addEventListener('boss:defeated', () => {
+    alert('✨ BOSS defeated! event fired');
+  });
+  document.addEventListener('boss:phase', e => {
+    console.log('BOSS phase →', e.detail.phase);
+  });
+</script>
+
+</body>
+</html>

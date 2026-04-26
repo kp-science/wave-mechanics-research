@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P17 · ตลาด · ก่อนตีบอส</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .shop-hero { padding:20px; background:linear-gradient(135deg, rgba(255,203,107,0.10), rgba(126,255,178,0.06)); border:2px solid var(--accent-gold); border-radius:14px; margin:14px 0; text-align:center; }
+  .shop-hero h2 { font-family:'Orbitron',sans-serif; letter-spacing:0.18em; color:var(--accent-gold); margin:0 0 6px; }
+  .shop-balance { font-family:'Orbitron',monospace; font-size:32px; color:var(--accent-gold); margin:8px 0; text-shadow:0 0 12px rgba(255,203,107,0.5); }
+
+  .shop-section { margin:20px 0; }
+  .shop-section h3 { font-family:'Orbitron',sans-serif; letter-spacing:0.15em; color:var(--accent); font-size:14px; margin:0 0 10px; }
+
+  .shop-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; }
+  .shop-card { padding:14px; background:var(--bg-card); border:2px solid var(--border); border-radius:10px; transition: all .15s; }
+  .shop-card:hover { border-color:var(--accent); transform: translateY(-2px); }
+  .shop-card .sc-icon { font-size:32px; text-align:center; margin-bottom:6px; }
+  .shop-card .sc-name { font-family:'Orbitron',sans-serif; font-size:13px; letter-spacing:0.1em; color:var(--text); text-align:center; }
+  .shop-card .sc-desc { font-size:11px; color:var(--text-dim); text-align:center; margin:4px 0 8px; line-height:1.4; }
+  .shop-card .sc-price { font-family:'Orbitron',monospace; color:var(--accent-gold); text-align:center; font-size:14px; font-weight:700; margin-bottom:8px; }
+  .shop-card .sc-buy { display:block; width:100%; padding:8px 14px; background:var(--accent-gold); color:#1a0f00; border:none; border-radius:6px; font-weight:700; cursor:pointer; font-family:inherit; font-size:13px; }
+  .shop-card .sc-buy:hover:not(:disabled) { background:#ffe199; }
+  .shop-card .sc-buy:disabled { opacity:0.4; cursor:not-allowed; background:var(--border); color:var(--text-faint); }
+  .shop-card .sc-owned { font-size:11px; color:var(--accent-green); text-align:center; margin-top:4px; }
+
+  .lootbox-card { background:linear-gradient(135deg, rgba(185,128,255,0.10), rgba(255,92,122,0.10)); border-color:var(--accent-2); }
+  .lootbox-card .sc-name { color:var(--accent-2); }
+
+  .shop-log { margin:16px 0; padding:12px; background:rgba(0,0,0,0.3); border:1px dashed var(--border); border-radius:8px; max-height:160px; overflow-y:auto; font-family:monospace; font-size:12px; }
+  .shop-log .sl-row { padding:4px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .shop-log .sl-row.gain { color:var(--accent-green); }
+  .shop-log .sl-row.lose { color:var(--accent-red); }
+  .shop-log .sl-row.jackpot { color:var(--accent-gold); font-weight:700; }
+</style>
+</head>
+<body data-page="p17" data-type="setup">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label mixed">องก์ 3 · Scene 17 · ตลาดก่อนสมรภูมิ</div>
+  <h1 class="page-title">🛒 Quartermaster · ก่อนตี BOSS สุดท้าย</h1>
+  <div class="obj-tags"><span class="obj-tag a">วางแผนใช้เหรียญ · จัดยุทโธปกรณ์</span></div>
+
+  <div class="narrative">
+    <p>ก่อนถึง BOSS ตัวสุดท้าย · ทีมแวะ <b>สถานี Quartermaster</b> · ใช้ 🪙 ที่สะสมมาแลกของ</p>
+    <p style="color:var(--text-dim);font-size:13px">⚠️ BOSS สุดท้ายจะถาม <b>15 คลื่นความรู้</b> · เก็บ shield + boost ให้ครบก่อนเข้า · ตัดสินใจฉลาด ๆ</p>
+  </div>
+
+  <div class="shop-hero">
+    <h2>🪙 BALANCE</h2>
+    <div class="shop-balance" id="shopBalance">0 🪙</div>
+    <div style="font-size:12px;color:var(--text-dim)">ใช้แลกของก่อนเข้าสมรภูมิ · เหรียญที่เหลือใช้ที่ HUD ทั่วไปได้</div>
+  </div>
+
+  <!-- ENERGY -->
+  <div class="shop-section">
+    <h3>⚡ Energy Pack · เติมพลัง</h3>
+    <div class="shop-grid" id="shopEnergy"></div>
+  </div>
+
+  <!-- ITEMS -->
+  <div class="shop-section">
+    <h3>🎒 Combat Items · boost dmg + shield (ใช้ใน BOSS)</h3>
+    <div class="shop-grid" id="shopItems"></div>
+  </div>
+
+  <!-- LOOT BOX -->
+  <div class="shop-section">
+    <h3>🎁 Loot Box · เสี่ยงดวง</h3>
+    <div class="shop-grid" id="shopLoot"></div>
+  </div>
+
+  <div class="shop-log" id="shopLog"><div class="sl-row" style="color:var(--text-faint)">— ประวัติการซื้อจะแสดงที่นี่ —</div></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P17 · บทบาท: Quartermaster (NPC)</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "ก่อนตี BOSS · ทีมต้องเลือกของ · ใช้เหรียญที่สะสมมาทั้ง EP"<br>
+      <b>ระหว่าง:</b> ปล่อยทีมตัดสินใจ · ห้ามแนะนำ · จะซื้อพลังหรือเสี่ยง loot box<br>
+      <b>ปิด:</b> "พร้อมแล้วก็เข้าสมรภูมิ · ของที่ซื้อใช้ครั้งเดียวเท่านั้น"<br>
+      <b>กลยุทธ์:</b> Decoder ×2.5 แพงสุดแต่คุ้มถ้าตอบถูกแน่ ๆ · loot box เสี่ยงสูง · shield ปลอดภัย
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" style="margin-top:18px">⚔ พร้อมแล้ว · เข้าสมรภูมิ BOSS</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ============ Shop catalog ============ */
+  const ENERGY_PACKS = [
+    { id:'e10', icon:'⚡', name:'Energy Small',  desc:'+10 ⚡',  price:5,  energy:10 },
+    { id:'e25', icon:'⚡⚡', name:'Energy Medium', desc:'+25 ⚡',  price:10, energy:25 },
+    { id:'e60', icon:'⚡⚡⚡', name:'Energy Large', desc:'+60 ⚡', price:20, energy:60 },
+  ];
+  const ITEMS = [
+    { id:'shop-shield',  icon:'🛡️', name:'Shield',         desc:'กัน VOID beam 1 ลูก · stack ได้',     price:30, type:'shield' },
+    { id:'shop-fuel',    icon:'⏱️', name:'Warp Fuel ×1.5', desc:'damage ×1.5 รอบเดียวที่ BOSS',        price:30, type:'boost', boost:'fuel' },
+    { id:'shop-lens',    icon:'🔍', name:'Hubble Lens ×2', desc:'damage ×2.0 รอบเดียวที่ BOSS',        price:40, type:'boost', boost:'lens' },
+    { id:'shop-decoder', icon:'📡', name:'Decoder ×2.5',   desc:'damage ×2.5 รอบเดียวที่ BOSS · แรงสุด', price:50, type:'boost', boost:'decoder' },
+  ];
+  const LOOT = [
+    { id:'lb25', icon:'🎁', name:'Loot Box', desc:'สุ่มรางวัล · 25 🪙 · เสี่ยงดวง', price:25 },
+  ];
+
+  /* ============ Persistent shop state ============ */
+  function ensureShopState() {
+    if (typeof Book.state.boughtShields !== 'number') Book.state.boughtShields = 0;
+    if (!Array.isArray(Book.state.boughtBoosts)) Book.state.boughtBoosts = [];
+    if (!Array.isArray(Book.state.boughtBoostsUsed)) Book.state.boughtBoostsUsed = [];
+    Book.save();
+  }
+
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    ensureShopState();
+    renderShop();
+  }, 50);
+
+  function renderShop() {
+    document.getElementById('shopBalance').textContent = (Book.state.coins || 0) + ' 🪙';
+    renderSection('shopEnergy', ENERGY_PACKS, false);
+    renderSection('shopItems', ITEMS, false);
+    renderSection('shopLoot', LOOT, true);
+  }
+
+  function renderSection(hostId, list, isLoot) {
+    const host = document.getElementById(hostId);
+    const balance = Book.state.coins || 0;
+    host.innerHTML = list.map(p => {
+      const can = balance >= p.price;
+      const ownedNote = p.type === 'shield' ? ` · มี: ${Book.state.boughtShields}` :
+                       p.type === 'boost' ? ` · มี: ${Book.state.boughtBoosts.filter(b => b === p.boost).length}` : '';
+      return `<div class="shop-card ${isLoot?'lootbox-card':''}">
+        <div class="sc-icon">${p.icon}</div>
+        <div class="sc-name">${p.name}</div>
+        <div class="sc-desc">${p.desc}</div>
+        <div class="sc-price">${p.price} 🪙</div>
+        <button class="sc-buy" data-id="${p.id}" ${can?'':'disabled'}>${can?'ซื้อ':'เหรียญไม่พอ'}</button>
+        ${ownedNote ? `<div class="sc-owned">${ownedNote}</div>` : ''}
+      </div>`;
+    }).join('');
+    host.querySelectorAll('.sc-buy').forEach(btn => btn.addEventListener('click', () => buy(btn.dataset.id)));
+  }
+
+  function logRow(text, kind) {
+    const log = document.getElementById('shopLog');
+    if (log.firstElementChild?.style?.color) log.innerHTML = ''; // clear placeholder
+    const row = document.createElement('div');
+    row.className = 'sl-row ' + (kind || '');
+    row.textContent = '• ' + text;
+    log.insertBefore(row, log.firstChild);
+  }
+
+  function buy(id) {
+    const all = [...ENERGY_PACKS, ...ITEMS, ...LOOT];
+    const p = all.find(x => x.id === id);
+    if (!p) return;
+    if (!Book.spendCoin(p.price, 'shop:'+id)) { logRow(`ซื้อ ${p.name} ไม่ได้ · เหรียญไม่พอ`, 'lose'); return; }
+
+    if (ENERGY_PACKS.includes(p)) {
+      Book.addEnergy(p.energy, 'shop-energy');
+      logRow(`ซื้อ ${p.name} · +${p.energy} ⚡ · -${p.price} 🪙`, 'gain');
+    } else if (p.type === 'shield') {
+      Book.state.boughtShields++;
+      Book.save();
+      logRow(`ซื้อ Shield · มีโล่รวม ${Book.state.boughtShields} ชิ้น · -${p.price} 🪙`, 'gain');
+    } else if (p.type === 'boost') {
+      Book.state.boughtBoosts.push(p.boost);
+      Book.save();
+      logRow(`ซื้อ ${p.name} · ใช้ที่ BOSS · -${p.price} 🪙`, 'gain');
+    } else if (id.startsWith('lb')) {
+      openLootBox();
+    }
+    renderShop();
+  }
+
+  /* ============ Loot box · weighted random ============ */
+  const LOOT_TABLE = [
+    { w:18, label:'รางวัลเล็ก · +5 ⚡', kind:'gain', apply: () => Book.addEnergy(5, 'lootbox') },
+    { w:18, label:'รางวัล · +30 ⚡',     kind:'gain', apply: () => Book.addEnergy(30, 'lootbox') },
+    { w:14, label:'🛡️ Shield 1 ชิ้น',    kind:'gain', apply: () => { Book.state.boughtShields++; Book.save(); } },
+    { w:12, label:'⏱️ Warp Fuel boost',  kind:'gain', apply: () => { Book.state.boughtBoosts.push('fuel'); Book.save(); } },
+    { w:10, label:'🔍 Hubble Lens boost', kind:'gain', apply: () => { Book.state.boughtBoosts.push('lens'); Book.save(); } },
+    { w:8,  label:'📡 Decoder boost',     kind:'gain', apply: () => { Book.state.boughtBoosts.push('decoder'); Book.save(); } },
+    { w:5,  label:'🎰 JACKPOT! +100 ⚡ + Decoder', kind:'jackpot', apply: () => { Book.addEnergy(100, 'lootbox-jackpot'); Book.state.boughtBoosts.push('decoder'); Book.save(); } },
+    { w:8,  label:'😢 ขาดทุน · ไม่ได้อะไรเลย', kind:'lose', apply: () => {} },
+    { w:5,  label:'💢 หายนะ · -10 ⚡',     kind:'lose', apply: () => Book.addEnergy(-10, 'lootbox-bad') },
+    { w:2,  label:'🦠 VOID แทรก · corruption +5%', kind:'lose', apply: () => Corruption.add(5) },
+  ];
+
+  function openLootBox() {
+    // weighted pick
+    const total = LOOT_TABLE.reduce((s,x) => s + x.w, 0);
+    let r = Math.random() * total;
+    let pick = LOOT_TABLE[0];
+    for (const opt of LOOT_TABLE) { if ((r -= opt.w) <= 0) { pick = opt; break; } }
+    pick.apply();
+    logRow('🎁 Loot box → ' + pick.label, pick.kind);
+    // dramatic burst
+    if (pick.kind === 'jackpot') {
+      const b = document.createElement('div');
+      b.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);font-size:80px;z-index:9999;animation:burst 1.6s ease-out forwards;text-shadow:0 0 30px gold';
+      b.textContent = '🎰 JACKPOT!';
+      document.body.appendChild(b);
+      setTimeout(() => b.remove(), 1600);
+    }
+  }
+
+  function finishPage() {
+    Book.savePageData('p17', {
+      shopBoughtShields: Book.state.boughtShields,
+      shopBoughtBoosts: Book.state.boughtBoosts,
+      remainingCoins: Book.state.coins,
+      remainingEnergy: Book.state.energy
+    });
+    Book.completePage('p17', { score: 1, max: 1, msg: 'พร้อมเข้า BOSS · เหลือ ' + Book.state.coins + ' 🪙' });
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ พร้อมแล้ว';
+  }
+</script>
+
+</body>
+</html>

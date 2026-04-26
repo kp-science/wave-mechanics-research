@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>🎙️ EP03 Teacher Remote · COSMOS LOG</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  body { padding: 16px; max-width: 760px; margin: 0 auto; }
+  .tr-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  .tr-head h1 { font-size:20px; margin:0; }
+  .tr-meta { font-size:12px; color: var(--text-dim); }
+
+  .tr-auth { margin:18px 0; padding:14px; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; }
+  .tr-auth input { width:100%; padding:10px; background:#0a0a18; border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:14px; box-sizing:border-box; }
+  .tr-auth button { margin-top:8px; padding:8px 14px; background:var(--accent); color:#0a0a18; border:none; border-radius:6px; font-weight:700; cursor:pointer; }
+
+  .tr-now {
+    padding: 18px; background: linear-gradient(135deg, rgba(100,216,255,0.12), rgba(185,128,255,0.12));
+    border: 1px solid var(--accent); border-radius: 12px; margin: 14px 0;
+  }
+  .tr-now .label { font-size:11px; color:var(--text-dim); letter-spacing:1px; }
+  .tr-now .title { font-size:22px; font-weight:800; margin:4px 0; color: var(--accent-gold); }
+  .tr-now .sub { font-size:13px; color:var(--text-dim); }
+  .tr-now .timer { font-family:'Orbitron',monospace; font-size:28px; color:var(--accent); margin-top:8px; }
+
+  .tr-controls { display:grid; grid-template-columns: 1fr 2fr 1fr; gap:10px; margin:14px 0; }
+  .tr-controls button {
+    padding: 16px; font-size: 16px; font-weight:700; border:1px solid var(--border);
+    border-radius: 10px; background: var(--bg-card); color: var(--text); cursor:pointer;
+  }
+  .tr-controls .primary { background: var(--accent); color:#0a0a18; border-color:var(--accent); font-size:18px; }
+  .tr-controls button:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .tr-list { margin-top: 16px; }
+  .tr-list .hdr { display:flex; justify-content:space-between; align-items:center; margin:10px 0 6px; font-size:12px; color:var(--text-dim); }
+  .tr-list .hdr button { background:transparent; color:var(--accent); border:1px solid var(--border); border-radius:5px; padding:4px 10px; font-size:11px; cursor:pointer; }
+  .tr-list .row {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 12px; background:var(--bg-card); border:1px solid var(--border);
+    border-radius:6px; margin-bottom:4px; font-size:13px;
+  }
+  .tr-list .row.current { border-color: var(--accent); background: rgba(100,216,255,0.08); box-shadow: 0 0 0 1px var(--accent) inset; }
+  .tr-list .row.unlocked { background: rgba(126,255,178,0.06); }
+  .tr-list .row .pid   { font-family:'Orbitron',monospace; color:var(--text-dim); width:40px; }
+  .tr-list .row .ttl   { flex:1; cursor:pointer; }
+  .tr-list .row .ttl:hover { color: var(--accent); }
+  .tr-list .row .tm    { font-size:11px; color:var(--text-dim); width:60px; text-align:right; }
+  .tr-list .row .chk   {
+    width:22px; height:22px; border:2px solid var(--border); border-radius:5px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; background:transparent; font-size:14px; color:transparent;
+    flex-shrink:0; transition: all 0.15s;
+  }
+  .tr-list .row .chk:hover { border-color: var(--accent); }
+  .tr-list .row.unlocked .chk { background: var(--accent-green); border-color: var(--accent-green); color:#03040c; }
+  .tr-list .row.current .chk { box-shadow: 0 0 8px rgba(100,216,255,0.6); }
+
+  .tr-log { margin-top:16px; font-size:12px; color:var(--text-dim); font-family:monospace; }
+</style>
+</head>
+<body>
+
+<div class="tr-head">
+  <h1>🎛️ Teacher Remote</h1>
+  <div class="tr-meta" id="meta"></div>
+</div>
+
+<div id="auth" class="tr-auth">
+  <div style="margin-bottom:6px;font-size:13px;">🔒 รหัสครู</div>
+  <input type="password" id="pw" placeholder="Teacher password" onkeydown="if(event.key==='Enter')saveAuth()">
+  <button onclick="saveAuth()">ยืนยัน</button>
+  <div style="margin-top:6px;font-size:11px;color:var(--text-dim)">เก็บใน localStorage ของเครื่องนี้</div>
+</div>
+
+<div id="panel" style="display:none;">
+  <div class="tr-now">
+    <div class="label">กำลังสอน</div>
+    <div class="title" id="nowTitle">—</div>
+    <div class="sub" id="nowSub">—</div>
+    <div class="timer" id="nowTimer">00:00</div>
+  </div>
+
+  <div class="tr-controls">
+    <button id="prevBtn" onclick="gotoRelative(-1)">← ก่อนหน้า</button>
+    <button class="primary" id="nextBtn" onclick="gotoRelative(+1)">ต่อไป →</button>
+    <button onclick="resync()">🔁 re-sync</button>
+  </div>
+
+  <div class="tr-list" id="list"></div>
+
+  <div class="tr-log" id="log"></div>
+</div>
+
+<script src="../../shared/pace-client.js?v=1"></script>
+<script>
+  const params = new URLSearchParams(location.search);
+  const ep   = 'ep03';  // hardcoded · ไฟล์นี้คุม EP03 เท่านั้น
+  const room = params.get('room') || 'default';
+  // default = local mode · เข้าได้เลยไม่ต้องใส่รหัส · ถ้าอยากใช้ backend จริงใส่ ?mode=remote
+  const mode = (params.get('mode') === 'remote') ? 'remote' : 'local';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec';
+
+  document.getElementById('meta').textContent =
+    'EP: ' + ep + ' · Room: ' + room + (mode === 'local' ? ' · 🧪 LOCAL' : '');
+
+  let pages = [];
+  let currentIdx = -1;
+  let unlockedUpToIdx = -1;   // หน้าสูงสุดที่ปลดล็อคให้ผู้เรียน (cumulative)
+  let pageStartAt = 0;
+
+  /* --- auth --- */
+  function saveAuth() {
+    const pw = document.getElementById('pw').value.trim();
+    if (!pw) return;
+    localStorage.setItem('teacherPw_pace', pw);
+    enterPanel();
+  }
+  function getPw() { return localStorage.getItem('teacherPw_pace') || ''; }
+
+  // local mode = ไม่ต้อง auth เพราะไม่แตะ server
+  if (mode === 'local' || getPw()) enterPanel();
+  if (mode === 'local') document.getElementById('auth').style.display = 'none';
+
+  function enterPanel() {
+    document.getElementById('auth').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    loadConfig();
+  }
+
+  /* --- load EP config (ep03 local) --- */
+  function loadConfig() {
+    const s = document.createElement('script');
+    s.src = './config.js?v=' + Date.now();
+    s.onload = () => {
+      if (!window.EP_CONFIG || !EP_CONFIG.pages) { alert('โหลด EP_CONFIG ไม่ได้'); return; }
+      pages = EP_CONFIG.pages;
+      renderList();
+      pullCurrent();
+    };
+    document.head.appendChild(s);
+  }
+
+  function renderList() {
+    const box = document.getElementById('list');
+    box.innerHTML = '';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'hdr';
+    hdr.innerHTML = '<span>☑ = ปลดล็อคแล้ว (นักเรียนเข้าได้) · คลิกกล่องเพื่อสลับ · คลิกชื่อเพื่อไปหน้านั้น</span>' +
+      '<span><button onclick="unlockAll()">ปลดล็อคทั้งหมด</button> ' +
+      '<button onclick="lockAll()">ล็อคทั้งหมด</button></span>';
+    box.appendChild(hdr);
+
+    pages.forEach((p, i) => {
+      const row = document.createElement('div');
+      const isUnlocked = i <= unlockedUpToIdx;
+      const isPast = i <= currentIdx;  // หน้าผ่านไปแล้ว · ล็อคไม่ได้
+      row.className = 'row' + (i === currentIdx ? ' current' : '') + (isUnlocked ? ' unlocked' : '');
+      const title = isPast ? 'หน้าผ่านไปแล้ว · ล็อคไม่ได้'
+                    : (isUnlocked ? 'ปลดล็อคแล้ว · คลิกเพื่อล็อคกลับ' : 'คลิกเพื่อปลดล็อค');
+      row.innerHTML =
+        '<button class="chk" title="' + title + '" data-i="' + i + '"' + (isPast ? ' disabled style="opacity:0.5;cursor:not-allowed"' : '') + '>' + (isUnlocked ? '✓' : '') + '</button>' +
+        '<span class="pid">' + p.id + '</span>' +
+        '<span class="ttl" data-i="' + i + '">' + p.title + '</span>' +
+        '<span class="tm">' + (p.time || '-') + ' นาที</span>';
+      box.appendChild(row);
+      row.querySelector('.ttl').onclick = () => gotoIndex(i);
+      row.querySelector('.chk').onclick = (ev) => { ev.stopPropagation(); toggleUnlock(i); };
+    });
+  }
+
+  function toggleUnlock(i) {
+    // หน้าเก่า/ปัจจุบันปลดล็อคอัตโนมัติ (ครูผ่านไปแล้ว) · ไม่ให้ toggle
+    if (i <= currentIdx) {
+      log('ℹ️ หน้า ' + pages[i].id + ' ครูผ่านไปแล้ว · ล็อคไม่ได้');
+      return;
+    }
+    if (i <= unlockedUpToIdx) {
+      // ล็อคกลับ · แต่ไม่ต่ำกว่า currentIdx
+      unlockedUpToIdx = Math.max(i - 1, currentIdx);
+      log('☐ ล็อค ← ' + pages[i].id);
+    } else {
+      unlockedUpToIdx = i;
+      log('☑ ปลดล็อค → ' + pages[i].id);
+    }
+    pushState();
+    renderList();
+  }
+
+  function unlockAll() {
+    unlockedUpToIdx = pages.length - 1;
+    pushState();
+    renderList();
+    log('☑ ปลดล็อคทั้งหมด');
+  }
+
+  function lockAll() {
+    unlockedUpToIdx = currentIdx;  // ล็อคแค่ให้เข้าถึงหน้าปัจจุบัน
+    pushState();
+    renderList();
+    log('☐ ล็อคกลับเฉพาะหน้าปัจจุบัน');
+  }
+
+  function pushState() {
+    if (currentIdx < 0) return;
+    const p = pages[currentIdx];
+    const uIdx = Math.max(unlockedUpToIdx, currentIdx);
+    PaceClient.setPage({
+      mode: mode, apiUrl: API_URL, roomCode: room,
+      page: p.id,
+      unlockedUpTo: pages[uIdx] ? pages[uIdx].id : p.id,
+      ep: ep, subject: 'astronomy',
+      teacherPw: getPw()
+    });
+  }
+
+  /* --- current page display + timer --- */
+  function setCurrent(idx, at) {
+    currentIdx = idx;
+    pageStartAt = at || Date.now();
+    const p = pages[idx];
+    if (!p) return;
+    document.getElementById('nowTitle').textContent = p.id + ' · ' + p.title;
+    document.getElementById('nowSub').textContent =
+      'แนะนำ ' + (p.time || '-') + ' นาที · type: ' + (p.type || '-');
+    renderList();
+    document.getElementById('prevBtn').disabled = (idx <= 0);
+    document.getElementById('nextBtn').disabled = (idx >= pages.length - 1);
+  }
+
+  setInterval(() => {
+    if (currentIdx < 0) return;
+    const elapsed = Math.floor((Date.now() - pageStartAt) / 1000);
+    const m = Math.floor(elapsed / 60);
+    const s = elapsed % 60;
+    const el = document.getElementById('nowTimer');
+    el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    const budget = (pages[currentIdx] && pages[currentIdx].time) || 0;
+    if (budget && m >= budget) el.style.color = 'var(--accent-red)';
+    else if (budget && m >= budget - 2) el.style.color = 'var(--accent-gold)';
+    else el.style.color = 'var(--accent)';
+  }, 1000);
+
+  /* --- pull server state --- */
+  async function pullCurrent() {
+    const pace = await PaceClient.peek(API_URL, room, mode);
+    if (pace && pace.page) {
+      const idx = pages.findIndex(p => p.id === pace.page);
+      const uIdx = pace.unlockedUpTo ? pages.findIndex(p => p.id === pace.unlockedUpTo) : idx;
+      unlockedUpToIdx = Math.max(uIdx, idx, 0);
+      if (idx >= 0) { setCurrent(idx, pace.at); return; }
+    }
+    unlockedUpToIdx = 0;
+    setCurrent(0, Date.now()); // default: หน้าแรก
+  }
+
+  /* --- push (set) --- */
+  function gotoIndex(i) {
+    if (i < 0 || i >= pages.length) return;
+    // ย้ายไปหน้า i → auto ปลดล็อคถึงหน้านี้ (cumulative · ไม่ลดลง)
+    unlockedUpToIdx = Math.max(unlockedUpToIdx, i);
+    setCurrent(i, Date.now());
+    pushState();
+    log('→ ' + pages[i].id + ' · ' + pages[i].title);
+  }
+
+  function gotoRelative(delta) { gotoIndex(currentIdx + delta); }
+
+  function resync() {
+    pullCurrent();
+    log('🔁 re-sync');
+  }
+
+  function log(msg) {
+    const el = document.getElementById('log');
+    const t = new Date().toLocaleTimeString('th-TH');
+    el.textContent = '[' + t + '] ' + msg + '\n' + el.textContent.split('\n').slice(0,7).join('\n');
+  }
+
+  /* Keyboard shortcuts */
+  document.addEventListener('keydown', (e) => {
+    if (document.getElementById('panel').style.display === 'none') return;
+    if (e.key === 'ArrowRight' || e.key === ' ') { gotoRelative(+1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { gotoRelative(-1); e.preventDefault(); }
+  });
+</script>
+
+</body>
+</html>

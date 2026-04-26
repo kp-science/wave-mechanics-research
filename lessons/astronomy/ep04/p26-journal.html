@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P26 · Journal 3-2-1 + Badge</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .badge-card { padding:24px; text-align:center; background:radial-gradient(ellipse at center,rgba(255,203,107,0.18),#000 75%); border:2px solid #ffcb6b; border-radius:14px; margin:18px 0; }
+  .badge-card .icon { font-size:80px; filter:drop-shadow(0 0 30px #ffcb6b); animation:badgeFloat 2s infinite ease-in-out; }
+  @keyframes badgeFloat { 50% { transform:translateY(-6px); } }
+  .badge-card .name { font-family:Orbitron; font-size:22px; color:#ffcb6b; letter-spacing:0.18em; margin:10px 0; }
+  .chip { padding:10px 14px; min-height:44px; background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.3); color:#e8ecf8; border-radius:20px; font-size:13px; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; transition:all .12s; }
+  .chip:hover { border-color:#64d8ff; }
+  .chip.on { background:rgba(126,255,178,0.15); border-color:#7effb2; color:#bcffd6; }
+  .chip.on.gold { background:rgba(255,203,107,0.18); border-color:#ffcb6b; color:#ffe2a8; }
+  .chip.on.pink { background:rgba(255,143,165,0.18); border-color:#ff8fa5; color:#ffb5c2; }
+  .chip-section { margin:14px 0; padding:14px; background:rgba(0,0,0,0.25); border-radius:12px; }
+  .chip-section h4 { font-family:Orbitron; font-size:12px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; }
+  .chip-counter { font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0; margin-left:8px; }
+  .chip-row { display:flex; flex-wrap:wrap; gap:8px; }
+</style>
+</head>
+<body data-page="p26" data-type="reflection">
+<div class="page">
+
+  <span class="lbl story">🏆 ACT D · BADGE + JOURNAL</span>
+  <h1>จบภารกิจ EP04</h1>
+
+  <div class="badge-card">
+    <div class="icon">🔥</div>
+    <div class="name">STELLAR FATE</div>
+    <div style="color:#ffd88a; font-size:13px;">Badge ประจำ EP04 · ขึ้นยศ → NAVIGATOR</div>
+    <div style="margin-top:14px; color:#9aa3c0; font-size:12px;">
+      ทีม T.H.E.O.S.-IX วิเคราะห์ดาวฤกษ์ครบทุกมิติ · ใช้ความรู้เลือกเส้นทางที่ปลอดภัย ·
+      กู้พ่ออารยากลับมาได้ (หรือพยายาม) · เข้าใจวิวัฒนาการดาว 5 เส้นทาง
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ขั้นสุดท้าย · <b>เลือกชิป 3-2-1</b> เพื่อบันทึกบทเรียน · ไม่ต้องพิมพ์"
+    </span>
+  </div>
+
+  <div class="chip-section">
+    <h4>3 สิ่งที่เรียนรู้ <span class="chip-counter" id="cnt3">0/3</span></h4>
+    <div class="chip-row" id="chips3"></div>
+  </div>
+
+  <div class="chip-section">
+    <h4>2 สิ่งที่อยากรู้เพิ่ม <span class="chip-counter" id="cnt2">0/2</span></h4>
+    <div class="chip-row" id="chips2"></div>
+  </div>
+
+  <div class="chip-section">
+    <h4>1 สิ่งที่จะเล่าให้คนที่บ้านฟัง <span class="chip-counter" id="cnt1">0/1</span></h4>
+    <div class="chip-row" id="chips1"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P26</summary>
+    <div class="body">
+      <b>วPA evidence:</b> เลือก chip = data ที่ครู export ดูได้<br>
+      <b>เปิดทาง EP05:</b> ดวงอาทิตย์เป็นเป้าต่อไปของ VOID
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ปิดบันทึก</button>
+    <button class="next-btn" id="nextBtn" disabled>🏁 จบ EP04</button>
+  </div>
+  <div class="gate-hint">เลือก chip ครบ 3+2+1 → กดส่ง → จบภารกิจ</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const learn3 = [
+  'สี = อุณหภูมิผิวเท่านั้น (OBAFGKM)',
+  'มวลตัดสินวาระสุดท้าย (0.08 · 9 · 25)',
+  'มวลมาก = อายุสั้น',
+  'ดาวเปลี่ยนสเปกตรัมตามอายุ',
+  'Brown dwarf ไม่จุดฟิวชัน',
+  'Red dwarf อยู่นานสุด',
+  'Sun-like → White dwarf → Black dwarf',
+  'ดาวมวล > 25 = Hypernova → BH',
+  'แรงโน้มถ่วง g = GM/R²',
+];
+const wonder2 = [
+  'Hypernova หน้าตาจริงเป็นยังไง?',
+  'Black dwarf ที่จริงมีอยู่ไหม?',
+  'time dilation รอบหลุมดำเป็นยังไง?',
+  'ดวงอาทิตย์เราจะตายเมื่อไร?',
+  'มีดาวที่ใกล้ระเบิดในท้องฟ้าจริงไหม?',
+  'Brown dwarf เห็นได้ด้วยกล้องโทรทรรศน์ไหม?',
+];
+const tell1 = [
+  '"ดาวสีบอกอุณหภูมิ ไม่ได้บอกอายุ"',
+  '"มวลมาก = อายุสั้น (กลับสามัญสำนึก!)"',
+  '"ดวงอาทิตย์จะกลายเป็น Red giant ใน 5 พันล้านปี"',
+  '"เบเทลจุสจะระเบิดเป็นซูเปอร์โนวาในไม่นาน"',
+  '"หลุมดำเกิดจากดาวที่มวล > 25 เท่าดวงอาทิตย์"',
+];
+
+const picked = { l3:[], w2:[], t1:[] };
+function renderChips(host, items, max, key, cls) {
+  host.innerHTML = items.map((t,i)=>`<button class="chip ${cls||''}" onclick="tap('${key}',${i},${max})">${t}</button>`).join('');
+}
+function tap(key, idx, max) {
+  const arr = picked[key];
+  const pos = arr.indexOf(idx);
+  if (pos >= 0) arr.splice(pos, 1);
+  else if (arr.length >= max) return;
+  else arr.push(idx);
+  const hostId = key==='l3'?'chips3':(key==='w2'?'chips2':'chips1');
+  document.getElementById(hostId).querySelectorAll('.chip').forEach((c,i)=>c.classList.toggle('on', arr.includes(i)));
+  const cntId = key==='l3'?'cnt3':(key==='w2'?'cnt2':'cnt1');
+  document.getElementById(cntId).textContent = arr.length + '/' + max;
+  if (window.SFX) SFX.play('tap');
+  document.getElementById('submitBtn').disabled =
+    !(picked.l3.length === 3 && picked.w2.length === 2 && picked.t1.length === 1);
+}
+window.tap = tap;
+renderChips(document.getElementById('chips3'), learn3, 3, 'l3', '');
+renderChips(document.getElementById('chips2'), wonder2, 2, 'w2', 'gold');
+renderChips(document.getElementById('chips1'), tell1, 1, 't1', 'pink');
+
+Submit.wirePair({
+  page:'p26',
+  nextHref:'index.html',
+  getPayload:()=>({ picked }),
+  isPerfect:()=>true,
+  onSubmit:()=>{
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

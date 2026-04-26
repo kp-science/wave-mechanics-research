@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>แบบฝึกหัด · มวล-สปริง (SHM แผน 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:15px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:10px 0;font-size:14px}
+.item{border:2px solid #fed7aa;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfffd}
+.no{display:inline-block;background:#ea580c;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.skill.calc{background:#dcfce7;color:#166534}
+.skill.theory{background:#fde68a;color:#78350f}
+.skill.appli{background:#bae6fd;color:#075985}
+.skill.challenge{background:#fce7f3;color:#9d174d}
+.stem{font-size:16px;margin:8px 0;font-weight:600;color:#9a3412}
+.sub{margin:8px 0 6px;padding-left:12px;border-left:3px solid #fdba74;font-size:15px}
+.sub b{color:#9a3412}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:5px 0 3px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600;transition:all .15s}
+.c-btn:hover,.c-btn.active{background:#ea580c;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #ea580c}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:5px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.opt:hover{border-color:#ea580c;background:#fff7ed}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#ea580c}
+.cb-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+@media(max-width:700px){.cb-bank{grid-template-columns:1fr}}
+select.ans-dd{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;background:#fff;min-width:160px}
+.ans-in{border:none;border-bottom:1.5px solid #fdba74;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:transparent}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+table.comp{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+table.comp th{background:#ea580c;color:#fff;padding:7px 10px;font-weight:700;text-align:center}
+table.comp td{border:1.5px solid #fed7aa;padding:7px 10px;text-align:center}
+table.comp tr:nth-child(even) td{background:#fff7ed}
+table.comp td input{width:95%;border:1px solid #fdba74;border-radius:4px;padding:4px;font-family:inherit;font-size:13.5px;text-align:center}
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#ffedd5}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 แบบฝึกหัด · ระบบมวล-สปริง (T = 2π√(m/k))</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">8 ข้อ · Elaborate Phase</span> ครอบคลุม M3.1–M3.4 · วPA 5, 6, 8</div>
+    </div>
+  </div>
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" placeholder="ชื่อนักเรียน"></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50"></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1"></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+  <div class="info">💡 สูตรสำคัญ: T = 2π√(m/k) · ω = √(k/m) · f = (1/2π)√(k/m) · อนุกรม: 1/k_eff = Σ(1/kᵢ) · ขนาน: k_eff = Σkᵢ</div>
+
+  <!-- ข้อ 1 -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span><span class="skill calc">🔢 คำนวณ</span> <span style="font-size:12px;color:#888">K3.1</span></div>
+    <div class="stem">มวล m = 0.5 kg ต่อกับสปริง k = 200 N/m วางแนวระดับบนพื้นลื่น ดึงมวลออก 3 cm แล้วปล่อย</div>
+    <div class="sub"><b>ก)</b> จงหาคาบ T (s)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c1a','pen')">✏️</button><button class="c-btn" onclick="sm('c1a','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c1a']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c1a')">🗑️</button>
+    </div>
+    <canvas id="c1a" data-bg="lined" width="960" height="220"></canvas>
+    <div class="sub" style="margin-top:10px"><b>ข)</b> ความถี่ f (Hz) และ ω (rad/s)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c1b','pen')">✏️</button><button class="c-btn" onclick="sm('c1b','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c1b']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c1b')">🗑️</button>
+    </div>
+    <canvas id="c1b" data-bg="lined" width="960" height="180"></canvas>
+    <div class="hint">💡 T = 2π√(0.5/200) = π/20 ≈ 0.157 s · f ≈ 6.37 Hz · ω ≈ 40 rad/s</div>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span><span class="skill calc">🔢 คำนวณ</span> <span style="font-size:12px;color:#888">P3.2</span></div>
+    <div class="stem">แขวนมวล m = 2 kg บนสปริงแนวดิ่ง สปริงยืดออก 5 cm จากตำแหน่งธรรมชาติเมื่อถึงสมดุล (g = 10 m/s²)</div>
+    <div class="sub"><b>ก)</b> จงหาค่า k ของสปริง (N/m) จากความสัมพันธ์ mg = kx₀</div>
+    <div class="sub"><b>ข)</b> จงหา T ของระบบนี้ (s)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c2','pen')">✏️</button><button class="c-btn" onclick="sm('c2','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c2']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c2')">🗑️</button>
+    </div>
+    <canvas id="c2" data-bg="lined" width="960" height="260"></canvas>
+    <div class="hint">💡 k = mg/x₀ = 2×10/0.05 = 400 N/m · T = 2π√(2/400) = π/10 ≈ 0.314 s</div>
+  </div>
+
+  <!-- ข้อ 3 -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span><span class="skill calc">🔢 คำนวณ</span> <span style="font-size:12px;color:#888">M3.1 · K3.2</span></div>
+    <div class="stem">สปริง 3 เส้น k₁ = 60 N/m · k₂ = 60 N/m · k₃ = 120 N/m ต่อกันแบบอนุกรมทั้งหมด แขวนมวล m = 3 kg</div>
+    <div class="sub"><b>ก)</b> หา k_eff (ใช้สูตร 1/k_eff = 1/k₁ + 1/k₂ + 1/k₃)</div>
+    <div class="sub"><b>ข)</b> หา T ของระบบ</div>
+    <div class="sub"><b>ค)</b> ถ้าต่อขนานแทน k_eff ของขนาน = ?</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c3','pen')">✏️</button><button class="c-btn" onclick="sm('c3','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c3']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c3')">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="960" height="280"></canvas>
+    <div class="hint">💡 อนุกรม: 1/k_eff = 1/60+1/60+1/120 = 5/120 → k_eff = 24 N/m · T = 2π√(3/24) = π√(1/2) ≈ 2.22 s · ขนาน k_eff = 240 N/m</div>
+  </div>
+
+  <!-- ข้อ 4 -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span><span class="skill calc">🔢 คำนวณ</span> <span style="font-size:12px;color:#888">M3.1</span></div>
+    <div class="stem">สปริง 2 เส้น k₁ = 300 N/m และ k₂ = 600 N/m ต่อกันแบบขนาน แขวนมวล m = 4 kg</div>
+    <div class="sub"><b>ก)</b> k_eff ของระบบ (N/m)</div>
+    <div class="sub"><b>ข)</b> T และ f ของระบบ</div>
+    <div class="sub"><b>ค)</b> ถ้าเปลี่ยนเป็นอนุกรม T ใหม่เป็นเท่าใด? สรุปว่าอนุกรม/ขนาน T ใครมากกว่า?</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c4','pen')">✏️</button><button class="c-btn" onclick="sm('c4','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c4']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c4')">🗑️</button>
+    </div>
+    <canvas id="c4" data-bg="lined" width="960" height="280"></canvas>
+    <div class="hint">💡 ขนาน k_eff=900 N/m · T=2π√(4/900)≈0.42 s · อนุกรม k_eff=200 N/m · T=2π√(4/200)≈0.89 s · อนุกรม T มากกว่า</div>
+  </div>
+
+  <!-- ข้อ 5 -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span><span class="skill theory">📖 ทฤษฎี</span> <span style="font-size:12px;color:#888">M3.4 · K3.2</span></div>
+    <div class="stem">เปรียบเทียบระบบ SHM 2 ระบบ: ระบบ A (มวล-สปริง) และ ระบบ B (ลูกตุ้มอย่างง่าย)</div>
+    <div style="margin:12px 0">
+      <table class="comp">
+        <thead>
+          <tr><th style="background:#374151;width:28%">ปริมาณ</th><th>ระบบ A · มวล-สปริง</th><th>ระบบ B · ลูกตุ้ม</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:left;padding-left:10px;font-weight:700">สูตร T</td>
+            <td><input id="t5_spring_T" placeholder="T = ?"></td>
+            <td><input id="t5_pend_T" placeholder="T = ?"></td></tr>
+          <tr><td style="text-align:left;padding-left:10px;font-weight:700">T ขึ้นกับ m?</td>
+            <td><select id="t5_spring_m" class="ans-dd"><option value="">เลือก...</option><option value="yes">✅ ขึ้นกับ m</option><option value="no">❌ ไม่ขึ้นกับ m</option></select></td>
+            <td><select id="t5_pend_m" class="ans-dd"><option value="">เลือก...</option><option value="yes">✅ ขึ้นกับ m</option><option value="no">❌ ไม่ขึ้นกับ m</option></select></td></tr>
+          <tr><td style="text-align:left;padding-left:10px;font-weight:700">T ขึ้นกับ A?</td>
+            <td><select id="t5_spring_A" class="ans-dd"><option value="">เลือก...</option><option value="yes">✅ ขึ้นกับ A</option><option value="no">❌ ไม่ขึ้นกับ A</option></select></td>
+            <td><select id="t5_pend_A" class="ans-dd"><option value="">เลือก...</option><option value="yes">✅ ขึ้นกับ A (มุมใหญ่)</option><option value="no">❌ ไม่ขึ้นกับ A (มุมเล็ก)</option></select></td></tr>
+          <tr><td style="text-align:left;padding-left:10px;font-weight:700">ตัวแปรควบคุม T</td>
+            <td><input id="t5_spring_var" placeholder="..."></td>
+            <td><input id="t5_pend_var" placeholder="..."></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="font-weight:700;color:#9a3412;margin:10px 0 6px">ถ้าเพิ่มมวลเป็น 2 เท่าในทั้งสองระบบ ระบบใดที่ T จะเปลี่ยนแปลง?</div>
+    <div class="opt"><label><input type="radio" name="q5_mass" value="A"> ก. ระบบ A (สปริง) T เพิ่ม · ระบบ B (ลูกตุ้ม) T ไม่เปลี่ยน</label></div>
+    <div class="opt"><label><input type="radio" name="q5_mass" value="B"> ข. ทั้งสองระบบ T เพิ่มขึ้น เพราะมวลมากต้องใช้เวลานานกว่า</label></div>
+    <div class="opt"><label><input type="radio" name="q5_mass" value="C"> ค. ระบบ A T ไม่เปลี่ยน · ระบบ B T เพิ่ม</label></div>
+    <div class="opt"><label><input type="radio" name="q5_mass" value="D"> ง. ทั้งสองระบบ T ไม่เปลี่ยน เพราะมวลตัดออก</label></div>
+  </div>
+
+  <!-- ข้อ 6 -->
+  <div class="item">
+    <div><span class="no">ข้อ 6</span><span class="skill theory">📖 ทฤษฎี</span> <span style="font-size:12px;color:#888">M3.3</span></div>
+    <div class="stem">สปริง m = 1 kg · k = 400 N/m ทดลองทั้งแนวระดับและแนวดิ่ง (g = 10 m/s²)</div>
+    <div style="margin:10px 0">
+      <div style="font-weight:600;margin-bottom:8px">6.1 เลือกข้อที่ถูกต้องเกี่ยวกับ T ของสปริงแนวดิ่ง (เลือกได้หลายข้อ)</div>
+      <div class="cb-bank">
+        <label class="opt"><input type="checkbox" data-correct="true" name="q6"> T = 2π√(m/k) ใช้ได้ทั้งแนวระดับและแนวดิ่ง</label>
+        <label class="opt"><input type="checkbox" data-correct="true" name="q6"> แนวดิ่ง equilibrium ใหม่อยู่ที่ x₀ = mg/k = 0.025 m ต่ำกว่าจุดยึด</label>
+        <label class="opt"><input type="checkbox" data-correct="false" name="q6"> แนวดิ่ง T = 2π√(m/(k+mg)) เพราะ g ช่วยแรงสปริง</label>
+        <label class="opt"><input type="checkbox" data-correct="false" name="q6"> แนวดิ่ง SHM รอบจุดยึดสปริง ไม่ใช่รอบ equilibrium ใหม่</label>
+      </div>
+    </div>
+    <div style="font-weight:600;margin-bottom:8px">6.2 คำนวณ T ของระบบนี้ (แสดงวิธีคิดในช่อง canvas)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c6','pen')">✏️</button><button class="c-btn" onclick="sm('c6','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c6']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c6')">🗑️</button>
+    </div>
+    <canvas id="c6" data-bg="lined" width="960" height="220"></canvas>
+    <div class="hint">💡 T = 2π√(1/400) = π/10 ≈ 0.314 s (เท่ากันทั้งสองแนว) · x₀ = 1×10/400 = 0.025 m</div>
+  </div>
+
+  <!-- ข้อ 7 -->
+  <div class="item">
+    <div><span class="no">ข้อ 7</span><span class="skill appli">🌍 ประยุกต์</span> <span style="font-size:12px;color:#888">P3.2 · วPA 8</span></div>
+    <div class="stem">โช้คอัพรถยนต์: มวลรถ (ด้านล่าง) ที่รองรับด้วยโช้คอัพ 1 ตัว = 300 kg · ต้องการให้ T ≈ 1.2 s เพื่อให้การสั่นสบาย</div>
+    <div class="sub"><b>ก)</b> จงหา k ที่เหมาะสม (N/m) เพื่อให้ได้ T = 1.2 s</div>
+    <div class="sub"><b>ข)</b> ถ้าใช้โช้คอัพ 4 ตัว (ขนาน) แต่ละตัวควรมีค่า k เท่าใด?</div>
+    <div class="sub"><b>ค)</b> จริงๆ แล้วรถยนต์มี damping (ความหน่วง) ด้วย — นี่เชื่อมกับ SHM แผนใด?</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c7','pen')">✏️</button><button class="c-btn" onclick="sm('c7','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c7']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c7')">🗑️</button>
+    </div>
+    <canvas id="c7" data-bg="lined" width="960" height="260"></canvas>
+    <div style="margin-top:8px">ค) เชื่อมกับ <select class="ans-dd" id="q7c"><option value="">เลือกแผน...</option><option>แผน 4 · เฟส x,v,a</option><option>แผน 5 · พลังงาน SHM</option><option>แผน 6 · Damping &amp; Resonance ✅</option></select></div>
+    <div class="hint">💡 k = 4π²m/T² = 4π²×300/1.44 ≈ 8225 N/m · แต่ละตัว k_each = 8225/4 ≈ 2056 N/m (ขนาน: k_eff=4k_each)</div>
+  </div>
+
+  <!-- ข้อ 8 -->
+  <div class="item">
+    <div><span class="no">ข้อ 8</span><span class="skill challenge">⭐ Challenge</span> <span style="font-size:12px;color:#888">K3.1 · K3.2</span></div>
+    <div class="stem">ระบบมวล-สปริงมี f = 5 Hz · ถ้าต้องการให้ T เพิ่มเป็น 2 เท่า (T_new = 0.4 s) โดยไม่เปลี่ยน k</div>
+    <div class="sub"><b>ก)</b> มวล m เดิมเป็นเท่าใด? (ใช้ f = 5 Hz)</div>
+    <div class="sub"><b>ข)</b> ต้องเพิ่มมวลเป็นเท่าใด (กี่เท่าของ m เดิม) เพื่อให้ T_new = 0.4 s?</div>
+    <div class="sub"><b>ค)</b> ถ้าต้องการลด T ลงครึ่งหนึ่ง (ไม่เปลี่ยน m) ต้องเปลี่ยน k อย่างไร?</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="sm('c8','pen')">✏️</button><button class="c-btn" onclick="sm('c8','eraser')">🧹</button>
+      <input type="range" min="1" max="16" value="3" oninput="sz['c8']=this.value" style="width:70px">
+      <button class="c-btn" onclick="clr('c8')">🗑️</button>
+    </div>
+    <canvas id="c8" data-bg="lined" width="960" height="300"></canvas>
+    <div class="hint">💡 f=5Hz → T=0.2s · T=2π√(m/k) → m/k=(T/2π)²=(0.2/2π)²=1/(100π²) · T_new=0.4s → m_new/k=(0.4/2π)²=4/(100π²) → m_new=4m · ลด T ครึ่ง: T∝1/√k → ต้องเพิ่ม k เป็น 4 เท่า</div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งแบบฝึกหัด มวล-สปริง (8 ข้อ)</h3>
+    <button class="btn-submit" onclick="submitEx()">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="foot">แบบฝึกหัด · SHM แผน 3 · มวล-สปริง · ว30203 ฟิสิกส์ 3 ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET='Exercise_SHM_Plan3';
+const cvs={},ctxs={},modes={},sz={};
+
+function initC(id){
+  const c=document.getElementById(id);if(!c)return;
+  cvs[id]=c;const ct=c.getContext('2d');ct.lineCap='round';ct.lineJoin='round';ctxs[id]=ct;
+  modes[id]='pen';sz[id]=3;
+  let drawing=false,last=null;
+  const gp=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();drawing=true;last=gp(e);};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=gp(e);
+    ct.globalCompositeOperation=modes[id]==='eraser'?'destination-out':'source-over';
+    ct.strokeStyle='#1a202c';ct.lineWidth=sz[id]||3;
+    ct.beginPath();ct.moveTo(last.x,last.y);ct.lineTo(p.x,p.y);ct.stroke();last=p;};
+  const end=()=>{drawing=false;last=null;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);
+  c.addEventListener('mouseup',end);c.addEventListener('mouseleave',end);
+  c.addEventListener('touchstart',start,{passive:false});
+  c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+}
+function sm(id,m){modes[id]=m;}
+function clr(id){if(ctxs[id])ctxs[id].clearRect(0,0,cvs[id].width,cvs[id].height);}
+function gv(id){return document.getElementById(id)?.value||'';}
+function gsv(id){const el=document.getElementById(id);return el?el.options[el.selectedIndex]?.value||'':'';}
+function gr(name){return document.querySelector(`input[name="${name}"]:checked`)?.value||'';}
+function gcb(name){return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(i=>i.value).join(',');}
+
+function getCanvases(){
+  const res={};
+  Object.keys(cvs).forEach(id=>{res['canvas_'+id]=cvs[id].toDataURL('image/png');});
+  return res;
+}
+
+function submitEx(){
+  const name=document.getElementById('student_name').value.trim();
+  if(!name){alert('กรุณากรอกชื่อก่อน');return;}
+  const payload={
+    sheet:SHEET,student_name:name,student_no:gv('student_no'),class:gv('class'),date:gv('test_date'),
+    q5_spring_T:gv('t5_spring_T'),q5_pend_T:gv('t5_pend_T'),
+    q5_spring_m:gsv('t5_spring_m'),q5_pend_m:gsv('t5_pend_m'),
+    q5_spring_A:gsv('t5_spring_A'),q5_pend_A:gsv('t5_pend_A'),
+    q5_mass_ans:gr('q5_mass'),
+    q6_cb:gcb('q6'),q7c:gsv('q7c'),
+    ...getCanvases()
+  };
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`Ex_Plan3_${name}.json`;a.click();
+    showStatus('success','💾 บันทึก .json แล้ว');return;
+  }
+  document.querySelector('.btn-submit').disabled=true;
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ'))
+    .finally(()=>document.querySelector('.btn-submit').disabled=false);
+}
+function showStatus(t,m){const el=document.getElementById('status');el.className='status '+t;el.textContent=m;}
+
+['c1a','c1b','c2','c3','c4','c6','c7','c8'].forEach(initC);
+document.getElementById('test_date').value=new Date().toISOString().slice(0,10);
+</script>
+</body></html>

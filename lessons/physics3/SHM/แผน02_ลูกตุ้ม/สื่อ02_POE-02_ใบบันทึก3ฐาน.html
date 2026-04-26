@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>POE-02 ใบบันทึก 3 ฐาน (SHM แผน 2 · ลูกตุ้ม)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.sec{margin:14px 0;border-radius:12px;padding:14px 18px}
+.sec.p{background:#e0e7ff;border-left:6px solid #4f46e5}
+.sec.o{background:#fff3e0;border-left:6px solid #ef6c00}
+.sec.e{background:#ccfbf1;border-left:6px solid #0d9488}
+.sec h2{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec.p h2{color:#3730a3}.sec.o h2{color:#c05621}.sec.e h2{color:#115e59}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:12px;background:#fff;border:1px solid currentColor}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:10px 14px;border-radius:8px;margin-bottom:10px;font-size:14.5px}
+.station{background:#fff;border:2px solid #5eead4;border-radius:12px;padding:14px;margin:10px 0}
+.station h3{color:#115e59;font-size:16px;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+th,td{border:1.5px solid #94a3b8;padding:6px 8px;text-align:center;vertical-align:middle}
+thead th{background:#0d9488;color:#fff;font-weight:600}
+td.situ{text-align:left;font-weight:600;color:#115e59}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:4px 0;font-size:14px;padding:3px 8px;border-radius:6px}
+.opt:hover{background:rgba(13,148,136,0.08)}
+.opt input{margin-top:4px;flex-shrink:0}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:90px;text-align:center;background:#fff}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f0fdfa 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 24px,#f0fdfa 25px),repeating-linear-gradient(to bottom,#fff 0,#fff 24px,#f0fdfa 25px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:12px 14px;margin-top:12px}
+.mc-reflect h4{font-size:14.5px;font-weight:800;color:#92400e;margin-bottom:4px}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+.mc-wrong{font-style:italic;color:#2d3748}
+.mc-q{font-size:13px;font-weight:700;color:#115e59;display:block;margin:6px 0 4px}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px;display:inline-flex;align-items:flex-start;gap:6px;margin:3px}
+.mc-opt:hover{border-color:#0d9488;background:#f0fdfa}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-poe">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 POE-02 ใบบันทึก Predict–Observe–Explain</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag">ลูกตุ้ม · 3 ฐานทดลอง</span> คู่กับ CC-02 + SIM02 Pendulum Timer</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำถามหลัก:</b> ปัจจัยใดบ้างที่ส่งผลต่อคาบ T ของลูกตุ้มอย่างง่าย? (มวล · แอมพลิจูด · ความยาวเชือก · แรงโน้มถ่วง)</div>
+
+  <!-- P Predict -->
+  <div class="sec p">
+    <h2>🔮 P · Predict (ทำนายก่อนดู SIM02) <span class="badge">E1 Engage · 3 นาที</span></h2>
+
+    <div><b>ทำนายผลใน 3 ฐาน · ติ๊กคำตอบที่คาดว่าจะเกิด:</b></div>
+
+    <div class="station">
+      <h3>🔬 ฐาน A · เปลี่ยนมวล (l, θ₀ เท่ากัน)</h3>
+      <div class="opt-row">
+        <label class="opt"><input type="radio" name="pa" value="eq"> T เท่ากันทั้งหมด</label>
+        <label class="opt"><input type="radio" name="pa" value="heavy-fast"> หนักเร็วกว่า</label>
+        <label class="opt"><input type="radio" name="pa" value="light-fast"> เบาเร็วกว่า</label>
+        <label class="opt"><input type="radio" name="pa" value="unk"> ยังไม่รู้</label>
+      </div>
+    </div>
+
+    <div class="station">
+      <h3>🔬 ฐาน B · เปลี่ยนแอมพลิจูด (l, m เท่ากัน · θ₀ = 5°/10°/15°/45°)</h3>
+      <div class="opt-row">
+        <label class="opt"><input type="radio" name="pb" value="eq-all"> T เท่ากันทั้ง 4</label>
+        <label class="opt"><input type="radio" name="pb" value="eq-small"> 3 มุมเล็กเท่ากัน · 45° ต่าง</label>
+        <label class="opt"><input type="radio" name="pb" value="bigA-big"> A ใหญ่ → T ใหญ่</label>
+        <label class="opt"><input type="radio" name="pb" value="bigA-small"> A ใหญ่ → T เล็ก</label>
+      </div>
+    </div>
+
+    <div class="station">
+      <h3>🔬 ฐาน C · เปลี่ยนความยาวเชือก l = 0.25, 0.5, 1.0, 1.5, 2.0 m</h3>
+      <div class="opt-row">
+        <label class="opt"><input type="radio" name="pc" value="linear"> T ∝ l (เชิงเส้น)</label>
+        <label class="opt"><input type="radio" name="pc" value="sqrt"> T ∝ √l (เพิ่ม 4 เท่า T เพิ่ม 2 เท่า)</label>
+        <label class="opt"><input type="radio" name="pc" value="square"> T ∝ l² (ยกกำลัง 2)</label>
+        <label class="opt"><input type="radio" name="pc" value="none"> T ไม่ขึ้นกับ l</label>
+      </div>
+    </div>
+
+    <div style="margin-top:8px"><b>ความมั่นใจ:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- O Observe -->
+  <div class="sec o">
+    <h2>👁 O · Observe (สังเกตจาก SIM02) <span class="badge">E2 Explore · 26 นาที</span></h2>
+    <div style="background:#fff;border:1.5px dashed #5eead4;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13.5px;color:#115e59">
+      <b>🛠 วิธีใช้ SIM02 Pendulum Timer (มี 1 ลูก เปลี่ยนค่าทีละ trial):</b><br>
+      ① ปรับ slider <b>L (cm)</b>, <b>θ₀ (°)</b>, <b>m (g)</b>, <b>g</b> (Earth/Moon/Mars/Jupiter) → กด <b>▶ Start</b><br>
+      ② ตั้ง <b>N = 10</b> ที่ Stopwatch → กด Start เมื่อลูกผ่านสมดุล → กด Stop เมื่อครบ N รอบ<br>
+      ③ SIM คำนวณ <b>T = t/N</b> และ <b>g_exp = 4π²L/T²</b> ให้อัตโนมัติ → กด <b>📊 Record to Table</b><br>
+      ④ "ลูก 1, 2, 3" ในตารางหมายถึง trial ที่ 1, 2, 3 (เปลี่ยน m เท่านั้น คงค่าอื่น)
+    </div>
+
+    <div class="station">
+      <h3>📊 ตาราง A · ปัจจัยมวล (8')</h3>
+      <table>
+        <thead><tr><th>Trial</th><th>m (g)</th><th>L (cm)</th><th>θ₀</th><th>N</th><th>t (s)</th><th>T = t/N (s)</th><th>g_exp (m/s²)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><input class="ans-in" id="a-m1" value="50"></td><td rowspan="3"><input class="ans-in" id="a-l" value="100"></td><td rowspan="3"><input class="ans-in" id="a-th" value="10°"></td><td rowspan="3" style="background:#f0fdfa">10</td><td><input class="ans-in" id="a-t1"></td><td><input class="ans-in" id="a-T1"></td><td><input class="ans-in" id="a-g1" style="width:70px"></td></tr>
+          <tr><td>2</td><td><input class="ans-in" id="a-m2" value="100"></td><td><input class="ans-in" id="a-t2"></td><td><input class="ans-in" id="a-T2"></td><td><input class="ans-in" id="a-g2" style="width:70px"></td></tr>
+          <tr><td>3</td><td><input class="ans-in" id="a-m3" value="200"></td><td><input class="ans-in" id="a-t3"></td><td><input class="ans-in" id="a-T3"></td><td><input class="ans-in" id="a-g3" style="width:70px"></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:6px;font-size:13px;color:#115e59"><b>เทียบทฤษฎี:</b> T = 2π√(L/g) = <input class="ans-in" id="a-Tc"> s · ทั้ง 3 trial T ควร <b>เท่ากัน</b> (ไม่ขึ้นกับ m)</div>
+      <div><b>ฐาน A สรุป:</b> T ของลูก 1, 2, 3
+        <select id="a-concl" style="padding:4px 8px;border:1.5px solid #5eead4;border-radius:6px">
+          <option value="">--</option><option value="eq">เท่ากัน</option><option value="diff">ต่างกัน (หนักเร็วกว่า)</option><option value="diff2">ต่างกัน (เบาเร็วกว่า)</option>
+        </select>
+        → แก้ <b>M2.1</b>
+      </div>
+    </div>
+
+    <div class="station">
+      <h3>📊 ตาราง B · ปัจจัยแอมพลิจูด (8') · คงที่: L=100 cm, m=100 g, N=10</h3>
+      <table>
+        <thead><tr><th>Trial</th><th>θ₀</th><th>t (s)</th><th>T = t/N (s)</th><th>g_exp (m/s²)</th><th>%error จาก 9.81</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>5°</td><td><input class="ans-in" id="b-t1"></td><td><input class="ans-in" id="b-T1"></td><td><input class="ans-in" id="b-g1" style="width:70px"></td><td><input class="ans-in" id="b-e1" style="width:70px"></td></tr>
+          <tr><td>2</td><td>10°</td><td><input class="ans-in" id="b-t2"></td><td><input class="ans-in" id="b-T2"></td><td><input class="ans-in" id="b-g2" style="width:70px"></td><td><input class="ans-in" id="b-e2" style="width:70px"></td></tr>
+          <tr><td>3</td><td>15°</td><td><input class="ans-in" id="b-t3"></td><td><input class="ans-in" id="b-T3"></td><td><input class="ans-in" id="b-g3" style="width:70px"></td><td><input class="ans-in" id="b-e3" style="width:70px"></td></tr>
+          <tr style="background:#fff1f2"><td>4 ⚠️</td><td>45°</td><td><input class="ans-in" id="b-t4"></td><td><input class="ans-in" id="b-T4"></td><td><input class="ans-in" id="b-g4" style="width:70px"></td><td><input class="ans-in" id="b-e4" style="width:70px"></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:6px;font-size:13px;color:#c05621"><b>💡 หมายเหตุ:</b> ที่ θ₀ = 45° SIM จะแสดง <b>%error ของ g_exp สูงกว่า</b> เพราะ sin θ ≠ θ (small-angle approx ใช้ไม่ได้)</div>
+      <div><b>ฐาน B สรุป:</b> มุมเล็ก (≤ 15°) T
+        <select id="b-concl-s" style="padding:4px 8px;border:1.5px solid #5eead4;border-radius:6px"><option value="">--</option><option>เท่ากัน</option><option>ต่างชัด</option></select>
+        · มุม 45° T <select id="b-concl-b" style="padding:4px 8px;border:1.5px solid #5eead4;border-radius:6px"><option value="">--</option><option>เท่ากัน</option><option>ต่างชัด</option></select>
+        → แก้ <b>M2.2 + M2.4</b>
+      </div>
+    </div>
+
+    <div class="station">
+      <h3>📊 ตาราง C · ปัจจัยความยาว (10') · คงที่: m=100 g, θ₀=10°, N=10 · กด <b>📊 Record to Table</b> ทุก trial</h3>
+      <table>
+        <thead><tr><th>Trial</th><th>L (cm)</th><th>L (m)</th><th>t (s)</th><th>T = t/N (s)</th><th>T² (s²)</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>25</td><td>0.25</td><td><input class="ans-in" id="c-t1"></td><td><input class="ans-in" id="c-T1"></td><td><input class="ans-in" id="c-T1s"></td></tr>
+          <tr><td>2</td><td>50</td><td>0.50</td><td><input class="ans-in" id="c-t2"></td><td><input class="ans-in" id="c-T2"></td><td><input class="ans-in" id="c-T2s"></td></tr>
+          <tr><td>3</td><td>100</td><td>1.00</td><td><input class="ans-in" id="c-t3"></td><td><input class="ans-in" id="c-T3"></td><td><input class="ans-in" id="c-T3s"></td></tr>
+          <tr><td>4</td><td>150</td><td>1.50</td><td><input class="ans-in" id="c-t4"></td><td><input class="ans-in" id="c-T4"></td><td><input class="ans-in" id="c-T4s"></td></tr>
+          <tr><td>5</td><td>200</td><td>2.00</td><td><input class="ans-in" id="c-t5"></td><td><input class="ans-in" id="c-T5"></td><td><input class="ans-in" id="c-T5s"></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:6px;font-size:13px;color:#c05621"><b>💡 ใน SIM:</b> เปิด tab <b>"T vs L" graph</b> เพื่อเทียบเส้นทฤษฎีกับจุดข้อมูลที่บันทึกไว้</div>
+      <div style="margin-top:8px"><b>✏️ วาดกราฟ T² vs l บนกระดาษกราฟ (แกน x = l, แกน y = T²):</b></div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tbc-p" onclick="setTool('canvasC','pencil',this)">✏️</button>
+        <button class="c-btn" id="tbc-e" onclick="setTool('canvasC','eraser',this)">⬜</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasC','#1a202c',this)"></div>
+        <div class="c-color" style="background:#0d9488" onclick="setColor('canvasC','#0d9488',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('canvasC','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('canvasC')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="canvasC" data-bg="grid" width="980" height="320"></canvas>
+      <div style="margin-top:8px"><b>ความชันกราฟ (4π²/g) =</b> <input class="ans-in" id="c-slope"> s²/m · <b>คำนวณ g จากความชัน =</b> <input class="ans-in" id="c-g"> m/s² · <b>%error จาก g = 9.8 =</b> <input class="ans-in" id="c-err" style="width:70px"> %</div>
+    </div>
+  </div>
+
+  <!-- E Explain -->
+  <div class="sec e">
+    <h2>✍️ E · Explain (อธิบายเชื่อม P↔O) <span class="badge">E3 Explain · 10 นาที</span></h2>
+    <div><b>P ตรงกับ O หรือไม่?</b>
+      <div class="opt-row">
+        <label class="opt"><input type="radio" name="e-cmp" value="match"> ตรงกัน</label>
+        <label class="opt"><input type="radio" name="e-cmp" value="partial"> ตรงบางส่วน</label>
+        <label class="opt"><input type="radio" name="e-cmp" value="diff"> ไม่ตรง</label>
+      </div>
+    </div>
+
+    <div style="margin-top:8px"><b>✍️ อธิบายและ derive สูตร T = 2π√(l/g) (ลาก: F = −mg sin θ ≈ −(mg/l)x · a = −(g/l)x · ω² = g/l)</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe-p" onclick="setTool('canvasE','pencil',this)">✏️</button>
+      <button class="c-btn" id="tbe-e" onclick="setTool('canvasE','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('canvasE','#0d9488',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('canvasE','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE" data-bg="lined" width="980" height="300"></canvas>
+    <textarea id="e-text" class="ans-ta" rows="3" placeholder="สรุปผล 3 ฐาน · T ขึ้นกับ... และไม่ขึ้นกับ... เพราะ..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>✅ จากหลักฐาน (SIM02 · 3 ฐาน) ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรง · ถูก 5 / ลวง 3)</div>
+    <div style="background:#fff;border:1px solid #5eead4;border-radius:8px;padding:8px 12px">
+      <label class="opt"><input type="checkbox" data-correct="true"> T ไม่ขึ้นกับมวลของลูกตุ้ม (ฐาน A)</label>
+      <label class="opt"><input type="checkbox" data-correct="true"> มุมเล็ก (≤15°) T คงที่ไม่ขึ้นกับแอมพลิจูด (ฐาน B)</label>
+      <label class="opt"><input type="checkbox" data-correct="true"> มุมใหญ่ (45°) T เริ่มแปรผันตาม A → ไม่ใช่ SHM แท้</label>
+      <label class="opt"><input type="checkbox" data-correct="true"> กราฟ T² vs l เป็นเส้นตรงผ่าน (0,0) · ความชัน = 4π²/g</label>
+      <label class="opt"><input type="checkbox" data-correct="true"> T ∝ √l · l × 4 → T × 2</label>
+      <label class="opt"><input type="checkbox" data-correct="false"> T ∝ m (มวลเพิ่ม คาบเพิ่ม)</label>
+      <label class="opt"><input type="checkbox" data-correct="false"> แอมพลิจูดใหญ่ทุกกรณี T ใหญ่ตาม</label>
+      <label class="opt"><input type="checkbox" data-correct="false"> T ∝ l (เชิงเส้น · l × 4 → T × 4)</label>
+    </div>
+  </div>
+
+  <!-- Misconception reflection -->
+  <div class="mc-reflect">
+    <h4>🧠 สรุปแก้ Misconception (Posner Conceptual Change · 4 ข้อ)</h4>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M2.1 ★</span> <span class="mc-wrong">"ลูกตุ้มหนักแกว่งเร็วกว่า"</span></div>
+      <span class="mc-q">① ก่อนเรียนเคยคิดแบบนี้ไหม?</span>
+      <label class="mc-opt"><input type="radio" name="m1-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m1-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m1-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้องคือ:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m1-c"> T = 2π√(l/g) · ไม่มี m · m ตัดออกเพราะ F = ma → −mg sin θ = ma · a = −g sin θ</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m1-c"> มวลส่งผลต่อ T โดยตรง</label></div>
+      <span class="mc-q">③ หลักฐาน (จากฐาน A):</span>
+      <textarea class="ans-ta" rows="2" placeholder="ลูก 1, 2, 3 มวลต่างกัน แต่ T = ... วินาที ทั้ง 3 ลูก..."></textarea>
+    </div>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M2.2</span> <span class="mc-wrong">"แอมพลิจูดใหญ่ T มากขึ้น"</span></div>
+      <span class="mc-q">① เคยคิดแบบนี้ไหม?</span>
+      <label class="mc-opt"><input type="radio" name="m2-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m2-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m2-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้อง:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m2-c"> ที่มุมเล็ก (≤15°) sin θ ≈ θ · แรงคืนตัวเป็นเส้นตรง F = −(mg/l)x · T ไม่ขึ้นกับ A (isochronism)</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m2-c"> A ใหญ่ วัตถุวิ่งไกล ใช้เวลานาน</label></div>
+      <span class="mc-q">③ หลักฐาน (ฐาน B · 5°, 10°, 15°):</span>
+      <textarea class="ans-ta" rows="2" placeholder="ที่ 5°, 10°, 15° T = ... เท่ากัน %error ≈ 0..."></textarea>
+    </div>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M2.3</span> <span class="mc-wrong">"T ∝ l เชิงเส้น (l×2 → T×2)"</span></div>
+      <span class="mc-q">① เคยคิดแบบนี้?</span>
+      <label class="mc-opt"><input type="radio" name="m3-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m3-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m3-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้อง:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m3-c"> T = 2π√(l/g) · T ∝ √l · l×4 → T×2 · กราฟ T² vs l เท่านั้นเป็นเส้นตรง</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m3-c"> l×4 → T×4 (เชิงเส้น)</label></div>
+      <span class="mc-q">③ หลักฐาน (ฐาน C · กราฟ T² vs l):</span>
+      <textarea class="ans-ta" rows="2" placeholder="กราฟ T² vs l เป็นเส้นตรงผ่าน (0,0) ความชัน = ... · กราฟ T vs l เป็นกรณฑ์..."></textarea>
+    </div>
+
+    <div class="mc-item" style="margin-bottom:0">
+      <div><span class="mc-code">M2.4</span> <span class="mc-wrong">"มุมใหญ่ก็ยังเป็น SHM"</span></div>
+      <span class="mc-q">① เคยคิดแบบนี้?</span>
+      <label class="mc-opt"><input type="radio" name="m4-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m4-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m4-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้อง:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m4-c"> มุมใหญ่ sin θ ≠ θ · F ไม่ ∝ x · T เริ่มแปรผันตาม A → ไม่ใช่ SHM แท้</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m4-c"> ลูกตุ้มทุกมุมเป็น SHM สูตรใช้ได้</label></div>
+      <span class="mc-q">③ หลักฐาน (ฐาน B · 45°):</span>
+      <textarea class="ans-ta" rows="2" placeholder="ที่ 45° T = ... · %error จาก 2π√(l/g) ≈ ...%..."></textarea>
+    </div>
+  </div>
+
+  <div class="foot">POE-02 · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='lined'||c.dataset.bg==='grid';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function drawGraphAxes(id){const c=document.getElementById(id);if(!c||c.dataset.bg!=='grid')return;const ctx=c.getContext('2d');const w=c.width,h=c.height;ctx.save();ctx.strokeStyle='#64748b';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(40,h-30);ctx.lineTo(w-20,h-30);ctx.moveTo(40,20);ctx.lineTo(40,h-30);ctx.stroke();ctx.fillStyle='#115e59';ctx.font='700 13px Sarabun';ctx.fillText('T² (s²)',10,18);ctx.fillText('l (m)',w-50,h-10);ctx.fillText('0',28,h-14);ctx.restore();}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}drawGraphAxes(id);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas[data-bg="grid"]').forEach(c=>{initCanvas(c.id);drawGraphAxes(c.id);});});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

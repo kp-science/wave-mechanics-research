@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน 2.2 · Spot the Error (SHM แผน 2 · ลูกตุ้ม)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.plan{background:#14b8a6}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.item{border:2px solid #fc8181;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fff5f5}
+.item .num{display:inline-block;background:#c53030;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
+.mis-tag{display:inline-block;background:#c53030;color:#fff;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.section-heading{font-weight:700;color:#115e59;margin:10px 0 6px;font-size:14.5px}
+.claim-stack{position:relative;margin:8px 0}
+.claim-content{background:#fff;border:1.5px solid #c53030;border-radius:10px;padding:14px 18px;font-size:15.5px;color:#2d3748;line-height:1.7;font-style:italic}
+.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:auto;touch-action:none;cursor:crosshair}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f0fdfa 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.chk-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+@media(max-width:760px){.chk-bank{grid-template-columns:1fr}}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:4px 0;font-size:14px;padding:5px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff}
+.opt:has(input:checked){background:#ccfbf1;border-color:#0d9488;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-spot">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔍 ใบงาน 2.2 — Spot the Error (ลูกตุ้ม)</h1>
+      <div class="meta"><span class="tag plan">SHM แผน 2</span><span class="tag">E4 Elaborate</span> 4 สถานการณ์ผิด · 10' · M2.1–M2.4</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำสั่ง:</b> (ก) มาร์คจุดที่ผิดบน canvas สีแดง · (ข) ติ๊กเหตุผลที่ถูกต้อง (อาจมีหลายข้อ · มีตัวลวงปน) · (ค) เขียน/วาดอธิบายที่ถูก</div>
+
+  <!-- ข้อ 1 M2.1 -->
+  <div class="item">
+    <div><span class="num">1</span><b>ข้อความ</b> <span class="mis-tag">M2.1 — หนักเร็วกว่า</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิดบนข้อความ (สีแดง)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb1mp" onclick="setTool('cm1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1me" onclick="setTool('cm1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm1','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cm1','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"ลูกตุ้มเหล็กหนัก 5 kg กับลูกตุ้มไม้ 0.5 kg ห้อยด้วยเชือกยาว 1 m เท่ากัน ปล่อยจากมุม 10° พร้อมกัน · ลูกเหล็กจะแกว่งเร็วกว่าเพราะมีมวลมากกว่า แรงโน้มถ่วงดึงแรงกว่า"</div>
+      <canvas id="cm1" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✅ (ข) เหตุผลที่ถูกต้องคือ (ติ๊กได้หลายข้อ · ถูก 3 · ลวง 3)</div>
+    <div class="chk-bank">
+      <label class="opt"><input type="checkbox" name="q1" value="a" data-correct="true"> ① ในสมการ F = ma · −mg sin θ = ma ⇒ a = −g sin θ · m ตัดออก</label>
+      <label class="opt"><input type="checkbox" name="q1" value="b" data-correct="false"> ② มวลมากแรงโน้มถ่วงดึงแรงจึงเร่งเร็วกว่า</label>
+      <label class="opt"><input type="checkbox" name="q1" value="c" data-correct="true"> ③ T = 2π√(l/g) · ไม่มี m · T เท่ากันเมื่อ l เท่ากัน</label>
+      <label class="opt"><input type="checkbox" name="q1" value="d" data-correct="false"> ④ หนักกว่ามีพลังงานจลน์มากกว่า T จึงเร็วกว่า</label>
+      <label class="opt"><input type="checkbox" name="q1" value="e" data-correct="true"> ⑤ ยืนยันด้วย SIM02 ฐาน A: m = 0.5, 1.0, 2.0 kg · T เท่ากันทั้ง 3</label>
+      <label class="opt"><input type="checkbox" name="q1" value="f" data-correct="false"> ⑥ แรงเฉื่อยของมวลมากชดเชยแรงโน้มถ่วงเพียงบางส่วน</label>
+    </div>
+    <div class="section-heading">✍️ (ค) เขียนคำอธิบายที่ถูก</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb1p" onclick="setTool('c1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1e" onclick="setTool('c1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c1','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c1" data-bg="lined" width="940" height="180"></canvas>
+    <textarea id="a1" class="ans-ta" rows="2" placeholder="ที่ถูกคือ: ทั้งสองแกว่งคาบเท่ากัน เพราะ T ไม่ขึ้นกับ m..."></textarea>
+  </div>
+
+  <!-- ข้อ 2 M2.3 -->
+  <div class="item">
+    <div><span class="num">2</span><b>ข้อความ</b> <span class="mis-tag">M2.3 — T ∝ l เชิงเส้น</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิด</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb2mp" onclick="setTool('cm2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2me" onclick="setTool('cm2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm2','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"ถ้าเพิ่มความยาวเชือกเป็น 4 เท่า คาบก็จะเพิ่มเป็น 4 เท่าเช่นกัน เพราะยิ่งเชือกยาว ลูกตุ้มยิ่งต้องเดินทางไกล คาบจึงแปรผันตรงกับความยาว · กราฟ T vs l เป็นเส้นตรง"</div>
+      <canvas id="cm2" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✅ (ข) เหตุผลที่ถูก (ถูก 3 · ลวง 3)</div>
+    <div class="chk-bank">
+      <label class="opt"><input type="checkbox" name="q2" value="a" data-correct="true"> ① T = 2π√(l/g) · T ∝ √l ไม่ใช่ T ∝ l</label>
+      <label class="opt"><input type="checkbox" name="q2" value="b" data-correct="false"> ② l × 4 → T × 16 (เพราะ T ∝ l²)</label>
+      <label class="opt"><input type="checkbox" name="q2" value="c" data-correct="true"> ③ l × 4 → T × 2 (√4 = 2)</label>
+      <label class="opt"><input type="checkbox" name="q2" value="d" data-correct="false"> ④ l × 4 → T × 4 (เชิงเส้น) เพราะลูกตุ้มต้องเดินทางไกลกว่า</label>
+      <label class="opt"><input type="checkbox" name="q2" value="e" data-correct="true"> ⑤ กราฟที่เป็นเส้นตรงคือ T² vs l (ไม่ใช่ T vs l) · ความชัน = 4π²/g</label>
+      <label class="opt"><input type="checkbox" name="q2" value="f" data-correct="false"> ⑥ กราฟ T vs l เป็นเส้นตรงผ่านจุดกำเนิด</label>
+    </div>
+    <div class="section-heading">✍️ (ค) วาดกราฟ T² vs l ที่ถูก + คำอธิบาย</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb2p" onclick="setTool('c2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2e" onclick="setTool('c2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c2','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c2" data-bg="lined" width="940" height="200"></canvas>
+    <textarea id="a2" class="ans-ta" rows="2" placeholder="ที่ถูกคือ: T ∝ √l · l × 4 → T × 2 · กราฟ T² vs l เท่านั้นเป็นเส้นตรง..."></textarea>
+  </div>
+
+  <!-- ข้อ 3 M2.2 -->
+  <div class="item">
+    <div><span class="num">3</span><b>ข้อความ</b> <span class="mis-tag">M2.2 — A ใหญ่ T เพิ่ม</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิด</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3mp" onclick="setTool('cm3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3me" onclick="setTool('cm3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm3','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"ถ้าปล่อยลูกตุ้มที่มุม 5° กับที่มุม 15° (มุมเล็กทั้งคู่) คาบจะต่างกันชัดเจน เพราะที่มุมใหญ่กว่า ลูกตุ้มแกว่งได้ไกลกว่า จึงใช้เวลานานกว่า"</div>
+      <canvas id="cm3" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✅ (ข) เหตุผลที่ถูก (ถูก 3 · ลวง 3)</div>
+    <div class="chk-bank">
+      <label class="opt"><input type="checkbox" name="q3" value="a" data-correct="true"> ① ที่มุมเล็ก sin θ ≈ θ · F = −(mg/l)x เป็น SHM เชิงเส้น · T ไม่ขึ้นกับ A</label>
+      <label class="opt"><input type="checkbox" name="q3" value="b" data-correct="false"> ② A ใหญ่ → เส้นทางยาวกว่า → ต้องใช้เวลาอยู่แล้ว</label>
+      <label class="opt"><input type="checkbox" name="q3" value="c" data-correct="true"> ③ A ใหญ่ ความเร็วสูงสุด v_max ก็สูงตาม (v_max = ωA) ชดเชยพอดี · T คงที่</label>
+      <label class="opt"><input type="checkbox" name="q3" value="d" data-correct="false"> ④ ที่มุมต่างกันเพียงเล็กน้อย T ก็ต่างชัด (5% ต่อองศา)</label>
+      <label class="opt"><input type="checkbox" name="q3" value="e" data-correct="true"> ⑤ คุณสมบัตินี้เรียก "isochronism" · ค้นพบโดย Galileo</label>
+      <label class="opt"><input type="checkbox" name="q3" value="f" data-correct="false"> ⑥ T ∝ A² (แอมพลิจูดยกกำลัง 2)</label>
+    </div>
+    <div class="section-heading">✍️ (ค) คำอธิบายที่ถูก</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c3','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="940" height="180"></canvas>
+    <textarea id="a3" class="ans-ta" rows="2" placeholder="ที่ถูก: 5° และ 15° T เท่ากัน (isochronism) เพราะ sin θ ≈ θ..."></textarea>
+  </div>
+
+  <!-- ข้อ 4 M2.4 -->
+  <div class="item">
+    <div><span class="num">4</span><b>ข้อความ</b> <span class="mis-tag">M2.4 — มุมใหญ่ยังเป็น SHM</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิด</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb4mp" onclick="setTool('cm4','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb4me" onclick="setTool('cm4','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm4','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm4')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"ลูกตุ้มแกว่งด้วยมุม 60° ก็ยังเป็น SHM แท้ และใช้สูตร T = 2π√(l/g) ได้ตรง ๆ เพราะเคลื่อนที่ซ้ำทางเดิมสม่ำเสมอและมีแรงคืนตัว"</div>
+      <canvas id="cm4" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✅ (ข) เหตุผลที่ถูก (ถูก 3 · ลวง 3)</div>
+    <div class="chk-bank">
+      <label class="opt"><input type="checkbox" name="q4" value="a" data-correct="true"> ① ที่มุมใหญ่ sin θ ≠ θ · แรงคืนตัว = −mg sin θ ไม่เป็นฟังก์ชันเชิงเส้นของ x</label>
+      <label class="opt"><input type="checkbox" name="q4" value="b" data-correct="false"> ② ทุกการเคลื่อนที่ซ้ำเป็น SHM</label>
+      <label class="opt"><input type="checkbox" name="q4" value="c" data-correct="true"> ③ ที่มุมใหญ่ T เริ่มขึ้นกับแอมพลิจูด (A) · เสีย isochronism → ไม่ใช่ SHM แท้</label>
+      <label class="opt"><input type="checkbox" name="q4" value="d" data-correct="false"> ④ สูตร T = 2π√(l/g) ใช้ได้ทุกมุมเพราะเป็นสูตรทั่วไป</label>
+      <label class="opt"><input type="checkbox" name="q4" value="e" data-correct="true"> ⑤ ที่ 60° %error ของสูตร ≈ 7% · ต้องแก้ด้วยสมการอนุพันธ์ (elliptic integral)</label>
+      <label class="opt"><input type="checkbox" name="q4" value="f" data-correct="false"> ⑥ มุมใหญ่ยิ่งเป็น SHM แท้กว่า เพราะมีพลังงานมากกว่า</label>
+    </div>
+    <div class="section-heading">✍️ (ค) คำอธิบายที่ถูก + วาด F vs θ (linear vs sin)</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb4p" onclick="setTool('c4','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb4e" onclick="setTool('c4','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c4','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c4" data-bg="lined" width="940" height="200"></canvas>
+    <textarea id="a4" class="ans-ta" rows="2" placeholder="ที่ถูก: 60° sin θ ≠ θ แรงคืนตัวไม่เป็นเชิงเส้น..."></textarea>
+  </div>
+
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">🎯 สรุป 1 ประโยค:</b> "คาบของลูกตุ้มอย่างง่าย T = 2π√(l/g) · ขึ้นกับ _______ และ _______ เท่านั้น · ไม่ขึ้นกับ _______ และ _______ · ใช้ได้เมื่อ θ _______"
+    <input type="text" id="summary" style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #86efac;border-radius:6px;font-family:inherit;font-size:14px">
+  </div>
+
+  <div class="foot">ใบงาน 2.2 · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.classList.contains('claim-overlay')||c.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:c.classList.contains('claim-overlay')?'#dc2626':'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.claim-overlay').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · Shop · Hubble Trading Post</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background: #04050d; }
+  .shop-head { text-align:center; padding:20px 0 10px; }
+  .shop-head h1 { color:#ffcb6b; font-family:Orbitron,sans-serif; font-size:28px; letter-spacing:0.12em; margin-bottom:6px; }
+  .shop-head .sub { color:#9aa3c0; font-size:13px; font-style:italic; }
+  .wallet { position:sticky; top:0; z-index:10; padding:12px 16px; background:rgba(10,10,24,0.95); border-bottom:1px solid rgba(255,203,107,0.3); display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(10px); }
+  .wallet .bal { font-family:Orbitron,monospace; font-size:20px; color:#ffcb6b; letter-spacing:0.1em; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin:16px 0; }
+  .card { padding:16px; background:rgba(22,27,58,0.7); border:2px solid rgba(120,140,220,0.3); border-radius:14px; transition:all .2s; position:relative; }
+  .card:hover { transform:translateY(-3px); border-color:#ffcb6b; }
+  .card.can { border-color:rgba(126,255,178,0.4); }
+  .card.cant { opacity:0.45; filter:grayscale(0.3); }
+  .card.owned { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .card .icon { font-size:32px; display:block; margin-bottom:6px; }
+  .card .name { font-family:Orbitron,sans-serif; font-size:14px; color:#fff; letter-spacing:0.08em; margin-bottom:4px; }
+  .card .desc { font-size:12px; color:#9aa3c0; line-height:1.5; margin-bottom:10px; min-height:38px; }
+  .card .cost { font-family:Orbitron,monospace; font-size:16px; color:#ffcb6b; margin-bottom:10px; }
+  .card button { width:100%; padding:10px; background:rgba(255,203,107,0.1); border:1px solid #ffcb6b; color:#ffcb6b; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; letter-spacing:0.1em; }
+  .card button:disabled { cursor:not-allowed; opacity:0.4; }
+  .card .owned-tag { position:absolute; top:8px; right:10px; padding:2px 8px; background:#7effb2; color:#03040c; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; }
+  .strategy { padding:14px; background:rgba(100,216,255,0.05); border:1px dashed rgba(100,216,255,0.3); border-radius:10px; margin:14px 0; font-size:13px; color:#9aa3c0; }
+  .strategy b { color:#64d8ff; }
+  .hubble-voice { padding:12px 16px; background:rgba(212,184,255,0.06); border-left:3px solid #d4b8ff; font-style:italic; color:#d4b8ff; border-radius:0 10px 10px 0; margin:12px 0; }
+  .proceed { margin:24px auto; display:block; width:100%; max-width:500px; padding:18px; background:rgba(255,92,122,0.1); border:2px solid #ff5c7a; color:#ff5c7a; border-radius:12px; font-family:Orbitron,sans-serif; font-size:16px; letter-spacing:0.15em; font-weight:700; cursor:pointer; }
+  .proceed:hover { background:rgba(255,92,122,0.2); box-shadow:0 0 20px rgba(255,92,122,0.3); }
+</style>
+</head>
+<body data-page="p17" data-type="setup">
+
+<div class="wallet">
+  <div style="font-family:Orbitron,sans-serif;font-size:12px;letter-spacing:0.2em;color:#9aa3c0;">🛍️ TRADING POST</div>
+  <div class="bal" id="balance">🪙 0</div>
+</div>
+
+<div class="page">
+  <div class="shop-head">
+    <h1>HUBBLE TRADING POST</h1>
+    <div class="sub">ก่อนออก · ซื้อไอเทมสำหรับ WARP RUN</div>
+  </div>
+
+  <div class="hubble-voice">
+    🎓 Dr.Hubble: "ข้างหน้าโหดกว่าที่ผ่านมา · VOIDHUNTER ตามติด · ดาวใกล้ระเบิด · เลือกให้ดี"
+  </div>
+
+  <div class="strategy">
+    💡 <b>Strategy แนะนำ</b><br>
+    · <b>DPS</b> (ยิงแรง): 🔭+ 📜+ 🌑 = 🪙110<br>
+    · <b>Tank</b> (รอด): 🛡️+ ⏱️ = 🪙180<br>
+    · <b>Ending A</b> (เน้นส่งพ่อ): 💌+ + อะไรก็ได้<br>
+    · <b>Balance</b>: 🎯 🛡️+ = 🪙140
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <button class="proceed" onclick="proceed()">▶ พร้อม · เริ่ม WARP RUN</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+function render() {
+  const bal = Coin.get();
+  document.getElementById('balance').textContent = '🪙 ' + bal;
+  const items = EP_CONFIG.shop.items;
+  const owned = ShopItems.load();
+  document.getElementById('grid').innerHTML = items.map(it => {
+    const isOwned = !!owned[it.id];
+    const canAfford = bal >= it.cost;
+    const cls = isOwned ? 'owned' : (canAfford ? 'can' : 'cant');
+    const btnTxt = isOwned ? '✓ ซื้อแล้ว' : (canAfford ? '🪙 ซื้อ' : '🪙 ไม่พอ');
+    return `
+      <div class="card ${cls}">
+        ${isOwned ? '<span class="owned-tag">OWNED</span>' : ''}
+        <span class="icon">${it.icon}</span>
+        <div class="name">${it.name}</div>
+        <div class="desc">${it.desc}</div>
+        <div class="cost">🪙 ${it.cost}</div>
+        <button onclick="buy('${it.id}')" ${isOwned || !canAfford ? 'disabled' : ''}>${btnTxt}</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function buy(id) {
+  if (ShopItems.buy(id)) {
+    Sync.recordDecision({ tag:'🛍️ shop', note:'bought '+id });
+    render();
+  }
+}
+
+function proceed() {
+  Submit.record('p17', { items: ShopItems.load(), coinLeft: Coin.get() });
+  Sync.recordDecision({ tag:'🚀 shop-exit', note:'items: '+JSON.stringify(ShopItems.load()) });
+  if (typeof Transition !== 'undefined') {
+    Transition.play('p17-to-p18', () => location.href = 'warprun.html');
+  } else {
+    location.href = 'warprun.html';
+  }
+}
+
+// Dev: add coin for testing
+window._addCoin = (n=100) => Coin.add(n, 'dev');
+
+// Init coin if zero (demo · allow testing)
+setTimeout(() => {
+  if (Coin.get() === 0) {
+    Coin.add(140, 'demo-init');
+  }
+  render();
+}, 150);
+</script>
+</body>
+</html>

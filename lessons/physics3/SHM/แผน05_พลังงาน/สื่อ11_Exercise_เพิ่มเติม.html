@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>แบบฝึกหัดเพิ่มเติม EX-05 · พลังงาน SHM</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fffbeb;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:960px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 34px}
+.head{border-bottom:3px solid #d97706;padding-bottom:12px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#78350f}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#d97706;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.progress-bar{height:8px;background:#fef3c7;border-radius:4px;margin-bottom:6px;overflow:hidden}
+.progress-fill{height:100%;background:#d97706;border-radius:4px;transition:.4s;width:0%}
+.q-block{border:2px solid #fcd34d;border-radius:14px;padding:20px 22px;margin:16px 0;background:#fffbeb}
+.q-num{background:#d97706;color:#fff;border-radius:50%;min-width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex-shrink:0}
+.q-type{display:inline-block;background:#fef3c7;color:#78350f;border:1.5px solid #fcd34d;border-radius:6px;padding:1px 8px;font-size:12px;font-weight:700;margin-left:8px}
+.q-header{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.q-text{font-size:15.5px;font-weight:600;flex:1}
+.misc-tag{background:#ffe4d6;color:#b53c00;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;margin-left:6px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:7px 10px;border-radius:8px;font-size:15px;margin:4px 0;border:1.5px solid transparent;transition:.15s}
+.opt:hover{background:#fef3c7;border-color:#fcd34d}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#d97706}
+/* Checkbox bank */
+.chip-bank{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chip{display:inline-block;padding:7px 16px;border-radius:20px;border:2px solid #fcd34d;background:#fff;font-size:14px;cursor:pointer;font-weight:600;color:#78350f;transition:.15s;user-select:none}
+.chip:hover{background:#fef3c7}
+.chip.selected{background:#d97706;color:#fff;border-color:#d97706}
+.chip.ok{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+.chip.bad{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+/* Canvas */
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #d97706;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#78350f;font-weight:600}
+.c-btn.active{background:#d97706;color:#fff}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fcd34d;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fef3c7 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fcd34d;border-radius:8px;touch-action:none;cursor:crosshair;margin-top:6px}
+/* Inputs */
+.ans-in{border:none;border-bottom:2px solid #d97706;padding:3px 6px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:transparent}
+.ans-ta{width:100%;padding:7px 10px;border:1.5px solid #fcd34d;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px;background:#fff}
+select{border:1.5px solid #fcd34d;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:14px;background:#fff;color:#1a202c}
+/* Drag-Drop */
+.drag-zone{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0;min-height:40px;padding:10px;background:#fef3c7;border:2px dashed #fcd34d;border-radius:10px}
+.draggable{padding:7px 16px;background:#fff;border:2px solid #d97706;border-radius:20px;cursor:grab;font-weight:700;font-size:14px;color:#78350f;user-select:none}
+.draggable:active{cursor:grabbing;opacity:.7}
+.drop-target{min-width:120px;min-height:40px;border:2px dashed #d97706;border-radius:10px;padding:6px 10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;color:#aaa;transition:.15s}
+.drop-target.over{background:#fef3c7;border-color:#b45309}
+.drop-target.filled{color:#78350f;font-weight:700;background:#fef3c7;border-style:solid}
+.match-table{width:100%;border-collapse:collapse}
+.match-table td,.match-table th{padding:9px 12px;border:1px solid #fcd34d;font-size:14px}
+.match-table th{background:#fef3c7;font-weight:700;color:#78350f}
+/* Score */
+.score-btn{background:#d97706;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.score-btn:hover{background:#b45309}
+.check-btn{background:#fff;border:2px solid #d97706;color:#78350f;border-radius:8px;padding:6px 16px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer}
+.fb{font-size:13px;margin-top:6px;padding:8px 12px;border-radius:8px;display:none}
+.fb.show{display:block}
+.fb.ok{background:#d1fae5;color:#065f46;border:1.5px solid #6ee7b7}
+.fb.bad{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5}
+.submit-btn{background:#d97706;color:#fff;border:none;border-radius:10px;padding:12px 36px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer}
+.submit-btn:hover{background:#b45309}
+.hint{font-size:12.5px;color:#718096;margin-top:5px}
+.data-table{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0}
+.data-table th{background:#fef3c7;padding:7px 10px;border:1px solid #fcd34d;font-weight:700;color:#78350f;text-align:center}
+.data-table td{padding:7px 10px;border:1px solid #fcd34d;text-align:center}
+.data-table input{width:90px;border:none;border-bottom:1.5px solid #d97706;text-align:center;padding:2px;font-family:inherit;font-size:13px;background:transparent}
+.given{background:#fef3c7;font-weight:700}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.score-btn,.submit-btn,.check-btn{display:none}}
+</style></head>
+<body data-ws-id="shm-plan5-ex11">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📚 แบบฝึกหัดเพิ่มเติม EX-05 · พลังงาน SHM</h1>
+      <div class="meta"><span class="tag">SHM แผน 5</span><span class="tag">12 ข้อ</span> ครอบคลุม M5.1–M5.4 · ทุกรูปแบบ</div>
+    </div>
+    <div class="meta" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+  <div style="text-align:right;font-size:12px;color:#78350f;margin-bottom:14px" id="prog-lbl">ทำแล้ว 0/12 ข้อ</div>
+
+  <!-- Q1 Drag-Drop จับคู่ตำแหน่ง–พลังงาน -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">1</span>
+      <span class="q-text">ลากคำตอบ (ด้านล่าง) ไปวางในช่องขวาของตาราง ให้ถูกต้อง<span class="q-type">ลากวาง</span><span class="misc-tag">M5.1</span></span>
+    </div>
+    <div style="margin-bottom:10px;font-size:14px">ระบบ SHM สปริง-มวล: k = 400 N/m, m = 1 kg, A = 0.10 m</div>
+    <table class="match-table">
+      <tr><th>ตำแหน่ง y</th><th>KE</th><th>PE = ½ky²</th><th>v</th></tr>
+      <tr>
+        <td>y = 0 (สมดุล)</td>
+        <td><div class="drop-target" id="dt-1a" ondragover="dov(event)" ondrop="dop(event,'dt-1a')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-1b" ondragover="dov(event)" ondrop="dop(event,'dt-1b')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-1c" ondragover="dov(event)" ondrop="dop(event,'dt-1c')">วางที่นี่</div></td>
+      </tr>
+      <tr>
+        <td>y = +A = 0.10 m</td>
+        <td><div class="drop-target" id="dt-2a" ondragover="dov(event)" ondrop="dop(event,'dt-2a')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-2b" ondragover="dov(event)" ondrop="dop(event,'dt-2b')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-2c" ondragover="dov(event)" ondrop="dop(event,'dt-2c')">วางที่นี่</div></td>
+      </tr>
+      <tr>
+        <td>y = A/2 = 0.05 m</td>
+        <td><div class="drop-target" id="dt-3a" ondragover="dov(event)" ondrop="dop(event,'dt-3a')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-3b" ondragover="dov(event)" ondrop="dop(event,'dt-3b')">วางที่นี่</div></td>
+        <td><div class="drop-target" id="dt-3c" ondragover="dov(event)" ondrop="dop(event,'dt-3c')">วางที่นี่</div></td>
+      </tr>
+    </table>
+    <div class="drag-zone" id="dz1">
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'2.0 J')" id="drag-2j">2.0 J</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'0 J')" id="drag-0j">0 J</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'0.5 J')" id="drag-0p5j">0.5 J</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'1.5 J')" id="drag-1p5j">1.5 J</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'2.0 m/s')" id="drag-2ms">2.0 m/s</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'0 m/s')" id="drag-0ms">0 m/s</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'√3 m/s')" id="drag-sq3">√3 m/s</div>
+      <div class="draggable" draggable="true" ondragstart="dstart(event,'1.0 J')" id="drag-1j">1.0 J</div>
+    </div>
+    <div class="hint">💡 k=400, A=0.10 → E=½(400)(0.01)=2.0 J; ω=√(400/1)=20 rad/s; v_max=20×0.1=2.0 m/s</div>
+    <button class="check-btn" style="margin-top:8px" onclick="checkDrop()">ตรวจข้อ 1</button>
+    <div class="fb" id="fb1"></div>
+    <div style="margin-top:6px;font-size:13px;color:#555" id="drop-score"></div>
+  </div>
+
+  <!-- Q2 Checkbox bank -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">2</span>
+      <span class="q-text">เลือก<b>ทุกข้อที่ถูกต้อง</b>เกี่ยวกับพลังงานใน SHM ไร้แรงเสียดทาน<span class="q-type">เลือกหลายข้อ</span></span>
+    </div>
+    <div class="chip-bank" id="cb2">
+      <span class="chip" data-c="1" onclick="tog(this)">KE สูงสุดที่ y = 0</span>
+      <span class="chip" data-c="1" onclick="tog(this)">PE สูงสุดที่ y = ±A</span>
+      <span class="chip" data-c="1" onclick="tog(this)">E = ½kA² = ค่าคงที่</span>
+      <span class="chip" data-c="0" onclick="tog(this)">KE สูงสุดที่ y = ±A ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">v = ω√(A²−y²)</span>
+      <span class="chip" data-c="0" onclick="tog(this)">E ∝ A (เส้นตรง) ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">E ∝ A² (กำลังสอง)</span>
+      <span class="chip" data-c="0" onclick="tog(this)">เมื่อ v = 0 ไม่มีพลังงาน ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">KE + PE = E ทุกตำแหน่ง</span>
+      <span class="chip" data-c="0" onclick="tog(this)">E ลดลงแม้ไม่มีแรงเสียดทาน ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">v_max = ωA ที่ y = 0</span>
+      <span class="chip" data-c="0" onclick="tog(this)">สปริงดิ่งต้องนับ PEg เพิ่มเสมอ ✗</span>
+    </div>
+    <button class="check-btn" style="margin-top:8px" onclick="checkChips('cb2','fb2')">ตรวจข้อ 2</button>
+    <div class="fb" id="fb2"></div>
+  </div>
+
+  <!-- Q3 Canvas calculation -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">3</span>
+      <span class="q-text">สปริง k = 500 N/m ติดมวล m = 2 kg ดึงแล้วปล่อย A = 0.08 m<br>จงหา (ก) ω (ข) E (ค) v_max (ง) v ที่ y = 0.06 m<span class="q-type">คำนวณ</span></span>
+    </div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c3','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c3','eraser',this)">⬜</button>
+      <div style="width:20px;height:20px;border-radius:50%;background:#1a202c;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c3','#1a202c')"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c3','#d97706')"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c3','#2563eb')"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="940" height="200"></canvas>
+    <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <span>(ก) ω = <input class="ans-in" id="q3a" onchange="markQ(3)"> rad/s</span>
+      <span>(ข) E = <input class="ans-in" id="q3b" onchange="markQ(3)"> J</span>
+      <span>(ค) v_max = <input class="ans-in" id="q3c" onchange="markQ(3)"> m/s</span>
+      <span>(ง) v = <input class="ans-in" id="q3d" onchange="markQ(3)"> m/s</span>
+    </div>
+    <div class="hint">💡 ω=√(k/m); E=½kA²; v_max=ωA; v=ω√(A²−y²)</div>
+  </div>
+
+  <!-- Q4 Radio + อธิบาย M5.1 -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">4</span>
+      <span class="q-text">ในระบบ SHM ที่ตำแหน่ง y = −A (ปลายสุดด้านลบ) พลังงานจลน์ KE มีค่าเท่าใด?<span class="q-type">เลือกตอบ</span><span class="misc-tag">M5.1★</span></span>
+    </div>
+    <label class="opt"><input type="radio" name="q4" value="a" onchange="markQ(4)"> ก. KE = ½E เพราะอยู่กึ่งกลางระหว่าง 0 กับ +A</label>
+    <label class="opt"><input type="radio" name="q4" value="b" onchange="markQ(4)"> ข. KE = E เพราะกำลังเคลื่อนที่</label>
+    <label class="opt"><input type="radio" name="q4" value="c" onchange="markQ(4)"> ค. KE = 0 เพราะ v = 0 ที่ปลายสุด และ PE = E ทั้งหมด</label>
+    <label class="opt"><input type="radio" name="q4" value="d" onchange="markQ(4)"> ง. KE = E เพราะปลายสุดเป็นจุดที่มีแรงมากที่สุด</label>
+    <div style="margin-top:8px"><b>อธิบายเหตุผล:</b><textarea class="ans-ta" rows="2" id="q4exp" placeholder="เขียนอธิบายว่าทำไมจึงเลือกคำตอบนั้น"></textarea></div>
+    <div class="fb" id="fb4"></div>
+    <button class="check-btn" style="margin-top:6px" onclick="checkRadio('q4','c','fb4','ถูกต้อง! ที่ y=−A: v=0 → KE=0; PE=½k(−A)²=½kA²=E · ข้อผิดพลาด M5.1: v=0 ไม่ได้หมายความว่าไม่มีพลังงาน ยังมี PE อยู่ครบ')">ตรวจข้อ 4</button>
+  </div>
+
+  <!-- Q5 Dropdown matching สมการ–ความหมาย -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">5</span>
+      <span class="q-text">จับคู่สมการกับความหมายที่ถูกต้อง โดยเลือก dropdown<span class="q-type">จับคู่ dropdown</span></span>
+    </div>
+    <table class="match-table">
+      <tr><th>สมการ</th><th>ความหมาย</th></tr>
+      <tr><td><b>E = ½kA²</b></td>
+        <td><select id="m5a" onchange="markQ(5)">
+          <option value="">— เลือก —</option>
+          <option value="1">พลังงานกลรวม ขึ้นกับแอมพลิจูดและค่าคงที่สปริง</option>
+          <option value="2">พลังงานจลน์ที่ตำแหน่งใดก็ได้</option>
+          <option value="3">ความเร็ว ณ ตำแหน่ง y</option>
+          <option value="4">ความถี่เชิงมุม</option>
+          <option value="5">พลังงานศักย์ยืดหยุ่น</option>
+        </select></td>
+      </tr>
+      <tr><td><b>½mv²</b></td>
+        <td><select id="m5b" onchange="markQ(5)">
+          <option value="">— เลือก —</option>
+          <option value="1">พลังงานกลรวม ขึ้นกับแอมพลิจูดและค่าคงที่สปริง</option>
+          <option value="2">พลังงานจลน์ที่ตำแหน่งใดก็ได้</option>
+          <option value="3">ความเร็ว ณ ตำแหน่ง y</option>
+          <option value="4">ความถี่เชิงมุม</option>
+          <option value="5">พลังงานศักย์ยืดหยุ่น</option>
+        </select></td>
+      </tr>
+      <tr><td><b>½ky²</b></td>
+        <td><select id="m5c" onchange="markQ(5)">
+          <option value="">— เลือก —</option>
+          <option value="1">พลังงานกลรวม ขึ้นกับแอมพลิจูดและค่าคงที่สปริง</option>
+          <option value="2">พลังงานจลน์ที่ตำแหน่งใดก็ได้</option>
+          <option value="3">ความเร็ว ณ ตำแหน่ง y</option>
+          <option value="4">ความถี่เชิงมุม</option>
+          <option value="5">พลังงานศักย์ยืดหยุ่น</option>
+        </select></td>
+      </tr>
+      <tr><td><b>ω√(A²−y²)</b></td>
+        <td><select id="m5d" onchange="markQ(5)">
+          <option value="">— เลือก —</option>
+          <option value="1">พลังงานกลรวม ขึ้นกับแอมพลิจูดและค่าคงที่สปริง</option>
+          <option value="2">พลังงานจลน์ที่ตำแหน่งใดก็ได้</option>
+          <option value="3">ความเร็ว ณ ตำแหน่ง y</option>
+          <option value="4">ความถี่เชิงมุม</option>
+          <option value="5">พลังงานศักย์ยืดหยุ่น</option>
+        </select></td>
+      </tr>
+      <tr><td><b>√(k/m)</b></td>
+        <td><select id="m5e" onchange="markQ(5)">
+          <option value="">— เลือก —</option>
+          <option value="1">พลังงานกลรวม ขึ้นกับแอมพลิจูดและค่าคงที่สปริง</option>
+          <option value="2">พลังงานจลน์ที่ตำแหน่งใดก็ได้</option>
+          <option value="3">ความเร็ว ณ ตำแหน่ง y</option>
+          <option value="4">ความถี่เชิงมุม</option>
+          <option value="5">พลังงานศักย์ยืดหยุ่น</option>
+        </select></td>
+      </tr>
+    </table>
+    <button class="check-btn" style="margin-top:8px" onclick="checkMatch()">ตรวจข้อ 5</button>
+    <div class="fb" id="fb5"></div>
+  </div>
+
+  <!-- Q6 Canvas — หา y ที่ KE = 3PE -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">6</span>
+      <span class="q-text">จงพิสูจน์และหาตำแหน่ง y ที่ทำให้ KE = 3PE ในระบบ SHM (ตอบในรูป A)<span class="q-type">คำนวณ</span></span>
+    </div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c6','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c6','eraser',this)">⬜</button>
+      <div style="width:20px;height:20px;border-radius:50%;background:#1a202c;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c6','#1a202c')"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c6','#d97706')"></div>
+      <button class="c-btn" onclick="clearCanvas('c6')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c6" data-bg="lined" width="940" height="200"></canvas>
+    <div style="margin-top:8px">y = <input class="ans-in" id="q6ans" onchange="markQ(6)"> (ตอบในรูป A)</div>
+    <div class="hint">💡 ตั้งสมการ KE = E−PE = E−½ky² = 3(½ky²) → E = 4PE → ½kA² = 4(½ky²) → A² = 4y²</div>
+  </div>
+
+  <!-- Q7 Radio M5.3 — E ratio -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">7</span>
+      <span class="q-text">สปริง k = 100 N/m ถูกดึงให้ A₁ = 0.05 m แล้วดึงอีกครั้งให้ A₂ = 0.15 m<br>พลังงาน E₂/E₁ = ?<span class="q-type">เลือกตอบ</span><span class="misc-tag">M5.3</span></span>
+    </div>
+    <label class="opt"><input type="radio" name="q7" value="a" onchange="markQ(7)"> ก. 2 เพราะ A₂/A₁ = 3 แต่ตัดค่าบางส่วนออก</label>
+    <label class="opt"><input type="radio" name="q7" value="b" onchange="markQ(7)"> ข. 3 เพราะ E ∝ A → E₂/E₁ = A₂/A₁ = 3</label>
+    <label class="opt"><input type="radio" name="q7" value="c" onchange="markQ(7)"> ค. 9 เพราะ E ∝ A² → E₂/E₁ = (A₂/A₁)² = 3² = 9</label>
+    <label class="opt"><input type="radio" name="q7" value="d" onchange="markQ(7)"> ง. 6 เพราะ E ∝ 2A</label>
+    <div style="margin-top:8px;background:#fff;border:1.5px solid #fcd34d;border-radius:8px;padding:8px">
+      <b>ยืนยัน:</b> E₁ = ½(100)(0.05²) = <input class="ans-in" id="q7e1"> J &nbsp; E₂ = ½(100)(0.15²) = <input class="ans-in" id="q7e2"> J &nbsp; E₂/E₁ = <input class="ans-in" id="q7rat">
+    </div>
+    <div class="fb" id="fb7"></div>
+    <button class="check-btn" style="margin-top:6px" onclick="checkRadio('q7','c','fb7','ถูก! E=½kA² → E∝A² · E₁=½(100)(0.0025)=0.125 J · E₂=½(100)(0.0225)=1.125 J · อัตราส่วน=9 · ข้อผิดพลาด M5.3: คิดว่า E∝A')">ตรวจข้อ 7</button>
+  </div>
+
+  <!-- Q8 M5.4 Checkbox สปริงแนวดิ่ง -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">8</span>
+      <span class="q-text">เลือก<b>ทุกข้อที่ถูกต้อง</b>เกี่ยวกับ SHM ของสปริงแนวดิ่ง<span class="q-type">เลือกหลายข้อ</span><span class="misc-tag">M5.4</span></span>
+    </div>
+    <div class="chip-bank" id="cb8">
+      <span class="chip" data-c="1" onclick="tog(this)">ถ้าวัด y จากสมดุลใหม่ ใช้ E=½kA² ได้เลย</span>
+      <span class="chip" data-c="0" onclick="tog(this)">ต้องนับ PEg เพิ่มจาก PE สปริงเสมอ ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">จุดสมดุลใหม่อยู่ที่ kδ = mg</span>
+      <span class="chip" data-c="0" onclick="tog(this)">สปริงแนวดิ่งมี E รวมมากกว่าแนวนอน ✗</span>
+      <span class="chip" data-c="1" onclick="tog(this)">สมการ v=ω√(A²−y²) ใช้ได้กับสปริงดิ่งด้วย</span>
+      <span class="chip" data-c="1" onclick="tog(this)">ω = √(k/m) ไม่ขึ้นกับทิศของสปริง</span>
+      <span class="chip" data-c="0" onclick="tog(this)">ตำแหน่งสมดุลของสปริงดิ่งคือจุดที่สปริงไม่ยืด ✗</span>
+    </div>
+    <button class="check-btn" style="margin-top:8px" onclick="checkChips('cb8','fb8')">ตรวจข้อ 8</button>
+    <div class="fb" id="fb8"></div>
+  </div>
+
+  <!-- Q9 วาดกราฟ KE-y -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">9</span>
+      <span class="q-text">วาดกราฟ KE vs y และ PE vs y บนแกนเดียวกัน สำหรับระบบ SHM ไร้แรงเสียดทาน<br>ระบุ: (ก) รูปกราฟ KE (ข) รูปกราฟ PE (ค) ผลรวม KE+PE<span class="q-type">วาดกราฟ</span></span>
+    </div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c9','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c9','eraser',this)">⬜</button>
+      <div style="width:20px;height:20px;border-radius:50%;background:#1a202c;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c9','#1a202c')" title="ดำ = แกน/เส้น E"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c9','#2563eb')" title="น้ำเงิน = KE"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c9','#d97706')" title="ส้ม = PE"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#dc2626;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c9','#dc2626')" title="แดง = E total"></div>
+      <button class="c-btn" onclick="clearCanvas('c9');drawAxes9()" style="margin-left:auto;color:#c53030">🗑️ + แกน</button>
+    </div>
+    <canvas id="c9" data-bg="grid" width="940" height="280"></canvas>
+    <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:12px;font-size:14px">
+      <span>(ก) กราฟ KE มีรูปร่าง: <select id="q9a" onchange="markQ(9)"><option value="">—</option><option value="para-down">พาราโบลาคว่ำ</option><option value="para-up">พาราโบลาหงาย</option><option value="line">เส้นตรง</option><option value="const">เส้นตรงแนวนอน</option></select></span>
+      <span>(ข) กราฟ PE มีรูปร่าง: <select id="q9b" onchange="markQ(9)"><option value="">—</option><option value="para-down">พาราโบลาคว่ำ</option><option value="para-up">พาราโบลาหงาย</option><option value="line">เส้นตรง</option><option value="const">เส้นตรงแนวนอน</option></select></span>
+      <span>(ค) KE+PE มีรูปร่าง: <select id="q9c" onchange="markQ(9)"><option value="">—</option><option value="para-down">พาราโบลาคว่ำ</option><option value="para-up">พาราโบลาหงาย</option><option value="line">เส้นตรง</option><option value="const">เส้นตรงแนวนอน</option></select></span>
+    </div>
+    <div class="hint">💡 KE=½k(A²−y²) → coefficient y² เป็นลบ; PE=½ky² → coefficient y² เป็นบวก; ผลรวม=½kA²=ค่าคงที่</div>
+    <button class="check-btn" style="margin-top:6px" onclick="checkGraph9()">ตรวจข้อ 9</button>
+    <div class="fb" id="fb9"></div>
+  </div>
+
+  <!-- Q10 Data table analysis -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">10</span>
+      <span class="q-text">ระบบ k = 200 N/m, m = 0.5 kg, A = 0.10 m (ω = 20 rad/s)<br>กรอกตารางให้สมบูรณ์ แล้วตอบคำถาม<span class="q-type">วิเคราะห์ข้อมูล</span></span>
+    </div>
+    <table class="data-table">
+      <tr><th>y (m)</th><th>v (m/s)</th><th>KE = ½mv² (J)</th><th>PE = ½ky² (J)</th><th>E = KE+PE (J)</th></tr>
+      <tr><td class="given">−0.10</td><td><input id="t10v1" oninput="calcRow10(1)"></td><td><input id="t10k1" oninput="markQ(10)"></td><td><input id="t10p1" oninput="markQ(10)"></td><td><input id="t10e1" oninput="markQ(10)"></td></tr>
+      <tr><td class="given">−0.05</td><td><input id="t10v2" oninput="calcRow10(2)"></td><td><input id="t10k2" oninput="markQ(10)"></td><td><input id="t10p2" oninput="markQ(10)"></td><td><input id="t10e2" oninput="markQ(10)"></td></tr>
+      <tr><td class="given">0</td><td><input id="t10v3" oninput="calcRow10(3)"></td><td><input id="t10k3" oninput="markQ(10)"></td><td><input id="t10p3" oninput="markQ(10)"></td><td><input id="t10e3" oninput="markQ(10)"></td></tr>
+      <tr><td class="given">+0.05</td><td><input id="t10v4" oninput="calcRow10(4)"></td><td><input id="t10k4" oninput="markQ(10)"></td><td><input id="t10p4" oninput="markQ(10)"></td><td><input id="t10e4" oninput="markQ(10)"></td></tr>
+      <tr><td class="given">+0.10</td><td><input id="t10v5" oninput="calcRow10(5)"></td><td><input id="t10k5" oninput="markQ(10)"></td><td><input id="t10p5" oninput="markQ(10)"></td><td><input id="t10e5" oninput="markQ(10)"></td></tr>
+    </table>
+    <div style="margin-top:10px;font-size:14px">
+      <div>สรุป: E รวมมีค่าคงที่ประมาณ <input class="ans-in" id="q10E"> J ตลอดทุกตำแหน่ง</div>
+      <div style="margin-top:6px">ตำแหน่งที่ KE = PE: y ≈ <input class="ans-in" id="q10eq"> m</div>
+    </div>
+    <div class="hint">💡 ω=20 rad/s; v=20√(0.01−y²); KE=½(0.5)v²; PE=½(200)y²; E=1.0 J; KE=PE เมื่อ y=A/√2≈0.0707 m</div>
+  </div>
+
+  <!-- Q11 Radio — กราฟ E-t เมื่อมีแรงเสียดทาน -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">11</span>
+      <span class="q-text">ถ้าระบบ SHM <strong>มีแรงเสียดทาน</strong> กราฟ E รวม เทียบ t จะมีรูปร่างอย่างไร?<span class="q-type">เลือกตอบ</span></span>
+    </div>
+    <label class="opt"><input type="radio" name="q11" value="a" onchange="markQ(11)"> ก. เส้นตรงแนวนอน (E คงที่)</label>
+    <label class="opt"><input type="radio" name="q11" value="b" onchange="markQ(11)"> ข. เส้นโค้งลดลงเอกซ์โพเนนเชียล (E ลดลงเรื่อยๆ)</label>
+    <label class="opt"><input type="radio" name="q11" value="c" onchange="markQ(11)"> ค. เส้นตรงเพิ่มขึ้น (E เพิ่มตามเวลา)</label>
+    <label class="opt"><input type="radio" name="q11" value="d" onchange="markQ(11)"> ง. แกว่งขึ้นลงเหมือน KE และ PE</label>
+    <div style="margin-top:8px"><b>เหตุผล:</b><textarea class="ans-ta" rows="2" id="q11exp" placeholder="อธิบายว่าแรงเสียดทานทำให้พลังงานเปลี่ยนอย่างไร"></textarea></div>
+    <div class="fb" id="fb11"></div>
+    <button class="check-btn" style="margin-top:6px" onclick="checkRadio('q11','b','fb11','ถูก! แรงเสียดทาน (damping) ดูดพลังงานออกจากระบบ → E ลดลงเรื่อยๆ รูปแบบ exponential decay · A ก็ลดลงด้วย (damped oscillation) · นี่คือพื้นฐานของ SHM แผน 6')">ตรวจข้อ 11</button>
+  </div>
+
+  <!-- Q12 Challenge Canvas — พิสูจน์ v = ω√(A²−y²) -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">12</span>
+      <span class="q-text">⭐ Challenge: พิสูจน์สมการ <strong>v = ω√(A²−y²)</strong> โดยเริ่มจากกฎอนุรักษ์พลังงาน KE + PE = E<span class="q-type">พิสูจน์</span></span>
+    </div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c12','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c12','eraser',this)">⬜</button>
+      <div style="width:20px;height:20px;border-radius:50%;background:#1a202c;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c12','#1a202c')"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#d97706;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c12','#d97706')"></div>
+      <div style="width:20px;height:20px;border-radius:50%;background:#2563eb;cursor:pointer;border:2px solid #cbd5e1" onclick="setColor('c12','#2563eb')"></div>
+      <button class="c-btn" onclick="clearCanvas('c12')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c12" data-bg="lined" width="940" height="260"></canvas>
+    <div style="margin-top:8px"><b>สรุปขั้นตอนสำคัญ:</b>
+      <textarea class="ans-ta" rows="3" id="q12sum" onchange="markQ(12)" placeholder="เขียนสรุปขั้นตอน: ½mv² + ½ky² = ½kA² → v² = (k/m)(A²−y²) = ω²(A²−y²) → v = ω√(A²−y²)"></textarea>
+    </div>
+    <div style="margin-top:8px">หา v ที่ y = 0.04 m สำหรับ k=200 N/m, m=0.5 kg, A=0.10 m: v = <input class="ans-in" id="q12v" onchange="markQ(12)"> m/s</div>
+    <div class="hint">💡 ω=20 rad/s; v=20√(0.01−0.0016)=20√0.0084=20×0.0917≈1.833 m/s</div>
+  </div>
+
+  <!-- Final Submit -->
+  <div style="background:#fef3c7;border:2px dashed #fcd34d;border-radius:12px;padding:16px;text-align:center;margin-top:18px">
+    <div style="margin-bottom:10px;font-size:14px;color:#78350f">ข้อที่ทำแล้ว: <b id="done-count">0</b>/12 ข้อ</div>
+    <button class="submit-btn" onclick="submitEx()">📤 ส่งแบบฝึกหัด</button>
+    <div style="margin-top:8px" id="ex-msg"></div>
+  </div>
+
+  <div style="text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #fde68a;padding-top:8px">
+    EX-05 · SHM แผน 5 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+  </div>
+</div>
+
+<script>
+/* ===== Canvas ===== */
+const cS={};
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  cS[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx};
+  if(c.dataset.bg==='grid')drawGrid(ctx,c.width,c.height);
+  function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function st(e){e.preventDefault();cS[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+  function mv(e){e.preventDefault();const s=cS[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function en(e){e.preventDefault();cS[id].drawing=false;}
+  c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);
+  c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});
+}
+function drawGrid(ctx,w,h){
+  ctx.save();ctx.strokeStyle='#fef3c7';ctx.lineWidth=1;
+  for(let x=0;x<=w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<=h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  ctx.restore();
+}
+function setTool(id,t,btn){cS[id].tool=t;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col){cS[id].color=col;}
+function clearCanvas(id){
+  const c=document.getElementById(id);
+  cS[id].ctx.globalCompositeOperation='source-over';
+  cS[id].ctx.clearRect(0,0,c.width,c.height);
+  if(c.dataset.bg==='grid')drawGrid(cS[id].ctx,c.width,c.height);
+}
+function drawAxes9(){
+  const c=document.getElementById('c9');const ctx=c.getContext('2d');
+  clearCanvas('c9');
+  ctx.save();ctx.strokeStyle='#555';ctx.lineWidth=2;ctx.font='14px Sarabun,sans-serif';ctx.fillStyle='#555';
+  const mx=60,my=30,w=c.width-80,h=c.height-60,cx=mx+w/2,cy=my+h;
+  ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(mx,cy);ctx.lineTo(mx+w,cy);ctx.stroke();
+  ctx.fillText('E',mx-20,my+10);ctx.fillText('y',mx+w+5,cy+5);
+  ctx.fillText('−A',mx+10,cy+18);ctx.fillText('0',cx-5,cy+18);ctx.fillText('+A',mx+w-20,cy+18);
+  ctx.restore();
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  ['c3','c6','c9','c12'].forEach(initCanvas);
+  drawAxes9();
+});
+
+/* ===== Progress ===== */
+const done=new Set();
+function markQ(n){done.add(n);updateProg();}
+function updateProg(){
+  const d=done.size;document.getElementById('prog').style.width=(d/12*100)+'%';
+  document.getElementById('prog-lbl').textContent=`ทำแล้ว ${d}/12 ข้อ`;
+  document.getElementById('done-count').textContent=d;
+}
+
+/* ===== Chip toggle ===== */
+function tog(el){el.classList.toggle('selected');markQ(parseInt(el.closest('.q-block').querySelector('.q-num').textContent));}
+
+/* ===== Chip bank check ===== */
+function checkChips(bankId,fbId){
+  const chips=document.querySelectorAll(`#${bankId} .chip`);
+  let ok=0,total=0;
+  chips.forEach(c=>{
+    const correct=c.dataset.c==='1';const sel=c.classList.contains('selected');
+    c.classList.remove('ok','bad');
+    if(correct&&sel){c.classList.add('ok');ok++;total++;}
+    else if(!correct&&!sel){ok++;total++;}
+    else{c.classList.add('bad');total++;}
+  });
+  chips.forEach(c=>{if(!c.classList.contains('ok')&&!c.classList.contains('bad'))c.classList.add(c.dataset.c==='1'?'ok':'bad');});
+  const fb=document.getElementById(fbId);
+  const pct=Math.round(ok/total*100);
+  fb.className=`fb show ${pct>=80?'ok':'bad'}`;
+  fb.textContent=`${ok}/${total} ถูก (${pct}%) ${pct>=80?'✅ ดีมาก':'❌ ตรวจสอบข้อที่ขึ้นสีแดง'}`;
+}
+
+/* ===== Radio check ===== */
+function checkRadio(name,correct,fbId,msg){
+  const sel=document.querySelector(`[name="${name}"]:checked`);
+  const fb=document.getElementById(fbId);
+  if(!sel){fb.className='fb show bad';fb.textContent='กรุณาเลือกคำตอบก่อน';return;}
+  if(sel.value===correct){fb.className='fb show ok';fb.textContent='✅ '+msg;}
+  else{fb.className='fb show bad';fb.textContent='❌ ยังไม่ถูก — ลองทบทวนสมการ KE และ PE ใหม่';}
+}
+
+/* ===== Dropdown match Q5 ===== */
+const m5ans={m5a:'1',m5b:'2',m5c:'5',m5d:'3',m5e:'4'};
+function checkMatch(){
+  let ok=0;const keys=Object.keys(m5ans);
+  keys.forEach(k=>{if(document.getElementById(k)?.value===m5ans[k])ok++;});
+  const fb=document.getElementById('fb5');
+  const pct=Math.round(ok/keys.length*100);
+  fb.className=`fb show ${pct>=80?'ok':'bad'}`;
+  fb.textContent=`${ok}/${keys.length} ถูก (${pct}%) ${pct>=80?'✅':'❌ ตรวจสอบสมการอีกครั้ง'}`;
+}
+
+/* ===== Drag-Drop Q1 ===== */
+let dragVal='';
+const dropAns={'dt-1a':'2.0 J','dt-1b':'0 J','dt-1c':'2.0 m/s','dt-2a':'0 J','dt-2b':'2.0 J','dt-2c':'0 m/s','dt-3a':'1.5 J','dt-3b':'0.5 J','dt-3c':'√3 m/s'};
+function dstart(e,val){dragVal=val;e.dataTransfer.setData('text/plain',val);}
+function dov(e){e.preventDefault();e.currentTarget.classList.add('over');}
+function dop(e,id){
+  e.preventDefault();
+  const el=document.getElementById(id);
+  el.classList.remove('over');el.classList.add('filled');
+  el.textContent=dragVal;el.dataset.val=dragVal;
+  markQ(1);
+}
+function checkDrop(){
+  let ok=0,total=0;
+  Object.keys(dropAns).forEach(id=>{
+    total++;const el=document.getElementById(id);
+    if(el&&el.dataset.val===dropAns[id])ok++;
+  });
+  const fb=document.getElementById('fb1');
+  const pct=Math.round(ok/total*100);
+  fb.className=`fb show ${pct>=7?'ok':'bad'}`;
+  fb.textContent=`${ok}/${total} ถูก · ${pct>=7?'✅ ดีมาก':'❌ ตรวจสอบ: y=0→KE=2J,PE=0J,v=2.0m/s; y=A→KE=0J,PE=2J,v=0m/s; y=A/2→KE=1.5J,PE=0.5J,v=√3m/s'}`;
+  document.getElementById('drop-score').textContent=`คะแนน: ${ok}/${total}`;
+}
+
+/* ===== Graph Q9 ===== */
+function checkGraph9(){
+  const a=document.getElementById('q9a').value;
+  const b=document.getElementById('q9b').value;
+  const cc=document.getElementById('q9c').value;
+  const fb=document.getElementById('fb9');
+  if(a==='para-down'&&b==='para-up'&&cc==='const'){fb.className='fb show ok';fb.textContent='✅ ถูกต้องทั้งหมด! KE=พาราโบลาคว่ำ · PE=พาราโบลาหงาย · E=เส้นตรงแนวนอน';}
+  else{fb.className='fb show bad';fb.textContent='❌ ยังไม่ถูกทั้งหมด: KE=½k(A²−y²)→พาราโบลาคว่ำ; PE=½ky²→พาราโบลาหงาย; ผลรวม=½kA²=const→เส้นตรงแนวนอน';}
+}
+
+/* ===== Data Table Q10 ===== */
+const t10data={1:{y:-0.10},2:{y:-0.05},3:{y:0},4:{y:0.05},5:{y:0.10}};
+function calcRow10(r){
+  const y=t10data[r].y;const v_id=`t10v${r}`;
+  const omega=20,k=200,m=0.5;
+  const v=omega*Math.sqrt(Math.max(0,0.01-y*y));
+  document.getElementById(`t10v${r}`).value=v.toFixed(4);
+  const KE=0.5*m*v*v;const PE=0.5*k*y*y;const E=KE+PE;
+  document.getElementById(`t10k${r}`).value=KE.toFixed(4);
+  document.getElementById(`t10p${r}`).value=PE.toFixed(4);
+  document.getElementById(`t10e${r}`).value=E.toFixed(4);
+  markQ(10);
+}
+
+/* ===== Submit ===== */
+const API_URL='https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+function submitEx(){
+  const d={sheet:'EX05_SHM_Plan5',payload:{}};
+  ['s-name','s-num','s-room'].forEach(id=>{d.payload[id]=document.getElementById(id)?.value||'';});
+  ['q3a','q3b','q3c','q3d','q6ans','q7e1','q7e2','q7rat','q9a','q9b','q9c','q10E','q10eq','q11exp','q12sum','q12v','q4exp'].forEach(id=>{d.payload[id]=document.getElementById(id)?.value||'';});
+  ['q4','q7','q11'].forEach(n=>{const el=document.querySelector(`[name="q${n}"]:checked`);d.payload[`q${n}`]=el?el.value:'';});
+  ['q3','q6','q9','c12'].forEach(id=>{const cv=document.getElementById(id);d.payload[`cv_${id}`]=cv?cv.toDataURL('image/png'):'';});
+  ['m5a','m5b','m5c','m5d','m5e'].forEach(id=>{d.payload[id]=document.getElementById(id)?.value||'';});
+  d.payload.done=done.size;d.payload.timestamp=new Date().toISOString();
+  if(API_URL.includes('YOUR_DEPLOYMENT')){
+    const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`EX05_${d.payload['s-name']||'student'}.json`;a.click();
+    document.getElementById('ex-msg').innerHTML='<span style="color:#d97706">💾 บันทึก JSON แล้ว</span>';return;
+  }
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(d)})
+    .then(()=>{document.getElementById('ex-msg').innerHTML='<span style="color:#059669">✅ ส่งสำเร็จ!</span>';})
+    .catch(()=>{document.getElementById('ex-msg').innerHTML='<span style="color:#dc2626">❌ ส่งไม่สำเร็จ</span>';});
+}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

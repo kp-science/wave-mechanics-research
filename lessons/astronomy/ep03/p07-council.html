@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P07 · TEACH Hipparchus</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p07" data-type="story">
+<div class="page">
+  <div class="lbl">🎓 TEACH · ความรู้ที่ 2</div>
+  <h1>Hipparchus · <span style="color:#d4b8ff;">magnitude</span></h1>
+
+  <div class="teach-pod">
+    <div class="avatar">🎩</div>
+    <div class="teacher-name">Dr.Hubble</div>
+    <div style="color:#c8cde0;line-height:1.7;">
+      *"2,100 ปีก่อน Hipparchus แบ่งดาว <b>6 ระดับ</b>"*<br>
+      *"ดาวสว่างที่สุด = <b>อันดับ 1</b> · หรี่ที่สุด (ตาเปล่าเห็น) = <b>อันดับ 6</b>"*<br>
+      *"โบลท์: 'อ้าว เลขน้อย = สว่าง? กลับด้าน!'"*
+    </div>
+
+    <div class="key-idea">
+      💡 <b>m น้อย = สว่าง (ปรากฎ)</b><br>
+      <span style="font-size:13px;color:#c8cde0;">Sun m=−26.74 · Sirius m=−1.46 · ตาเปล่าสุด m=6</span>
+    </div>
+
+    <div class="try-it">
+      🔁 <b>ทวน P04:</b> ดาว p = 0.1" · d = ?
+      <div class="choice-row" style="margin:6px 0;">
+        <button class="choice-btn" onclick="r1(0)">1 pc</button>
+        <button class="choice-btn" onclick="r1(1)">10 pc</button>
+        <button class="choice-btn" onclick="r1(2)">100 pc</button>
+      </div>
+      <div id="r1out" class="status"></div>
+    </div>
+
+    <div class="try-it">
+      🎯 <b>ลองใหม่:</b> Sirius m=−1.46 vs Polaris m=1.98 · ใครสว่างปรากฎกว่า?
+      <div class="choice-row" style="margin:6px 0;">
+        <button class="choice-btn" onclick="r2(0)">Sirius</button>
+        <button class="choice-btn" onclick="r2(1)">Polaris</button>
+      </div>
+      <div id="r2out" class="status"></div>
+    </div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.3;">(ไม่ต้องส่ง)</button>
+    <button class="next-btn" id="nextBtn">▶ ไป P08</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+function r1(i) {
+  const ok = i === 1;
+  document.getElementById('r1out').innerHTML = ok ? '<div class="ok">✓ d=1/0.1=10 pc</div>' : '<div class="bad">✗ d=1/p</div>';
+}
+function r2(i) {
+  const ok = i === 0;
+  document.getElementById('r2out').innerHTML = ok ? '<div class="ok">✓ Sirius · m ต่ำกว่า · สว่างกว่า</div>' : '<div class="bad">✗ m=1.98 หรี่กว่า</div>';
+}
+setTimeout(() => {
+  const nb = document.getElementById('nextBtn');
+  Gate.soloMode(nb, 'p08-arrive.html');
+  if (window.PaceClient) Gate.wireButton('p07', nb, 'p08-arrive.html');
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined') Transition.wireNext(nb, 'p07-to-p08', 'p08-arrive.html');
+  }, 100);
+}, 200);
+</script>
+</body></html>

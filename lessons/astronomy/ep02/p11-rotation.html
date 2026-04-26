@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P11 · Galaxy Rotation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .sim-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin: 20px 0; }
+  @media (max-width: 720px) { .sim-wrap { grid-template-columns: 1fr; } }
+  canvas#simCanvas { width: 100%; background: radial-gradient(circle at 50% 50%, #1a1540, #03040c); border-radius: 12px; border: 1px solid var(--border); display: block; }
+  .controls { padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; }
+  .controls label { display: block; margin: 10px 0 4px; font-size: 12px; color: var(--text-dim); }
+  .controls input[type=range] { width: 100%; }
+  .controls .val { color: var(--accent-gold); font-family: monospace; }
+  .observe-list { padding: 14px; background: rgba(185,128,255,0.05); border: 1px dashed var(--border); border-radius: 10px; margin: 14px 0; }
+  .observe-list label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body data-page="p11" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 2 · Scene 11 · DEEPER UNDERSTANDING</div>
+  <h1 class="page-title">Galaxy Rotation · มีอะไรแปลก?</h1>
+  <div class="obj-tags">
+    <span class="obj-tag p">P1 · สังเกต</span>
+    <span class="obj-tag p">P2 · สมมติฐาน</span>
+  </div>
+
+  <div class="narrative">
+    <span class="hubble-voice">"มีสิ่งที่ฉันอธิบายไม่ได้ในกาแล็กซี · ลองเล่น sim นี้ · แล้วบอกฉันว่าเจออะไรแปลก"</span>
+  </div>
+
+  <div class="sim-wrap">
+    <canvas id="simCanvas" width="600" height="400"></canvas>
+    <div class="controls">
+      <label>มวลศูนย์กลาง <span class="val" id="vMass">50</span></label>
+      <input type="range" id="mass" min="10" max="100" value="50">
+
+      <label>Dark Matter Halo <span class="val" id="vDm">0</span>%</label>
+      <input type="range" id="dm" min="0" max="100" value="0">
+
+      <label>ความเร็วฐาน <span class="val" id="vSpd">1.0</span>×</label>
+      <input type="range" id="spd" min="5" max="30" value="10">
+
+      <button class="finish-btn" style="width:100%;margin-top:14px" onclick="resetSim()">🔁 reset</button>
+    </div>
+  </div>
+
+  <div class="observe-list">
+    <b>✍️ สังเกตอะไรบ้าง? (ติ๊ก 1+ ข้อ)</b>
+    <label><input type="checkbox" name="obs" value="outerFast"> ขอบนอกหมุนเร็วเกินไป (ถ้าเทียบกับที่ควรเป็น)</label>
+    <label><input type="checkbox" name="obs" value="flatCurve"> กราฟความเร็วค่อนข้างแบน · ไม่ลดลงที่ขอบ</label>
+    <label><input type="checkbox" name="obs" value="dmEffect"> เมื่อเพิ่ม Dark Matter · ขอบเร็วขึ้น</label>
+    <label><input type="checkbox" name="obs" value="centerFast"> ใจกลางหมุนเร็วกว่าขอบ</label>
+    <label><input type="checkbox" name="obs" value="linear"> ความเร็วแปรตามระยะ</label>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P11 · บทบาท: กระตุ้น Socratic</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "ลองเล่น sim · ปรับ mass · ปรับ Dark Matter · แล้วดูว่าเกิดอะไร"<br>
+      <b>ระหว่าง:</b> ถามนำ "ขอบนอกเร็วเกินไปหรือช้าเกินไป · ถ้ามีแค่มวลที่เห็น"<br>
+      <b>ปิด:</b> "เก็บคำถามนี้ไว้ · เราจะกลับมาตอบใน EP อื่น" (teaser dark matter)<br>
+      <b>Item:</b> ตอบถูก "outerFast" + "flatCurve" ใน try แรก → ⏱️ Warp Fuel<br>
+      <b>🖼️ เจน:</b> [CLIP-P11] Galaxy rotation curve animation
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ ส่งข้อสังเกต</button>
+  <div id="status" style="margin-top:10px;color:var(--text-dim);font-size:12px;"></div>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); startSim(); }, 50);
+
+  const cv = document.getElementById('simCanvas');
+  const ctx = cv.getContext('2d');
+  let stars = [], raf = null;
+  let simStartTime = Date.now();
+
+  function mkStars() {
+    stars = [];
+    for (let i=0; i<150; i++) {
+      const r = Math.random() * 0.48 + 0.02;
+      stars.push({ r, theta: Math.random()*Math.PI*2, color: Math.random() < 0.3 ? '#ffcb6b' : '#fff' });
+    }
+  }
+
+  function startSim() { mkStars(); animate(); bind(); }
+
+  function bind() {
+    ['mass','dm','spd'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => {
+        document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1)).textContent =
+          id==='spd' ? (document.getElementById('spd').value/10).toFixed(1) : document.getElementById(id).value + (id==='dm'?'':'');
+      });
+    });
+  }
+
+  function velocity(r) {
+    const M = +document.getElementById('mass').value;
+    const DM = +document.getElementById('dm').value / 100;
+    // Keplerian: v ~ sqrt(M/r) · Dark Matter: flatten at large r
+    const kepler = Math.sqrt(M / (r * 100 + 1)) * 0.5;
+    const flat = DM * 0.3;
+    return kepler + flat;
+  }
+
+  function animate() {
+    ctx.clearRect(0,0,cv.width,cv.height);
+    // center
+    ctx.fillStyle = '#ffcb6b';
+    ctx.beginPath(); ctx.arc(cv.width/2, cv.height/2, 8, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 20; ctx.shadowColor = '#ffcb6b';
+    ctx.fill(); ctx.shadowBlur = 0;
+
+    const spd = +document.getElementById('spd').value / 10;
+    stars.forEach(s => {
+      s.theta += velocity(s.r) * 0.02 * spd;
+      const x = cv.width/2 + Math.cos(s.theta) * s.r * cv.width * 0.7;
+      const y = cv.height/2 + Math.sin(s.theta) * s.r * cv.height * 0.7;
+      ctx.fillStyle = s.color;
+      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI*2); ctx.fill();
+    });
+    raf = requestAnimationFrame(animate);
+  }
+
+  function resetSim() {
+    document.getElementById('mass').value = 50;
+    document.getElementById('dm').value = 0;
+    document.getElementById('spd').value = 10;
+    ['mass','dm','spd'].forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+    mkStars();
+  }
+
+  function finishPage() {
+    const checked = [...document.querySelectorAll('input[name="obs"]:checked')].map(x => x.value);
+    const keyObs = checked.includes('outerFast') && checked.includes('flatCurve');
+    const elapsed = Date.now() - simStartTime;
+    const keyCount = (checked.includes('outerFast') ? 1 : 0) + (checked.includes('flatCurve') ? 1 : 0);
+
+    // 🔑 ตั้ง gate ก่อน scoring
+    Book.completePage('p11', {
+      score: keyCount, max: 2,
+      msg: `จับประเด็นสำคัญได้ ${keyCount}/2 · ทั้งหมด ${checked.length} ข้อสังเกต`
+    });
+
+    try {
+      if (checked.length >= 2) {
+        Game.award({ base: 10 + checked.length * 3, page:'p11', objective:'P1' });
+        Obj.hit('P2', { page:'p11' });
+      } else {
+        Game.penalty({ amount: 3, page:'p11', objective:'P1' });
+      }
+      if (keyObs && elapsed < 180000) { Items.grant('warpFuel', { from:'p11' }); Book.addCoin(10, 'p11-key-obs-fast'); }
+      else if (keyObs) Book.addCoin(5, 'p11-key-obs');
+      Book.savePageData('p11', { observations: checked, elapsedMs: elapsed });
+    } catch(e){ console.warn('p11 scoring failed', e); }
+    document.getElementById('status').textContent = `✓ บันทึก ${checked.length} ข้อสังเกต`;
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว';
+  }
+</script>
+
+</body>
+</html>

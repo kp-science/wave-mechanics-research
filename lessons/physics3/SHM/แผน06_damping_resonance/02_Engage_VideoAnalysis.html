@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engage — Video Analysis · Tacoma & Resonance (SHM แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.section-title{font-size:19px;font-weight:800;color:#4c1d95;margin:24px 0 10px;padding-left:12px;border-left:5px solid #7c3aed}
+.item{border:2px solid #ddd6fe;border-radius:12px;padding:18px 20px;margin:16px 0;background:#fdfcff}
+.item-no{display:inline-block;background:#7c3aed;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800;margin-bottom:8px}
+.stem{font-size:16px;font-weight:600;color:#2d3748;margin:8px 0;line-height:1.7}
+.sub{margin:10px 0 6px;padding-left:12px;border-left:3px solid #a78bfa;font-size:15px}
+.sub b{color:#4c1d95}
+.ans-ta{width:100%;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;margin-top:4px;min-height:80px;transition:border .15s}
+.ans-ta:focus{outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.ans-in{border:none;border-bottom:1.5px solid #a78bfa;padding:3px 8px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:transparent}
+select.drop{border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer;min-width:180px}
+select.drop:focus{outline:none;border-color:#7c3aed}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:15px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:640px){.checkbox-bank{grid-template-columns:1fr}.id-box{grid-template-columns:1fr 1fr}}
+.video-card{background:#1a1a2e;border-radius:12px;padding:16px 20px;margin:10px 0;color:#fff;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.vid-icon{font-size:32px;flex-shrink:0;margin-top:4px}
+.vid-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.vid-url{font-size:12px;color:#a78bfa;word-break:break-all}
+.vid-desc{font-size:13px;color:#c4b5fd;margin-top:6px;line-height:1.5}
+.vid-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0}
+@media(max-width:760px){.vid-grid{grid-template-columns:1fr}}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #7c3aed;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600;transition:all .15s}
+.c-btn.active{background:#7c3aed;color:#fff}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4c1d95;box-shadow:0 0 0 2px #a78bfa}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f5f3ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="sketch"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:#fffbf5;touch-action:none;cursor:crosshair;margin-top:6px}
+.dq-box{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:20px 24px;margin:16px 0;color:#fff;text-align:center}
+.dq-box h3{font-size:18px;margin-bottom:8px}
+.dq-text{font-size:16px;font-style:italic;background:rgba(255,255,255,.12);border-radius:10px;padding:12px 16px;margin:10px 0}
+.hint{font-size:13px;color:#6b7280;font-style:italic;margin-top:4px}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+@media(max-width:640px){.compare-grid{grid-template-columns:1fr}}
+.compare-card{border-radius:10px;padding:12px 14px;font-size:14px}
+.compare-card.left{background:#e8f5e9;border-left:4px solid #4caf50}
+.compare-card.right{background:#e3f2fd;border-left:4px solid #2196f3}
+.compare-card h4{margin-bottom:6px;font-size:15px}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:18px 22px;margin:22px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:17px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:11px 28px;border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-submit:hover{background:#f5f3ff}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎬 Engage — Video Analysis & Driving Question</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" style="background:#dc2626">ใบกิจกรรม 02</span> Tacoma · ชิงช้า · แก้วไวน์ · คาบ 11–12</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 บันทึกอัตโนมัติ</div>
+  </div>
+
+  <div class="info">🎯 <b>จุดประสงค์:</b> สังเกตปรากฏการณ์ resonance จาก 3 วิดีโอ · ตั้งสมมติฐาน "สิ่งที่เหมือนกัน" ก่อนเรียนเนื้อหา · เป้าหมาย: แก้ M6.2 (resonance ≠ สะท้อน) + M6.3 (ไม่ใช่แรงมากสุด)</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <!-- ส่วน 1: วิดีโอ 3 คลิป -->
+  <h2 class="section-title">📺 ส่วน 1 · ดูวิดีโอ 3 คลิป</h2>
+
+  <div class="vid-grid">
+    <div class="video-card">
+      <div class="vid-icon">🌉</div>
+      <div>
+        <div class="vid-title">คลิป A · Tacoma Narrows Bridge 1940</div>
+        <div class="vid-desc">สะพานแขวนสั่นจนพัง · ลมไม่แรงมาก · f ลม ≈ f_natural สะพาน · ใช้เวลา 4 เดือน</div>
+        <div class="vid-url">ค้นหา: "Tacoma Narrows Bridge Collapse 1940" ใน YouTube (2:30)</div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="vid-icon">🎡</div>
+      <div>
+        <div class="vid-title">คลิป B · ชิงช้าเติมจังหวะ</div>
+        <div class="vid-desc">ผลักชิงช้าทุกรอบตามจังหวะ · A ค่อย ๆ เพิ่มขึ้น · แรงน้อยแต่ถ้า f_push = f_natural แล้วสูงมาก</div>
+        <div class="vid-url">ค้นหา: "resonance swing push rhythm" ใน YouTube (~1:00)</div>
+      </div>
+    </div>
+    <div class="video-card">
+      <div class="vid-icon">🍷</div>
+      <div>
+        <div class="vid-title">คลิป C · แก้วไวน์แตกจากเสียงร้อง</div>
+        <div class="vid-desc">นักร้อง Opera ออกเสียงถูก f_natural ของแก้ว → แก้วสั่นพ้องจนแตก · เสียงไม่ดัง แต่ f ตรง</div>
+        <div class="vid-url">ค้นหา: "opera singer breaks wine glass resonance" ใน YouTube (~1:00)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ส่วน 2: สังเกตและบันทึก -->
+  <h2 class="section-title">✍️ ส่วน 2 · บันทึกการสังเกต</h2>
+
+  <div class="item">
+    <div class="item-no">กิจกรรม 2.1</div>
+    <div class="stem">สังเกตจากแต่ละคลิป — บันทึก "สิ่งที่เกิดขึ้น" และ "คุณสังเกตว่าแอมพลิจูดเปลี่ยนอย่างไร?"</div>
+    <div class="sub"><b>คลิป A — Tacoma Narrows:</b></div>
+    <textarea class="ans-ta" id="obs-a" rows="2" placeholder="สังเกตว่า...สะพานเริ่มสั่นจาก... แอมพลิจูดเพิ่ม/ลด..."></textarea>
+    <div class="sub"><b>คลิป B — ชิงช้า:</b></div>
+    <textarea class="ans-ta" id="obs-b" rows="2" placeholder="สังเกตว่า...ผลักทุก... วินาที แอมพลิจูด..."></textarea>
+    <div class="sub"><b>คลิป C — แก้วไวน์:</b></div>
+    <textarea class="ans-ta" id="obs-c" rows="2" placeholder="สังเกตว่า...เสียงที่ทำให้แก้วแตกมีลักษณะ..."></textarea>
+  </div>
+
+  <!-- ส่วน 3: เปรียบเทียบ -->
+  <div class="item">
+    <div class="item-no">กิจกรรม 2.2 · เปรียบเทียบ 3 คลิป</div>
+    <div class="stem">สิ่งใดที่ปรากฏการณ์ทั้ง 3 คลิปมีเหมือนกัน? — ติ๊กทุกข้อที่คุณคิดว่าจริง</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="sim" value="a" data-correct="false"> ① ทั้ง 3 กรณีใช้แรงมากมาก เพื่อให้แอมพลิจูดใหญ่</label>
+      <label class="opt"><input type="checkbox" name="sim" value="b" data-correct="true"> ② ทั้ง 3 กรณีมี "แหล่งขับ" ที่ให้พลังงานซ้ำ ๆ เป็นคาบ</label>
+      <label class="opt"><input type="checkbox" name="sim" value="c" data-correct="true"> ③ แอมพลิจูดค่อย ๆ เพิ่มขึ้นเรื่อย ๆ ไม่ใช่ทันทีทันใด</label>
+      <label class="opt"><input type="checkbox" name="sim" value="d" data-correct="false"> ④ ทั้ง 3 คลิปเกี่ยวข้องกับการสะท้อนของคลื่น</label>
+      <label class="opt"><input type="checkbox" name="sim" value="e" data-correct="true"> ⑤ ความถี่ของแหล่งขับตรงกับความถี่ธรรมชาติของระบบที่รับ</label>
+      <label class="opt"><input type="checkbox" name="sim" value="f" data-correct="false"> ⑥ ระบบที่ถูกขับต้องมีมวลมากจึงจะเกิดปรากฏการณ์นี้ได้</label>
+    </div>
+    <div class="hint">💡 Hint: ลองดูว่าแต่ละกรณี "แรงขับ" เป็นอย่างไร เทียบกับ "ระบบที่ถูกขับ"</div>
+    <div class="sub" style="margin-top:12px"><b>เขียนสิ่งที่ทั้ง 3 คลิปมีเหมือนกันในความคิดของคุณ:</b></div>
+    <textarea class="ans-ta" id="sim-text" rows="3" placeholder="ตามความเข้าใจของฉัน... สิ่งที่เหมือนกันคือ..."></textarea>
+  </div>
+
+  <!-- ส่วน 4: สิ่งที่ต่างกัน -->
+  <div class="item">
+    <div class="item-no">กิจกรรม 2.3 · สิ่งที่ต่างกัน</div>
+    <div class="stem">แม้จะมีสิ่งเหมือนกัน แต่ 3 กรณีมีความแตกต่างอะไรบ้าง?</div>
+    <div class="compare-grid">
+      <div class="compare-card left">
+        <h4>🌉 Tacoma (สะพาน)</h4>
+        แหล่งขับ = ลมวน (Vortex shedding)<br>ระบบที่รับ = โครงสร้างสะพาน<br>ผลลัพธ์ = สะพานพัง (Catastrophic)
+      </div>
+      <div class="compare-card" style="background:#fce4ec;border-left:4px solid #e91e63;">
+        <h4>🎡 ชิงช้า</h4>
+        แหล่งขับ = แรงมือผลัก<br>ระบบที่รับ = ลูกตุ้ม<br>ผลลัพธ์ = สนุก (Beneficial)
+      </div>
+    </div>
+    <div class="sub"><b>สรุปความต่าง — ผลลัพธ์ของ resonance ขึ้นกับอะไร?</b></div>
+    <textarea class="ans-ta" id="diff-text" rows="3" placeholder="resonance อาจเป็นประโยชน์หรือโทษขึ้นกับ..."></textarea>
+  </div>
+
+  <!-- ส่วน 5: วาดภาพสังเกต -->
+  <div class="item">
+    <div class="item-no">กิจกรรม 2.4 · วาดภาพ/Sketch สิ่งที่สังเกตได้</div>
+    <div class="stem">วาดภาพ sketch คร่าว ๆ แสดงสิ่งที่เกิดขึ้นใน 1 ใน 3 คลิป (เลือก 1 คลิปที่ประทับใจที่สุด) · ระบุแรงขับและระบบที่รับ</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cSketch','pencil',this)">✏️ วาด</button>
+      <button class="c-btn" onclick="setTool('cSketch','eraser',this)">⬜ ลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cSketch','#1a202c',this)" title="ดำ"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('cSketch','#7c3aed',this)" title="ม่วง"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cSketch','#dc2626',this)" title="แดง"></div>
+      <div class="c-color" style="background:#2563eb" onclick="setColor('cSketch','#2563eb',this)" title="น้ำเงิน"></div>
+      <button class="c-btn" onclick="clearCanvas('cSketch')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <canvas id="cSketch" data-bg="sketch" width="980" height="300"></canvas>
+    <div class="hint">💡 ไม่ต้องสวย — ขอแค่ระบุ "แหล่งขับ" และ "ระบบที่รับ" และ "A เพิ่ม/ลด"</div>
+  </div>
+
+  <!-- ส่วน 6: Driving Question -->
+  <h2 class="section-title">❓ ส่วน 3 · Driving Question (คำถามหลัก)</h2>
+
+  <div class="dq-box">
+    <h3>🎯 คำถามหลักของวันนี้ (Driving Question)</h3>
+    <div class="dq-text">"สะพาน Tacoma Narrows พังเพราะ <em>ลมแรงมาก</em> หรือเพราะ <em>อย่างอื่น</em>?"</div>
+    <div style="font-size:14px;opacity:.9">ตอบตามความคิดของคุณตอนนี้ — จะไม่มีถูก/ผิด · เราจะตรวจสอบด้วย SIM06 ในขั้น Explore</div>
+  </div>
+
+  <div class="item">
+    <div class="item-no">กิจกรรม 3.1 · การทำนาย (Predict)</div>
+    <div class="stem"><strong>เหตุผลที่ Tacoma Narrows พัง</strong> — เลือกคำตอบที่คุณเห็นด้วยมากที่สุด:</div>
+    <label class="opt"><input type="radio" name="predict" value="a"> ก. ลมแรงมากผิดปกติในวันนั้น จึงทำให้โครงสร้างรับไม่ไหว</label>
+    <label class="opt"><input type="radio" name="predict" value="b"> ข. ความถี่ของลมวน (f_wind) ตรงกับความถี่ธรรมชาติของสะพาน ทำให้ A เพิ่มสูงจนพัง แม้ลมไม่แรงมาก</label>
+    <label class="opt"><input type="radio" name="predict" value="c"> ค. สะพานมีรอยร้าวในโครงสร้างอยู่ก่อน ลมธรรมดาก็ทำให้แตกได้</label>
+    <label class="opt"><input type="radio" name="predict" value="d"> ง. คลื่นน้ำใต้สะพานดันโครงสร้างจนพัง ไม่ใช่ลม</label>
+    <div class="sub" style="margin-top:12px"><b>เหตุผลที่คุณเลือกข้อนั้น:</b></div>
+    <textarea class="ans-ta" id="predict-reason" rows="3" placeholder="ฉันเลือกข้อ ... เพราะ..."></textarea>
+  </div>
+
+  <div class="item">
+    <div class="item-no">กิจกรรม 3.2 · ความสงสัยและคำถาม</div>
+    <div class="stem">หลังดูวิดีโอและคิดเรื่อง Driving Question — <strong>คุณยังสงสัยอะไรอยู่?</strong></div>
+    <div class="sub"><b>สิ่งที่รู้แล้ว (K):</b></div>
+    <textarea class="ans-ta" id="kwl-k" rows="2" placeholder="ฉันรู้แล้วว่า..."></textarea>
+    <div class="sub"><b>สิ่งที่อยากรู้ (W):</b></div>
+    <textarea class="ans-ta" id="kwl-w" rows="2" placeholder="ฉันอยากรู้ว่า..."></textarea>
+    <div class="sub"><b>สิ่งที่ยังสงสัย / คำถามของฉัน:</b></div>
+    <textarea class="ans-ta" id="kwl-q" rows="2" placeholder="คำถามของฉัน:..."></textarea>
+  </div>
+
+  <!-- ส่วน 7: ทำนายผล SIM06 -->
+  <div class="item">
+    <div class="item-no">กิจกรรม 3.3 · ทำนายก่อนใช้ SIM06</div>
+    <div class="stem">ในขั้น Explore เราจะใช้ SIM06 เพื่อทดสอบสมมติฐาน · <strong>ทำนายผลการทดลองก่อน:</strong></div>
+    <div class="sub"><b>ฐาน A (Damping):</b> ถ้าเพิ่มค่าแรงหน่วง b จาก 0 → 1.0 · T ของระบบจะ...</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0">
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-a" value="increase"> T เพิ่มขึ้น</label>
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-a" value="same"> T คงที่</label>
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-a" value="decrease"> T ลดลง</label>
+    </div>
+    <div class="sub"><b>ฐาน B (Resonance Sweep):</b> เมื่อ f_drive = f_natural · A จะ...</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0">
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-b" value="max"> สูงสุด (maximum)</label>
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-b" value="zero"> ต่ำสุด (zero)</label>
+      <label class="opt" style="flex:1;min-width:180px"><input type="radio" name="pred-b" value="same"> เท่ากับ f อื่น</label>
+    </div>
+    <div class="sub"><b>วาดกราฟ A vs f_drive ที่คุณคาดว่าจะเห็น:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cGraph','pencil',this)">✏️ วาด</button>
+      <button class="c-btn" onclick="setTool('cGraph','eraser',this)">⬜ ลบ</button>
+      <div class="c-color active" style="background:#7c3aed" onclick="setColor('cGraph','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cGraph','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cGraph','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cGraph')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cGraph" data-bg="lined" width="980" height="240"></canvas>
+    <div class="hint">💡 วาดแกน f_drive (แนวนอน) และ A (แนวตั้ง) แล้ววาดกราฟที่คาดว่าจะเห็น · ไม่ต้องแม่นยำ — เป็นการทำนาย</div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งใบบันทึก Engage</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">Engage — Video Analysis · SHM แผน 6 Damping & Resonance · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  เป้าหมาย: แก้ M6.2 (resonance ≠ สะท้อน) · M6.3 (ไม่ใช่แรงมากสุด) · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
+const SHEET = 'Engage_SHM_Plan6';
+const tools={}, colors={};
+
+function initCanvas(id){
+  const c=document.getElementById(id); if(!c)return;
+  const ctx=c.getContext('2d');
+  tools[id]='pencil'; colors[id]='#1a202c';
+  let drawing=false,lx=0,ly=0;
+  const pos=e=>{
+    const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
+  };
+  const down=e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;
+    ctx.beginPath();ctx.arc(p.x,p.y,1,0,Math.PI*2);
+    ctx.fillStyle=tools[id]==='eraser'?'#fff':colors[id];ctx.fill();};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pos(e);
+    ctx.beginPath();ctx.strokeStyle=tools[id]==='eraser'?'#fff':colors[id];
+    ctx.lineWidth=tools[id]==='eraser'?20:2.5;ctx.lineCap='round';
+    ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  const up=()=>{drawing=false;saveCanvas(id);};
+  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
+  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});
+  c.addEventListener('touchend',up);
+}
+function setTool(id,t,btn){
+  tools[id]=t;
+  const tb=btn.closest('.canvas-toolbar');
+  if(tb)tb.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function setColor(id,c,el){
+  colors[id]=c;tools[id]='pencil';
+  const tb=el.closest('.canvas-toolbar');
+  if(tb){tb.querySelectorAll('.c-color').forEach(e=>e.classList.remove('active'));
+    tb.querySelectorAll('.c-btn').forEach(b=>{if(b.textContent.includes('✏️'))b.classList.add('active');});}
+  el.classList.add('active');
+}
+function clearCanvas(id){
+  const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);
+  localStorage.removeItem('canvas6_'+id);
+}
+function saveCanvas(id){
+  const c=document.getElementById(id);
+  try{localStorage.setItem('canvas6_'+id,c.toDataURL());}catch(e){}
+}
+function loadCanvas(id){
+  const data=localStorage.getItem('canvas6_'+id);if(!data)return;
+  const c=document.getElementById(id),ctx=c.getContext('2d');
+  const img=new Image();img.src=data;img.onload=()=>ctx.drawImage(img,0,0);
+}
+function autoSave(){
+  const data={
+    name:document.getElementById('student_name').value,
+    no:document.getElementById('student_no').value,
+    room:document.getElementById('class').value
+  };
+  try{localStorage.setItem('engage6_meta',JSON.stringify(data));}catch(e){}
+}
+async function submitAll(){
+  const name=document.getElementById('student_name').value;
+  const no=document.getElementById('student_no').value;
+  const room=document.getElementById('class').value;
+  if(!name||!no||!room){alert('กรุณากรอกชื่อ เลขที่ และห้อง');return;}
+  const data={
+    sheet:SHEET,
+    name,no,room,date:document.getElementById('test_date').value,
+    timestamp:new Date().toISOString(),
+    obs_a:document.getElementById('obs-a').value,
+    obs_b:document.getElementById('obs-b').value,
+    obs_c:document.getElementById('obs-c').value,
+    sim_text:document.getElementById('sim-text').value,
+    diff_text:document.getElementById('diff-text').value,
+    predict:document.querySelector('[name=predict]:checked')?.value||'',
+    predict_reason:document.getElementById('predict-reason').value,
+    kwl_k:document.getElementById('kwl-k').value,
+    kwl_w:document.getElementById('kwl-w').value,
+    kwl_q:document.getElementById('kwl-q').value,
+    pred_a:document.querySelector('[name=pred-a]:checked')?.value||'',
+    pred_b:document.querySelector('[name=pred-b]:checked')?.value||'',
+    sketch:document.getElementById('cSketch').toDataURL('image/png'),
+    graph:document.getElementById('cGraph').toDataURL('image/png')
+  };
+  const statusEl=document.getElementById('submitStatus');
+  statusEl.className='status loading';statusEl.textContent='⏳ กำลังส่ง...';
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`Engage6_${name}_${Date.now()}.json`;a.click();
+    statusEl.className='status success';statusEl.textContent='✅ ดาวน์โหลด JSON สำเร็จ';return;
+  }
+  try{
+    await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});
+    statusEl.className='status success';statusEl.textContent='✅ ส่งสำเร็จ!';
+  }catch(e){statusEl.className='status error';statusEl.textContent='❌ ส่งไม่ได้ — ลองบันทึก JSON';}
+}
+window.addEventListener('load',()=>{
+  ['cSketch','cGraph'].forEach(id=>{initCanvas(id);loadCanvas(id);});
+  const d=document.getElementById('test_date');if(!d.value)d.value=new Date().toISOString().split('T')[0];
+  try{const m=JSON.parse(localStorage.getItem('engage6_meta')||'{}');
+    if(m.name)document.getElementById('student_name').value=m.name;
+    if(m.no)document.getElementById('student_no').value=m.no;
+    if(m.room)document.getElementById('class').value=m.room;
+  }catch(e){}
+  document.querySelectorAll('input,textarea').forEach(el=>el.addEventListener('input',autoSave));
+});
+</script>
+</body></html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P18 · Captain's Log</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .field { margin:14px 0; }
+  .field label { display:block; color:#64d8ff; font-size:12px; font-family:Orbitron,sans-serif; letter-spacing:0.15em; margin-bottom:6px; }
+  .field textarea { width:100%; min-height:80px; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #444; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:14px; box-sizing:border-box; resize:vertical; }
+  .field textarea:focus { border-color:#64d8ff; outline:none; }
+</style>
+</head>
+<body data-page="p18" data-type="reflection">
+<div class="page">
+  <div class="lbl">GROWTH · safe haven</div>
+  <h1>Captain's Log · 4 ช่อง</h1>
+  <div class="tags"><span class="tag a">A3·A4</span></div>
+
+  <div class="card">
+    <div class="narrative">พื้นที่เงียบ · เขียนอะไรที่อยู่ในใจ · ไม่มีถูกผิด · เก็บไว้อ่านเองใน EP04</div>
+  </div>
+
+  <div class="field">
+    <label>① ถึงพ่อ · อยากพูดอะไรกับเขาไหม?</label>
+    <textarea id="f1" placeholder="เขียนถึงพ่อ..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>② ถึงตัวเองตอนนี้ · ฉันเปลี่ยนไปยังไงบ้างหลัง EP03?</label>
+    <textarea id="f2" placeholder="ฉันรู้แล้วว่า..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>③ ถึง EP04 · ดาวยักษ์แดงกำลังจะระเบิด · ต้องเตรียมอะไร?</label>
+    <textarea id="f3" placeholder="ครั้งหน้า ฉันจะ..."></textarea>
+  </div>
+
+  <div class="field">
+    <label>④ คำสัญญา · ต่อไปนี้ฉันจะ...</label>
+    <textarea id="f4" placeholder="สัญญาว่า..."></textarea>
+  </div>
+
+  <details class="tc" open>
+    <summary>🎙️ Teacher Cue · P18 · 🏅 เงียบ</summary>
+    <div class="body">
+      <b>เปิด:</b> "เวลาเงียบ 4 นาที · เขียนได้ช้า ๆ · ไม่เร่ง"<br>
+      <b>ระหว่าง:</b> ไม่อ่านของเด็ก · ไม่พูดถ้าไม่ถาม<br>
+      <b>ปิด:</b> "Export บันทึกเก็บไว้ · ไป P19 ปิดภารกิจ"<br>
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ บันทึก + ไป P19</button>
+  <div class="status" id="status"></div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+// autosave
+['f1','f2','f3','f4'].forEach(id => {
+  const el = document.getElementById(id);
+  try { el.value = localStorage.getItem('cosmosLog_ep03_log_'+id) || ''; } catch {}
+  el.oninput = () => { try { localStorage.setItem('cosmosLog_ep03_log_'+id, el.value); } catch {} };
+});
+
+function finishPage() {
+  const data = {
+    toFather:    document.getElementById('f1').value,
+    toSelf:      document.getElementById('f2').value,
+    toEp04:      document.getElementById('f3').value,
+    promise:     document.getElementById('f4').value,
+    at: Date.now(),
+  };
+  try { localStorage.setItem('cosmosLog_captainLog_ep03', JSON.stringify(data)); } catch {}
+  Sync.recordDecision({ tag:"📜 Log", note:'Captain log saved' });
+  document.getElementById('status').innerHTML = '<div class="ok">✓ บันทึกในเครื่อง · อ่านได้ใน EP04</div>';
+  const btn = document.getElementById('finishBtn');
+  btn.classList.add('done'); btn.disabled = true;
+  setTimeout(()=>location.href='p19-map.html', 700);
+}
+</script>
+</body></html>

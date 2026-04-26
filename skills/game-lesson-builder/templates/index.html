@@ -1,0 +1,81 @@
+<!-- Episode Cover (auto-generates page list from EP_CONFIG)
+     Reference: lessons/astronomy/ep03/index.html
+-->
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP<NN> · <TITLE></title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  body { background: radial-gradient(ellipse at top, #0d1530 0%, #04050d 60%); color:#e8ecf8; }
+  .cover { max-width:760px; margin:0 auto; padding:40px 20px; }
+  .ep-badge { text-align:center; margin-bottom:20px; }
+  .ep-badge .num { font-family:Orbitron,sans-serif; font-size:14px; color:#9aa3c0; letter-spacing:0.3em; }
+  .ep-badge .title { font-family:Orbitron,sans-serif; font-size:32px; color:#ffcb6b;
+    letter-spacing:0.15em; text-shadow:0 0 30px rgba(255,203,107,0.5); margin:6px 0; }
+  .ep-badge .subtitle { font-size:14px; color:#9aa3c0; font-style:italic; }
+
+  .page-list { background:rgba(22,27,58,0.5); border:1px solid #2a3050; border-radius:14px; padding:20px; margin:20px 0; }
+  .page-row { display:grid; grid-template-columns:auto 1fr auto auto; gap:12px; align-items:center;
+    padding:10px 12px; border-bottom:1px solid rgba(120,140,220,0.15); transition:background .15s; }
+  .page-row:hover { background:rgba(100,216,255,0.06); }
+  .page-row:last-child { border-bottom:none; }
+  .page-row .num { font-family:Orbitron,monospace; font-size:11px; color:#6a7394; min-width:40px; }
+  .page-row .name { color:#e8ecf8; font-size:14px; }
+  .page-row .type { font-family:Orbitron,sans-serif; font-size:9px; padding:2px 8px; border-radius:8px;
+    background:rgba(100,216,255,0.1); color:#64d8ff; letter-spacing:0.1em; }
+  .page-row .time { font-size:11px; color:#9aa3c0; min-width:30px; text-align:right; }
+  .page-row a { color:inherit; text-decoration:none; display:contents; }
+
+  .start-btn { display:block; width:100%; max-width:400px; margin:20px auto; padding:18px;
+    background:rgba(126,255,178,0.15); border:2px solid #7effb2; color:#7effb2; border-radius:12px;
+    font-family:Orbitron,sans-serif; font-size:16px; letter-spacing:0.15em; font-weight:700; text-align:center; text-decoration:none; }
+  .start-btn:hover { background:rgba(126,255,178,0.25); transform:translateY(-2px); }
+
+  .meta { text-align:center; color:#9aa3c0; font-size:12px; margin-top:14px; }
+  .meta a { color:#64d8ff; text-decoration:none; margin:0 8px; }
+</style>
+</head>
+<body>
+<div class="cover">
+  <div class="ep-badge">
+    <div class="num">EPISODE <NN></div>
+    <div class="title" id="epTitle">...</div>
+    <div class="subtitle" id="epSubtitle">...</div>
+  </div>
+
+  <p style="text-align:center;color:#c8cde0;line-height:1.7;font-size:14px;">
+    <span id="epDuration">...</span> นาที · <span id="epPageCount">...</span> หน้า · ม.6 · ว 7.1
+  </p>
+
+  <a href="join.html" class="start-btn">🚀 เริ่มภารกิจ</a>
+
+  <div class="page-list" id="pageList"></div>
+
+  <div class="meta">
+    <a href="teacher.html">👩‍🏫 Teacher Console</a>
+    <a href="../">← Back to all EPs</a>
+  </div>
+</div>
+
+<script src="./config.js"></script>
+<script>
+const cfg = EP_CONFIG;
+document.getElementById('epTitle').textContent = cfg.title;
+document.getElementById('epSubtitle').textContent = cfg.subtitle;
+document.getElementById('epDuration').textContent = cfg.duration;
+document.getElementById('epPageCount').textContent = cfg.pages.length;
+
+document.getElementById('pageList').innerHTML = cfg.pages.map((p, i) => `
+  <a href="${p.file}">
+    <div class="page-row">
+      <div class="num">${String(i+1).padStart(2,'0')}</div>
+      <div class="name">${p.title}</div>
+      <div class="type">${p.type}</div>
+      <div class="time">${p.time}m</div>
+    </div>
+  </a>
+`).join('');
+</script>
+</body></html>

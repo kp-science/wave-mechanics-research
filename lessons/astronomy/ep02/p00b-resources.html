@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P00b · Tutorial · ทรัพยากร 3 อย่าง</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  /* Demo HUD pills · ใช้แสดงเป็นตัวอย่าง */
+  .demo-hud { display:flex; flex-wrap:wrap; gap:14px; padding:18px; background:linear-gradient(135deg, rgba(255,203,107,0.06), rgba(126,255,178,0.06)); border:2px solid var(--border); border-radius:14px; margin:16px 0; justify-content:center; }
+  .demo-pill {
+    display:inline-flex; flex-direction:column; align-items:center; gap:4px;
+    padding:14px 22px; min-width:140px;
+    background:var(--bg-card); border:2px solid var(--border); border-radius:12px;
+    font-family:'Orbitron',monospace; transition: all .3s;
+  }
+  .demo-pill .pl-icon { font-size:32px; line-height:1; }
+  .demo-pill .pl-val  { font-size:24px; font-weight:700; color:var(--accent-gold); }
+  .demo-pill .pl-lbl  { font-size:10px; letter-spacing:0.15em; color:var(--text-dim); text-transform:uppercase; }
+  .demo-pill.energy  { border-color:rgba(255,203,107,0.5); }
+  .demo-pill.streak  { border-color:rgba(255,140,80,0.5); }
+  .demo-pill.streak.hot { background:rgba(255,140,80,0.18); border-color:#ff8c50; box-shadow:0 0 20px rgba(255,140,80,0.5); }
+  .demo-pill.corrupt { border-color:rgba(126,255,178,0.5); }
+  .demo-pill.corrupt.warn { border-color:var(--accent-red); background:rgba(255,92,122,0.10); }
+  .demo-pill.flash { animation: flashPop .7s ease-out; }
+  @keyframes flashPop { 0%{transform:scale(1)} 30%{transform:scale(1.25); box-shadow:0 0 40px var(--accent-gold)} 100%{transform:scale(1)} }
+
+  .lesson-card { padding:16px 20px; background:var(--bg-card); border-left:4px solid var(--accent); border-radius:8px; margin:14px 0; }
+  .lesson-card h3 { font-family:'Orbitron',sans-serif; letter-spacing:0.15em; color:var(--accent); margin:0 0 8px; font-size:14px; }
+  .lesson-card .row { display:flex; justify-content:space-between; padding:4px 0; font-size:14px; border-bottom:1px dashed var(--border); }
+  .lesson-card .row:last-child { border-bottom:none; }
+  .lesson-card .row b { color:var(--accent-gold); font-family:monospace; }
+
+  .question-card { padding:16px; background:var(--bg-card); border:2px solid var(--border); border-radius:12px; margin:12px 0; }
+  .question-card .q-text { font-size:16px; line-height:1.5; margin-bottom:12px; }
+  .choice-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .choice-btn { padding:14px 16px; background:rgba(100,216,255,0.06); border:2px solid var(--border); color:var(--text); border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit; text-align:left; transition: all .12s; }
+  .choice-btn:hover:not(:disabled) { border-color:var(--accent); transform: translateY(-2px); }
+  .choice-btn.correct { border-color:var(--accent-green); background:rgba(126,255,178,0.15); }
+  .choice-btn.wrong { border-color:var(--accent-red); background:rgba(255,92,122,0.15); }
+  .choice-btn:disabled { cursor:not-allowed; opacity:0.5; }
+
+  .feedback { padding:10px 14px; border-radius:8px; text-align:center; font-family:'Orbitron',sans-serif; letter-spacing:0.05em; margin:8px 0; min-height:22px; font-size:13px; }
+  .feedback.gain { background:rgba(126,255,178,0.15); border:1px solid var(--accent-green); color:var(--accent-green); }
+  .feedback.crit { background:rgba(255,203,107,0.18); border:2px solid var(--accent-gold); color:var(--accent-gold); font-size:16px; }
+  .feedback.lose { background:rgba(255,92,122,0.15); border:1px solid var(--accent-red); color:var(--accent-red); }
+
+  .formula { padding:10px 14px; background:rgba(100,216,255,0.06); border:1px dashed var(--accent); border-radius:8px; font-family:'Orbitron',monospace; font-size:13px; color:var(--accent); text-align:center; margin:10px 0; }
+
+  /* Spotlight */
+  .spotlight-mask { position:fixed; inset:0; background:rgba(0,0,0,0.78); z-index:9000; transition: opacity .25s; }
+  .spotlight-mask.hidden { opacity:0; pointer-events:none; }
+  .spotlight-target { position:relative !important; z-index:9001 !important; box-shadow: 0 0 0 4px var(--accent-gold), 0 0 40px var(--accent-gold) !important; border-radius:10px; pointer-events:auto !important; animation: spotPulse 1.2s infinite; }
+  @keyframes spotPulse { 0%,100%{box-shadow:0 0 0 4px var(--accent-gold), 0 0 30px rgba(255,203,107,0.6) !important} 50%{box-shadow:0 0 0 4px var(--accent-gold), 0 0 60px rgba(255,203,107,1) !important} }
+  .spotlight-arrow { position:fixed; font-size:36px; z-index:9002; pointer-events:none; text-shadow:0 0 12px var(--accent-gold); animation: arrBounce .7s infinite; }
+  @keyframes arrBounce { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-10px)} }
+  .spotlight-msg { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); padding:14px 22px; background:linear-gradient(135deg, rgba(255,203,107,0.95), rgba(255,180,80,0.95)); color:#1a0f00; border-radius:10px; font-size:15px; font-weight:700; z-index:9002; max-width:90vw; text-align:center; box-shadow:0 6px 24px rgba(0,0,0,0.7); animation: msgIn .35s ease-out; }
+  .spotlight-msg .step-no { display:inline-block; background:#000; color:var(--accent-gold); padding:2px 8px; border-radius:10px; font-size:11px; margin-right:8px; font-family:'Orbitron',monospace; }
+  .spotlight-msg .next-hint { display:block; font-size:11px; color:rgba(0,0,0,0.6); margin-top:4px; font-weight:500; }
+  @keyframes msgIn { from{transform:translateX(-50%) translateY(20px); opacity:0} to{transform:translateX(-50%) translateY(0); opacity:1} }
+
+  .summary-box { padding:24px; background:linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.06)); border:2px solid var(--accent); border-radius:14px; text-align:center; margin:16px 0; }
+  .summary-box .big { font-family:'Orbitron',sans-serif; font-size:24px; color:var(--accent-gold); margin:8px 0; }
+</style>
+</head>
+<body data-page="p00b" data-type="story">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label story">องก์ 0 · TUTORIAL · ทรัพยากร 3 อย่าง</div>
+  <h1 class="page-title">รู้จัก ⚡ Energy · 🔥 Streak · 🦠 Corruption</h1>
+  <div class="obj-tags"><span class="obj-tag a">Tutorial · safe haven · ไม่กระทบ state จริง</span></div>
+
+  <div id="introSection">
+    <div style="padding:14px;background:rgba(185,128,255,0.06);border:1px solid var(--accent-2);border-radius:10px;margin:12px 0">
+      <p style="margin:0">VOID ฉาย hologram ของระบบให้ทีมดู · "เข้าใจตัวเลขบนจอ ก่อนภารกิจจริง"</p>
+    </div>
+
+    <div class="demo-hud">
+      <div class="demo-pill energy"><div class="pl-icon">⚡</div><div class="pl-val">50</div><div class="pl-lbl">Energy</div></div>
+      <div class="demo-pill streak"><div class="pl-icon">🔥</div><div class="pl-val">×1</div><div class="pl-lbl">Streak</div></div>
+      <div class="demo-pill corrupt"><div class="pl-icon">🦠</div><div class="pl-val">0%</div><div class="pl-lbl">Corruption</div></div>
+    </div>
+
+    <p style="text-align:center;color:var(--text-dim);font-size:13px">3 ตัวเลขนี้เป็นหัวใจของเกม · ระบบจะ guide ทีละตัว</p>
+
+    <div style="text-align:center;margin:18px 0">
+      <button class="finish-btn" onclick="startResourceTutorial()">▶ เริ่ม Tutorial · ทรัพยากร</button>
+    </div>
+
+    <details class="teacher-cue" open>
+      <summary>🎙️ Teacher Cue · P00b · Trainer · ระบบเครดิต</summary>
+      <div class="tc-body">
+        <b>เปิด:</b> "หน้านี้เรียนรู้ตัวเลข 3 ตัว · energy · streak · corruption · จะเห็น demo จริง"<br>
+        <b>ระหว่าง:</b> นักเรียนตอบ mini quiz · streak จะวิ่ง · ครูชี้ "เห็นไหม ตัวคูณเปลี่ยน"<br>
+        <b>ปิด:</b> "จำ corruption ไว้ · มันจะค่อย ๆ เพิ่มทุกหน้าตามเรื่อง · ครบ 100 = แพ้"<br>
+        <b>เวลา:</b> ~3 นาที
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== TUTORIAL STAGE ===== -->
+  <div id="stageSection" style="display:none">
+    <div class="demo-hud" id="demoHud">
+      <div class="demo-pill energy" id="pEnergy"><div class="pl-icon">⚡</div><div class="pl-val" id="vEnergy">50</div><div class="pl-lbl">Energy</div></div>
+      <div class="demo-pill streak" id="pStreak"><div class="pl-icon">🔥</div><div class="pl-val" id="vStreak">×1</div><div class="pl-lbl">Streak (0)</div></div>
+      <div class="demo-pill corrupt" id="pCorrupt"><div class="pl-icon">🦠</div><div class="pl-val" id="vCorrupt">0%</div><div class="pl-lbl">Corruption</div></div>
+    </div>
+
+    <div id="lessonCard"></div>
+    <div id="feedbackBox" class="feedback" style="display:none"></div>
+    <div id="quizArea"></div>
+  </div>
+
+  <div id="summaryArea"></div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled style="margin-top:20px">🔒 ผ่าน tutorial ก่อน · ไปต่อ</button>
+</div></div>
+
+<div id="spotlightMask" class="spotlight-mask hidden"></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ============ Local demo state (ไม่กระทบ Book.state จริง) ============ */
+  let dEnergy = 50;
+  let dStreak = 0;
+  let dCorrupt = 0;
+  let stepIdx = 0;
+  let qIdx = 0;
+
+  const Q = [
+    { q:'1 ปีแสง คือ?', a:['ระยะที่แสงเดิน 1 ปี','เวลา 1 ปี'], correct:0 },
+    { q:'Sun ใหญ่กว่าโลกประมาณ?', a:['~109 เท่า (เส้นผ่านศูนย์กลาง)','เท่ากัน'], correct:0 },
+    { q:'ดาวฤกษ์ที่ใกล้ Sun ที่สุด?', a:['Proxima Centauri','Andromeda'], correct:0 },
+    { q:'กาแล็กซีที่เราอยู่ชื่ออะไร?', a:['Milky Way','Triangulum'], correct:0 },
+    { q:'Hubble\'s Law ใช้คำนวณ?', a:['ระยะกาแล็กซีจาก v ถอยหลัง','อายุดวงอาทิตย์'], correct:0 },
+    { q:'ใจกลาง Milky Way คาดว่ามี?', a:['หลุมดำมวลยิ่งยวด (Sgr A*)','ดาวฤกษ์ปกติ'], correct:0 },
+  ];
+
+  /* ============ Spotlight ============ */
+  function setSpotlight(selector, msg, opts) {
+    opts = opts || {};
+    document.querySelectorAll('.spotlight-target').forEach(el => el.classList.remove('spotlight-target'));
+    document.querySelectorAll('.spotlight-arrow, .spotlight-msg').forEach(el => el.remove());
+    const mask = document.getElementById('spotlightMask');
+    if (!selector) { mask.classList.add('hidden'); return; }
+    mask.classList.remove('hidden');
+    const target = typeof selector === 'string' ? document.querySelector(selector) : selector;
+    if (!target) return;
+    target.classList.add('spotlight-target');
+    target.scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(() => {
+      const r = target.getBoundingClientRect();
+      const arrow = document.createElement('div');
+      arrow.className = 'spotlight-arrow';
+      arrow.textContent = '👉';
+      arrow.style.left = Math.max(8, r.left - 50) + 'px';
+      arrow.style.top  = (r.top + r.height/2 - 18) + 'px';
+      document.body.appendChild(arrow);
+      const m = document.createElement('div');
+      m.className = 'spotlight-msg';
+      m.innerHTML = `<span class="step-no">STEP ${stepIdx}/8</span>${msg}` + (opts.next ? `<span class="next-hint">${opts.next}</span>` : '');
+      document.body.appendChild(m);
+    }, 350);
+  }
+  function clearSpotlight() {
+    document.querySelectorAll('.spotlight-target').forEach(el => el.classList.remove('spotlight-target'));
+    document.querySelectorAll('.spotlight-arrow, .spotlight-msg').forEach(el => el.remove());
+    document.getElementById('spotlightMask').classList.add('hidden');
+  }
+
+  /* ============ HUD render ============ */
+  function renderHUD() {
+    document.getElementById('vEnergy').textContent = dEnergy;
+    const mult = dStreak >= 5 ? 2.0 : (dStreak >= 3 ? 1.5 : 1.0);
+    document.getElementById('vStreak').textContent = `×${mult.toFixed(1)}`;
+    document.querySelector('#pStreak .pl-lbl').textContent = `Streak (${dStreak})`;
+    document.getElementById('pStreak').classList.toggle('hot', dStreak >= 3);
+    document.getElementById('vCorrupt').textContent = dCorrupt + '%';
+    document.getElementById('pCorrupt').classList.toggle('warn', dCorrupt >= 70);
+  }
+  function flashPill(id) {
+    const el = document.getElementById(id);
+    el.classList.add('flash');
+    setTimeout(() => el.classList.remove('flash'), 700);
+  }
+
+  /* ============ Lesson card + quiz ============ */
+  function showLesson(html) {
+    document.getElementById('lessonCard').innerHTML = `<div class="lesson-card">${html}</div>`;
+  }
+  function showFeedback(text, kind) {
+    const fb = document.getElementById('feedbackBox');
+    fb.style.display = 'block';
+    fb.className = 'feedback ' + kind;
+    fb.textContent = text;
+  }
+  function renderQuiz() {
+    const q = Q[qIdx % Q.length]; qIdx++;
+    document.getElementById('quizArea').innerHTML = `
+      <div class="question-card" id="qCard">
+        <div class="q-text">❓ <b>${q.q}</b></div>
+        <div class="choice-row">
+          ${[0,1].map(k => `<button class="choice-btn" data-correct="${k===q.correct}">${q.a[k]}</button>`).join('')}
+        </div>
+      </div>`;
+    document.querySelectorAll('.choice-btn').forEach(b => b.addEventListener('click', () => {
+      if (b.disabled) return;
+      const isCorrect = b.dataset.correct === 'true';
+      document.querySelectorAll('.choice-btn').forEach(x => {
+        x.disabled = true;
+        if (x.dataset.correct === 'true') x.classList.add('correct');
+        else if (x === b) x.classList.add('wrong');
+      });
+      onAnswer(isCorrect);
+    }));
+  }
+
+  function onAnswer(isCorrect) {
+    if (isCorrect) {
+      dStreak++;
+      const mult = dStreak >= 5 ? 2.0 : (dStreak >= 3 ? 1.5 : 1.0);
+      const gain = Math.round(10 * mult);
+      dEnergy += gain;
+      flashPill('pEnergy'); flashPill('pStreak');
+      const kind = mult >= 1.5 ? 'crit' : 'gain';
+      showFeedback(`🎯 ถูก · +${gain} energy (10 × ×${mult.toFixed(1)} streak)`, kind);
+    } else {
+      dStreak = 0;
+      flashPill('pStreak');
+      showFeedback(`❌ ผิด · streak reset → ×1.0 · ไม่ได้ energy`, 'lose');
+    }
+    renderHUD();
+    setTimeout(advanceFromAnswer, 1300);
+  }
+
+  /* ============ Tutorial steps ============ */
+  function startResourceTutorial() {
+    document.getElementById('introSection').style.display = 'none';
+    document.getElementById('stageSection').style.display = '';
+    renderHUD();
+    stepIdx = 1;
+    runStep();
+  }
+
+  function advanceFromAnswer() {
+    // step 2 (correct #1) · step 3 (correct #2) · step 4 (correct #3 → streak ×1.5) · step 5 (correct #4 → ×1.5) · step 6 (intentional wrong)
+    if (stepIdx === 2) { nextStep(); }
+    else if (stepIdx === 3) { nextStep(); }
+    else if (stepIdx === 4) { nextStep(); }
+    else if (stepIdx === 5) { nextStep(); }
+    else if (stepIdx === 6) { nextStep(); }
+  }
+
+  function runStep() {
+    renderHUD();
+    if (stepIdx === 1) {
+      // intro to energy pill
+      showLesson(`
+        <h3>⚡ Energy · พลังงานของทีม</h3>
+        <div class="row"><span>เริ่มต้น</span><b>50 (ที่ P02)</b></div>
+        <div class="row"><span>ตอบถูก</span><b>+10 (×streak mult)</b></div>
+        <div class="row"><span>ตอบเร็ว &lt;30s</span><b>+5 bonus</b></div>
+        <div class="row"><span>ตอบผิด · ใช้ item · ค่ายิง</span><b>-energy</b></div>
+        <div class="formula">energy_gain = 10 × streak_multiplier (+5 ถ้าเร็ว)</div>
+      `);
+      setSpotlight('#pEnergy', '⚡ นี่คือ Energy · คะแนนหลักของทีม · ลองตอบคำถามดู', { next: 'จะเห็นว่าตอบถูก = +energy' });
+      renderQuiz();
+      stepIdx = 2;
+      setSpotlight('#qCard', '👉 STEP 2: ตอบคำถามให้<b>ถูก</b> · ดู energy เพิ่ม', { next: 'streak จะเพิ่มขึ้น 1' });
+    } else if (stepIdx === 3) {
+      renderQuiz();
+      setSpotlight('#qCard', '👉 STEP 3: ตอบ<b>ถูกอีกครั้ง</b> · streak ขึ้นเป็น 2', { next: 'streak ×1.5 ปลดที่ 3 ติด' });
+    } else if (stepIdx === 4) {
+      renderQuiz();
+      setSpotlight('#qCard', '👉 STEP 4: ตอบ<b>ถูกครั้งที่ 3</b> · streak จะปลด ×1.5!', { next: 'ดู energy ที่จะได้คูณ 1.5' });
+    } else if (stepIdx === 5) {
+      // explain streak after 3 hits
+      showLesson(`
+        <h3>🔥 Streak · ตอบถูกติดกัน = คูณคะแนน</h3>
+        <div class="row"><span>0-2 ติด</span><b>×1.0 (ปกติ)</b></div>
+        <div class="row"><span>3-4 ติด</span><b>×1.5 ⚡</b></div>
+        <div class="row"><span>≥ 5 ติด</span><b>×2.0 🔥</b></div>
+        <div class="row"><span>ตอบผิด 1 ครั้ง</span><b>reset → ×1.0</b></div>
+        <div class="formula">ตอบถูก 5 ติด = +20 energy/ข้อ (จาก 10 ปกติ)</div>
+      `);
+      // ไม่ render quiz · เน้นให้ดู pill อย่างเดียว · กด pill = ไปต่อ
+      document.getElementById('quizArea').innerHTML = '';
+      setSpotlight('#pStreak', '🔥 ดู streak pill เปลี่ยนสี · สีส้มเข้ม = active · ตัวคูณ ×1.5', { next: '👉 กดที่ streak pill เพื่อไปต่อ' });
+    } else if (stepIdx === 6) {
+      renderQuiz();
+      setSpotlight('#qCard', '👉 STEP 6: คราวนี้ลอง<b>ตอบผิด</b>เจตนา · ดูว่า streak จะ reset', { next: 'streak จะลงเป็น 0 ทันที' });
+    } else if (stepIdx === 7) {
+      // corruption explanation
+      showLesson(`
+        <h3>🦠 Corruption · VOID meter · เพิ่มเองตามเรื่อง</h3>
+        <div class="row"><span>เริ่ม</span><b>0%</b></div>
+        <div class="row"><span>เปลี่ยนหน้า</span><b>+5% (auto)</b></div>
+        <div class="row"><span>P13 chase / P14 race</span><b>+2% ทุก 10 วินาที</b></div>
+        <div class="row"><span>Safe haven (P00·P00b·P10·P18·P19)</span><b>หยุดเพิ่ม</b></div>
+        <div class="row"><span>≥ 20% / 70% / 95%</span><b>tint / glitch / hue shift</b></div>
+        <div class="row"><span>ครบ 100%</span><b>game over event</b></div>
+        <div class="formula">corruption = pressure ของเรื่อง · ห้ามอืดอาดเกิน</div>
+      `);
+      // simulate corruption rising
+      let target = 75;
+      const iv = setInterval(() => {
+        if (dCorrupt >= target) { clearInterval(iv); }
+        else { dCorrupt += 5; renderHUD(); flashPill('pCorrupt'); }
+      }, 200);
+      setSpotlight('#pCorrupt', '🦠 ดู corruption ขึ้นเร็ว ๆ (simulate) · ของจริง +5%/หน้า · 19 หน้า ≈ ใกล้ 95%', { next: 'กดที่ corruption pill เพื่อไปต่อ' });
+    } else if (stepIdx === 8) {
+      // summary
+      clearSpotlight();
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+      document.getElementById('quizArea').innerHTML = '';
+      document.getElementById('lessonCard').innerHTML = '';
+      document.getElementById('feedbackBox').style.display = 'none';
+      document.getElementById('summaryArea').innerHTML = `
+        <div class="summary-box">
+          <div style="color:var(--accent-green);font-family:Orbitron,sans-serif;letter-spacing:0.1em;font-size:14px">✨ Tutorial complete · เข้าใจระบบเครดิตครบ</div>
+          <div class="big">⚡ ${dEnergy} · 🔥 streak ${dStreak} · 🦠 ${dCorrupt}%</div>
+          <p style="color:var(--text-dim);font-size:13px;margin:10px 0">
+            <b>กลยุทธ์ที่จำง่าย:</b><br>
+            • ตอบถูกติด ๆ ให้ streak ปลด ×2.0 → ทำคะแนนพุ่ง<br>
+            • อย่าตอบผิด → streak พังทันที<br>
+            • อย่าอืด → corruption เพิ่มทุกหน้า · หาทาง safe haven
+          </p>
+          <div style="padding:12px;background:rgba(100,216,255,0.06);border:1px dashed var(--accent);border-radius:8px;margin-top:12px;color:var(--text);font-size:13px">
+            ตอนนี้พร้อมแล้ว · กด <b>"จบ Tutorial"</b> เพื่อไปทำ Entry Ticket (Pre-test) ที่ P01
+          </div>
+        </div>
+      `;
+      const fb = document.getElementById('finishBtn');
+      fb.disabled = false;
+      fb.textContent = '✓ จบ Tutorial · ไปทำ Entry Ticket →';
+      setSpotlight('#finishBtn', '🎓 จบ Tutorial · กดไปต่อ', { next: 'จะไป P01 entry ticket · ภารกิจจริงเริ่ม' });
+    }
+  }
+  function nextStep() { stepIdx++; runStep(); }
+
+  /* spotlight click handler for step 7 (click corrupt pill) */
+  document.addEventListener('click', (e) => {
+    if (stepIdx === 5 && e.target.closest('#pStreak')) nextStep();
+    else if (stepIdx === 7 && e.target.closest('#pCorrupt')) nextStep();
+  });
+
+  function finishPage() {
+    Book.completePage('p00b', { score: 8, max: 8, msg: 'รู้จัก energy/streak/corruption' });
+    const fb = document.getElementById('finishBtn');
+    fb.classList.add('done'); fb.disabled = true; fb.textContent = '✓ ส่งแล้ว';
+    clearSpotlight();
+  }
+
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); }, 50);
+</script>
+
+</body>
+</html>

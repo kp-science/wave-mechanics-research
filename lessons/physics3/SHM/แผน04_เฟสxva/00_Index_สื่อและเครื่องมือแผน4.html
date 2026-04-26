@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผน 4 · สื่อและเครื่องมือทั้งหมด · เฟส x,v,a</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap">
+<style>
+:root{--pri:#e11d48;--dark:#881337;--bg:#fff1f2;--border:#fda4af}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a1a2e;font-size:16px;min-height:100vh}
+/* Hero */
+.hero{background:linear-gradient(135deg,#881337 0%,#e11d48 55%,#f43f5e 100%);color:#fff;padding:36px 24px 30px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero::after{content:'';position:absolute;bottom:-30px;left:30%;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:1}
+.plan-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 14px;font-size:.82rem;font-weight:600;letter-spacing:.04em;margin-bottom:10px}
+.hero h1{font-size:1.65rem;font-weight:800;line-height:1.3;margin-bottom:6px}
+.hero p{font-size:.95rem;opacity:.88;line-height:1.6;max-width:580px}
+.hero-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:.85rem;opacity:.8}
+.hero-meta span{display:flex;align-items:center;gap:5px}
+/* Stats strip */
+.stats-strip{background:#fff;border-bottom:1px solid #e2e8f0;padding:14px 24px}
+.stats-inner{max-width:900px;margin:0 auto;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.stat-item{display:flex;align-items:center;gap:8px;font-size:.9rem}
+.stat-num{font-size:1.3rem;font-weight:700;color:var(--pri)}
+/* Legend */
+.legend-row{max-width:900px;margin:20px auto 0;padding:0 16px;display:flex;gap:10px;flex-wrap:wrap}
+.legend-chip{display:flex;align-items:center;gap:5px;font-size:.82rem;padding:4px 10px;border-radius:14px;border:1px solid #e2e8f0;background:#fff}
+.dot-chip{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+/* Grid */
+.grid{max-width:900px;margin:14px auto 40px;padding:0 16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+/* Card */
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column}
+.card:hover{box-shadow:0 4px 18px rgba(225,29,72,.12);transform:translateY(-2px)}
+.card-top{height:6px}
+.card-body{padding:16px 18px;flex:1}
+.card-num{font-size:.75rem;font-weight:700;color:#94a3b8;letter-spacing:.06em;margin-bottom:4px}
+.card-icon{font-size:1.5rem;margin-bottom:6px}
+.card-title{font-size:1rem;font-weight:700;color:#1a1a2e;line-height:1.35;margin-bottom:6px}
+.card-desc{font-size:.85rem;color:#64748b;line-height:1.55}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.tag{font-size:.72rem;padding:2px 8px;border-radius:10px;font-weight:600}
+.tag.canvas{background:#dbeafe;color:#1d4ed8}
+.tag.checkbox{background:#d1fae5;color:#065f46}
+.tag.drag{background:#fef3c7;color:#92400e}
+.tag.mcq{background:#f3e8ff;color:#6b21a8}
+.tag.graph{background:#ffe4e6;color:#9f1239}
+.tag.core{background:#fff1f2;color:var(--dark)}
+.tag.plus{background:#fffbeb;color:#78350f}
+.card-footer{padding:12px 18px;border-top:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center}
+.card-type{font-size:.78rem;color:#94a3b8;font-weight:600}
+.open-btn{display:inline-flex;align-items:center;gap:5px;padding:7px 16px;background:var(--pri);color:#fff;border-radius:8px;text-decoration:none;font-size:.88rem;font-weight:600;transition:filter .15s}
+.open-btn:hover{filter:brightness(.9)}
+.open-btn.outline{background:#fff;border:2px solid var(--pri);color:var(--pri)}
+/* Misconceptions card */
+.misc-card{max-width:900px;margin:0 auto 30px;padding:0 16px}
+.misc-inner{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:18px 22px}
+.misc-inner h3{color:var(--dark);font-weight:700;margin-bottom:12px;font-size:1rem}
+.misc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.misc-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.misc-item .m-tag{font-size:.75rem;font-weight:700;color:var(--dark);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1px 7px;margin-bottom:4px;display:inline-block}
+.misc-item .m-text{font-size:.84rem;color:#555;line-height:1.5}
+/* Footer */
+footer{text-align:center;padding:20px;font-size:.82rem;color:#94a3b8;border-top:1px solid #e2e8f0;background:#fff}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-inner">
+    <div class="plan-badge">แผน 4 · SHM</div>
+    <h1>เฟสของการกระจัด ความเร็ว และความเร่ง</h1>
+    <p>สื่อการเรียนรู้และเครื่องมือประเมินผลครบชุด ครอบคลุมมโนทัศน์ y-v-a เฟส Jigsaw Gallery Walk และแก้ไขความเข้าใจคลาดเคลื่อน M4.1–M4.4</p>
+    <div class="hero-meta">
+      <span>📚 11 สื่อ</span>
+      <span>🧲 Core 6 + Plus 4 + Extra 1</span>
+      <span>🎯 ฟิสิกส์ 3 · ม.6</span>
+      <span>🌹 Rose Theme</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-num">11</span><span>สื่อการสอน</span></div>
+    <div class="stat-item"><span class="stat-num">4</span><span>ความเข้าใจคลาดเคลื่อน</span></div>
+    <div class="stat-item"><span class="stat-num">20+</span><span>แบบฝึกหัด</span></div>
+    <div class="stat-item"><span class="stat-num">6</span><span>ประเภทกิจกรรม</span></div>
+  </div>
+</div>
+
+<div class="legend-row">
+  <div class="legend-chip"><span class="dot-chip" style="background:#e11d48"></span>Core (6 ชิ้น)</div>
+  <div class="legend-chip"><span class="dot-chip" style="background:#f59e0b"></span>Plus (4 ชิ้น)</div>
+  <div class="legend-chip"><span class="dot-chip" style="background:#7c3aed"></span>Extra (1 ชิ้น)</div>
+  <div class="legend-chip">✏️ มี Canvas</div>
+  <div class="legend-chip">☑️ มี Checkbox</div>
+  <div class="legend-chip">🔀 มี Drag-drop</div>
+</div>
+
+<!-- Cards Grid -->
+<div class="grid">
+
+  <!-- SIM04 -->
+  <div class="card" style="border:2px solid #9f7aea;background:#faf5ff">
+    <div class="card-top" style="background:#9f7aea"></div>
+    <div class="card-body">
+      <div class="card-num">SIM 04 · ONLINE</div>
+      <div class="card-icon">💻</div>
+      <div class="card-title">SIM04 SHM Phase Explorer</div>
+      <div class="card-desc">Interactive: เลื่อนเฟส 0–2π · ดูเวกเตอร์ y, v, a พร้อมกัน · กราฟ y-t, v-t, a-t real-time · ใช้ประกอบ Jigsaw + ConceptMap</div>
+      <div class="card-tags">
+        <span class="tag" style="background:#ede9fe;color:#5b21b6">🌐 ออนไลน์</span>
+        <span class="tag graph">Graph</span>
+        <span class="tag canvas">Interactive</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">Simulation</span>
+      <a href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/43.%20shm-phase-explorer.html" target="_blank" rel="noopener" class="open-btn" style="background:#9f7aea">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 01 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 01 · CORE</div>
+      <div class="card-icon">🔬</div>
+      <div class="card-title">Pretest / Posttest แบบ Four-Tier</div>
+      <div class="card-desc">วัดและประเมินความเข้าใจก่อน-หลัง ด้วย 6 ข้อ Four-Tier แยก Pre/Post toggle ประเมินความรู้สึก M4.1–M4.4</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+        <span class="tag mcq">MCQ</span>
+        <span class="tag checkbox">Checkbox</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">วินิจฉัย</span>
+      <a href="สื่อ01_F4_Fourtier_PrePost.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="card">
+    <div class="card-top" style="background:#f59e0b"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 02 · PLUS</div>
+      <div class="card-icon">🎣</div>
+      <div class="card-title">Engage Hook — POE</div>
+      <div class="card-desc">วิดีโอ hook + SVG diagram สามตำแหน่ง คำถามทำนาย-สังเกต-อธิบาย เปิด misconception trap M4.1</div>
+      <div class="card-tags">
+        <span class="tag plus">Plus</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag checkbox">Checkbox</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">กระตุ้น</span>
+      <a href="สื่อ02_Engage_Hook.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 03 · CORE</div>
+      <div class="card-icon">🧩</div>
+      <div class="card-title">Jigsaw Phase Explorer</div>
+      <div class="card-desc">4 expert tab (y, v, a, phase) — canvas grid วาดกราฟ, คำนวณ, จับคู่เฟส drag-drop, สอนเพื่อนสรุป</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag drag">Drag-drop</span>
+        <span class="tag mcq">MCQ</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">สำรวจ</span>
+      <a href="สื่อ03_Jigsaw_PhaseExplorer.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="card">
+    <div class="card-top" style="background:#f59e0b"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 04 · PLUS</div>
+      <div class="card-icon">🗺️</div>
+      <div class="card-title">Concept Map + Vector Draw</div>
+      <div class="card-desc">Gallery Walk 2 กลุ่ม + วาด vector v และ a บน 4 ตำแหน่งพร้อม SVG background overlay canvas แบบ scene-stack</div>
+      <div class="card-tags">
+        <span class="tag plus">Plus</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag graph">Vector</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">อธิบาย</span>
+      <a href="สื่อ04_ConceptMap_VectorDraw.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 05 · CORE</div>
+      <div class="card-icon">📐</div>
+      <div class="card-title">แบบฝึกหัดเฟส</div>
+      <div class="card-desc">8 ข้อ progress bar — คำนวณ v,a canvas / v=ω√(A²−y²) / อ่านกราฟ / วาด v-t graph / challenge หา φ</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag checkbox">Checkbox</span>
+        <span class="tag mcq">MCQ</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">ฝึกหัด</span>
+      <a href="สื่อ05_Exercise_Phase.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 06 · CORE</div>
+      <div class="card-icon">🌍</div>
+      <div class="card-title">Case Study ไซสโมกราฟ</div>
+      <div class="card-desc">บริบทจริง y=0.02sin(2πt) หา v_max, a_max, กราฟ a-t, drag-drop อัลกอริทึม, challenge จาก a_max=g</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag drag">Drag-drop</span>
+        <span class="tag checkbox">Checkbox</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">ประยุกต์</span>
+      <a href="สื่อ06_CaseStudy_Seismograph.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="card">
+    <div class="card-top" style="background:#f59e0b"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 07 · PLUS</div>
+      <div class="card-icon">🚦</div>
+      <div class="card-title">Exit Ticket (3 นาที)</div>
+      <div class="card-desc">3 ข้อด่วน Q1–Q2 MCQ ตรวจ M4.1 M4.2, Q3 วาด vector บน SVG background ที่ y=−A/2 พร้อม dropdown ทิศ</div>
+      <div class="card-tags">
+        <span class="tag plus">Plus</span>
+        <span class="tag mcq">MCQ</span>
+        <span class="tag canvas">Canvas</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">ตรวจสอบ</span>
+      <a href="สื่อ07_ExitTicket.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 08 · CORE</div>
+      <div class="card-icon">📓</div>
+      <div class="card-title">Journal 3-2-1 Metacognition</div>
+      <div class="card-desc">3 สิ่งที่เรียนรู้ + checkbox misconception bank, 2 การประยุกต์, 1 คำถาม, conceptual change card, hook แผน 5</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+        <span class="tag checkbox">Checkbox</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">สะท้อนคิด</span>
+      <a href="สื่อ08_Journal_321.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 09 -->
+  <div class="card">
+    <div class="card-top" style="background:var(--pri)"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 09 · CORE</div>
+      <div class="card-icon">🟢</div>
+      <div class="card-title">Traffic Light Self-Assessment</div>
+      <div class="card-desc">10 CAN-DO แดง/เหลือง/เขียว ครอบคลุม K4.1–K4.2 และ M4.1–M4.4 นับสรุปอัตโนมัติ พร้อมแผนพัฒนา</div>
+      <div class="card-tags">
+        <span class="tag core">Core</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">ประเมินตนเอง</span>
+      <a href="สื่อ09_TL-04_TrafficLight.html" class="open-btn">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <div class="card-top" style="background:#6b7280"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 10 · อ้างอิง</div>
+      <div class="card-icon">🔑</div>
+      <div class="card-title">เฉลยและคำอธิบาย</div>
+      <div class="card-desc">Accordion เฉลยครบทุกสื่อ: สื่อ01, 05, 06, 07, 11 พร้อมขั้นตอนคำนวณ คำอธิบาย misconception และตารางสูตร</div>
+      <div class="card-tags">
+        <span class="tag" style="background:#f1f5f9;color:#475569">ครู</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">เฉลย</span>
+      <a href="สื่อ10_AnswerKey.html" class="open-btn outline">เปิด →</a>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="card">
+    <div class="card-top" style="background:#7c3aed"></div>
+    <div class="card-body">
+      <div class="card-num">สื่อ 11 · EXTRA</div>
+      <div class="card-icon">⚡</div>
+      <div class="card-title">แบบฝึกหัดเพิ่มเติม (12 ข้อ)</div>
+      <div class="card-desc">12 ข้อครบทุกมโนทัศน์ — canvas calc, checkbox bank 8 ข้อ, drag-drop จับคู่สูตร, MCQ กระจายคำตอบ, sequence drag, challenge cosine+phase</div>
+      <div class="card-tags">
+        <span class="tag" style="background:#f3e8ff;color:#6b21a8">Extra</span>
+        <span class="tag canvas">Canvas</span>
+        <span class="tag drag">Drag-drop</span>
+        <span class="tag mcq">MCQ</span>
+        <span class="tag checkbox">Checkbox</span>
+        <span class="tag graph">วาดกราฟ</span>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-type">เพิ่มเติม</span>
+      <a href="สื่อ11_Exercise_เพิ่มเติม.html" class="open-btn" style="background:#7c3aed">เปิด →</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Misconception Reference -->
+<div class="misc-card">
+  <div class="misc-inner">
+    <h3>ความเข้าใจคลาดเคลื่อนเป้าหมาย แผน 4</h3>
+    <div class="misc-grid">
+      <div class="misc-item">
+        <div class="m-tag">M4.1 ★★ (75%)</div>
+        <div class="m-text">"ที่ปลายสุด วัตถุหยุด → a = 0" — ความจริง: a = Aω² สูงสุด ณ y = ±A</div>
+      </div>
+      <div class="misc-item">
+        <div class="m-tag">M4.2</div>
+        <div class="m-text">"ที่สมดุล v สูงสุด → a สูงสุดด้วย" — ความจริง: a = 0 ที่ y = 0</div>
+      </div>
+      <div class="misc-item">
+        <div class="m-tag">M4.3</div>
+        <div class="m-text">"v และ a อยู่ในเฟสเดียวกัน" — ความจริง: ต่างเฟสกัน 90°</div>
+      </div>
+      <div class="misc-item">
+        <div class="m-tag">M4.4</div>
+        <div class="m-text">"a บางครั้งชี้ออกจากสมดุล" — ความจริง: a = −ω²y ชี้เข้าหาสมดุลเสมอ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  แผน 4 · เฟส x,v,a · ฟิสิกส์ 3 ม.6 · wave-mechanics-research &nbsp;|&nbsp; Rose Theme #e11d48
+</footer>
+</body>
+</html>

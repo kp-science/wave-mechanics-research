@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>F3 Four-tier Pre/Post (SHM แผน 3 · มวล-สปริง)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.post{background:#c62828}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.phase-select{background:#fff3e0;border:2px solid #ea580c;padding:12px 16px;border-radius:10px;margin:12px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.phase-select label{font-weight:700;color:#9a3412;cursor:pointer;padding:6px 14px;border:2px solid #ea580c;border-radius:20px;transition:all .15s}
+.phase-select label:has(input:checked){background:#ea580c;color:#fff}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.item{border:2px solid #fed7aa;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fff}
+.item .no{display:inline-block;background:#ea580c;color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:800}
+.item .stem{font-size:16px;margin:8px 0 4px;font-weight:600;color:#1a202c}
+.item .stem-note{font-size:13.5px;color:#4a5568;margin-bottom:8px;background:#fff7ed;padding:6px 10px;border-radius:6px;border-left:3px solid #fdba74}
+.tier{margin:10px 0;background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:10px 14px}
+.tier b{color:#9a3412}
+.tier.t3 b{color:#166534}
+.tier.t2 b,.tier.t4 b{color:#c05621}
+.opt{margin:5px 0;padding:5px 8px;border-radius:6px;cursor:pointer;border:1.5px solid transparent;display:flex;align-items:flex-start;gap:8px;font-size:14.5px;transition:all .15s}
+.opt:hover{background:#ffedd5;border-color:#fdba74}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.opt input[type=radio]{margin-top:3px;flex-shrink:0;accent-color:#ea580c}
+.cert{display:flex;gap:20px;flex-wrap:wrap}
+.cert label{cursor:pointer;padding:6px 14px;border-radius:20px;border:1.5px solid #e2e8f0;font-size:14px;transition:all .15s}
+.cert label:hover{background:#fff3e0;border-color:#ea580c}
+.cert label:has(input:checked){background:#ea580c;color:#fff;border-color:#ea580c;font-weight:700}
+.cert input{display:none}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:18px;font-weight:800;padding:12px 30px;border-radius:10px;cursor:pointer;transition:all .15s}
+.btn-submit:hover{background:#ffedd5}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar,.phase-select{display:none}}
+</style></head>
+<body>
+
+<div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — เปิดไฟล์ Settings แล้ววาง URL ของ Apps Script</div>
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 F3 Four-tier Diagnostic · SHM แผน 3 (มวล-สปริง)</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag" id="phaseTag">F3-Pre</span> 5 ข้อ · วัด M3.1–M3.4 + K3.1, K3.2</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">💾 ส่งออนไลน์ผ่านปุ่มด้านล่าง</div>
+  </div>
+
+  <div class="info"><b>วิธีทำ Four-tier:</b> Tier 1 คำตอบ · Tier 2 ความมั่นใจในคำตอบ · Tier 3 เหตุผล · Tier 4 ความมั่นใจในเหตุผล<br>
+  <b>การให้คะแนน Sound:</b> ต้อง <b>ถูกทั้ง</b> T1 + T3 จึงนับว่าเข้าใจ · ผิดอย่างใดอย่างหนึ่ง = Misconception หรือ Guessing</div>
+
+  <div class="phase-select">
+    <b>เลือกช่วงเวลา:</b>
+    <label><input type="radio" name="phase" value="pre" checked onchange="updatePhase()"> 🟦 Pre-test (ก่อนเรียน)</label>
+    <label><input type="radio" name="phase" value="post" onchange="updatePhase()"> 🟥 Post-test (หลังเรียน)</label>
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" placeholder="ชื่อนักเรียน" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" placeholder="1" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="ftForm">
+
+  <!-- ข้อ 1 M3.1 ★ -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="mis-tag">M3.1 ★ (พบ 58.3%)</span></div>
+    <div class="stem">สปริง 2 เส้น ค่า k₁ = 100 N/m และ k₂ = 200 N/m ต่อกันแบบอนุกรม (series) ค่านิจสปริงรวม k_eff มีค่าเท่าใด?</div>
+    <div class="stem-note">💡 สูตรอนุกรม: 1/k_eff = 1/k₁ + 1/k₂ · สูตรขนาน: k_eff = k₁ + k₂</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="A" required> ก. 300 N/m</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="B"> ข. 150 N/m</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="C"> ค. 200/3 N/m ≈ 66.7 N/m</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="D"> ง. 50 N/m</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q1_t2" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q1_t2" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="1" required> 1) k_eff รวม = k₁ + k₂ เสมอ ไม่ว่าจะต่อแบบใด</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="2"> 2) k_eff = ค่าเฉลี่ยของ k ทั้งหมด = (k₁+k₂)/2</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="3"> 3) อนุกรม 1/k_eff = 1/k₁ + 1/k₂ จึงได้ k_eff = k₁k₂/(k₁+k₂) = (100×200)/(100+200) = 200/3 N/m</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="4"> 4) อนุกรมสปริงแข็งขึ้น เหมือนตัวต้านทานขนาน ต้องใช้สูตร k_eff = k₁k₂ รวมกัน</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q1_t4" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q1_t4" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 2 M3.2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="mis-tag">M3.2</span></div>
+    <div class="stem">สปริงค่า k = 50 N/m มวลถูกดึงออกจากตำแหน่งสมดุล 20 cm (x = 0.20 m) · ขนาดแรงที่สปริงกระทำต่อมวล ณ ขณะนั้นเป็นเท่าใด?</div>
+    <div class="stem-note">💡 กฎของฮุค: F = kx (ขนาด) · แรงมีทิศตรงข้ามการกระจัด</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="A" required> ก. 10 N</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="B"> ข. 50 N</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="C"> ค. 2.5 N</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="D"> ง. ขึ้นกับมวล ไม่สามารถหาได้จากข้อมูลที่ให้</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q2_t2" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q2_t2" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="1" required> 1) แรงสปริงคงที่เท่ากับ k เสมอ = 50 N</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="2"> 2) F = kx = 50 × 0.20 = 10 N · แรงสปริงแปรผันตามระยะกระจัด</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="3"> 3) F = k/x = 50/0.20 = 250 N</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="4"> 4) ต้องรู้มวล m และความเร่ง a ก่อน จึงหาแรงได้จาก F = ma</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q2_t4" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q2_t4" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 3 M3.3 -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="mis-tag">M3.3</span></div>
+    <div class="stem">สปริง m = 1 kg, k = 100 N/m ทดลอง 2 กรณี: (1) วางแนวระดับบนพื้นลื่น (2) แขวนแนวดิ่ง ทั้งสองกรณีดึงมวลออกจากสมดุล 5 cm แล้วปล่อย · คาบ T ของทั้งสองกรณีเป็นอย่างไร?</div>
+    <div class="stem-note">💡 พิจารณาว่า mg เปลี่ยนสมการการเคลื่อนที่อย่างไร เมื่อสปริงแนวดิ่ง</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="A" required> ก. กรณี (2) แนวดิ่ง T มากกว่า เพราะแรงโน้มถ่วงต้านการเคลื่อนที่</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="B"> ข. T เท่ากันทั้งสองกรณี คือ T = 2π√(m/k)</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="C"> ค. กรณี (1) แนวระดับ T มากกว่า เพราะไม่มีแรงโน้มถ่วงช่วยดึงคืน</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="D"> ง. T ต่างกันขึ้นกับแอมพลิจูดที่ใช้</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q3_t2" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q3_t2" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="1" required> 1) สปริงแนวดิ่งใช้สูตร T = 2π√(m/(k+mg)) เพราะ g เพิ่มแรงดึง</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="2"> 2) สปริงแนวดิ่ง mg เลื่อน equilibrium ไปที่จุดใหม่ (x₀ = mg/k) · SHM รอบจุดใหม่ · T = 2π√(m/k) เหมือนเดิม</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="3"> 3) แนวระดับมีแรงเสียดทานพื้น ทำให้ T ต่างจากแนวดิ่ง</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="4"> 4) แอมพลิจูดมีผลต่อ T โดยตรงในระบบสปริง เหมือนลูกตุ้มมุมใหญ่</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q3_t4" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q3_t4" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 4 M3.4 -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="mis-tag">M3.4</span></div>
+    <div class="stem">ระบบสปริง: m = 2 kg, k = 200 N/m · ระบบลูกตุ้ม: m = 2 kg, l = 0.5 m (g = 10 m/s²) · ถ้าเพิ่มมวลในทั้งสองระบบเป็น 4 kg · T ของแต่ละระบบจะเปลี่ยนแปลงอย่างไร?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="A" required> ก. T ทั้งสองระบบเพิ่มขึ้น เพราะมวลมากต้องใช้เวลามากกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="B"> ข. T ทั้งสองระบบไม่เปลี่ยน เพราะมวลตัดออกในทั้งสองสมการ</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="C"> ค. สปริง T เพิ่ม (T ∝ √m) · ลูกตุ้ม T ไม่เปลี่ยน (T ∝ √(l/g) ไม่มี m)</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="D"> ง. สปริง T ไม่เปลี่ยน · ลูกตุ้ม T เพิ่มขึ้น</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q4_t2" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q4_t2" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="1" required> 1) T สปริง = 2π√(m/k) → m ปรากฏในสมการ m↑ T↑ · T ลูกตุ้ม = 2π√(l/g) → m ไม่ปรากฏ T คงที่</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="2"> 2) ทั้งสองระบบ T ∝ √m เหมือนกัน เพราะมวลต้องเคลื่อนที่</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="3"> 3) ทั้งสองระบบ m ตัดออกจากสมการ T ไม่ขึ้นกับ m</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="4"> 4) ลูกตุ้ม T = 2π√(m/g) ขึ้นกับมวล · สปริง T = 2π√(k/m) ไม่ขึ้นกับมวล</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q4_t4" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q4_t4" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 5 M3.1 ประยุกต์ -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span> <span class="mis-tag">M3.1 ประยุกต์</span></div>
+    <div class="stem">สปริงสองเส้นค่า k₁ = k₂ = 120 N/m ต่อกันแบบขนาน (parallel) แขวนมวล m = 3 kg · คาบ T ของระบบนี้เป็นเท่าใด? (ใช้ π² ≈ 10)</div>
+    <div class="stem-note">💡 ขนาน: k_eff = k₁ + k₂ · T = 2π√(m/k_eff)</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="A" required> ก. T = 2π√(3/120) ≈ 1.00 s (ใช้ k เส้นเดียว)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="B"> ข. T = 2π√(3/240) ≈ 0.71 s (ขนาน k_eff = 240 N/m)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="C"> ค. T = 2π√(3/60) ≈ 1.41 s (อนุกรม k_eff = 60 N/m)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="D"> ง. T = 2π√(3/180) ≈ 0.81 s (k_eff = เฉลี่ย 3 เส้น)</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q5_t2" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q5_t2" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="1" required> 1) ขนาน k_eff = k₁+k₂ = 240 N/m · T = 2π√(3/240) = 2π√(1/80) = 2π/(4√5) ≈ 0.71 s</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="2"> 2) ขนาน k_eff เหมือนอนุกรม: 1/k_eff = 1/k₁+1/k₂ = 60 N/m</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="3"> 3) สปริงหลายเส้นใช้ k ของเส้นใดเส้นหนึ่ง เพราะแรงเฉลี่ย</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="4"> 4) k_eff = ผลรวม 3 เส้น = 120+120+60 เพราะนับทั้ง k₁, k₂ และค่า effective</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q5_t4" value="มั่นใจ" required>มั่นใจ</label><label><input type="radio" name="q5_t4" value="ไม่มั่นใจ">ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  </form>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งคำตอบ Four-tier</h3>
+    <p style="font-size:14px;margin-bottom:12px;opacity:.9">ตรวจสอบว่ากรอกข้อมูลครบทุก tier · ระบบจะบันทึกเป็น Pre หรือ Post ตามที่เลือก</p>
+    <button class="btn-submit" onclick="submitForm()" id="submitBtn">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="foot">F3 Four-tier · SHM แผน 3 · มวล-สปริง · ว30203 ฟิสิกส์ 3 ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME = 'F3_SHM_Plan3';
+
+const ANSWER_KEY = {
+  q1_t1:'C', q1_t3:'3',
+  q2_t1:'A', q2_t3:'2',
+  q3_t1:'B', q3_t3:'2',
+  q4_t1:'C', q4_t3:'1',
+  q5_t1:'B', q5_t3:'1'
+};
+
+function updatePhase(){
+  const ph = document.querySelector('input[name=phase]:checked').value;
+  document.getElementById('phaseTag').textContent = ph==='pre'?'F3-Pre':'F3-Post';
+  document.getElementById('phaseTag').className = ph==='pre'?'tag':'tag post';
+}
+
+function classifyResponse(t1,t2,t3,t4,ansT1,ansT3){
+  const t1ok = t1===ansT1, t3ok = t3===ansT3;
+  if(t1ok && t3ok) return 'Sound';
+  if(!t1ok && !t3ok && t2==='มั่นใจ') return 'Misconception';
+  if(!t1ok && t2==='ไม่มั่นใจ') return 'Guessing';
+  return 'Partial';
+}
+
+function getVal(name){
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '';
+}
+
+function submitForm(){
+  const name = document.getElementById('student_name').value.trim();
+  const num  = document.getElementById('student_no').value.trim();
+  const room = document.getElementById('class').value.trim();
+  if(!name||!num||!room){alert('กรุณากรอกชื่อ เลขที่ และห้องให้ครบ');return;}
+
+  const qs = ['q1','q2','q3','q4','q5'];
+  const missing = [];
+  qs.forEach(q=>{
+    ['t1','t2','t3','t4'].forEach(t=>{
+      if(!getVal(`${q}_${t}`)) missing.push(`${q}_${t}`);
+    });
+  });
+  if(missing.length>0){alert(`กรุณาตอบทุก tier ให้ครบ (ยังขาด ${missing.length} ช่อง)`);return;}
+
+  const phase = document.querySelector('input[name=phase]:checked').value;
+  const date  = document.getElementById('test_date').value || new Date().toISOString().slice(0,10);
+
+  const rows = {};
+  qs.forEach(q=>{
+    const t1=getVal(`${q}_t1`),t2=getVal(`${q}_t2`),t3=getVal(`${q}_t3`),t4=getVal(`${q}_t4`);
+    rows[q]={t1,t2,t3,t4,classify:classifyResponse(t1,t2,t3,t4,ANSWER_KEY[`${q}_t1`],ANSWER_KEY[`${q}_t3`])};
+  });
+
+  const payload = {
+    sheet: SHEET_NAME,
+    student_name: name, student_no: num, class: room,
+    phase, date, ...rows
+  };
+
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `F3_${phase}_${name}_${room}.json`;
+    a.click();
+    showStatus('success','💾 บันทึก .json เรียบร้อย (ยังไม่ได้ตั้งค่า API URL)');
+    return;
+  }
+
+  document.getElementById('submitBtn').disabled = true;
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งคำตอบสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ กรุณาลองใหม่'))
+    .finally(()=>document.getElementById('submitBtn').disabled=false);
+}
+
+function showStatus(type,msg){
+  const el=document.getElementById('status');
+  el.className='status '+type; el.textContent=msg;
+  setTimeout(()=>{if(type!=='success'&&type!=='error'){}},5000);
+}
+
+// Set default date
+document.getElementById('test_date').value = new Date().toISOString().slice(0,10);
+
+// Check config
+if(API_URL.includes('YOUR_APPS_SCRIPT')){
+  document.getElementById('configWarn').classList.add('show');
+}
+</script>
+</body></html>

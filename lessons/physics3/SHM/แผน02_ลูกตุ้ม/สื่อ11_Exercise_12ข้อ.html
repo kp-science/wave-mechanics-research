@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>แบบฝึกหัด · ลูกตุ้มอย่างง่าย (SHM แผน 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:23px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ccfbf1;border-left:6px solid #0d9488;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.15)}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:16px 0;background:#fdfffd}
+.item .no{display:inline-block;background:#0d9488;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.item .skill.calc{background:#dcfce7;color:#166534}
+.item .skill.theory{background:#fde68a;color:#78350f}
+.item .skill.appli{background:#bae6fd;color:#075985}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#115e59}
+.sub{margin:10px 0 8px;padding-left:12px;border-left:3px solid #5eead4}
+.sub b{color:#115e59}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:4px}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:#fff8}
+select.ans-in{border:1.5px solid #5eead4;border-radius:6px;padding:6px 10px;font-family:inherit;font-size:14px;background:#fff;width:auto;min-width:140px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14.5px;padding:5px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;transition:all .15s}
+.opt:hover{border-color:#0d9488;background:#f0fdfa}
+.opt input{margin-top:3px;flex-shrink:0}
+.opt:has(input:checked){background:#ccfbf1;border-color:#0d9488;font-weight:600}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px}
+@media(max-width:760px){.checkbox-bank{grid-template-columns:1fr}}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f0fdfa 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 24px,#f0fdfa 25px),repeating-linear-gradient(to bottom,#fff 0,#fff 24px,#f0fdfa 25px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.dd-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:10px}
+@media(max-width:760px){.dd-wrap{grid-template-columns:1fr}}
+.dd-pool{background:#fff8e1;border:2px dashed #f9a825;border-radius:10px;padding:10px;min-height:80px;grid-column:1/-1}
+.dd-pool-title{font-weight:700;color:#7a5800;font-size:13px;margin-bottom:6px}
+.dd-zone{background:#f0fdf4;border:2px dashed #86efac;border-radius:10px;padding:10px;min-height:100px}
+.dd-zone.mid{background:#fff3e0;border-color:#ffcc80}
+.dd-zone.no{background:#fff1f2;border-color:#fecaca}
+.dd-zone-title{font-weight:700;font-size:14px;margin-bottom:6px;color:#166534}
+.dd-zone.mid .dd-zone-title{color:#c05621}
+.dd-zone.no .dd-zone-title{color:#991b1b}
+.dd-item{display:inline-block;background:#fff;border:1.5px solid #5eead4;border-radius:8px;padding:6px 12px;margin:4px;cursor:grab;font-size:14px;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dd-item:active{cursor:grabbing;opacity:.6}
+.dd-item.placed{border-color:#0d9488}
+.match-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0}
+.match-side{background:#fff;border:1.5px solid #5eead4;border-radius:8px;padding:8px 12px;font-size:14px}
+.match-side.left{background:#ccfbf1;font-weight:600;color:#115e59}
+.match-side.right select{border:none;width:100%;background:transparent;font-family:inherit;font-size:14px;outline:none}
+.submit-bar{background:linear-gradient(135deg,#115e59,#0d9488);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#115e59;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-exercise">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 แบบฝึกหัด · ลูกตุ้มอย่างง่าย (T = 2π√(l/g))</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag">12 ข้อ · 70 นาที</span> Mixed Methods · ส่งออนไลน์ได้</div>
+    </div>
+    <div class="meta" style="color:#115e59;font-weight:700">💾 ทำเสร็จกดปุ่ม "ส่งคำตอบ" ด้านล่าง</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — เปิด <code>_SETUP_AppsScript_Database.html</code></div>
+
+  <div class="info"><b>วิธีทำ:</b> (ก) คำนวณ → วาดวิธีคิดบน canvas · (ข) ทฤษฎี → ติ๊ก/เลือก/ลากวาง · (ค) เติมคำตอบ · <b>เกณฑ์:</b> ถูก ≥ 8/12 · <b>Misconception:</b> M2.1–M2.4 · <b>K:</b> K2.1, K2.2 · <b>P:</b> P2.2</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="exForm">
+
+  <!-- ข้อ 1 Drag-Drop ปัจจัย -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="skill theory">Drag-Drop · จำแนกปัจจัย (K2.1 · M2.1/M2.2)</span></div>
+    <div class="stem">ลากปัจจัย 10 ข้อไปวางในกล่องที่ถูกต้อง ว่า "ส่งผลต่อ T" / "ส่งผลบางกรณี" / "ไม่ส่งผล"</div>
+    <div class="dd-wrap">
+      <div class="dd-pool">
+        <div class="dd-pool-title">🔄 ลากจากที่นี่ → ไปวางในกล่องด้านล่าง</div>
+        <div id="dd-pool-1">
+          <span class="dd-item" draggable="true" data-ans="yes">ความยาวเชือก l</span>
+          <span class="dd-item" draggable="true" data-ans="yes">ค่า g ของท้องที่</span>
+          <span class="dd-item" draggable="true" data-ans="no">มวลของลูกตุ้ม m</span>
+          <span class="dd-item" draggable="true" data-ans="mid">แอมพลิจูด (ถ้ามุมใหญ่ &gt; 15°)</span>
+          <span class="dd-item" draggable="true" data-ans="no">แอมพลิจูด (ที่มุมเล็ก ≤ 15°)</span>
+          <span class="dd-item" draggable="true" data-ans="no">ขนาด/รูปทรงของวัตถุ (ถ้า l ไม่เปลี่ยน)</span>
+          <span class="dd-item" draggable="true" data-ans="yes">การเร่งของกรอบอ้างอิง (เช่น ลิฟต์)</span>
+          <span class="dd-item" draggable="true" data-ans="no">ชนิดของวัสดุเชือก (ถ้าไม่ยืด)</span>
+          <span class="dd-item" draggable="true" data-ans="mid">อุณหภูมิ (ผ่านการขยายตัวของเชือก)</span>
+          <span class="dd-item" draggable="true" data-ans="no">สีของลูกตุ้ม</span>
+        </div>
+      </div>
+      <div class="dd-zone" data-zone="yes"><div class="dd-zone-title">✅ ส่งผลต่อ T</div><div class="dd-drop" data-zone="yes"></div></div>
+      <div class="dd-zone mid" data-zone="mid"><div class="dd-zone-title">⚠️ บางกรณี</div><div class="dd-drop" data-zone="mid"></div></div>
+      <div class="dd-zone no" data-zone="no"><div class="dd-zone-title">❌ ไม่ส่งผล</div><div class="dd-drop" data-zone="no"></div></div>
+    </div>
+    <div class="hint">💡 แตะที่ชิปเพื่อย้าย (มือถือ) · ลากได้บน desktop</div>
+  </div>
+
+  <!-- ข้อ 2 Checkbox bank ข้อเท็จจริง -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="skill theory">Checkbox Bank · ข้อเท็จจริง (K2.1, K2.2)</span></div>
+    <div class="stem">ติ๊ก ✔ ทุกข้อที่ <b>ถูกต้อง</b> เกี่ยวกับลูกตุ้มอย่างง่าย · <span style="color:#c53030">ถูก 5 · ลวง 5</span></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q2" value="a" data-correct="true"> ① T = 2π√(l/g) ไม่มี m ในสูตร</label>
+      <label class="opt"><input type="checkbox" name="q2" value="b" data-correct="false"> ② T ∝ m · มวลเพิ่ม T เพิ่ม</label>
+      <label class="opt"><input type="checkbox" name="q2" value="c" data-correct="true"> ③ T ∝ √l · l × 4 → T × 2</label>
+      <label class="opt"><input type="checkbox" name="q2" value="d" data-correct="false"> ④ T ∝ l เชิงเส้น · l × 4 → T × 4</label>
+      <label class="opt"><input type="checkbox" name="q2" value="e" data-correct="true"> ⑤ เงื่อนไข SHM ของลูกตุ้มคือ θ ≤ 15° (sin θ ≈ θ)</label>
+      <label class="opt"><input type="checkbox" name="q2" value="f" data-correct="false"> ⑥ ที่มุมใหญ่ T ยังคำนวณด้วย T = 2π√(l/g) ได้ตรง</label>
+      <label class="opt"><input type="checkbox" name="q2" value="g" data-correct="true"> ⑦ ลูกตุ้มบนดวงจันทร์ (g น้อยกว่า) T ยาวกว่าบนโลก</label>
+      <label class="opt"><input type="checkbox" name="q2" value="h" data-correct="false"> ⑧ ลูกตุ้มบนดวงจันทร์ T สั้นกว่าเพราะแรงโน้มถ่วงน้อย</label>
+      <label class="opt"><input type="checkbox" name="q2" value="i" data-correct="true"> ⑨ กราฟ T² vs l เป็นเส้นตรงผ่าน (0,0) · ความชัน = 4π²/g</label>
+      <label class="opt"><input type="checkbox" name="q2" value="j" data-correct="false"> ⑩ กราฟ T vs l เท่านั้นที่เป็นเส้นตรง</label>
+    </div>
+  </div>
+
+  <!-- ข้อ 3 Calc T บนดาวอื่น -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="skill calc">คำนวณ · Canvas (K2.2 · P2.2)</span></div>
+    <div class="stem">ลูกตุ้มเชือก <b>l = 0.6 m</b> · ใช้ g = 9.8 m/s² (K2.2)</div>
+    <div class="sub"><b>(3.1)</b> T = <input class="ans-in" id="q3-t"> s · f = <input class="ans-in" id="q3-f"> Hz · ω = <input class="ans-in" id="q3-w"> rad/s</div>
+    <div class="sub"><b>(3.2)</b> ถ้านำไปดาวอังคาร (g = 3.7 m/s²) · T ใหม่ = <input class="ans-in" id="q3-tm"> s</div>
+    <div class="sub"><b>(3.3) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c3','#0d9488',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c3','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="980" height="280"></canvas>
+  </div>
+
+  <!-- ข้อ 4 หา l -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="skill calc">คำนวณ + Dropdown · (K2.1)</span></div>
+    <div class="stem">ต้องการให้ลูกตุ้มมีคาบ T = 1.0 s พอดี ที่ g = 9.8 m/s² (K2.1)</div>
+    <div class="sub"><b>(4.1)</b> ต้องใช้เชือกยาว l = <input class="ans-in" id="q4-l"> m</div>
+    <div class="sub"><b>(4.2)</b> ถ้าเปลี่ยน g เป็น 9.8 × 4 = 39.2 m/s² (สมมติ) · T จะเปลี่ยนเป็น
+      <select class="ans-in" id="q4-Trate"><option value="">--</option><option value="2">2 เท่า</option><option value="0.5">0.5 เท่า</option><option value="4">4 เท่า</option><option value="0.25">0.25 เท่า</option></select>
+    </div>
+    <div class="sub"><b>(4.3)</b> ถ้าทั้ง l และ g เพิ่ม 4 เท่าพร้อมกัน · T จะ
+      <select class="ans-in" id="q4-both" style="min-width:180px"><option value="">--</option><option value="same">เท่าเดิม</option><option value="2x">เพิ่ม 2 เท่า</option><option value="4x">เพิ่ม 4 เท่า</option><option value="half">ลดครึ่ง</option></select>
+    </div>
+    <div class="sub"><b>(4.4) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb4p" onclick="setTool('c4','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb4e" onclick="setTool('c4','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c4','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c4" data-bg="lined" width="980" height="240"></canvas>
+  </div>
+
+  <!-- ข้อ 5 รอบ Calc -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span> <span class="skill calc">คำนวณ · Canvas (P2.2)</span></div>
+    <div class="stem">ลูกตุ้มยาว l = 2.45 m · ใน 5 นาทีแกว่งครบกี่รอบ? (ใช้ g = 9.8 m/s²) (K2.2)</div>
+    <div class="sub"><b>(5.1)</b> T = <input class="ans-in" id="q5-t"> s · f = <input class="ans-in" id="q5-f"> Hz · N รอบ = <input class="ans-in" id="q5-n"> รอบ</div>
+    <div class="sub"><b>(5.2) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb5p" onclick="setTool('c5','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb5e" onclick="setTool('c5','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c5','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c5" data-bg="lined" width="980" height="260"></canvas>
+  </div>
+
+  <!-- ข้อ 6 Match -->
+  <div class="item">
+    <div><span class="no">ข้อ 6</span> <span class="skill theory">จับคู่ (Dropdown) · K2.1/K2.2</span></div>
+    <div class="stem">จับคู่สถานการณ์กับผลที่เกิดกับคาบ T (เทียบกับเดิม)</div>
+    <div class="match-row"><div class="match-side left">🅰️ เปลี่ยนมวลเป็น 2 เท่า (l, g คงที่)</div><div>↔</div><div class="match-side right"><select name="q6-a"><option value="">-- เลือก --</option><option value="1">T เพิ่ม 2 เท่า</option><option value="2">T ลดครึ่ง</option><option value="3">T เท่าเดิม</option><option value="4">T เพิ่ม √2 เท่า</option><option value="5">T ลด √2 เท่า</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅱️ เพิ่ม l เป็น 2 เท่า (m, g คงที่)</div><div>↔</div><div class="match-side right"><select name="q6-b"><option value="">-- เลือก --</option><option value="1">T เพิ่ม 2 เท่า</option><option value="2">T ลดครึ่ง</option><option value="3">T เท่าเดิม</option><option value="4">T เพิ่ม √2 เท่า</option><option value="5">T ลด √2 เท่า</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅲️ ย้ายไปที่ g = 2g (l, m คงที่)</div><div>↔</div><div class="match-side right"><select name="q6-c"><option value="">-- เลือก --</option><option value="1">T เพิ่ม 2 เท่า</option><option value="2">T ลดครึ่ง</option><option value="3">T เท่าเดิม</option><option value="4">T เพิ่ม √2 เท่า</option><option value="5">T ลด √2 เท่า</option></select></div></div>
+    <div class="match-row"><div class="match-side left">🅳️ เพิ่มแอมพลิจูด 2 เท่า (ยังอยู่ในมุมเล็ก)</div><div>↔</div><div class="match-side right"><select name="q6-d"><option value="">-- เลือก --</option><option value="1">T เพิ่ม 2 เท่า</option><option value="2">T ลดครึ่ง</option><option value="3">T เท่าเดิม</option><option value="4">T เพิ่ม √2 เท่า</option><option value="5">T ลด √2 เท่า</option></select></div></div>
+  </div>
+
+  <!-- ข้อ 7 ตัวแปรในสูตร -->
+  <div class="item">
+    <div><span class="no">ข้อ 7</span> <span class="skill theory">ระบุตัวแปร (Dropdown · K2.1)</span></div>
+    <div class="stem">ในสูตร <b style="color:#115e59">T = 2π√(l/g)</b> · ระบุความหมายของแต่ละตัวแปร</div>
+    <div class="sub"><b>T</b>
+      <select class="ans-in" style="min-width:260px"><option value="">--</option><option value="1">คาบ (เวลา 1 รอบสมบูรณ์ · หน่วย s)</option><option value="2">ความถี่ (หน่วย Hz)</option><option value="3">ความเร็วเชิงมุม</option><option value="4">อุณหภูมิ</option></select>
+    </div>
+    <div class="sub"><b>l</b>
+      <select class="ans-in" style="min-width:260px"><option value="">--</option><option value="1">ความยาวเชือก (จากจุดแขวนถึงจุดศูนย์กลางมวล · หน่วย m)</option><option value="2">ระยะทางที่ลูกตุ้มเดินในหนึ่งรอบ</option><option value="3">แอมพลิจูดการแกว่ง</option><option value="4">ความยาวคลื่น</option></select>
+    </div>
+    <div class="sub"><b>g</b>
+      <select class="ans-in" style="min-width:260px"><option value="">--</option><option value="1">ค่าความเร่งเนื่องจากแรงโน้มถ่วงของท้องที่ (m/s²)</option><option value="2">ค่าคงที่สปริง</option><option value="3">พลังงานศักย์</option><option value="4">มวลของโลก</option></select>
+    </div>
+    <div class="sub"><b>เครื่องหมาย √ (ราก)</b> บอกว่า
+      <select class="ans-in" style="min-width:300px"><option value="">--</option><option value="1">T แปรผันกับ l แบบกรณฑ์ (l × 4 → T × 2 ไม่ใช่ × 4)</option><option value="2">T แปรผันตรงกับ l</option><option value="3">l แปรผันกับ T²</option><option value="4">ต้องยกกำลังสองทั้งสองข้าง</option></select>
+    </div>
+  </div>
+
+  <!-- ข้อ 8 กราฟ T² vs l -->
+  <div class="item">
+    <div><span class="no">ข้อ 8</span> <span class="skill theory">อ่าน/วาดกราฟ (P2.2)</span></div>
+    <div class="stem">กราฟ <b>T² vs l</b> ของลูกตุ้มอย่างง่ายเป็นอย่างไร?</div>
+    <label class="opt"><input type="radio" name="q8" value="a"> ① เส้นโค้ง parabola เปิดขึ้น ผ่าน (0,0)</label>
+    <label class="opt"><input type="radio" name="q8" value="b"> ② เส้นตรงผ่าน (0,0) ความชัน = 4π²/g</label>
+    <label class="opt"><input type="radio" name="q8" value="c"> ③ เส้นตรงไม่ผ่านจุดกำเนิด · ตัดแกน y ที่ 2π²</label>
+    <label class="opt"><input type="radio" name="q8" value="d"> ④ เส้นตรงผ่าน (0,0) ความชัน = g/(4π²)</label>
+    <label class="opt"><input type="radio" name="q8" value="e"> ⑤ เส้นกรณฑ์ (y ∝ √x)</label>
+    <div class="sub"><b>(8.2)</b> ถ้าทดลองได้ความชันกราฟ T² vs l = 4.02 s²/m · คำนวณ g = <input class="ans-in" id="q8-g"> m/s² · %error จาก 9.8 = <input class="ans-in" id="q8-e" style="width:70px"> %</div>
+    <div class="sub"><b>(8.3)</b> วาดกราฟ T² vs l (ใช้ข้อมูลตัวอย่าง: l = 0.25, 0.5, 1.0 · T² ≈ 1.0, 2.0, 4.0) บนกระดาษกราฟ:</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb8p" onclick="setTool('c8','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb8e" onclick="setTool('c8','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c8','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c8','#0d9488',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c8','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c8')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c8" data-bg="grid" width="980" height="320"></canvas>
+  </div>
+
+  <!-- ข้อ 9 อัตราเปลี่ยนแปลง -->
+  <div class="item">
+    <div><span class="no">ข้อ 9</span> <span class="skill calc">คำนวณ · Canvas (P2.2)</span></div>
+    <div class="stem">นาฬิกาลูกตุ้มเดินตรงตอนฤดูหนาว · ตอนฤดูร้อนเชือกยืดขึ้น 0.04% · จงหา (K2.2)</div>
+    <div class="sub"><b>(9.1)</b> ΔT/T ≈ <input class="ans-in" id="q9-dt"> % <span class="hint">(สูตร ΔT/T ≈ ½ Δl/l)</span></div>
+    <div class="sub"><b>(9.2)</b> ใน 1 วัน (86400 s) นาฬิกาจะ<select id="q9-fs" style="padding:4px 8px;border:1.5px solid #5eead4;border-radius:6px"><option value="">--</option><option value="slow">เดินช้า</option><option value="fast">เดินเร็ว</option></select> ประมาณ <input class="ans-in" id="q9-s"> วินาที</div>
+    <div class="sub"><b>(9.3) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb9p" onclick="setTool('c9','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb9e" onclick="setTool('c9','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c9','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c9','#0d9488',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c9')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c9" data-bg="lined" width="980" height="240"></canvas>
+  </div>
+
+  <!-- ข้อ 10 Spot Error -->
+  <div class="item">
+    <div><span class="no">ข้อ 10</span> <span class="skill theory">Spot the Error + Checkbox (M2.1–M2.4)</span></div>
+    <div class="stem">ข้อความต่อไปนี้มีส่วนที่ "ผิด":<br><em style="color:#b91c1c;background:#fee2e2;padding:4px 10px;border-radius:6px;display:inline-block;margin-top:4px">"ลูกตุ้มหนัก 3 kg ยาว 1 m แกว่งที่มุม 60° · T = 2π√(l/g) = 2.0 s · และถ้าเพิ่มแอมพลิจูด T จะใหญ่ขึ้นตามสัดส่วน"</em></div>
+    <div class="sub"><b>(10.1)</b> ติ๊ก ✔ ข้อที่เป็น "จุดผิด" ในข้อความนี้ (ถูก 3 · ลวง 3)</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q10" value="a" data-correct="true"> ① ที่มุม 60° ไม่ใช่ SHM แท้ สูตร T = 2π√(l/g) ไม่แม่น (error ~7%)</label>
+      <label class="opt"><input type="checkbox" name="q10" value="b" data-correct="false"> ② การระบุมวล 3 kg เป็นข้อผิด (ลูกตุ้มเบาเท่านั้นที่เป็น SHM)</label>
+      <label class="opt"><input type="checkbox" name="q10" value="c" data-correct="true"> ③ "เพิ่มแอมพลิจูด T ใหญ่ตามสัดส่วน" ผิด · ที่มุมเล็ก T ไม่ขึ้นกับ A</label>
+      <label class="opt"><input type="checkbox" name="q10" value="d" data-correct="false"> ④ การใช้ l = 1 m ให้ T = 2.0 s ผิด · ที่จริง T ≈ 2.01 s</label>
+      <label class="opt"><input type="checkbox" name="q10" value="e" data-correct="true"> ⑤ "T ใหญ่ตามแอมพลิจูด" เป็น M2.2 · ต้องแก้ว่า isochronism</label>
+      <label class="opt"><input type="checkbox" name="q10" value="f" data-correct="false"> ⑥ T = 2π√(l/g) = 2.0 s เมื่อ g = π² ≈ 9.87 ซึ่งผิด ต้อง 9.8</label>
+    </div>
+    <div class="sub"><b>(10.2)</b> เขียนข้อความที่ถูกต้อง (เงื่อนไขมุมเล็ก + T ไม่ขึ้นกับ m, A):</div>
+    <textarea class="ans-ta" id="q10-correct" rows="3" placeholder="ที่ถูก: ลูกตุ้มยาว 1 m · ที่มุมเล็ก (≤15°) ใช้ T = 2π√(l/g) ได้ = 2.006 s · T ไม่ขึ้นกับมวลและไม่ขึ้นกับแอมพลิจูด · ถ้ามุมใหญ่ 60° สูตรไม่แม่น ต้องใช้วิธี elliptic integral"></textarea>
+  </div>
+
+  <!-- ข้อ 11 SHM ในชีวิต (Checkbox Bank) -->
+  <div class="item">
+    <div><span class="no">ข้อ 11</span> <span class="skill appli">ประยุกต์ · Checkbox Bank (M2.1)</span></div>
+    <div class="stem">ติ๊ก ✔ สถานการณ์ที่<b>สามารถจำลองด้วยสูตร T = 2π√(l/g)</b> ของลูกตุ้มอย่างง่ายได้ (ถูก 5 · ไม่ 5)</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q11" value="a" data-correct="true"> ① ลูกตุ้มนาฬิกา Huygens (มุมเล็ก)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="b" data-correct="false"> ② ลูกตุ้มแกว่ง 60° (มุมใหญ่)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="c" data-correct="true"> ③ เมโทรนอม (มุมเล็ก ≤10°)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="d" data-correct="false"> ④ ล้อจักรยานหมุน</label>
+      <label class="opt"><input type="checkbox" name="q11" value="e" data-correct="true"> ⑤ ชิงช้าเด็ก (แกว่งมุมเล็ก)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="f" data-correct="false"> ⑥ ลูกตุ้ม Conical (หมุนเป็นกรวย)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="g" data-correct="true"> ⑦ Foucault Pendulum (มุมเล็ก · เชือกยาวมาก)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="h" data-correct="false"> ⑧ มวลเด้งบนสปริงแนวดิ่ง (ใช้ T = 2π√(m/k) แทน)</label>
+      <label class="opt"><input type="checkbox" name="q11" value="i" data-correct="true"> ⑨ ลูกตุ้มวัด g ในห้องปฏิบัติการ ม.ปลาย</label>
+      <label class="opt"><input type="checkbox" name="q11" value="j" data-correct="false"> ⑩ ส้อมเสียงสั่น</label>
+    </div>
+    <div class="hint">💡 Hint: ต้องเป็น "ลูกตุ้มอย่างง่าย + มุมเล็ก" ถึงใช้สูตรนี้ได้ตรง</div>
+  </div>
+
+  <!-- ข้อ 12 Challenge ลิฟต์ + FBD -->
+  <div class="item">
+    <div><span class="no">ข้อ 12</span> <span class="skill appli">ประยุกต์ Challenge · Canvas + อธิบาย</span></div>
+    <div class="stem">🏆 ลูกตุ้มเชือก l = 1.0 m อยู่ในลิฟต์ที่เร่งขึ้นด้วย a = 2.0 m/s² · ใช้ g = 9.8 m/s² (K2.2)</div>
+    <div class="sub"><b>(12.1)</b> g_eff ที่ลูกตุ้มรู้สึก =
+      <select class="ans-in" id="q12-geff" style="min-width:180px" data-correct="1"><option value="">--</option><option value="1">g + a = 11.8</option><option value="2">g − a = 7.8</option><option value="3">g × a = 19.6</option><option value="4">g เท่าเดิม (ลิฟต์ไม่ส่งผล)</option></select> m/s²
+    </div>
+    <div class="sub"><b>(12.2)</b> T ใหม่ในลิฟต์ = <input class="ans-in" id="q12-T"> s · (เทียบกับบนพื้นที่ T_ground = 2.006 s)</div>
+    <div class="sub"><b>(12.3)</b> นาฬิกาลูกตุ้มในลิฟต์จะ<select class="ans-in" id="q12-speed" style="min-width:160px"><option value="">--</option><option value="fast">เดินเร็วขึ้น</option><option value="slow">เดินช้าลง</option><option value="same">เดินตรงเท่าเดิม</option></select></div>
+    <div class="sub"><b>(12.4) วาด FBD ของลูกตุ้มในลิฟต์ + คำนวณ บน canvas:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb12p" onclick="setTool('c12','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb12e" onclick="setTool('c12','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c12','#1a202c',this)"></div>
+      <div class="c-color" style="background:#0d9488" onclick="setColor('c12','#0d9488',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('c12','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c12')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c12" data-bg="grid" width="980" height="300"></canvas>
+    <div class="sub"><b>(12.5) สรุปคำอธิบาย:</b></div>
+    <textarea class="ans-ta" id="q12-exp" rows="3" placeholder="ในกรอบอ้างอิงที่เร่งขึ้น แรงเสมือน −ma เพิ่มเข้าไปในแรงโน้มถ่วง → g_eff = g + a..."></textarea>
+    <div class="sub"><b>(12.6) ✅ ติ๊กหลักการที่ถูกต้อง:</b></div>
+    <label class="opt"><input type="checkbox" name="q12" value="a" data-correct="true"> (ก) ลิฟต์เร่งขึ้น → แรงเสมือนเพิ่ม g_eff → T ลดลง (เดินเร็วขึ้น)</label>
+    <label class="opt"><input type="checkbox" name="q12" value="b" data-correct="true"> (ข) ลิฟต์เร่งลง → g_eff ลด → T เพิ่ม (เดินช้าลง)</label>
+    <label class="opt"><input type="checkbox" name="q12" value="c" data-correct="false"> (ค) ลิฟต์เร่งขึ้นทำให้ m เพิ่ม → T เพิ่ม (เดินช้า)</label>
+    <label class="opt"><input type="checkbox" name="q12" value="d" data-correct="false"> (ง) การเคลื่อนที่ของลิฟต์ไม่มีผลต่อ T ของลูกตุ้ม</label>
+    <label class="opt"><input type="checkbox" name="q12" value="e" data-correct="true"> (จ) ถ้าลิฟต์ตกอย่างอิสระ (a = g) → g_eff = 0 → ลูกตุ้มไม่แกว่ง (T → ∞)</label>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <h3>✅ ทำครบ 12 ข้อแล้ว กดส่งคำตอบ</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+
+  <div class="foot">แบบฝึกหัด 12 ข้อ · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='lined'||c.dataset.bg==='grid';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function drawAxes(id){const c=document.getElementById(id);if(!c||c.dataset.bg!=='grid')return;const ctx=c.getContext('2d');const w=c.width,h=c.height;ctx.save();ctx.strokeStyle='#64748b';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(40,h-30);ctx.lineTo(w-20,h-30);ctx.moveTo(40,20);ctx.lineTo(40,h-30);ctx.stroke();ctx.fillStyle='#115e59';ctx.font='700 13px Sarabun';ctx.fillText('y',10,18);ctx.fillText('x',w-18,h-10);ctx.fillText('0',28,h-14);ctx.restore();}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}drawAxes(id);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas[data-bg="grid"]').forEach(c=>{initCanvas(c.id);drawAxes(c.id);});initDragDrop();document.getElementById('test_date').value=new Date().toISOString().split('T')[0];if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}});
+
+// Drag-Drop (3 zones)
+function initDragDrop(){
+  document.querySelectorAll('.dd-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',e.target.textContent);e.target.classList.add('dragging');window._draggingEl=e.target;});
+    item.addEventListener('dragend',e=>{e.target.classList.remove('dragging');});
+  });
+  document.querySelectorAll('.dd-drop, #dd-pool-1').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();});
+    zone.addEventListener('drop',e=>{e.preventDefault();if(window._draggingEl){zone.appendChild(window._draggingEl);window._draggingEl.classList.add('placed');window._draggingEl=null;}});
+  });
+  // Mobile click cycle: pool → yes → mid → no → pool
+  const cycle=['pool','yes','mid','no'];
+  document.querySelectorAll('.dd-item').forEach(item=>{
+    item.addEventListener('click',e=>{
+      const cur=item.parentElement;let idx=-1;
+      if(cur.id==='dd-pool-1')idx=0;else if(cur.dataset.zone==='yes')idx=1;else if(cur.dataset.zone==='mid')idx=2;else if(cur.dataset.zone==='no')idx=3;
+      const nextIdx=(idx+1)%4;let next;
+      if(nextIdx===0)next=document.getElementById('dd-pool-1');else next=document.querySelector(`.dd-drop[data-zone="${cycle[nextIdx]}"]`);
+      if(next){next.appendChild(item);item.classList.add('placed');}
+    });
+  });
+}
+
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='Exercise_SHM_Plan2';
+
+function collectAnswers(){
+  const ans={};
+  // ข้อ 1 drag-drop 3 zones
+  let q1score=0,q1max=10;
+  ['yes','mid','no'].forEach(z=>{const zone=document.querySelector(`.dd-drop[data-zone="${z}"]`);if(zone){ans['q1_'+z]=Array.from(zone.querySelectorAll('.dd-item')).map(e=>{if(e.dataset.ans===z)q1score++;return e.textContent;});}});
+  ans.q1_score=q1score+'/'+q1max;
+  // ข้อ 2, 10, 11, 12 · checkbox
+  ['q2','q10','q11','q12'].forEach(q=>{
+    let score=0,max=0;
+    document.querySelectorAll(`input[name="${q}"]`).forEach(cb=>{max++;const correct=cb.dataset.correct==='true';if(correct===cb.checked)score++;});
+    ans[q+'_sel']=Array.from(document.querySelectorAll(`input[name="${q}"]:checked`)).map(c=>c.value);
+    ans[q+'_score']=score+'/'+max;
+  });
+  // ข้อ 3, 4, 5, 9, 12 calc inputs
+  ['q3-t','q3-f','q3-w','q3-tm','q4-l','q4-Trate','q4-both','q5-t','q5-f','q5-n','q8-g','q8-e','q9-dt','q9-fs','q9-s','q12-geff','q12-T','q12-speed'].forEach(id=>{const el=document.getElementById(id);if(el)ans[id]=el.value;});
+  // ข้อ 6 match
+  ['q6-a','q6-b','q6-c','q6-d'].forEach(n=>{const el=document.querySelector(`select[name="${n}"]`);if(el)ans[n]=el.value;});
+  // ข้อ 7 dropdowns (all 4 selects in item 7)
+  const item7=document.querySelectorAll('.item')[6];if(item7){item7.querySelectorAll('select').forEach((s,j)=>{ans['q7-'+j]=s.value;});}
+  // ข้อ 8 radio
+  const q8=document.querySelector('input[name="q8"]:checked');ans.q8=q8?q8.value:'';
+  // text
+  ans.q10_correct=document.getElementById('q10-correct').value;
+  ans.q12_exp=document.getElementById('q12-exp').value;
+  // Canvas dataURL
+  ['c3','c4','c5','c8','c9','c12'].forEach(id=>{const c=document.getElementById(id);if(c){try{ans[id+'_img']=c.toDataURL('image/png');}catch(e){}}});
+  return ans;
+}
+
+document.getElementById('exForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();const date=document.getElementById('test_date').value;
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ ห้องก่อน';return;}
+  const answers=collectAnswers();
+  const payload={plan:'SHM-2',type:'Exercise-12',student_name:name,student_no:Number(no),class:cls,test_date:date,...answers};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){status.className='status error';status.innerHTML='⚠️ ครูยังไม่ได้ตั้งค่า API URL · <a href="#" onclick="downloadJSON();return false;" style="color:#115e59;text-decoration:underline">Download .json</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});
+    status.className='status success';status.innerHTML='✅ ส่งคำตอบสำเร็จ! 🎉';btn.textContent='✅ ส่งแล้ว';
+  }catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`Exercise_SHM2_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

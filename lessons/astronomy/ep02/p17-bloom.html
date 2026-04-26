@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P17 · Bloom 15 ข้อ</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .q-card { padding: 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; margin: 12px 0; }
+  .q-level { display: inline-block; padding: 3px 10px; font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 0.15em; border-radius: 100px; margin-bottom: 8px; }
+  .q-level.L1 { color: #7effb2; border: 1px solid #7effb2; }
+  .q-level.L2 { color: #64d8ff; border: 1px solid #64d8ff; }
+  .q-level.L3 { color: #ffcb6b; border: 1px solid #ffcb6b; }
+  .q-level.L4 { color: #ffa95c; border: 1px solid #ffa95c; }
+  .q-level.L5 { color: #ff5c7a; border: 1px solid #ff5c7a; }
+  .q-level.L6 { color: #b980ff; border: 1px solid #b980ff; }
+  .q-text { font-size: 15px; margin-bottom: 8px; }
+  .q-opts label { display: block; padding: 6px 10px; cursor: pointer; border-radius: 4px; }
+  .q-opts label:hover { background: rgba(100,216,255,0.06); }
+  .medal-bar { padding: 16px; background: rgba(255,203,107,0.06); border: 1px dashed var(--accent-gold); border-radius: 10px; margin: 14px 0; text-align: center; }
+  .medal-bar .mnum { font-family: 'Orbitron', sans-serif; font-size: 32px; color: var(--accent-gold); }
+  .streak-indicator { padding: 8px 14px; background: rgba(255,169,92,0.1); border: 1px solid rgba(255,169,92,0.4); border-radius: 100px; display: inline-block; font-family: monospace; color: #ffa95c; font-size: 13px; }
+</style>
+</head>
+<body data-page="p17" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 3 · Scene 17 · RESOLUTION 2 · BOSS RUSH</div>
+  <h1 class="page-title">Bloom 15 ข้อ · ไล่ 6 ระดับ</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K1-K4</span>
+  </div>
+
+  <div class="narrative">
+    <p>Dr.Hubble ส่งแบบฝึก 15 ข้อ · <b>Boss Rush mode</b> · ตอบถูกต่อเนื่องได้ combo</p>
+    <p>L1 จำ · L2 เข้าใจ · L3 ใช้ · L4 วิเคราะห์ · L5 ประเมิน · L6 สร้าง</p>
+  </div>
+
+  <div style="text-align:center"><span class="streak-indicator" id="streakInd">🔥 streak: 0 · ×1.0</span></div>
+
+  <div id="qList"></div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ ส่งทั้งหมด · รับ Medal</button>
+  <div class="medal-bar" id="medalBar" style="display:none">
+    <div class="mnum" id="medalText">🥉</div>
+    <div id="medalLabel" style="color:var(--text-dim)"></div>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P17 · บทบาท: facilitator + ใบ้ L5-L6</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "แบบฝึกจาก Dr.Hubble · 15 ข้อ · จากง่ายไปยาก"<br>
+      <b>ระหว่าง:</b> ใบ้เฉพาะ L5-L6 (ประเมิน/สร้าง) · L1-L4 ให้คิดเอง<br>
+      <b>ปิด:</b> "ครูดู profile · พวกเธอเก่งระดับไหน"<br>
+      Bronze 5-7 · Silver 8-11 · Gold 12+
+    </div>
+  </details>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); build(); }, 50);
+
+  const QUESTIONS = [
+    // L1 · remember (3)
+    { lv:'L1', q:'1 pc ≈ กี่ปีแสง?', opts:['1','3.26','10','100'], ans:1 },
+    { lv:'L1', q:'Edwin Hubble เสนอ classification ปีไหน?', opts:['1905','1926','1965','1998'], ans:1 },
+    { lv:'L1', q:'H₀ มีหน่วยอะไร?', opts:['km/s','Mpc','km/s/Mpc','ly'], ans:2 },
+    // L2 · understand (3)
+    { lv:'L2', q:'กาแล็กซีรูปไข่ E0 ต่าง E7 ที่จุดไหน?', opts:['สี','ความกลม','มวล','อายุ'], ans:1 },
+    { lv:'L2', q:'Sc แขนหลวมกว่า Sa หมายความว่า?', opts:['มวลน้อยกว่า','แขนกระจายกว่า','อายุน้อยกว่า','ไม่มีแขน'], ans:1 },
+    { lv:'L2', q:'Milky Way จัดอยู่ในประเภทใด?', opts:['E','SBbc','Irr','S0'], ans:1 },
+    // L3 · apply (3)
+    { lv:'L3', q:'v = 7,000 km/s · H₀=70 → D =?', opts:['50 Mpc','100 Mpc','200 Mpc','500 Mpc'], ans:1 },
+    { lv:'L3', q:'D = 200 Mpc · H₀=70 → v =?', opts:['7,000','14,000','70,000','140,000'], ans:1 },
+    { lv:'L3', q:'ระยะ 10 pc เทียบเป็น ly ≈?', opts:['3.26','10','32.6','100'], ans:2 },
+    // L4 · analyze (2)
+    { lv:'L4', q:'ถ้ากราฟความเร็วหมุนกาแล็กซีแบน (ไม่ลดลง) · สื่อว่า?', opts:['มวลกระจุกใจกลาง','มีมวลที่มองไม่เห็น','ไม่มีดาว','ทฤษฎีผิด'], ans:1 },
+    { lv:'L4', q:'Sun อยู่แขน Orion (26,000 ly จากศูนย์) · สรุปอะไรได้?', opts:['เราอยู่ศูนย์กลาง','เราอยู่ชานเมือง','เราอยู่ขอบจักรวาล','ไม่ได้อยู่ใน MW'], ans:1 },
+    // L5 · evaluate (2)
+    { lv:'L5', q:'คำกล่าว "parsec คือหน่วยเวลา" · ประเมินว่า?', opts:['ถูก','ผิด · เป็นระยะ','ถูกบางส่วน','วัดไม่ได้'], ans:1 },
+    { lv:'L5', q:'ถ้ามี 2 กาแล็กซี v ต่างกัน 10 เท่า · สรุปอะไรได้ดีที่สุด?', opts:['มวลต่างกัน','ระยะต่างกันประมาณ 10 เท่า','อายุต่างกัน','ชนิดต่างกัน'], ans:1 },
+    // L6 · create (2)
+    { lv:'L6', q:'ถ้าต้องออกแบบภารกิจวัดระยะกาแล็กซีใหม่ · จะใช้ข้อมูลอะไรเป็นหลัก?', opts:['สีกาแล็กซี','อุณหภูมิ','redshift + H₀','รูปร่าง'], ans:2 },
+    { lv:'L6', q:'ออกแบบการทดลองหักล้าง VOID (MW=เมฆ) · ทำอะไร?', opts:['สังเกตด้วยตาเปล่า','ถ่ายภาพ infrared + วัด rotation','ถามผู้ใหญ่','ไม่ได้'], ans:1 },
+  ];
+
+  function build() {
+    const host = document.getElementById('qList');
+    QUESTIONS.forEach((q, i) => {
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.innerHTML = `
+        <span class="q-level ${q.lv}">${q.lv}</span>
+        <div class="q-text"><b>${i+1}.</b> ${q.q}</div>
+        <div class="q-opts">
+          ${q.opts.map((o,j) => `<label><input type="radio" name="q${i}" value="${j}"> ${o}</label>`).join('')}
+        </div>
+      `;
+      host.appendChild(card);
+    });
+  }
+
+  function finishPage() {
+    let correct = 0, streak = 0, maxStreak = 0;
+    const levelScore = { L1:[0,0], L2:[0,0], L3:[0,0], L4:[0,0], L5:[0,0], L6:[0,0] };
+
+    QUESTIONS.forEach((q, i) => {
+      const chosen = document.querySelector(`input[name="q${i}"]:checked`);
+      const right = chosen && +chosen.value === q.ans;
+      levelScore[q.lv][1]++;
+      if (right) {
+        correct++;
+        levelScore[q.lv][0]++;
+        streak++;
+        maxStreak = Math.max(maxStreak, streak);
+        Obj.hit('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'p17' });
+      } else {
+        streak = 0;
+        Obj.miss('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'p17' });
+      }
+    });
+
+    // streak bonus
+    const streakBonus = Math.floor(maxStreak / 3) * 10;
+    Book.addEnergy(correct * 5 + streakBonus, 'bloom');
+
+    // medal
+    let medal = '', mlbl = '';
+    if (correct >= 12) { medal = '🥇'; mlbl = 'GOLD · ' + correct + '/15'; }
+    else if (correct >= 8) { medal = '🥈'; mlbl = 'SILVER · ' + correct + '/15'; }
+    else if (correct >= 5) { medal = '🥉'; mlbl = 'BRONZE · ' + correct + '/15'; }
+    else { medal = '📘'; mlbl = 'ยังฝึกได้อีก · ' + correct + '/15'; }
+
+    document.getElementById('streakInd').textContent = `🔥 max streak: ${maxStreak}`;
+    document.getElementById('medalBar').style.display = '';
+    document.getElementById('medalText').textContent = medal;
+    document.getElementById('medalLabel').textContent = mlbl + ` · streak bonus +${streakBonus}`;
+
+    Book.savePageData('p17', { correct, levelScore, maxStreak, medal });
+    Book.completePage('p17', {
+      score: correct, max: 15,
+      msg: `${medal} ${mlbl} · streak สูงสุด ${maxStreak} · bonus +${streakBonus}`
+    });
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว';
+  }
+</script>
+
+</body>
+</html>

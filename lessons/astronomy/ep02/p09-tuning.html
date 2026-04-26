@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P09 · Tuning Fork Lab</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .phase-tabs { display: flex; gap: 8px; margin: 16px 0; }
+  .phase-tab { padding: 8px 16px; background: var(--bg-card); border: 1px solid var(--border); color: var(--text-dim); border-radius: 100px; font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: 0.15em; }
+  .phase-tab.active { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(255,203,107,0.08); }
+  .phase-tab.done { border-color: var(--accent-green); color: var(--accent-green); }
+  .phase-body { padding: 16px; background: rgba(100,216,255,0.03); border: 1px dashed var(--border); border-radius: 10px; margin: 10px 0; }
+  .predict-row { display: flex; gap: 10px; margin: 6px 0; align-items: center; }
+  .predict-row select { padding: 6px 10px; background: rgba(3,4,12,0.5); border: 1px solid var(--border); color: var(--text); border-radius: 4px; font-family: inherit; }
+  .tf-pool { display: flex; gap: 8px; flex-wrap: wrap; padding: 14px; background: rgba(3,4,12,0.4); border: 1px dashed var(--border); border-radius: 10px; min-height: 60px; margin: 10px 0; justify-content: center; }
+  .tf-item { padding: 10px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; cursor: grab; user-select: none; font-size: 14px; font-family: 'Orbitron', sans-serif; letter-spacing: 0.08em; }
+  .tf-item.E { color: #ffcb6b; } .tf-item.S { color: #64d8ff; } .tf-item.SB { color: #b980ff; } .tf-item.Irr { color: #7effb2; }
+  .tf-item.dragging { opacity: 0.4; }
+
+  /* Y-shape Tuning Fork layout */
+  .tf-fork {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(3, 64px);
+    gap: 10px;
+    padding: 18px;
+    background: rgba(3,4,12,0.5);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    margin: 12px 0;
+    position: relative;
+  }
+  /* connector lines (E7 → Sa, E7 → SBa) */
+  .tf-fork::before, .tf-fork::after {
+    content: ''; position: absolute; border: 1px dashed rgba(100,216,255,0.35); pointer-events: none;
+  }
+  .tf-fork::before { left: 42%; top: 24%; width: 12%; height: 0; transform: rotate(-22deg); transform-origin: left center; }
+  .tf-fork::after  { left: 42%; top: 76%; width: 12%; height: 0; transform: rotate(22deg); transform-origin: left center; }
+
+  .tf-slot {
+    border: 1px dashed var(--border);
+    background: rgba(100,216,255,0.04);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 48px;
+    font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint);
+    transition: all 0.12s;
+  }
+  .tf-slot.over { border-color: var(--accent-gold); background: rgba(255,203,107,0.1); border-style: solid; }
+  .tf-slot.filled { border-style: solid; background: rgba(3,4,12,0.5); }
+  .tf-slot.filled .tf-item { margin: 0; cursor: grab; }
+  .tf-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.1); }
+  .tf-slot.wrong   { border-color: var(--accent-red);   background: rgba(255,92,122,0.1); }
+
+  .slot-hint { opacity: 0.4; font-size: 9px; }
+
+  /* Grid positions */
+  .pos-E0  { grid-column: 1; grid-row: 2; }
+  .pos-E5  { grid-column: 2; grid-row: 2; }
+  .pos-E7  { grid-column: 3; grid-row: 2; }
+  .pos-Sa  { grid-column: 4; grid-row: 1; }
+  .pos-Sb  { grid-column: 5; grid-row: 1; }
+  .pos-Sc  { grid-column: 6; grid-row: 1; }
+  .pos-SBa { grid-column: 4; grid-row: 3; }
+  .pos-SBb { grid-column: 5; grid-row: 3; }
+  .pos-SBc { grid-column: 6; grid-row: 3; }
+  .pos-Irr { grid-column: 7; grid-row: 2; }
+
+  .fork-label { position: absolute; font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 0.15em; color: var(--text-dim); pointer-events: none; }
+  .fork-label.stem  { top: 2px; left: 18px; color: #ffcb6b; }
+  .fork-label.top   { top: 2px; right: 30%; color: #64d8ff; }
+  .fork-label.bot   { bottom: 2px; right: 30%; color: #b980ff; }
+  .fork-label.irr   { top: 2px; right: 8px; color: #7effb2; }
+
+  @media (max-width: 640px) {
+    .tf-fork { grid-template-rows: repeat(3, 52px); gap: 6px; padding: 10px; }
+    .tf-slot { font-size: 9px; }
+  }
+</style>
+</head>
+<body data-page="p09" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 2 · Scene 9 · RISING ACTION 2 (หัวใจ EP02)</div>
+  <h1 class="page-title">Tuning Fork Lab</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K1 · จำแนก</span>
+    <span class="obj-tag p">P1 · สังเกต · P2 · ทำนาย</span>
+    <span class="obj-tag a">A1 · ทีม · A2 · ปกป้องความคิด</span>
+  </div>
+
+  <div class="narrative">
+    <p>Dr.Hubble วาง <b>10 ภาพกาแล็กซี</b> บนโต๊ะ · "เรียงจากรูปไข่ไปกังหัน · ทำ 3 เฟส"</p>
+    <div style="text-align:center;margin:14px 0">
+      <img src="./galaxy/hubbletuningfork2w_med.jpeg" alt="Hubble Tuning Fork diagram" style="max-width:100%;width:560px;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.4)">
+      <div style="font-size:11px;color:var(--text-faint);margin-top:6px">Hubble Tuning Fork diagram (1926)</div>
+    </div>
+  </div>
+
+  <div class="phase-tabs">
+    <div class="phase-tab active" data-phase="1">① BEFORE · ทำนาย</div>
+    <div class="phase-tab" data-phase="2">② ACTIVITY · เรียง</div>
+    <div class="phase-tab" data-phase="3">③ AFTER · Debate</div>
+  </div>
+
+  <!-- Phase 1 · Predict -->
+  <div class="phase-body" id="phase1">
+    <b>ก่อนเรียง · ทำนาย</b>
+    <div class="predict-row">
+      <span>1. ซ้ายสุดควรเป็นกาแล็กซีแบบ:</span>
+      <select id="pred1"><option value="">--</option><option value="E">รูปไข่</option><option value="S">กังหัน</option><option value="SB">กังหันมีคาน</option><option value="Irr">ไม่มีรูป</option></select>
+    </div>
+    <div class="predict-row">
+      <span>2. สีของกาแล็กซีรูปไข่ส่วนใหญ่:</span>
+      <select id="pred2"><option value="">--</option><option value="red" data-correct="1">ออกแดง</option><option value="blue">ออกฟ้า</option><option value="green">ออกเขียว</option></select>
+    </div>
+    <div class="predict-row">
+      <span>3. การสร้างดาวใหม่เกิดในแบบไหนมากกว่า:</span>
+      <select id="pred3"><option value="">--</option><option value="E">รูปไข่</option><option value="S" data-correct="1">กังหัน</option></select>
+    </div>
+    <button class="finish-btn" onclick="nextPhase(2)">ถัดไป → เรียง</button>
+  </div>
+
+  <!-- Phase 2 · Arrange tuning fork -->
+  <div class="phase-body" id="phase2" style="display:none">
+    <div id="betMount"></div>
+    <b>วางการ์ดลงในผัง Tuning Fork ให้ตรงตำแหน่ง</b>
+    <p style="color:var(--text-dim);font-size:12px;margin:6px 0">💡 Stem (รูปไข่): E0 → E5 → E7 · แขนบน (กังหัน): Sa → Sb → Sc · แขนล่าง (มีคาน): SBa → SBb → SBc · Irr แยกทางขวา</p>
+
+    <div class="tf-fork" id="tfFork">
+      <span class="fork-label stem">◀ STEM · E</span>
+      <span class="fork-label top">S (กังหัน) ▶</span>
+      <span class="fork-label bot">SB (มีคาน) ▶</span>
+      <span class="fork-label irr">Irr</span>
+      <div class="tf-slot pos-E0"  data-pos="E0"><span class="slot-hint">E0</span></div>
+      <div class="tf-slot pos-E5"  data-pos="E5"><span class="slot-hint">E5</span></div>
+      <div class="tf-slot pos-E7"  data-pos="E7"><span class="slot-hint">E7</span></div>
+      <div class="tf-slot pos-Sa"  data-pos="Sa"><span class="slot-hint">Sa</span></div>
+      <div class="tf-slot pos-Sb"  data-pos="Sb"><span class="slot-hint">Sb</span></div>
+      <div class="tf-slot pos-Sc"  data-pos="Sc"><span class="slot-hint">Sc</span></div>
+      <div class="tf-slot pos-SBa" data-pos="SBa"><span class="slot-hint">SBa</span></div>
+      <div class="tf-slot pos-SBb" data-pos="SBb"><span class="slot-hint">SBb</span></div>
+      <div class="tf-slot pos-SBc" data-pos="SBc"><span class="slot-hint">SBc</span></div>
+      <div class="tf-slot pos-Irr" data-pos="Irr"><span class="slot-hint">Irr</span></div>
+    </div>
+
+    <div style="font-size:12px;color:var(--text-dim);margin-top:10px">🃏 กองการ์ด · ลากไปวางในผัง (ดับเบิลคลิกการ์ดในผังเพื่อดึงกลับ)</div>
+    <div class="tf-pool" id="tfPool"></div>
+
+    <button class="finish-btn" onclick="checkArrange()">ตรวจผัง → Debate</button>
+  </div>
+
+  <!-- Phase 3 · Self-Defense Journal -->
+  <div class="phase-body" id="phase3" style="display:none">
+    <b>③ ปกป้องความคิด · เขียนบันทึก</b>
+    <p style="color:var(--text-dim);font-size:12px;margin:4px 0 10px">ไม่ต้องยืนนำเสนอ · เขียนสั้น ๆ เป็นบันทึกให้ตัวเอง/ครู · ช่องละ 1-2 ประโยค</p>
+
+    <div id="forkRecap" style="margin:10px 0;padding:10px;background:rgba(100,216,255,0.05);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-dim)"></div>
+
+    <div style="margin:14px 0">
+      <label style="display:block;margin-bottom:6px;font-weight:700">
+        ① ตำแหน่งไหนที่คุณ<span style="color:var(--accent-green)">มั่นใจที่สุด</span> · เพราะสังเกตเห็นอะไร?
+      </label>
+      <textarea id="j1" rows="3" style="width:100%;padding:10px;background:rgba(3,4,12,0.5);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:14px;resize:vertical" placeholder="เช่น · ผมมั่นใจว่า E0 อยู่ซ้ายสุด เพราะรูปกลมที่สุด ไม่มีแขน ไม่มีคาน..."></textarea>
+    </div>
+
+    <div style="margin:14px 0">
+      <label style="display:block;margin-bottom:6px;font-weight:700">
+        ② สมมติเพื่อนแย้งว่า <span style="color:var(--accent-red)">"Sa ควรอยู่แขนล่าง (คู่กับ SBa)"</span> · คุณจะตอบอย่างไร?
+      </label>
+      <textarea id="j2" rows="3" style="width:100%;padding:10px;background:rgba(3,4,12,0.5);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:14px;resize:vertical" placeholder="เช่น · ผมไม่เห็นด้วย เพราะ Sa ไม่มีแท่งคานตรงกลาง แต่ SBa มี..."></textarea>
+    </div>
+
+    <p style="font-size:11px;color:var(--text-faint)">💡 ครูอ่านบันทึกย้อนหลังได้จาก Teacher Panel · ไม่ต้องออกมานำเสนอ</p>
+    <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ บันทึก · จบ Lab</button>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P09 · บทบาท: คุม debate · ไม่เฉลย</summary>
+    <div class="tc-body">
+      <b>Phase 1 (3 นาที):</b> ทำนายก่อน · "ทำไมคิดแบบนั้น"<br>
+      <b>Phase 2 (8 นาที):</b> เรียง · ถามนำ "อะไรเปลี่ยนเมื่อเลื่อนจากซ้ายไปขวา"<br>
+      <b>Phase 3 (3 นาที):</b> Self-Defense Journal · เขียน 2 ข้อสั้น ๆ · ครูอ่านทีหลังใน Teacher Panel<br>
+      <b>⛔ ห้ามพูด:</b> "Hubble sequence" (รอ P10)<br>
+      <b>Item:</b> ทำนายถูก 2/3 → 🛡️ Shield · ถูกทั้ง 3 → Shield + 🔍 Lens reveal (ถ้ามี Lens จาก P04)
+    </div>
+  </details>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Game.mountBetPanel('#betMount', { page:'p09', qid:'tuning-fork' });
+  }, 50);
+
+  let predictScore = 0;
+  let arrangeCorrect = false;
+
+  function nextPhase(n) {
+    // score predictions
+    const p1 = document.getElementById('pred1').value === 'E' ? 1 : 0;
+    const p2 = document.getElementById('pred2').value === 'red' ? 1 : 0;
+    const p3 = document.getElementById('pred3').value === 'S' ? 1 : 0;
+    predictScore = p1 + p2 + p3;
+
+    document.querySelectorAll('.phase-tab').forEach(t => t.classList.toggle('done', +t.dataset.phase < n));
+    document.querySelectorAll('.phase-tab').forEach(t => t.classList.toggle('active', +t.dataset.phase === n));
+    ['phase1','phase2','phase3'].forEach((id,i) => document.getElementById(id).style.display = (i+1===n ? '' : 'none'));
+
+    if (predictScore >= 2) { Items.grant('shield', { from:'p09-predict' }); Book.addCoin(10, 'p09-predict-pass'); }
+    else if (predictScore >= 1) Book.addCoin(5, 'p09-predict-some');
+    Obj.hit('P2', { page:'p09' });
+    if (n === 2) buildTF();
+    if (n === 3) renderForkRecap();
+  }
+
+  /* ===== Tuning Fork drag/drop into Y-shape slots ===== */
+  const TF_CARDS = [
+    { id:'E0',  type:'E',   label:'E0' },
+    { id:'E5',  type:'E',   label:'E5' },
+    { id:'E7',  type:'E',   label:'E7' },
+    { id:'Sa',  type:'S',   label:'Sa' },
+    { id:'Sb',  type:'S',   label:'Sb' },
+    { id:'Sc',  type:'S',   label:'Sc' },
+    { id:'SBa', type:'SB',  label:'SBa' },
+    { id:'SBb', type:'SB',  label:'SBb' },
+    { id:'SBc', type:'SB',  label:'SBc' },
+    { id:'Irr', type:'Irr', label:'Irr' },
+  ];
+
+  function buildTF() {
+    const pool = document.getElementById('tfPool');
+    if (!pool || pool.dataset.built) return;
+    pool.dataset.built = '1';
+    const shuffled = [...TF_CARDS].sort(() => Math.random() - 0.5);
+    shuffled.forEach(c => pool.appendChild(makeCard(c)));
+
+    // Pool accepts returned cards
+    pool.addEventListener('dragover', e => e.preventDefault());
+    pool.addEventListener('drop', e => {
+      e.preventDefault();
+      const id = e.dataTransfer.getData('text');
+      const card = document.querySelector(`.tf-item[data-id="${id}"]`);
+      if (card) returnToPool(card);
+    });
+
+    document.querySelectorAll('.tf-slot').forEach(slot => {
+      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('over'); });
+      slot.addEventListener('dragleave', () => slot.classList.remove('over'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault(); slot.classList.remove('over');
+        const id = e.dataTransfer.getData('text');
+        const card = document.querySelector(`.tf-item[data-id="${id}"]`);
+        if (!card) return;
+        const existing = slot.querySelector('.tf-item');
+        if (existing) returnToPool(existing);
+        slot.innerHTML = '';
+        slot.appendChild(card);
+        slot.classList.add('filled');
+      });
+      slot.addEventListener('dblclick', () => {
+        const card = slot.querySelector('.tf-item');
+        if (card) returnToPool(card);
+      });
+    });
+  }
+
+  function makeCard(c) {
+    const el = document.createElement('div');
+    el.className = 'tf-item ' + c.type;
+    el.draggable = true;
+    el.dataset.id = c.id;
+    el.dataset.type = c.type;
+    el.textContent = c.label;
+    el.addEventListener('dragstart', e => { e.dataTransfer.setData('text', c.id); el.classList.add('dragging'); });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    return el;
+  }
+
+  function returnToPool(card) {
+    const parent = card.parentElement;
+    document.getElementById('tfPool').appendChild(card);
+    if (parent && parent.classList.contains('tf-slot')) {
+      parent.classList.remove('filled','correct','wrong');
+      const pos = parent.dataset.pos;
+      parent.innerHTML = `<span class="slot-hint">${pos}</span>`;
+    }
+  }
+
+  function checkArrange() {
+    let correct = 0, total = TF_CARDS.length;
+    document.querySelectorAll('.tf-slot').forEach(slot => {
+      const card = slot.querySelector('.tf-item');
+      slot.classList.remove('correct','wrong');
+      if (!card) { slot.classList.add('wrong'); return; }
+      if (card.dataset.id === slot.dataset.pos) { slot.classList.add('correct'); correct++; }
+      else slot.classList.add('wrong');
+    });
+    arrangeCorrect = (correct === total);
+    if (arrangeCorrect) {
+      Game.award({ base: 20, page:'p09', objective:'K1' });
+      Obj.hit('P1', { page:'p09' });
+    } else if (correct >= total - 2) {
+      Game.award({ base: 10, page:'p09', objective:'K1' });
+    } else {
+      Game.penalty({ amount: 5, page:'p09', objective:'K1' });
+    }
+    setTimeout(() => nextPhase(3), 900);
+  }
+
+  function renderForkRecap() {
+    const box = document.getElementById('forkRecap');
+    if (!box) return;
+    const slots = [...document.querySelectorAll('.tf-slot')];
+    const correct = slots.filter(s => {
+      const c = s.querySelector('.tf-item');
+      return c && c.dataset.id === s.dataset.pos;
+    }).length;
+    const placed = slots.filter(s => s.querySelector('.tf-item')).length;
+    box.innerHTML = `📊 ผังที่คุณวาง: <b style="color:var(--accent)">${correct}/${slots.length}</b> ตำแหน่งถูก${placed < slots.length ? ` · (ยังไม่ได้วาง ${slots.length - placed} ช่อง)` : ''} · เขียนบันทึกเพื่อปกป้องความคิดของคุณ`;
+  }
+
+  function finishPage() {
+    const j1 = (document.getElementById('j1').value || '').trim();
+    const j2 = (document.getElementById('j2').value || '').trim();
+    const wrote1 = j1.length >= 10;
+    const wrote2 = j2.length >= 10;
+    const defended = wrote1 && wrote2;
+
+    if (!wrote1 || !wrote2) {
+      alert('กรุณาเขียนบันทึกทั้ง 2 ข้อ (อย่างน้อยข้อละ 10 ตัวอักษร)');
+      return;
+    }
+
+    Obj.hit('A1', { page:'p09' });
+    Obj.hit('A2', { page:'p09' });
+    Book.addEnergy(+10, 'journal-defend');
+    if (j1.length >= 40 && j2.length >= 40) Book.addCoin(5, 'journal-thorough');
+
+    Book.savePageData('p09', { predictScore, arrangeCorrect, journal1: j1, journal2: j2 });
+    const composite = (Number(predictScore) ? 1 : 0) + (arrangeCorrect ? 1 : 0) + (defended ? 1 : 0);
+    Book.completePage('p09', {
+      score: composite, max: 3,
+      msg: `Predict ${predictScore ? '✓' : '✗'} · Tuning fork ${arrangeCorrect ? '✓' : '✗'} · บันทึกปกป้องความคิด ✓`
+    });
+    document.querySelectorAll('.phase-tab').forEach(t => t.classList.add('done'));
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ Lab เสร็จสิ้น';
+  }
+</script>
+
+</body>
+</html>

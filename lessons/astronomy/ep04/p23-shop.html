@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · Shop · Voyager Cache</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .shop-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+  @media(max-width:560px) { .shop-grid { grid-template-columns:1fr; } }
+  .item { padding:18px; background:rgba(22,27,58,0.6); border:1.5px solid rgba(120,140,220,0.3); border-radius:14px; transition:all .15s; }
+  .item:hover { border-color:#64d8ff; transform:translateY(-2px); }
+  .item.unique { border-color:#bcd0ff; background:rgba(60,50,80,0.3); }
+  .item.bought { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .item .ic { font-size:30px; }
+  .item .name { font-family:Orbitron,sans-serif; font-size:14.5px; color:#ffcb6b; margin-top:4px; letter-spacing:0.05em; }
+  .item .desc { color:#9aa3c0; font-size:13px; line-height:1.6; margin:8px 0; min-height:40px; }
+  .item .cost { font-family:Orbitron,monospace; color:#ffcb6b; font-size:14px; }
+  .item .buy-btn { width:100%; padding:12px; min-height:48px; background:rgba(255,203,107,0.1); border:1.5px solid #ffcb6b; color:#ffcb6b; border-radius:10px; font-family:Orbitron,sans-serif; font-size:13px; cursor:pointer; margin-top:8px; letter-spacing:0.05em; }
+  .item .buy-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .item.bought .buy-btn { background:rgba(126,255,178,0.1); border-color:#7effb2; color:#7effb2; }
+  .wallet { padding:14px; background:rgba(0,0,0,0.4); border:1.5px solid #ffcb6b; border-radius:12px; text-align:center; margin:14px 0; font-family:Orbitron,monospace; }
+  .wallet .v { font-size:30px; color:#ffcb6b; }
+</style>
+</head>
+<body data-page="p23" data-type="setup">
+<div class="page">
+
+  <span class="lbl story">🛒 ACT 5 · SHOP · VOYAGER CACHE</span>
+  <h1>เลือกของก่อนเข้าหลุมดำ</h1>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ฐานข้อมูล Voyager เก่าตรวจพบของในยานเก็บไว้ · ทีมเลือกได้ <b>2-3 ชิ้น</b> ตามงบ ·
+      <b style="color:#bcd0ff;">Black Dwarf Shell</b> เป็น item คีย์สำหรับ ending A+"
+    </span>
+  </div>
+
+  <div class="wallet">
+    <div style="font-size:11px; letter-spacing:0.2em; color:#9aa3c0;">YOUR COINS</div>
+    <div class="v" id="wallet">🪙 0</div>
+  </div>
+
+  <div class="shop-grid" id="grid"></div>
+
+  <div class="card success" id="purchases" style="display:none;">
+    <h3>🎒 Inventory ของคุณ</h3>
+    <div id="invList" style="font-size:13px; color:#bcffd6; line-height:1.8;"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · Shop</summary>
+    <div class="body">
+      <b>กลยุทธ์ 3 แบบ:</b> DPS (Spectroscope+Pulse) · Tank (MassSensor+Cloak) · Ending A+ (Black Dwarf+Whisper)<br>
+      <b>นักเรียนที่ฝึกตอบเร็ว:</b> ใช้น้อยก็ผ่านได้ A+<br>
+      <b>นักเรียนที่ไม่มั่นใจ:</b> ซื้อ Cloak Skip + Whisper เพื่อปลอดภัย
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ยืนยันการซื้อของ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ยืนยันก่อน</button>
+  </div>
+  <div class="gate-hint">เลือกของแล้ว → กดยืนยัน → ปุ่มไปต่อปลดล็อก · ไม่ซื้อก็ได้</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const SHOP_KEY = 'cosmosLog_ep04_shop';
+function loadInv(){ try{ return JSON.parse(localStorage.getItem(SHOP_KEY))||[];}catch{return [];} }
+function saveInv(arr){ localStorage.setItem(SHOP_KEY, JSON.stringify(arr)); }
+function getCoin(){ return (window.Coin && Coin.get) ? Coin.get() : 0; }
+function setCoinUI(){ document.getElementById('wallet').textContent = '🪙 ' + getCoin(); }
+
+let inv = loadInv();
+const items = (EP_CONFIG.shop && EP_CONFIG.shop.items) || [];
+const grid = document.getElementById('grid');
+function render(){
+  grid.innerHTML = items.map(it => {
+    const owned = inv.includes(it.id);
+    const canAfford = getCoin() >= it.cost;
+    return `
+      <div class="item ${owned?'bought':''} ${it.type==='unique'?'unique':''}" data-id="${it.id}">
+        <div class="ic">${it.icon}</div>
+        <div class="name">${it.name}</div>
+        <div class="desc">${it.desc}</div>
+        <div class="cost">ราคา: 🪙 ${it.cost}</div>
+        <button class="buy-btn" onclick="buy('${it.id}')" ${owned||!canAfford?'disabled':''}>
+          ${owned?'✓ ซื้อแล้ว':(canAfford?'ซื้อ':'ไม่พอ 🪙')}
+        </button>
+      </div>
+    `;
+  }).join('');
+  updateInvList();
+}
+function buy(id){
+  const it = items.find(x=>x.id===id);
+  if (!it || inv.includes(id)) return;
+  if (getCoin() < it.cost) return;
+  if (window.Coin && Coin.spend) Coin.spend(it.cost);
+  inv.push(id); saveInv(inv);
+  setCoinUI(); render();
+}
+function updateInvList(){
+  if (inv.length === 0) {
+    document.getElementById('purchases').style.display = 'none';
+    return;
+  }
+  document.getElementById('purchases').style.display = 'block';
+  document.getElementById('invList').innerHTML = inv.map(id => {
+    const it = items.find(x=>x.id===id);
+    return it ? `${it.icon} <b>${it.name}</b> — ${it.desc}` : '';
+  }).join('<br>');
+}
+window.buy = buy;
+
+// Init
+setTimeout(()=>{ setCoinUI(); render(); }, 200);
+
+document.getElementById('submitBtn').onclick = () => {
+  Submit.record('p23', { inv });
+  Chain.set('shop.purchased', inv);
+  document.getElementById('submitBtn').classList.add('done');
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = '✓ ยืนยันแล้ว';
+  Gate.markSubmitted();
+};
+setTimeout(() => {
+  const nb = document.getElementById('nextBtn');
+  Gate.wireButton('p23', nb, 'p24-boss.html', { requireSubmit:true });
+}, 200);
+</script>
+</body></html>

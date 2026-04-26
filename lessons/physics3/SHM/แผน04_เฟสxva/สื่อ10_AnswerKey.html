@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>สื่อ 10 · เฉลยแผน 4 เฟส x,v,a</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{--pri:#e11d48;--dark:#881337;--bg:#fff1f2;--border:#fda4af}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a1a2e;font-size:16px}
+header{background:linear-gradient(135deg,var(--dark),var(--pri));color:#fff;padding:20px 24px}
+header h1{font-size:1.4rem;font-weight:700}
+header p{font-size:.9rem;opacity:.85;margin-top:4px}
+.container{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+.teacher-note{background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:.9rem;color:#92400e}
+/* Accordion */
+.acc-section{background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;overflow:hidden}
+.acc-header{padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .15s}
+.acc-header:hover{background:#fdf2f4}
+.acc-header.open{background:var(--bg);border-bottom:1px solid var(--border)}
+.acc-title{font-weight:700;font-size:1rem;color:var(--dark)}
+.acc-sub{font-size:.85rem;color:#888;margin-left:8px;font-weight:400}
+.acc-arrow{transition:transform .2s;color:var(--pri);font-size:1.2rem}
+.acc-header.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{display:none;padding:18px 20px}
+.acc-body.open{display:block}
+/* Q block */
+.q-block{margin-bottom:18px;padding-bottom:18px;border-bottom:1px dashed #e2e8f0}
+.q-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.q-num{font-weight:700;color:var(--pri);margin-right:6px}
+.q-text{font-size:.97rem;line-height:1.6;margin-bottom:8px}
+.answer-box{background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:10px 14px;margin-top:6px}
+.answer-box .ans-label{font-weight:700;color:#166534;font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.answer-box .ans-val{font-size:1rem;font-weight:600;color:#14532d}
+.answer-box .ans-explain{font-size:.9rem;color:#166534;margin-top:6px;line-height:1.5}
+.misconception-tag{display:inline-block;background:#fee2e2;color:#b91c1c;font-size:.78rem;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px}
+.formula-box{background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono',monospace;font-size:.9rem;margin:8px 0;line-height:1.7;color:#334155}
+.calc-step{margin-left:16px;line-height:2;font-size:.93rem}
+.calc-step span{font-family:'JetBrains Mono',monospace;background:#f1f5f9;padding:1px 5px;border-radius:3px;font-size:.88rem}
+.warn-box{background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px 14px;font-size:.9rem;color:#9a3412;margin-top:8px}
+.formula-ref{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:18px 22px;margin-top:24px}
+.formula-ref h3{color:var(--dark);font-weight:700;margin-bottom:12px;font-size:1rem}
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.formula-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.formula-item .f-name{font-size:.82rem;color:#666;margin-bottom:4px}
+.formula-item .f-eq{font-family:'JetBrains Mono',monospace;font-size:.95rem;font-weight:600;color:var(--dark)}
+.submit-bar{background:#fff;border-top:1px solid #e2e8f0;position:sticky;bottom:0;padding:10px 16px;display:flex;gap:10px;justify-content:flex-end}
+.btn{padding:9px 20px;border:none;border-radius:8px;cursor:pointer;font-family:'Sarabun',sans-serif;font-size:.95rem;font-weight:600}
+.btn-out{background:#fff;border:2px solid var(--pri);color:var(--pri)}
+.btn:hover{filter:brightness(.92)}
+@media print{.submit-bar{display:none}header{print-color-adjust:exact;-webkit-print-color-adjust:exact}.acc-body{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>สื่อ 10 · เฉลยและคำอธิบาย · แผน 4 เฟส x,v,a</h1>
+  <p>เฉลยพร้อมคำอธิบายแนวคิดและการแก้ไขความเข้าใจคลาดเคลื่อน (สำหรับครู/นักเรียนตรวจสอบคำตอบ)</p>
+</header>
+<div class="container">
+  <div class="teacher-note">
+    ⚠️ <strong>หมายเหตุสำหรับครู:</strong> เฉลยนี้ครอบคลุม สื่อ 01 (Pre/Posttest), สื่อ 05 (แบบฝึกหัด), สื่อ 06 (Case Study), สื่อ 07 (Exit Ticket) และ สื่อ 11 (แบบฝึกหัดเพิ่มเติม) — คลิกหัวข้อเพื่อเปิด/ปิดเฉลยแต่ละรายการ
+  </div>
+
+  <!-- ============ สื่อ01 ============ -->
+  <div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span><span class="acc-title">สื่อ 01 · Pretest / Posttest แบบ Four-Tier</span><span class="acc-sub">6 ข้อ</span></span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 1</span>วัตถุสั่นอย่างง่าย ณ ปลายสุด (y = +A) ข้อใดถูกต้อง?<span class="misconception-tag">M4.1★★</span></div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ค. ความเร็วเป็นศูนย์ ความเร่งมีค่าสูงสุดและชี้ไปทางลบ</div>
+          <div class="ans-explain">ที่ y = +A: v = Aω cos(π/2) = 0 และ a = −ω²(+A) = −Aω² (ค่าสูงสุด ชี้ลบ/เข้าหาสมดุล) ข้อผิดพลาดที่พบบ่อยคือนักเรียนคิดว่า a = 0 ที่ปลายสุดเพราะ "หยุดนิ่งชั่วขณะ" ซึ่งผิด — ความเร็วเป็นศูนย์ไม่ได้หมายความว่าความเร่งเป็นศูนย์</div>
+        </div>
+        <div class="warn-box">❌ ความเข้าใจคลาดเคลื่อน M4.1: "หยุดชั่วขณะ → a = 0" — แรงดึงกลับยังคงกระทำอยู่เต็มที่ที่ปลายสุด</div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 2</span>วัตถุสั่นอย่างง่าย ณ จุดสมดุล (y = 0) ข้อใดถูกต้อง?<span class="misconception-tag">M4.2</span></div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ข. ความเร็วมีค่าสูงสุด ความเร่งเป็นศูนย์</div>
+          <div class="ans-explain">ที่ y = 0: v = ω√(A²−0²) = Aω = v<sub>max</sub> และ a = −ω²(0) = 0 แรงดึงกลับ (F = −ky) เป็นศูนย์ที่จุดสมดุล จึงทำให้ a = 0</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 3</span>v และ a ต่างเฟสกันเท่าใด?<span class="misconception-tag">M4.3</span></div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ข. 90° (π/2) โดย a นำเฟส v อยู่ 90°</div>
+          <div class="ans-explain">v = Aω cos(ωt+φ) = Aω sin(ωt+φ+π/2) และ a = −Aω² sin(ωt+φ) = Aω² cos(ωt+φ+π/2) ดังนั้น a = −ω²y นำเฟส v ไป 90°</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 4</span>ทิศของความเร่ง a ในการสั่นอย่างง่าย?<span class="misconception-tag">M4.4</span></div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ข. a ชี้เข้าหาจุดสมดุลเสมอ (สวนทางกับ y)</div>
+          <div class="ans-explain">เนื่องจาก a = −ω²y เครื่องหมายลบแสดงว่า a ชี้ตรงข้ามกับ y เสมอ เมื่อ y > 0 → a < 0, เมื่อ y < 0 → a > 0</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 5</span>y = 0.20 sin(10t) m, v<sub>max</sub> = ?</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ก. 2.0 m/s</div>
+          <div class="calc-step">A = 0.20 m, ω = 10 rad/s<br><span>v_max = Aω = 0.20 × 10 = 2.0 m/s</span></div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 6</span>y = 0.20 sin(10t) m, v ที่ y = A/2 = ?</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบที่ถูก</div>
+          <div class="ans-val">ก. (√3/2) × v<sub>max</sub> ≈ 1.73 m/s</div>
+          <div class="calc-step">
+            <span>v = ω√(A²−y²) = ω√(A²−(A/2)²)</span><br>
+            <span>  = ω√(A²(1−1/4)) = ω × A√(3/4) = Aω × (√3/2)</span><br>
+            <span>  = 2.0 × (√3/2) ≈ 1.732 m/s</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ สื่อ05 ============ -->
+  <div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span><span class="acc-title">สื่อ 05 · แบบฝึกหัดเฟส</span><span class="acc-sub">8 ข้อ</span></span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 1</span>y = 0.20 sin(4t) m, หา v และ a ที่ t = 0.25 s</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="calc-step">
+            ωt = 4 × 0.25 = <span>1.00 rad</span><br>
+            <span>v = Aω cos(ωt) = 0.20 × 4 × cos(1.00)</span><br>
+            <span>  = 0.80 × 0.5403 ≈ 0.432 m/s</span><br>
+            <span>a = −Aω² sin(ωt) = −0.20 × 16 × sin(1.00)</span><br>
+            <span>  = −3.20 × 0.8415 ≈ −2.69 m/s²</span><br>
+            ∴ v ≈ 0.43 m/s, a ≈ −2.69 m/s² (ชี้ลบ/เข้าหาสมดุล)
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 2</span>y = A sin(ωt), หา v เมื่อ y = A/2</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="calc-step">
+            <span>v = ω√(A²−y²) = ω√(A²−(A/2)²)</span><br>
+            <span>  = ω√(3A²/4) = (√3/2)Aω ≈ 0.866 Aω</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 3</span>v มีค่าสูงสุดเมื่อใด? (MCQ + เหตุผล)</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="ans-val">เมื่อ y = 0 (ผ่านจุดสมดุล)</div>
+          <div class="ans-explain">เหตุผลที่ถูกต้อง: v = ω√(A²−y²) มีค่าสูงสุดเมื่อ y = 0 / พลังงานจลน์สูงสุดที่จุดสมดุล / แรงดึงกลับ = 0 ที่จุดนี้จึงเปลี่ยนทิศจากบวกเป็นลบ (ไม่ใช่เรื่องแรง แต่เป็นเรื่องพลังงาน)</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 4</span>อ่านค่าจากกราฟ y-t</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย (ขึ้นกับค่าในกราฟ)</div>
+          <div class="ans-explain">A = แอมพลิจูดจากกราฟ / T = คาบจากกราฟ / ω = 2π/T / f = 1/T</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 5</span>วาดกราฟ v-t จาก y = A sin(ωt)</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="ans-explain">v = Aω cos(ωt) → กราฟ cosine แอมพลิจูด = Aω คาบเดียวกัน นำเฟส y อยู่ 90° (เริ่มที่ค่าสูงสุด Aω เมื่อ t=0)</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 6</span>a ที่ y = +A<span class="misconception-tag">M4.1★★</span></div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="ans-val">a = −ω²A (ค่าสูงสุด ชี้ทิศลบ/เข้าหาสมดุล)</div>
+          <div class="ans-explain">a = −ω²y = −ω²(+A) = −ω²A ≠ 0 แม้วัตถุ "หยุด" ชั่วขณะ แต่แรงยังกระทำอยู่เต็มที่</div>
+        </div>
+        <div class="warn-box">⚠️ ข้อผิดพลาดที่พบ: ตอบว่า a = 0 เพราะวัตถุหยุดนิ่ง — ความเร็ว = 0 ≠ ความเร่ง = 0</div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 7</span>v กับ a ชี้ทิศเดียวกันหรือไม่?<span class="misconception-tag">M4.4</span></div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="ans-explain">ไม่เสมอไป a ชี้เข้าหาสมดุลเสมอ แต่ v ชี้ได้ทั้งสองทิศ ขึ้นกับว่าวัตถุกำลังเคลื่อนเข้าหาหรือออกจากสมดุล เช่น เมื่อ y > 0 กำลังเคลื่อนออกจากสมดุล v > 0 แต่ a < 0 → ทิศตรงข้ามกัน</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 8</span>Challenge: y(0) = A/2 และ v(0) > 0 หา φ</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="calc-step">
+            y(0) = A sin(φ) = A/2 → <span>sin(φ) = 1/2</span> → φ = π/6 หรือ 5π/6<br>
+            v(0) = Aω cos(φ) > 0 → <span>cos(φ) > 0</span> → φ อยู่ในควอดรันต์ที่ 1<br>
+            ∴ <span>φ = π/6 (30°)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ สื่อ06 ============ -->
+  <div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span><span class="acc-title">สื่อ 06 · Case Study ไซสโมกราฟ</span><span class="acc-sub">3 ส่วน</span></span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ส่วน A</span>y = 0.02 sin(2πt) m</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="calc-step">
+            A = 0.02 m, ω = 2π rad/s<br>
+            <span>v_max = Aω = 0.02 × 2π ≈ 0.1257 m/s</span><br>
+            <span>a_max = Aω² = 0.02 × (2π)² = 0.02 × 39.48 ≈ 0.790 m/s²</span><br>
+            ที่ y = A/2 = 0.01 m:<br>
+            <span>v = ω√(A²−y²) = 2π√(0.0004−0.0001) ≈ 0.109 m/s</span><br>
+            <span>a = −ω²y = −(2π)² × 0.01 ≈ −0.395 m/s²</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">Challenge</span>หา A จาก a<sub>max</sub> = 9.8 m/s², f = 5 Hz</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="calc-step">
+            ω = 2πf = 2π × 5 = <span>10π rad/s</span><br>
+            <span>a_max = Aω²</span> → <span>A = a_max/ω² = 9.8/(10π)²</span><br>
+            <span>A = 9.8/(100π²) ≈ 9.8/986.96 ≈ 0.00993 m ≈ 1 cm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ สื่อ07 ============ -->
+  <div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span><span class="acc-title">สื่อ 07 · Exit Ticket</span><span class="acc-sub">3 ข้อ</span></span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">Q1</span>ที่ y = +A ข้อใดถูก?<span class="misconception-tag">M4.1★★</span></div>
+        <div class="answer-box"><div class="ans-label">คำตอบ</div><div class="ans-val">ข. v = 0, a = −Aω² (ค่าสูงสุด ชี้ทิศลบ)</div></div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">Q2</span>ที่ y = 0 ข้อใดถูก?<span class="misconception-tag">M4.2</span></div>
+        <div class="answer-box"><div class="ans-label">คำตอบ</div><div class="ans-val">ก. v = Aω (สูงสุด), a = 0</div></div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">Q3</span>วาดเวกเตอร์ v และ a ที่ y = −A/2</div>
+        <div class="answer-box">
+          <div class="ans-label">เฉลย</div>
+          <div class="ans-explain">ที่ y = −A/2: a = −ω²y = −ω²(−A/2) = +ω²A/2 → ชี้ทิศ<strong>บวก</strong> (ขึ้น/เข้าหาสมดุล)<br>v: ขึ้นกับทิศการเคลื่อนที่ ถ้ากำลังเคลื่อนขึ้น v ชี้บวก ถ้าลง v ชี้ลบ<br>v = ω√(A²−(A/2)²) = (√3/2)Aω ≈ 0.866 Aω</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ สื่อ11 ============ -->
+  <div class="acc-section">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <span><span class="acc-title">สื่อ 11 · แบบฝึกหัดเพิ่มเติม</span><span class="acc-sub">12 ข้อ</span></span>
+      <span class="acc-arrow">▼</span>
+    </div>
+    <div class="acc-body">
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 1</span>y = 0.15 sin(6πt) m, หา y, v, a ที่ t = 1/12 s</div>
+        <div class="answer-box">
+          <div class="calc-step">
+            ωt = 6π × (1/12) = <span>π/2 rad</span><br>
+            <span>y = 0.15 sin(π/2) = 0.15 × 1 = 0.15 m</span><br>
+            <span>v = 0.15 × 6π × cos(π/2) = 0.9π × 0 = 0 m/s</span><br>
+            <span>a = −0.15 × (6π)² × sin(π/2) = −0.15 × 36π² × 1</span><br>
+            <span>  = −5.4π² ≈ −53.3 m/s²</span><br>
+            ∴ วัตถุอยู่ที่ปลายสุด y = +A, v = 0, a สูงสุดชี้ลบ
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 2</span>y = 0.20 sin(5t) m, หา v เมื่อ y = A/4</div>
+        <div class="answer-box">
+          <div class="calc-step">
+            A = 0.20 m, y = A/4 = 0.05 m, ω = 5 rad/s<br>
+            <span>v = ω√(A²−y²) = 5√(0.0400−0.0025)</span><br>
+            <span>  = 5√0.0375 = 5 × 0.1936 ≈ 0.968 m/s</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 3</span>เลือกข้อที่ถูกต้อง (checkbox — 5 ข้อถูก)</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบถูก</div>
+          <div class="ans-val">ค, ง, จ, ฉ, ช</div>
+          <div class="ans-explain">ค: v และ a ต่างเฟสกัน 90° ✓ / ง: a ชี้เข้าหาสมดุลเสมอ ✓ / จ: v_max = Aω ✓ / ฉ: ที่ y=±A ความเร่งมีค่าสูงสุด ✓ / ช: a_max = Aω² ✓<br>ผิด: ก(v≠0 ที่ปลายสุด), ข(a≠สูงสุดที่สมดุล), ซ(v≠0 ที่สมดุล)</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 4</span>Drag-Drop: จับคู่สูตร</div>
+        <div class="answer-box">
+          <div class="ans-val">v_max → Aω · a_max → Aω² · v ที่ตำแหน่ง y → ω√(A²−y²) · a ที่ตำแหน่ง y → −ω²y</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 5</span>y = A sin(ωt), ที่ t = T/4 ข้อใดถูก?</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบ</div><div class="ans-val">ง. y = A, v = 0, a = −Aω²</div>
+          <div class="ans-explain">ωt = (2π/T)(T/4) = π/2 → sin(π/2)=1, cos(π/2)=0 ∴ y=A, v=0, a=−Aω²</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 6</span>เฟสต่างระหว่าง y กับ v เป็นเท่าใด?</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบ</div><div class="ans-val">ค. 90° (π/2)</div>
+          <div class="ans-explain">y=Asin(ωt+φ), v=Aωcos(ωt+φ)=Aωsin(ωt+φ+π/2) → v นำ y อยู่ 90°</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 7</span>สปริง k=200 N/m, m=0.5 kg, A=0.1 m หา ω, T, v_max, a_max</div>
+        <div class="answer-box">
+          <div class="calc-step">
+            <span>ω = √(k/m) = √(200/0.5) = √400 = 20 rad/s</span><br>
+            <span>T = 2π/ω = 2π/20 ≈ 0.314 s</span><br>
+            <span>f = 1/T = 20/(2π) ≈ 3.18 Hz</span><br>
+            <span>v_max = Aω = 0.1 × 20 = 2.0 m/s</span><br>
+            <span>a_max = Aω² = 0.1 × 400 = 40 m/s²</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 8</span>วาดกราฟ v-t และ a-t สำหรับ y = A sin(ωt)</div>
+        <div class="answer-box">
+          <div class="ans-explain">v-t: cosine wave แอมพ์ = Aω ขึ้นสุดที่ t=0 / a-t: −sine wave แอมพ์ = Aω² ลงสุดที่ t=0 (ตรงข้ามเฟสกับ y) ทั้งสองกราฟมีคาบ T เดียวกัน</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 9</span>ลูกตุ้มที่จุดต่ำสุด (สมดุล) ข้อใดถูก?</div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบ</div><div class="ans-val">ข. v = สูงสุด, a = 0</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 10</span>เรียงลำดับขั้นตอนหา v จากตำแหน่ง y</div>
+        <div class="answer-box">
+          <div class="ans-val">1→2→3→4→5</div>
+          <div class="ans-explain">1.ระบุ A และ ω จากสมการ → 2.ระบุค่า y ที่ต้องการ → 3.เขียนสูตร v=ω√(A²−y²) → 4.คำนวณ (A²−y²) → 5.หารากที่สองแล้วคูณ ω</div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 11</span>y = 0.08 cos(4t + π/6) m, หา y(0), v(0), a(0)</div>
+        <div class="answer-box">
+          <div class="calc-step">
+            <span>y(0) = 0.08 cos(π/6) = 0.08 × (√3/2) ≈ 0.0693 m</span><br>
+            <span>v = dy/dt = −0.08 × 4 × sin(4t+π/6)</span><br>
+            <span>v(0) = −0.32 sin(π/6) = −0.32 × 0.5 = −0.16 m/s</span><br>
+            <span>a = dv/dt = −0.08 × 16 × cos(4t+π/6)</span><br>
+            <span>a(0) = −1.28 cos(π/6) = −1.28 × (√3/2) ≈ −1.109 m/s²</span>
+          </div>
+        </div>
+      </div>
+      <div class="q-block">
+        <div class="q-text"><span class="q-num">ข้อ 12</span>ข้อใดกล่าวผิด?<span class="misconception-tag">M4.2</span></div>
+        <div class="answer-box">
+          <div class="ans-label">คำตอบ (ข้อที่ผิด)</div>
+          <div class="ans-val">ค. "ที่จุดสมดุล ความเร่งมีค่าสูงสุด"</div>
+          <div class="ans-explain">ที่จุดสมดุล y=0 → a=−ω²y=0 (ต่ำสุด ไม่ใช่สูงสุด) ความเร่งสูงสุดอยู่ที่ปลายสุด y=±A</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formula Reference -->
+  <div class="formula-ref">
+    <h3>สูตรอ้างอิง แผน 4</h3>
+    <div class="formula-grid">
+      <div class="formula-item"><div class="f-name">การกระจัด</div><div class="f-eq">y = A sin(ωt + φ)</div></div>
+      <div class="formula-item"><div class="f-name">ความเร็ว</div><div class="f-eq">v = Aω cos(ωt + φ)</div></div>
+      <div class="formula-item"><div class="f-name">ความเร่ง</div><div class="f-eq">a = −Aω² sin(ωt + φ)</div></div>
+      <div class="formula-item"><div class="f-name">ความสัมพันธ์ a กับ y</div><div class="f-eq">a = −ω²y</div></div>
+      <div class="formula-item"><div class="f-name">v จากตำแหน่ง</div><div class="f-eq">v = ω√(A² − y²)</div></div>
+      <div class="formula-item"><div class="f-name">ความเร็วสูงสุด</div><div class="f-eq">v_max = Aω (ที่ y = 0)</div></div>
+      <div class="formula-item"><div class="f-name">ความเร่งสูงสุด</div><div class="f-eq">a_max = Aω² (ที่ y = ±A)</div></div>
+      <div class="formula-item"><div class="f-name">ความถี่เชิงมุม</div><div class="f-eq">ω = 2πf = 2π/T</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="submit-bar">
+  <button class="btn btn-out" onclick="window.print()">🖨 พิมพ์เฉลย</button>
+</div>
+
+<script>
+function toggleAcc(header){
+  header.classList.toggle('open');
+  const body=header.nextElementSibling;
+  body.classList.toggle('open');
+}
+</script>
+</body>
+</html>

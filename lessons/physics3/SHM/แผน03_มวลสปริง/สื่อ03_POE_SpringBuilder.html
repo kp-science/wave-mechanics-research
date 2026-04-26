@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>POE-03 ใบบันทึก 3 ฐาน (SHM แผน 3 · มวล-สปริง)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.id-row label{font-size:13px;font-weight:600;color:#555;display:flex;gap:6px;align-items:center}
+.id-row input{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;width:160px}
+.id-row input.short{width:70px}
+.sec-title{font-size:18px;font-weight:800;color:#9a3412;margin:20px 0 10px;padding-left:12px;border-left:5px solid #ea580c;display:flex;align-items:center;gap:8px}
+.station{background:#fff;border:2px solid #fed7aa;border-radius:14px;margin:14px 0;overflow:hidden}
+.station-header{padding:12px 16px;display:flex;align-items:center;gap:12px}
+.station-header.A{background:linear-gradient(90deg,#9a3412,#ea580c);color:white}
+.station-header.B{background:linear-gradient(90deg,#c2410c,#fb923c);color:white}
+.station-header.C{background:linear-gradient(90deg,#7c3aed,#a78bfa);color:white}
+.station-icon{font-size:26px}
+.station-title{font-size:17px;font-weight:800}
+.station-sub{font-size:13px;opacity:.85;margin-top:2px}
+.station-body{padding:14px 16px}
+.poe-sec{border-radius:10px;padding:12px 14px;margin:10px 0}
+.poe-sec.p{background:#e0e7ff;border-left:5px solid #6366f1}
+.poe-sec.o{background:#fff3e0;border-left:5px solid #ef6c00}
+.poe-sec.e{background:#dcfce7;border-left:5px solid #16a34a}
+.poe-sec h3{font-size:15px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.poe-sec.p h3{color:#3730a3}.poe-sec.o h3{color:#c05621}.poe-sec.e h3{color:#166534}
+.poe-badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:12.5px;font-weight:800;color:#fff}
+.poe-badge.p{background:#5a67d8}.poe-badge.o{background:#dd6b20}.poe-badge.e{background:#38a169}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600;transition:all .15s}
+.c-btn:hover,.c-btn.active{background:#ea580c;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;transition:border .15s}
+.c-color.active{border:3px solid #ea580c}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #fdba74;padding:3px 6px;font-family:inherit;font-size:15px;width:90px;text-align:center;background:#fff8}
+.opt{display:flex;align-items:flex-start;gap:8px;margin:5px 0;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:14px;transition:all .15s;border:1.5px solid transparent}
+.opt:hover{background:#ffedd5;border-color:#fdba74}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.opt input{margin-top:3px;accent-color:#ea580c}
+table.data-tbl{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+table.data-tbl th{background:#ea580c;color:#fff;padding:7px 10px;text-align:center;font-weight:700}
+table.data-tbl td{border:1.5px solid #fed7aa;padding:6px 8px;text-align:center;vertical-align:middle}
+table.data-tbl td input{width:90%;padding:4px 6px;border:1px solid #fdba74;border-radius:4px;font-family:inherit;font-size:14px;text-align:center}
+table.data-tbl tr:nth-child(even) td{background:#fff7ed}
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f59e0b;border-radius:10px;padding:12px 14px;margin-top:12px}
+.mc-reflect h4{font-size:15px;font-weight:800;color:#92400e;margin-bottom:8px}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+.mc-wrong{font-style:italic;color:#374151;font-size:13.5px}
+.mc-q{font-size:13px;font-weight:700;color:#9a3412;display:block;margin:6px 0 4px}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;margin:3px;transition:all .15s}
+.mc-opt:hover{border-color:#ea580c;background:#fff7ed}
+.mc-opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:700}
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#ffedd5}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 POE-03 ใบบันทึก Predict–Observe–Explain · มวล-สปริง</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">3 ฐานทดลอง</span> คู่กับ SIM03 Spring Builder · วPA 2, 3, 7</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">Explore Phase · 30–55 นาที</div>
+  </div>
+  <div class="id-row">
+    <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อนักเรียน"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short" placeholder="1"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+    <label>กลุ่มที่ <input type="text" id="s-group" class="short" placeholder="1"></label>
+  </div>
+
+  <div style="background:#fff;border:1.5px dashed #fdba74;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:13.5px;color:#9a3412;line-height:1.7">
+    <b>🛠 วิธีใช้ SIM03 SHM Spring Builder (ทั้ง 3 ฐาน):</b><br>
+    • <b>Builder bar (บนสุด):</b> เลือก <b>Series / Parallel / Single</b> → ใส่ <b>k₁, k₂, k₃ (N/m)</b>, <b>m (kg)</b>, <b>A (m)</b> → เลือก <b>g</b><br>
+    • <b>Base A (Builder)</b> = ใช้ฐาน A อนุกรม/ขนาน · <b>Base B (F-x Graph)</b> = ใช้ฐาน B · <b>Base C (Dual-view)</b> + ปุ่ม <b>↔ Horizontal / ↕ Vertical</b> = ใช้ฐาน C<br>
+    • <b>Manual Mode:</b> ตั้ง N รอบ → SIM คำนวณ <b>T = t/N</b> และ <b>k_meas = 4π²m/T²</b> + เปอร์เซ็นต์ผิดพลาดให้อัตโนมัติ (สีเขียว <2%, ส้ม <5%, แดง ≥5%)<br>
+    • <b>Auto Mode + 📥 Export CSV:</b> บันทึก t, x, v, F, KE, PE, E_tot ทุก ~0.1s
+  </div>
+
+  <!-- ฐาน A -->
+  <div class="station">
+    <div class="station-header A">
+      <div class="station-icon">⚡</div>
+      <div>
+        <div class="station-title">ฐาน A — Spring Builder (อนุกรม vs ขนาน)</div>
+        <div class="station-sub">เป้าหมาย: หา k_eff และ T · แก้ M3.1 · ใช้ SIM03 · ≈ 10 นาที</div>
+      </div>
+    </div>
+    <div class="station-body">
+      <div style="background:#fff7ed;border-radius:8px;padding:10px;margin-bottom:10px;font-size:14px">
+        <b>เงื่อนไข:</b> k₁ = 100 N/m · k₂ = 200 N/m · m = 1.0 kg · ทดลองต่อ 2 แบบ
+      </div>
+
+      <div class="poe-sec p">
+        <h3><span class="poe-badge p">P</span> Predict — ทำนายก่อนทดลอง</h3>
+        <div style="margin-bottom:8px;font-size:14px">คาดว่า k_eff ของแต่ละแบบเป็นเท่าใด?</div>
+        <table class="data-tbl">
+          <thead><tr><th>การต่อ</th><th>ทำนาย k_eff (N/m)</th><th>ทำนาย T (s)</th><th>เหตุผล</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;color:#9a3412">อนุกรม</td>
+              <td><input id="pA_s_kpred" placeholder="?"></td>
+              <td><input id="pA_s_Tpred" placeholder="?"></td>
+              <td><input id="pA_s_reason" placeholder="เพราะ..." style="width:98%"></td></tr>
+            <tr><td style="font-weight:700;color:#9a3412">ขนาน</td>
+              <td><input id="pA_p_kpred" placeholder="?"></td>
+              <td><input id="pA_p_Tpred" placeholder="?"></td>
+              <td><input id="pA_p_reason" placeholder="เพราะ..." style="width:98%"></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="poe-sec o">
+        <h3><span class="poe-badge o">O</span> Observe — ผลจาก SIM03 (Base A · Manual Mode · N=10)</h3>
+        <table class="data-tbl">
+          <thead><tr><th>การต่อ</th><th>t (s)</th><th>T = t/N (s)</th><th>k_meas = 4π²m/T² (N/m)</th><th>%error vs k_ref</th><th>สี SIM</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;color:#c2410c">Series</td>
+              <td><input id="oA_s_t" placeholder="..."></td>
+              <td><input id="oA_s_Tobs" placeholder="..."></td>
+              <td><input id="oA_s_kobs" placeholder="..."></td>
+              <td><input id="oA_s_err" placeholder="?%"></td>
+              <td><select style="border:1px solid #fdba74;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>🟢</option><option>🟠</option><option>🔴</option></select></td></tr>
+            <tr><td style="font-weight:700;color:#c2410c">Parallel</td>
+              <td><input id="oA_p_t" placeholder="..."></td>
+              <td><input id="oA_p_Tobs" placeholder="..."></td>
+              <td><input id="oA_p_kobs" placeholder="..."></td>
+              <td><input id="oA_p_err" placeholder="?%"></td>
+              <td><select style="border:1px solid #fdba74;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>🟢</option><option>🟠</option><option>🔴</option></select></td></tr>
+          </tbody>
+        </table>
+        <div style="font-size:12.5px;color:#9a3412;margin-top:6px"><b>💡</b> สีเขียว = ใกล้สูตรทฤษฎี (<2%) · ถ้าได้สีส้ม/แดง → ตรวจการอ่าน N รอบให้ถูก</div>
+      </div>
+
+      <div class="poe-sec e">
+        <h3><span class="poe-badge e">E</span> Explain — อธิบายเชิงทฤษฎี</h3>
+        <div style="font-size:14px;margin-bottom:8px">เชื่อมผลการสังเกตกับสมการ:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div style="background:white;border-radius:8px;padding:8px 12px;border-left:3px solid #38a169">
+            <div style="font-weight:700;font-size:13px;color:#166534">อนุกรม: 1/k_eff = ?</div>
+            <input id="eA_series_formula" style="width:100%;border:none;border-bottom:1.5px solid #86efac;padding:4px;font-family:inherit;font-size:14px;margin-top:4px" placeholder="เขียนสูตร...">
+            <div style="font-size:12px;color:#555;margin-top:4px">คำนวณ: k_eff = <input id="eA_series_calc" style="width:80px;border:none;border-bottom:1px solid #86efac;font-family:inherit;font-size:13px;text-align:center" placeholder="..."> N/m</div>
+          </div>
+          <div style="background:white;border-radius:8px;padding:8px 12px;border-left:3px solid #38a169">
+            <div style="font-weight:700;font-size:13px;color:#166534">ขนาน: k_eff = ?</div>
+            <input id="eA_parallel_formula" style="width:100%;border:none;border-bottom:1.5px solid #86efac;padding:4px;font-family:inherit;font-size:14px;margin-top:4px" placeholder="เขียนสูตร...">
+            <div style="font-size:12px;color:#555;margin-top:4px">คำนวณ: k_eff = <input id="eA_parallel_calc" style="width:80px;border:none;border-bottom:1px solid #86efac;font-family:inherit;font-size:13px;text-align:center" placeholder="..."> N/m</div>
+          </div>
+        </div>
+        <textarea class="ans-ta" rows="2" id="eA_explain" placeholder="สรุป: ทำไมอนุกรมถึง k_eff น้อยกว่า ขนาน k_eff มากกว่า..."></textarea>
+        <div class="canvas-toolbar">
+          <button class="c-btn active" onclick="setMode('A','pen')">✏️</button>
+          <button class="c-btn" onclick="setMode('A','eraser')">🧹</button>
+          <input type="range" min="1" max="16" value="3" oninput="sz.A=this.value" style="width:70px">
+          <button class="c-btn" onclick="clearC('cA')">🗑️</button>
+        </div>
+        <canvas id="cA" data-bg="lined" width="960" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฐาน B -->
+  <div class="station">
+    <div class="station-header B">
+      <div class="station-icon">📊</div>
+      <div>
+        <div class="station-title">ฐาน B — กราฟ F-x (Hooke's Law)</div>
+        <div class="station-sub">เป้าหมาย: ยืนยัน F = −kx · แก้ M3.2 · ≈ 8 นาที</div>
+      </div>
+    </div>
+    <div class="station-body">
+      <div class="poe-sec p">
+        <h3><span class="poe-badge p">P</span> Predict — คาดลักษณะกราฟ F-x</h3>
+        <div style="font-size:14px;margin-bottom:8px">ถ้าแรงสปริง F ∝ x กราฟ F vs x ควรมีลักษณะอย่างไร?</div>
+        <div class="opt"><label><input type="radio" name="bPred" value="1"> ก. เส้นตรงผ่านจุดกำเนิด (ความชัน = k)</label></div>
+        <div class="opt"><label><input type="radio" name="bPred" value="2"> ข. เส้นโค้งพาราโบลา</label></div>
+        <div class="opt"><label><input type="radio" name="bPred" value="3"> ค. เส้นแนวนอน (F คงที่ ไม่ขึ้นกับ x) — M3.2</label></div>
+        <div class="opt"><label><input type="radio" name="bPred" value="4"> ง. เส้นตรงแต่ไม่ผ่านจุดกำเนิด</label></div>
+        <div style="font-size:13px;color:#6b7280;margin-top:6px">วาดทำนายกราฟที่คิดว่าจะได้ (แกน F แนวตั้ง · แกน x แนวนอน):</div>
+        <div class="canvas-toolbar">
+          <button class="c-btn active" onclick="setMode('B','pen')">✏️</button>
+          <button class="c-btn" onclick="setMode('B','eraser')">🧹</button>
+          <input type="range" min="1" max="16" value="3" oninput="sz.B=this.value" style="width:70px">
+          <button class="c-btn" onclick="clearC('cBpred')">🗑️</button>
+        </div>
+        <canvas id="cBpred" data-bg="grid" width="960" height="240"></canvas>
+      </div>
+
+      <div class="poe-sec o">
+        <h3><span class="poe-badge o">O</span> Observe — บันทึกข้อมูลจาก SIM03</h3>
+        <table class="data-tbl">
+          <thead><tr><th>x (cm)</th><th>2</th><th>4</th><th>6</th><th>8</th><th>10</th><th>12</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;text-align:left;padding-left:8px">F (N)</td>
+              <td><input id="bF1" placeholder=""></td><td><input id="bF2" placeholder=""></td>
+              <td><input id="bF3" placeholder=""></td><td><input id="bF4" placeholder=""></td>
+              <td><input id="bF5" placeholder=""></td><td><input id="bF6" placeholder=""></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:13.5px;color:#c05621">วาดกราฟ F-x จากข้อมูล:</div>
+        <div class="canvas-toolbar">
+          <button class="c-btn active" onclick="setMode('Bobs','pen')">✏️</button>
+          <button class="c-btn" onclick="setMode('Bobs','eraser')">🧹</button>
+          <input type="range" min="1" max="16" value="3" oninput="sz.Bobs=this.value" style="width:70px">
+          <button class="c-btn" onclick="clearC('cBobs');drawGridAxes('cBobs')">🗑️</button>
+        </div>
+        <canvas id="cBobs" data-bg="grid" width="960" height="280"></canvas>
+      </div>
+
+      <div class="poe-sec e">
+        <h3><span class="poe-badge e">E</span> Explain — กราฟบอกอะไร?</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div style="background:#fff;border-radius:8px;padding:8px 12px;border-left:3px solid #38a169">
+            <div style="font-size:13px;font-weight:700;color:#166534">ความชันของกราฟ F-x เท่ากับ?</div>
+            <div style="font-size:13px;color:#374151;margin-top:4px">ความชัน = <input id="bSlope" style="width:80px;border:none;border-bottom:1.5px solid #86efac;padding:3px;font-family:inherit;font-size:14px;text-align:center" placeholder="..."> N/m</div>
+            <div style="font-size:12px;color:#555;margin-top:4px">ค่านี้เป็น: <select id="bSlopeIs" style="border:1px solid #86efac;border-radius:4px;padding:3px;font-family:inherit;font-size:13px"><option value="">เลือก...</option><option>ค่า k (ค่านิจสปริง)</option><option>ค่า m (มวล)</option><option>ค่า T (คาบ)</option><option>ค่า ω (ความถี่เชิงมุม)</option></select></div>
+          </div>
+          <div style="background:#fff;border-radius:8px;padding:8px 12px;border-left:3px solid #38a169">
+            <div style="font-size:13px;font-weight:700;color:#166534">กราฟผ่านจุดกำเนิดหรือไม่?</div>
+            <div class="opt" style="margin-top:4px"><label><input type="radio" name="bOrigin" value="yes"> ✅ ผ่านจุดกำเนิด</label></div>
+            <div class="opt"><label><input type="radio" name="bOrigin" value="no"> ❌ ไม่ผ่าน</label></div>
+            <div style="font-size:12px;color:#555;margin-top:4px">ความหมาย: เมื่อ x = 0 แรง F = <input id="bF0" style="width:50px;border:none;border-bottom:1px solid #86efac;font-family:inherit;font-size:13px;text-align:center" placeholder="?"> N</div>
+          </div>
+        </div>
+        <textarea class="ans-ta" rows="2" id="bExplain" placeholder="สรุป M3.2: แรงสปริงคงที่หรือแปรผัน? หลักฐานจากกราฟคืออะไร?"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ฐาน C -->
+  <div class="station">
+    <div class="station-header C">
+      <div class="station-icon">⚖️</div>
+      <div>
+        <div class="station-title">ฐาน C — Dual-view: แนวระดับ vs แนวดิ่ง</div>
+        <div class="station-sub">เป้าหมาย: เปรียบเทียบ T · แก้ M3.3 · ≈ 7 นาที</div>
+      </div>
+    </div>
+    <div class="station-body">
+      <div style="background:#f3e8ff;border-radius:8px;padding:10px;margin-bottom:10px;font-size:14px">
+        <b>เงื่อนไข:</b> Single spring · m = 1.0 kg · k₁ = 100 N/m · A = 0.05 m · g = 9.8<br>
+        <b>วิธี:</b> เลือก <b>Base C (Dual-view)</b> → กดปุ่ม <b>↔ Horizontal</b> ทดลอง 1 ครั้ง → เปลี่ยนเป็น <b>↕ Vertical</b> → สังเกตตำแหน่งสมดุลใหม่ + เทียบ T
+      </div>
+
+      <div class="poe-sec p">
+        <h3><span class="poe-badge p">P</span> Predict</h3>
+        <div style="font-size:14px;margin-bottom:6px">คาดว่า T ของสปริงแนวดิ่งเปรียบกับแนวระดับอย่างไร?</div>
+        <div class="opt"><label><input type="radio" name="cPred" value="1"> ก. แนวดิ่ง T มากกว่า เพราะ g เพิ่มแรง</label></div>
+        <div class="opt"><label><input type="radio" name="cPred" value="2"> ข. T เท่ากันทั้งสองกรณี</label></div>
+        <div class="opt"><label><input type="radio" name="cPred" value="3"> ค. แนวระดับ T มากกว่า เพราะไม่มีแรงโน้มถ่วงช่วย</label></div>
+        <textarea class="ans-ta" rows="2" id="cPredReason" placeholder="เหตุผล..." style="margin-top:8px"></textarea>
+      </div>
+
+      <div class="poe-sec o">
+        <h3><span class="poe-badge o">O</span> Observe</h3>
+        <table class="data-tbl">
+          <thead><tr><th>แนว</th><th>ตำแหน่งสมดุล (cm)</th><th>T ที่วัดได้ (s)</th><th>f (Hz)</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:700;text-align:left;padding-left:8px">⟷ ระดับ</td>
+              <td><input id="cHoriEq" placeholder="..."></td>
+              <td><input id="cHoriT" placeholder="..."></td>
+              <td><input id="cHoriF" placeholder="..."></td></tr>
+            <tr><td style="font-weight:700;text-align:left;padding-left:8px">↕ ดิ่ง</td>
+              <td><input id="cVertEq" placeholder="(เลื่อนลง ...)"></td>
+              <td><input id="cVertT" placeholder="..."></td>
+              <td><input id="cVertF" placeholder="..."></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px;font-size:13.5px;color:#c05621">สมดุลใหม่แนวดิ่งอยู่ที่ x₀ = mg/k = 1×10/100 = <b>0.10 m = 10 cm</b> ใต้จุดยึด</div>
+      </div>
+
+      <div class="poe-sec e">
+        <h3><span class="poe-badge e">E</span> Explain — แก้ M3.3</h3>
+        <div style="font-size:14px;margin-bottom:8px">เติมช่องว่างเพื่ออธิบาย:</div>
+        <div style="background:#fff;border-radius:8px;padding:12px;border:1.5px solid #86efac;font-size:14px;line-height:2">
+          สปริงแนวดิ่ง: แรงโน้มถ่วง mg เลื่อนตำแหน่งสมดุลลงมาที่ x₀ =
+          <input id="cX0" style="width:80px;border:none;border-bottom:1.5px solid #38a169;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="mg/k"> m<br>
+          SHM ของสปริงแนวดิ่งเกิดรอบจุดสมดุลใหม่ <em>ไม่ใช่</em>รอบจุดยึด<br>
+          สมการการเคลื่อนที่: a = −(k/m)·Δx → ω = √(k/m) →<br>
+          T = 2π√(m/k) = 2π√(1/100) =
+          <input id="cTcalc" style="width:80px;border:none;border-bottom:1.5px solid #38a169;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="?"> s<br>
+          <b>สรุป:</b> T แนวระดับ <select id="cCompare" style="border:1px solid #86efac;border-radius:4px;padding:3px;font-family:inherit;font-size:13px"><option value="">เลือก...</option><option>= เท่ากับ</option><option>มากกว่า</option><option>น้อยกว่า</option></select> T แนวดิ่ง
+        </div>
+        <div class="canvas-toolbar" style="margin-top:10px">
+          <button class="c-btn active" onclick="setMode('C','pen')">✏️</button>
+          <button class="c-btn" onclick="setMode('C','eraser')">🧹</button>
+          <input type="range" min="1" max="16" value="3" oninput="sz.C=this.value" style="width:70px">
+          <button class="c-btn" onclick="clearC('cC')">🗑️</button>
+          <span style="font-size:12.5px;color:#666">วาด FBD สปริงแนวดิ่ง:</span>
+        </div>
+        <canvas id="cC" data-bg="lined" width="960" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Misconception Reflection -->
+  <div class="mc-reflect">
+    <h4>🧠 Misconception Reflection — สะท้อนหลังทดลอง (M3.1–M3.3)</h4>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M3.1 ★</span> <span class="mc-wrong">"k_eff อนุกรม = k₁ + k₂ เหมือนขนาน"</span></div>
+      <span class="mc-q">หลังทดลองฐาน A: ฉันคิดว่าความเข้าใจเดิมของฉันเกี่ยวกับ M3.1 ถูกหรือผิด?</span>
+      <label class="mc-opt"><input type="radio" name="r31" value="ถูก"> ✅ ถูกตั้งแต่แรก</label>
+      <label class="mc-opt"><input type="radio" name="r31" value="ผิดตอนแรก"> ❌ ผิดตอนแรก แต่แก้ไขแล้ว</label>
+      <label class="mc-opt"><input type="radio" name="r31" value="ยังสงสัย"> 🤔 ยังสงสัยอยู่</label>
+    </div>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M3.2</span> <span class="mc-wrong">"แรงสปริงเป็นแรงคงที่ไม่ขึ้นกับ x"</span></div>
+      <span class="mc-q">หลังทดลองฐาน B: หลักฐานจากกราฟ F-x ยืนยัน M3.2 ว่าผิดได้อย่างไร?</span>
+      <textarea class="ans-ta" rows="2" id="reflect32" placeholder="กราฟ F-x แสดงให้เห็นว่า..."></textarea>
+    </div>
+
+    <div class="mc-item" style="margin-bottom:0">
+      <div><span class="mc-code">M3.3</span> <span class="mc-wrong">"สปริงแนวดิ่งใช้สูตร T ต่างจากแนวระดับ"</span></div>
+      <span class="mc-q">หลังทดลองฐาน C: เขียนสรุปสั้น ๆ ว่า M3.3 ผิดตรงไหน</span>
+      <textarea class="ans-ta" rows="2" id="reflect33" placeholder="M3.3 ผิดเพราะ..."></textarea>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่ง POE-03 ทั้ง 3 ฐาน</h3>
+    <button class="btn-submit" onclick="submitPOE()">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="foot">POE-03 · SHM แผน 3 · มวล-สปริง · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET = 'POE3_SHM_Plan3';
+
+const cvs = {}; const ctxs = {};
+const modes = {}; const sz = {A:3,B:3,Bobs:3,Bpred:3,C:3};
+
+function initC(id){
+  const c = document.getElementById(id); if(!c) return;
+  cvs[id]=c; const ctx=c.getContext('2d'); ctx.lineCap='round'; ctx.lineJoin='round'; ctxs[id]=ctx;
+  if(c.dataset.bg==='grid') drawGridAxes(id);
+  let drawing=false, last=null;
+  const gp=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();drawing=true;last=gp(e);};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=gp(e);const k=id.replace(/[^A-Za-z]/g,'').replace('cB','B').replace('cA','A').replace('cC','C');
+    const key=id==='cBobs'?'Bobs':id==='cBpred'?'Bpred':id.replace('c','');
+    ctxs[id].globalCompositeOperation=modes[key]==='eraser'?'destination-out':'source-over';
+    ctxs[id].strokeStyle='#1a202c'; ctxs[id].lineWidth=sz[key]||3;
+    ctxs[id].beginPath();ctxs[id].moveTo(last.x,last.y);ctxs[id].lineTo(p.x,p.y);ctxs[id].stroke();last=p;};
+  const end=()=>{drawing=false;last=null;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);
+  c.addEventListener('mouseup',end);c.addEventListener('mouseleave',end);
+  c.addEventListener('touchstart',start,{passive:false});
+  c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+}
+
+function setMode(key,m){
+  modes[key]=m;
+}
+function clearC(id){
+  if(ctxs[id]){ctxs[id].clearRect(0,0,cvs[id].width,cvs[id].height);if(cvs[id].dataset.bg==='grid')drawGridAxes(id);}
+}
+function drawGridAxes(id){
+  const c=cvs[id]; if(!c) return;
+  const ctx=ctxs[id]; if(!ctx) return;
+  const w=c.width, h=c.height;
+  ctx.clearRect(0,0,w,h);
+  // grid
+  ctx.strokeStyle='#f0f0f0'; ctx.lineWidth=1;
+  for(let x=0;x<w;x+=25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  // axes
+  const mx=60,my=20,bx=w-20,by=h-40;
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(mx,by);ctx.lineTo(bx,by);ctx.stroke();
+  // labels
+  ctx.fillStyle='#333'; ctx.font='bold 14px Sarabun,sans-serif';
+  ctx.fillText('F (N)',mx-50,my+20); ctx.fillText('x (cm)',bx-40,by+24);
+  ctx.fillText('0',mx-16,by+18);
+}
+
+function gv(id){return document.getElementById(id)?.value||'';}
+function gr(name){return document.querySelector(`input[name="${name}"]:checked`)?.value||'';}
+
+function submitPOE(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){alert('กรุณากรอกชื่อก่อน');return;}
+  const payload={
+    sheet:SHEET, student_name:name,
+    student_no:gv('s-num'), class:gv('s-room'), group:gv('s-group'),
+    A_series_kpred:gv('pA_s_kpred'),A_series_Tpred:gv('pA_s_Tpred'),A_series_reason:gv('pA_s_reason'),
+    A_parallel_kpred:gv('pA_p_kpred'),A_parallel_Tpred:gv('pA_p_Tpred'),A_parallel_reason:gv('pA_p_reason'),
+    A_series_kobs:gv('oA_s_kobs'),A_series_Tobs:gv('oA_s_Tobs'),
+    A_parallel_kobs:gv('oA_p_kobs'),A_parallel_Tobs:gv('oA_p_Tobs'),
+    A_series_formula:gv('eA_series_formula'),A_parallel_formula:gv('eA_parallel_formula'),
+    B_pred:gr('bPred'),B_slope:gv('bSlope'),B_slopeIs:gv('bSlopeIs'),B_origin:gr('bOrigin'),
+    B_explain:gv('bExplain'),
+    C_pred:gr('cPred'),C_predReason:gv('cPredReason'),
+    C_horiT:gv('cHoriT'),C_vertT:gv('cVertT'),C_compare:gv('cCompare'),
+    C_Tcalc:gv('cTcalc'),
+    reflect31:gr('r31'),reflect32:gv('reflect32'),reflect33:gv('reflect33'),
+    canvas_A:cvs['cA']?cvs['cA'].toDataURL('image/png'):'',
+    canvas_Bpred:cvs['cBpred']?cvs['cBpred'].toDataURL('image/png'):'',
+    canvas_Bobs:cvs['cBobs']?cvs['cBobs'].toDataURL('image/png'):'',
+    canvas_C:cvs['cC']?cvs['cC'].toDataURL('image/png'):''
+  };
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`POE3_${name}.json`;a.click();
+    showStatus('success','💾 บันทึก .json แล้ว');return;
+  }
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ'));
+}
+function showStatus(t,m){const el=document.getElementById('status');el.className='status '+t;el.textContent=m;}
+
+['cA','cBpred','cBobs','cC'].forEach(initC);
+</script>
+</body></html>

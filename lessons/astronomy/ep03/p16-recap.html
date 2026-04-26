@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P16 · Movie Recap · ลากเนื้อหาเข้าฉาก</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:radial-gradient(ellipse at top, #0d1530 0%, #04050d 60%); }
+
+  /* === Scene grid === */
+  .scene-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin:14px 0; }
+  .scene-card { background:linear-gradient(160deg, rgba(22,27,58,0.85), rgba(10,12,30,0.7));
+    border:1px solid rgba(120,140,220,0.35); border-radius:14px; padding:14px; min-height:140px;
+    display:flex; flex-direction:column; transition:all .2s; }
+  .scene-card.hover { border-color:#64d8ff; box-shadow:0 0 22px rgba(100,216,255,0.35); transform:translateY(-2px); }
+  .scene-card.matched { border-color:#7effb2; background:linear-gradient(160deg, rgba(126,255,178,0.12), rgba(10,12,30,0.7)); }
+  .scene-card.wrong { border-color:#ff5c7a; background:linear-gradient(160deg, rgba(255,92,122,0.12), rgba(10,12,30,0.7)); animation:shakeX 0.3s; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+  .sc-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .sc-icon { font-size:28px; filter:drop-shadow(0 0 10px rgba(100,216,255,0.5)); }
+  .sc-title { font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.15em; color:#9aa3c0; }
+  .sc-name { font-size:14px; color:#e8ecf8; font-weight:700; line-height:1.3; }
+  .sc-drop { flex:1; min-height:50px; padding:10px; background:rgba(0,0,0,0.4);
+    border:1.5px dashed #2a3050; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:12px; color:#6a7394; text-align:center; }
+  .sc-card.has-content .sc-drop { border-style:solid; }
+  .sc-content { padding:8px 10px; background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#e8ecf8;
+    border-radius:8px; font-size:13px; line-height:1.5; width:100%; }
+  .sc-content.bad { background:rgba(255,92,122,0.12); border-color:#ff5c7a; }
+
+  /* === Content tray === */
+  .tray-wrap { margin:18px 0; }
+  .tray-head { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+  .tray-head .lbl { font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.2em; color:#ffcb6b; }
+  .tray-head .hint { font-size:11px; color:#9aa3c0; }
+  .tray { display:flex; flex-wrap:wrap; gap:8px; padding:14px; background:rgba(0,0,0,0.4);
+    border:1px dashed #2a3050; border-radius:12px; min-height:60px; }
+  .chip { padding:8px 14px; background:linear-gradient(135deg, rgba(100,216,255,0.12), rgba(185,128,255,0.08));
+    border:1.5px solid #64d8ff; color:#e8ecf8; border-radius:20px; font-size:13px; cursor:grab;
+    user-select:none; transition:all .15s; }
+  .chip:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(100,216,255,0.3); }
+  .chip.dragging { opacity:0.4; }
+  .chip.placed { display:none; }
+
+  /* === Trap zone === */
+  .trap-zone { margin:14px 0; padding:14px; background:linear-gradient(160deg, rgba(255,92,122,0.08), rgba(10,12,30,0.5));
+    border:2px dashed rgba(255,92,122,0.5); border-radius:14px; min-height:80px; }
+  .trap-zone.hover { background:rgba(255,92,122,0.18); border-color:#ff5c7a; }
+  .trap-zone .tz-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .trap-zone .tz-icon { font-size:18px; }
+  .trap-zone .tz-title { font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.2em; color:#ff5c7a; }
+  .trap-zone .tz-sub { font-size:11px; color:#9aa3c0; }
+  .trap-zone .tz-items { display:flex; flex-wrap:wrap; gap:8px; min-height:32px; }
+  .trap-chip { padding:6px 12px; background:rgba(255,92,122,0.15); border:1.5px solid #ff5c7a;
+    color:#ffd; border-radius:20px; font-size:12px; }
+  .trap-chip.bad { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; }
+  .trap-chip .why { display:block; font-size:10px; color:#9aa3c0; margin-top:2px; }
+
+  /* === Status bar === */
+  .status-bar { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0; }
+  .stat-cell { padding:8px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; text-align:center; }
+  .stat-cell .v { font-family:Orbitron,monospace; font-size:18px; color:#ffcb6b; }
+  .stat-cell .k { font-size:10px; color:#9aa3c0; letter-spacing:0.1em; }
+
+  .reset-btn { padding:6px 14px; background:rgba(212,184,255,0.1); border:1px solid #d4b8ff; color:#d4b8ff;
+    border-radius:8px; cursor:pointer; font-size:12px; font-family:inherit; }
+  .reset-btn:hover { background:rgba(212,184,255,0.2); }
+</style>
+</head>
+<body data-page="p16" data-type="puzzle">
+<div class="page">
+  <div class="lbl puzzle">🎬 RECAP · ลากเนื้อหาเข้าฉากให้ถูก · ระวัง trap!</div>
+  <h1>Movie Recap · 6 ฉาก + 2 trap</h1>
+
+  <div class="card">
+    <div class="narrative">ยานปลอดภัยชั่วคราว · ย้อนดูฉากสำคัญใน EP03 · <b>ลากเนื้อหาจากกล่องล่าง</b> ไปวางในฉากที่ตรงกัน · มี <b>2 ข้อมูลเป็น trap</b> ให้ลากไปทิ้งใน "🚨 TRAP" zone</div>
+    <div class="status">🎯 จับคู่ครบ 6 ฉาก + ดัก 2 trap = perfect!</div>
+  </div>
+
+  <div class="status-bar">
+    <div class="stat-cell"><div class="v" id="sMatched">0/6</div><div class="k">ฉากจับคู่</div></div>
+    <div class="stat-cell"><div class="v" id="sTraps">0/2</div><div class="k">trap ดักได้</div></div>
+    <div class="stat-cell"><div class="v" id="sWrong">0</div><div class="k">วางผิด</div></div>
+  </div>
+
+  <!-- Scene grid -->
+  <div class="scene-grid" id="sceneGrid"></div>
+
+  <!-- Trap zone -->
+  <div class="trap-zone" id="trapZone">
+    <div class="tz-head">
+      <span class="tz-icon">🚨</span>
+      <div>
+        <div class="tz-title">TRAP ZONE</div>
+        <div class="tz-sub">ลากข้อมูลที่คิดว่า "ผิด" มาทิ้งที่นี่</div>
+      </div>
+    </div>
+    <div class="tz-items" id="trapItems"></div>
+  </div>
+
+  <!-- Tray -->
+  <div class="tray-wrap">
+    <div class="tray-head">
+      <span class="lbl">📦 เนื้อหาที่ต้องจัดเข้าฉาก</span>
+      <span class="hint">(8 ใบ · 6 ตรงฉาก · 2 trap)</span>
+      <button class="reset-btn" onclick="resetAll()" style="margin-left:auto;">↻ รีเซ็ต</button>
+    </div>
+    <div class="tray" id="tray"></div>
+  </div>
+
+  <div id="result" class="card" style="display:none;"></div>
+
+  <div class="btn-pair">
+    <button class="submit-btn">💾 ส่งรายงาน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Movie Recap (P16)</summary>
+    <div class="body">
+      <b>Recap ตอน EP03</b> · drag-drop · ไม่มี math (ตรงกับ vault 3 review)<br>
+      <b>6 ฉาก</b>: P02 SOS · P04 parallax · P06 spectrum · P08 m-scale · P11 units · P15 heist<br>
+      <b>2 trap</b>: ปีแสง=parsec · parallax วัดครั้งเดียว → ลาก trap zone<br>
+      <b>🪙 reward</b>: +5/match · +25/trap · -5/wrong<br>
+      <b>perfect</b>: ครบ 6 + trap 2 + wrong = 0
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+const SCENES = [
+  { id:'s2',  icon:'💌', title:'P02', name:'SOS · ARYA',         match:'c1' },
+  { id:'s4',  icon:'🔭', title:'P04', name:'Parallax',           match:'c2' },
+  { id:'s6',  icon:'🌈', title:'P06', name:'Spectrum สี',         match:'c3' },
+  { id:'s8',  icon:'👁',  title:'P08', name:'m · ปรากฎ',          match:'c4' },
+  { id:'s11', icon:'📏', title:'P11', name:'หน่วยระยะ',           match:'c5' },
+  { id:'s15', icon:'🔥', title:'P15', name:'Stellar Heist',       match:'c6' },
+];
+
+const CONTENTS = [
+  { id:'c1', text:'ถอดรหัสคำว่า "ARYA" จากสัญญาณ', trap:false },
+  { id:'c2', text:'ดาวใกล้ → มุมขยับเยอะ (d = 1/p)', trap:false },
+  { id:'c3', text:'ดาวสีน้ำเงินร้อนกว่าดาวสีแดง', trap:false },
+  { id:'c4', text:'Sirius (m = −1.5) สว่างสุดบนฟ้า', trap:false },
+  { id:'c5', text:'1 parsec ≈ 3.26 ปีแสง', trap:false },
+  { id:'c6', text:'ผ่าน 3 vault หนี VOIDHUNTER', trap:false },
+  { id:'t1', text:'1 ปีแสง = 1 parsec', trap:true,  why:'ผิด · 1 pc = 3.26 ly' },
+  { id:'t2', text:'parallax วัดครั้งเดียวก็พอ', trap:true,  why:'ต้องวัด 2 จุด ห่าง 6 เดือน' },
+];
+
+// state
+const placement = {};   // contentId → 'sceneId' | 'trap'
+let wrongCount = 0;
+let submitted = false;
+
+/* ===== render ===== */
+function renderScenes() {
+  document.getElementById('sceneGrid').innerHTML = SCENES.map(s => {
+    const placed = Object.entries(placement).find(([cid, where]) => where === s.id);
+    let drop = '<div class="sc-drop" data-scene="'+s.id+'">⬇ ลากเนื้อหามาวาง</div>';
+    let cls = '';
+    if (placed) {
+      const c = CONTENTS.find(x => x.id === placed[0]);
+      const correct = (s.match === c.id);
+      cls = correct ? 'matched' : 'wrong';
+      drop = '<div class="sc-content '+(correct?'':'bad')+'" data-scene="'+s.id+'">'+c.text+(correct?'':' <span style="color:#ff5c7a;">✗ ไม่ตรงฉาก</span>')+'</div>';
+    }
+    return `<div class="scene-card ${cls}" data-scene="${s.id}">
+      <div class="sc-head">
+        <span class="sc-icon">${s.icon}</span>
+        <div>
+          <div class="sc-title">${s.title}</div>
+          <div class="sc-name">${s.name}</div>
+        </div>
+      </div>
+      ${drop}
+    </div>`;
+  }).join('');
+  wireSceneDrop();
+}
+function renderTray() {
+  const placedIds = new Set(Object.keys(placement));
+  document.getElementById('tray').innerHTML = CONTENTS.map(c =>
+    placedIds.has(c.id)
+      ? ''
+      : `<div class="chip" draggable="true" data-id="${c.id}">${c.text}</div>`
+  ).join('');
+  wireChipDrag();
+}
+function renderTrap() {
+  document.getElementById('trapItems').innerHTML = CONTENTS
+    .filter(c => placement[c.id] === 'trap')
+    .map(c => {
+      const ok = !!c.trap;
+      return `<div class="trap-chip ${ok?'':'bad'}" title="${c.why || 'นี่ไม่ใช่ trap'}">
+        ${c.text}
+        ${ok ? `<span class="why">${c.why}</span>` : '<span class="why" style="color:#ffcb6b;">ไม่ใช่ trap · เป็นข้อมูลถูก</span>'}
+      </div>`;
+    }).join('');
+}
+function refreshStats() {
+  const matched = SCENES.filter(s => {
+    const placed = Object.entries(placement).find(([cid, where]) => where === s.id);
+    return placed && CONTENTS.find(c => c.id === placed[0]).id === s.match;
+  }).length;
+  const traps = CONTENTS.filter(c => c.trap && placement[c.id] === 'trap').length;
+  document.getElementById('sMatched').textContent = matched + '/6';
+  document.getElementById('sTraps').textContent = traps + '/2';
+  document.getElementById('sWrong').textContent = wrongCount;
+}
+
+/* ===== drag-drop ===== */
+function placeOnScene(cid, sceneId) {
+  if (!cid || !sceneId) return;
+  Object.entries(placement).forEach(([k, v]) => { if (v === sceneId) delete placement[k]; });
+  placement[cid] = sceneId;
+  const s = SCENES.find(x => x.id === sceneId);
+  const correct = (s && s.match === cid);
+  if (correct) {
+    if (typeof Photon !== 'undefined') Photon.add(5, 'p16-match');
+  } else {
+    wrongCount++;
+    if (typeof Photon !== 'undefined') Photon.add(-5, 'p16-wrong-scene');
+  }
+  renderAll();
+}
+function placeOnTrap(cid) {
+  if (!cid) return;
+  placement[cid] = 'trap';
+  const c = CONTENTS.find(x => x.id === cid);
+  if (c && c.trap) {
+    if (typeof Photon !== 'undefined') Photon.add(25, 'p16-trap');
+  } else {
+    wrongCount++;
+    if (typeof Photon !== 'undefined') Photon.add(-5, 'p16-wrong-trap');
+  }
+  renderAll();
+}
+function wireChipDrag() {
+  document.querySelectorAll('.chip').forEach(ch => {
+    ch.ondragstart = (e) => { e.dataTransfer.setData('cid', ch.dataset.id); e.dataTransfer.setData('text/plain', ch.dataset.id); ch.classList.add('dragging'); };
+    ch.ondragend = () => ch.classList.remove('dragging');
+    if (typeof TouchDrag !== 'undefined') TouchDrag.makeDraggable(ch, () => ch.dataset.id);
+  });
+}
+function wireSceneDrop() {
+  document.querySelectorAll('.scene-card').forEach(card => {
+    card.ondragover = (e) => { e.preventDefault(); card.classList.add('hover'); };
+    card.ondragleave = () => card.classList.remove('hover');
+    card.ondrop = (e) => {
+      e.preventDefault();
+      card.classList.remove('hover');
+      let cid = e.dataTransfer.getData('cid');
+      if (!cid) cid = e.dataTransfer.getData('text/plain');
+      placeOnScene(cid, card.dataset.scene);
+    };
+    if (typeof TouchDrag !== 'undefined') {
+      TouchDrag.makeDropTarget(card, (cid) => placeOnScene(cid, card.dataset.scene));
+    }
+  });
+}
+function wireTrapDrop() {
+  const tz = document.getElementById('trapZone');
+  tz.ondragover = (e) => { e.preventDefault(); tz.classList.add('hover'); };
+  tz.ondragleave = () => tz.classList.remove('hover');
+  tz.ondrop = (e) => {
+    e.preventDefault();
+    tz.classList.remove('hover');
+    let cid = e.dataTransfer.getData('cid');
+    if (!cid) cid = e.dataTransfer.getData('text/plain');
+    placeOnTrap(cid);
+  };
+  if (typeof TouchDrag !== 'undefined') {
+    TouchDrag.makeDropTarget(tz, (cid) => placeOnTrap(cid));
+  }
+}
+
+function renderAll() {
+  renderScenes();
+  renderTray();
+  renderTrap();
+  refreshStats();
+}
+
+window.resetAll = function() {
+  if (submitted) return;
+  Object.keys(placement).forEach(k => delete placement[k]);
+  wrongCount = 0;
+  renderAll();
+};
+
+// initial
+renderAll();
+wireTrapDrop();
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p16',
+    nextHref: 'p19-map.html',
+    getPayload: () => {
+      const matched = SCENES.filter(s => placement[s.match] === s.id).length;
+      const trapsCaught = CONTENTS.filter(c => c.trap && placement[c.id] === 'trap').length;
+      return {
+        tag: 'recap-drag',
+        placement: { ...placement },
+        matched,
+        trapsCaught,
+        wrongCount,
+      };
+    },
+    isPerfect: (p) => p.matched === 6 && p.trapsCaught === 2 && p.wrongCount === 0,
+    onSubmit: (mode, coin) => {
+      submitted = true;
+      const r = document.getElementById('result');
+      r.style.display = 'block';
+      const matched = SCENES.filter(s => placement[s.match] === s.id).length;
+      const traps = CONTENTS.filter(c => c.trap && placement[c.id] === 'trap').length;
+      r.innerHTML = `<h3>จับคู่ ${matched}/6 ฉาก · ดัก trap ${traps}/2</h3>
+        <div style="font-size:13px;color:#c8cde0;margin-top:6px;">
+          🚨 trap 1: "1 ปีแสง = 1 parsec" → จริงๆ 1 pc ≈ 3.26 ly<br>
+          🚨 trap 2: "parallax วัดครั้งเดียวก็พอ" → จริงๆ ต้อง 2 จุด ห่าง 6 เดือน
+        </div>
+        ${coin ? '<div class="ok" style="margin-top:8px;">🪙 PERFECT +'+coin+'</div>' : ''}`;
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p16-to-p19', 'p19-map.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

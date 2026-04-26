@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP03 · Smoke Test</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  body { font-family:'Sarabun',sans-serif; background:#05060f; color:#e8ecf8; padding:20px; }
+  .sect { padding:16px; background:rgba(22,27,58,0.6); border:1px solid rgba(120,140,220,0.3); border-radius:12px; margin:14px 0; }
+  h3 { font-family:Orbitron,sans-serif; color:#64d8ff; font-size:14px; letter-spacing:0.15em; margin-bottom:10px; }
+  pre { background:rgba(0,0,0,0.3); padding:10px; border-radius:6px; font-size:12px; overflow:auto; }
+  button { padding:8px 14px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; color:#64d8ff; border-radius:6px; cursor:pointer; margin:3px; font-family:inherit; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+  .ok { color:#7effb2; } .bad { color:#ff5c7a; } .warn { color:#ffcb6b; }
+  .result { font-family:monospace; font-size:12px; padding:8px; background:rgba(0,0,0,0.3); border-radius:6px; max-height:240px; overflow:auto; }
+</style>
+</head>
+<body>
+<h1 style="font-family:Orbitron,sans-serif;">🧪 EP03 Smoke Test</h1>
+<p style="color:#9aa3c0;">กดปุ่มไล่จากบน · ดูผลด้านล่าง</p>
+
+<div class="sect">
+  <h3>1. Module loaded?</h3>
+  <div id="modCheck">checking...</div>
+</div>
+
+<div class="sect">
+  <h3>2. Config OK?</h3>
+  <div id="cfgCheck">checking...</div>
+</div>
+
+<div class="sect">
+  <h3>3. Sync · สร้างห้อง · เพิ่ม/ลด photon · meter</h3>
+  <div class="row">
+    <button onclick="t.create()">createRoom()</button>
+    <button onclick="t.addPhoton()">+50 ⚡️</button>
+    <button onclick="t.spendWarp()">spend WARP (100)</button>
+    <button onclick="t.wrong()">wrongAnswer (-10 meter)</button>
+    <button onclick="t.vote()">castVote(warp)</button>
+    <button onclick="t.reset()">leaveRoom</button>
+  </div>
+  <div class="result" id="syncOut">—</div>
+</div>
+
+<div class="sect">
+  <h3>4. HUD · Photon pill + VOIDHUNTER meter + Role badge</h3>
+  <button onclick="t.renderHUD()">render</button>
+  <button onclick="t.setRole('nav')">role=NAV</button>
+  <button onclick="t.setRole('eng')">role=ENG</button>
+  <button onclick="t.setRole('med')">role=MED</button>
+  <button onclick="t.setRole('mech')">role=MECH</button>
+</div>
+
+<div class="sect">
+  <h3>5. Photon Bank UI</h3>
+  <div id="bankHost"></div>
+  <button onclick="t.bank()">mountBank</button>
+</div>
+
+<div class="sect">
+  <h3>6. Pages listed</h3>
+  <div id="pagesList"></div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script>
+const log = (id, msg, cls='') => {
+  const el = document.getElementById(id);
+  el.innerHTML = '<div class="'+cls+'">'+msg+'</div>' + (el.innerHTML||'');
+};
+
+function checkMod() {
+  const mods = ['Sync','VoidHunter','Photon','Role','EP_CONFIG','FirebaseConfig'];
+  const out = mods.map(m => {
+    const ok = typeof window[m] !== 'undefined';
+    return '<span class="'+(ok?'ok':'bad')+'">' + (ok?'✓':'✗') + ' ' + m + '</span>';
+  }).join(' · ');
+  document.getElementById('modCheck').innerHTML = out;
+}
+
+function checkCfg() {
+  const c = EP_CONFIG;
+  const ok = c && c.id==='ep03' && c.pages.length===20 && c.roles.length===4;
+  const msg = ok ? '<span class="ok">✓ EP_CONFIG.id='+c.id+' · pages='+c.pages.length+' · roles='+c.roles.length+' · stars='+c.stars.length+' · photon targets='+Object.keys(c.photon.targets).length+'</span>'
+                 : '<span class="bad">✗ config broken</span>';
+  document.getElementById('cfgCheck').innerHTML = msg;
+}
+
+function dumpState() {
+  const s = Sync.getState();
+  document.getElementById('syncOut').textContent = 'ROOM: '+(Sync.getRoomCode()||'—')+'\nME: '+JSON.stringify(Sync.getMe())+'\nSTATE:\n'+JSON.stringify(s,null,2);
+}
+
+const t = {
+  create() { Sync.createRoom({}); dumpState(); },
+  addPhoton() { Sync.addPhoton(50,'test'); dumpState(); },
+  spendWarp() { const ok = Sync.spendPhoton(100,'warp'); dumpState(); alert(ok?'ok':'not enough'); },
+  wrong() { VoidHunter.wrongAnswer('test'); dumpState(); },
+  vote() { Sync.castVote('warp-target','proxima'); dumpState(); },
+  reset() { Sync.leaveRoom(); localStorage.removeItem('cosmosLog_state_shared'); dumpState(); },
+  renderHUD() { Photon.renderPill(); VoidHunter.renderHUD(); Role.renderBadge(); },
+  setRole(r) { Sync.setRole(r); Role.renderBadge(); },
+  bank() { Photon.mountBank('#bankHost'); },
+};
+
+function listPages() {
+  const host = document.getElementById('pagesList');
+  host.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px;">' +
+    EP_CONFIG.pages.map(p => '<a href="'+p.file+'" style="padding:6px 10px;background:rgba(100,216,255,0.06);border:1px solid #333;border-radius:6px;color:#64d8ff;text-decoration:none;font-size:12px;">'+p.id+' · '+p.title+'</a>').join('') + '</div>';
+}
+
+Sync.init();
+checkMod();
+checkCfg();
+listPages();
+dumpState();
+Sync.on(dumpState);
+</script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P19B · 3-2-1 JOURNAL</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:radial-gradient(ellipse at top, #1a0a1a 0%, #04050d 60%); }
+
+  /* Section · 3 · 2 · 1 · big number badges */
+  .section-321 {
+    padding: 22px 26px;
+    border-radius: 16px;
+    margin: 18px 0;
+    position: relative;
+  }
+  .section-321::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -18px; left: 20px;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px; font-weight: 900;
+    color: var(--c); background: #04050d;
+    border: 2px solid var(--c);
+    box-shadow: 0 0 20px var(--c);
+  }
+  .section-3 { --c: #7effb2; background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.03)); border: 1px solid rgba(126,255,178,0.35); }
+  .section-2 { --c: #b980ff; background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.03)); border: 1px solid rgba(185,128,255,0.35); }
+  .section-1 { --c: #ffcb6b; background: linear-gradient(135deg, rgba(255,203,107,0.06), rgba(255,92,122,0.03)); border: 1px solid rgba(255,203,107,0.35); }
+  .section-321 h3 { font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:0.2em; color:var(--c); margin-bottom:4px; padding-left:54px; }
+  .section-321 .s-sub { font-size:13px; color:#9aa3c0; padding-left:54px; margin-bottom:16px; }
+
+  /* 3 · concept checkboxes */
+  .concept-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; }
+  .cpt-item { display:flex; align-items:center; gap:10px; padding:12px 14px; background:rgba(0,0,0,0.3);
+    border:1px solid #2a3050; border-radius:10px; cursor:pointer; font-size:13.5px; transition:all .2s; }
+  .cpt-item:hover { border-color:#64d8ff; }
+  .cpt-item input { accent-color:#7effb2; width:18px; height:18px; flex-shrink:0; }
+  .cpt-item.selected { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .cpt-count { margin-top:10px; padding:8px 14px; background:rgba(0,0,0,0.3); border-radius:100px; font-size:12px; display:inline-block; }
+  .cpt-count b { color:#7effb2; }
+
+  /* 2 · scene drag */
+  .scene-layout { display:grid; grid-template-columns:2fr 1fr; gap:16px; margin:16px 0; }
+  @media(max-width:800px){ .scene-layout { grid-template-columns:1fr; } }
+  .scene-src { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:8px; padding:14px; background:rgba(0,0,0,0.25); border:1px solid #2a3050; border-radius:12px; }
+  .scene-src-card { padding:10px; text-align:center; background:linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.06));
+    border:1px solid #64d8ff; border-radius:8px; cursor:grab; font-size:11px; color:#e8ecf8; user-select:none; }
+  .scene-src-card:hover { transform:translateY(-2px); border-color:#b980ff; }
+  .scene-src-card.picked { opacity:0.3; cursor:not-allowed; }
+  .scene-src-card .icon { font-size:22px; margin-bottom:4px; display:block; }
+  .fav-zones { display:flex; flex-direction:column; gap:12px; }
+  .fav-zone { padding:14px; min-height:140px; background:rgba(185,128,255,0.05); border:2px dashed rgba(185,128,255,0.4); border-radius:12px;
+    text-align:center; transition:all .2s; display:flex; flex-direction:column; gap:6px; justify-content:center; }
+  .fav-zone.drag-over { border-color:#b980ff; background:rgba(185,128,255,0.1); }
+  .fav-zone.filled { border-style:solid; border-color:#b980ff; justify-content:flex-start; }
+  .fav-zone .zone-lbl { font-family:'Orbitron'; font-size:10px; color:#b980ff; letter-spacing:0.2em; }
+  .fav-zone .picked-card { font-size:12px; color:#e8ecf8; }
+  .fav-zone .picked-card .icon { font-size:24px; display:block; }
+  .fav-zone textarea { margin-top:6px; min-height:44px; font-size:12px; width:100%; padding:6px 8px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; color:#e8ecf8; border-radius:6px; box-sizing:border-box; font-family:inherit; }
+
+  /* 1 · question */
+  .q-row { display:flex; flex-direction:column; gap:8px; }
+  .q-row select, .q-row textarea { padding:10px 12px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:14px; box-sizing:border-box; }
+  .q-row select:focus, .q-row textarea:focus { border-color:#ffcb6b; outline:none; }
+
+  /* Bonus row */
+  .bonus-wrap { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin:14px 0; }
+  .bonus-card { padding:12px; background:rgba(22,27,58,0.5); border:1px solid #2a3050; border-radius:10px; text-align:center; }
+  .bonus-card h5 { font-size:12px; color:#9aa3c0; letter-spacing:0.1em; margin-bottom:8px; font-family:Orbitron,sans-serif; }
+  .emoji-row { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+  .emoji-btn { padding:8px 6px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:8px; cursor:pointer; font-size:24px; min-width:52px; display:flex; flex-direction:column; align-items:center; gap:2px; transition:all .2s; }
+  .emoji-btn .label { font-size:9px; color:#9aa3c0; }
+  .emoji-btn:hover { border-color:#ffcb6b; transform:translateY(-2px); }
+  .emoji-btn.active { background:rgba(255,203,107,0.15); border-color:#ffcb6b; }
+  .star-row { display:flex; gap:4px; justify-content:center; }
+  .star { font-size:24px; color:#444; cursor:pointer; transition:all .15s; }
+  .star.on { color:#ffcb6b; text-shadow:0 0 12px #ffcb6b; }
+  .slider-wrap { padding:6px 0; }
+  .slider-val { font-family:Orbitron,monospace; font-size:24px; color:#ffcb6b; }
+
+  /* Submit / cert */
+  .submit-area { padding:20px; text-align:center; margin:14px 0; }
+  .submit-final { padding:16px 36px; background:linear-gradient(135deg, #7effb2, #64d8ff); border:none; color:#0a0420;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; letter-spacing:0.18em; border-radius:12px; cursor:pointer;
+    box-shadow:0 8px 28px rgba(126,255,178,0.35); transition:all .2s; }
+  .submit-final:hover:not(:disabled) { transform:translateY(-2px); }
+  .submit-final:disabled { opacity:0.4; cursor:not-allowed; box-shadow:none; }
+
+  .result-card { padding:24px; background:radial-gradient(ellipse, rgba(126,255,178,0.1), #0a0420); border:3px solid #7effb2;
+    border-radius:14px; text-align:center; margin:14px 0; animation:revealIn .6s ease-out; }
+  @keyframes revealIn { from { opacity:0; transform:scale(0.9); } }
+  .result-card h3 { font-family:Orbitron,sans-serif; font-size:18px; color:#7effb2; letter-spacing:0.15em; margin-bottom:10px; }
+
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px;
+    background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999;
+    box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px); opacity:0; } }
+
+  .ped-tag-row { display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+  .ped-tag { padding:3px 10px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; color:#9aa3c0; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; letter-spacing:0.1em; }
+  .ped-tag.p { color:#7effb2; border-color:rgba(126,255,178,0.3); }
+  .ped-tag.a { color:#ffcb6b; border-color:rgba(255,203,107,0.3); }
+</style>
+</head>
+<body data-page="p19b" data-type="reflection">
+<div class="page">
+
+  <div class="lbl">📒 3-2-1 JOURNAL · บันทึกขั้นสุดท้าย</div>
+  <h1>3 สิ่งที่เรียน · 2 ฉากประทับใจ · 1 คำถามที่อยากรู้ต่อ</h1>
+
+  <div class="card" style="border-color:#d4b8ff;background:rgba(212,184,255,0.06);">
+    <div style="font-style:italic;color:#d4b8ff;line-height:1.7;">
+      <b>Dr.Hubble</b>: "ก่อนปิดสมุด · ขอเก็บความคิดของลูก<br>
+      ข้อมูลนี้จะติดตัวลูกไป EP04 · และใช้ทำวิจัยเรื่องการเรียนรู้"
+    </div>
+  </div>
+
+  <!-- SECTION 3 · CONTENT -->
+  <div class="section-321 section-3" data-num="3">
+    <h3>สิ่งที่เรียนรู้วันนี้ (เนื้อหา)</h3>
+    <div class="s-sub">กาถูก <b>3 ข้อ</b> ที่ทีมจำได้มากที่สุด · จากเนื้อหาทั้งหมดใน EP03</div>
+
+    <div class="concept-grid" id="concept-grid">
+      <label class="cpt-item"><input type="checkbox" value="c1"><span><b>d = 1/p</b> · parallax → distance</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c2"><span><b>1 pc ≈ 3.26 ly</b> · parsec ≠ เวลา</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c3"><span><b>m scale</b> · ติดลบ = สว่างปรากฎมาก (กลับทิศ)</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c4"><span><b>m vs M</b> · m=อันดับความสว่างปรากฎ · M=ปล่อยแสงจริง</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c5"><span><b>distance modulus</b>: M = m − 5×log(d/10)</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c6"><span><b>supergiant</b> ปล่อยแสงเยอะ · อายุสั้น (เช่น Deneb)</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c7"><span><b>Sirius สว่างปรากฎสุด</b> ≠ ปล่อยแสงเยอะสุด · เพราะแค่ใกล้</span></label>
+      <label class="cpt-item"><input type="checkbox" value="c8"><span><b>triangulation</b>: รวม 3 ค่า (d, m, M) ระบุดาว</span></label>
+    </div>
+    <div class="cpt-count">เลือกแล้ว · <b id="cpt-n">0</b> / 3</div>
+
+    <div style="margin-top:14px;">
+      <label style="font-size:12px;color:#9aa3c0;">✍ ถ้ามีความรู้อื่นที่ไม่อยู่ในรายการ · เขียนที่นี่</label>
+      <textarea id="extra-concept" rows="2" placeholder="optional · เช่น 'CRI · misconception M2' · ฯลฯ"
+        style="width:100%;padding:8px 10px;background:rgba(0,0,0,0.4);border:1px solid #2a3050;color:#e8ecf8;border-radius:8px;font-family:inherit;font-size:13px;box-sizing:border-box;margin-top:4px;"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 2 · STORY FAVORITE -->
+  <div class="section-321 section-2" data-num="2">
+    <h3>ฉากประทับใจ (เรื่องราว)</h3>
+    <div class="s-sub">ลาก <b>2 ฉาก</b> ที่ทีมชอบที่สุด · เขียนเหตุผลสั้น ๆ</div>
+
+    <div class="scene-layout">
+      <div class="scene-src" id="scene-src"></div>
+      <div class="fav-zones">
+        <div class="fav-zone" data-slot="fav1">
+          <div class="zone-lbl">◦ FAVORITE 1</div>
+          <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+        </div>
+        <div class="fav-zone" data-slot="fav2">
+          <div class="zone-lbl">◦ FAVORITE 2</div>
+          <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 · QUESTION -->
+  <div class="section-321 section-1" data-num="1">
+    <h3>คำถามที่อยากรู้ต่อ (ต่อยอด)</h3>
+    <div class="s-sub">เลือก 1 คำถามจาก dropdown หรือเขียนเอง · จะติดไป EP04</div>
+
+    <div class="q-row">
+      <select id="q-preset" onchange="onPresetChange()">
+        <option value="">-- เลือกคำถาม หรือ "อื่นๆ" เพื่อเขียนเอง --</option>
+        <option value="q1">ดาว Deneb จะ supernova เมื่อไหร่?</option>
+        <option value="q2">parallax ของดาวที่ไกลกว่า 1000 pc วัดยังไง?</option>
+        <option value="q3">มีดาวที่ M ติดลบกว่า −10 ไหม?</option>
+        <option value="q4">กล้อง James Webb เห็นไกลแค่ไหน?</option>
+        <option value="q5">ถ้าดาวระเบิด · หลักฐานไหนเหลืออยู่?</option>
+        <option value="q6">supernova ของดาวต่างกับ Big Bang ยังไง?</option>
+        <option value="q7">ดาวที่อยู่ใกล้ Earth สุดที่ตาเห็นไม่ได้ · มีกี่ดวง?</option>
+        <option value="q8">VOIDHUNTER ในเรื่องเป็นเปรียบเปรยอะไรในโลกจริง?</option>
+        <option value="other">อื่นๆ (เขียนเอง)</option>
+      </select>
+      <textarea id="q-text" rows="2" placeholder="เขียนคำถามของทีม"></textarea>
+    </div>
+  </div>
+
+  <!-- BONUS · AFFECTIVE + SELF-RATING + CONFIDENCE -->
+  <h3 style="font-family:Orbitron,sans-serif; font-size:12px; color:#ffcb6b; letter-spacing:0.2em; margin:24px 0 8px;">🎨 BONUS · เก็บข้อมูลเพิ่ม</h3>
+
+  <div class="bonus-wrap">
+    <div class="bonus-card">
+      <h5>😊 ความรู้สึกวันนี้</h5>
+      <div class="emoji-row" id="emoji-row">
+        <button class="emoji-btn" data-v="love">😍<span class="label">สนุก</span></button>
+        <button class="emoji-btn" data-v="think">🤔<span class="label">คิดเยอะ</span></button>
+        <button class="emoji-btn" data-v="mind">🤯<span class="label">ทึ่ง</span></button>
+        <button class="emoji-btn" data-v="cry">🥲<span class="label">ซึ้ง</span></button>
+        <button class="emoji-btn" data-v="lost">😵<span class="label">งง</span></button>
+      </div>
+    </div>
+    <div class="bonus-card">
+      <h5>⭐ เข้าใจ m vs M ระดับ</h5>
+      <div class="star-row" id="star-row">
+        <div class="star" data-v="1">★</div>
+        <div class="star" data-v="2">★</div>
+        <div class="star" data-v="3">★</div>
+        <div class="star" data-v="4">★</div>
+        <div class="star" data-v="5">★</div>
+      </div>
+      <p style="font-size:11px;color:#9aa3c0;margin-top:4px;" id="star-lbl">เลือกระดับ 1-5</p>
+    </div>
+    <div class="bonus-card">
+      <h5>🎯 ความมั่นใจสอบผ่าน</h5>
+      <div class="slider-wrap">
+        <div class="slider-val" id="slider-val">50</div>
+        <input type="range" id="confidence" min="0" max="100" step="5" value="50" oninput="updSlider()" style="width:100%;">
+      </div>
+      <p style="font-size:11px;color:#9aa3c0;text-align:center;">ถ้าสอบตอนนี้ · ได้กี่ %</p>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <button class="submit-final" id="submitBtn" onclick="submitJournal()">✓ ยืนยัน · ส่ง 3-2-1 Journal</button>
+  </div>
+  <div id="result"></div>
+
+  <div class="ped-tag-row">
+    <span class="ped-tag p">P · สะท้อนคิด · Metacognition</span>
+    <span class="ped-tag a">A · ประเมินตนเอง</span>
+    <span class="ped-tag">วPA 6 · Feedback</span>
+    <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+    <span class="ped-tag">Research · 3-2-1 Journal Data</span>
+  </div>
+
+  <div class="btn-pair" id="navBar" style="display:none;margin-top:20px;">
+    <button class="submit-btn done" disabled>✓ Journal เสร็จสิ้น</button>
+    <button class="next-btn" id="nextBtn" onclick="goNext()">▶ จบ EP03 · กลับหน้าแรก</button>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · 3-2-1 Journal (P19B)</summary>
+    <div class="body">
+      <b>Pattern จาก EP01</b> · เก็บ metacognitive data + affective<br>
+      <b>3 · concepts</b>: ระบุว่าเด็กจำอะไรได้ที่สุด (frequency analysis)<br>
+      <b>2 · scenes</b>: ความสนุก/ประทับใจ (engagement preference)<br>
+      <b>1 · question</b>: direction ของความอยากรู้ (curiosity)<br>
+      <b>Bonus</b>: emoji = อารมณ์ · star = self-rating · slider = confidence<br>
+      <b>🪙 Coin reward</b>: +5 + ✦ +5 (effort · ไม่ grade)<br>
+      <b>Export</b>: ทุกข้อมูลรวมในรายงานสุดท้าย
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* SECTION 3 · checkbox limit 3 */
+let selected3 = [];
+document.querySelectorAll('.cpt-item input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const item = inp.closest('.cpt-item');
+    if (inp.checked) {
+      if (selected3.length >= 3) { inp.checked = false; alert('เลือกได้มากสุด 3 ข้อ'); return; }
+      selected3.push(inp.value); item.classList.add('selected');
+    } else {
+      selected3 = selected3.filter(v => v !== inp.value); item.classList.remove('selected');
+    }
+    document.getElementById('cpt-n').textContent = selected3.length;
+  });
+});
+
+/* SECTION 2 · drag-drop scene favorites */
+const SCENES = [
+  { id:'s1', icon:'💌', name:'decode SOS "ARYA"' },
+  { id:'s2', icon:'🔭', name:'วัด parallax 3 ดาว' },
+  { id:'s3', icon:'⚠', name:'reveal 1,304 ปีแสง' },
+  { id:'s4', icon:'👁', name:'sort 5 ดาว · m scale' },
+  { id:'s5', icon:'⚡', name:'compute M · supergiant!' },
+  { id:'s6', icon:'🔐', name:'master decode "1-3-1"' },
+  { id:'s7', icon:'📦', name:'กล่องพ่อเปิด · DENEB' },
+  { id:'s8', icon:'🎙', name:'เสียงพ่อ 28 วินาที' },
+  { id:'s9', icon:'🔥', name:'STELLAR HEIST · 3 vault' },
+  { id:'s10', icon:'💌', name:'beacon ถึงพ่อ · 1,304 ปี' },
+];
+function renderSceneSrc() {
+  document.getElementById('scene-src').innerHTML = SCENES.map(s => `
+    <div class="scene-src-card" draggable="true" data-id="${s.id}">
+      <span class="icon">${s.icon}</span>
+      <div>${s.name}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.scene-src-card').forEach(c => {
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.id); c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+    if (typeof TouchDrag !== 'undefined') TouchDrag.makeDraggable(c, () => c.dataset.id);
+  });
+}
+const favs = { fav1: null, fav2: null };
+function placeFav(zone, id) {
+  if (!id) return;
+  if (Object.values(favs).includes(id)) { alert('ฉากนี้ถูกเลือกแล้ว'); return; }
+  const slot = zone.dataset.slot;
+  favs[slot] = id;
+  const s = SCENES.find(x => x.id === id);
+  if (!s) return;
+  zone.classList.add('filled');
+  zone.innerHTML = `
+    <div class="zone-lbl">◦ ${slot.toUpperCase()}</div>
+    <div class="picked-card"><span class="icon">${s.icon}</span>${s.name}</div>
+    <textarea placeholder="เพราะอะไร? (1 ประโยค)" data-slot="${slot}"></textarea>
+  `;
+  const src = document.querySelector(`.scene-src-card[data-id="${id}"]`);
+  if (src) src.classList.add('picked');
+}
+document.querySelectorAll('.fav-zone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    placeFav(zone, e.dataTransfer.getData('text/plain'));
+  });
+  if (typeof TouchDrag !== 'undefined') {
+    TouchDrag.makeDropTarget(zone, (id) => placeFav(zone, id));
+  }
+});
+renderSceneSrc();
+
+/* SECTION 1 · dropdown */
+function onPresetChange() {
+  const v = document.getElementById('q-preset').value;
+  const txt = document.getElementById('q-text');
+  const presetText = {
+    q1: 'ดาว Deneb จะ supernova เมื่อไหร่?',
+    q2: 'parallax ของดาวที่ไกลกว่า 1000 pc วัดยังไง?',
+    q3: 'มีดาวที่ M ติดลบกว่า −10 ไหม?',
+    q4: 'กล้อง James Webb เห็นไกลแค่ไหน?',
+    q5: 'ถ้าดาวระเบิด · หลักฐานไหนเหลืออยู่?',
+    q6: 'supernova ของดาวต่างกับ Big Bang ยังไง?',
+    q7: 'ดาวที่อยู่ใกล้ Earth สุดที่ตาเห็นไม่ได้ · มีกี่ดวง?',
+    q8: 'VOIDHUNTER ในเรื่องเป็นเปรียบเปรยอะไรในโลกจริง?',
+    other: '',
+  };
+  if (v && v !== 'other') txt.value = presetText[v];
+  else txt.focus();
+}
+
+/* BONUS · emoji */
+let emoji = null;
+document.querySelectorAll('.emoji-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    emoji = b.dataset.v;
+  });
+});
+
+/* BONUS · stars */
+let stars = 0;
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    stars = parseInt(s.dataset.v);
+    document.querySelectorAll('.star').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= stars));
+    document.getElementById('star-lbl').textContent = `ระดับ ${stars} / 5`;
+  });
+});
+
+/* BONUS · slider */
+function updSlider() {
+  const v = document.getElementById('confidence').value;
+  document.getElementById('slider-val').textContent = v;
+}
+
+/* TOAST */
+function showCoinToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* SUBMIT */
+function submitJournal() {
+  if (selected3.length !== 3) { alert('กาถูก 3 ข้อในส่วน "3 สิ่งที่เรียน" ก่อน'); return; }
+  if (!favs.fav1 || !favs.fav2) { alert('ลาก 2 ฉากมาวางในช่อง Favorite ทั้งสอง'); return; }
+  const q = (document.getElementById('q-text').value || '').trim();
+  if (!q) { alert('เขียน 1 คำถามในส่วน "คำถามที่อยากรู้ต่อ"'); return; }
+  if (!emoji) { alert('เลือก emoji อารมณ์'); return; }
+  if (stars === 0) { alert('ให้ดาวระดับความเข้าใจ m vs M'); return; }
+
+  const favReasons = {};
+  document.querySelectorAll('textarea[data-slot]').forEach(t => { favReasons[t.dataset.slot] = t.value.trim(); });
+
+  const data = {
+    tag: 'journal-321',
+    concepts: selected3,
+    concepts_extra: document.getElementById('extra-concept').value.trim(),
+    fav_scenes: favs,
+    fav_reasons: favReasons,
+    question: q,
+    question_preset: document.getElementById('q-preset').value,
+    emoji,
+    stars,
+    confidence: parseInt(document.getElementById('confidence').value),
+    submittedAt: Date.now(),
+  };
+  Submit.record('p19b', data);
+
+  // Reward · effort · ไม่ grade
+  if (typeof Coin !== 'undefined') Coin.add(5, 'p19b-journal-effort');
+  if (typeof Photon !== 'undefined') Photon.add(5, 'p19b-journal-effort');
+  showCoinToast('🪙 +5 · ✦ +5 · บันทึกเก็บไว้แล้ว · ขอบคุณที่สะท้อนคิด');
+
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = '✓ ส่งแล้ว';
+  document.getElementById('result').innerHTML = `
+    <div class="result-card">
+      <h3>✓ JOURNAL SAVED · CYGNUS LOGGED</h3>
+      <div style="color:#c8cde0;font-size:14px;line-height:1.7;margin:8px 0;">
+        ทีมเลือก ${selected3.length} concept · ${Object.values(favs).filter(Boolean).length} ฉาก · 1 คำถาม<br>
+        <span style="color:#ffcb6b;">🪙 +5 · ✦ +5</span><br>
+        <i style="color:#d4b8ff;font-size:12px;">ข้อมูลส่งต่อ EP04 · ใช้ในงานวิจัย</i>
+      </div>
+    </div>
+  `;
+  document.getElementById('navBar').style.display = 'flex';
+  // Mark final completion
+  if (typeof Chain !== 'undefined') Chain.set('ep03_complete', true);
+}
+
+function goNext() {
+  window.location.href = 'index.html';
+}
+</script>
+</body></html>

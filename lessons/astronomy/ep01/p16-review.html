@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P16 · สรุปเส้นทาง · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+/* FILM STRIP · JOURNEY ORDER */
+.film-strip {
+  background: linear-gradient(180deg, rgba(0,0,0,0.5), rgba(22,27,58,0.3));
+  border: 1px solid var(--border-strong);
+  border-radius: 14px;
+  padding: 20px 16px;
+  margin: 18px 0;
+  overflow-x: auto;
+  position: relative;
+}
+.film-strip::before, .film-strip::after {
+  content: '';
+  position: absolute; left: 0; right: 0; height: 14px;
+  background-image:
+    radial-gradient(circle at 12px 7px, var(--bg-0) 4px, transparent 5px),
+    radial-gradient(circle at 36px 7px, var(--bg-0) 4px, transparent 5px),
+    radial-gradient(circle at 60px 7px, var(--bg-0) 4px, transparent 5px);
+  background-size: 48px 14px; background-repeat: repeat-x;
+  background-color: rgba(0,0,0,0.6);
+}
+.film-strip::before { top: 0; }
+.film-strip::after  { bottom: 0; }
+.strip-row {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(140px, 1fr));
+  gap: 8px;
+  padding: 20px 0;
+  min-width: 1200px;
+}
+.strip-frame {
+  position: relative;
+  aspect-ratio: 4/5;
+  background: rgba(0,0,0,0.5);
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 10px;
+  transition: all 0.25s;
+  overflow: hidden;
+}
+.strip-frame::before {
+  content: attr(data-num);
+  position: absolute; top: 6px; left: 8px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--accent); opacity: 0.6;
+}
+.strip-frame.drag-over {
+  border-color: var(--accent); background: rgba(100,216,255,0.08);
+  transform: scale(1.03);
+}
+.strip-frame.filled {
+  border-style: solid;
+  border-color: var(--accent-green);
+  background: linear-gradient(160deg, rgba(126,255,178,0.08), rgba(100,216,255,0.05));
+}
+.strip-frame .frame-icon { font-size: 38px; margin-bottom: 6px; filter: drop-shadow(0 0 15px rgba(100,216,255,0.4)); }
+.strip-frame .frame-title { font-size: 11px; color: var(--text); font-weight: 600; line-height: 1.3; }
+.strip-frame .frame-empty { color: var(--text-faint); font-size: 11px; font-style: italic; }
+
+/* CONCEPT REVEAL (below strip) */
+.concept-reveals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+.reveal-card {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.04));
+  border: 1px solid var(--accent-green);
+  border-radius: 10px;
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.reveal-card.show { display: block; }
+.reveal-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.15em;
+  color: var(--accent-green); margin-bottom: 6px;
+}
+.reveal-card p { font-size: 13px; color: var(--text); line-height: 1.6; }
+.reveal-card b { color: var(--accent-gold); }
+
+/* SCENE POOL · cards to drag */
+.scene-pool {
+  padding: 20px; margin-top: 20px;
+  background: rgba(185,128,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.scene-pool h4 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 12px; letter-spacing: 0.2em;
+  color: var(--accent-2); margin-bottom: 12px;
+}
+.scene-pool .cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.scene-card {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.08));
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  cursor: grab;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 10px;
+  user-select: none;
+}
+.scene-card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 6px 20px rgba(100,216,255,0.12); }
+.scene-card.dragging { opacity: 0.4; }
+.scene-card.placed { display: none; }
+.scene-card .s-icon { font-size: 28px; flex-shrink: 0; }
+.scene-card .s-name { font-size: 12.5px; color: var(--text); line-height: 1.4; }
+</style>
+</head>
+<body data-page="p16">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ PAGE 16 / 17 · REVIEW · 7 นาที</div>
+<h1 class="page-title">รีวิวหนัง · เรียงฉาก</h1>
+<h2 class="page-sub">MOVIE RECAP · PLACE SCENES IN ORDER · UNLOCK CONCEPTS</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · รีวิวเรื่องที่ผ่านมา</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">นำเข้า</span><span>"เหมือนดู trailer ของหนังที่เพิ่งดูจบ · ลองเรียง 8 ฉากให้ถูกลำดับ · แต่ละฉากวางถูก = เผยเนื้อหาที่เรียนในฉากนั้น"</span></div>
+    <div class="role"><span class="tag do">อำนวย</span><span>ถ้าทีมลืม · ใบ้ให้ดูว่า "ยานชนก่อน · แล้วถึงวิเคราะห์ซาก · ไม่ใช่ Dr.Hubble อธิบายก่อนลูกโป่ง"</span></div>
+    <div class="role"><span class="tag teach">สรุป</span><span>หลังเรียงครบ · ย้ำว่าทีมไม่ได้เรียนแบบท่องจำ · แต่<b>เดินทางผ่านเรื่อง</b>ทีละฉาก · คอนเซปต์ทุกตัวเชื่อมกับเรื่องที่เพิ่งเล่น</span></div>
+  </div>
+</div>
+
+<div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+  <div class="txt">ก่อนจบภารกิจ · เรามาดูซ้ำกันว่า <b>ทีมเดินทางผ่านอะไรมาบ้าง</b> · ลากฉากด้านล่างมาเรียงบน <b>film strip</b> ให้ตรงลำดับเรื่อง · วางถูก = เปิดเผยสิ่งที่ทีมเรียนจริงในฉากนั้น</div>
+</div>
+
+<!-- FILM STRIP -->
+<h3 style="font-family:'Orbitron'; font-size:13px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 8px;">🎬 FILM STRIP · เรียง 8 ฉากตามลำดับที่เกิดจริง (ฉาก 1 → 8)</h3>
+
+<div class="film-strip">
+  <div class="strip-row">
+    <div class="strip-frame" data-num="FRAME 1" data-accept="s1"><span class="frame-empty">ลากฉากที่ 1</span></div>
+    <div class="strip-frame" data-num="FRAME 2" data-accept="s2"><span class="frame-empty">ลากฉากที่ 2</span></div>
+    <div class="strip-frame" data-num="FRAME 3" data-accept="s3"><span class="frame-empty">ลากฉากที่ 3</span></div>
+    <div class="strip-frame" data-num="FRAME 4" data-accept="s4"><span class="frame-empty">ลากฉากที่ 4</span></div>
+    <div class="strip-frame" data-num="FRAME 5" data-accept="s5"><span class="frame-empty">ลากฉากที่ 5</span></div>
+    <div class="strip-frame" data-num="FRAME 6" data-accept="s6"><span class="frame-empty">ลากฉากที่ 6</span></div>
+    <div class="strip-frame" data-num="FRAME 7" data-accept="s7"><span class="frame-empty">ลากฉากที่ 7</span></div>
+    <div class="strip-frame" data-num="FRAME 8" data-accept="s8"><span class="frame-empty">ลากฉากที่ 8</span></div>
+  </div>
+</div>
+
+<!-- SCENE CARDS POOL (shuffled) -->
+<div class="scene-pool">
+  <h4>◦ ลากฉากต่อไปนี้ไปวางบน Film Strip ให้ตรงลำดับ</h4>
+  <div class="cards" id="pool">
+    <!-- rendered by JS in shuffled order -->
+  </div>
+</div>
+
+<!-- CONCEPT REVEALS -->
+<h3 style="font-family:'Orbitron'; font-size:13px; color:var(--accent-gold); letter-spacing:0.2em; margin:24px 0 10px;">📖 เนื้อหาที่ทีมเรียนในแต่ละฉาก (เผยเมื่อวางถูก)</h3>
+
+<div class="concept-reveals" id="reveals"></div>
+
+<div id="status" class="info-card">
+  <h4>📊 ความก้าวหน้า</h4>
+  <p>เรียงฉาก · <span id="count">0</span> / 8</p>
+</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag k">K · สังเคราะห์ EP01 ทั้งหมด</span>
+  <span class="ped-tag p">P · จำลำดับเหตุการณ์</span>
+  <span class="ped-tag a">A · เชื่อมโยงเรื่องกับเนื้อหา</span>
+  <span class="ped-tag">Review · Narrative Recap</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+const SCENES = [
+  { id: 's1', icon: '💥', name: 'ยานชนศิลาต้นกำเนิด · เซ็นเซอร์จับแสงอายุ 13.8 พันล้านปี',
+    concept: 'อายุของเอกภพ',
+    body: 'เซ็นเซอร์ยืนยันว่าแสงสะท้อนจากวัตถุมีอายุ <b>13.8 พันล้านปี</b> · เก่ากว่าดวงอาทิตย์ (4.6B ปี) 3 เท่า · แปลว่ามาจากจุดเริ่มต้นของเอกภพ' },
+  { id: 's2', icon: '🔍', name: 'จัดกลุ่มซาก 5 ชิ้น ตามลักษณะ (แสง/อุณหภูมิ/ทิศ/สสาร/ขนาด)',
+    concept: 'Experience · จัดกลุ่มข้อมูล 5 แบบ',
+    body: 'ทีมสังเกตข้อมูล 5 ชิ้น · <b>แสงแดง</b> (ทางเคลื่อนที่) · <b>2.725 K</b> (ทางพลังงาน) · <b>ทุกทิศ</b> (ทางทิศทาง) · <b>ธาตุเบา H/He</b> (ทางสสาร) · <b>ขยายตัว</b> (ทางขนาด) · ทั้งหมดจะถูกตั้งชื่อใน Dr.Hubble Reveal' },
+  { id: 's3', icon: '📚', name: 'ค้นประวัติศาสตร์ · Penzias & Wilson · Bell Labs · 1965',
+    concept: 'หลักฐาน CMB · Penzias-Wilson 1965',
+    body: 'ปี 1965 · <b>Arno Penzias + Robert Wilson</b> ที่ Bell Labs ใช้เสาอากาศฮอร์น พบสัญญาณ <b>2.725 K</b> อยู่ทุกทิศ · ตั้งชื่อว่า <b>CMB (Cosmic Microwave Background)</b> · ได้ <b>Nobel Prize ฟิสิกส์ 1978</b>' },
+  { id: 's4', icon: '🎈', name: 'ทดลองลูกโป่ง · จุดทุกคู่ห่างกันพร้อมกัน ไม่มีศูนย์กลาง',
+    concept: 'การขยายตัวของอวกาศ · ไม่มีศูนย์กลาง',
+    body: 'ลูกโป่งเป็นแบบจำลองเอกภพ · เมื่อเป่า · <b>ทุกจุดบนผิวห่างกันพร้อมกัน</b> · ไม่มีจุดไหนเป็นศูนย์กลาง · <b>อัตราขยายใกล้เคียงกันทุกคู่</b> · คู่ที่ไกลมากยิ่งขยับไกลขึ้นเร็วกว่า' },
+  { id: 's5', icon: '🎓', name: 'Dr.Hubble เฉลย · บิกแบง + กฎฮับเบิล v = H₀D',
+    concept: 'ทฤษฎีบิกแบง + กฎฮับเบิล',
+    body: '<b>ทฤษฎีบิกแบง</b>: เอกภพเริ่มเมื่อ 13.8 พันล้านปีก่อน · ขยายตัวต่อเนื่อง · <b>ไม่ใช่ระเบิดในที่ว่าง</b> · <b>กฎฮับเบิล-เลอเมตร์</b>: <b>v = H₀ × D</b> · H₀ ≈ 70 km/s/Mpc' },
+  { id: 's6', icon: '🕰', name: 'ดู 6 ยุคอนุภาค · ควาร์ก → โปรตอน → He → อะตอม → กาแล็กซี',
+    concept: 'ลำดับอนุภาค 6 ยุค',
+    body: '<b>10⁻⁴³ วิ</b> แรงรวมกัน · <b>10⁻⁶ วิ</b> ควาร์ก → โปรตอน + นิวตรอน · <b>3 นาที</b> นิวเคลียสฮีเลียม (H:He = 75:25) · <b>380,000 ปี</b> อะตอมเป็นกลาง · CMB หลุด · <b>1 พันล้านปี</b> กาแล็กซีแรก' },
+  { id: 's7', icon: '🚀', name: 'Ship Lock · คำนวณตำแหน่งอดีต Galaxy A',
+    concept: 'ประยุกต์ v = H₀D',
+    body: 'ใช้ข้อมูล D = 100 Mpc · H₀ = 70 · อัตราขยาย 2 เท่า · คำนวณ:<br>• <b>ระยะอดีต = 100 ÷ 2 = 50 Mpc</b><br>• <b>ความเร็ว = 70 × 100 = 7,000 km/s</b><br>ไฟเขียว = Lock สำเร็จ' },
+  { id: 's8', icon: '⚔️', name: 'VOID โผล่มาโต้ · ทีมหักล้าง 3 misconceptions',
+    concept: 'แก้มโนทัศน์คลาดเคลื่อน',
+    body: '<b>① บิกแบง ≠ ระเบิดในที่ว่าง</b> · ใช้ลูกโป่งหักล้าง<br><b>② CMB ≠ สัญญาณรบกวน</b> · วัดซ้ำโดย COBE/Planck<br><b>③ ธาตุหนัก ≠ จากบิกแบง</b> · เกิดในดาวฤกษ์ภายหลัง · BBN สร้างได้แค่ H, He' },
+];
+
+let placed = 0;
+const TOTAL = 8;
+
+// Shuffle pool and render
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function renderPool() {
+  const pool = document.getElementById('pool');
+  pool.innerHTML = shuffle(SCENES).map(s => `
+    <div class="scene-card" draggable="true" data-id="${s.id}">
+      <div class="s-icon">${s.icon}</div>
+      <div class="s-name">${s.name}</div>
+    </div>
+  `).join('');
+  // Attach drag listeners
+  pool.querySelectorAll('.scene-card').forEach(c => {
+    c.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', c.dataset.id);
+      c.classList.add('dragging');
+    });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+}
+
+function renderReveals() {
+  const r = document.getElementById('reveals');
+  r.innerHTML = SCENES.map(s => `
+    <div class="reveal-card" id="rev-${s.id}">
+      <h5>${s.icon} FRAME ${s.id.replace('s','')} · ${s.concept}</h5>
+      <p>${s.body}</p>
+    </div>
+  `).join('');
+}
+
+function setupDrop() {
+  document.querySelectorAll('.strip-frame').forEach(frame => {
+    frame.addEventListener('dragover', e => { e.preventDefault(); frame.classList.add('drag-over'); });
+    frame.addEventListener('dragleave', () => frame.classList.remove('drag-over'));
+    frame.addEventListener('drop', e => {
+      e.preventDefault();
+      frame.classList.remove('drag-over');
+      if (frame.classList.contains('filled')) return;
+      const id = e.dataTransfer.getData('text/plain');
+      const accept = frame.dataset.accept;
+      if (id === accept) {
+        const scene = SCENES.find(s => s.id === id);
+        frame.classList.add('filled');
+        frame.innerHTML = `<div class="frame-icon">${scene.icon}</div><div class="frame-title">${scene.name}</div>`;
+        document.querySelector(`.scene-card[data-id="${id}"]`).classList.add('placed');
+        document.getElementById(`rev-${id}`).classList.add('show');
+        placed++;
+        document.getElementById('count').textContent = placed;
+        Book.addEnergy(1, `Scene ${id} placed`);
+        if (placed === TOTAL) complete();
+      } else {
+        frame.classList.add('shake');
+        setTimeout(() => frame.classList.remove('shake'), 450);
+      }
+    });
+  });
+}
+
+function complete() {
+  Book.addEnergy(5, 'Movie recap complete');
+  Book.addDiscovery('EP01 Story arc complete');
+  Book.addInventory('🎬 Badge · Story Master');
+  Book.completePage('p16');
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main" style="padding: 24px;">
+      <h3>🎬 MOVIE RECAP COMPLETE</h3>
+      <p class="mt-10">เรียง 8 ฉากถูกหมด · เข้าใจเรื่องและคอนเซปต์ครบ · พร้อม Journey Map</p>
+      <p style="color: var(--accent-gold); margin-top: 10px;">+5 Energy · 🎬 Badge: Story Master</p>
+    </div>`;
+}
+
+renderPool();
+renderReveals();
+setupDrop();
+</script>
+</body>
+</html>

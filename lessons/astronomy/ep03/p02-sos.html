@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P02 · SOS</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .morse { font-family:Orbitron,monospace; font-size:36px; letter-spacing:0.4em; color:#ffcb6b; padding:20px; background:rgba(0,0,0,0.5); border:1px solid #ffcb6b; border-radius:12px; text-align:center; user-select:none; }
+  .beat { display:inline-block; padding:4px 6px; margin:2px; cursor:pointer; transition:all .2s; border-radius:6px; }
+  .beat:hover { background:rgba(255,203,107,0.1); transform:scale(1.2); }
+  .beat.tapped { color:#7effb2; background:rgba(126,255,178,0.15); }
+  .decoded { font-family:Orbitron,sans-serif; font-size:32px; color:#7effb2; text-align:center; padding:16px; border:2px solid #7effb2; border-radius:12px; letter-spacing:0.4em; margin:14px 0; animation: reveal .8s; }
+  @keyframes reveal { from {opacity:0;transform:scale(0.8);} to {opacity:1;transform:scale(1);} }
+</style>
+</head>
+<body data-page="p02" data-type="story">
+<div class="page">
+  <div class="lbl">🎞️ COLD OPEN · COLD SIGNAL</div>
+  <h1>มอร์สจากที่มืด</h1>
+
+  <div class="card">
+    <div class="narrative">ดาวระยิบจังหวะแปลก · โบลท์: <i>"มอร์ส! · แตะ peak 3 จุดที่ดังสุด"</i></div>
+  </div>
+
+  <div class="morse" id="morse">
+    <span class="beat" data-i="0">·</span><span class="beat" data-i="1">–</span><span class="beat" data-i="2">·</span>
+    <span class="beat" data-i="3">–·</span><span class="beat" data-i="4">·–·</span><span class="beat" data-i="5">·</span>
+    <span class="beat" data-i="6">—·——</span><span class="beat" data-i="7">·</span><span class="beat" data-i="8">·—</span>
+  </div>
+  <div class="status" id="hint">💡 peak = จุดที่ "ดัง" กว่า · ทดลองแตะที่ ‒ และ ‒·‒‒ และ ·‒·</div>
+
+  <div class="decoded" id="decoded" style="display:none;"></div>
+
+  <div class="card" id="afterDecode" style="display:none;">
+    <span class="void-voice">เป็นชื่อ "ARYA" — ชื่อกัปตันยาน · ใครส่งชื่อเรา?!</span>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled>🔒 ถอดรหัสก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+const TARGETS = new Set([1,4,6]);
+const tapped = new Set();
+const startT = Date.now();
+
+document.querySelectorAll('.beat').forEach(el => {
+  el.onclick = () => {
+    const i = parseInt(el.dataset.i);
+    if (TARGETS.has(i) && !tapped.has(i)) {
+      el.classList.add('tapped');
+      tapped.add(i);
+      if (tapped.size === 3) {
+        document.getElementById('decoded').style.display = 'block';
+        document.getElementById('decoded').textContent = '— ARYA —';
+        document.getElementById('afterDecode').style.display = 'block';
+        document.getElementById('hint').style.display = 'none';
+        Photon.add(20, 'decode-sos');
+        Chain.set('ARYA', 'ARYA');
+        const sb = document.querySelector('.submit-btn');
+        sb.disabled = false;
+        sb.textContent = '💾 ส่ง (เปิดปุ่ม)';
+      }
+    } else if (!TARGETS.has(i)) {
+      el.style.color = '#ff5c7a';
+      setTimeout(() => el.style.color = '', 400);
+    }
+  };
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p02',
+    nextHref: 'p02b-genesis.html',
+    getPayload: () => ({ decoded: tapped.size === 3, timeMs: Date.now() - startT }),
+    isPerfect: (p) => p.decoded,
+    onSubmit: () => {},
+  });
+}, 200);
+</script>
+</body></html>

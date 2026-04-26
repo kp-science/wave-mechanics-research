@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>F2 Four-tier Pre/Post (SHM แผน 2 · ลูกตุ้ม)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.post{background:#c62828}
+.info{background:#ccfbf1;border-left:6px solid #0d9488;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.phase-select{background:#fff3e0;border:2px solid #ef6c00;padding:12px 16px;border-radius:10px;margin:12px 0;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.phase-select label{font-weight:700;color:#c05621;cursor:pointer;padding:6px 14px;border:2px solid #ef6c00;border-radius:20px}
+.phase-select label:has(input:checked){background:#ef6c00;color:#fff}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.item{border:2px solid #cfd8e3;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fff}
+.item .no{display:inline-block;background:#0d9488;color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:800}
+.item .stem{font-size:16px;margin:8px 0;font-weight:600}
+.tier{margin:10px 0;background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:10px 14px}
+.tier b{color:#115e59}
+.tier.t3 b{color:#1b5e20}
+.tier.t2 b,.tier.t4 b{color:#c05621}
+.opt{margin:5px 0;padding:4px 6px;border-radius:4px;cursor:pointer}
+.opt:hover{background:#ccfbf1}
+.opt input[type=radio]{margin-right:8px;transform:scale(1.1)}
+.cert{display:flex;gap:20px;flex-wrap:wrap}
+.cert label{cursor:pointer;padding:4px 10px;border-radius:4px}
+.cert label:hover{background:#fff3e0}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.submit-bar{background:linear-gradient(135deg,#115e59,#0d9488);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#115e59;border:none;font-family:inherit;font-size:18px;font-weight:800;padding:12px 30px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.warn-config{background:#ffebee;border:2px solid #c62828;color:#b71c1c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px;display:none}
+.warn-config.show{display:block}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar,.phase-select{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 F2 Four-tier Diagnostic · SHM แผน 2 (ลูกตุ้ม)</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag" id="phaseTag">F2-Pre</span> 5 ข้อ · วัด M2.1–M2.4 + K2.1, K2.2</div>
+    </div>
+    <div class="meta" style="color:#115e59;font-weight:700">💾 ส่งออนไลน์ผ่านปุ่มด้านล่าง</div>
+  </div>
+
+  <div class="warn-config" id="configWarn">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — เปิด <code>_SETUP_AppsScript_Database.html</code> แล้ววาง URL</div>
+  <div class="info"><b>วิธีทำ Four-tier:</b> Tier 1 คำตอบ · Tier 2 ความมั่นใจในคำตอบ · Tier 3 เหตุผล · Tier 4 ความมั่นใจในเหตุผล</div>
+
+  <div class="phase-select">
+    <b>เลือกช่วงเวลา:</b>
+    <label><input type="radio" name="phase" value="pre" checked onchange="updatePhase()"> 🟦 Pre-test (ก่อนเรียน)</label>
+    <label><input type="radio" name="phase" value="post" onchange="updatePhase()"> 🟥 Post-test (หลังเรียน)</label>
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="ftForm">
+
+  <!-- ข้อ 1 M2.1 -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="mis-tag">M2.1</span></div>
+    <div class="stem">ลูกตุ้มลูก A มวล 0.2 kg กับลูก B มวล 2.0 kg ห้อยด้วยเชือกยาว 1.0 m เท่ากัน ปล่อยจากมุม 10° พร้อมกัน · คาบ T ของทั้งสองเป็นอย่างไร?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ก" required> ก. ลูก B (หนัก) T มากกว่า เพราะมวลมากต้องใช้เวลามากกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ข"> ข. T เท่ากันทั้ง A และ B เพราะ T ไม่ขึ้นกับมวล</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ค"> ค. ลูก B (หนัก) T น้อยกว่า เพราะแรงโน้มถ่วงดึงแรงกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t1" value="ง"> ง. ขึ้นกับความหนาแน่นของวัตถุ ไม่สามารถบอกได้</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+      <div class="cert"><label><input type="radio" name="q1_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q1_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="1" required> 1) มวลมาก → แรง mg มาก → ความเร่งมาก → เร็วกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="2"> 2) ในสมการ a = −g sin θ · m ตัดออก → T ไม่ขึ้นกับ m · T = 2π√(l/g)</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="3"> 3) มวลมากเฉื่อยมาก ใช้เวลามากกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q1_t3" value="4"> 4) มวลส่งผลต่อ T โดยตรงตามสูตร T = 2π√(m/g)</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+      <div class="cert"><label><input type="radio" name="q1_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q1_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 2 M2.3 -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="mis-tag">M2.3</span></div>
+    <div class="stem">ลูกตุ้มเดิมที่ l = 1.0 m · T = 2.0 s · ถ้าเพิ่มความยาวเป็น l = 4.0 m · T ใหม่ = ?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ก" required> ก. 2.0 s (เท่าเดิม เพราะ T ไม่ขึ้นกับ l)</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ข"> ข. 4.0 s (T × 2 เพราะ T ∝ √l · √4 = 2)</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ค"> ค. 8.0 s (T × 4 เชิงเส้น เพราะ l × 4)</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t1" value="ง"> ง. 16.0 s (T × 8 ยกกำลัง)</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2:</b>
+      <div class="cert"><label><input type="radio" name="q2_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q2_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="1" required> 1) T = 2π√(l/g) · T ∝ √l · T ใหม่ = 2.0 × √4 = 4.0 s</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="2"> 2) T ∝ l (เชิงเส้น) · l × 4 → T × 4</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="3"> 3) T ไม่ขึ้นกับ l · ขึ้นกับมวลเท่านั้น</label></div>
+      <div class="opt"><label><input type="radio" name="q2_t3" value="4"> 4) T ∝ l² · l × 4 → T × 16</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4:</b>
+      <div class="cert"><label><input type="radio" name="q2_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q2_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 3 M2.2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="mis-tag">M2.2</span></div>
+    <div class="stem">ลูกตุ้มเชือกยาว 1 m · เปล่อยที่ θ₀ = 5° วัด T ได้ 2.006 s · ถ้าปล่อยที่ θ₀ = 12° T จะเป็นเท่าใด (โดยประมาณ)?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ก" required> ก. ประมาณ 2.01 s (ไม่ต่างอย่างมีนัย)</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ข"> ข. ประมาณ 4.8 s (T × 2.4 เพราะมุมเพิ่ม 2.4 เท่า)</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ค"> ค. ประมาณ 2.5 s (T เพิ่มตามแอมพลิจูด)</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t1" value="ง"> ง. ประมาณ 1.0 s (T ลดครึ่งเพราะ A ใหญ่เคลื่อนไวขึ้น)</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2:</b>
+      <div class="cert"><label><input type="radio" name="q3_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q3_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="1" required> 1) ที่มุมเล็ก (≤15°) sin θ ≈ θ · T ไม่ขึ้นกับ A · ต่างกันไม่ถึง 0.5%</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="2"> 2) T ∝ θ · θ × 2.4 → T × 2.4</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="3"> 3) A ใหญ่ → T เพิ่มแบบเชิงเส้น</label></div>
+      <div class="opt"><label><input type="radio" name="q3_t3" value="4"> 4) A ใหญ่ ความเร็วสูงสุดมาก → T ลด</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4:</b>
+      <div class="cert"><label><input type="radio" name="q3_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q3_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 4 M2.4 + K2.2 -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="mis-tag">M2.4</span></div>
+    <div class="stem">ลูกตุ้มแกว่งด้วยมุม 60° · การใช้สูตร T = 2π√(l/g) คำนวณค่า T จะให้ผลอย่างไรเทียบกับความเป็นจริง?</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="ก" required> ก. สูตรให้ผลตรงทุกกรณี ไม่ว่ามุมเท่าไร</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="ข"> ข. สูตรให้ค่าต่ำกว่าความจริง · จริง ๆ แล้ว T ที่มุม 60° จะมากกว่าที่สูตรบอก (~7%)</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="ค"> ค. สูตรให้ค่าสูงกว่าความจริง · ที่มุมใหญ่ T จริงจะน้อยกว่า</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t1" value="ง"> ง. ลูกตุ้มไม่สามารถแกว่งที่มุม 60° ได้เป็น SHM ดังนั้นไม่มีคาบ</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2:</b>
+      <div class="cert"><label><input type="radio" name="q4_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q4_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="1" required> 1) ที่มุมใหญ่ sin θ ≠ θ · แรงคืนตัวไม่เป็นเชิงเส้น · T จริงมากกว่าสูตรประมาณ</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="2"> 2) สูตรเป็นสูตรทั่วไป ใช้ได้ทุกมุม</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="3"> 3) มุมใหญ่ SHM แท้ยิ่งขึ้น เพราะพลังงานมาก</label></div>
+      <div class="opt"><label><input type="radio" name="q4_t3" value="4"> 4) ที่มุมใหญ่วัตถุวิ่งเร็วขึ้นจึง T ลดลง</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4:</b>
+      <div class="cert"><label><input type="radio" name="q4_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q4_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <!-- ข้อ 5 K2.1 + K2.2 g-dependence -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span> <span class="mis-tag">K2.1 + K2.2</span></div>
+    <div class="stem">นาฬิกาลูกตุ้มที่เดินตรงเวลาบนโลก (g = 9.8 m/s²) ถูกนำไปใช้ในลิฟต์ที่เร่งขึ้นด้วย a = 2.0 m/s² · นาฬิกาจะ...</div>
+    <div class="tier"><b>Tier 1 · คำตอบ:</b>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="ก" required> ก. เดินตรงเท่าเดิม (การเคลื่อนที่ของลิฟต์ไม่ส่งผล)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="ข"> ข. เดินเร็วขึ้น (T สั้นลง เพราะ g_eff = g + a เพิ่ม)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="ค"> ค. เดินช้าลง (T ยาวขึ้น เพราะลิฟต์เร่งขึ้นต้านแรงโน้มถ่วง)</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t1" value="ง"> ง. หยุดเดิน เพราะลูกตุ้มไม่แกว่ง</label></div>
+    </div>
+    <div class="tier t2"><b>Tier 2:</b>
+      <div class="cert"><label><input type="radio" name="q5_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q5_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+    <div class="tier t3"><b>Tier 3 · เหตุผล:</b>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="1" required> 1) กรอบเฉื่อยไม่เกี่ยวกับลูกตุ้ม</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="2"> 2) ลิฟต์เร่งขึ้น → แรงเสมือนเพิ่ม g_eff = g + a = 11.8 · T = 2π√(l/g_eff) ลดลง → เดินเร็วขึ้น</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="3"> 3) ลิฟต์เร่งขึ้น → g ลด → T ยาว</label></div>
+      <div class="opt"><label><input type="radio" name="q5_t3" value="4"> 4) ลูกตุ้มไม่แกว่งในลิฟต์เพราะเฉื่อย</label></div>
+    </div>
+    <div class="tier t4"><b>Tier 4:</b>
+      <div class="cert"><label><input type="radio" name="q5_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q5_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>✅ ตรวจคำตอบครบทุกข้อแล้ว กดปุ่มเพื่อส่ง</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  </form>
+  <div class="foot">F2 Four-tier · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const API_URL='PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME='F2_SHM_Plan2';
+const PLAN='SHM-2';
+const ANSWER_KEY={
+  q1:{t1:'ข',t3:'2',misc:'M2.1'},
+  q2:{t1:'ข',t3:'1',misc:'M2.3'},
+  q3:{t1:'ก',t3:'1',misc:'M2.2'},
+  q4:{t1:'ข',t3:'1',misc:'M2.4'},
+  q5:{t1:'ข',t3:'2',misc:'K2.1+K2.2'}
+};
+function classify(t1,t2,t3,t4,k){if(t1!==k.t1)return'No-K';if(t2!=='มั่นใจ')return'Guessing';if(t3!==k.t3||t4!=='มั่นใจ')return'Misconception';return'Sound';}
+function updatePhase(){const p=document.querySelector('input[name=phase]:checked').value;const t=document.getElementById('phaseTag');if(p==='pre'){t.textContent='F2-Pre';t.style.background='#0d9488';}else{t.textContent='F2-Post';t.style.background='#c62828';}}
+window.addEventListener('DOMContentLoaded',()=>{if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){document.getElementById('configWarn').classList.add('show');}document.getElementById('test_date').value=new Date().toISOString().split('T')[0];});
+document.getElementById('ftForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();const btn=document.getElementById('btnSubmit');const status=document.getElementById('status');
+  const name=document.getElementById('student_name').value.trim();const no=document.getElementById('student_no').value.trim();const cls=document.getElementById('class').value.trim();const date=document.getElementById('test_date').value;
+  if(!name||!no||!cls){status.className='status error';status.textContent='❌ กรอกชื่อ เลขที่ และห้องให้ครบก่อน';return;}
+  const getVal=n=>{const el=document.querySelector(`input[name="${n}"]:checked`);return el?el.value:'';};
+  const answers={};let incomplete=false;
+  ['q1','q2','q3','q4','q5'].forEach(q=>{['t1','t2','t3','t4'].forEach(t=>{const v=getVal(`${q}_${t}`);if(!v)incomplete=true;answers[`${q}_${t}`]=v;});answers[`${q}_category`]=classify(answers[`${q}_t1`],answers[`${q}_t2`],answers[`${q}_t3`],answers[`${q}_t4`],ANSWER_KEY[q]);answers[`${q}_misc`]=ANSWER_KEY[q].misc;});
+  if(incomplete){status.className='status error';status.textContent='❌ ยังตอบไม่ครบทุกข้อ';return;}
+  const phase=document.querySelector('input[name=phase]:checked').value;
+  const payload={phase,plan:PLAN,student_name:name,student_no:Number(no),class:cls,test_date:date,...answers};
+  if(API_URL==='PASTE_YOUR_APPS_SCRIPT_URL_HERE'||!API_URL.startsWith('https://')){status.className='status error';status.innerHTML='⚠️ ครูยังไม่ได้ตั้งค่า API URL · <a href="#" onclick="downloadJSON();return false;" style="color:#115e59;text-decoration:underline">Download .json</a>';window._lastPayload=payload;return;}
+  btn.disabled=true;status.className='status loading';status.textContent='⏳ กำลังส่ง...';
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({sheet:SHEET_NAME,payload})});status.className='status success';status.innerHTML='✅ ส่งสำเร็จ! 🎉';btn.textContent='✅ ส่งแล้ว';}catch(err){status.className='status error';status.textContent='❌ '+err.message;btn.disabled=false;}
+});
+function downloadJSON(){if(!window._lastPayload)return;const blob=new Blob([JSON.stringify(window._lastPayload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`F2_SHM2_${window._lastPayload.phase}_${window._lastPayload.student_name}_${window._lastPayload.student_no}.json`;a.click();URL.revokeObjectURL(url);}
+</script>
+</body></html>

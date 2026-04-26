@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P03 · การปะทะ · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+</head>
+<body data-page="p03">
+<main class="page"><div class="page-inner">
+
+<div class="page-label story">◤ PAGE 03 / 16 · STORY · 3 นาที</div>
+<h1 class="page-title">การปะทะ</h1>
+<h2 class="page-sub">THE COLLISION · DEEP SPACE BEYOND NEPTUNE</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">บรรยาย</span><span>อ่านบทให้มีอารมณ์ · ปิดไฟในห้อง · เปิดเสียงเตือนภัย (ถ้าได้)</span></div>
+    <div class="role"><span class="tag dont">ห้าม</span><span>สอนเนื้อหาวิทยาศาสตร์ · ยังไม่ใช่จุดสอน · แค่สร้างอารมณ์เข้าเรื่อง</span></div>
+    <div class="role"><span class="tag do">ทำ</span><span>กด Play typewriter · รอให้จบทุก dialog · ครูสวมบท LEMAÎTRE/อารยา อ่านออกเสียง</span></div>
+  </div>
+</div>
+
+<div class="media-placeholder">
+  <div class="icon">🎬</div>
+  <div class="label">VIDEO M1 · COLD OPEN CINEMATIC (90 วินาที)</div>
+  <div>ยานเดินทาง → เซ็นเซอร์จับวัตถุ → ชน → หัวเรือแตก</div>
+</div>
+
+<div class="dialog-box terminal" data-speaker="T.H.E.O.S.-IX SYSTEM LOG">
+  <div class="txt" id="s-log">&gt; กำลังโหลดบันทึก...</div>
+</div>
+
+<div class="dialog-box lem" data-speaker="LEMAÎTRE · AI COMPUTER" id="d-lem" style="display:none">
+  <div class="txt">Cadets... นี่คือคอมพิวเตอร์ยาน T.H.E.O.S.-IX · เราชนวัตถุปริศนาที่ความเร็ว 0.15c · เซ็นเซอร์รายงานว่า <b>วัตถุนี้สะท้อนแสงอายุ 13.8 พันล้านปี</b> · เก่ากว่าดวงอาทิตย์ของเรา <b>3 เท่า</b></div>
+</div>
+
+<div class="dialog-box arya" data-speaker="กัปตัน อารยา" id="d-arya" style="display:none">
+  <div class="txt">ทีม... รวมกำลังทันที · เราต้องเข้าใจว่ามัน <em>คืออะไร</em> ก่อนเงาดำในจอเรดาร์จะมาถึง · เหลือเวลาประมาณ 30 นาที</div>
+</div>
+
+<div class="info-card" id="brief" style="display:none">
+  <h4>🎯 ภารกิจแรกของทีม</h4>
+  <p>ห้องวิจัยเก็บ <b>ข้อมูลเซ็นเซอร์ 5 ชิ้น</b> จากการปะทะ · ทีมต้อง <b>จัดกลุ่มข้อมูล</b> ตามลักษณะที่สังเกตเห็น · เหมือนนักสืบรวบรวมหลักฐานก่อน</p>
+</div>
+
+<div class="form-row" id="hypo" style="display:none">
+  <label>💭 ก่อนเริ่ม · ทีมคิดว่า "ศิลาต้นกำเนิด" คืออะไร?</label>
+  <textarea id="hypo-text" rows="2" placeholder="เขียนสั้น ๆ · ไม่ต้องถูก · baseline สำหรับวิจัย"></textarea>
+  <button class="btn primary mt-10" onclick="saveHypo()">📝 บันทึกสมมติฐาน</button>
+</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag a">A1 แรงจูงใจ</span>
+  <span class="ped-tag">วPA 1 · เข้าถึงบทเรียน</span>
+  <span class="ped-tag">Narrative · Cold Open</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+const lines = [
+  '> 2267.03.14 · 14:22:07 UTC',
+  '> YEAR 2267 · MISSION DAY 14',
+  '> LOCATION: 47 AU BEYOND NEPTUNE ORBIT',
+  '> SPEED: 0.15c · HEADING: GALACTIC NORTH',
+  '> ... SENSOR ANOMALY DETECTED ...',
+  '> ... COLLISION IMMINENT ...',
+  '> ⚠ IMPACT ⚠',
+  '> HULL INTEGRITY: 42% · EMERGENCY PROTOCOL ACTIVE'
+];
+let i = 0, j = 0;
+const logEl = document.getElementById('s-log');
+function tick() {
+  if (i >= lines.length) {
+    document.getElementById('d-lem').style.display = 'block';
+    setTimeout(() => document.getElementById('d-arya').style.display = 'block', 1800);
+    setTimeout(() => {
+      document.getElementById('brief').style.display = 'block';
+      document.getElementById('hypo').style.display = 'block';
+    }, 3500);
+    return;
+  }
+  if (j <= lines[i].length) {
+    logEl.innerHTML = lines.slice(0, i).join('<br>') + (i > 0 ? '<br>' : '') + lines[i].slice(0, j) + '<span style="opacity:0.6">▮</span>';
+    j++; setTimeout(tick, 28);
+  } else { i++; j = 0; setTimeout(tick, 180); }
+}
+tick();
+function saveHypo() {
+  const v = document.getElementById('hypo-text').value.trim();
+  if (!v) { alert('เขียนสั้น ๆ สัก 1 ประโยคก็พอ'); return; }
+  Book.savePageData('p03', { hypothesis_pre: v });
+  Book.addEnergy(1, 'Hypothesis saved');
+  Book.completePage('p03');
+  document.getElementById('result').innerHTML = '<div class="success">✓ บันทึกสมมติฐานแล้ว · กด "ต่อไป →"</div>';
+}
+</script>
+</body>
+</html>

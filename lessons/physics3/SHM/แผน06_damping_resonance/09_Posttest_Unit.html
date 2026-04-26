@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Posttest + Unit Test | SHM | แผน 6</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --dark: #4c1d95;
+  --light: #ede9fe;
+  --bg: #faf5ff;
+  --card: #ffffff;
+  --border: #c4b5fd;
+  --text: #1e1b4b;
+  --muted: #6b7280;
+  --green: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+header { background: linear-gradient(135deg, var(--dark), var(--primary)); color: #fff; padding: 20px 24px; }
+header h1 { font-size: 1.5rem; font-weight: 700; }
+header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+.container { max-width: 1040px; margin: 0 auto; padding: 20px 16px 60px; }
+.id-bar { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; align-items: flex-end; }
+.id-bar label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 3px; }
+.id-bar input, .id-bar select { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 9px; font-size: 0.9rem; font-family: inherit; }
+.id-bar input:focus, .id-bar select:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+/* Phase toggle */
+.phase-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.phase-btn { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: 8px; background: #fff; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; color: var(--muted); transition: all 0.2s; text-align: center; }
+.phase-btn.active { border-color: var(--primary); background: var(--light); color: var(--dark); }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; }
+section > h2 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.badge-num { background: var(--dark); color: #fff; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+.badge { display: inline-block; background: var(--primary); color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; }
+/* 4-tier question */
+.q-block { border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.q-block .q-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
+.q-num { background: var(--primary); color: #fff; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+.q-text { font-size: 0.95rem; line-height: 1.6; }
+.q-text em { color: var(--primary); font-style: normal; font-weight: 600; }
+.tier-label { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; margin: 10px 0 6px; }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.option-label { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+.option-label:has(input:checked) { border-color: var(--primary); background: var(--light); }
+.option-label input[type=radio] { accent-color: var(--primary); }
+.conf-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.conf-btn { padding: 5px 12px; border: 1px solid #e5e7eb; border-radius: 20px; font-size: 0.8rem; cursor: pointer; font-family: inherit; background: #fff; }
+.conf-btn:has(input:checked) { background: var(--light); border-color: var(--primary); color: var(--dark); font-weight: 600; }
+.conf-btn input[type=radio] { display: none; }
+.reason-input { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 0.875rem; resize: vertical; margin-top: 6px; }
+.reason-input:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+/* Score display */
+.score-panel { display: none; background: var(--light); border: 2px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-top: 16px; }
+.score-panel.show { display: block; }
+.score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
+.score-cell { border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; }
+.score-cell .num { font-size: 1.3rem; font-weight: 700; }
+/* Unit test questions */
+.ut-q { border-left: 4px solid var(--primary); padding: 12px 14px; margin-bottom: 16px; background: #fafafa; border-radius: 0 8px 8px 0; }
+.ut-q .ut-qnum { font-weight: 700; color: var(--dark); margin-bottom: 8px; font-size: 0.9rem; }
+.ut-q .ut-qtext { font-size: 0.9rem; line-height: 1.65; margin-bottom: 10px; }
+.ut-q .ut-qtext .formula { font-family: 'Courier New', monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+.radio-group { display: flex; flex-direction: column; gap: 5px; }
+.radio-opt { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+.radio-opt:has(input:checked) { border-color: var(--primary); background: var(--light); }
+.radio-opt input { accent-color: var(--primary); }
+/* Dropdown */
+select.ut-sel { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 10px; font-family: inherit; font-size: 0.875rem; width: 100%; max-width: 320px; }
+select.ut-sel:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+/* Drag-drop */
+.dd-container { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; }
+.dd-source { display: flex; flex-wrap: wrap; gap: 6px; }
+.dd-item { background: var(--light); border: 2px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; cursor: grab; user-select: none; }
+.dd-item:active { cursor: grabbing; }
+.dd-zones { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
+.dd-zone { min-height: 48px; min-width: 140px; border: 2px dashed var(--border); border-radius: 8px; padding: 6px 10px; font-size: 0.8rem; color: var(--muted); flex: 1; }
+.dd-zone .zone-label { font-weight: 700; font-size: 0.78rem; color: var(--dark); margin-bottom: 4px; }
+.dd-zone.dragover { border-color: var(--primary); background: #f5f0ff; }
+/* Canvas */
+.canvas-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); margin-top: 8px; }
+canvas { display: block; cursor: crosshair; touch-action: none; }
+.canvas-toolbar { display: flex; gap: 6px; align-items: center; padding: 6px 10px; background: #f9f7ff; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+.tool-btn.active, .tool-btn:hover { background: var(--light); border-color: var(--primary); color: var(--dark); }
+.color-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-dot.active { border-color: var(--dark); }
+/* Checkbox bank */
+.cb-bank { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+.cb-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+.cb-item:has(input:checked) { border-color: var(--primary); background: var(--light); }
+.cb-item input { accent-color: var(--primary); }
+/* Submit */
+.submit-bar { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.btn { padding: 9px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-secondary { background: #e5e7eb; color: #374151; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: #1e1b4b; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 999; }
+@media print {
+  header { background: #4c1d95 !important; -webkit-print-color-adjust: exact; }
+  .submit-bar, .phase-bar, .canvas-toolbar .tool-btn { display: none; }
+  canvas { border: 1px solid #ccc !important; }
+}
+@media (max-width: 700px) {
+  .options-grid { grid-template-columns: 1fr; }
+  .score-grid { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>📝 Posttest + Unit Test | SHM — แผน 6</h1>
+  <p>การหน่วง · การสั่นพ้อง · สรุปหน่วย SHM ทั้งหมด</p>
+</header>
+
+<div class="container">
+
+  <div class="id-bar">
+    <div><label>ชื่อ–นามสกุล</label><input id="student_name" placeholder="ชื่อ นามสกุล" style="width:200px"></div>
+    <div><label>เลขที่</label><input id="student_no" placeholder="01" style="width:60px"></div>
+    <div><label>ห้อง</label><input id="class" placeholder="ม.4/1" style="width:80px"></div>
+    <div><label>วันที่</label><input id="test_date" type="date" style="width:140px"></div>
+  </div>
+
+  <!-- Phase -->
+  <div class="phase-bar">
+    <button class="phase-btn" id="phaseBtn_pre" onclick="setPhase('pre')">📋 Pre-test (ก่อนเรียน)</button>
+    <button class="phase-btn active" id="phaseBtn_post" onclick="setPhase('post')">✅ Post-test (หลังเรียน)</button>
+  </div>
+  <input type="hidden" id="phase" value="post">
+
+  <!-- ===== PART I: FOUR-TIER ===== -->
+  <section>
+    <h2><span class="badge-num">I</span> แบบวินิจฉัยสี่ระดับ — M6.1, M6.2, M6.3 <span class="badge">4 ข้อ</span></h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
+      แต่ละข้อมี 4 ระดับ: T1 = เลือกคำตอบ, T2 = ระดับมั่นใจ, T3 = เหตุผล, T4 = มั่นใจในเหตุผล
+    </p>
+
+    <!-- Q1: M6.1 -->
+    <div class="q-block" id="qblock1">
+      <div class="q-header">
+        <span class="q-num">1</span>
+        <div class="q-text">ลูกตุ้มสปริงแกว่งอยู่ในน้ำ (Underdamped) เปรียบเทียบกับลูกตุ้มเดียวกันในอากาศ ความถี่จะเป็นอย่างไร?</div>
+      </div>
+      <div class="tier-label">T1 — คำตอบ</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q1" value="ก"> ก. เพิ่มขึ้น</label>
+        <label class="option-label"><input type="radio" name="q1" value="ข"> ข. ลดลงเล็กน้อย</label>
+        <label class="option-label"><input type="radio" name="q1" value="ค"> ค. แทบไม่เปลี่ยน (ลดน้อยมาก)</label>
+        <label class="option-label"><input type="radio" name="q1" value="ง"> ง. ลดลงมากเท่ากับ b</label>
+      </div>
+      <div class="tier-label">T2 — มั่นใจในคำตอบระดับไหน?</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q1_c1" value="1">1 ไม่มั่นใจเลย</label>
+        <label class="conf-btn"><input type="radio" name="q1_c1" value="2">2 เดา</label>
+        <label class="conf-btn"><input type="radio" name="q1_c1" value="3">3 พอมั่นใจ</label>
+        <label class="conf-btn"><input type="radio" name="q1_c1" value="4">4 มั่นใจมาก</label>
+      </div>
+      <div class="tier-label">T3 — เหตุผลที่เลือกคำตอบนั้น</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q1_r" value="ก"> ก. ตัวหน่วงทำให้แรงเพิ่ม จึงแกว่งเร็วขึ้น</label>
+        <label class="option-label"><input type="radio" name="q1_r" value="ข"> ข. ω_d = √(ω₀²−(b/2m)²) < ω₀ เสมอ</label>
+        <label class="option-label"><input type="radio" name="q1_r" value="ค"> ค. การหน่วงไม่มีผลต่อความถี่เลย</label>
+        <label class="option-label"><input type="radio" name="q1_r" value="ง"> ง. ความถี่ขึ้นกับแอมพลิจูด</label>
+      </div>
+      <div class="tier-label">T4 — มั่นใจในเหตุผลระดับไหน?</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q1_c2" value="1">1 ไม่มั่นใจ</label>
+        <label class="conf-btn"><input type="radio" name="q1_c2" value="2">2 เดา</label>
+        <label class="conf-btn"><input type="radio" name="q1_c2" value="3">3 พอมั่นใจ</label>
+        <label class="conf-btn"><input type="radio" name="q1_c2" value="4">4 มั่นใจมาก</label>
+      </div>
+    </div>
+
+    <!-- Q2: M6.2 -->
+    <div class="q-block" id="qblock2">
+      <div class="q-header">
+        <span class="q-num">2</span>
+        <div class="q-text">นักเรียนคนหนึ่งกล่าวว่า "การสั่นพ้องคือการที่คลื่นสะท้อนกลับมาเสริมกัน" ข้อใดวิจารณ์ได้ถูกต้องที่สุด?</div>
+      </div>
+      <div class="tier-label">T1 — คำตอบ</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q2" value="ก"> ก. ถูกต้อง คลื่นสะท้อนเสริมกัน</label>
+        <label class="option-label"><input type="radio" name="q2" value="ข"> ข. ผิด การสั่นพ้องคือ f_drive = f_natural ไม่ใช่การสะท้อน</label>
+        <label class="option-label"><input type="radio" name="q2" value="ค"> ค. ผิด การสั่นพ้องคือเรื่องของแรง ไม่ใช่คลื่น</label>
+        <label class="option-label"><input type="radio" name="q2" value="ง"> ง. ถูกในบางกรณี เช่น ในท่อเปิด</label>
+      </div>
+      <div class="tier-label">T2 — มั่นใจในคำตอบระดับไหน?</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q2_c1" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q2_c1" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q2_c1" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q2_c1" value="4">4</label>
+      </div>
+      <div class="tier-label">T3 — เหตุผล</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q2_r" value="ก"> ก. การสั่นพ้องเกิดในท่อ จึงต้องสะท้อน</label>
+        <label class="option-label"><input type="radio" name="q2_r" value="ข"> ข. การสั่นพ้องคือปรากฏการณ์ที่พลังงานถ่ายเทได้มาก เมื่อ f_drive = f_nat</label>
+        <label class="option-label"><input type="radio" name="q2_r" value="ค"> ค. แรงภายนอกทำให้แอมพลิจูดเพิ่มขึ้นโดยไม่ต้องสะท้อน</label>
+        <label class="option-label"><input type="radio" name="q2_r" value="ง"> ง. การสั่นพ้องเกิดเฉพาะในของเหลว</label>
+      </div>
+      <div class="tier-label">T4 — มั่นใจในเหตุผลระดับไหน?</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q2_c2" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q2_c2" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q2_c2" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q2_c2" value="4">4</label>
+      </div>
+    </div>
+
+    <!-- Q3: M6.3 -->
+    <div class="q-block" id="qblock3">
+      <div class="q-header">
+        <span class="q-num">3</span>
+        <div class="q-text">ที่ความถี่สั่นพ้อง สิ่งใดมีค่าสูงสุด?</div>
+      </div>
+      <div class="tier-label">T1 — คำตอบ</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q3" value="ก"> ก. ความถี่ของการสั่น</label>
+        <label class="option-label"><input type="radio" name="q3" value="ข"> ข. แรงที่กระทำต่อระบบ</label>
+        <label class="option-label"><input type="radio" name="q3" value="ค"> ค. ความเร็วที่จุดสมดุล</label>
+        <label class="option-label"><input type="radio" name="q3" value="ง"> ง. แอมพลิจูดของการสั่น</label>
+      </div>
+      <div class="tier-label">T2 — ระดับมั่นใจ</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q3_c1" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q3_c1" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q3_c1" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q3_c1" value="4">4</label>
+      </div>
+      <div class="tier-label">T3 — เหตุผล</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q3_r" value="ก"> ก. ที่สั่นพ้อง ระบบรับพลังงานสูงสุดจากแหล่งขับ แอมพลิจูดจึงสูงสุด</label>
+        <label class="option-label"><input type="radio" name="q3_r" value="ข"> ข. ที่สั่นพ้อง แรงสปริงมีค่าสูงสุด</label>
+        <label class="option-label"><input type="radio" name="q3_r" value="ค"> ค. ที่สั่นพ้อง พลังงานสูญหายน้อยที่สุด</label>
+        <label class="option-label"><input type="radio" name="q3_r" value="ง"> ง. ที่สั่นพ้อง ความถี่เพิ่มขึ้น จึงทำให้ความเร็วสูงขึ้น</label>
+      </div>
+      <div class="tier-label">T4 — มั่นใจในเหตุผล</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q3_c2" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q3_c2" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q3_c2" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q3_c2" value="4">4</label>
+      </div>
+    </div>
+
+    <!-- Q4: K6.1+K6.2 -->
+    <div class="q-block" id="qblock4">
+      <div class="q-header">
+        <span class="q-num">4</span>
+        <div class="q-text">สปริงตัวหนึ่ง (k = 16 N/m, m = 1 kg, b = 0) ถูกขับด้วยแรงแปรตาม f = 0.4 Hz, 0.6 Hz, 0.8 Hz ตามลำดับ ที่ f ใด แอมพลิจูดจะสูงสุด?</div>
+      </div>
+      <div class="tier-label">T1 — คำตอบ</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q4" value="ก"> ก. f = 0.64 Hz (≈ √(k/m) / 2π)</label>
+        <label class="option-label"><input type="radio" name="q4" value="ข"> ข. f = 0.4 Hz</label>
+        <label class="option-label"><input type="radio" name="q4" value="ค"> ค. f = 0.6 Hz</label>
+        <label class="option-label"><input type="radio" name="q4" value="ง"> ง. f = 0.8 Hz</label>
+      </div>
+      <div class="tier-label">T2 — ระดับมั่นใจ</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q4_c1" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q4_c1" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q4_c1" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q4_c1" value="4">4</label>
+      </div>
+      <div class="tier-label">T3 — เหตุผล</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q4_r" value="ก"> ก. f_nat = (1/2π)√(16/1) ≈ 0.64 Hz การสั่นพ้องเกิดที่ f_drive = f_nat</label>
+        <label class="option-label"><input type="radio" name="q4_r" value="ข"> ข. ความถี่ต่ำสุดทำให้แอมพลิจูดสูงสุดเสมอ</label>
+        <label class="option-label"><input type="radio" name="q4_r" value="ค"> ค. แอมพลิจูดไม่ขึ้นกับความถี่ขับ</label>
+        <label class="option-label"><input type="radio" name="q4_r" value="ง"> ง. แรงขับที่สูงกว่าทำให้แอมพลิจูดสูงกว่า</label>
+      </div>
+      <div class="tier-label">T4 — มั่นใจในเหตุผล</div>
+      <div class="conf-row">
+        <label class="conf-btn"><input type="radio" name="q4_c2" value="1">1</label>
+        <label class="conf-btn"><input type="radio" name="q4_c2" value="2">2</label>
+        <label class="conf-btn"><input type="radio" name="q4_c2" value="3">3</label>
+        <label class="conf-btn"><input type="radio" name="q4_c2" value="4">4</label>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:4px">
+      <button class="btn btn-primary" onclick="scoreFourTier()">ตรวจแบบวินิจฉัย</button>
+    </div>
+    <div class="score-panel" id="scorePanel">
+      <strong>ผลการวินิจฉัย</strong>
+      <div class="score-grid" id="scoreGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===== PART II: UNIT TEST ===== -->
+  <section>
+    <h2><span class="badge-num">II</span> Unit Test — SHM ครบหน่วย <span class="badge">10 ข้อ</span></h2>
+
+    <!-- UT1: Drag-drop damping -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 1. จัดหมวดหมู่ — ลากการหน่วงแต่ละชนิดไปยังลักษณะที่ถูกต้อง</div>
+      <div class="ut-qtext">ลากคำศัพท์ไปใส่ในช่องที่ถูกต้อง: <em>Under / Over / Critical / Undamped</em></div>
+      <div class="dd-container">
+        <div class="dd-source" id="ddSrc1">
+          <div class="dd-item" draggable="true" data-val="Under">Underdamped</div>
+          <div class="dd-item" draggable="true" data-val="Over">Overdamped</div>
+          <div class="dd-item" draggable="true" data-val="Critical">Critical</div>
+          <div class="dd-item" draggable="true" data-val="Free">Undamped</div>
+        </div>
+        <div class="dd-zones">
+          <div class="dd-zone" id="zone_oscillate"><div class="zone-label">แกว่งไกว ค่อยๆ ลด</div></div>
+          <div class="dd-zone" id="zone_fastest"><div class="zone-label">คืนสู่สมดุลเร็วสุด ไม่แกว่ง</div></div>
+          <div class="dd-zone" id="zone_slow"><div class="zone-label">คืนสู่สมดุลช้า ไม่แกว่ง</div></div>
+          <div class="dd-zone" id="zone_constant"><div class="zone-label">แอมพลิจูดคงที่ตลอด</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UT2: Radio — SHM basics -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 2. ลูกตุ้มอย่างง่าย ยาว 1.0 m บนดาวที่ g = 4.0 m/s² คาบเป็นเท่าใด?</div>
+      <div class="ut-qtext">สูตร: <span class="formula">T = 2π√(L/g)</span></div>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="ut2" value="ก"> ก. T ≈ 2.0 s</label>
+        <label class="radio-opt"><input type="radio" name="ut2" value="ข"> ข. T ≈ 3.14 s</label>
+        <label class="radio-opt"><input type="radio" name="ut2" value="ค"> ค. T ≈ 1.57 s</label>
+        <label class="radio-opt"><input type="radio" name="ut2" value="ง"> ง. T ≈ 0.5 s</label>
+      </div>
+      <div class="canvas-wrap" style="margin-top:10px">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_ut2" onclick="setTool('canvas_ut2','pencil')">✏️ วิธีทำ</button>
+          <button class="tool-btn" id="eraserBtn_ut2" onclick="setTool('canvas_ut2','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_ut2')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_ut2" style="width:60px">
+        </div>
+        <canvas id="canvas_ut2" width="980" height="160" data-bg="lined"></canvas>
+      </div>
+    </div>
+
+    <!-- UT3: Checkbox bank — energy in SHM -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 3. เลือกข้อความที่ถูกต้องทั้งหมดเกี่ยวกับพลังงานใน SHM <em>(อาจมีมากกว่า 1 ข้อ)</em></div>
+      <div class="cb-bank">
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut3a"> E_total = ½kA² แปรผันตรงกับ A²</label>
+        <label class="cb-item" data-correct="false"><input type="checkbox" id="ut3b"> ที่ x = A/2 พลังงานจลน์ = พลังงานศักย์</label>
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut3c"> ที่จุดสมดุล KE มีค่าสูงสุดเท่ากับ E_total</label>
+        <label class="cb-item" data-correct="false"><input type="checkbox" id="ut3d"> พลังงานรวมขึ้นกับความเร็วสูงสุดเพียงอย่างเดียว</label>
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut3e"> ที่ x = A พลังงานจลน์ = 0</label>
+        <label class="cb-item" data-correct="false"><input type="checkbox" id="ut3f"> E_total เปลี่ยนตามตำแหน่งของวัตถุ</label>
+      </div>
+    </div>
+
+    <!-- UT4: Calculation Q-factor canvas -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 4. สปริงมี m = 0.5 kg, k = 50 N/m, b = 2 kg/s คำนวณ Q-factor และบอกว่าเป็น Underdamped หรือ Overdamped</div>
+      <div class="ut-qtext">สูตร: <span class="formula">Q = mω₀/b</span>, <span class="formula">ω₀ = √(k/m)</span> — ถ้า Q > ½ → Underdamped</div>
+      <select class="ut-sel" id="ut4_type" style="margin-top:8px">
+        <option value="">-- เลือกประเภทการหน่วง --</option>
+        <option>Underdamped (Q > ½)</option>
+        <option>Overdamped (Q < ½)</option>
+        <option>Critical (Q = ½)</option>
+      </select>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_ut4" onclick="setTool('canvas_ut4','pencil')">✏️ วิธีทำ</button>
+          <button class="tool-btn" id="eraserBtn_ut4" onclick="setTool('canvas_ut4','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_ut4')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_ut4" style="width:60px">
+          <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_ut4','#1e1b4b',this)"></div>
+          <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_ut4','#7c3aed',this)"></div>
+          <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_ut4','#dc2626',this)"></div>
+        </div>
+        <canvas id="canvas_ut4" width="980" height="200" data-bg="lined"></canvas>
+      </div>
+    </div>
+
+    <!-- UT5: Dropdown matching — applications -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 5. จับคู่การประยุกต์กับหลักการที่ใช้</div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.875rem;margin-top:8px">
+        <thead><tr style="background:var(--light)">
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border)">การประยุกต์</th>
+          <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border)">หลักการ</th>
+        </tr></thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:8px">สะพาน Millennium Bridge (London, 2000)</td>
+            <td style="padding:8px"><select class="ut-sel" id="ut5a"><option value="">-- เลือก --</option><option>การหน่วงวิกฤต</option><option>การสั่นพ้องที่ไม่ต้องการ</option><option>การสั่นพ้อง NMR</option><option>SHM ในสปริง</option></select></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6;background:#fafafa">
+            <td style="padding:8px">ประตูรถยนต์ปิดนุ่มนวล</td>
+            <td style="padding:8px"><select class="ut-sel" id="ut5b"><option value="">-- เลือก --</option><option>การหน่วงวิกฤต</option><option>การสั่นพ้องที่ไม่ต้องการ</option><option>การสั่นพ้อง NMR</option><option>SHM ในสปริง</option></select></td>
+          </tr>
+          <tr style="border-bottom:1px solid #f3f4f6">
+            <td style="padding:8px">MRI — ภาพอวัยวะภายใน</td>
+            <td style="padding:8px"><select class="ut-sel" id="ut5c"><option value="">-- เลือก --</option><option>การหน่วงวิกฤต</option><option>การสั่นพ้องที่ไม่ต้องการ</option><option>การสั่นพ้อง NMR</option><option>SHM ในสปริง</option></select></td>
+          </tr>
+          <tr>
+            <td style="padding:8px">นาฬิกาลูกตุ้ม</td>
+            <td style="padding:8px"><select class="ut-sel" id="ut5d"><option value="">-- เลือก --</option><option>การหน่วงวิกฤต</option><option>การสั่นพ้องที่ไม่ต้องการ</option><option>การสั่นพ้อง NMR</option><option>SHM ในสปริง</option></select></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- UT6: Graph drawing canvas -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 6. วาดกราฟ x–t ของการสั่นทั้งสามแบบในแกนเดียวกัน</div>
+      <div class="ut-qtext">วาดบนกระดาษกราฟ: (1) Underdamped — สีม่วง, (2) Overdamped — สีแดง, (3) Critical — สีเขียว พร้อมระบุแกน</div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_ut6" onclick="setTool('canvas_ut6','pencil')">✏️ วาด</button>
+          <button class="tool-btn" id="eraserBtn_ut6" onclick="setTool('canvas_ut6','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_ut6')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_ut6" style="width:60px">
+          <div class="color-dot active" style="background:#7c3aed" onclick="setColor('canvas_ut6','#7c3aed',this)"></div>
+          <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_ut6','#dc2626',this)"></div>
+          <div class="color-dot" style="background:#15803d" onclick="setColor('canvas_ut6','#15803d',this)"></div>
+          <div class="color-dot" style="background:#1e1b4b" onclick="setColor('canvas_ut6','#1e1b4b',this)"></div>
+          <div class="color-dot" style="background:#d97706" onclick="setColor('canvas_ut6','#d97706',this)"></div>
+        </div>
+        <canvas id="canvas_ut6" width="980" height="300" data-bg="grid"></canvas>
+      </div>
+    </div>
+
+    <!-- UT7: Calculation A(t) -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 7. ลูกตุ้มสปริง A₀ = 0.20 m, m = 0.5 kg, b = 1.0 kg/s คำนวณแอมพลิจูดเมื่อ t = 2.0 s</div>
+      <div class="ut-qtext">สูตร: <span class="formula">A(t) = A₀ e^(−bt/2m)</span></div>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_ut7" onclick="setTool('canvas_ut7','pencil')">✏️ วิธีทำ</button>
+          <button class="tool-btn" id="eraserBtn_ut7" onclick="setTool('canvas_ut7','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_ut7')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_ut7" style="width:60px">
+          <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_ut7','#1e1b4b',this)"></div>
+          <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_ut7','#7c3aed',this)"></div>
+        </div>
+        <canvas id="canvas_ut7" width="980" height="200" data-bg="lined"></canvas>
+      </div>
+      <div style="margin-top:8px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <label style="font-size:0.85rem">คำตอบ A(2) =</label>
+        <input id="ut7_ans" placeholder="______ m" style="border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-family:inherit;font-size:0.9rem;width:130px">
+      </div>
+    </div>
+
+    <!-- UT8: Spot the error -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 8. หาข้อผิดพลาด — นักเรียนอธิบายไว้ดังนี้ อะไรผิด?</div>
+      <div class="ut-qtext" style="background:#fef9c3;border-left:4px solid #f59e0b;padding:10px 14px;border-radius:0 6px 6px 0;font-style:italic">
+        "เมื่อเพิ่มตัวหน่วง (b) ระบบจะสั่นด้วยความถี่สูงขึ้น เพราะแรงต้านทำให้พลังงานสูงขึ้น และแอมพลิจูดคงที่"
+      </div>
+      <div style="margin-top:10px;font-size:0.85rem;color:var(--muted);margin-bottom:6px">เลือกข้อที่ระบุข้อผิดพลาดได้ถูกต้องที่สุด</div>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="ut8" value="ก"> ก. ผิดตรงที่ b เพิ่ม → ω_d ลดลง (ไม่เพิ่ม) และแอมพลิจูดลดลงตามเวลา</label>
+        <label class="radio-opt"><input type="radio" name="ut8" value="ข"> ข. ถูกต้องทุกประการ</label>
+        <label class="radio-opt"><input type="radio" name="ut8" value="ค"> ค. ผิดเฉพาะเรื่องแอมพลิจูด แต่เรื่องความถี่ถูก</label>
+        <label class="radio-opt"><input type="radio" name="ut8" value="ง"> ง. ผิดเฉพาะเรื่องพลังงาน แต่ความถี่และแอมพลิจูดถูก</label>
+      </div>
+    </div>
+
+    <!-- UT9: PBL short analysis -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 9. วิศวกรออกแบบ TMD (Tuned Mass Damper) สำหรับตึกสูง 50 ชั้น อธิบายหลักการทำงานและบอกว่าใช้หลักการ SHM แผนใดบ้าง</div>
+      <textarea id="ut9_ans" rows="3" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px;font-family:inherit;font-size:0.875rem;margin-top:8px" placeholder="TMD ทำงานโดย... ใช้หลักการจากแผน..."></textarea>
+    </div>
+
+    <!-- UT10: Synthesis question -->
+    <div class="ut-q">
+      <div class="ut-qnum">ข้อ 10. สังเคราะห์ — เชื่อมโยง SHM กับคลื่นกล</div>
+      <div class="ut-qtext">อธิบายว่า SHM เชื่อมโยงกับคลื่นกลได้อย่างไร (≥ 3 ประเด็น) และยกตัวอย่างปรากฏการณ์คลื่นที่มีรากมาจาก SHM</div>
+      <div class="cb-bank" style="margin-bottom:10px">
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut10a"> แหล่งกำเนิดคลื่นคือวัตถุที่สั่นแบบ SHM</label>
+        <label class="cb-item" data-correct="false"><input type="checkbox" id="ut10b"> คลื่นกลเคลื่อนที่ได้โดยไม่ต้องอาศัย SHM</label>
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut10c"> ความถี่คลื่น = ความถี่ SHM ของแหล่งกำเนิด</label>
+        <label class="cb-item" data-correct="true"><input type="checkbox" id="ut10d"> การสั่นพ้องของคลื่นเสียงในท่ออาศัยหลักการ SHM + Superposition</label>
+        <label class="cb-item" data-correct="false"><input type="checkbox" id="ut10e"> คลื่นกลไม่จำเป็นต้องมีตัวกลาง</label>
+      </div>
+      <textarea id="ut10_synthesis" rows="3" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px;font-family:inherit;font-size:0.875rem" placeholder="อธิบายเพิ่มเติม..."></textarea>
+    </div>
+
+  </section>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <button class="btn btn-secondary" onclick="window.print()">🖨️ พิมพ์ PDF</button>
+    <button class="btn btn-secondary" onclick="downloadJSON()">⬇️ บันทึก JSON</button>
+    <button class="btn btn-primary" onclick="submitData()">📤 ส่งข้อมูล</button>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
+const SHEET   = 'Posttest_SHM_Plan6';
+
+// Answer keys: q1=ค, q2=ข, q3=ง, q4=ก; reasons: q1=ข, q2=ข, q3=ก, q4=ก
+const ANS  = { q1:'ค', q2:'ข', q3:'ง', q4:'ก' };
+const RANS = { q1:'ข', q2:'ข', q3:'ก', q4:'ก' };
+
+function setPhase(p) {
+  document.getElementById('phase').value = p;
+  document.getElementById('phaseBtn_pre').classList.toggle('active', p==='pre');
+  document.getElementById('phaseBtn_post').classList.toggle('active', p==='post');
+}
+
+// Four-tier scoring
+function scoreFourTier() {
+  const labels = ['Q1 M6.1','Q2 M6.2','Q3 M6.3','Q4 K6.1+6.2'];
+  const qKeys  = ['q1','q2','q3','q4'];
+  const colors = ['#d1fae5','#fee2e2','#fef9c3','#e0e7ff'];
+  const cats   = { Sound:'✅ Sound Knowledge', Misc:'❌ Misconception', Lucky:'🍀 Lucky Guess', NoK:'❓ No Knowledge' };
+  let html = '';
+  qKeys.forEach((q, i) => {
+    const a   = document.querySelector(`input[name="${q}"]:checked`)?.value || '';
+    const r   = document.querySelector(`input[name="${q}_r"]:checked`)?.value || '';
+    const c1  = +document.querySelector(`input[name="${q}_c1"]:checked`)?.value || 1;
+    const c2  = +document.querySelector(`input[name="${q}_c2"]:checked`)?.value || 1;
+    const aOk = a === ANS[q];
+    const rOk = r === RANS[q];
+    let cat;
+    if (aOk && rOk && c1 >= 3 && c2 >= 3) cat = cats.Sound;
+    else if (!aOk && !rOk) cat = cats.NoK;
+    else if (aOk && !rOk) cat = cats.Lucky;
+    else cat = cats.Misc;
+    html += `<div class="score-cell" style="background:${colors[i]};border:1px solid #d1d5db">
+      <div style="font-size:0.75rem;color:#374151;font-weight:600">${labels[i]}</div>
+      <div style="font-size:0.8rem;margin-top:4px">${cat}</div>
+    </div>`;
+  });
+  const panel = document.getElementById('scorePanel');
+  document.getElementById('scoreGrid').innerHTML = html;
+  panel.classList.add('show');
+}
+
+// ====== Canvas ======
+const canvasState = {};
+function initCanvas(id) {
+  const c = document.getElementById(id); if (!c) return;
+  const ctx = c.getContext('2d');
+  const bg = c.dataset.bg;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  if (bg === 'lined') {
+    ctx.strokeStyle = '#e0e7ff'; ctx.lineWidth = 0.8;
+    for (let y = 28; y < c.height; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke(); }
+    ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40, 0); ctx.lineTo(40, c.height); ctx.stroke();
+  } else if (bg === 'grid') {
+    ctx.strokeStyle = '#e0e7ff'; ctx.lineWidth = 0.7;
+    for (let x = 0; x < c.width; x += 30) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, c.height); ctx.stroke(); }
+    for (let y = 0; y < c.height; y += 30) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke(); }
+    // Axes
+    ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(50, c.height - 30); ctx.lineTo(c.width - 10, c.height - 30); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(50, 10); ctx.lineTo(50, c.height - 30); ctx.stroke();
+    ctx.fillStyle = '#4c1d95'; ctx.font = '11px sans-serif';
+    ctx.fillText('t (s)', c.width - 28, c.height - 35);
+    ctx.fillText('x (m)', 55, 20);
+    ctx.fillText('0', 34, c.height - 18);
+  }
+  canvasState[id] = canvasState[id] || { tool: 'pencil', color: '#1e1b4b', drawing: false };
+  const saved = localStorage.getItem('canvas_' + id);
+  if (saved) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = saved; }
+  bindCanvas(c);
+}
+function bindCanvas(c) {
+  const id = c.id;
+  const getPos = e => { const r = c.getBoundingClientRect(); const s = e.touches ? e.touches[0] : e; return { x:(s.clientX-r.left)*(c.width/r.width), y:(s.clientY-r.top)*(c.height/r.height) }; };
+  const start = e => { e.preventDefault(); const s = canvasState[id]; s.drawing = true; const p = getPos(e); s.lastX=p.x; s.lastY=p.y; };
+  const draw  = e => { e.preventDefault(); const s = canvasState[id]; if (!s.drawing) return; const ctx = c.getContext('2d'); const p = getPos(e); const sz = +document.getElementById('size_'+id)?.value||2; if (s.tool==='eraser') { ctx.clearRect(p.x-sz*4,p.y-sz*4,sz*8,sz*8); } else { ctx.strokeStyle=s.color; ctx.lineWidth=sz; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(s.lastX,s.lastY); ctx.lineTo(p.x,p.y); ctx.stroke(); } s.lastX=p.x; s.lastY=p.y; };
+  const stop  = () => { canvasState[id].drawing = false; localStorage.setItem('canvas_'+id, c.toDataURL()); };
+  c.addEventListener('mousedown',start); c.addEventListener('mousemove',draw); c.addEventListener('mouseup',stop); c.addEventListener('mouseleave',stop);
+  c.addEventListener('touchstart',start,{passive:false}); c.addEventListener('touchmove',draw,{passive:false}); c.addEventListener('touchend',stop);
+}
+function setTool(id, tool) {
+  canvasState[id] = canvasState[id] || {};
+  canvasState[id].tool = tool;
+  const suf = id.split('_').slice(1).join('_');
+  document.getElementById('pencilBtn_'+suf)?.classList.toggle('active', tool==='pencil');
+  document.getElementById('eraserBtn_'+suf)?.classList.toggle('active', tool==='eraser');
+}
+function setColor(id, color, el) {
+  canvasState[id] = canvasState[id] || {};
+  canvasState[id].color = color;
+  el.closest('.canvas-toolbar').querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+function clearCanvas(id) {
+  const c = document.getElementById(id); const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height); initCanvas(id); localStorage.removeItem('canvas_'+id);
+}
+
+// ====== Drag & Drop ======
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.dd-item').forEach(item => {
+    item.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', item.dataset.val); e.dataTransfer.setData('id', item.id || ''); });
+  });
+  document.querySelectorAll('.dd-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault(); zone.classList.remove('dragover');
+      const val = e.dataTransfer.getData('text/plain');
+      const tag = document.createElement('span');
+      tag.className = 'dd-item'; tag.textContent = val; tag.style.cursor = 'default';
+      zone.appendChild(tag);
+    });
+  });
+  // Set date
+  document.getElementById('test_date').value = new Date().toISOString().split('T')[0];
+  // Init canvases
+  ['canvas_ut2','canvas_ut4','canvas_ut6','canvas_ut7'].forEach(initCanvas);
+  // Restore
+  const saved = localStorage.getItem('posttest_plan6');
+  if (saved) { try { const d = JSON.parse(saved); Object.keys(d).forEach(k => { const el = document.getElementById(k); if (el && el.tagName !== 'CANVAS') el.value = d[k]; }); } catch(e){} }
+});
+document.addEventListener('input', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) {
+    const data = {};
+    document.querySelectorAll('input[id],textarea[id],select[id]').forEach(el => { data[el.id] = el.value; });
+    localStorage.setItem('posttest_plan6', JSON.stringify(data));
+  }
+});
+
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; setTimeout(() => t.style.display='none', 2800); }
+function collectData() {
+  return {
+    timestamp: new Date().toISOString(), sheet: SHEET,
+    student_name: document.getElementById('student_name').value,
+    student_no: document.getElementById('student_no').value,
+    class: document.getElementById('class').value,
+    test_date: document.getElementById('test_date').value,
+    phase: document.getElementById('phase').value,
+    q1: document.querySelector('input[name="q1"]:checked')?.value||'',
+    q2: document.querySelector('input[name="q2"]:checked')?.value||'',
+    q3: document.querySelector('input[name="q3"]:checked')?.value||'',
+    q4: document.querySelector('input[name="q4"]:checked')?.value||'',
+    ut2: document.querySelector('input[name="ut2"]:checked')?.value||'',
+    ut4_type: document.getElementById('ut4_type').value,
+    ut7_ans: document.getElementById('ut7_ans').value,
+    ut8: document.querySelector('input[name="ut8"]:checked')?.value||'',
+    ut9_ans: document.getElementById('ut9_ans').value,
+    canvas_ut6: document.getElementById('canvas_ut6').toDataURL(),
+  };
+}
+function downloadJSON() {
+  const data = collectData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `Posttest_${data.student_no||'xx'}_Plan6.json`; a.click();
+}
+function submitData() {
+  const data = collectData();
+  if (!data.student_name) { showToast('กรุณากรอกชื่อก่อนส่ง'); return; }
+  if (API_URL === 'YOUR_APPS_SCRIPT_URL') { downloadJSON(); showToast('ดาวน์โหลด JSON สำเร็จ'); return; }
+  fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
+    .then(() => showToast('ส่งข้อมูลสำเร็จ ✓'))
+    .catch(() => { downloadJSON(); showToast('ส่งไม่ได้ — บันทึก JSON แทน'); });
+}
+</script>
+</body>
+</html>

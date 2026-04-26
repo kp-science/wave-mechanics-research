@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P05 · Council · ตัดเหลือ 3</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .candidates { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 20px 0; }
+  .cand {
+    padding: 16px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer;
+  }
+  .cand:hover { border-color: var(--accent); }
+  .cand.voted { border-color: var(--accent-gold); background: rgba(255,203,107,0.08); }
+  .cand .cand-title { font-family: 'Orbitron', sans-serif; color: var(--accent); letter-spacing: 0.15em; font-size: 14px; margin-bottom: 6px; }
+  .cand .cand-vote { font-size: 22px; font-family: 'Orbitron', sans-serif; color: var(--accent-gold); margin-top: 8px; }
+  .vote-panel { padding: 14px; background: rgba(100,216,255,0.05); border: 1px dashed var(--border); border-radius: 10px; margin: 16px 0; }
+  .vote-panel input { width: 60px; padding: 6px; background: rgba(3,4,12,0.5); border: 1px solid var(--border); color: var(--text); border-radius: 4px; text-align: center; }
+  .vote-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+</style>
+</head>
+<body data-page="p05" data-type="mixed">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label mixed">องก์ 1 · Scene 5 · PLOT POINT 1</div>
+  <h1 class="page-title">Council · ตัดสินใจทิศทาง</h1>
+  <div class="obj-tags">
+    <span class="obj-tag a">A1 · ประชาธิปไตย · ฟังเสียงข้างน้อย</span>
+  </div>
+
+  <div class="narrative">
+    <p>ผลการจำแนกตัดเหลือ <b>3 กาแล็กซีต้องสงสัย</b> · ทีมต้องเลือก <b>1 ใน 3</b> เพื่อตั้งเป้าหมายเดินทาง</p>
+    <p style="color:var(--text-dim)">⚠️ ครูบังคับให้<b>เสียงข้างน้อย</b>ได้พูด 30 วินาทีก่อนโหวต</p>
+  </div>
+
+  <div class="candidates">
+    <div class="cand" data-id="alpha" onclick="vote(this)">
+      <div class="cand-title">α · ALPHA</div>
+      <div>กังหันสีขาวฟ้า · ห่าง ~80 Mpc</div>
+      <div class="cand-vote">0 เสียง</div>
+    </div>
+    <div class="cand" data-id="beta" onclick="vote(this)">
+      <div class="cand-title">β · BETA</div>
+      <div>กังหันมีคาน · ห่าง ~120 Mpc</div>
+      <div class="cand-vote">0 เสียง</div>
+    </div>
+    <div class="cand" data-id="gamma" onclick="vote(this)">
+      <div class="cand-title">γ · GAMMA</div>
+      <div>ไม่มีรูป (Irr) · ห่าง ~150 Mpc</div>
+      <div class="cand-vote">0 เสียง</div>
+    </div>
+  </div>
+
+  <div class="vote-panel">
+    <b>โหวตในทีม · กรอกจำนวนเสียงแต่ละตัวเลือก</b>
+    <div class="vote-row">α ALPHA: <input type="number" id="vA" min="0" value="0" oninput="tally()"></div>
+    <div class="vote-row">β BETA:  <input type="number" id="vB" min="0" value="0" oninput="tally()"></div>
+    <div class="vote-row">γ GAMMA: <input type="number" id="vC" min="0" value="0" oninput="tally()"></div>
+    <label style="display:block;margin-top:10px;color:var(--text-dim);font-size:13px">
+      <input type="checkbox" id="minorityHeard"> ✅ เปิดโอกาสให้เสียงข้างน้อยพูด 30 วินาทีแล้ว
+    </label>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P05 · บทบาท: ผู้คุมสภา</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "3 ตัวเลือกนี้ · ต้องเลือก 1 · ครูขอให้ทุกทีมโหวตตามกัน"<br>
+      <b>บังคับ minority:</b> ก่อนโหวต · ให้เสียงข้างน้อยพูด 30 วิ · "ถ้าไม่เห็นด้วย · บอกก่อน"<br>
+      <b>ปิด:</b> "กดยืนยัน · ยานเริ่มเคลื่อน · ถอยกลับไม่ได้"<br>
+      <b>🎴 DM card:</b> Silent 60s ก่อนโหวต · ให้คิดในหัวไม่รีบพูด
+    </div>
+  </details>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled>✓ ยืนยัน · ไม่มีทางถอย</button>
+  <div id="status" style="margin-top:10px;color:var(--text-dim);font-size:12px;"></div>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); }, 50);
+
+  let selected = null;
+  function vote(el) {
+    document.querySelectorAll('.cand').forEach(c => c.classList.remove('voted'));
+    el.classList.add('voted');
+    selected = el.dataset.id;
+    validate();
+  }
+
+  function tally() {
+    const a = +document.getElementById('vA').value || 0;
+    const b = +document.getElementById('vB').value || 0;
+    const c = +document.getElementById('vC').value || 0;
+    document.querySelectorAll('.cand').forEach(el => {
+      const id = el.dataset.id;
+      const vote = id==='alpha' ? a : id==='beta' ? b : c;
+      el.querySelector('.cand-vote').textContent = `${vote} เสียง`;
+    });
+    // auto-select highest
+    const max = Math.max(a,b,c);
+    if (max > 0) {
+      const winner = a===max ? 'alpha' : b===max ? 'beta' : 'gamma';
+      document.querySelectorAll('.cand').forEach(c => c.classList.toggle('voted', c.dataset.id===winner));
+      selected = winner;
+    }
+    validate();
+  }
+
+  function validate() {
+    const total = (+document.getElementById('vA').value||0) + (+document.getElementById('vB').value||0) + (+document.getElementById('vC').value||0);
+    const heard = document.getElementById('minorityHeard').checked;
+    document.getElementById('finishBtn').disabled = !(selected && total > 0 && heard);
+  }
+  document.getElementById('minorityHeard').addEventListener('change', validate);
+
+  function finishPage() {
+    const votes = {
+      alpha: +document.getElementById('vA').value || 0,
+      beta:  +document.getElementById('vB').value || 0,
+      gamma: +document.getElementById('vC').value || 0,
+    };
+    const heard = document.getElementById('minorityHeard').checked;
+
+    // ✅ เซฟ + ปลดล็อค gate ก่อน · กันพัง
+    try { Book.savePageData('p05', { choice:selected, votes, minorityHeard:heard }); } catch(e){ console.warn(e); }
+    Book.completePage();
+
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ตัดสินแล้ว · กด "ต่อไป →"';
+    document.getElementById('status').textContent = `✓ เลือก ${(selected||'').toUpperCase()} · กด "ต่อไป →" ที่ footer`;
+
+    // เก็บข้อมูลวิจัย (optional · ถ้าล้มก็ไม่เป็นไร)
+    try {
+      Game.recordDecision({ page:'p05', choice:selected, votes, minorityHeard:heard, note:'council' });
+      Obj.hit('A1', { page:'p05' });
+      if (heard) Book.addEnergy(+10, 'minority-heard');
+    } catch(err) { console.warn('Scoring failed:', err); }
+
+    // auto-advance 800ms · กันกรณี book.js เก่าใน cache
+    setTimeout(() => {
+      if (Book.state.gates && Book.state.gates.p05) {
+        const pages = (window.EP_CONFIG && EP_CONFIG.pages) || [];
+        const nextPage = pages.find((p,i) => pages[i-1] && pages[i-1].id === 'p05');
+        if (nextPage) location.href = nextPage.file;
+      }
+    }, 800);
+  }
+</script>
+
+</body>
+</html>

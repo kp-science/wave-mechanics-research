@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Engage Hook + CC-03 สปริงคู่ (SHM แผน 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.id-row label{font-size:13px;font-weight:600;color:#555;display:flex;gap:6px;align-items:center}
+.id-row input{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;width:160px}
+.id-row input.short{width:70px}
+.sec-title{font-size:19px;font-weight:800;color:#9a3412;margin:20px 0 10px;padding-left:12px;border-left:5px solid #ea580c;display:flex;align-items:center;gap:8px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+
+/* KWL */
+.kwl-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}
+@media(max-width:700px){.kwl-grid{grid-template-columns:1fr}}
+.kwl-col{border-radius:12px;padding:14px}
+.kwl-col.k{background:#fef3c7;border-top:4px solid #f59e0b}
+.kwl-col.w{background:#dbeafe;border-top:4px solid #3b82f6}
+.kwl-col.l{background:#dcfce7;border-top:4px solid #16a34a}
+.kwl-col h3{font-size:15px;font-weight:800;margin-bottom:8px}
+.kwl-col.k h3{color:#78350f}.kwl-col.w h3{color:#1e40af}.kwl-col.l h3{color:#166534}
+.kwl-col textarea{width:100%;padding:8px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:120px}
+
+/* DQ Box */
+.dq-box{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:14px;padding:18px 22px;color:white;margin:14px 0}
+.dq-box h3{font-size:16px;opacity:.85;margin-bottom:8px}
+.dq-box p{font-size:18px;font-weight:800;line-height:1.5}
+
+/* CC Characters */
+.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:700px){.cc-grid{grid-template-columns:1fr}}
+.char-card{border-radius:12px;padding:14px;border:2px solid transparent;position:relative}
+.char-card.A{background:#e0e7ff;border-color:#6366f1}
+.char-card.B{background:#fee2e2;border-color:#ef4444}
+.char-card.C{background:#dcfce7;border-color:#16a34a}
+.char-card.D{background:#fef9c3;border-color:#ca8a04}
+.char-name{font-weight:800;font-size:15px;margin-bottom:6px}
+.char-card.A .char-name{color:#3730a3}
+.char-card.B .char-name{color:#991b1b}
+.char-card.C .char-name{color:#166534}
+.char-card.D .char-name{color:#713f12}
+.char-say{font-size:14px;font-style:italic;color:#374151;background:white;border-radius:8px;padding:8px 12px;margin:6px 0}
+.mis-tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:8px;font-weight:700;margin-top:4px}
+.mis-tag.wrong{background:#fee2e2;color:#b91c1c}
+.mis-tag.right{background:#dcfce7;color:#15803d}
+
+/* Checkbox bank */
+.cb-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}
+@media(max-width:600px){.cb-bank{grid-template-columns:1fr}}
+.cb-opt{display:flex;align-items:flex-start;gap:8px;background:#f9fafb;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:14px;transition:all .15s}
+.cb-opt:hover{border-color:#fdba74;background:#fff7ed}
+.cb-opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.cb-opt.correct:has(input:checked){background:#dcfce7;border-color:#16a34a}
+.cb-opt.wrong-sel:has(input:checked){background:#fee2e2;border-color:#ef4444}
+.cb-opt input{margin-top:2px;flex-shrink:0;accent-color:#ea580c}
+.score-box{display:none;background:#ffedd5;border:2px solid #ea580c;border-radius:10px;padding:10px 14px;margin:10px 0;font-weight:700;color:#9a3412}
+.score-box.show{display:block}
+
+/* Radio choice */
+.radio-opts{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.radio-opt{display:flex;align-items:center;gap:6px;background:#f9fafb;border:1.5px solid #e2e8f0;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:14px;transition:all .15s}
+.radio-opt:hover{border-color:#ea580c;background:#fff7ed}
+.radio-opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:700}
+.radio-opt input{accent-color:#ea580c}
+
+/* Canvas */
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600;transition:all .15s}
+.c-btn:hover,.c-btn.active{background:#ea580c;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #ea580c}
+
+/* Dropdown */
+select.ans-dd{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;color:#1a202c;background:#fff;min-width:180px}
+
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#ffedd5}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎬 Engage Hook + 🎭 CC-03 Concept Cartoon "สปริงคู่"</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">Engage Phase</span> KWL + Driving Question + Concept Cartoon · วPA 1, 4</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">ใช้ในขั้น Engage · 15–30 นาที</div>
+  </div>
+  <div class="id-row">
+    <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อนักเรียน"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short" placeholder="1"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+  </div>
+
+  <!-- ===== SECTION 1: KWL ===== -->
+  <div class="sec-title">📋 ส่วนที่ 1 — KWL Chart · ระบบมวล-สปริง</div>
+  <div class="info">ก่อนเรียน: กรอก K และ W · หลังเรียน: กรอก L · KWL ช่วยให้เห็นพัฒนาการความรู้ของตัวเอง</div>
+
+  <div class="kwl-grid">
+    <div class="kwl-col k">
+      <h3>K — ฉันรู้อะไรแล้ว?</h3>
+      <div style="font-size:12.5px;color:#78350f;margin-bottom:6px">เกี่ยวกับสปริง, แรงสปริง, กฎของฮุค...</div>
+      <textarea id="kwl_k" placeholder="เช่น: รู้ว่า F = kx · รู้ว่าสปริงยืดออกเมื่อมีแรงดึง..."></textarea>
+    </div>
+    <div class="kwl-col w">
+      <h3>W — ฉันอยากรู้อะไร?</h3>
+      <div style="font-size:12.5px;color:#1e40af;margin-bottom:6px">คำถามที่ฉันอยากหาคำตอบ...</div>
+      <textarea id="kwl_w" placeholder="เช่น: สปริง 2 เส้นต่อกันแล้ว T เปลี่ยนไหม? · m มีผลต่อ T ไหม?..."></textarea>
+    </div>
+    <div class="kwl-col l">
+      <h3>L — ฉันเรียนรู้อะไร?</h3>
+      <div style="font-size:12.5px;color:#166534;margin-bottom:6px">กรอกหลังเรียน...</div>
+      <textarea id="kwl_l" placeholder="[กรอกหลังจบบทเรียน]"></textarea>
+    </div>
+  </div>
+
+  <!-- Driving Question -->
+  <div class="dq-box">
+    <h3>❓ Driving Question (คำถามขับเคลื่อน)</h3>
+    <p>"สปริงแต่ละแบบในชีวิตจริง เช่น โช้คอัพรถยนต์ เตียงสปริง เครื่องชั่ง<br>มีคาบสั่นต่างกันเพราะอะไร? ตัวแปรใดที่ควบคุม T ของระบบมวล-สปริง?"</p>
+  </div>
+
+  <!-- ===== SECTION 2: Concept Cartoon CC-03 ===== -->
+  <div class="sec-title">🎭 ส่วนที่ 2 — Concept Cartoon CC-03 "สปริงคู่ — อนุกรม vs ขนาน"</div>
+  <div class="info">
+    <b>โจทย์:</b> สปริง k₁ = k₂ = 100 N/m · ต่ออนุกรม vs ขนาน · แขวนมวลเท่ากัน<br>
+    <b>คำถาม:</b> ตัวละครใดพูดถูก? เพราะอะไร?
+  </div>
+
+  <div class="cc-grid">
+    <div class="char-card A">
+      <div class="char-name">🧑 เอ — นักเรียนสายคำนวณ</div>
+      <div class="char-say">"ต่ออนุกรม 2 เส้น k รวม = k₁ + k₂ = 200 N/m ระบบแข็งขึ้น T จะลดลง"</div>
+      <span class="mis-tag wrong">❌ M3.1 — ผิด สับสนสูตร</span>
+    </div>
+    <div class="char-card B">
+      <div class="char-name">👩 บี — นักเรียนชอบท่องจำ</div>
+      <div class="char-say">"ต่อขนาน k รวม ก็ = k₁ + k₂ เหมือนกัน ไม่ต่างกัน ทั้งคู่ให้ T เท่ากัน"</div>
+      <span class="mis-tag wrong">❌ M3.1 — ผิดครึ่ง (ขนาน k_eff = k₁+k₂ ถูก แต่อนุกรมผิด)</span>
+    </div>
+    <div class="char-card C">
+      <div class="char-name">🧑‍🔬 ซี — นักเรียนชอบทดลอง</div>
+      <div class="char-say">"อนุกรมทำให้สปริงอ่อนลง 1/k_eff = 1/k₁+1/k₂ → k_eff = 50 N/m · T เพิ่ม · ขนาน k_eff = 200 N/m · T ลด"</div>
+      <span class="mis-tag right">✅ ถูก — ใช้สูตรครบถ้วน</span>
+    </div>
+    <div class="char-card D">
+      <div class="char-name">👧 ดี — นักเรียนระวัง</div>
+      <div class="char-say">"ต่อแบบไหนก็ T เท่ากัน เพราะมวลและแรงโน้มถ่วงเท่ากัน k ไม่มีผลต่อ T"</div>
+      <span class="mis-tag wrong">❌ M3.1 + M3.4 — ผิด T ของสปริงขึ้นกับ k</span>
+    </div>
+  </div>
+
+  <div style="margin-top:12px">
+    <div style="font-weight:700;color:#9a3412;margin-bottom:8px">❓ 2.1 คุณคิดว่าตัวละครใดพูดถูกต้องที่สุด?</div>
+    <div class="radio-opts">
+      <label class="radio-opt"><input type="radio" name="cc_pick" value="A"> 🧑 เอ</label>
+      <label class="radio-opt"><input type="radio" name="cc_pick" value="B"> 👩 บี</label>
+      <label class="radio-opt"><input type="radio" name="cc_pick" value="C"> 🧑‍🔬 ซี</label>
+      <label class="radio-opt"><input type="radio" name="cc_pick" value="D"> 👧 ดี</label>
+    </div>
+    <div style="font-weight:700;color:#9a3412;margin:10px 0 6px">📝 2.2 เหตุผลของคุณ:</div>
+    <textarea style="width:100%;padding:8px 10px;border:1.5px solid #fdba74;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:80px" id="cc_reason" placeholder="อธิบายว่าทำไมคุณเลือกตัวละครนั้น..."></textarea>
+  </div>
+
+  <!-- Checkbox bank: วิเคราะห์คำพูดแต่ละคน -->
+  <div style="margin-top:16px">
+    <div style="font-weight:700;color:#9a3412;margin-bottom:8px">✅ 2.3 เลือกข้อความที่ <u>ถูกต้อง</u> เกี่ยวกับระบบสปริงต่อกัน (เลือกได้หลายข้อ)</div>
+    <div class="cb-bank" id="ccBank">
+      <label class="cb-opt correct"><input type="checkbox" data-correct="true" value="s1"> อนุกรม: 1/k_eff = 1/k₁ + 1/k₂ ดังนั้น k_eff &lt; k ทุกตัว</label>
+      <label class="cb-opt correct"><input type="checkbox" data-correct="true" value="s2"> ขนาน: k_eff = k₁ + k₂ ดังนั้น k_eff &gt; k ทุกตัว</label>
+      <label class="cb-opt correct"><input type="checkbox" data-correct="true" value="s3"> อนุกรมทำให้สปริงอ่อนลง → T เพิ่มขึ้น</label>
+      <label class="cb-opt correct"><input type="checkbox" data-correct="true" value="s4"> ขนานทำให้สปริงแข็งขึ้น → T ลดลง</label>
+      <label class="cb-opt"><input type="checkbox" data-correct="false" value="w1"> การต่อแบบใดก็ตาม k_eff ไม่เปลี่ยนค่า</label>
+      <label class="cb-opt"><input type="checkbox" data-correct="false" value="w2"> อนุกรม k_eff = k₁ + k₂ เสมอ</label>
+      <label class="cb-opt"><input type="checkbox" data-correct="false" value="w3"> T ของสปริงไม่ขึ้นกับ k_eff เพราะ T ขึ้นกับ m เท่านั้น</label>
+      <label class="cb-opt"><input type="checkbox" data-correct="false" value="w4"> ขนาน k_eff = k₁k₂/(k₁+k₂) เหมือนอนุกรม</label>
+    </div>
+    <button class="c-btn" onclick="checkCC()" style="margin-top:8px">🔍 ตรวจคำตอบ</button>
+    <div class="score-box" id="ccScore"></div>
+  </div>
+
+  <!-- POE Predict -->
+  <div style="margin-top:16px;background:#e0e7ff;border-radius:12px;padding:14px;border-left:5px solid #6366f1">
+    <div style="font-weight:800;color:#3730a3;font-size:15px;margin-bottom:8px">🔮 2.4 POE — Predict (ทำนายก่อนทดลอง)</div>
+    <div style="font-size:14px;color:#1e40af;margin-bottom:10px">
+      สปริง k₁ = 100 N/m, k₂ = 200 N/m, มวล m = 0.5 kg<br>
+      ทำนาย: ระบบ (ก) อนุกรม vs (ข) ขนาน · ระบบใดมี T มากกว่า?
+    </div>
+    <div class="radio-opts" style="margin-bottom:10px">
+      <label class="radio-opt"><input type="radio" name="poe_pred" value="A"> ก. อนุกรม T มากกว่า</label>
+      <label class="radio-opt"><input type="radio" name="poe_pred" value="B"> ข. ขนาน T มากกว่า</label>
+      <label class="radio-opt"><input type="radio" name="poe_pred" value="C"> ค. T เท่ากัน</label>
+    </div>
+    <div style="font-weight:600;color:#3730a3;margin-bottom:4px;font-size:14px">เหตุผลที่ทำนาย:</div>
+    <textarea style="width:100%;padding:8px 10px;border:1.5px solid #818cf8;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;min-height:80px" id="poe_reason" placeholder="อธิบายเหตุผลการทำนาย..."></textarea>
+    <div style="margin-top:10px">
+      <div style="font-weight:600;color:#3730a3;margin-bottom:4px;font-size:14px">เขียน/วาดประกอบ (ไม่บังคับ):</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="modeBtn_p" onclick="setMode('p','pen')">✏️ ปากกา</button>
+        <button class="c-btn" id="modeBtn_e" onclick="setMode('p','eraser')">🧹 ยางลบ</button>
+        <span style="font-size:12px;color:#666">ขนาด:</span>
+        <input type="range" id="sz_p" min="1" max="20" value="3" style="width:80px" oninput="sz.p=this.value">
+        <button class="c-btn" onclick="clearC('c_p')">🗑️ ล้าง</button>
+      </div>
+      <canvas id="c_p" data-bg="lined" width="960" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: Misconception Traps ===== -->
+  <div class="sec-title">⚠️ ส่วนที่ 3 — ระบุ Misconception</div>
+  <div style="font-size:14.5px;margin-bottom:10px">เชื่อมโยงคำพูดตัวละครกับ Misconception ที่พบในงานวิจัย:</div>
+  <div style="display:grid;gap:10px">
+    <div style="background:#fff5f5;border:1.5px solid #fca5a5;border-radius:10px;padding:12px">
+      <div style="font-weight:700;color:#b91c1c;margin-bottom:6px">❌ M3.1 (พบ 58.3% · Tumanggor 2020)</div>
+      <div style="font-size:13.5px;color:#374151">"k_eff ของสปริงอนุกรม = ผลรวม k ทุกตัว" — ตัวละครใดมี M3.1?</div>
+      <div class="radio-opts" style="margin-top:6px">
+        <label class="radio-opt"><input type="radio" name="m31_who" value="A"> เอ</label>
+        <label class="radio-opt"><input type="radio" name="m31_who" value="B"> บี</label>
+        <label class="radio-opt"><input type="radio" name="m31_who" value="C"> เอ และ ดี</label>
+        <label class="radio-opt"><input type="radio" name="m31_who" value="D"> ทุกคน ยกเว้น ซี</label>
+      </div>
+    </div>
+    <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:12px">
+      <div style="font-weight:700;color:#166534;margin-bottom:6px">✅ แนวคิดที่ถูกต้อง — เติมช่องว่าง</div>
+      <div style="font-size:13.5px;color:#374151">อนุกรม: k_eff = <input type="text" style="border:none;border-bottom:2px solid #16a34a;width:120px;font-family:inherit;font-size:14px;text-align:center;background:transparent" id="fill_series" placeholder="สูตร"> · ขนาน: k_eff = <input type="text" style="border:none;border-bottom:2px solid #16a34a;width:120px;font-family:inherit;font-size:14px;text-align:center;background:transparent" id="fill_parallel" placeholder="สูตร"></div>
+    </div>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่ง Engage Hook + CC-03</h3>
+    <button class="btn-submit" onclick="submitCC()">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="foot">Engage Hook + CC-03 · SHM แผน 3 · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET_NAME = 'CC3_SHM_Plan3';
+
+// Canvas setup
+const canvases = {};
+const contexts = {};
+const modes = {p:'pen'};
+const sz = {p:3};
+const colors = {p:'#1a202c'};
+
+function initCanvas(id){
+  const c = document.getElementById(id);
+  if(!c) return;
+  canvases[id] = c;
+  const ctx = c.getContext('2d');
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  contexts[id] = ctx;
+  let drawing = false;
+  let last = null;
+  const getPos = e => {
+    const r = c.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return {x:(t.clientX-r.left)*(c.width/r.width), y:(t.clientY-r.top)*(c.height/r.height)};
+  };
+  const start = e => { e.preventDefault(); drawing = true; last = getPos(e); };
+  const move = e => {
+    if(!drawing) return; e.preventDefault();
+    const pos = getPos(e);
+    const key = id.slice(-1);
+    ctx.globalCompositeOperation = modes[id.slice(-1)] === 'eraser' ? 'destination-out' : 'source-over';
+    ctx.strokeStyle = colors[key] || '#1a202c';
+    ctx.lineWidth = sz[key] || 3;
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(pos.x, pos.y); ctx.stroke();
+    last = pos;
+  };
+  const end = () => { drawing = false; last = null; };
+  c.addEventListener('mousedown', start); c.addEventListener('mousemove', move);
+  c.addEventListener('mouseup', end); c.addEventListener('mouseleave', end);
+  c.addEventListener('touchstart', start, {passive:false});
+  c.addEventListener('touchmove', move, {passive:false});
+  c.addEventListener('touchend', end);
+}
+
+function setMode(key, m){
+  modes[key] = m;
+  document.getElementById('modeBtn_p').classList.toggle('active', m==='pen');
+  document.getElementById('modeBtn_e').classList.toggle('active', m==='eraser');
+}
+function clearC(id){ const c=canvases[id]; if(c) contexts[id].clearRect(0,0,c.width,c.height); }
+
+function checkCC(){
+  const bank = document.querySelectorAll('#ccBank .cb-opt input');
+  let correct=0, wrong=0, total_correct=0;
+  bank.forEach(inp => {
+    const isCorrect = inp.dataset.correct === 'true';
+    if(isCorrect) total_correct++;
+    if(inp.checked && isCorrect) correct++;
+    if(inp.checked && !isCorrect) wrong++;
+  });
+  const el = document.getElementById('ccScore');
+  el.classList.add('show');
+  el.innerHTML = `ถูกต้อง ${correct}/${total_correct} ข้อ · เลือกผิด ${wrong} ข้อ · ${correct===total_correct&&wrong===0?'🎉 สมบูรณ์!':'ลองทบทวนอีกครั้ง'}`;
+}
+
+function submitCC(){
+  const name = document.getElementById('s-name').value.trim();
+  if(!name){alert('กรุณากรอกชื่อก่อน');return;}
+  const payload = {
+    sheet: SHEET_NAME,
+    student_name: name,
+    student_no: document.getElementById('s-num').value,
+    class: document.getElementById('s-room').value,
+    kwl_k: document.getElementById('kwl_k').value,
+    kwl_w: document.getElementById('kwl_w').value,
+    kwl_l: document.getElementById('kwl_l').value,
+    cc_pick: document.querySelector('input[name=cc_pick]:checked')?.value || '',
+    cc_reason: document.getElementById('cc_reason').value,
+    poe_predict: document.querySelector('input[name=poe_pred]:checked')?.value || '',
+    poe_reason: document.getElementById('poe_reason').value,
+    m31_who: document.querySelector('input[name=m31_who]:checked')?.value || '',
+    fill_series: document.getElementById('fill_series').value,
+    fill_parallel: document.getElementById('fill_parallel').value,
+    canvas_p: canvases['c_p'] ? canvases['c_p'].toDataURL('image/png') : ''
+  };
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `CC3_${name}.json`; a.click();
+    showStatus('success','💾 บันทึก .json แล้ว (ยังไม่ได้ตั้งค่า API URL)');
+    return;
+  }
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ'));
+}
+
+function showStatus(type,msg){
+  const el=document.getElementById('status'); el.className='status '+type; el.textContent=msg;
+}
+
+initCanvas('c_p');
+</script>
+</body></html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM06 Worksheet — Damping & Resonance Lab (SHM แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#7c3aed}
+.section-title{font-size:18px;font-weight:800;color:#4c1d95;margin:22px 0 10px;padding-left:12px;border-left:5px solid #7c3aed}
+.station{border:2px solid #ddd6fe;border-radius:14px;padding:18px 20px;margin:16px 0;background:#fdfcff}
+.station-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid #ede9fe;flex-wrap:wrap}
+.station-badge{background:#7c3aed;color:#fff;border-radius:10px;padding:6px 16px;font-weight:800;font-size:14px;white-space:nowrap}
+.station-badge.b{background:#5b21b6}
+.station-badge.c{background:#4c1d95}
+.station-title{font-size:16px;font-weight:700;color:#2d3748}
+.station-misc{background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700}
+.sub{margin:10px 0 6px;padding-left:12px;border-left:3px solid #a78bfa;font-size:15px}
+.sub b{color:#4c1d95}
+.ans-ta{width:100%;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;margin-top:4px;min-height:70px}
+.ans-ta:focus{outline:none;border-color:#7c3aed}
+.ans-in{border:none;border-bottom:1.5px solid #a78bfa;padding:3px 8px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:transparent}
+.ans-in:focus{outline:none;border-color:#7c3aed}
+select.drop{border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer;min-width:160px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:15px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+.data-table{width:100%;border-collapse:collapse;font-size:14px;margin:10px 0}
+.data-table th{background:#7c3aed;color:#fff;padding:8px 12px;text-align:center;font-weight:600}
+.data-table td{padding:8px 12px;border:1.5px solid #ddd6fe;text-align:center;vertical-align:middle}
+.data-table td input{border:none;border-bottom:1.5px solid #a78bfa;text-align:center;font-family:inherit;font-size:14px;width:90%;background:transparent;padding:3px}
+.data-table tr:nth-child(even) td{background:#faf5ff}
+.data-table .highlight{background:#ede9fe !important;font-weight:700;color:#4c1d95}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #7c3aed;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600}
+.c-btn.active{background:#7c3aed;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4c1d95}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f5f3ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:white;touch-action:none;cursor:crosshair;margin-top:6px}
+.sim-note{background:#fefce8;border:2px solid #eab308;border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px;color:#713f12}
+.conclusion-box{background:#f5f3ff;border:2px solid #7c3aed;border-radius:12px;padding:16px 18px;margin:16px 0}
+.conclusion-box h3{color:#4c1d95;font-size:15px;margin-bottom:10px}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:640px){.checkbox-bank{grid-template-columns:1fr}.id-box{grid-template-columns:1fr 1fr}}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:18px 22px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:17px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:11px 28px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#f5f3ff}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.hint{font-size:13px;color:#6b7280;font-style:italic;margin-top:4px}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🚀 SIM06 Worksheet — Damping & Resonance Lab (3 ฐาน)</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" style="background:#5b21b6">ใบกิจกรรม 03</span> Explore · SIM06 · 18 นาที · M6.1–M6.3</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 บันทึกอัตโนมัติ</div>
+  </div>
+
+  <div class="sim-note">⚠️ <b>ใช้ร่วมกับ SIM06 SHM Damping & Resonance</b> · 3 Bases: <b>A Damping Sweep / B Resonance Sweep / C Preset Cases</b> · <b>ข้อมูลตัวอย่างอยู่ด้านล่างแต่ละตาราง</b></div>
+  <div style="background:#fff;border:1.5px dashed #c4b5fd;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:13.5px;color:#4c1d95;line-height:1.7">
+    <b>🛠 วิธีใช้ SIM06:</b> slider <b>b (N·s/m)</b>, <b>k (N/m)</b>, <b>m (kg)</b>, <b>A₀ (m)</b>, <b>F₀ (N)</b>, <b>f_drive (Hz)</b> (ลากที่กราฟได้) · readout <b>f_natural, f_drive, A_current, Q-factor, ω₀, ω_d, T</b><br>
+    <b>Base A:</b> envelope <i>A₀·exp(−bt/2m)</i> + caliper วัด T → กด <b>📍 Record period</b> · <b>Base B:</b> เลื่อน f_drive หาจุด peak → กด <b>📍 Record peak</b> หรือ <b>Auto-Sweep 0.1→3 Hz</b> · <b>Base C:</b> 6 preset (Tacoma / Wine / Swing / MRI / LIGO / Taipei 101)
+  </div>
+  <div class="info">🎯 <b>จุดประสงค์:</b> ฐาน A — พิสูจน์ M6.1 (Damping เปลี่ยน f ไหม?) · ฐาน B — พิสูจน์ M6.3 (Resonance = f ตรง ไม่ใช่แรงมาก) · ฐาน C — ประยุกต์ case จริง</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <!-- ฐาน A: Damping -->
+  <h2 class="section-title">⚡ ฐาน A — Damping (6 นาที)</h2>
+  <div class="station">
+    <div class="station-header">
+      <span class="station-badge">ฐาน A</span>
+      <span class="station-title">ปรับค่าแรงหน่วง b · สังเกต A(t) และ T</span>
+      <span class="station-misc">M6.1 — Damping เปลี่ยน f หรือไม่?</span>
+    </div>
+
+    <div class="sub"><b>คำถามนำ:</b> เมื่อปรับ b เพิ่มขึ้น แอมพลิจูด A และคาบ T จะเปลี่ยนอย่างไร?</div>
+
+    <div class="sub"><b>ตาราง A1 — Base A · ใช้ caliper ลากเส้นประส้มไปที่ peak 2 จุด → กด <b>📍 Record period</b> · ตั้ง k, m, A₀ คงที่ · ปรับเฉพาะ b</b></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>b (N·s/m)</th><th>T วัด (s)</th><th>T ทฤษฎี (s)</th><th>%error</th><th>A_max (m)</th><th>Q-factor</th><th>Regime</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0 (ไม่มี damping)</td><td><input id="a0-b0-T"></td><td><input id="a0-b0-Tt"></td><td><input id="a0-b0-err"></td><td><input id="a0-b0-A"></td><td><input id="a0-b0-Q"></td><td><select id="a0-b0-reg" style="border:1px solid #c4b5fd;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>Under</option><option>Critical</option><option>Over</option></select></td></tr>
+        <tr><td>0.1</td><td><input id="a0-b01-T"></td><td><input id="a0-b01-Tt"></td><td><input id="a0-b01-err"></td><td><input id="a0-b01-A"></td><td><input id="a0-b01-Q"></td><td><select id="a0-b01-reg" style="border:1px solid #c4b5fd;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>Under</option><option>Critical</option><option>Over</option></select></td></tr>
+        <tr><td>0.5</td><td><input id="a0-b05-T"></td><td><input id="a0-b05-Tt"></td><td><input id="a0-b05-err"></td><td><input id="a0-b05-A"></td><td><input id="a0-b05-Q"></td><td><select id="a0-b05-reg" style="border:1px solid #c4b5fd;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>Under</option><option>Critical</option><option>Over</option></select></td></tr>
+        <tr class="highlight"><td>1.0</td><td><input id="a0-b10-T"></td><td><input id="a0-b10-Tt"></td><td><input id="a0-b10-err"></td><td><input id="a0-b10-A"></td><td><input id="a0-b10-Q"></td><td><select id="a0-b10-reg" style="border:1px solid #c4b5fd;border-radius:4px;padding:2px;font-family:inherit;font-size:13px"><option value="">--</option><option>Under</option><option>Critical</option><option>Over</option></select></td></tr>
+      </tbody>
+    </table>
+    <div class="hint">📊 ตัวอย่าง (k=10, m=1): b=0: T≈2.00s, Q→∞, Under | b=0.1: T≈2.00s, Q≈10 | b=0.5: T≈2.01s, Q≈2 | b=1.0: T≈2.05s, Q≈1 · Envelope: <i>A₀·exp(−bt/2m)</i></div>
+
+    <div class="sub" style="margin-top:14px"><b>วาดกราฟ A(t) สำหรับ b = 0 และ b = 1.0 บนกระดาษกราฟ (แกน t แนวนอน · A แนวตั้ง):</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cA','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('cA','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#7c3aed" onclick="setColor('cA','#7c3aed',this)" title="b=0"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cA','#dc2626',this)" title="b=1.0"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cA','#1a202c',this)" title="ดำ"></div>
+      <button class="c-btn" onclick="clearCanvas('cA')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cA" data-bg="grid" width="980" height="300"></canvas>
+    <div class="hint">💡 วาดเส้น b=0 (ม่วง·เส้นตรงไม่ลด) และ b=1.0 (แดง·แอมพลิจูดลดแบบ envelope e^(−t)) · ระบุ T ของทั้งสองเส้น</div>
+
+    <div class="sub" style="margin-top:14px"><b>สรุปผล ฐาน A — เมื่อ b เพิ่มขึ้น:</b></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0">
+      <div>แอมพลิจูด A: <select class="drop" id="concl-A-amp">
+        <option value="">-- เลือก --</option>
+        <option value="increase">เพิ่มขึ้น</option>
+        <option value="decrease">ลดลงเร็วขึ้น</option>
+        <option value="same">คงที่</option>
+      </select></div>
+      <div>คาบ T: <select class="drop" id="concl-A-T">
+        <option value="">-- เลือก --</option>
+        <option value="increase">เพิ่มขึ้นชัดเจน</option>
+        <option value="decrease">ลดลงชัดเจน</option>
+        <option value="approx-same">คงที่หรือเปลี่ยนเล็กน้อยมาก</option>
+      </select></div>
+    </div>
+    <div class="sub"><b>สิ่งที่ทดลองนี้พิสูจน์เกี่ยวกับ M6.1:</b></div>
+    <textarea class="ans-ta" id="concl-A-text" rows="2" placeholder="ผลการทดลองแสดงว่า... M6.1 ที่เชื่อว่า 'damping ทำให้ f ลด' นั้น..."></textarea>
+  </div>
+
+  <!-- ฐาน B: Resonance Sweep -->
+  <h2 class="section-title">🎯 ฐาน B — Resonance Sweep (8 นาที)</h2>
+  <div class="station">
+    <div class="station-header">
+      <span class="station-badge b">ฐาน B</span>
+      <span class="station-title">เลื่อน f_drive ช้า ๆ — สังเกต A เทียบกับ f_drive</span>
+      <span class="station-misc">M6.3 — A สูงสุดที่ f ตรง ไม่ใช่แรงมากสุด</span>
+    </div>
+
+    <div class="sub"><b>ตาราง B1 — บันทึก A เมื่อปรับ f_drive (ระบบมี f_natural = 1.5 Hz)</b></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>f_drive (Hz)</th><th>A (cm) จาก SIM06</th><th>เทียบกับ f_natural</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>0.5</td><td><input id="b-f05"></td><td>ต่ำกว่า</td></tr>
+        <tr><td>0.8</td><td><input id="b-f08"></td><td>ต่ำกว่า</td></tr>
+        <tr><td>1.0</td><td><input id="b-f10"></td><td>ต่ำกว่า</td></tr>
+        <tr><td>1.2</td><td><input id="b-f12"></td><td>ต่ำกว่า</td></tr>
+        <tr class="highlight"><td>1.5 (= f_natural)</td><td><input id="b-f15"></td><td>ตรงกัน!</td></tr>
+        <tr><td>1.8</td><td><input id="b-f18"></td><td>สูงกว่า</td></tr>
+        <tr><td>2.2</td><td><input id="b-f22"></td><td>สูงกว่า</td></tr>
+        <tr><td>3.0</td><td><input id="b-f30"></td><td>สูงกว่า</td></tr>
+      </tbody>
+    </table>
+    <div class="hint">📊 ตัวอย่างข้อมูล: 0.5Hz→3cm, 0.8→5, 1.0→8, 1.2→14, 1.5→45cm (peak!), 1.8→12, 2.2→6, 3.0→2cm</div>
+
+    <div class="sub" style="margin-top:14px"><b>วาดกราฟ A vs f_drive บนกระดาษกราฟ:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cB','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('cB','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#7c3aed" onclick="setColor('cB','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cB','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cB','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cB')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cB" data-bg="grid" width="980" height="320"></canvas>
+    <div class="hint">💡 วาดแกน f_drive (0–3 Hz แนวนอน) · A (0–50 cm แนวตั้ง) · พล็อต 8 จุด → เชื่อมเส้น → ระบุ peak ที่ f_natural = 1.5 Hz</div>
+
+    <div class="sub" style="margin-top:14px"><b>คำถาม B2 — วิเคราะห์กราฟ:</b></div>
+    <div class="sub"><b>(B2.1)</b> A มีค่าสูงสุดที่ f_drive = <input class="ans-in" id="b-peak" style="width:80px"> Hz · A_max = <input class="ans-in" id="b-amax" style="width:80px"> cm</div>
+    <div class="sub"><b>(B2.2)</b> ถ้าเพิ่ม F_drive (ขนาดแรง) เป็น 2 เท่า แต่ยัง f_drive = 0.5 Hz · A จะเปลี่ยนอย่างไร?</div>
+    <label class="opt"><input type="radio" name="b22" value="a"> ก. A เพิ่มขึ้น 2 เท่า เพราะแรงมากขึ้น 2 เท่า</label>
+    <label class="opt"><input type="radio" name="b22" value="b"> ข. A เพิ่มขึ้นบ้าง แต่ยังไม่มาก เพราะ f ยังไม่ตรง f_natural</label>
+    <label class="opt"><input type="radio" name="b22" value="c"> ค. A ไม่เปลี่ยน เพราะ resonance ควบคุมทั้งหมด</label>
+    <label class="opt"><input type="radio" name="b22" value="d"> ง. A ลดลง เพราะแรงมากทำให้ damping เพิ่ม</label>
+    <div class="sub"><b>(B2.3)</b> สรุป: เงื่อนไขหลักที่ทำให้ A สูงสุด (Resonance) คือ:</div>
+    <textarea class="ans-ta" id="concl-B" rows="2" placeholder="A สูงสุดเมื่อ... ไม่ใช่เมื่อ..."></textarea>
+  </div>
+
+  <!-- ฐาน C: Preset Cases -->
+  <h2 class="section-title">🏙️ ฐาน C — Preset Cases (4 นาที)</h2>
+  <div class="station">
+    <div class="station-header">
+      <span class="station-badge c">ฐาน C</span>
+      <span class="station-title">วิเคราะห์กรณีจริง 4 เคส ใน SIM06 Preset</span>
+      <span class="station-misc">K6.1 + K6.2 — ประยุกต์</span>
+    </div>
+
+    <div class="sub"><b>ตาราง C1 — Base C · เปิด Preset แต่ละเคส → ลาก f_drive หา resonance → เลือก Use Beneficially / Must Prevent (ครบ 6 preset)</b></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>Preset</th><th>f_natural (Hz)</th><th>f_drive ที่ peak (Hz)</th><th>Use / Prevent</th><th>เหตุผลสั้น ๆ</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🌉 Tacoma Bridge</td>
+          <td><input id="c-tac-fn" placeholder="?"></td>
+          <td><input id="c-tac-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-tac-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-tac-res" placeholder="สะพาน..."></td>
+        </tr>
+        <tr>
+          <td>🍷 Wine Glass</td>
+          <td><input id="c-wine-fn" placeholder="?"></td>
+          <td><input id="c-wine-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-wine-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-wine-res" placeholder="แก้ว..."></td>
+        </tr>
+        <tr>
+          <td>🎡 Swing</td>
+          <td><input id="c-sw-fn" placeholder="?"></td>
+          <td><input id="c-sw-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-sw-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-sw-res" placeholder="ชิงช้า..."></td>
+        </tr>
+        <tr>
+          <td>🏥 MRI</td>
+          <td><input id="c-mri-fn" placeholder="?"></td>
+          <td><input id="c-mri-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-mri-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-mri-res" placeholder="ถ่ายภาพ..."></td>
+        </tr>
+        <tr>
+          <td>🌊 LIGO</td>
+          <td><input id="c-ligo-fn" placeholder="?"></td>
+          <td><input id="c-ligo-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-ligo-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-ligo-res" placeholder="คลื่นความโน้มถ่วง..."></td>
+        </tr>
+        <tr>
+          <td>🏢 Taipei 101 (TMD)</td>
+          <td><input id="c-tp-fn" placeholder="?"></td>
+          <td><input id="c-tp-fd" placeholder="?"></td>
+          <td><select class="drop" id="c-tp-type" style="font-size:12px;min-width:130px"><option value="">--</option><option value="use">Use Beneficially</option><option value="prevent">Must Prevent</option></select></td>
+          <td><input id="c-tp-res" placeholder="tuned mass damper..."></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="hint">📊 ตัวอย่าง: Tacoma f≈0.2 Hz + ลมตรงเฟส → Prevent | MRI ใช้ NMR resonance ที่ 63.87 MHz → Use | Taipei 101 ใช้ TMD แดมป์การสั่นจากแผ่นดินไหว → Prevent</div>
+
+    <div class="sub" style="margin-top:14px"><b>C2 — ทำไม MRI ถึงเป็นตัวอย่าง Resonance ที่ "ดี" ในขณะที่ Tacoma เป็นตัวอย่างที่ "ร้าย"?</b></div>
+    <textarea class="ans-ta" id="concl-C" rows="3" placeholder="MRI ใช้ resonance โดย... แต่ Tacoma เกิด resonance โดยไม่ได้ตั้งใจ... ความต่างคือ..."></textarea>
+  </div>
+
+  <!-- สรุปรวม -->
+  <h2 class="section-title">📋 สรุปรวม — 3 ฐานทดลอง</h2>
+  <div class="conclusion-box">
+    <h3>✅ Misconception Check — ตรวจสอบความเข้าใจ</h3>
+    <div class="sub"><b>M6.1 ตรวจสอบ:</b> "Damping ทำให้ f ลดลง" — จากฐาน A คุณพิสูจน์ว่า...</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0">
+      <label class="opt" style="flex:1;min-width:200px"><input type="radio" name="m61" value="true"> ✅ จริง — Damping ทำให้ f ลดลงชัดเจน</label>
+      <label class="opt" style="flex:1;min-width:200px"><input type="radio" name="m61" value="false"> ❌ ไม่จริง — f คงที่ (หรือเปลี่ยนน้อยมาก) แม้ A ลด</label>
+    </div>
+    <div class="sub"><b>M6.3 ตรวจสอบ:</b> "Resonance = แรงมากสุด" — จากฐาน B คุณพิสูจน์ว่า...</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:6px 0">
+      <label class="opt" style="flex:1;min-width:200px"><input type="radio" name="m63" value="true"> ✅ จริง — ต้องออกแรงมากที่สุดจึงจะ resonance</label>
+      <label class="opt" style="flex:1;min-width:200px"><input type="radio" name="m63" value="false"> ❌ ไม่จริง — A สูงสุดเมื่อ f ตรง ไม่ใช่แรงมากสุด</label>
+    </div>
+    <div class="sub"><b>สรุปกฎทั้ง 2 ข้อที่ได้จากการทดลองวันนี้:</b></div>
+    <textarea class="ans-ta" id="final-concl" rows="3" placeholder="กฎ 1 (จาก ฐาน A): ...\nกฎ 2 (จาก ฐาน B): ..."></textarea>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งใบบันทึก SIM06 Worksheet</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">SIM06 Worksheet · SHM แผน 6 Damping & Resonance · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  ฐาน A: แก้ M6.1 · ฐาน B: แก้ M6.3 · ฐาน C: ประยุกต์ K6.1, K6.2 · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL';
+const SHEET='SIM06_SHM_Plan6';
+const tools={},colors={};
+
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  tools[id]='pencil';colors[id]='#7c3aed';
+  let drawing=false,lx=0,ly=0;
+
+  // Draw grid for grid type
+  if(c.getAttribute('data-bg')==='grid'){
+    const gs=30;
+    ctx.strokeStyle='#ede9fe';ctx.lineWidth=1;
+    for(let x=0;x<=c.width;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,c.height);ctx.stroke();}
+    for(let y=0;y<=c.height;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(c.width,y);ctx.stroke();}
+    // Axes
+    ctx.strokeStyle='#a78bfa';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(40,10);ctx.lineTo(40,c.height-10);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(10,c.height-40);ctx.lineTo(c.width-10,c.height-40);ctx.stroke();
+    // Axis labels
+    ctx.fillStyle='#4c1d95';ctx.font='14px Sarabun';
+    ctx.fillText('A',10,20);ctx.fillText('f_drive',c.width-60,c.height-10);
+  }
+
+  const pos=e=>{
+    const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};
+  };
+  const down=e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pos(e);
+    ctx.beginPath();ctx.strokeStyle=tools[id]==='eraser'?'#fff':colors[id];
+    ctx.lineWidth=tools[id]==='eraser'?20:2.5;ctx.lineCap='round';
+    ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  const up=()=>{drawing=false;saveCanvas(id);};
+  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
+  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});
+  c.addEventListener('touchend',up);
+}
+function setTool(id,t,btn){tools[id]=t;const tb=btn.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,c,el){colors[id]=c;tools[id]='pencil';const tb=el.closest('.canvas-toolbar');if(tb){tb.querySelectorAll('.c-color').forEach(e=>e.classList.remove('active'));}el.classList.add('active');}
+function clearCanvas(id){
+  const c=document.getElementById(id);
+  const ctx=c.getContext('2d');
+  ctx.clearRect(0,0,c.width,c.height);
+  if(c.getAttribute('data-bg')==='grid') initCanvas(id);
+  localStorage.removeItem('canvas6_'+id);
+}
+function saveCanvas(id){try{localStorage.setItem('canvas6_'+id,document.getElementById(id).toDataURL());}catch(e){}}
+function loadCanvas(id){
+  const data=localStorage.getItem('canvas6_'+id);if(!data)return;
+  const c=document.getElementById(id),ctx=c.getContext('2d');
+  const img=new Image();img.src=data;img.onload=()=>ctx.drawImage(img,0,0);
+}
+function collectData(){
+  const ids=['a0-b0-A0','a0-b0-At','a0-b0-T','a0-b0-f','a0-b02-A0','a0-b02-At','a0-b02-T','a0-b02-f','a0-b05-A0','a0-b05-At','a0-b05-T','a0-b05-f','a0-b10-A0','a0-b10-At','a0-b10-T','a0-b10-f','b-f05','b-f08','b-f10','b-f12','b-f15','b-f18','b-f22','b-f30','b-peak','b-amax','concl-A-text','concl-B','concl-C','final-concl'];
+  const data={name:document.getElementById('student_name').value,no:document.getElementById('student_no').value,room:document.getElementById('class').value,date:document.getElementById('test_date').value,timestamp:new Date().toISOString()};
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value||'';});
+  ['concl-A-amp','concl-A-T','c-tac-type','c-wine-type','c-mri-type','c-sw-type'].forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value||'';});
+  ['b22','m61','m63'].forEach(n=>{const el=document.querySelector(`[name=${n}]:checked`);data[n]=el?el.value:'';});
+  data.graphA=document.getElementById('cA').toDataURL('image/png');
+  data.graphB=document.getElementById('cB').toDataURL('image/png');
+  return data;
+}
+async function submitAll(){
+  const data=collectData();
+  if(!data.name||!data.no||!data.room){alert('กรุณากรอกชื่อ เลขที่ และห้อง');return;}
+  const statusEl=document.getElementById('submitStatus');
+  statusEl.className='status loading';statusEl.textContent='⏳ กำลังส่ง...';
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){
+    const blob=new Blob([JSON.stringify({sheet:SHEET,data},null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`SIM06_${data.name}_${Date.now()}.json`;a.click();
+    statusEl.className='status success';statusEl.textContent='✅ ดาวน์โหลด JSON สำเร็จ';return;
+  }
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify({sheet:SHEET,data})});
+    statusEl.className='status success';statusEl.textContent='✅ ส่งสำเร็จ!';}
+  catch(e){statusEl.className='status error';statusEl.textContent='❌ ส่งไม่ได้';}
+}
+window.addEventListener('load',()=>{
+  ['cA','cB'].forEach(id=>{initCanvas(id);loadCanvas(id);});
+  const d=document.getElementById('test_date');if(!d.value)d.value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body></html>

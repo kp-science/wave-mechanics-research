@@ -5,9 +5,9 @@
 // Actions:
 //   POST: submit / uploadStudents / updateSetting / deleteSetting /
 //         sendFeedback / markRead / verifyPin / verifyAdmin / uploadFile /
-//         deleteRow / setCourseStatus / setCanvasScore
+//         deleteRow / setCourseStatus / setCanvasScore / paceSet
 //   GET:  info / list / stats / students / settings / feedback / postPlan /
-//         verifyAdmin / courseStatus / planStats
+//         verifyAdmin / courseStatus / planStats / paceGet
 // ═══════════════════════════════════════════════════════════════════
 // ⚠️ SECURITY (Phase 4):
 // ห้าม hardcode รหัสครูในโค้ดนี้ (โค้ดอาจถูกแชร์/fork)
@@ -48,6 +48,7 @@ function doPost(e) {
     if (action === 'deleteRow')       return handleDeleteRow(data);
     if (action === 'setCanvasScore')  return handleSetCanvasScore(data);
     if (action === 'setScore')        return handleSetCanvasScore(data); // alias · grading dashboard (generic cell write)
+    if (action === 'paceSet')         return handlePaceSet(data);
     return jsonOut({status:'error', message:'unknown action: ' + action});
   } catch (err) {
     return jsonOut({status:'error', message:err.toString()});
@@ -154,6 +155,46 @@ function handlePlanStats(p) {
   });
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// Teacher Pace Remote (Phase 7)
+// ─────────────────────────────────────────────────────────────────
+// ครูคุมจังหวะ "ไปหน้าถัดไป" ให้นักเรียนทั้งห้องพร้อมกัน
+// State เก็บใน Script Properties · key: PACE_<roomCode> · value: JSON
+//   { page, ep, subject, at }
+// Student poll ผ่าน GET paceGet · Teacher สั่งผ่าน POST paceSet (ต้องมี pw)
+// ═══════════════════════════════════════════════════════════════════
+function paceKey_(code) {
+  const safe = String(code || 'default').replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 32);
+  return 'PACE_' + (safe || 'default');
+}
+
+function handlePaceGet(p) {
+  try {
+    const key = paceKey_(p.code);
+    const v = PropertiesService.getScriptProperties().getProperty(key);
+    if (!v) return jsonOut({status:'ok', pace: null});
+    return jsonOut({status:'ok', pace: JSON.parse(v)});
+  } catch (e) {
+    return jsonOut({status:'ok', pace: null});
+  }
+}
+
+function handlePaceSet(data) {
+  if (!checkTeacherPassword_(data.teacher_pw))
+    return jsonOut({status:'error', message:'unauthorized'});
+  const page = String(data.page || '').trim();
+  if (!page) return jsonOut({status:'error', message:'page required'});
+  const pace = {
+    page: page,
+    unlockedUpTo: String(data.unlockedUpTo || page),
+    ep: String(data.ep || ''),
+    subject: String(data.subject || ''),
+    at: Date.now()
+  };
+  PropertiesService.getScriptProperties().setProperty(paceKey_(data.code), JSON.stringify(pace));
+  return jsonOut({status:'ok', pace: pace});
+}
+
 function doGet(e) {
   try {
     const p = e.parameter || {};
@@ -171,6 +212,8 @@ function doGet(e) {
     if (action === 'courseStatus') return handleGetCourseStatus();
     // Phase 6: live plan stats (Teacher หน้าจอสอน)
     if (action === 'planStats')    return handlePlanStats(p);
+    // Phase 7: teacher pace remote (broadcast current page to students)
+    if (action === 'paceGet')      return handlePaceGet(p);
     return jsonOut({status:'error', message:'unknown action: ' + action});
   } catch (err) {
     return jsonOut({status:'error', message:err.toString()});

@@ -1,0 +1,14 @@
+- [Interactive drawing pattern](feedback_interactive_drawing_pattern.md) — scene-stack SVG bg + transparent canvas overlay, "ทิศการเคลื่อนที่"/"หน้าคลื่น" language for wave drawing tasks
+- [Worksheet core infrastructure](reference_worksheet_core.md) — lessons/shared/worksheet-core.js provides auto-save + identity auto-fill + JSON export + print PDF for all worksheets
+- [Plan pipeline checklist + common mistakes](reference_plan_pipeline_checklist.md) — 7-step pipeline per plan + 13 bugs to avoid + pre-push checklist (from Plan 5 lessons)
+- [Apps Script Drive scope](feedback_apps_script_drive_scope.md) — createFolder ต้อง authorize full drive scope · getRootFolder ไม่พอ · ต้องกด New version เมื่อ redeploy
+- [Astronomy lesson path](project_astronomy_lesson_path.md) — ไฟล์ที่ wave-mechanics-research/lessons/astronomy/ · EP01-EP04 พร้อมใช้
+- [COSMOS LOG design](feedback_cosmos_log_design.md) — Book-page flow · Experience Before Labeling · ไม่มี info dump · Before→Activity→After · Teacher Cue ทุกหน้า
+- [EP02 Game Layer](reference_ep02_game_layer.md) — shared/{game,items,corruption,leaderboard,boss,teacher-cards}.js + ep02/config.js · API, state model, load order
+- **EP02 Handoff**: `wave-mechanics-research/lessons/astronomy/HANDOFF_ep02.md` — scaffold ครบ 20 หน้า · รอเติมเนื้อหาจริง
+- **EP03 Handoff**: `wave-mechanics-research/lessons/astronomy/HANDOFF_ep03.md` — 20 หน้าเสร็จ · 5-องก์ Adventure model · WARP RUN boss
+- [EP03 Game Patterns](reference_ep03_patterns.md) — Chain/Gate/Submit/Coin/ShopItems modules · 3 ending · 2 cash-in points · EP02 boss applied @ WARP RUN
+- **EP04 Handoff** ⭐: `wave-mechanics-research/lessons/astronomy/HANDOFF_ep04.md` — 27 หน้าเสร็จ · **4-องก์ Lab-build model** · 5 mass tracks · Mystery Box 5 จุด · starfield+audio+mission-brief+mystery-box modules · GRAVITY ASCENT boss · cliffhanger → EP05 ดวงอาทิตย์
+- **Skill v2** ⭐: `skills/game-lesson-builder/SKILL.md` รองรับ 2 รูปแบบ (5-องก์ EP03 / 4-องก์ EP04) + `references/ep04-structure.md` blueprint สำหรับ EP05+
+- [Teacher Pace Remote](reference_pace_remote.md) — backend paceGet/paceSet + pace-client.js + book.js banner · opt-in ?room=XXX · ต้อง redeploy Apps Script
+- [Puzzle interaction patterns](feedback_puzzle_interaction_patterns.md) — 7 stabilized UX patterns (slot+hint, shuffle, match-by-id, journal A2, image state swap) from EP02 session 3

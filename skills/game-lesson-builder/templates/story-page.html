@@ -1,0 +1,92 @@
+<!-- Story Page Template (narrative · cinematic · click-through)
+     Use for: HOOK pages (p00-p02), TEACH pages (p04, p07, p11, p14), CINE pages (p10, p13)
+     Reference: lessons/astronomy/ep03/p02-sos.html, p13-maze.html
+-->
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP<NN> · P<XX> · <PAGE TITLE></title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* page-specific styles only */
+  body { background: #04050d; }
+  /* add narrative styles, scene cards, etc. */
+</style>
+</head>
+<body data-page="p<XX>" data-type="story">
+<div class="page">
+  <div class="lbl">📖 <ACT NAME></div>
+  <h1><PAGE TITLE></h1>
+
+  <!-- Optional: K/P/A tags -->
+  <div class="tags">
+    <span class="tag k">K1 <objective></span>
+    <span class="tag a">A2 <objective></span>
+  </div>
+
+  <!-- Mentor voice / dialogue -->
+  <div class="card" style="border-color:#d4b8ff;background:rgba(212,184,255,0.06);">
+    <div style="font-style:italic;color:#d4b8ff;line-height:1.7;">
+      <b>Dr.<MENTOR></b>: "<dialogue here>"
+    </div>
+  </div>
+
+  <!-- Narrative content -->
+  <div class="card">
+    <div class="narrative">
+      <p>เนื้อเรื่อง...</p>
+      <p>ตัวละครพูด...</p>
+    </div>
+  </div>
+
+  <!-- Optional: scene illustration / SVG -->
+  <!-- <div class="scene-svg">...</div> -->
+
+  <!-- Footer · 2-button pair -->
+  <div class="btn-pair">
+    <button class="submit-btn">💾 บันทึกผ่าน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+  </div>
+
+  <!-- Teacher cue -->
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · <PAGE TITLE></summary>
+    <div class="body">
+      <b>เป้าหมาย:</b> <objective><br>
+      <b>เปิดด้วย:</b> "<opening line for teacher>"<br>
+      <b>ระหว่าง:</b> <what teacher should observe><br>
+      <b>ปิด:</b> "<closing line>"<br>
+      <b>เวลา:</b> <X> นาที
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep<NN>-boot.js?v=2"></script>
+<script>
+// Page logic (minimal for story pages)
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p<XX>',
+    nextHref: 'p<XX+1>-<next>.html',
+    getPayload: () => ({ tag:'<page-tag>', viewedAt: Date.now() }),
+    onSubmit: () => { /* show "ผ่านแล้ว" feedback */ },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p<XX>-to-p<XX+1>', 'p<XX+1>-<next>.html');
+    }
+  }, 100);
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · Join Mission</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  body { font-family:'Sarabun',sans-serif; background:#05060f; color:#e8ecf8; min-height:100vh; }
+  .wrap { max-width:680px; margin:0 auto; padding:40px 20px; }
+  h1 { font-family:'Orbitron',sans-serif; text-align:center; font-size:30px; letter-spacing:0.1em; color:#ff8fa5; margin-bottom:20px; }
+  .step { padding:22px; background:rgba(22,27,58,0.6); border:1.5px solid rgba(120,140,220,0.3); border-radius:14px; margin:16px 0; }
+  .step h3 { font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:0.15em; color:#ffcb6b; margin-bottom:12px; }
+  .step.done { border-color:#7effb2; opacity:0.7; }
+  input { width:100%; padding:14px; min-height:48px; background:rgba(0,0,0,0.3); border:1.5px solid #444; color:#e8ecf8;
+          border-radius:10px; font-size:17px; font-family:inherit; margin-top:6px; box-sizing:border-box; }
+  input:focus { border-color:#64d8ff; outline:none; }
+  .code-input { text-align:center; font-family:Orbitron,monospace; font-size:34px; letter-spacing:0.3em; }
+  .btn { width:100%; padding:16px; min-height:52px; background:rgba(126,255,178,0.1); border:2px solid #7effb2; color:#7effb2;
+         border-radius:10px; font-size:14px; font-family:inherit; font-weight:700; cursor:pointer; margin-top:12px; letter-spacing:0.1em; }
+  .btn:hover { background:rgba(126,255,178,0.2); }
+  .btn.alt { border-color:#64d8ff; color:#64d8ff; background:rgba(100,216,255,0.1); }
+  .roles { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+  @media(max-width:540px) { .roles { grid-template-columns:1fr; } }
+  .role-btn { padding:16px; min-height:90px; background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.3); color:#e8ecf8;
+              border-radius:10px; cursor:pointer; font-family:inherit; text-align:left; transition:all .15s; }
+  .role-btn:hover:not(.active) { border-color:#64d8ff; transform:translateY(-2px); }
+  .role-btn.active { border-color:#7effb2; background:rgba(126,255,178,0.15); }
+  .role-btn .icon { font-size:24px; display:block; margin-bottom:4px; }
+  .role-btn .name { font-weight:700; font-size:14.5px; }
+  .role-btn .desc { font-size:11.5px; color:#9aa3c0; margin-top:3px; line-height:1.5; }
+  .status { padding:12px 14px; background:rgba(100,216,255,0.06); border-left:3px solid #64d8ff; margin:10px 0; font-size:13px; border-radius:0 8px 8px 0; }
+  .roster { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .roster-chip { padding:4px 10px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; border-radius:12px; font-size:11px; color:#64d8ff; }
+  .back { display:inline-block; margin-top:20px; color:#9aa3c0; text-decoration:none; font-size:13px; }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <h1>🚀 JOIN EP04</h1>
+
+  <div class="step" id="step1">
+    <h3>ขั้นที่ 1 · ใส่รหัสห้อง</h3>
+    <input class="code-input" id="roomInput" maxlength="4" placeholder="ABCD" autocapitalize="characters">
+    <button class="btn" onclick="doJoin()">ENTER ROOM</button>
+    <div class="status">💡 ครูให้รหัส 4 ตัวอักษร · หรือเริ่มเอง (solo) ด้านล่าง</div>
+    <button class="btn alt" onclick="doSolo()">▶ เล่นคนเดียว (Solo Mode)</button>
+  </div>
+
+  <div class="step" id="step2" style="display:none;">
+    <h3>ขั้นที่ 2 · ใส่ชื่อของคุณ</h3>
+    <input id="nameInput" placeholder="ชื่อเล่น" maxlength="24">
+    <button class="btn" onclick="doName()">ยืนยันชื่อ</button>
+  </div>
+
+  <div class="step" id="step3" style="display:none;">
+    <h3>ขั้นที่ 3 · เลือกบทบาท</h3>
+    <div class="roles" id="roles"></div>
+    <div class="status" id="rosterStatus"></div>
+  </div>
+
+  <div class="step" id="step4" style="display:none;">
+    <h3>✓ พร้อม</h3>
+    <button class="btn" onclick="startGame()">▶ เริ่มภารกิจ EP04 · ไปที่ P00</button>
+  </div>
+
+  <a class="back" href="index.html">← กลับ</a>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/role-view.js"></script>
+<script>
+Sync.init();
+
+function doJoin() {
+  const code = document.getElementById('roomInput').value.toUpperCase().trim();
+  if (!code || code.length < 3) { alert('ใส่รหัสห้อง'); return; }
+  Sync.joinRoom(code);
+  advance(2);
+}
+function doSolo() {
+  const code = Sync.createRoom({});
+  alert('สร้างห้องใหม่: ' + code + ' (solo)');
+  document.getElementById('roomInput').value = code;
+  advance(2);
+}
+function doName() {
+  const name = document.getElementById('nameInput').value.trim();
+  if (!name) { alert('ใส่ชื่อก่อน'); return; }
+  Sync.setName(name);
+  renderRoles();
+  advance(3);
+}
+function renderRoles() {
+  const roles = EP_CONFIG.roles;
+  const host = document.getElementById('roles');
+  host.innerHTML = roles.map(r => `
+    <button class="role-btn" data-role="${r.id}" onclick="pickRole('${r.id}')">
+      <span class="icon">${r.icon}</span>
+      <span class="name">${r.name}</span>
+      <div class="desc">${r.desc}</div>
+    </button>
+  `).join('');
+}
+function pickRole(roleId) {
+  Sync.setRole(roleId);
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === roleId));
+  updateRoster();
+  advance(4);
+}
+function updateRoster() {
+  const s = Sync.getState();
+  const roles = EP_CONFIG.roles;
+  const host = document.getElementById('rosterStatus');
+  if (!s || !s.roster) { host.innerHTML = 'ห้อง: ' + (Sync.getRoomCode()||'—'); return; }
+  host.innerHTML = '<b>ทีม (' + s.roster.length + '):</b><div class="roster">' +
+    s.roster.map(m => {
+      const r = roles.find(x => x.id === m.role);
+      return '<span class="roster-chip">' + (r?r.icon:'?') + ' ' + (m.name||'...') + '</span>';
+    }).join('') + '</div>';
+}
+function advance(n) {
+  for (let i=1; i<=4; i++) {
+    const s = document.getElementById('step'+i);
+    if (!s) continue;
+    s.style.display = (i <= n) ? 'block' : 'none';
+    if (i < n) s.classList.add('done');
+  }
+}
+function startGame() { location.href = 'p00-cover.html'; }
+Sync.on(() => updateRoster());
+
+setTimeout(() => {
+  const code = Sync.getRoomCode();
+  if (code) {
+    document.getElementById('roomInput').value = code;
+    const me = Sync.getMe();
+    if (me.name) {
+      document.getElementById('nameInput').value = me.name;
+      renderRoles();
+      if (me.role) {
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === me.role));
+        updateRoster();
+        advance(4);
+      } else { advance(3); }
+    } else { advance(2); }
+  }
+}, 100);
+</script>
+</body>
+</html>

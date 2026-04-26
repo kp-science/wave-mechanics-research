@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>COSMOS LOG · Series Bible & Storyboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #05060f;
+    --bg-1: #0a0d1f;
+    --bg-2: #12152c;
+    --bg-card: rgba(22, 27, 58, 0.6);
+    --border: rgba(120, 140, 220, 0.18);
+    --border-strong: rgba(140, 180, 255, 0.35);
+    --text: #e8ecf8;
+    --text-dim: #9aa3c0;
+    --text-faint: #6a7394;
+    --accent: #64d8ff;
+    --accent-2: #b980ff;
+    --accent-gold: #ffcb6b;
+    --accent-red: #ff5c7a;
+    --accent-green: #7effb2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Sarabun', 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg-0);
+    color: var(--text);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(100, 216, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(185, 128, 255, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(255, 203, 107, 0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px, white, transparent),
+      radial-gradient(1px 1px at 60px 80px, white, transparent),
+      radial-gradient(1px 1px at 150px 50px, rgba(255,255,255,0.7), transparent),
+      radial-gradient(2px 2px at 250px 180px, white, transparent),
+      radial-gradient(1px 1px at 330px 120px, rgba(255,255,255,0.6), transparent),
+      radial-gradient(1px 1px at 400px 250px, white, transparent),
+      radial-gradient(1px 1px at 500px 60px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(2px 2px at 120px 300px, white, transparent);
+    background-size: 550px 400px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: -1;
+    animation: twinkle 8s infinite ease-in-out;
+  }
+  @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.55; } }
+  .display { font-family: 'Orbitron', sans-serif; letter-spacing: 0.05em; }
+
+  /* NAVIGATION */
+  nav.topnav {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(16px);
+    background: rgba(5, 6, 15, 0.8);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 5vw;
+    display: flex; align-items: center; gap: 24px;
+    flex-wrap: wrap;
+  }
+  nav.topnav .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 16px;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 0.15em;
+  }
+  nav.topnav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  nav.topnav a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 88vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 80px 5vw;
+    text-align: center;
+    position: relative;
+  }
+  .hero .badge-top {
+    display: inline-block;
+    padding: 6px 18px;
+    border: 1px solid var(--border-strong);
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    margin-bottom: 28px;
+  }
+  .hero h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(48px, 9vw, 120px);
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    line-height: 0.95;
+    background: linear-gradient(180deg, #ffffff 0%, #8ca0d8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 18px;
+  }
+  .hero h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 500;
+    font-size: clamp(16px, 2vw, 22px);
+    color: var(--accent-gold);
+    letter-spacing: 0.2em;
+    margin-bottom: 36px;
+  }
+  .hero .logline {
+    max-width: 780px;
+    font-size: clamp(16px, 1.5vw, 19px);
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .hero .meta-row {
+    display: flex; gap: 32px; flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--text-faint);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .hero .meta-row span { display: flex; align-items: center; gap: 6px; }
+  .hero .meta-row b { color: var(--text); font-weight: 500; }
+
+  /* SECTIONS */
+  section {
+    padding: 100px 5vw;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    margin-bottom: 18px;
+    background: linear-gradient(180deg, #fff 0%, #7e8bb8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .section-sub {
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 720px;
+    margin-bottom: 48px;
+  }
+
+  /* PREMISE BLOCK */
+  .premise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .premise-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .premise-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-3px);
+  }
+  .premise-card .icon {
+    font-size: 24px;
+    margin-bottom: 14px;
+  }
+  .premise-card h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .premise-card p { color: var(--text-dim); font-size: 14.5px; }
+
+  /* CHARACTERS */
+  .char-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .char-card {
+    background: linear-gradient(160deg, var(--bg-card) 0%, rgba(12, 15, 35, 0.8) 100%);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .char-card:hover {
+    border-color: var(--char-color, var(--accent));
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px var(--char-glow, transparent);
+  }
+  .char-card .char-top {
+    padding: 32px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    background: radial-gradient(circle at top right, var(--char-glow, transparent), transparent 70%);
+  }
+  .char-card .avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    background: linear-gradient(135deg, var(--char-color, var(--accent)) 0%, var(--char-color-2, var(--accent-2)) 100%);
+    margin-bottom: 16px;
+    box-shadow: 0 0 25px var(--char-glow, transparent);
+  }
+  .char-card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+  .char-card .role {
+    font-size: 13px;
+    color: var(--char-color, var(--accent));
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+  }
+  .char-card .char-body { padding: 20px 24px 28px; }
+  .char-card .stat {
+    display: flex; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 13.5px;
+  }
+  .char-card .stat:last-of-type { border-bottom: none; }
+  .char-card .stat b { color: var(--text-faint); font-weight: 400; }
+  .char-card .arc {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.025);
+    border-left: 2px solid var(--char-color, var(--accent));
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* CREW */
+  .c-arya   { --char-color: #64d8ff; --char-color-2: #3a8cff; --char-glow: rgba(100, 216, 255, 0.25); }
+  .c-ken    { --char-color: #ff8fa5; --char-color-2: #ff5c7a; --char-glow: rgba(255, 92, 122, 0.25); }
+  .c-meera  { --char-color: #7effb2; --char-color-2: #2fe48a; --char-glow: rgba(126, 255, 178, 0.25); }
+  .c-bolt   { --char-color: #ffcb6b; --char-color-2: #ff9a3d; --char-glow: rgba(255, 203, 107, 0.25); }
+  .c-void   { --char-color: #b980ff; --char-color-2: #7a3fff; --char-glow: rgba(185, 128, 255, 0.35); }
+  .c-lem    { --char-color: #a0e8ff; --char-color-2: #5aa8d8; --char-glow: rgba(160, 232, 255, 0.2); }
+  .c-hubble { --char-color: #d4b8ff; --char-color-2: #8a6ad8; --char-glow: rgba(212, 184, 255, 0.2); }
+
+  /* GAME RULES */
+  .rules-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 900px) { .rules-wrap { grid-template-columns: 1fr; } }
+  .rule-block {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 26px;
+  }
+  .rule-block h4 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    margin-bottom: 16px;
+    color: var(--accent-gold);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .rule-block ul { list-style: none; }
+  .rule-block li {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14.5px;
+    color: var(--text-dim);
+    display: flex; gap: 10px; align-items: baseline;
+  }
+  .rule-block li:last-child { border-bottom: none; }
+  .rule-block li span.pt {
+    color: var(--accent);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    min-width: 60px;
+  }
+  .rank-chain {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .rank-chain .rank {
+    padding: 8px 14px;
+    background: rgba(100, 216, 255, 0.08);
+    border: 1px solid rgba(100, 216, 255, 0.25);
+    border-radius: 100px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+  }
+  .rank-chain .arrow { color: var(--text-faint); }
+
+  /* EPISODE STRUCTURE */
+  .struct-timeline {
+    display: flex; gap: 10px; margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+  .struct-beat {
+    flex: 1 1 0;
+    min-width: 140px;
+    padding: 18px 16px;
+    border-radius: 12px;
+    background: linear-gradient(160deg, var(--bg-card), rgba(12, 15, 35, 0.6));
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .struct-beat .beat-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    margin-bottom: 8px;
+  }
+  .struct-beat .beat-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+  }
+  .struct-beat .beat-time {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 8px;
+  }
+  .struct-beat .beat-desc {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* STORYBOARD */
+  .ep-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 24px;
+  }
+  .ep-card {
+    background: linear-gradient(160deg, rgba(22, 27, 58, 0.85) 0%, rgba(8, 10, 24, 0.9) 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1);
+    position: relative;
+  }
+  .ep-card:hover {
+    border-color: var(--ep-color, var(--accent));
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 40px var(--ep-glow, transparent);
+  }
+  .ep-poster {
+    height: 180px;
+    background: linear-gradient(135deg, var(--ep-color, var(--accent)) 0%, var(--ep-color-2, var(--accent-2)) 100%);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .ep-poster::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 60%),
+                radial-gradient(circle at 70% 70%, rgba(0,0,0,0.3) 0%, transparent 60%);
+  }
+  .ep-poster .ep-num {
+    position: absolute;
+    top: 16px; left: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.9);
+    padding: 4px 10px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+  }
+  .ep-poster .ep-emoji {
+    font-size: 72px;
+    filter: drop-shadow(0 8px 20px rgba(0,0,0,0.4));
+    z-index: 1;
+  }
+  .ep-poster .ep-badge-icon {
+    position: absolute;
+    bottom: 14px; right: 16px;
+    font-size: 22px;
+    background: rgba(0,0,0,0.4);
+    padding: 8px 10px;
+    border-radius: 50%;
+    backdrop-filter: blur(8px);
+  }
+  .ep-body { padding: 24px 26px 28px; }
+  .ep-body h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+  .ep-body .ep-subtitle {
+    color: var(--ep-color, var(--accent));
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ep-body .ep-logline {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.65;
+    margin-bottom: 18px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .ep-field {
+    margin-bottom: 12px;
+    font-size: 13px;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .ep-field .lbl {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+  .ep-field .val { color: var(--text); }
+  .ep-field.villain .lbl { color: var(--accent-red); }
+  .ep-field.villain .val { color: #ffb0bf; font-style: italic; }
+  .ep-field.content .lbl { color: var(--accent-green); }
+  .ep-field.content .val code {
+    background: rgba(126, 255, 178, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    color: var(--accent-green);
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  .ep-cliff {
+    margin-top: 16px;
+    padding: 12px 14px;
+    background: rgba(255, 203, 107, 0.06);
+    border-left: 2px solid var(--accent-gold);
+    border-radius: 4px;
+    font-size: 13px;
+    color: #ffe2a8;
+    font-style: italic;
+  }
+
+  /* EP COLORS */
+  .ep1 { --ep-color: #64d8ff; --ep-color-2: #7a3fff; --ep-glow: rgba(100, 216, 255, 0.3); }
+  .ep2 { --ep-color: #b980ff; --ep-color-2: #ff5c7a; --ep-glow: rgba(185, 128, 255, 0.3); }
+  .ep3 { --ep-color: #ffcb6b; --ep-color-2: #ff8fa5; --ep-glow: rgba(255, 203, 107, 0.3); }
+  .ep4 { --ep-color: #ff5c7a; --ep-color-2: #ff2040; --ep-glow: rgba(255, 92, 122, 0.3); }
+  .ep5 { --ep-color: #ffcb6b; --ep-color-2: #ff6a1a; --ep-glow: rgba(255, 154, 61, 0.3); }
+  .ep6 { --ep-color: #7effb2; --ep-color-2: #3a8cff; --ep-glow: rgba(126, 255, 178, 0.3); }
+  .ep7 { --ep-color: #a0e8ff; --ep-color-2: #64d8ff; --ep-glow: rgba(160, 232, 255, 0.3); }
+  .ep8 { --ep-color: #ffcb6b; --ep-color-2: #b980ff; --ep-glow: rgba(255, 203, 107, 0.35); }
+
+  /* SEASON ARC */
+  .arc-wrap {
+    overflow-x: auto;
+    padding: 20px 0 30px;
+  }
+  .arc-table {
+    min-width: 1100px;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 2px;
+  }
+  .arc-table th {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    padding: 12px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-strong);
+    font-weight: 500;
+  }
+  .arc-table td {
+    padding: 8px 6px;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+  .arc-table td.row-label {
+    text-align: left;
+    padding-left: 14px;
+    font-weight: 600;
+    color: var(--text);
+    border-right: 1px solid var(--border);
+    width: 180px;
+  }
+  .arc-cell {
+    padding: 10px 8px !important;
+    color: var(--text-dim);
+  }
+  .arc-cell.active {
+    background: linear-gradient(135deg, rgba(100, 216, 255, 0.15), rgba(185, 128, 255, 0.15));
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+  }
+  .arc-cell.climax {
+    background: linear-gradient(135deg, rgba(255, 203, 107, 0.2), rgba(255, 92, 122, 0.2));
+    color: var(--accent-gold);
+    border: 1px solid rgba(255, 203, 107, 0.4);
+    font-weight: 600;
+  }
+  .arc-cell.resolve {
+    background: linear-gradient(135deg, rgba(126, 255, 178, 0.15), rgba(100, 216, 255, 0.15));
+    color: var(--accent-green);
+    border: 1px solid rgba(126, 255, 178, 0.35);
+    font-weight: 600;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 80px 5vw 60px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 80px;
+  }
+  footer .next-steps {
+    max-width: 720px;
+    margin: 0 auto 40px;
+  }
+  footer .next-steps h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: var(--accent-gold);
+  }
+  footer .next-steps p {
+    color: var(--text-dim);
+    margin-bottom: 20px;
+    font-size: 15px;
+  }
+  footer .tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--text-faint);
+  }
+
+  /* utility */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+  .lead-quote {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--accent-gold);
+    padding: 20px 24px;
+    border-left: 3px solid var(--accent-gold);
+    background: rgba(255, 203, 107, 0.04);
+    border-radius: 4px;
+    margin: 24px 0;
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="logo">★ COSMOS LOG</div>
+  <a href="#hero">Overview</a>
+  <a href="#bible">Series Bible</a>
+  <a href="#characters">Characters</a>
+  <a href="#rules">Game Rules</a>
+  <a href="#structure">Episode Format</a>
+  <a href="#storyboard">8 Episodes</a>
+  <a href="#arc">Season Arc</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero" style="padding-top: 60px; padding-bottom: 60px; max-width: none;">
+  <div class="badge-top">★ SEASON 1 · 8 EPISODES · 16 PERIODS ★</div>
+  <h1>COSMOS LOG</h1>
+  <h2>ปริศนาวัตถุต้นกำเนิด</h2>
+  <p class="logline">
+    ปี 2267 ยานสำรวจ <b style="color: var(--accent);">T.H.E.O.S.-IX</b> ของสหพันธ์โลกชนกับ
+    <b style="color: var(--accent-gold);">"ศิลาต้นกำเนิด"</b> — วัตถุลึกลับที่สะท้อนคลื่นย้อนเวลาได้ —
+    ลูกเรือ 4 คนต้องเดินทางข้ามเอกภพและกาลเวลา เพื่อหยุดเผ่า
+    <b style="color: var(--accent-2);">โวอิเดียน</b> ก่อนที่พวกมันจะย้อนไปลบจุดเริ่มต้นของบิกแบง
+  </p>
+  <div class="meta-row">
+    <span>🎓 <b>ชั้น ม.6</b></span>
+    <span>📚 <b>หน่วย 1 ดาราศาสตร์</b></span>
+    <span>🎬 <b>Narrative-Based Learning</b></span>
+    <span>🎮 <b>Gamification</b></span>
+    <span>🔬 <b>Experience Before Labeling</b></span>
+  </div>
+</section>
+
+<!-- SERIES BIBLE -->
+<section id="bible">
+  <div class="section-label">◤ PART I</div>
+  <h2 class="section-title">Series Bible</h2>
+  <p class="section-sub">หลักคิดการออกแบบซีรีส์ — เนื้อหาดาราศาสตร์ไม่ใช่ "บทเรียน" แต่เป็น "เครื่องมือเอาตัวรอด" ของลูกเรือ</p>
+
+  <div class="premise-grid">
+    <div class="premise-card">
+      <div class="icon">🌌</div>
+      <h4>Premise</h4>
+      <p>นักเรียนคือ Cadet คนที่ 5 ของยาน T.H.E.O.S.-IX ต้องไขปริศนาจักรวาลทีละตอน เพื่อเลื่อนยศสู่ Commander</p>
+    </div>
+    <div class="premise-card">
+      <div class="icon">🎭</div>
+      <h4>Genre & Tone</h4>
+      <p>Space Opera ผสม Mystery และ Time-Travel — สไตล์ Star Trek × Interstellar × Guardians of the Galaxy</p>
+    </div>
+    <div class="premise-card">
+      <div class="icon">🕰️</div>
+      <h4>Setting</h4>
+      <p>ปี 2267 สหพันธ์โลกรวมชาติ 47 ประเทศ · ยานใช้ Warp Drive · มีฐานการค้าระหว่างดาว · สถานี ISS-Prime โคจรรอบโลก</p>
+    </div>
+    <div class="premise-card">
+      <div class="icon">⚔️</div>
+      <h4>Core Conflict</h4>
+      <p>โวอิเดียนเชื่อว่าเอกภพไม่มีจุดเริ่ม ความรู้วิทยาศาสตร์เป็นของปลอม · พวกมันใช้ <b>มโนทัศน์คลาดเคลื่อน</b> เป็นอาวุธ</p>
+    </div>
+    <div class="premise-card">
+      <div class="icon">🎯</div>
+      <h4>Themes</h4>
+      <p>ความรู้ = อำนาจ · ความร่วมมือข้ามความเชี่ยวชาญ · การตั้งคำถามต่อสิ่งที่ "ดูเหมือน" จริง · ครอบครัวที่เลือกเอง</p>
+    </div>
+    <div class="premise-card">
+      <div class="icon">📐</div>
+      <h4>Design Principle</h4>
+      <p>ทุกพล็อตบีทต้องการ <b>ความรู้ดาราศาสตร์</b> เพื่อแก้ · นักเรียนประสบการณ์ก่อน (Experience) ค่อยให้ชื่อวิชาการทีหลัง (Labeling)</p>
+    </div>
+  </div>
+
+  <div class="lead-quote">
+    "จะสอนให้จำ หรือให้รู้สึก — หนังไม่เคยถามผู้ชมว่าเข้าใจไหม มันแค่ทำให้ผู้ชมอยู่ในนั้น"
+  </div>
+</section>
+
+<!-- CHARACTERS -->
+<section id="characters">
+  <div class="section-label">◤ PART II</div>
+  <h2 class="section-title">Characters</h2>
+  <p class="section-sub">ลูกเรือ 4 คน + AI + Mentor + Antagonist · แต่ละคนมีปมส่วนตัวที่คลี่คลายข้ามตอน</p>
+
+  <div class="char-grid">
+
+    <div class="char-card c-arya">
+      <div class="char-top">
+        <div class="avatar">👩‍🚀</div>
+        <h3>กัปตัน อารยา เวชชาชีวะ</h3>
+        <div class="role">Captain · Navigator</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>อายุ</b><span>32 ปี</span></div>
+        <div class="stat"><b>เชี่ยวชาญ</b><span>แผนที่กาแล็กซี, ดาราศาสตร์เชิงสังเกต</span></div>
+        <div class="stat"><b>สเปเชียล</b><span>คำนวณ v = H₀D ในหัวได้</span></div>
+        <div class="stat"><b>ปม</b><span>พ่อหายในภารกิจ 20 ปีก่อน</span></div>
+        <div class="arc">Arc: เริ่มจากผู้นำที่ยึดติดภารกิจ → ตามหาพ่อใน EP3 → ปิดปมด้วยการเผชิญ VOID ใน EP8</div>
+      </div>
+    </div>
+
+    <div class="char-card c-ken">
+      <div class="char-top">
+        <div class="avatar">👨‍🔬</div>
+        <h3>ร้อยโท เคน "Spectra"</h3>
+        <div class="role">Stellar Engineer</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>อายุ</b><span>28 ปี</span></div>
+        <div class="stat"><b>เชี่ยวชาญ</b><span>สเปกโตรสโคปี, ดาวฤกษ์</span></div>
+        <div class="stat"><b>สเปเชียล</b><span>ดูสีดาวรู้อุณหภูมิ/อายุ</span></div>
+        <div class="stat"><b>ปม</b><span>เคยตาบอดชั่วคราวจากซูเปอร์โนวาใกล้ ๆ</span></div>
+        <div class="arc">Arc: เริ่มจากกลัวแสงจ้า → เผชิญหน้ายักษ์แดงใน EP4 → ใช้ความกลัวเป็นจุดแข็ง</div>
+      </div>
+    </div>
+
+    <div class="char-card c-meera">
+      <div class="char-top">
+        <div class="avatar">👩‍⚕️</div>
+        <h3>หมอ มีรา ชาห์</h3>
+        <div class="role">Astrobiologist</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>อายุ</b><span>30 ปี</span></div>
+        <div class="stat"><b>เชี่ยวชาญ</b><span>ระบบสุริยะ, ชีวิตต่างดาว</span></div>
+        <div class="stat"><b>สเปเชียล</b><span>วินิจฉัยสภาพแวดล้อมดาว</span></div>
+        <div class="stat"><b>ปม</b><span>น้องหายในพายุสุริยะ 2261</span></div>
+        <div class="arc">Arc: เริ่มจากอยากรู้ว่าน้องอยู่ที่ไหน → พบสัญญาณในออโรราใน EP5 → ยอมรับการสูญเสีย</div>
+      </div>
+    </div>
+
+    <div class="char-card c-bolt">
+      <div class="char-top">
+        <div class="avatar">👨‍🔧</div>
+        <h3>ช่าง โบลท์ เทอร์เรลล์</h3>
+        <div class="role">Warp Mechanic</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>อายุ</b><span>26 ปี</span></div>
+        <div class="stat"><b>เชี่ยวชาญ</b><span>จรวด, วงโคจร, วาร์ปไดรฟ์</span></div>
+        <div class="stat"><b>สเปเชียล</b><span>ประดิษฐ์จรวดด่วนจากเศษยาน</span></div>
+        <div class="stat"><b>ปม</b><span>พ่อเป็นนักบินที่ไม่กลับมา</span></div>
+        <div class="arc">Arc: เริ่มจากไม่กล้าขึ้นบังคับ → ค้นหาข้อความพ่อในดาวเทียมเก่า EP7 → สืบทอดตำนาน</div>
+      </div>
+    </div>
+
+    <div class="char-card c-void">
+      <div class="char-top">
+        <div class="avatar">👁️‍🗨️</div>
+        <h3>จักรพรรดิ VOID</h3>
+        <div class="role">Antagonist · Prime Void</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>เผ่า</b><span>โวอิเดียน (ผู้ปฏิเสธความรู้)</span></div>
+        <div class="stat"><b>อาวุธ</b><span>ข้อมูลผิด, มโนทัศน์คลาดเคลื่อน</span></div>
+        <div class="stat"><b>ปรัชญา</b><span>"เอกภพไม่มีจุดเริ่ม · ทุกอย่างสุ่ม"</span></div>
+        <div class="stat"><b>เป้าหมาย</b><span>ย้อนเวลาไปลบบิกแบง</span></div>
+        <div class="arc">ปรากฏทุกตอน · โยนข้อคิดผิด 1 ข้อ/ตอน ให้ Cadets หาหลักฐานหักล้าง = กลไกสอนแก้ misconception</div>
+      </div>
+    </div>
+
+    <div class="char-card c-lem">
+      <div class="char-top">
+        <div class="avatar">🤖</div>
+        <h3>AI "LEMAÎTRE"</h3>
+        <div class="role">Ship Computer</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>ประเภท</b><span>AI ประจำยาน · เสียงครู</span></div>
+        <div class="stat"><b>หน้าที่</b><span>มอบภารกิจ · ให้คลู (จำกัด 3 ครั้ง/ตอน)</span></div>
+        <div class="stat"><b>สไตล์</b><span>พูดเป็นข้อเท็จจริง ไม่เฉลยตรง</span></div>
+        <div class="stat"><b>ความลับ</b><span>มีโปรแกรมย้อนเวลาในตัว</span></div>
+        <div class="arc">บทสำหรับครูสวมแทน · ควบคุมจังหวะห้องเรียนผ่าน "สัญญาณจากยาน"</div>
+      </div>
+    </div>
+
+    <div class="char-card c-hubble">
+      <div class="char-top">
+        <div class="avatar">🎩</div>
+        <h3>ดร.ฮับเบิล</h3>
+        <div class="role">Mentor · Academy</div>
+      </div>
+      <div class="char-body">
+        <div class="stat"><b>ตำแหน่ง</b><span>อาจารย์ใหญ่ Cosmos Academy</span></div>
+        <div class="stat"><b>หน้าที่</b><span>ปรากฏช่วง "The Reveal" เฉลยชื่อวิทยาศาสตร์</span></div>
+        <div class="stat"><b>สไตล์</b><span>พูดช้า หนักแน่น ชื่นชมเหตุผล</span></div>
+        <div class="stat"><b>ปรากฏ</b><span>ทุกตอน · ช่วง Labeling phase</span></div>
+        <div class="arc">บทสำหรับครูสวมเมื่อต้องใส่ศัพท์วิชาการ · แยกจาก LEMAÎTRE ชัดเจน</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GAME RULES -->
+<section id="rules">
+  <div class="section-label">◤ PART III</div>
+  <h2 class="section-title">Game Mechanics</h2>
+  <p class="section-sub">ระบบแต้ม เกียรติยศ และกติกาการเล่น — ผูกกับเกณฑ์ประเมิน KPA</p>
+
+  <div class="rules-wrap">
+    <div class="rule-block">
+      <h4>⚡ Currency & Points</h4>
+      <ul>
+        <li><span class="pt">STARDUST</span> XP รายบุคคล · สะสมจากการตอบ/ทำใบงาน/อภิปราย</li>
+        <li><span class="pt">FUEL CELL</span> แต้มทีม · ใช้ซื้อ hint จาก LEMAÎTRE</li>
+        <li><span class="pt">BADGE</span> เกียรติยศประจำตอน · 1 ตอน = 1 badge หลัก</li>
+        <li><span class="pt">RESPAWN</span> ตอบผิดไม่หักแต้ม · ต้องเขียน Log บทเรียนจึงได้ครึ่ง XP</li>
+      </ul>
+    </div>
+
+    <div class="rule-block">
+      <h4>🎖️ Rank Progression</h4>
+      <p style="color: var(--text-dim); font-size: 13.5px; margin-bottom: 8px;">เลเวลปลดตาม Stardust สะสม · ประกาศท้ายทุกตอน</p>
+      <div class="rank-chain">
+        <span class="rank">CADET</span>
+        <span class="arrow">→</span>
+        <span class="rank">PILOT</span>
+        <span class="arrow">→</span>
+        <span class="rank">NAVIGATOR</span>
+        <span class="arrow">→</span>
+        <span class="rank">ASTRONAUT</span>
+        <span class="arrow">→</span>
+        <span class="rank">COMMANDER</span>
+      </div>
+    </div>
+
+    <div class="rule-block">
+      <h4>🎭 Team Roles (เลือก 1 ต่อตอน)</h4>
+      <ul>
+        <li><span class="pt">NAV</span> นักเดินเรือ · แผนที่และคำนวณ (สาย อารยา)</li>
+        <li><span class="pt">ENG</span> วิศวกรสเปกตรัม · วิเคราะห์แสง (สาย เคน)</li>
+        <li><span class="pt">MED</span> นักชีวดาราศาสตร์ · ประเมินสภาพแวดล้อม (สาย มีรา)</li>
+        <li><span class="pt">MECH</span> ช่างเครื่อง · จรวด/วงโคจร (สาย โบลท์)</li>
+      </ul>
+    </div>
+
+    <div class="rule-block">
+      <h4>🃏 Cards & Twists</h4>
+      <ul>
+        <li><span class="pt">VOID</span> การ์ดข้อมูลผิด · ต้องหาหลักฐานหักล้างภายใน 5 นาที</li>
+        <li><span class="pt">TWIST</span> พลิกสถานการณ์กลางคาบ · ทดสอบการปรับตัว</li>
+        <li><span class="pt">HINT</span> คลูจาก LEMAÎTRE · ใช้ Fuel Cell แลก</li>
+        <li><span class="pt">SIDE</span> Side Quest นอกห้อง · สังเกตท้องฟ้า ถ่ายดวงจันทร์</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- EPISODE STRUCTURE -->
+<section id="structure">
+  <div class="section-label">◤ PART IV</div>
+  <h2 class="section-title">Episode Format</h2>
+  <p class="section-sub">โครง 100 นาที (2 คาบ) ของทุกตอน · ดำเนินเหมือนหนัง ไม่ใช่บทเรียน · Experience มาก่อน Labeling</p>
+
+  <div class="struct-timeline">
+    <div class="struct-beat">
+      <div class="beat-num">01</div>
+      <div class="beat-title">Recap</div>
+      <div class="beat-time">2 นาที</div>
+      <div class="beat-desc">"ตอนที่แล้วใน COSMOS LOG..." ย้อนสรุป</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">02</div>
+      <div class="beat-title">Cold Open</div>
+      <div class="beat-time">8 นาที</div>
+      <div class="beat-desc">ฉากเปิดดึงดูด · ภัยใหม่ · ยังไม่ให้ชื่อวิทยาศาสตร์</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">03</div>
+      <div class="beat-title">Mission</div>
+      <div class="beat-time">5 นาที</div>
+      <div class="beat-desc">LEMAÎTRE แจกภารกิจ · ทีมเลือกบทบาท</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">04</div>
+      <div class="beat-title">Investigation</div>
+      <div class="beat-time">30 นาที</div>
+      <div class="beat-desc">ลงมือทำ/ทดลอง · <b style="color:var(--accent-green)">Experience</b> ยังไม่ใช้ศัพท์</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">05</div>
+      <div class="beat-title">Villain Strike</div>
+      <div class="beat-time">10 นาที</div>
+      <div class="beat-desc">VOID โผล่ · โยนข้อมูลผิด · ทีมโต้</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">06</div>
+      <div class="beat-title">The Reveal</div>
+      <div class="beat-time">25 นาที</div>
+      <div class="beat-desc">ดร.ฮับเบิล เฉลยชื่อจริง = <b style="color:var(--accent)">Labeling</b> หลังประสบการณ์</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">07</div>
+      <div class="beat-title">Boss Move</div>
+      <div class="beat-time">15 นาที</div>
+      <div class="beat-desc">ใช้ความรู้แก้ปัญหาสุดท้าย · ตัดสินชะตาตอน</div>
+    </div>
+    <div class="struct-beat">
+      <div class="beat-num">08</div>
+      <div class="beat-title">End Credits</div>
+      <div class="beat-time">5 นาที</div>
+      <div class="beat-desc">แจก XP/Badge · Cliffhanger ตอนหน้า</div>
+    </div>
+  </div>
+</section>
+
+<!-- STORYBOARD -->
+<section id="storyboard">
+  <div class="section-label">◤ PART V</div>
+  <h2 class="section-title">Storyboard · 8 Episodes</h2>
+  <p class="section-sub">ซีซัน 1 ทั้งหมด · แต่ละตอน 2 คาบ · หัวข้อเนื้อหาเดียวกันอยู่ในตอนเดียวกันตามหลักสูตร</p>
+
+  <div class="ep-grid">
+
+    <div class="ep-card ep1">
+      <div class="ep-poster">
+        <div class="ep-num">EP 01 · PILOT</div>
+        <div class="ep-emoji">💥</div>
+        <div class="ep-badge-icon">🎈</div>
+      </div>
+      <div class="ep-body">
+        <h3>การปะทะ</h3>
+        <div class="ep-subtitle">The Collision · เอกภพและบิกแบง</div>
+        <div class="ep-logline">ยาน T.H.E.O.S.-IX ชนวัตถุปริศนาขณะสำรวจนอกระบบสุริยะ หัวเรือแตก เศษวัตถุสะท้อน "แสงอายุ 13.8 พันล้านปี" ทีมต้องถอดรหัสก่อนเงาดำในจอเรดาร์จะเข้าใกล้</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ไขปริศนา "ศิลาต้นกำเนิด" · วิเคราะห์สเปกตรัม CMB</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">อารยาเห็นนิมิตของพ่อในแสงสะท้อน</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>Big Bang</code> <code>CMB 2.73 K</code> <code>expansion</code> <code>timeline 13.8 Gyr</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"บิกแบงคือระเบิดกลางอวกาศว่างเปล่า!"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🎈 Big Bang Witness</span></div>
+        <div class="ep-cliff">Cliffhanger: เงาดำปรากฏตัว · ส่งพิกัดจากกาแล็กซีที่ไม่อยู่ในแผนที่</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep2">
+      <div class="ep-poster">
+        <div class="ep-num">EP 02</div>
+        <div class="ep-emoji">🌀</div>
+        <div class="ep-badge-icon">🌌</div>
+      </div>
+      <div class="ep-body">
+        <h3>แผนที่ลับกาแล็กซี</h3>
+        <div class="ep-subtitle">The Lost Map · กาแล็กซีและกฎฮับเบิล</div>
+        <div class="ep-logline">สัญญาณจากเงาดำชี้พิกัด "บ้านเกิดโวอิเดียน" ในกาแล็กซีไร้ชื่อ อารยาต้องจำแนกชนิดกาแล็กซี 12 แห่งเพื่อตัดตัวเลือก พร้อมคำนวณระยะด้วย v = H₀D</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ระบุพิกัดโวอิเดียน · ตัดสินใจใช้วาร์ป</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">โบลท์พบวาร์ปไดรฟ์ซ่อนในศิลาต้นกำเนิด</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>Hubble classification</code> <code>Milky Way</code> <code>v = H₀D</code> <code>parsec</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"ทางช้างเผือกเป็นแค่แถบเมฆบนท้องฟ้า"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🌌 Galaxy Classifier</span></div>
+        <div class="ep-cliff">Cliffhanger: วาร์ปเปิดฉาก · ยานเคลื่อนข้ามกาแล็กซีในพริบตา</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep3">
+      <div class="ep-poster">
+        <div class="ep-num">EP 03</div>
+        <div class="ep-emoji">✨</div>
+        <div class="ep-badge-icon">🔍</div>
+      </div>
+      <div class="ep-body">
+        <h3>เสียงร้องจากอดีต</h3>
+        <div class="ep-subtitle">Echo from the Past · ดาวฤกษ์ · แสงและระยะ</div>
+        <div class="ep-logline">วาร์ปพาไปเจอดาวเดี่ยวในความมืด ส่งสัญญาณ SOS เป็นภาษามนุษย์ เคนต้องวิเคราะห์ว่าดาวนี้สว่างจริง หรือแค่อยู่ใกล้ ด้วย parallax + magnitude</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ถอดรหัสสัญญาณ · พบเป็นของพ่ออารยา 400 ปีก่อน</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">อารยาปิดปมเรื่องพ่อ · ยอมรับสูญเสีย</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>apparent mag</code> <code>absolute mag</code> <code>parallax</code> <code>ly ↔ pc</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"ดาวเลขมากยิ่งสว่าง ใช่ไหมล่ะ?"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">✨ Light Detective</span></div>
+        <div class="ep-cliff">Cliffhanger: ดาวที่ส่งสัญญาณเริ่มสั่น · จะระเบิดใน 6 ชั่วโมง!</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep4">
+      <div class="ep-poster">
+        <div class="ep-num">EP 04</div>
+        <div class="ep-emoji">🔥</div>
+        <div class="ep-badge-icon">⭐</div>
+      </div>
+      <div class="ep-body">
+        <h3>วันสุดท้ายของยักษ์แดง</h3>
+        <div class="ep-subtitle">Death of a Giant · ดาวฤกษ์ · วิวัฒนาการ</div>
+        <div class="ep-logline">ดาวที่ส่งสัญญาณกำลังจะเป็นซูเปอร์โนวา ทีมต้องพิสูจน์มวลจากสีสเปกตรัมเพื่อรู้ว่าจะเป็นนิวตรอนหรือหลุมดำ ถ้าหลุมดำต้องหนีทันที</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">วัดมวลดาว · ตัดสินใจอยู่หรือหนี</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">เคนเอาชนะกลัวแสงจ้า · ช่วยทีมผ่าน</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>OBAFGKM</code> <code>HR diagram</code> <code>evolution by mass</code> <code>supernova</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"ดาวแดงย่อมร้อนกว่าดาวน้ำเงิน — สามัญสำนึกง่าย ๆ"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🔥 Stellar Fate</span></div>
+        <div class="ep-cliff">Plot Twist: พบว่าโวอิเดียนเป็นคนเร่งให้ดาวระเบิด · พวกมันมาถึงระบบสุริยะแล้ว!</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep5">
+      <div class="ep-poster">
+        <div class="ep-num">EP 05</div>
+        <div class="ep-emoji">☀️</div>
+        <div class="ep-badge-icon">🛡️</div>
+      </div>
+      <div class="ep-body">
+        <h3>หัวใจที่เต้นผิดจังหวะ</h3>
+        <div class="ep-subtitle">Solar Heart · ระบบสุริยะ · ดวงอาทิตย์</div>
+        <div class="ep-logline">โวอิเดียนยิงคลื่นรบกวนดวงอาทิตย์ เกิด CME ขนาดใหญ่ โลกจะโดนใน 18 ชั่วโมง มีราต้องใช้ความรู้ชั้นบรรยากาศดวงอาทิตย์ยิงเลเซอร์เบี่ยงลำอนุภาค</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ป้องกันโลกจากพายุสุริยะ</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">มีราพบสัญญาณน้องในออโรรา · ปิดปม</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>สุริยะ core→corona</code> <code>sunspot/flare/CME</code> <code>solar wind</code> <code>aurora</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"ดวงอาทิตย์แค่ไฟติดเหมือนเทียนเท่านั้นเอง"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">☀️ Solar Guardian</span></div>
+        <div class="ep-cliff">Cliffhanger: ดาวหางเบี่ยงวงโคจรผิดปกติทั่วระบบสุริยะ · โวอิเดียนมีฐานซ่อนอยู่!</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep6">
+      <div class="ep-poster">
+        <div class="ep-num">EP 06</div>
+        <div class="ep-emoji">🪐</div>
+        <div class="ep-badge-icon">🗺️</div>
+      </div>
+      <div class="ep-body">
+        <h3>ขอบฟ้าของบ้าน</h3>
+        <div class="ep-subtitle">Edge of Home · สมาชิกระบบสุริยะ</div>
+        <div class="ep-logline">ตามรอยวงโคจรดาวหางที่เบี่ยงผิดปกติ ใช้กฎเคปเลอร์คำนวณว่าโวอิเดียนซ่อนฐานบนดาวเคราะห์แคระในแถบไคเปอร์ บุกฐานเจอ "แผนที่เวลา"</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">หาฐานโวอิเดียน · บุกยึดแผนที่</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">ทีมค้นพบเป้าหมายสุดท้าย — ย้อนไปลบบิกแบง</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>terrestrial vs gas</code> <code>Kepler's laws</code> <code>asteroid belt</code> <code>Kuiper/Oort</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"พลูโตยังเป็นดาวเคราะห์ — คนเรียนเยอะแค่ไหนก็ไม่ยอมรับ"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🪐 Scale Master</span></div>
+        <div class="ep-cliff">Cliffhanger: VOID ยึดดาวเทียมสื่อสารทั้งหมด · โลกถูกตัดขาด</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep7">
+      <div class="ep-poster">
+        <div class="ep-num">EP 07</div>
+        <div class="ep-emoji">🛰️</div>
+        <div class="ep-badge-icon">🚀</div>
+      </div>
+      <div class="ep-body">
+        <h3>สงครามในวงโคจร</h3>
+        <div class="ep-subtitle">Orbital War · เทคโนโลยีอวกาศ · จรวดและดาวเทียม</div>
+        <div class="ep-logline">โวอิเดียนยึดดาวเทียม GPS/สื่อสารทั้งหมด โบลท์ต้องคำนวณความเร็วหลุดพ้นและส่งจรวดสกัดสู่วงโคจร LEO/MEO/GEO ตามลำดับ ในดาวเทียมเก่าเก็บข้อความจากพ่อของเขา</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ปลดล็อกดาวเทียม 3 ชั้นวงโคจร</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">โบลท์พบข้อความพ่อ · สืบทอดตำนานวาร์ปย้อนเวลา</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>v_orbit = 7.9 km/s</code> <code>v_escape = 11.2</code> <code>LEO/MEO/GEO</code> <code>uses</code></span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"GEO ลอยนิ่งอยู่เหนือหัวเรา — พิสูจน์สิว่าเคลื่อน"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🛰️ Orbit Engineer</span></div>
+        <div class="ep-cliff">Cliffhanger: วาร์ปย้อนเวลาเปิด · เป้าหมายปลายทาง — วินาทีที่ 0 ของบิกแบง</div>
+      </div>
+    </div>
+
+    <div class="ep-card ep8">
+      <div class="ep-poster">
+        <div class="ep-num">EP 08 · FINALE</div>
+        <div class="ep-emoji">🏆</div>
+        <div class="ep-badge-icon">♾️</div>
+      </div>
+      <div class="ep-body">
+        <h3>จุดเริ่มต้นอีกครั้ง</h3>
+        <div class="ep-subtitle">Genesis Again · เทคโนโลยีอวกาศ + Season Finale</div>
+        <div class="ep-logline">ทีมย้อนเวลาไปที่บิกแบง VOID เตรียมปิดปฏิกิริยาดั้งเดิม · ทุกความรู้ของซีซันถูกใช้พร้อมกัน · ฟิวชัน · สเปกตรัม · วงโคจร · กาแล็กซี · ยาน Voyager และ ISS กลายเป็นอาวุธสุดท้าย</div>
+        <div class="ep-field"><span class="lbl">A-Plot</span><span class="val">ปะทะ VOID ที่จุดกำเนิดเอกภพ · กู้บิกแบง</span></div>
+        <div class="ep-field"><span class="lbl">B-Plot</span><span class="val">ทีมต้องแยกย้ายกลับยุคของตัวเอง · ลาจาก</span></div>
+        <div class="ep-field content"><span class="lbl">Content</span><span class="val"><code>spacecraft</code> <code>ISS</code> <code>Voyager/Hubble/JWST</code> <code>spinoff tech</code> + สังเคราะห์ทั้งหน่วย</span></div>
+        <div class="ep-field villain"><span class="lbl">VOID</span><span class="val">"เทคโนโลยีอวกาศ = เผาเงินทิ้งเปล่า ๆ"</span></div>
+        <div class="ep-field"><span class="lbl">Badge</span><span class="val">🏆 COMMANDER (Level Final)</span></div>
+        <div class="ep-cliff">End Credits: สัญญาณปริศนาใหม่จาก Andromeda... Season 2 teased</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SEASON ARC -->
+<section id="arc">
+  <div class="section-label">◤ PART VI</div>
+  <h2 class="section-title">Season Arc Visualization</h2>
+  <p class="section-sub">ดูพัฒนาการตัวละครและ Season Arc ข้าม 8 ตอนในมุมเดียว</p>
+
+  <div class="arc-wrap">
+    <table class="arc-table">
+      <thead>
+        <tr>
+          <th style="text-align:left; padding-left:14px;">TRACK / EPISODE</th>
+          <th>EP1</th><th>EP2</th><th>EP3</th><th>EP4</th><th>EP5</th><th>EP6</th><th>EP7</th><th>EP8</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label">🌌 Main Plot</td>
+          <td class="arc-cell active">ชน</td>
+          <td class="arc-cell active">แผนที่</td>
+          <td class="arc-cell">สืบ</td>
+          <td class="arc-cell climax">พบผู้ร้าย</td>
+          <td class="arc-cell active">ป้องโลก</td>
+          <td class="arc-cell active">บุกฐาน</td>
+          <td class="arc-cell active">ยึดคืน</td>
+          <td class="arc-cell climax">บอสไฟต์</td>
+        </tr>
+        <tr>
+          <td class="row-label">👩‍🚀 อารยา · พ่อ</td>
+          <td class="arc-cell active">นิมิต</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell resolve">พบ/ลา</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell climax">เผชิญ VOID</td>
+        </tr>
+        <tr>
+          <td class="row-label">👨‍🔬 เคน · กลัวแสง</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">เริ่ม</td>
+          <td class="arc-cell active">ลังเล</td>
+          <td class="arc-cell resolve">เอาชนะ</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">ใช้เป็นจุดแข็ง</td>
+        </tr>
+        <tr>
+          <td class="row-label">👩‍⚕️ มีรา · น้อง</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">เบาะแส</td>
+          <td class="arc-cell resolve">พบ/ปล่อย</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">สานต่อ</td>
+        </tr>
+        <tr>
+          <td class="row-label">👨‍🔧 โบลท์ · พ่อ</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">วาร์ป</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell">—</td>
+          <td class="arc-cell active">ปริศนา</td>
+          <td class="arc-cell resolve">พบข้อความ</td>
+          <td class="arc-cell active">สืบทอด</td>
+        </tr>
+        <tr>
+          <td class="row-label">👁️ VOID · ข้อมูลผิด</td>
+          <td class="arc-cell active">บิกแบง</td>
+          <td class="arc-cell active">ทางช้างเผือก</td>
+          <td class="arc-cell active">magnitude</td>
+          <td class="arc-cell active">สีดาว</td>
+          <td class="arc-cell active">ดวงอาทิตย์</td>
+          <td class="arc-cell active">พลูโต</td>
+          <td class="arc-cell active">GEO</td>
+          <td class="arc-cell climax">ความรู้ = ของปลอม</td>
+        </tr>
+        <tr>
+          <td class="row-label">🎓 ตัวชี้วัดหลัก</td>
+          <td class="arc-cell active">ว7.1/1</td>
+          <td class="arc-cell active">ว7.1/1</td>
+          <td class="arc-cell active">ว7.1/2</td>
+          <td class="arc-cell active">ว7.1/2</td>
+          <td class="arc-cell active">ว7.1/1</td>
+          <td class="arc-cell active">ว7.1/1</td>
+          <td class="arc-cell active">ว7.2/1-2</td>
+          <td class="arc-cell active">ว7.2/3</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="display:flex; gap:16px; flex-wrap:wrap; margin-top:20px; font-size:12px; color:var(--text-faint);">
+    <span style="display:flex; align-items:center; gap:8px;"><span style="width:12px;height:12px;background:linear-gradient(135deg,rgba(100,216,255,0.15),rgba(185,128,255,0.15));border:1px solid var(--border-strong);border-radius:3px;"></span> Active Beat</span>
+    <span style="display:flex; align-items:center; gap:8px;"><span style="width:12px;height:12px;background:linear-gradient(135deg,rgba(255,203,107,0.2),rgba(255,92,122,0.2));border:1px solid rgba(255,203,107,0.4);border-radius:3px;"></span> Climax / Turning Point</span>
+    <span style="display:flex; align-items:center; gap:8px;"><span style="width:12px;height:12px;background:linear-gradient(135deg,rgba(126,255,178,0.15),rgba(100,216,255,0.15));border:1px solid rgba(126,255,178,0.35);border-radius:3px;"></span> Resolution / Payoff</span>
+  </div>
+</section>
+
+<footer>
+  <div class="next-steps">
+    <h3>★ Next Mission ★</h3>
+    <p>Series Bible + Storyboard ครบถ้วนแล้ว · ขั้นต่อไปคือเขียนแผนจริงเป็น Word .docx ตาม template ที่วางไว้</p>
+    <p style="color: var(--text-faint); font-size: 13px;">แนะนำเริ่มจาก EP1 (Pilot) เป็นตัวอย่างก่อน แล้วทยอยขยายตอน 2-8 ตาม</p>
+  </div>
+  <div class="tag">COSMOS LOG · S01 · BIBLE v1.0 · 2026</div>
+</footer>
+
+</body>
+</html>

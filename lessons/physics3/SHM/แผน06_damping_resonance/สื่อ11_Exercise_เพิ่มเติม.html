@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบฝึกหัดเพิ่มเติม | SHM แผน 6 | การหน่วงและการสั่นพ้อง</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --dark: #4c1d95;
+  --light: #ede9fe;
+  --bg: #faf5ff;
+  --card: #ffffff;
+  --border: #c4b5fd;
+  --text: #1e1b4b;
+  --muted: #6b7280;
+  --green: #059669; --amber: #d97706; --red: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+header { background: linear-gradient(135deg, var(--dark), var(--primary)); color: #fff; padding: 20px 24px; }
+header h1 { font-size: 1.5rem; font-weight: 700; }
+header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+.container { max-width: 1040px; margin: 0 auto; padding: 20px 16px 60px; }
+.id-bar { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.id-bar label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 3px; }
+.id-bar input { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 9px; font-size: 0.9rem; font-family: inherit; }
+.id-bar input:focus { outline: 2px solid var(--primary); }
+/* Formula box */
+.formula-ref { background: #f3f0ff; border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 18px; font-size: 0.85rem; line-height: 1.9; }
+.formula-ref strong { color: var(--dark); }
+.formula-ref code { font-family: 'Courier New', monospace; background: #ede9fe; padding: 1px 5px; border-radius: 3px; font-size: 0.82rem; }
+/* Q block */
+.q-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+.q-header { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+.q-num { background: var(--primary); color: #fff; width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 700; flex-shrink: 0; }
+.q-title { font-weight: 700; color: var(--dark); font-size: 0.92rem; }
+.q-sub { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+.q-text { font-size: 0.9rem; line-height: 1.65; margin-bottom: 10px; }
+.q-text .formula { font-family: 'Courier New', monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+.q-text .highlight { background: #fef3c7; padding: 1px 4px; border-radius: 3px; }
+/* Radio options */
+.radio-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.radio-opt { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-size: 0.875rem; }
+.radio-opt:has(input:checked) { border-color: var(--primary); background: var(--light); }
+.radio-opt input { accent-color: var(--primary); }
+/* Checkbox bank */
+.cb-bank { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.cb-item { display: flex; align-items: flex-start; gap: 8px; padding: 7px 10px; border: 1px solid #e5e7eb; border-radius: 6px; cursor: pointer; font-size: 0.875rem; line-height: 1.5; }
+.cb-item:has(input:checked) { border-color: var(--primary); background: var(--light); }
+.cb-item input { accent-color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+/* Drag drop */
+.dd-wrap { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
+.dd-pool { display: flex; flex-wrap: wrap; gap: 6px; align-content: flex-start; }
+.dd-item { background: var(--light); border: 2px solid var(--border); border-radius: 20px; padding: 4px 14px; font-size: 0.82rem; cursor: grab; user-select: none; white-space: nowrap; }
+.dd-item:active { cursor: grabbing; }
+.dd-zones { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
+.dd-zone { min-height: 44px; border: 2px dashed var(--border); border-radius: 8px; padding: 6px 10px; }
+.dd-zone .zone-label { font-size: 0.78rem; font-weight: 700; color: var(--dark); margin-bottom: 4px; }
+.dd-zone.dragover { border-color: var(--primary); background: #f5f0ff; }
+/* Dropdown */
+select.sel { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 10px; font-family: inherit; font-size: 0.875rem; width: 100%; max-width: 300px; margin-top: 4px; }
+select.sel:focus { outline: 2px solid var(--primary); }
+/* Canvas */
+.canvas-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); margin-top: 8px; }
+canvas { display: block; cursor: crosshair; touch-action: none; }
+.canvas-toolbar { display: flex; gap: 6px; align-items: center; padding: 6px 10px; background: #f9f7ff; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+.tool-btn.active, .tool-btn:hover { background: var(--light); border-color: var(--primary); color: var(--dark); }
+.color-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-dot.active { border-color: var(--dark); }
+/* Textarea */
+textarea.ans { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px; font-family: inherit; font-size: 0.875rem; resize: vertical; }
+textarea.ans:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+input.ans-short { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 10px; font-family: inherit; font-size: 0.9rem; width: 160px; }
+input.ans-short:focus { outline: 2px solid var(--primary); }
+/* Spot error */
+.error-box { background: #fef9c3; border-left: 4px solid #f59e0b; border-radius: 0 8px 8px 0; padding: 12px 14px; font-style: italic; font-size: 0.88rem; line-height: 1.6; margin-bottom: 10px; }
+/* Score bar */
+.score-display { display: none; background: var(--light); border-radius: 8px; padding: 10px 14px; margin-top: 10px; font-size: 0.88rem; }
+.score-display.show { display: block; }
+/* Submit */
+.submit-bar { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; margin-top: 20px; }
+.btn { padding: 9px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-secondary { background: #e5e7eb; color: #374151; }
+.btn-check { background: #f0fdf4; border: 1px solid #6ee7b7; color: #065f46; font-size: 0.82rem; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: #1e1b4b; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 999; }
+/* Score summary */
+.score-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 0.875rem; }
+.score-num { font-weight: 700; color: var(--primary); }
+@media print {
+  header { background: #4c1d95 !important; -webkit-print-color-adjust: exact; }
+  .submit-bar, .canvas-toolbar .tool-btn, .btn-check { display: none; }
+}
+@media (max-width: 700px) {
+  .radio-grid { grid-template-columns: 1fr; }
+  .dd-wrap { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 แบบฝึกหัดเพิ่มเติม | SHM แผน 6 — การหน่วงและการสั่นพ้อง</h1>
+  <p>12 ข้อ · หลากหลายวิธีตอบ · ครอบคลุมเนื้อหาทั้งหมด</p>
+</header>
+
+<div class="container">
+
+  <div class="id-bar">
+    <div><label>ชื่อ–นามสกุล</label><input id="student_name" placeholder="ชื่อ นามสกุล" style="width:200px"></div>
+    <div><label>เลขที่</label><input id="student_no" placeholder="01" style="width:60px"></div>
+    <div><label>ห้อง</label><input id="class" placeholder="ม.4/1" style="width:80px"></div>
+    <div><label>วันที่</label><input id="test_date" type="date" style="width:140px"></div>
+  </div>
+
+  <!-- Formula Reference -->
+  <div class="formula-ref">
+    <strong>สูตรอ้างอิง</strong><br>
+    <code>A(t) = A₀ e^(−bt/2m)</code> &nbsp;|&nbsp;
+    <code>ω_d = √(ω₀² − (b/2m)²)</code> &nbsp;|&nbsp;
+    <code>Q = mω₀/b</code> &nbsp;|&nbsp;
+    <code>ω₀ = √(k/m)</code><br>
+    <code>T = 2π/ω</code> &nbsp;|&nbsp;
+    <code>Resonance: f_drive = f_nat</code> &nbsp;|&nbsp;
+    <code>b_critical = 2√(km)</code> &nbsp;|&nbsp;
+    <code>τ = 2m/b</code> (time constant)
+  </div>
+
+  <!-- ===== Q1: Radio — ประเภทการหน่วง ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">1</span>
+      <div><div class="q-title">ระบุประเภทการหน่วง</div><div class="q-sub">ทฤษฎี · เลือกตอบ</div></div>
+    </div>
+    <div class="q-text">ระบบ m = 2 kg, k = 8 N/m, b = 4 kg/s — ระบบนี้อยู่ในประเภทการหน่วงใด?<br>
+    <span style="font-size:0.82rem;color:var(--muted)">คำใบ้: หา b_critical แล้วเปรียบเทียบกับ b</span></div>
+    <div class="radio-grid">
+      <label class="radio-opt"><input type="radio" name="q1" value="ก"> ก. Underdamped (Q > ½)</label>
+      <label class="radio-opt"><input type="radio" name="q1" value="ข"> ข. Overdamped (Q < ½)</label>
+      <label class="radio-opt"><input type="radio" name="q1" value="ค"> ค. Critically Damped (Q = ½)</label>
+      <label class="radio-opt"><input type="radio" name="q1" value="ง"> ง. Undamped (b = 0)</label>
+    </div>
+    <div style="margin-top:10px">
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_q1" onclick="setTool('canvas_q1','pencil')">✏️ วิธีทำ</button>
+          <button class="tool-btn" id="eraserBtn_q1" onclick="setTool('canvas_q1','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_q1')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_q1" style="width:60px">
+        </div>
+        <canvas id="canvas_q1" width="980" height="140" data-bg="lined"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q2: Checkbox — สมบัติการหน่วง ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">2</span>
+      <div><div class="q-title">สมบัติ Underdamped</div><div class="q-sub">ทฤษฎี · เลือกหลายตอบ</div></div>
+    </div>
+    <div class="q-text">เลือก <strong>ทุกข้อ</strong> ที่ถูกต้องสำหรับระบบ Underdamped</div>
+    <div class="cb-bank" id="cb2">
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ก. แอมพลิจูดลดลงตามเวลาแบบ exponential</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> ข. ความถี่ลดลงเท่ากับ b ทุกครั้งที่สั่น</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ค. ω_d < ω₀ เสมอ</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> ง. วัตถุไม่ผ่านจุดสมดุลได้</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> จ. Q-factor มีค่ามากกว่า ½</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> ฉ. ระบบ Underdamped คืนสู่สมดุลเร็วกว่า Critical</label>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn-check" onclick="checkCB('cb2','score2')">ตรวจ</button>
+      <span class="score-display" id="score2"></span>
+    </div>
+  </div>
+
+  <!-- ===== Q3: Calculation A(t) ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">3</span>
+      <div><div class="q-title">คำนวณ A(t) — แอมพลิจูดที่เวลา t</div><div class="q-sub">คำนวณ · วาดวิธีทำ</div></div>
+    </div>
+    <div class="q-text">
+      ลูกตุ้มสปริง: A₀ = 0.40 m, m = 1.0 kg, b = 2.0 kg/s<br>
+      <strong>จงหา</strong> แอมพลิจูดเมื่อ (ก) t = 1.0 s และ (ข) t = 3.0 s<br>
+      และบอกว่าที่เวลาใดแอมพลิจูดเหลือครึ่งหนึ่งของค่าเดิม
+    </div>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_q3" onclick="setTool('canvas_q3','pencil')">✏️ วิธีทำ</button>
+        <button class="tool-btn" id="eraserBtn_q3" onclick="setTool('canvas_q3','eraser')">🧹</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_q3')">🗑️</button>
+        <input type="range" min="1" max="10" value="2" id="size_canvas_q3" style="width:60px">
+        <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_q3','#1e1b4b',this)"></div>
+        <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_q3','#7c3aed',this)"></div>
+        <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_q3','#dc2626',this)"></div>
+      </div>
+      <canvas id="canvas_q3" width="980" height="280" data-bg="lined"></canvas>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">A(1.0 s) =</label><input class="ans-short" id="q3a" placeholder="______ m"></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">A(3.0 s) =</label><input class="ans-short" id="q3b" placeholder="______ m"></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">A = A₀/2 เมื่อ t =</label><input class="ans-short" id="q3c" placeholder="______ s"></div>
+    </div>
+  </div>
+
+  <!-- ===== Q4: Drag-drop — จับคู่ application ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">4</span>
+      <div><div class="q-title">จับคู่การประยุกต์กับประเภทการหน่วง</div><div class="q-sub">ลากวาง</div></div>
+    </div>
+    <div class="q-text">ลากชื่อการประยุกต์ไปใส่ช่องประเภทการหน่วงที่ถูกต้อง</div>
+    <div class="dd-wrap">
+      <div class="dd-pool" id="ddPool4">
+        <div class="dd-item" draggable="true" data-val="โช้คอัพรถ">โช้คอัพรถ</div>
+        <div class="dd-item" draggable="true" data-val="สะพาน Tacoma">สะพาน Tacoma</div>
+        <div class="dd-item" draggable="true" data-val="TMD ตึกสูง">TMD ตึกสูง</div>
+        <div class="dd-item" draggable="true" data-val="ประตูรถ">ประตูรถ</div>
+        <div class="dd-item" draggable="true" data-val="แก้วไวน์สั่น">แก้วไวน์สั่น</div>
+        <div class="dd-item" draggable="true" data-val="MRI">MRI</div>
+      </div>
+      <div class="dd-zones">
+        <div class="dd-zone" id="zone4_under"><div class="zone-label">Underdamped / Resonance</div></div>
+        <div class="dd-zone" id="zone4_critical"><div class="zone-label">Critical Damping</div></div>
+        <div class="dd-zone" id="zone4_active"><div class="zone-label">Active Damping (TMD)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q5: Canvas — วาดกราฟ A vs f ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">5</span>
+      <div><div class="q-title">วาดกราฟ Amplitude vs Driving Frequency</div><div class="q-sub">วาดกราฟ · canvas กราฟกระดาษ</div></div>
+    </div>
+    <div class="q-text">
+      วาดกราฟแสดง A vs f_drive สำหรับระบบที่มี b ต่างกัน 3 ค่า (b₁ < b₂ < b₃)<br>
+      — ระบุ: จุดยอด (peak), f_nat, และแนวโน้มเมื่อ f_drive ห่างจาก f_nat<br>
+      — ใช้สี: ม่วง=b₁, น้ำเงิน=b₂, แดง=b₃
+    </div>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_q5" onclick="setTool('canvas_q5','pencil')">✏️ วาด</button>
+        <button class="tool-btn" id="eraserBtn_q5" onclick="setTool('canvas_q5','eraser')">🧹</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_q5')">🗑️</button>
+        <input type="range" min="1" max="10" value="2" id="size_canvas_q5" style="width:60px">
+        <div class="color-dot active" style="background:#7c3aed" onclick="setColor('canvas_q5','#7c3aed',this)"></div>
+        <div class="color-dot" style="background:#0369a1" onclick="setColor('canvas_q5','#0369a1',this)"></div>
+        <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_q5','#dc2626',this)"></div>
+        <div class="color-dot" style="background:#1e1b4b" onclick="setColor('canvas_q5','#1e1b4b',this)"></div>
+      </div>
+      <canvas id="canvas_q5" width="980" height="320" data-bg="grid"></canvas>
+    </div>
+    <div style="margin-top:8px">
+      <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:4px">บรรยายกราฟที่วาด:</label>
+      <textarea class="ans" id="q5_desc" rows="2" placeholder="เมื่อ b เพิ่มขึ้น ยอดกราฟ (peak amplitude) จะ..."></textarea>
+    </div>
+  </div>
+
+  <!-- ===== Q6: Dropdown matching — Tacoma, MRI, Clock ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">6</span>
+      <div><div class="q-title">วิเคราะห์กรณีศึกษา — จับคู่สาเหตุ</div><div class="q-sub">Dropdown · จับคู่</div></div>
+    </div>
+    <div class="q-text">เลือกคำอธิบายที่ถูกต้องสำหรับแต่ละกรณีศึกษา</div>
+    <table style="width:100%;border-collapse:collapse;font-size:0.875rem;margin-top:6px">
+      <thead><tr style="background:var(--light)">
+        <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--border)">กรณีศึกษา</th>
+        <th style="padding:8px;text-align:left;border-bottom:2px solid var(--border)">หลักฟิสิกส์ที่เกี่ยวข้อง</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:8px 10px">สะพาน Tacoma Narrows (1940) พังเพราะลม</td>
+          <td style="padding:8px">
+            <select class="sel" id="q6a">
+              <option value="">-- เลือก --</option>
+              <option>การสั่นพ้องเนื่องจากลมขับที่ f ≈ f_nat ของสะพาน</option>
+              <option>น้ำหนักสะพานเกินขีดจำกัด</option>
+              <option>Critical damping ล้มเหลว</option>
+              <option>Overdamping ทำให้สะพานแกว่งมาก</option>
+            </select>
+          </td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6;background:#fafafa">
+          <td style="padding:8px 10px">เครื่อง MRI ถ่ายภาพอวัยวะ</td>
+          <td style="padding:8px">
+            <select class="sel" id="q6b">
+              <option value="">-- เลือก --</option>
+              <option>Resonance ทางแม่เหล็ก: โปรตอนสั่นพ้องกับ f คลื่นวิทยุ</option>
+              <option>Critical damping ทำให้ภาพชัด</option>
+              <option>Overdamped เพื่อป้องกันอันตราย</option>
+              <option>SHM ของอิเล็กตรอนในสนามแม่เหล็ก</option>
+            </select>
+          </td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:8px 10px">โช้คอัพรถยนต์รับแรงกระแทก</td>
+          <td style="padding:8px">
+            <select class="sel" id="q6c">
+              <option value="">-- เลือก --</option>
+              <option>Critical damping ให้รถไม่กระดอนและกลับสู่สมดุลเร็ว</option>
+              <option>Underdamping เพื่อให้นุ่มนวล</option>
+              <option>Resonance ให้พลังงานเพิ่มขึ้น</option>
+              <option>ไม่เกี่ยวกับ SHM เลย</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:8px 10px">นักร้อง Opera แตกแก้วไวน์ด้วยเสียง</td>
+          <td style="padding:8px">
+            <select class="sel" id="q6d">
+              <option value="">-- เลือก --</option>
+              <option>Acoustic resonance: f เสียง = f_nat ของแก้ว แอมพลิจูดสูงสุดจนแตก</option>
+              <option>Overdamping ทำให้แก้วรับพลังงานมากเกิน</option>
+              <option>Critical damping ของแก้วล้มเหลว</option>
+              <option>เสียงนักร้องสร้างแรงดันสูงกว่าขีดจำกัด</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== Q7: Calculation Q-factor ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">7</span>
+      <div><div class="q-title">คำนวณ Q-factor และ time constant</div><div class="q-sub">คำนวณ · canvas</div></div>
+    </div>
+    <div class="q-text">
+      ระบบสปริง: m = 0.8 kg, k = 200 N/m, b = 4.0 kg/s<br>
+      <strong>(ก)</strong> คำนวณ ω₀, Q-factor<br>
+      <strong>(ข)</strong> time constant τ = 2m/b<br>
+      <strong>(ค)</strong> ระบบนี้เป็นประเภทใด และแอมพลิจูดลดเหลือ 1/e ของค่าเดิมเมื่อ t = ?
+    </div>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_q7" onclick="setTool('canvas_q7','pencil')">✏️ วิธีทำ</button>
+        <button class="tool-btn" id="eraserBtn_q7" onclick="setTool('canvas_q7','eraser')">🧹</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_q7')">🗑️</button>
+        <input type="range" min="1" max="10" value="2" id="size_canvas_q7" style="width:60px">
+        <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_q7','#1e1b4b',this)"></div>
+        <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_q7','#7c3aed',this)"></div>
+      </div>
+      <canvas id="canvas_q7" width="980" height="260" data-bg="lined"></canvas>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">ω₀ =</label><input class="ans-short" id="q7a" placeholder="rad/s"></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">Q =</label><input class="ans-short" id="q7b" placeholder=""></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">τ =</label><input class="ans-short" id="q7c" placeholder="s"></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">ประเภท</label>
+        <select class="sel" id="q7type" style="width:180px">
+          <option value="">-- เลือก --</option>
+          <option>Underdamped</option><option>Critical</option><option>Overdamped</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q8: Spot the Error ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">8</span>
+      <div><div class="q-title">หาข้อผิดพลาด — Spot the Error</div><div class="q-sub">วิเคราะห์ · เลือกตอบ + อธิบาย</div></div>
+    </div>
+    <div class="q-text">นักเรียนบันทึกผลการทดลองดังนี้:</div>
+    <div class="error-box">
+      "เมื่อลดค่า b จาก 10 เป็น 2 kg/s ระบบสปริงแกว่งเร็วขึ้นมาก เพราะการหน่วงน้อยลงทำให้ความถี่เพิ่มขึ้นอย่างมีนัยสำคัญ และแอมพลิจูดคงที่เพราะไม่มีแรงต้าน"
+    </div>
+    <div class="q-text" style="margin-bottom:8px">เลือกข้อที่ระบุข้อผิดพลาดได้ครบและถูกต้องที่สุด</div>
+    <div class="radio-grid">
+      <label class="radio-opt"><input type="radio" name="q8" value="ก"> ก. ผิดเรื่องความถี่อย่างเดียว (ω_d ≈ ω₀ ต่างกันน้อยมาก)</label>
+      <label class="radio-opt"><input type="radio" name="q8" value="ข"> ข. ผิดทั้งสองอย่าง: ω_d ≈ ω₀ เปลี่ยนน้อย และ A ยังลดตามเวลาแม้ b น้อย</label>
+      <label class="radio-opt"><input type="radio" name="q8" value="ค"> ค. ถูกทั้งหมด — ลด b แล้วความถี่เพิ่มจริง</label>
+      <label class="radio-opt"><input type="radio" name="q8" value="ง"> ง. ผิดเฉพาะเรื่องแอมพลิจูด แต่เรื่องความถี่ถูก</label>
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:4px">อธิบายข้อผิดพลาดโดยใช้สมการ:</label>
+      <textarea class="ans" id="q8_explain" rows="2" placeholder="ω_d = √(ω₀² − (b/2m)²) แสดงว่า..."></textarea>
+    </div>
+  </div>
+
+  <!-- ===== Q9: Resonance curve reading ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">9</span>
+      <div><div class="q-title">อ่านกราฟ Resonance curve</div><div class="q-sub">Checkbox + วาดเพิ่มเติม</div></div>
+    </div>
+    <div class="q-text">
+      จากกราฟ A vs f_drive ของสปริงตัวหนึ่ง พบว่า peak อยู่ที่ f = 2.0 Hz และ peak ลดลงครึ่งหนึ่งเมื่อ f = 1.6 Hz และ 2.4 Hz
+      เลือกข้อสรุปที่ถูกต้องทั้งหมด
+    </div>
+    <div class="cb-bank" id="cb9">
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ก. ความถี่ธรรมชาติของสปริงนี้คือ 2.0 Hz</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> ข. Bandwidth = 0.4 Hz แสดงว่า Q-factor สูงมาก</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ค. Bandwidth = 0.8 Hz (จาก 1.6 ถึง 2.4 Hz)</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ง. Q ≈ f_nat/Bandwidth = 2.0/0.8 = 2.5</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> จ. ระบบที่มี Q สูงกว่านี้จะมี bandwidth กว้างกว่า</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ฉ. Q ต่ำ → peak กว้าง → พลังงานสูญเสียเร็ว</label>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn-check" onclick="checkCB('cb9','score9')">ตรวจ</button>
+      <span class="score-display" id="score9"></span>
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:4px">วาดกราฟเพิ่มเติม: แสดงว่าถ้าเพิ่ม b เป็นสองเท่า กราฟจะเปลี่ยนอย่างไร</label>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_q9" onclick="setTool('canvas_q9','pencil')">✏️ วาด</button>
+          <button class="tool-btn" id="eraserBtn_q9" onclick="setTool('canvas_q9','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_q9')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_q9" style="width:60px">
+          <div class="color-dot active" style="background:#7c3aed" onclick="setColor('canvas_q9','#7c3aed',this)"></div>
+          <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_q9','#dc2626',this)"></div>
+          <div class="color-dot" style="background:#1e1b4b" onclick="setColor('canvas_q9','#1e1b4b',this)"></div>
+        </div>
+        <canvas id="canvas_q9" width="980" height="240" data-bg="grid"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Q10: Calculation f_nat + resonance ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">10</span>
+      <div><div class="q-title">คำนวณ f_nat และ resonance condition</div><div class="q-sub">คำนวณ · canvas</div></div>
+    </div>
+    <div class="q-text">
+      เครื่องซักผ้ามีถัง m = 5.0 kg รองรับด้วยสปริง k = 500 N/m พร้อมตัวหน่วง b = 10 kg/s<br>
+      <strong>(ก)</strong> หาความถี่ธรรมชาติ f_nat<br>
+      <strong>(ข)</strong> ถ้าเครื่องสั่นที่ f = 1.5 Hz จะเกิดการสั่นพ้องหรือไม่<br>
+      <strong>(ค)</strong> ที่ความเร็วรอบเท่าใด (rpm) ของมอเตอร์จึงจะเกิดการสั่นพ้อง
+    </div>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_q10" onclick="setTool('canvas_q10','pencil')">✏️ วิธีทำ</button>
+        <button class="tool-btn" id="eraserBtn_q10" onclick="setTool('canvas_q10','eraser')">🧹</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_q10')">🗑️</button>
+        <input type="range" min="1" max="10" value="2" id="size_canvas_q10" style="width:60px">
+        <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_q10','#1e1b4b',this)"></div>
+        <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_q10','#7c3aed',this)"></div>
+        <div class="color-dot" style="background:#0369a1" onclick="setColor('canvas_q10','#0369a1',this)"></div>
+      </div>
+      <canvas id="canvas_q10" width="980" height="280" data-bg="lined"></canvas>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">f_nat =</label><input class="ans-short" id="q10a" placeholder="Hz"></div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">เกิด resonance ที่ f=1.5 Hz?</label>
+        <select class="sel" id="q10b" style="width:120px"><option value="">เลือก</option><option>ใช่</option><option>ไม่ใช่</option></select>
+      </div>
+      <div><label style="font-size:0.85rem;display:block;margin-bottom:4px">Resonance ที่</label><input class="ans-short" id="q10c" placeholder="rpm"></div>
+    </div>
+  </div>
+
+  <!-- ===== Q11: Checkbox — TMD Analysis ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">11</span>
+      <div><div class="q-title">วิเคราะห์ TMD (Tuned Mass Damper)</div><div class="q-sub">Checkbox · หลายตอบ</div></div>
+    </div>
+    <div class="q-text">
+      ตึก Taipei 101 ใช้ลูกบอลเหล็ก 660 ตันเป็น TMD แขวนไว้ที่ชั้น 87–92<br>
+      เลือก <strong>ทุกข้อที่ถูกต้อง</strong> เกี่ยวกับหลักการทำงานของ TMD
+    </div>
+    <div class="cb-bank" id="cb11">
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ก. TMD ต้องมีความถี่ธรรมชาติตรงกับตึกเพื่อสั่นต้านเฟส</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> ข. TMD ทำให้ตึกแข็งแรงขึ้นโดยเพิ่ม k ของโครงสร้าง</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ค. เมื่อตึกสั่น TMD ถ่ายเทพลังงานออกจากตึก</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ง. ใช้หลักการ Superposition: สั่นต้านทิศกับตึก</label>
+      <label class="cb-item" data-correct="false"><input type="checkbox"> จ. TMD ป้องกันแผ่นดินไหวได้โดยดูดซับแรงทั้งหมด</label>
+      <label class="cb-item" data-correct="true"><input type="checkbox"> ฉ. ใช้ได้กับทั้งลมและแผ่นดินไหวในบางช่วงความถี่</label>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+      <button class="btn-check" onclick="checkCB('cb11','score11')">ตรวจ</button>
+      <span class="score-display" id="score11"></span>
+    </div>
+  </div>
+
+  <!-- ===== Q12: PBL Challenge ===== -->
+  <div class="q-block">
+    <div class="q-header">
+      <span class="q-num">12</span>
+      <div><div class="q-title">PBL Challenge — ออกแบบแก้ปัญหาจริง</div><div class="q-sub">วิเคราะห์ · สังเคราะห์ · วาดแบบ</div></div>
+    </div>
+    <div class="q-text" style="background:#f0fdf4;border-left:4px solid #6ee7b7;padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:12px">
+      <strong>โจทย์:</strong> หอสังเกตการณ์แห่งหนึ่งสูง 120 m มีปัญหาสั่นสะเทือนจากลมที่ความถี่ 0.8 Hz ทำให้อุปกรณ์วิทยาศาสตร์เสียหาย ท่านเป็นวิศวกรผู้ออกแบบ — เสนอวิธีแก้ปัญหา
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div>
+        <label style="font-size:0.85rem;font-weight:700;color:var(--dark);display:block;margin-bottom:4px">วิธีแก้ที่เลือก</label>
+        <select class="sel" id="q12_method" style="max-width:100%">
+          <option value="">-- เลือกวิธี --</option>
+          <option>ติดตั้ง TMD ที่ยอดหอ</option>
+          <option>ใช้ Active Damping ด้วยตัวกระตุ้น</option>
+          <option>เปลี่ยนวัสดุโครงสร้างเพิ่ม b</option>
+          <option>เพิ่มมวลหอเพื่อเปลี่ยน f_nat</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.85rem;font-weight:700;color:var(--dark);display:block;margin-bottom:4px">ความถี่ TMD ที่ต้องตั้ง</label>
+        <input class="ans-short" id="q12_freq" placeholder="Hz" style="width:100%;max-width:180px">
+      </div>
+    </div>
+    <label style="font-size:0.85rem;font-weight:700;color:var(--dark);display:block;margin-bottom:4px">อธิบายหลักการ (อ้างสมการ):</label>
+    <textarea class="ans" id="q12_explain" rows="3" placeholder="วิธีนี้ทำงานโดย... ใช้หลักการ... สมการที่เกี่ยวข้อง..."></textarea>
+    <div style="margin-top:10px">
+      <label style="font-size:0.85rem;font-weight:700;color:var(--dark);display:block;margin-bottom:4px">วาดแบบ / Diagram:</label>
+      <div class="canvas-wrap">
+        <div class="canvas-toolbar">
+          <button class="tool-btn active" id="pencilBtn_q12" onclick="setTool('canvas_q12','pencil')">✏️ วาด</button>
+          <button class="tool-btn" id="eraserBtn_q12" onclick="setTool('canvas_q12','eraser')">🧹</button>
+          <button class="tool-btn" onclick="clearCanvas('canvas_q12')">🗑️</button>
+          <input type="range" min="1" max="10" value="2" id="size_canvas_q12" style="width:60px">
+          <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_q12','#1e1b4b',this)"></div>
+          <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_q12','#7c3aed',this)"></div>
+          <div class="color-dot" style="background:#0369a1" onclick="setColor('canvas_q12','#0369a1',this)"></div>
+          <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_q12','#dc2626',this)"></div>
+          <div class="color-dot" style="background:#15803d" onclick="setColor('canvas_q12','#15803d',this)"></div>
+        </div>
+        <canvas id="canvas_q12" width="980" height="320" data-bg="lined"></canvas>
+      </div>
+    </div>
+    <div style="margin-top:10px">
+      <label style="font-size:0.85rem;font-weight:700;color:var(--dark);display:block;margin-bottom:4px">ข้อดีและข้อจำกัดของวิธีที่เลือก:</label>
+      <textarea class="ans" id="q12_pros" rows="2" placeholder="ข้อดี: ... ข้อจำกัด: ..."></textarea>
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <button class="btn btn-secondary" onclick="window.print()">🖨️ พิมพ์ PDF</button>
+    <button class="btn btn-secondary" onclick="downloadJSON()">⬇️ บันทึก JSON</button>
+    <button class="btn btn-primary" onclick="submitData()">📤 ส่งข้อมูล</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
+const SHEET   = 'Exercise11_SHM_Plan6';
+
+// ====== Canvas ======
+const canvasState = {};
+function initCanvas(id) {
+  const c = document.getElementById(id); if (!c) return;
+  const ctx = c.getContext('2d');
+  const bg = c.dataset.bg;
+  ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  if (bg === 'lined') {
+    ctx.strokeStyle = '#e0e7ff'; ctx.lineWidth = 0.8;
+    for (let y = 28; y < c.height; y += 28) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(c.width,y); ctx.stroke(); }
+    ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40,0); ctx.lineTo(40,c.height); ctx.stroke();
+  } else if (bg === 'grid') {
+    ctx.strokeStyle = '#e0e7ff'; ctx.lineWidth = 0.7;
+    for (let x = 0; x < c.width; x += 30) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,c.height); ctx.stroke(); }
+    for (let y = 0; y < c.height; y += 30) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(c.width,y); ctx.stroke(); }
+    ctx.strokeStyle = '#a78bfa'; ctx.lineWidth = 2;
+    const mx = 50; const my = c.height - 30;
+    ctx.beginPath(); ctx.moveTo(mx,10); ctx.lineTo(mx,my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx,my); ctx.lineTo(c.width-10,my); ctx.stroke();
+    ctx.fillStyle = '#4c1d95'; ctx.font = '11px sans-serif';
+    ctx.fillText('f (Hz)', c.width-42, my-8);
+    ctx.fillText('A', mx+6, 20);
+    ctx.fillText('0', mx-16, my+12);
+  }
+  canvasState[id] = canvasState[id] || { tool:'pencil', color:'#1e1b4b', drawing:false };
+  const saved = localStorage.getItem('canvas_'+id);
+  if (saved) { const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0); img.src=saved; }
+  bindCanvas(c);
+}
+function bindCanvas(c) {
+  const id=c.id;
+  const getPos=e=>{const r=c.getBoundingClientRect();const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*(c.width/r.width),y:(s.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();const s=canvasState[id];s.drawing=true;const p=getPos(e);s.lastX=p.x;s.lastY=p.y;};
+  const draw =e=>{e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const ctx=c.getContext('2d');const p=getPos(e);const sz=+document.getElementById('size_'+id)?.value||2;if(s.tool==='eraser'){ctx.clearRect(p.x-sz*4,p.y-sz*4,sz*8,sz*8);}else{ctx.strokeStyle=s.color;ctx.lineWidth=sz;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(s.lastX,s.lastY);ctx.lineTo(p.x,p.y);ctx.stroke();}s.lastX=p.x;s.lastY=p.y;};
+  const stop =()=>{canvasState[id].drawing=false;localStorage.setItem('canvas_'+id,c.toDataURL());};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',draw);c.addEventListener('mouseup',stop);c.addEventListener('mouseleave',stop);
+  c.addEventListener('touchstart',start,{passive:false});c.addEventListener('touchmove',draw,{passive:false});c.addEventListener('touchend',stop);
+}
+function setTool(id,tool){
+  canvasState[id]=canvasState[id]||{};canvasState[id].tool=tool;
+  const suf=id.replace('canvas_','');
+  document.getElementById('pencilBtn_'+suf)?.classList.toggle('active',tool==='pencil');
+  document.getElementById('eraserBtn_'+suf)?.classList.toggle('active',tool==='eraser');
+}
+function setColor(id,color,el){canvasState[id]=canvasState[id]||{};canvasState[id].color=color;el.closest('.canvas-toolbar').querySelectorAll('.color-dot').forEach(d=>d.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);initCanvas(id);localStorage.removeItem('canvas_'+id);}
+
+// ====== Checkbox check ======
+function checkCB(bankId, scoreId) {
+  const items = document.querySelectorAll('#'+bankId+' .cb-item');
+  let correct=0,total_correct=0;
+  items.forEach(item=>{
+    const isCorrect=item.dataset.correct==='true';
+    const checked=item.querySelector('input').checked;
+    if(isCorrect)total_correct++;
+    if(checked&&isCorrect)correct++;
+    if(checked&&!isCorrect)correct--;
+    item.style.background = checked ? (isCorrect?'#d1fae5':'#fee2e2') : '';
+    item.style.borderColor = checked ? (isCorrect?'#10b981':'#ef4444') : '';
+  });
+  correct=Math.max(0,correct);
+  const s=document.getElementById(scoreId);
+  s.className='score-display show';
+  s.style.background=correct>=Math.ceil(total_correct*0.7)?'#d1fae5':'#fee2e2';
+  s.style.color=correct>=Math.ceil(total_correct*0.7)?'#065f46':'#991b1b';
+  s.textContent=`คะแนน: ${correct}/${total_correct}`;
+}
+
+// ====== Drag & Drop ======
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.querySelectorAll('.dd-item').forEach(item=>{
+    item.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',item.dataset.val||item.textContent.trim());});
+  });
+  document.querySelectorAll('.dd-zone').forEach(zone=>{
+    zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('dragover');});
+    zone.addEventListener('dragleave',()=>zone.classList.remove('dragover'));
+    zone.addEventListener('drop',e=>{
+      e.preventDefault();zone.classList.remove('dragover');
+      const val=e.dataTransfer.getData('text');
+      const tag=document.createElement('span');
+      tag.className='dd-item';tag.textContent=val;tag.style.cursor='default';tag.style.margin='2px';
+      tag.setAttribute('draggable','true');
+      tag.addEventListener('dragstart',ev=>ev.dataTransfer.setData('text',val));
+      zone.appendChild(tag);
+    });
+  });
+  // Date
+  document.getElementById('test_date').value=new Date().toISOString().split('T')[0];
+  // Init canvases
+  ['canvas_q1','canvas_q3','canvas_q5','canvas_q7','canvas_q9','canvas_q10','canvas_q12'].forEach(initCanvas);
+  // Restore
+  const saved=localStorage.getItem('exercise11_plan6');
+  if(saved){try{const d=JSON.parse(saved);Object.keys(d).forEach(k=>{const el=document.getElementById(k);if(el&&el.tagName!=='CANVAS')el.value=d[k];});}catch(e){}}
+});
+document.addEventListener('input',e=>{
+  if(['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)){
+    const data={};
+    document.querySelectorAll('input[id],textarea[id],select[id]').forEach(el=>{data[el.id]=el.value;});
+    localStorage.setItem('exercise11_plan6',JSON.stringify(data));
+  }
+});
+
+// ====== Submit ======
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';setTimeout(()=>t.style.display='none',2800);}
+function collectData(){
+  const radios={};
+  document.querySelectorAll('input[type=radio]:checked').forEach(r=>{radios[r.name]=r.value;});
+  return{
+    timestamp:new Date().toISOString(),sheet:SHEET,
+    student_name:document.getElementById('student_name').value,
+    student_no:document.getElementById('student_no').value,
+    class:document.getElementById('class').value,
+    test_date:document.getElementById('test_date').value,
+    ...radios,
+    q3a:document.getElementById('q3a').value,
+    q3b:document.getElementById('q3b').value,
+    q3c:document.getElementById('q3c').value,
+    q7a:document.getElementById('q7a').value,
+    q7b:document.getElementById('q7b').value,
+    q7c:document.getElementById('q7c').value,
+    q7type:document.getElementById('q7type').value,
+    q10a:document.getElementById('q10a').value,
+    q10b:document.getElementById('q10b').value,
+    q10c:document.getElementById('q10c').value,
+    q12_method:document.getElementById('q12_method').value,
+    q12_freq:document.getElementById('q12_freq').value,
+    q12_explain:document.getElementById('q12_explain').value,
+    q8_explain:document.getElementById('q8_explain').value,
+    q5_desc:document.getElementById('q5_desc').value,
+    canvas_q5:document.getElementById('canvas_q5').toDataURL(),
+    canvas_q9:document.getElementById('canvas_q9').toDataURL(),
+    canvas_q12:document.getElementById('canvas_q12').toDataURL(),
+  };
+}
+function downloadJSON(){
+  const data=collectData();
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`Exercise11_${data.student_no||'xx'}_Plan6.json`;a.click();
+}
+function submitData(){
+  const data=collectData();
+  if(!data.student_name){showToast('กรุณากรอกชื่อก่อนส่ง');return;}
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){downloadJSON();showToast('ดาวน์โหลด JSON สำเร็จ');return;}
+  fetch(API_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)})
+    .then(()=>showToast('ส่งข้อมูลสำเร็จ ✓'))
+    .catch(()=>{downloadJSON();showToast('ส่งไม่ได้ — บันทึก JSON แทน');});
+}
+</script>
+</body>
+</html>

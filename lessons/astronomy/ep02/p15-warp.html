@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P15 · Warp</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .warp-scene { position: relative; height: 360px; overflow: hidden; border-radius: 14px; margin: 20px 0;
+    background: radial-gradient(circle at center, #0a0520 0%, #000 70%);
+    border: 1px solid var(--border);
+    box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+  }
+  .warp-canvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+  .warp-hud { position:absolute; top:10px; left:12px; font-family:'Orbitron',monospace; font-size:11px; letter-spacing:0.15em; color:var(--accent); text-shadow:0 0 6px rgba(100,216,255,0.5); z-index:3; }
+  .warp-hud .hud-line { margin:2px 0; opacity:0.85; }
+  .warp-hud .hud-phase { color:var(--accent-gold); font-weight:700; font-size:12px; }
+  .warp-hud .hud-bar { width:160px; height:6px; background:rgba(0,0,0,0.5); border:1px solid rgba(100,216,255,0.4); border-radius:3px; margin-top:4px; overflow:hidden; }
+  .warp-hud .hud-fill { height:100%; background:linear-gradient(90deg,#64d8ff,#b980ff,#ff5c7a); width:0%; transition: width .2s linear; }
+
+  .warp-controls { position:absolute; bottom:12px; left:12px; display:flex; gap:8px; z-index:3; }
+  .warp-btn { padding:7px 14px; background:rgba(0,0,0,0.55); border:1px solid var(--accent); color:var(--accent); font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:0.14em; border-radius:100px; cursor:pointer; }
+  .warp-btn:hover { background:rgba(100,216,255,0.15); }
+  .warp-btn:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .arrival-overlay { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; pointer-events:none; opacity:0; transition:opacity 0.8s ease-out; z-index:2; }
+  .arrival-overlay.show { opacity:1; }
+  .arrival-overlay .a-ribbon { font-family:'Orbitron',sans-serif; letter-spacing:0.3em; color:var(--accent); font-size:11px; padding:4px 14px; border:1px solid var(--accent); border-radius:100px; background:rgba(0,0,0,0.55); margin-bottom:12px; animation: ribbonPulse 1.8s ease-in-out infinite; }
+  @keyframes ribbonPulse { 0%,100%{box-shadow:0 0 0 0 rgba(100,216,255,0.5)} 50%{box-shadow:0 0 18px 4px rgba(100,216,255,0.4)} }
+  .arrival-overlay .a-name { font-family:'Orbitron',sans-serif; font-size:36px; letter-spacing:0.18em; color:#fff; text-shadow:0 0 20px rgba(100,216,255,0.9), 0 0 40px rgba(185,128,255,0.6); animation: nameGlitch 2.2s steps(1,end) infinite; }
+  @keyframes nameGlitch { 0%,90%,100%{transform:translate(0)} 92%{transform:translate(-2px,1px)} 94%{transform:translate(2px,-1px)} 96%{transform:translate(-1px,2px)} }
+  .arrival-overlay .a-sub { margin-top:10px; color:var(--text-dim); font-size:13px; letter-spacing:0.12em; }
+
+  .sos-ping { position:absolute; top:14px; right:14px; z-index:3; display:none; align-items:center; gap:8px; padding:8px 14px; background:rgba(255,92,122,0.15); border:1px solid var(--accent-red); border-radius:100px; font-family:'Orbitron',monospace; font-size:11px; color:var(--accent-red); letter-spacing:0.15em; animation: sosPulse 0.9s ease-in-out infinite; }
+  .sos-ping.show { display:flex; }
+  @keyframes sosPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,92,122,0.7)} 50%{box-shadow:0 0 0 10px rgba(255,92,122,0)} }
+  .sos-ping .dot { width:8px; height:8px; border-radius:50%; background:var(--accent-red); }
+
+  .sos-panel { padding: 16px; background: rgba(255,92,122,0.06); border: 1px dashed var(--accent-red); border-radius: 10px; margin: 14px 0; font-family: monospace; color: var(--accent-red); position:relative; transition: all 0.4s; }
+  .sos-panel b { color: #ffb5c2; }
+  .sos-panel.locked { opacity: 0.25; filter: blur(3px); }
+  .sos-panel.unlocked { animation: sosReveal 0.7s ease-out; box-shadow: 0 0 30px rgba(255,92,122,0.3); }
+  @keyframes sosReveal { 0%{transform:scale(0.96);box-shadow:0 0 0 0 rgba(255,92,122,0)} 50%{box-shadow:0 0 0 8px rgba(255,92,122,0.25)} 100%{transform:scale(1);box-shadow:0 0 30px rgba(255,92,122,0.3)} }
+</style>
+</head>
+<body data-page="p15" data-type="story">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label story">องก์ 3 · Scene 15 · FALLING ACTION + CLIFFHANGER</div>
+  <h1 class="page-title">Warp!</h1>
+
+  <div class="warp-scene" id="warpScene">
+    <canvas class="warp-canvas" id="warpCanvas"></canvas>
+    <div class="warp-hud">
+      <div class="hud-line">⚡ WARP DRIVE</div>
+      <div class="hud-line">PHASE: <span class="hud-phase" id="hudPhase">STANDBY</span></div>
+      <div class="hud-line">VELOCITY: <span id="hudSpeed">0.00c</span></div>
+      <div class="hud-bar"><div class="hud-fill" id="hudFill"></div></div>
+    </div>
+    <div class="sos-ping" id="sosPing">
+      <div class="dot"></div> INCOMING · SOS
+    </div>
+    <div class="arrival-overlay" id="arrivalOverlay">
+      <div class="a-ribbon">DESTINATION LOCKED</div>
+      <div class="a-name">NGC-???</div>
+      <div class="a-sub">ยินดีต้อนรับสู่กาแล็กซีใหม่</div>
+    </div>
+    <div class="warp-controls">
+      <button class="warp-btn" id="replayBtn" onclick="replayWarp()">↻ Replay</button>
+      <button class="warp-btn" id="skipBtn" onclick="skipToEnd()">⏭ Skip</button>
+    </div>
+  </div>
+
+  <div class="narrative">
+    <p>VOID หายไปในความมืด · Warp Drive เปิด · แสงยืดเป็นเส้น · ยานข้ามกาแล็กซีในพริบตา</p>
+    <p>จอขึ้น: <b>"ยินดีต้อนรับสู่ NGC-???"</b></p>
+    <p>ทีมหายใจโล่งอก... แต่ยังไม่ทันสงบดี</p>
+  </div>
+
+  <div class="sos-panel locked" id="sosPanel">
+    📡 <span id="sosGate">[ สัญญาณจะปรากฏเมื่อ Warp เสร็จ ]</span>
+    <div id="sosContent" style="display:none">
+      สัญญาณเข้า... ภาษามนุษย์... <br>
+      <b>"...ช่วยด้วย... ฉัน... ฉันคิดว่าฉันเป็น... พ่อของอารยา..."</b>
+    </div>
+  </div>
+
+  <div class="narrative">
+    <p style="color:var(--text-dim)">🎙️ ครู (ปิดค้าง): "ใครส่งมา · จริงไหม · เก็บไว้ต่อ EP03"</p>
+  </div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P15 · ปิดค้าง</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "Warp เปิด · แสงยืดเป็นเส้น..."<br>
+      <b>ระหว่าง warp:</b> เงียบ · ให้จอเล่น · ~10 วินาที<br>
+      <b>ตอน NGC-??? ปรากฏ:</b> เงียบ 5 วิ ก่อนอ่าน SOS<br>
+      <b>ปิด:</b> ไม่เฉลย · ให้เก็บคำถาม "พ่ออารยาตายไปแล้วใน backstory · นี่เป็นใครกันแน่"<br>
+      <b>🎬 Simulation:</b> กด Replay ถ้าทีมพลาด · กด Skip ถ้าเวลาน้อย
+    </div>
+  </details>
+
+  <button class="finish-btn" id="finishBtn" onclick="finishPage()" disabled>🔒 รอ Warp เสร็จ...</button>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); startWarp(); }, 60);
+
+  /* ============ Warp Simulation ============ */
+  const NUM_STARS = 320;
+  const FOV = 260;
+  const MAX_Z = 1400;
+
+  const cvs = document.getElementById('warpCanvas');
+  const ctx = cvs.getContext('2d');
+  let W = 0, H = 0, cx = 0, cy = 0;
+  let stars = [];
+  let speed = 0;        // current warp speed
+  let targetSpeed = 0;
+  let running = false;
+  let tStart = 0;
+  let arrived = false;
+  let sosTriggered = false;
+  let soundHandle = null;
+
+  function resize() {
+    const r = cvs.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cvs.width = Math.round(r.width * dpr);
+    cvs.height = Math.round(r.height * dpr);
+    W = cvs.width; H = cvs.height; cx = W/2; cy = H/2;
+    ctx.setTransform(1,0,0,1,0,0);
+  }
+  window.addEventListener('resize', resize);
+
+  function initStars() {
+    stars = [];
+    for (let i=0; i<NUM_STARS; i++) {
+      stars.push(makeStar(Math.random() * MAX_Z));
+    }
+  }
+  function makeStar(z) {
+    // uniform-ish disc in X/Y plane, then project through z
+    const ang = Math.random() * Math.PI * 2;
+    const rad = Math.sqrt(Math.random()) * 1400 + 80;
+    return {
+      x: Math.cos(ang) * rad,
+      y: Math.sin(ang) * rad,
+      z: z,
+      pz: z,
+      hue: 190 + Math.random()*110  // cyan/purple/pink range
+    };
+  }
+  function resetStar(s) {
+    const ang = Math.random() * Math.PI * 2;
+    const rad = Math.sqrt(Math.random()) * 1400 + 80;
+    s.x = Math.cos(ang) * rad;
+    s.y = Math.sin(ang) * rad;
+    s.z = MAX_Z;
+    s.pz = MAX_Z;
+    s.hue = 190 + Math.random()*110;
+  }
+
+  function startWarp() {
+    resize();
+    initStars();
+    arrived = false;
+    sosTriggered = false;
+    speed = 0; targetSpeed = 0;
+    document.getElementById('arrivalOverlay').classList.remove('show');
+    document.getElementById('sosPing').classList.remove('show');
+    document.getElementById('sosPanel').classList.remove('unlocked');
+    document.getElementById('sosPanel').classList.add('locked');
+    document.getElementById('sosContent').style.display = 'none';
+    document.getElementById('sosGate').style.display = '';
+    document.getElementById('finishBtn').disabled = true;
+    document.getElementById('finishBtn').textContent = '🔒 รอ Warp เสร็จ...';
+    running = true;
+    tStart = performance.now();
+    try { Book.playSound && Book.playSound('hyperdrive', { volume: 0.45 }); } catch(e){}
+    requestAnimationFrame(loop);
+  }
+
+  function phaseFor(tSec) {
+    if (tSec < 1)    return { name:'SPOOL-UP',   target: 6,  pct: tSec/1 * 10 };
+    if (tSec < 3)    return { name:'ACCELERATE', target: 20, pct: 10 + (tSec-1)/2 * 30 };
+    if (tSec < 7)    return { name:'MAX WARP',   target: 45, pct: 40 + (tSec-3)/4 * 50 };
+    if (tSec < 9)    return { name:'DECELERATE', target: 8,  pct: 90 + (tSec-7)/2 * 8 };
+    if (tSec < 10)   return { name:'ARRIVAL',    target: 0.5, pct: 98 + (tSec-9)*2 };
+    return { name:'ARRIVED', target: 0, pct: 100, done:true };
+  }
+
+  function updateHUD(phase, tSec) {
+    document.getElementById('hudPhase').textContent = phase.name;
+    document.getElementById('hudSpeed').textContent = (speed/45).toFixed(2) + 'c';
+    document.getElementById('hudFill').style.width = Math.min(100, phase.pct) + '%';
+  }
+
+  function onArrive() {
+    arrived = true;
+    document.getElementById('arrivalOverlay').classList.add('show');
+    // after 2.5s, show SOS ping + unlock panel
+    setTimeout(triggerSOS, 2500);
+    // enable finish button once arrived
+    const fb = document.getElementById('finishBtn');
+    fb.disabled = false;
+    fb.textContent = '🚀 ไปต่อ · Recap';
+  }
+  function triggerSOS() {
+    if (sosTriggered) return;
+    sosTriggered = true;
+    document.getElementById('sosPing').classList.add('show');
+    const panel = document.getElementById('sosPanel');
+    panel.classList.remove('locked');
+    panel.classList.add('unlocked');
+    document.getElementById('sosGate').style.display = 'none';
+    document.getElementById('sosContent').style.display = '';
+    try { Book.playSound && Book.playSound('beam', { volume: 0.35 }); } catch(e){}
+  }
+
+  function loop(now) {
+    if (!running) return;
+    const tSec = (now - tStart) / 1000;
+    const phase = phaseFor(tSec);
+    targetSpeed = phase.target;
+    // ease toward target
+    speed += (targetSpeed - speed) * 0.035;
+    updateHUD(phase, tSec);
+
+    // draw
+    // slight trail: fade prev frame instead of clear
+    ctx.fillStyle = arrived ? 'rgba(5,8,22,0.55)' : 'rgba(0,0,0,0.35)';
+    ctx.fillRect(0,0,W,H);
+
+    for (const s of stars) {
+      s.pz = s.z;
+      s.z -= speed * 6;
+      if (s.z <= 1) { resetStar(s); continue; }
+      const k = FOV / s.z;
+      const pk = FOV / Math.max(1, s.pz);
+      const sx = s.x * k + cx;
+      const sy = s.y * k + cy;
+      const psx = s.x * pk + cx;
+      const psy = s.y * pk + cy;
+      if (sx<0||sx>W||sy<0||sy>H) continue;
+      const t = 1 - s.z / MAX_Z;               // 0 far → 1 near
+      const alpha = Math.min(1, 0.15 + t*0.9);
+      const width = Math.min(3.5, 0.4 + t*2.6);
+      ctx.strokeStyle = `hsla(${s.hue}, 95%, ${60 + t*25}%, ${alpha})`;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(psx, psy);
+      ctx.lineTo(sx, sy);
+      ctx.stroke();
+    }
+
+    // central bloom during max warp
+    if (speed > 20) {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(W,H)*0.35);
+      g.addColorStop(0, `rgba(200,220,255,${Math.min(0.35, (speed-20)/80)})`);
+      g.addColorStop(1, 'rgba(200,220,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    if (phase.done && !arrived) onArrive();
+    if (phase.done && speed < 0.1) return; // stop loop after arrival stabilizes
+    requestAnimationFrame(loop);
+  }
+
+  function replayWarp() {
+    running = false;
+    setTimeout(startWarp, 80);
+  }
+  function skipToEnd() {
+    tStart = performance.now() - 10200; // jump past arrival threshold
+    speed = 0.5;
+    if (!arrived) onArrive();
+  }
+
+  function finishPage() {
+    Book.completePage();
+    const btn = document.getElementById('finishBtn');
+    btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ Warp แล้ว';
+  }
+</script>
+
+</body>
+</html>

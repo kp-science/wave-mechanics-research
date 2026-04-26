@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P11 · 6 ยุคอนุภาค · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.timeline-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 14px 0; }
+@media (max-width: 1100px) { .timeline-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 600px) { .timeline-grid { grid-template-columns: repeat(2, 1fr); } }
+.era-card {
+  padding: 16px 12px; background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: center; transition: all 0.3s;
+  min-height: 160px; display: flex; flex-direction: column;
+}
+.era-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 8px 25px rgba(100,216,255,0.15); }
+.era-card.revealed { border-color: var(--accent-gold); background: linear-gradient(160deg, rgba(255,203,107,0.08), rgba(100,216,255,0.04)); }
+.era-time { font-family: 'Space Grotesk'; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.era-name { font-family: 'Orbitron'; font-size: 10.5px; letter-spacing: 0.12em; color: var(--text); margin-bottom: 4px; }
+.era-temp { font-size: 12px; color: var(--accent-gold); margin-bottom: 8px; font-family: 'Space Grotesk'; }
+.era-tap { margin-top: auto; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 0.2em; color: var(--text-faint); opacity: 0.6; }
+.era-card.revealed .era-tap { color: var(--accent-green); opacity: 1; }
+.era-card.revealed .era-tap::before { content: '✓ '; }
+
+.era-modal { position: fixed; inset: 0; background: rgba(3,4,12,0.85); backdrop-filter: blur(8px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+.era-modal.open { display: flex; animation: fadeIn 0.3s ease; }
+.era-modal-inner {
+  background: linear-gradient(160deg, rgba(12,15,35,0.98), rgba(5,6,15,0.98));
+  border: 1px solid var(--border-strong); border-radius: 20px;
+  padding: 28px 32px; max-width: 1200px; width: 100%;
+  max-height: 92vh; overflow-y: auto; position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(100,216,255,0.15);
+}
+.era-modal-close { position: absolute; top: 16px; right: 16px; padding: 8px 16px; background: rgba(255,92,122,0.1); border: 1px solid rgba(255,92,122,0.4); border-radius: 100px; color: var(--accent-red); font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.2em; cursor: pointer; }
+.era-modal-head { padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 18px; }
+.era-modal-label { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.3em; color: var(--accent); margin-bottom: 6px; }
+.era-modal-title { font-family: 'Orbitron'; font-size: 24px; font-weight: 700; background: linear-gradient(180deg, #fff, #8ca0d8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
+.era-modal-meta { font-family: 'Space Grotesk'; font-size: 14px; color: var(--accent-gold); margin-bottom: 8px; }
+.era-modal-event { font-size: 14px; color: var(--text-dim); font-style: italic; }
+.era-modal-body { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; }
+@media (max-width: 900px) { .era-modal-body { grid-template-columns: 1fr; } }
+#era-canvas { width: 100%; height: auto; background: radial-gradient(ellipse at center, #0a0e1f 0%, #03040c 100%); border: 1px solid var(--border); border-radius: 12px; display: block; }
+.era-legend { margin-top: 8px; padding: 8px 12px; font-size: 11px; color: var(--text-faint); font-family: 'Space Grotesk'; background: rgba(0,0,0,0.3); border-radius: 6px; }
+.era-check { background: rgba(100,216,255,0.04); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.era-check h5 { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 6px; }
+.particle-options { max-height: 340px; overflow-y: auto; padding-right: 6px; }
+.particle-option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; margin: 4px 0;
+  border: 1px solid var(--border); border-radius: 8px;
+  cursor: pointer; font-size: 13px;
+}
+.particle-option:hover { border-color: var(--accent); background: rgba(100,216,255,0.04); }
+.particle-option input { width: 16px; height: 16px; accent-color: var(--accent); }
+.particle-option .swatch { width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); }
+.particle-option .lbl { flex: 1; color: var(--text); }
+.particle-option.show-correct { background: rgba(126,255,178,0.08); border-color: var(--accent-green); }
+.particle-option.show-wrong { background: rgba(255,92,122,0.08); border-color: var(--accent-red); }
+.particle-option.show-missed { background: rgba(255,203,107,0.08); border-color: var(--accent-gold); }
+
+.progress-box { margin-top: 14px; padding: 10px 16px; background: rgba(0,0,0,0.3); border: 1px dashed var(--border); border-radius: 8px; text-align: center; font-size: 13px; color: var(--text-dim); }
+.progress-box b { color: var(--accent); }
+
+/* Particle chips on era card (after selection) */
+.era-parts {
+  display: flex; flex-direction: column; gap: 4px;
+  margin: 8px 0 6px; min-height: 10px;
+  align-items: stretch;
+}
+.era-part-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 3px 8px 3px 3px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  font-size: 10.5px;
+  animation: chipIn 0.3s ease;
+}
+@keyframes chipIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+.era-part-chip .dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  color: #05060f; font-size: 9px;
+  flex-shrink: 0;
+}
+.era-part-chip .nm {
+  font-family: 'Sarabun', sans-serif;
+  color: var(--text); font-size: 10.5px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.era-part-empty {
+  font-size: 10px; color: var(--text-faint);
+  font-style: italic; text-align: center; padding: 4px;
+}
+
+/* Simulation legend */
+.sim-legend-panel {
+  margin-top: 10px; padding: 10px 14px;
+  background: rgba(100,216,255,0.04);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.sim-legend-panel .lbl {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--accent); margin-right: 6px;
+  align-self: center;
+}
+.sim-legend-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px 3px 3px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 100px;
+  font-size: 11px; color: var(--text);
+}
+.sim-legend-chip .d {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+  font-size: 9px; color: #05060f;
+}
+</style>
+</head>
+<body data-page="p11">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ PAGE 11 / 16 · PUZZLE · 10 นาที</div>
+<h1 class="page-title">6 ยุคอนุภาคของเอกภพ</h1>
+<h2 class="page-sub">COSMIC TIMELINE · WARP INTO EACH ERA</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag do">อำนวย</span><span>ให้ทีมคลิกแต่ละยุค · ดูการเคลื่อนที่ของอนุภาค · กาถูกเฉพาะที่เห็นจริง</span></div>
+    <div class="role"><span class="tag say">ถาม</span><span>"สังเกตไหมว่ายุคแรกมีแต่อนุภาคเล็ก · ยุคหลัง ๆ มีอะไรใหญ่ขึ้น?" · ชี้ pattern</span></div>
+    <div class="role"><span class="tag teach">เชื่อมโยง</span><span>"โปรตอนเกิดจากควาร์กในยุคที่ 3 · นิวเคลียสฮีเลียมเกิดในยุคที่ 4 · อะตอมเป็นกลางในยุคที่ 5 (ตอน CMB หลุด) · กาแล็กซีในยุคที่ 6"</span></div>
+  </div>
+</div>
+
+<div class="dialog-box arya" data-speaker="กัปตัน อารยา">
+  <div class="txt">ขณะวาร์ปออกจากสถานี A · เซ็นเซอร์ยานสแกนภายในศิลาต้นกำเนิด · พบ <b>อนุภาคหลายชนิด</b> แต่ยังไม่รู้ว่าอนุภาคไหนเกิดจากยุคไหนของเอกภพ · ทีมต้องช่วยจำแนก</div>
+</div>
+
+<div class="dialog-box hubble" data-speaker="ดร.ฮับเบิล">
+  <div class="txt">เอกภพของเราผ่าน 6 ยุคสำคัญ · ในแต่ละยุคมี <b>อนุภาค</b> ต่างกัน · <b>คลิกแต่ละการ์ด</b> · ยานจะวาร์ปพาเข้าไปดูจริง · <b>กาถูกอนุภาคที่เห็น</b> · เมื่อปิดกลับมา · อนุภาคที่เลือกจะปรากฏบนการ์ดเพื่อเปรียบเทียบแต่ละยุค</div>
+</div>
+
+<div class="timeline-grid" id="timeline-grid">
+  <div class="era-card" data-era="1" onclick="openEra(1)">
+    <div class="era-time">10⁻⁴³ วิ</div>
+    <div class="era-name">PLANCK</div>
+    <div class="era-temp">~10³² K</div>
+    <div class="era-parts" id="parts-1"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+  <div class="era-card" data-era="2" onclick="openEra(2)">
+    <div class="era-time">10⁻³² วิ</div>
+    <div class="era-name">RADIATION</div>
+    <div class="era-temp">~10²⁷ K</div>
+    <div class="era-parts" id="parts-2"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+  <div class="era-card" data-era="3" onclick="openEra(3)">
+    <div class="era-time">10⁻⁶ วิ</div>
+    <div class="era-name">NUCLEON</div>
+    <div class="era-temp">~10¹³ K</div>
+    <div class="era-parts" id="parts-3"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+  <div class="era-card" data-era="4" onclick="openEra(4)">
+    <div class="era-time">3 นาที</div>
+    <div class="era-name">NUCLEOSYNTHESIS</div>
+    <div class="era-temp">~10⁹ K</div>
+    <div class="era-parts" id="parts-4"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+  <div class="era-card" data-era="5" onclick="openEra(5)">
+    <div class="era-time">380,000 ปี</div>
+    <div class="era-name">RECOMBINATION</div>
+    <div class="era-temp">~3,000 K</div>
+    <div class="era-parts" id="parts-5"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+  <div class="era-card" data-era="6" onclick="openEra(6)">
+    <div class="era-time">13.8 Gyr</div>
+    <div class="era-name">PRESENT</div>
+    <div class="era-temp">2.73 K</div>
+    <div class="era-parts" id="parts-6"></div>
+    <div class="era-tap">▼ วาร์ป</div>
+  </div>
+</div>
+
+<div class="progress-box" id="progress">เปิดแล้ว <b>0/6</b> ยุค · เปิดครบเพื่อปลดล็อก</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag k">K · ลำดับอนุภาค สสวท.</span>
+  <span class="ped-tag p">P · สังเกต · จำแนก</span>
+  <span class="ped-tag">เนื้อหา: 6 ยุคเอกภพ</span>
+</div>
+
+</div></main>
+
+<!-- MODAL -->
+<div id="era-modal" class="era-modal" onclick="if(event.target===this) closeEra()">
+  <div class="era-modal-inner">
+    <button class="era-modal-close" onclick="closeEra()">✕ ปิด</button>
+    <div class="era-modal-head">
+      <div class="era-modal-label" id="m-label">◦ ERA</div>
+      <div class="era-modal-title" id="m-title"></div>
+      <div class="era-modal-meta" id="m-meta"></div>
+      <div class="era-modal-event" id="m-event"></div>
+    </div>
+    <div class="era-modal-body">
+      <div>
+        <canvas id="era-canvas" width="640" height="460"></canvas>
+        <div class="era-legend" id="m-legend"></div>
+        <div class="sim-legend-panel" id="sim-legend" style="display:none">
+          <span class="lbl">◦ อนุภาคจริงในยุคนี้ (เฉลยหลังยืนยัน)</span>
+        </div>
+      </div>
+      <div class="era-check">
+        <h5>🔎 สังเกต · ทีมเห็นอนุภาคใดบ้าง?</h5>
+        <p class="muted" style="font-size: 12px; margin-bottom: 10px;">กาถูกเฉพาะที่เห็นจริงในจอ · แล้วยืนยัน</p>
+        <div id="p-opts" class="particle-options"></div>
+        <button class="btn primary mt-10" onclick="checkEra()">✓ ยืนยัน</button>
+        <div id="p-result" class="mt-10"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/particles.js"></script>
+<script src="../shared/book.js"></script>
+<script>
+let currentEra = null;
+
+function openEra(id) {
+  currentEra = id;
+  const data = ERA_DATA[id];
+  document.getElementById('m-label').textContent = data.label;
+  document.getElementById('m-title').textContent = data.title;
+  document.getElementById('m-meta').textContent = data.meta;
+  document.getElementById('m-event').textContent = data.event;
+  document.getElementById('m-legend').textContent = `⚡ ความเร็ว ~${data.speed.toFixed(1)}x · อนุภาคในยุคนี้ ${data.particles.length} ชนิด · สังเกตก่อนค่อยกาถูกทางขวา`;
+  // Restore previous checks if exists
+  const prevSel = Book.state.data.p11?.[`selected${id}`] || [];
+  document.getElementById('p-opts').innerHTML = ALL_PARTICLE_ORDER.map(p => {
+    const s = PARTICLE_STYLES[p];
+    const checked = prevSel.includes(p) ? 'checked' : '';
+    return `<label class="particle-option">
+      <input type="checkbox" value="${p}" ${checked}>
+      <span class="swatch" style="background:${s.color}"></span>
+      <span class="lbl">${s.name} <span style="color:var(--text-faint);font-family:'Space Grotesk';">${s.label}</span></span>
+    </label>`;
+  }).join('');
+  document.getElementById('p-result').innerHTML = '';
+  document.getElementById('sim-legend').style.display = 'none';
+  document.getElementById('sim-legend').innerHTML = '<span class="lbl">◦ อนุภาคจริงในยุคนี้ (เฉลยหลังยืนยัน)</span>';
+  document.getElementById('era-modal').classList.add('open');
+  const cv = document.getElementById('era-canvas');
+  ParticleSim.start(cv, id);
+}
+function closeEra() {
+  ParticleSim.stop();
+  document.getElementById('era-modal').classList.remove('open');
+}
+function checkEra() {
+  const data = ERA_DATA[currentEra];
+  const correctSet = new Set(data.particles);
+  let hits = 0, misses = 0, extras = 0;
+  const selected = [];
+  document.querySelectorAll('.particle-option').forEach(opt => {
+    const val = opt.querySelector('input').value;
+    const checked = opt.querySelector('input').checked;
+    const should = correctSet.has(val);
+    opt.classList.remove('show-correct','show-wrong','show-missed');
+    if (checked) selected.push(val);
+    if (checked && should) { opt.classList.add('show-correct'); hits++; }
+    else if (checked && !should) { opt.classList.add('show-wrong'); extras++; }
+    else if (!checked && should) { opt.classList.add('show-missed'); misses++; }
+  });
+  const total = correctSet.size;
+  document.getElementById('p-result').innerHTML = `
+    <div class="info-card" style="padding:10px 12px; margin:0;">
+      <div style="font-size:13px;">✓ ถูก <b style="color:var(--accent-green)">${hits}/${total}</b> · ขาด <b style="color:var(--accent-gold)">${misses}</b> · เกิน <b style="color:var(--accent-red)">${extras}</b></div>
+    </div>`;
+
+  // Show ANSWER-KEY legend (only the particles that ACTUALLY exist in this era)
+  const leg = document.getElementById('sim-legend');
+  leg.style.display = 'flex';
+  leg.innerHTML = '<span class="lbl">◦ อนุภาคจริงในยุคนี้ ' + data.particles.length + ' ชนิด ·</span>' +
+    data.particles.map(p => {
+      const s = PARTICLE_STYLES[p];
+      return `<span class="sim-legend-chip"><span class="d" style="background:${s.color}">${s.label}</span>${s.name}</span>`;
+    }).join('');
+
+  // Mark era revealed
+  const card = document.querySelector(`.era-card[data-era="${currentEra}"]`);
+  if (card) card.classList.add('revealed');
+  const revealed = Book.state.data.p11 || { eras: [] };
+  if (!revealed.eras.includes(currentEra)) {
+    revealed.eras.push(currentEra);
+    const energy = hits === total && extras === 0 ? 3 : 1;
+    Book.addEnergy(energy, `Era ${currentEra}: ${hits}/${total}`);
+  }
+  revealed[`era${currentEra}`] = { hits, misses, extras };
+  revealed[`selected${currentEra}`] = selected;       // NEW: user picks
+  revealed[`correct${currentEra}`] = data.particles;  // NEW: answer key
+  Book.savePageData('p11', revealed);
+  renderEraParts(currentEra);
+  updateProgress();
+}
+
+// Render selected particle chips (with name) on era card in main view
+function renderEraParts(eraId) {
+  const el = document.getElementById(`parts-${eraId}`);
+  if (!el) return;
+  const sel = Book.state.data.p11?.[`selected${eraId}`] || [];
+  if (sel.length === 0) {
+    el.innerHTML = '<div class="era-part-empty">ยังไม่สำรวจ</div>';
+    return;
+  }
+  el.innerHTML = sel.map(p => {
+    const s = PARTICLE_STYLES[p];
+    return `<div class="era-part-chip" title="${s.name}">
+      <span class="dot" style="background:${s.color}">${s.label}</span>
+      <span class="nm">${s.name}</span>
+    </div>`;
+  }).join('');
+}
+function updateProgress() {
+  const revealed = Book.state.data.p11?.eras || [];
+  const el = document.getElementById('progress');
+  if (revealed.length < 6) {
+    el.innerHTML = `เปิดแล้ว <b>${revealed.length}/6</b> ยุค · เหลือ ${6-revealed.length} ยุค`;
+  } else {
+    el.innerHTML = '<b style="color:var(--accent-green)">✓ ครบ 6 ยุคแล้ว · เข้าใจวิวัฒนาการของเอกภพ</b>';
+    if (!Book.state.gates.p11) {
+      Book.addDiscovery('Cosmic Timeline · 6 Eras');
+      Book.addInventory('🕰 6-Era Knowledge');
+      Book.completePage('p11');
+      document.getElementById('result').innerHTML = `<div class="branch-reveal main"><h3>✓ เข้าใจ 6 ยุคของเอกภพแล้ว</h3><p class="mt-10">กด "ต่อไป →" เพื่อรับภารกิจถัดไป</p></div>`;
+    }
+  }
+}
+// Restore state on load · re-render chips + revealed cards
+(function restore() {
+  const data = Book.state.data.p11 || {};
+  const revealed = data.eras || [];
+  revealed.forEach(id => {
+    const card = document.querySelector(`.era-card[data-era="${id}"]`);
+    if (card) card.classList.add('revealed');
+  });
+  for (let i = 1; i <= 6; i++) renderEraParts(i);
+  updateProgress();
+})();
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEra(); });
+</script>
+</body>
+</html>

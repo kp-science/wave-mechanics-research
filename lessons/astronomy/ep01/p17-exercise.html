@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P17 · แบบฝึกหัด · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.bloom-nav {
+  display: flex; gap: 4px; flex-wrap: nowrap;
+  padding: 6px 8px; background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border); border-radius: 8px;
+  margin: 10px 0; position: sticky; top: 56px; z-index: 10;
+  backdrop-filter: blur(10px);
+  overflow-x: auto;
+}
+.bloom-nav::-webkit-scrollbar { display: none; }
+.bloom-nav .pill {
+  padding: 3px 8px; border-radius: 100px;
+  font-family: 'Orbitron', sans-serif; font-size: 9.5px;
+  letter-spacing: 0.1em; border: 1px solid var(--border);
+  white-space: nowrap; flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .bloom-nav .pill { font-size: 9px; padding: 2px 6px; letter-spacing: 0.05em; }
+}
+.bloom-nav .pill.L1 { color: #7effb2; border-color: rgba(126,255,178,0.5); }
+.bloom-nav .pill.L2 { color: #64d8ff; border-color: rgba(100,216,255,0.5); }
+.bloom-nav .pill.L3 { color: #b980ff; border-color: rgba(185,128,255,0.5); }
+.bloom-nav .pill.L4 { color: #ffcb6b; border-color: rgba(255,203,107,0.5); }
+.bloom-nav .pill.L5 { color: #ff5c7a; border-color: rgba(255,92,122,0.5); }
+.bloom-nav .pill.L6 { color: #ff8fa5; border-color: rgba(255,143,165,0.5); }
+
+.ex {
+  padding: 20px 24px; margin: 16px 0;
+  background: rgba(22,27,58,0.5);
+  border: 1px solid var(--border); border-radius: 14px;
+  border-left: 4px solid var(--lvl-color);
+}
+.ex.L1 { --lvl-color: #7effb2; }
+.ex.L2 { --lvl-color: #64d8ff; }
+.ex.L3 { --lvl-color: #b980ff; }
+.ex.L4 { --lvl-color: #ffcb6b; }
+.ex.L5 { --lvl-color: #ff5c7a; }
+.ex.L6 { --lvl-color: #ff8fa5; }
+.ex-head {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.ex-num {
+  font-family: 'Orbitron', sans-serif; font-weight: 900;
+  font-size: 20px; color: var(--lvl-color);
+}
+.ex-badge {
+  padding: 3px 10px; background: rgba(0,0,0,0.4);
+  border: 1px solid var(--lvl-color); border-radius: 100px;
+  font-family: 'Orbitron', sans-serif; font-size: 10px;
+  letter-spacing: 0.15em; color: var(--lvl-color);
+}
+.ex-type {
+  padding: 2px 8px; background: rgba(255,255,255,0.05);
+  border-radius: 4px; font-size: 10px; color: var(--text-faint);
+  font-family: 'Space Grotesk', sans-serif;
+}
+.ex.done .ex-head::after { content: ' ✓'; color: var(--accent-green); font-size: 20px; font-weight: bold; }
+.ex .q { font-size: 15px; color: var(--text); margin: 10px 0; line-height: 1.7; }
+.ex .q b { color: var(--accent-gold); }
+.ex .sub-q { padding: 10px 14px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 8px; margin: 10px 0; }
+.ex .sub-q .sl { font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+.ex .fb {
+  padding: 10px 14px; margin-top: 10px; border-radius: 8px;
+  font-size: 13.5px; display: none;
+}
+.ex .fb.show { display: block; animation: fadeIn 0.3s; }
+.ex .fb.ok { background: rgba(126,255,178,0.08); border: 1px solid var(--accent-green); color: #b5ffd4; }
+.ex .fb.bad { background: rgba(255,92,122,0.08); border: 1px solid var(--accent-red); color: #ffb0bf; }
+
+/* Table for analysis */
+table.analyze-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+table.analyze-table th, table.analyze-table td {
+  padding: 8px 10px; border: 1px solid var(--border); text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+}
+table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent); font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.1em; }
+
+/* Drag match (L2 Q4) */
+.match-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .match-wrap { grid-template-columns: 1fr; } }
+.match-col { display: flex; flex-direction: column; gap: 8px; }
+.match-col h6 { font-family: 'Orbitron'; font-size: 11px; color: var(--accent); letter-spacing: 0.15em; margin-bottom: 4px; }
+.match-left-item {
+  padding: 10px 12px; background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.06));
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  cursor: grab; font-size: 13px; user-select: none;
+}
+.match-left-item.placed { opacity: 0.4; cursor: default; }
+.match-right-slot {
+  padding: 10px 12px; min-height: 44px;
+  background: rgba(0,0,0,0.25); border: 2px dashed var(--border);
+  border-radius: 8px; font-size: 13px; color: var(--text-dim);
+  display: flex; align-items: center;
+}
+.match-right-slot.drag-over { border-color: var(--accent); background: rgba(100,216,255,0.06); }
+.match-right-slot.filled { border-style: solid; }
+.match-right-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.06); }
+.match-right-slot.wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.06); }
+.match-right-slot .target-label { font-size: 12px; color: var(--text-faint); margin-right: 8px; }
+.match-right-slot .placed-text { color: var(--text); }
+
+/* Rank list (drag order) */
+.rank-wrap {
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 10px; background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border); border-radius: 10px;
+}
+.rank-item {
+  padding: 10px 14px; background: rgba(22,27,58,0.5);
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  cursor: grab; font-size: 13px; user-select: none;
+  display: flex; gap: 10px; align-items: center;
+}
+.rank-item.dragging { opacity: 0.4; }
+.rank-item .rk { font-family: 'Orbitron'; font-size: 16px; color: var(--accent-gold); min-width: 24px; }
+
+/* Summary panel */
+.bloom-summary {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, rgba(100,216,255,0.05), rgba(185,128,255,0.05));
+  border: 1px solid var(--border-strong); border-radius: 16px;
+  margin: 20px 0;
+}
+.bloom-summary h4 { font-family: 'Orbitron'; font-size: 13px; color: var(--accent); letter-spacing: 0.2em; margin-bottom: 14px; }
+.bloom-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+.bloom-cell {
+  padding: 14px 12px; background: rgba(0,0,0,0.35);
+  border: 1px solid var(--cell-color); border-radius: 10px;
+  text-align: center;
+}
+.bloom-cell.L1 { --cell-color: rgba(126,255,178,0.45); }
+.bloom-cell.L2 { --cell-color: rgba(100,216,255,0.45); }
+.bloom-cell.L3 { --cell-color: rgba(185,128,255,0.45); }
+.bloom-cell.L4 { --cell-color: rgba(255,203,107,0.45); }
+.bloom-cell.L5 { --cell-color: rgba(255,92,122,0.45); }
+.bloom-cell.L6 { --cell-color: rgba(255,143,165,0.45); }
+.bloom-cell .lv { font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.2em; color: var(--cell-color); margin-bottom: 4px; }
+.bloom-cell .sc { font-family: 'Orbitron'; font-size: 22px; font-weight: 700; color: var(--text); }
+.bloom-cell .nm { font-size: 11px; color: var(--text-faint); margin-top: 2px; }
+</style>
+</head>
+<body data-page="p17">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ P17/19 · EXERCISE · 10 นาที</div>
+<h1 class="page-title">แบบฝึกหัด 15 ข้อ</h1>
+<h2 class="page-sub">BLOOM'S TAXONOMY · 6 ระดับ</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · แบบฝึกหัดแยกระดับ Bloom</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag do">ทำ</span><span>ให้ทีมทำ 15 ข้อ · มี check ต่อข้อ · feedback ทันที · หลังจบ ดูสรุปคะแนนแต่ละระดับ Bloom</span></div>
+    <div class="role"><span class="tag teach">วิจัย</span><span>ใช้วิเคราะห์ว่าระดับไหน <b>อ่อน</b> ที่สุด · สอนเสริมจุดนั้น · Data เก็บอัตโนมัติใน state.data.p17</span></div>
+    <div class="role"><span class="tag say">ใบ้</span><span>ถ้าทีมติดระดับสูง (L4-L6) · ใบ้ให้ย้อนไปหน้า P10 Dr.Hubble หรือ P11 Timeline</span></div>
+  </div>
+</div>
+
+<div class="bloom-nav">
+  <span class="pill L1">L1 · จำ</span>
+  <span class="pill L2">L2 · เข้าใจ</span>
+  <span class="pill L3">L3 · ประยุกต์</span>
+  <span class="pill L4">L4 · วิเคราะห์</span>
+  <span class="pill L5">L5 · ประเมิน</span>
+  <span class="pill L6">L6 · สร้าง</span>
+</div>
+
+<!-- ═══ L1 · REMEMBER ═══ -->
+
+<div class="ex L1" id="q1">
+  <div class="ex-head"><span class="ex-num">1</span><span class="ex-badge">L1 · REMEMBER</span><span class="ex-type">single choice</span></div>
+  <div class="q">เอกภพเกิดขึ้นเมื่อประมาณกี่ปีก่อน?</div>
+  <label class="radio-opt"><input type="radio" name="a1" value="w1"><span>4.6 พันล้านปี</span></label>
+  <label class="radio-opt"><input type="radio" name="a1" value="c"><span>13.8 พันล้านปี</span></label>
+  <label class="radio-opt"><input type="radio" name="a1" value="w2"><span>100 พันล้านปี</span></label>
+  <label class="radio-opt"><input type="radio" name="a1" value="w3"><span>380,000 ปี</span></label>
+  <button class="btn mt-10" onclick="check('q1','a1','c',1,'L1')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q1"></div>
+</div>
+
+<div class="ex L1" id="q2">
+  <div class="ex-head"><span class="ex-num">2</span><span class="ex-badge">L1 · REMEMBER</span><span class="ex-type">checkbox · multi</span></div>
+  <div class="q">กาถูก <b>ทุกอนุภาค</b> ที่ปรากฏในยุค <b>Nucleosynthesis</b> (3 นาที · 10⁹ K)</div>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="electron"><span>อิเล็กตรอน</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="neutrino"><span>นิวทริโน</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="photon"><span>โฟตอน</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="neutron"><span>นิวตรอน</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="proton"><span>โปรตอน</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="he_nuc"><span>นิวเคลียสฮีเลียม</span></label>
+  <label class="chk-item" data-c="0"><input type="checkbox" value="h_atom"><span>อะตอมไฮโดรเจน</span></label>
+  <label class="chk-item" data-c="0"><input type="checkbox" value="galaxy"><span>กาแล็กซี</span></label>
+  <button class="btn mt-10" onclick="checkCheckbox('q2',1,'L1')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q2"></div>
+</div>
+
+<div class="ex L1" id="q3">
+  <div class="ex-head"><span class="ex-num">3</span><span class="ex-badge">L1 · REMEMBER</span><span class="ex-type">3 dropdowns</span></div>
+  <div class="q">เติม dropdown · ใครค้นพบ CMB · ที่ไหน · ปีใด</div>
+  <div class="sub-q">
+    <div class="sl">3.1 · ผู้ค้นพบ 2 คน</div>
+    <select id="q3a"><option value="">-- --</option><option>Penzias &amp; Wilson</option><option>Hubble &amp; Lemaître</option><option>Einstein &amp; Bohr</option></select>
+  </div>
+  <div class="sub-q">
+    <div class="sl">3.2 · สถาบัน</div>
+    <select id="q3b"><option value="">-- --</option><option>MIT</option><option>Bell Labs</option><option>CERN</option><option>NASA</option></select>
+  </div>
+  <div class="sub-q">
+    <div class="sl">3.3 · ปี ค.ศ.</div>
+    <select id="q3c"><option value="">-- --</option><option>1929</option><option>1965</option><option>1978</option><option>1992</option></select>
+  </div>
+  <button class="btn mt-10" onclick="checkQ3()">✓ ตรวจ</button>
+  <div class="fb" id="fb-q3"></div>
+</div>
+
+<!-- ═══ L2 · UNDERSTAND ═══ -->
+
+<div class="ex L2" id="q4">
+  <div class="ex-head"><span class="ex-num">4</span><span class="ex-badge">L2 · UNDERSTAND</span><span class="ex-type">drag-drop match</span></div>
+  <div class="q">ลากยุค (ซ้าย) มาจับคู่กับเหตุการณ์ (ขวา)</div>
+  <div class="match-wrap">
+    <div class="match-col">
+      <h6>◦ ยุค</h6>
+      <div class="match-left-item" draggable="true" data-id="m1">Planck · 10⁻⁴³ วิ</div>
+      <div class="match-left-item" draggable="true" data-id="m2">Nucleon · 10⁻⁶ วิ</div>
+      <div class="match-left-item" draggable="true" data-id="m3">Nucleosynthesis · 3 นาที</div>
+      <div class="match-left-item" draggable="true" data-id="m4">Recombination · 380,000 ปี</div>
+      <div class="match-left-item" draggable="true" data-id="m5">Galaxy Era · 13.8 Gyr</div>
+    </div>
+    <div class="match-col">
+      <h6>◦ เหตุการณ์</h6>
+      <div class="match-right-slot" data-accept="m2"><span class="target-label">A ·</span>ควาร์กรวมเป็นโปรตอน + นิวตรอน</div>
+      <div class="match-right-slot" data-accept="m4"><span class="target-label">B ·</span>อะตอมเป็นกลาง · CMB หลุดอิสระ</div>
+      <div class="match-right-slot" data-accept="m1"><span class="target-label">C ·</span>แรงพื้นฐาน 4 รวมเป็นแรงเดียว</div>
+      <div class="match-right-slot" data-accept="m5"><span class="target-label">D ·</span>เอกภพปัจจุบัน · 2.725 K</div>
+      <div class="match-right-slot" data-accept="m3"><span class="target-label">E ·</span>นิวเคลียสฮีเลียมเกิดจาก p + n</div>
+    </div>
+  </div>
+  <button class="btn mt-10" onclick="checkMatch()">✓ ตรวจ</button>
+  <div class="fb" id="fb-q4"></div>
+</div>
+
+<div class="ex L2" id="q5">
+  <div class="ex-head"><span class="ex-num">5</span><span class="ex-badge">L2 · UNDERSTAND</span><span class="ex-type">single choice</span></div>
+  <div class="q">ทำไม CMB จึงอยู่ <b>ทุกทิศทาง</b> ของเอกภพเท่ากัน?</div>
+  <label class="radio-opt"><input type="radio" name="a5" value="w1"><span>เพราะดาวเทียมส่งสัญญาณมาทุกทิศ</span></label>
+  <label class="radio-opt"><input type="radio" name="a5" value="w2"><span>เพราะแสงเดินทางจากจุดศูนย์กลางของบิกแบง</span></label>
+  <label class="radio-opt"><input type="radio" name="a5" value="c"><span>เพราะ CMB เกิดทั่วทั้งเอกภพพร้อมกันตอนอะตอมเป็นกลาง · ไม่มีแหล่งกำเนิดจุดเดียว</span></label>
+  <label class="radio-opt"><input type="radio" name="a5" value="w3"><span>เพราะดวงอาทิตย์ปล่อยรังสีออกทุกทิศ</span></label>
+  <button class="btn mt-10" onclick="check('q5','a5','c',1,'L2')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q5"></div>
+</div>
+
+<div class="ex L2" id="q6">
+  <div class="ex-head"><span class="ex-num">6</span><span class="ex-badge">L2 · UNDERSTAND</span><span class="ex-type">true/false</span></div>
+  <div class="q">ข้อความ: <i>"บิกแบงคือการระเบิดของสสารในอวกาศที่ว่างเปล่าจากจุดเดียว"</i></div>
+  <label class="radio-opt"><input type="radio" name="a6" value="w"><span>✓ ถูกต้อง</span></label>
+  <label class="radio-opt"><input type="radio" name="a6" value="c"><span>✗ ผิด · เพราะมันคือการขยายของอวกาศเอง ไม่มีจุดศูนย์กลาง</span></label>
+  <button class="btn mt-10" onclick="check('q6','a6','c',1,'L2')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q6"></div>
+</div>
+
+<!-- ═══ L3 · APPLY ═══ -->
+
+<div class="ex L3" id="q7">
+  <div class="ex-head"><span class="ex-num">7</span><span class="ex-badge">L3 · APPLY</span><span class="ex-type">calculation · 3 blanks</span></div>
+  <div class="q">คำนวณความเร็วเคลื่อนออกของกาแล็กซี โดยใช้ <b>v = H₀ × D</b> · H₀ = 70 km/s/Mpc</div>
+  <div class="sub-q">
+    <div class="sl">7.1 · D = 50 Mpc · v = ?</div>
+    <input type="number" id="q7a" placeholder="km/s" style="max-width: 200px;">
+  </div>
+  <div class="sub-q">
+    <div class="sl">7.2 · D = 100 Mpc · v = ?</div>
+    <input type="number" id="q7b" placeholder="km/s" style="max-width: 200px;">
+  </div>
+  <div class="sub-q">
+    <div class="sl">7.3 · D = 200 Mpc · v = ?</div>
+    <input type="number" id="q7c" placeholder="km/s" style="max-width: 200px;">
+  </div>
+  <button class="btn mt-10" onclick="checkQ7()">✓ ตรวจ</button>
+  <div class="fb" id="fb-q7"></div>
+</div>
+
+<div class="ex L3" id="q8">
+  <div class="ex-head"><span class="ex-num">8</span><span class="ex-badge">L3 · APPLY</span><span class="ex-type">calculation</span></div>
+  <div class="q">ถ้ากาแล็กซี X ปัจจุบันอยู่ที่ D = 300 Mpc · และเอกภพขยายตัว <b>3 เท่า</b> ในช่วงเวลาที่พิจารณา · กาแล็กซีเคยอยู่ที่ระยะเท่าใดในอดีต? (Mpc)</div>
+  <input type="number" id="q8a" placeholder="Mpc" style="max-width: 200px;">
+  <button class="btn mt-10" onclick="checkNumber('q8','q8a',100,5,1,'L3')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q8"></div>
+</div>
+
+<div class="ex L3" id="q9">
+  <div class="ex-head"><span class="ex-num">9</span><span class="ex-badge">L3 · APPLY</span><span class="ex-type">single choice</span></div>
+  <div class="q">3 กาแล็กซีที่ระยะ A=20 Mpc · B=80 Mpc · C=150 Mpc · ข้อใดเรียงความเร็ว <b>จากน้อยไปมาก</b> ถูกต้อง?</div>
+  <label class="radio-opt"><input type="radio" name="a9" value="c"><span>A &lt; B &lt; C</span></label>
+  <label class="radio-opt"><input type="radio" name="a9" value="w1"><span>C &lt; B &lt; A</span></label>
+  <label class="radio-opt"><input type="radio" name="a9" value="w2"><span>B &lt; A &lt; C</span></label>
+  <label class="radio-opt"><input type="radio" name="a9" value="w3"><span>ความเร็วเท่ากันทุกกาแล็กซี</span></label>
+  <button class="btn mt-10" onclick="check('q9','a9','c',1,'L3')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q9"></div>
+</div>
+
+<!-- ═══ L4 · ANALYZE ═══ -->
+
+<div class="ex L4" id="q10">
+  <div class="ex-head"><span class="ex-num">10</span><span class="ex-badge">L4 · ANALYZE</span><span class="ex-type">table + single</span></div>
+  <div class="q">จากตารางข้อมูล 4 กาแล็กซี · ข้อสรุปใดถูกต้องที่สุด?</div>
+  <table class="analyze-table">
+    <thead><tr><th>กาแล็กซี</th><th>ระยะ (Mpc)</th><th>redshift z</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>50</td><td>0.012</td></tr>
+      <tr><td>B</td><td>150</td><td>0.035</td></tr>
+      <tr><td>C</td><td>300</td><td>0.070</td></tr>
+      <tr><td>D</td><td>600</td><td>0.140</td></tr>
+    </tbody>
+  </table>
+  <label class="radio-opt"><input type="radio" name="a10" value="w1"><span>ระยะยิ่งไกล redshift ยิ่งต่ำ</span></label>
+  <label class="radio-opt"><input type="radio" name="a10" value="c"><span>redshift แปรผันตรงกับระยะ · สอดคล้องกฎฮับเบิล</span></label>
+  <label class="radio-opt"><input type="radio" name="a10" value="w2"><span>ไม่มีแนวโน้มชัดเจน</span></label>
+  <label class="radio-opt"><input type="radio" name="a10" value="w3"><span>redshift เพิ่มแบบกำลังสอง</span></label>
+  <button class="btn mt-10" onclick="check('q10','a10','c',1,'L4')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q10"></div>
+</div>
+
+<div class="ex L4" id="q11">
+  <div class="ex-head"><span class="ex-num">11</span><span class="ex-badge">L4 · ANALYZE</span><span class="ex-type">checkbox · multi</span></div>
+  <div class="q">กาถูก <b>ทุกประโยค</b> ที่มี <b>misconception</b> (ความเข้าใจผิด)</div>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="m1"><span>บิกแบงคือการระเบิดจากจุดเดียว</span></label>
+  <label class="chk-item" data-c="0"><input type="checkbox" value="m2"><span>CMB มีอุณหภูมิ 2.725 K</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="m3"><span>ธาตุทุกชนิด (รวมเหล็ก) เกิดจากบิกแบง</span></label>
+  <label class="chk-item" data-c="0"><input type="checkbox" value="m4"><span>กาแล็กซีไกลเคลื่อนออกจากเราเร็วกว่ากาแล็กซีใกล้</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="m5"><span>เอกภพมีศูนย์กลางที่กาแล็กซีทางช้างเผือก</span></label>
+  <label class="chk-item" data-c="1"><input type="checkbox" value="m6"><span>ก่อนบิกแบงมีอวกาศอันกว้างใหญ่รอการระเบิดอยู่</span></label>
+  <button class="btn mt-10" onclick="checkCheckbox('q11',1,'L4')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q11"></div>
+</div>
+
+<div class="ex L4" id="q12">
+  <div class="ex-head"><span class="ex-num">12</span><span class="ex-badge">L4 · ANALYZE</span><span class="ex-type">single choice</span></div>
+  <div class="q">ข้อใดเปรียบเทียบ <b>บิกแบง</b> กับ <b>ซูเปอร์โนวา</b> ถูกต้อง?</div>
+  <label class="radio-opt"><input type="radio" name="a12" value="w1"><span>ทั้งคู่คือการระเบิดแบบเดียวกัน</span></label>
+  <label class="radio-opt"><input type="radio" name="a12" value="c"><span>บิกแบง = การขยายของอวกาศ · ซูเปอร์โนวา = การระเบิดของดาวในอวกาศ</span></label>
+  <label class="radio-opt"><input type="radio" name="a12" value="w2"><span>บิกแบงเกิดในดาว · ซูเปอร์โนวาเกิดในเอกภพ</span></label>
+  <label class="radio-opt"><input type="radio" name="a12" value="w3"><span>ไม่มีความเกี่ยวข้องกัน</span></label>
+  <button class="btn mt-10" onclick="check('q12','a12','c',1,'L4')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q12"></div>
+</div>
+
+<!-- ═══ L5 · EVALUATE ═══ -->
+
+<div class="ex L5" id="q13">
+  <div class="ex-head"><span class="ex-num">13</span><span class="ex-badge">L5 · EVALUATE</span><span class="ex-type">single choice</span></div>
+  <div class="q">ข้อใดเป็นหลักฐาน <b>แข็งแรงที่สุด</b> ที่ยืนยันว่าเอกภพเคยร้อนหนาแน่นแล้วขยายตัว?</div>
+  <label class="radio-opt"><input type="radio" name="a13" value="w1"><span>โลกหมุนรอบดวงอาทิตย์</span></label>
+  <label class="radio-opt"><input type="radio" name="a13" value="c"><span>CMB 2.725 K ที่มาจากทุกทิศทาง + การเลื่อนทางแดงของกาแล็กซี</span></label>
+  <label class="radio-opt"><input type="radio" name="a13" value="w2"><span>มีดวงดาวมากมายในท้องฟ้า</span></label>
+  <label class="radio-opt"><input type="radio" name="a13" value="w3"><span>มนุษย์ใช้ชีวิตบนโลก</span></label>
+  <button class="btn mt-10" onclick="check('q13','a13','c',1,'L5')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q13"></div>
+</div>
+
+<div class="ex L5" id="q14">
+  <div class="ex-head"><span class="ex-num">14</span><span class="ex-badge">L5 · EVALUATE</span><span class="ex-type">drag · rank order</span></div>
+  <div class="q">ลากเรียงหลักฐานต่อไปนี้จาก <b>สำคัญที่สุด</b> (บน) ไป <b>น้อยที่สุด</b> (ล่าง) ในการพิสูจน์บิกแบง</div>
+  <div class="rank-wrap" id="rank-list">
+    <div class="rank-item" draggable="true" data-id="r1"><span class="rk">·</span>สัดส่วน H:He = 75:25 (BBN)</div>
+    <div class="rank-item" draggable="true" data-id="r2"><span class="rk">·</span>CMB 2.725 K (ทุกทิศทาง)</div>
+    <div class="rank-item" draggable="true" data-id="r3"><span class="rk">·</span>การเลื่อนทางแดง + กฎฮับเบิล</div>
+    <div class="rank-item" draggable="true" data-id="r4"><span class="rk">·</span>โครงสร้างขนาดใหญ่ของเอกภพ (กระจุกกาแล็กซี)</div>
+  </div>
+  <p class="muted" style="font-size:11px; margin-top:6px;">💡 แนะนำลำดับ (โดยทั่วไป): CMB · Redshift · BBN · Structure</p>
+  <button class="btn mt-10" onclick="checkRank()">✓ ตรวจ</button>
+  <div class="fb" id="fb-q14"></div>
+</div>
+
+<!-- ═══ L6 · CREATE ═══ -->
+
+<div class="ex L6" id="q15">
+  <div class="ex-head"><span class="ex-num">15</span><span class="ex-badge">L6 · CREATE</span><span class="ex-type">short text</span></div>
+  <div class="q">สมมติ <b>H₀ ใหญ่ขึ้น 2 เท่า</b> (140 km/s/Mpc) · เอกภพจะเปลี่ยนแปลงอย่างไร? เขียนอย่างน้อย <b>2 ผล</b> ที่จะเกิดขึ้น</div>
+  <textarea id="q15a" rows="4" placeholder="เช่น · กาแล็กซีเคลื่อนออกเร็วขึ้น · อายุเอกภพจะสั้นลง · ฯลฯ"></textarea>
+  <p class="muted" style="font-size:11px; margin-top:4px;">💡 คำสำคัญที่ควรมี: เร็วขึ้น, อายุ, ขยายตัว, ระยะ</p>
+  <button class="btn mt-10" onclick="checkText('q15','q15a',['เร็ว','อายุ'],1,'L6')">✓ ตรวจ</button>
+  <div class="fb" id="fb-q15"></div>
+</div>
+
+<!-- SUMMARY -->
+<div class="bloom-summary" id="summary-panel">
+  <h4>📊 สรุปคะแนนตามระดับ Bloom · ยิ่งสูงยิ่งเข้าใจลึก</h4>
+  <div class="bloom-grid">
+    <div class="bloom-cell L1"><div class="lv">L1 · REMEMBER</div><div class="sc"><span id="s-L1">0</span>/3</div><div class="nm">จำ</div></div>
+    <div class="bloom-cell L2"><div class="lv">L2 · UNDERSTAND</div><div class="sc"><span id="s-L2">0</span>/3</div><div class="nm">เข้าใจ</div></div>
+    <div class="bloom-cell L3"><div class="lv">L3 · APPLY</div><div class="sc"><span id="s-L3">0</span>/3</div><div class="nm">ประยุกต์</div></div>
+    <div class="bloom-cell L4"><div class="lv">L4 · ANALYZE</div><div class="sc"><span id="s-L4">0</span>/3</div><div class="nm">วิเคราะห์</div></div>
+    <div class="bloom-cell L5"><div class="lv">L5 · EVALUATE</div><div class="sc"><span id="s-L5">0</span>/2</div><div class="nm">ประเมิน</div></div>
+    <div class="bloom-cell L6"><div class="lv">L6 · CREATE</div><div class="sc"><span id="s-L6">0</span>/1</div><div class="nm">สร้าง</div></div>
+  </div>
+  <p class="muted center mt-20" id="summary-msg">ตอบทีละข้อ · สรุปจะอัปเดตอัตโนมัติ</p>
+</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag k">K1 K2 K3 · ความรู้ครบ EP01</span>
+  <span class="ped-tag p">P · ทักษะ 6 ระดับ Bloom</span>
+  <span class="ped-tag">วPA 5 · พัฒนาความเชี่ยวชาญ</span>
+  <span class="ped-tag">Research · Bloom level performance</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+const TOTAL_BY_LEVEL = { L1: 3, L2: 3, L3: 3, L4: 3, L5: 2, L6: 1 };
+let checked = {};
+let scores = { L1: 0, L2: 0, L3: 0, L4: 0, L5: 0, L6: 0 };
+
+function updateSummary() {
+  Object.keys(scores).forEach(l => {
+    document.getElementById(`s-${l}`).textContent = scores[l];
+  });
+  const done = Object.keys(checked).length;
+  const total = 15;
+  const msg = document.getElementById('summary-msg');
+  if (done < total) {
+    msg.innerHTML = `ทำแล้ว <b style="color:var(--accent)">${done}/${total}</b> ข้อ · ยังเหลือ ${total - done}`;
+  } else {
+    const totalScore = Object.values(scores).reduce((a,b)=>a+b,0);
+    msg.innerHTML = `<b style="color:var(--accent-green)">✓ ครบแล้ว · รวม ${totalScore}/15 ข้อ</b> · ระดับที่อ่อนที่สุดคือระดับที่ควรทบทวน`;
+    if (!Book.state.gates.p17) {
+      Book.addEnergy(Math.max(3, totalScore), 'Exercise complete');
+      Book.addInventory(`📝 Badge · Bloom ${totalScore}/15`);
+      Book.completePage('p17');
+      document.getElementById('result').innerHTML = `<div class="branch-reveal main"><h3>✓ ทำแบบฝึกหัดครบ · รวม ${totalScore}/15</h3><p class="mt-10">กด "ต่อไป →" เพื่อไป Exit Ticket</p></div>`;
+    }
+  }
+  Book.savePageData('p17', { checked, scores });
+}
+
+function markDone(qId, correct, level) {
+  if (checked[qId] !== undefined) return;
+  checked[qId] = { correct, level, at: Date.now() };
+  if (correct) scores[level]++;
+  document.getElementById(qId).classList.add('done');
+  updateSummary();
+}
+
+function showFB(qId, correct, correctMsg, wrongMsg) {
+  const fb = document.getElementById(`fb-${qId}`);
+  fb.className = 'fb show ' + (correct ? 'ok' : 'bad');
+  fb.innerHTML = correct ? `✓ <b>ถูกต้อง!</b> ${correctMsg}` : `✗ <b>ยังไม่ถูก</b> · ${wrongMsg}`;
+}
+
+function check(qId, name, correct, level, lvl) {
+  if (checked[qId]) return;
+  const sel = document.querySelector(`input[name="${name}"]:checked`);
+  if (!sel) { alert('เลือกคำตอบก่อน'); return; }
+  const ok = sel.value === correct;
+  showFB(qId, ok, 'คำตอบนี้ตรงกับเนื้อหาที่เรียน', 'ลองทบทวนเนื้อหาในหน้าที่ผ่านมา');
+  markDone(qId, ok ? 1 : 0, lvl);
+}
+
+function checkCheckbox(qId, level, lvl) {
+  if (checked[qId]) return;
+  const items = document.querySelectorAll(`#${qId} .chk-item`);
+  let ok = true;
+  items.forEach(it => {
+    const ch = it.querySelector('input').checked;
+    const should = it.dataset.c === '1';
+    it.classList.remove('chk-correct','chk-wrong','chk-missed');
+    if (ch && should) it.classList.add('chk-correct');
+    else if (ch && !should) { it.classList.add('chk-wrong'); ok = false; }
+    else if (!ch && should) { it.classList.add('chk-missed'); ok = false; }
+  });
+  showFB(qId, ok, 'เลือกครบและถูกทุกข้อ', 'มีบางข้อกาเกินหรือพลาด · ดูสีแดง/เหลือง');
+  markDone(qId, ok ? 1 : 0, lvl);
+}
+
+function checkQ3() {
+  if (checked['q3']) return;
+  const a = document.getElementById('q3a').value;
+  const b = document.getElementById('q3b').value;
+  const c = document.getElementById('q3c').value;
+  const ok = (a === 'Penzias & Wilson' && b === 'Bell Labs' && c === '1965');
+  showFB('q3', ok, '1965 · Penzias-Wilson · Bell Labs · ได้โนเบล 1978', 'ลองกลับไปดู P06 หรือ P10');
+  markDone('q3', ok ? 1 : 0, 'L1');
+}
+
+function checkQ7() {
+  if (checked['q7']) return;
+  const a = parseFloat(document.getElementById('q7a').value);
+  const b = parseFloat(document.getElementById('q7b').value);
+  const c = parseFloat(document.getElementById('q7c').value);
+  const ok = Math.abs(a-3500)<50 && Math.abs(b-7000)<50 && Math.abs(c-14000)<50;
+  showFB('q7', ok, '3,500 · 7,000 · 14,000 km/s', 'v = H₀ × D · ลองคูณ 70 กับ D แต่ละค่า');
+  markDone('q7', ok ? 1 : 0, 'L3');
+}
+
+function checkNumber(qId, inputId, target, tol, level, lvl) {
+  if (checked[qId]) return;
+  const v = parseFloat(document.getElementById(inputId).value);
+  const ok = !isNaN(v) && Math.abs(v - target) <= tol;
+  showFB(qId, ok, `คำตอบคือ ${target}`, `ลองคำนวณใหม่ · 300 ÷ 3 = ?`);
+  markDone(qId, ok ? 1 : 0, lvl);
+}
+
+// Match drag-drop (Q4)
+const matchState = {};
+document.querySelectorAll('#q4 .match-left-item').forEach(el => {
+  el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', el.dataset.id));
+});
+document.querySelectorAll('#q4 .match-right-slot').forEach(slot => {
+  slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+  slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+  slot.addEventListener('drop', e => {
+    e.preventDefault(); slot.classList.remove('drag-over');
+    if (slot.dataset.placed) return;
+    const id = e.dataTransfer.getData('text/plain');
+    const src = document.querySelector(`#q4 .match-left-item[data-id="${id}"]`);
+    slot.dataset.placed = id;
+    slot.classList.add('filled');
+    const label = slot.querySelector('.target-label').textContent;
+    slot.innerHTML = `<span class="target-label">${label}</span><span class="placed-text">⇢ ${src.textContent}</span>`;
+    src.classList.add('placed');
+    matchState[slot.dataset.accept] = id;
+  });
+});
+function checkMatch() {
+  if (checked['q4']) return;
+  let correctCount = 0, total = 0;
+  document.querySelectorAll('#q4 .match-right-slot').forEach(slot => {
+    total++;
+    const placed = slot.dataset.placed;
+    if (placed === slot.dataset.accept) { slot.classList.add('correct'); correctCount++; }
+    else if (placed) slot.classList.add('wrong');
+  });
+  const ok = correctCount === total;
+  showFB('q4', ok, 'จับคู่ถูกทั้ง 5 คู่', `ถูก ${correctCount}/${total} · ดูสีแดงและลองใหม่`);
+  markDone('q4', ok ? 1 : 0, 'L2');
+}
+
+// Rank drag (Q14)
+const rankList = document.getElementById('rank-list');
+let dragSrc = null;
+rankList.querySelectorAll('.rank-item').forEach(item => {
+  item.addEventListener('dragstart', () => { dragSrc = item; item.classList.add('dragging'); });
+  item.addEventListener('dragend', () => item.classList.remove('dragging'));
+  item.addEventListener('dragover', e => e.preventDefault());
+  item.addEventListener('drop', e => {
+    e.preventDefault();
+    if (dragSrc && dragSrc !== item) {
+      const rect = item.getBoundingClientRect();
+      const before = e.clientY < rect.top + rect.height/2;
+      rankList.insertBefore(dragSrc, before ? item : item.nextSibling);
+    }
+  });
+});
+function checkRank() {
+  if (checked['q14']) return;
+  const order = [...rankList.querySelectorAll('.rank-item')].map(el => el.dataset.id);
+  const correct = ['r2','r3','r1','r4']; // CMB, Redshift, BBN, Structure
+  const ok = JSON.stringify(order) === JSON.stringify(correct);
+  // Update rank numbers display
+  rankList.querySelectorAll('.rank-item').forEach((el, i) => el.querySelector('.rk').textContent = i+1);
+  showFB('q14', ok, 'ลำดับถูกต้อง · CMB > Redshift > BBN > Structure', 'ตามแนะนำ: CMB · Redshift · BBN · Structure');
+  markDone('q14', ok ? 1 : 0, 'L5');
+}
+
+function checkText(qId, inputId, keywords, level, lvl) {
+  if (checked[qId]) return;
+  const text = document.getElementById(inputId).value.trim().toLowerCase();
+  if (text.length < 20) { alert('เขียนอย่างน้อย 20 ตัวอักษร'); return; }
+  const hits = keywords.filter(k => text.includes(k.toLowerCase())).length;
+  const ok = hits >= keywords.length;
+  showFB(qId, ok, 'ใช้คำสำคัญครบ · คิดได้ดี', `ต้องมีคำสำคัญ: ${keywords.join(' · ')}`);
+  markDone(qId, ok ? 1 : 0, lvl);
+}
+
+updateSummary();
+</script>
+</body>
+</html>

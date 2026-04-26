@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P13 · Ship Lock Chase</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .chase-bar { position: sticky; top: 70px; z-index: 10; padding: 10px 16px; background: rgba(255,92,122,0.15); border: 2px solid var(--accent-red); border-radius: 12px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; font-family: 'Orbitron', sans-serif; }
+  .chase-bar.warn { animation: chaseBlink 0.6s infinite; }
+  @keyframes chaseBlink { 0%,100% { background: rgba(255,92,122,0.15); } 50% { background: rgba(255,92,122,0.35); } }
+  .chase-timer { font-size: 28px; color: var(--accent-red); }
+  .chase-void { font-size: 13px; color: var(--accent-2); }
+  .galaxy-row { display: grid; grid-template-columns: 80px 1fr 120px; gap: 10px; padding: 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; margin: 8px 0; align-items: center; }
+  .galaxy-row .g-name { font-family: 'Orbitron', sans-serif; color: var(--accent); letter-spacing: 0.1em; }
+  .galaxy-row .g-data { font-size: 12px; color: var(--text-dim); }
+  .galaxy-row input { padding: 8px; background: rgba(3,4,12,0.5); border: 1px solid var(--border); color: var(--text); border-radius: 4px; width: 100%; font-family: monospace; text-align: center; }
+  .galaxy-row input.correct { border-color: var(--accent-green); color: var(--accent-green); }
+  .galaxy-row input.wrong { border-color: var(--accent-red); color: var(--accent-red); }
+  .formula-box { padding: 16px; background: rgba(100,216,255,0.08); border: 1px solid rgba(100,216,255,0.4); border-radius: 10px; text-align: center; margin: 16px 0; font-family: 'Orbitron', sans-serif; letter-spacing: 0.1em; color: var(--accent); font-size: 18px; }
+  .lock-panel { padding: 14px; background: rgba(255,203,107,0.06); border: 1px dashed var(--border); border-radius: 10px; margin: 14px 0; }
+  .lock-panel label { margin-right: 16px; cursor: pointer; }
+  .lock-status { padding: 12px; border-radius: 8px; margin-top: 14px; text-align: center; font-family: 'Orbitron', sans-serif; letter-spacing: 0.15em; }
+  .lock-status.ok { background: rgba(126,255,178,0.15); border: 1px solid var(--accent-green); color: var(--accent-green); }
+  .lock-status.fail { background: rgba(255,92,122,0.15); border: 1px solid var(--accent-red); color: var(--accent-red); }
+</style>
+</head>
+<body data-page="p13" data-type="puzzle">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label puzzle">องก์ 2 · Scene 13 · 🔥 CRISIS · CHASE</div>
+  <h1 class="page-title">Ship Lock · Escape Sequence</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K3 · v=H₀D</span>
+    <span class="obj-tag p">P4 · เร็ว</span>
+    <span class="obj-tag a">A3 · ไม่ย่อท้อ</span>
+  </div>
+
+  <div class="chase-bar" id="chaseBar">
+    <div><span class="chase-timer" id="timer">3:00</span> ก่อน VOID ทัน</div>
+    <div class="chase-void">👁️ VOID: <span id="voidDist">FAR</span></div>
+  </div>
+
+  <div class="narrative">
+    <span class="void-voice">"คำนวณให้ได้ ... ถ้าพลาดครั้งเดียว ... ฉันจับได้"</span>
+    <p>🎙️ ครู: "3 นาที · คำนวณระยะของ 3 กาแล็กซี · เลือกที่ตรงพิกัด VOID · พลาด = VOID เพิ่ม 5% ต่อ 10 วิ"</p>
+  </div>
+
+  <div id="itemPicker"></div>
+
+  <div class="formula-box">
+    v = H₀ × D → <b>D = v / H₀</b> · H₀ = 70 km/s/Mpc
+  </div>
+
+  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent);letter-spacing:0.15em">คำนวณ D (หน่วย Mpc) จากความเร็วถอยหลัง v</h3>
+
+  <div class="galaxy-row" data-ans="100">
+    <div class="g-name">α ALPHA</div>
+    <div class="g-data">v = 7,000 km/s</div>
+    <input type="number" id="dA" placeholder="D = ?">
+  </div>
+  <div class="galaxy-row" data-ans="50">
+    <div class="g-name">β BETA</div>
+    <div class="g-data">v = 3,500 km/s</div>
+    <input type="number" id="dB" placeholder="D = ?">
+  </div>
+  <div class="galaxy-row" data-ans="200">
+    <div class="g-name">γ GAMMA</div>
+    <div class="g-data">v = 14,000 km/s</div>
+    <input type="number" id="dC" placeholder="D = ?">
+  </div>
+
+  <div class="lock-panel">
+    <b>🔒 Ship Lock · พิกัด VOID ที่โจทย์บอก: D = 100 Mpc · เลือกกาแล็กซี</b><br><br>
+    <label><input type="radio" name="lock" value="alpha"> α ALPHA</label>
+    <label><input type="radio" name="lock" value="beta"> β BETA</label>
+    <label><input type="radio" name="lock" value="gamma"> γ GAMMA</label>
+  </div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()">🚀 Warp · ยืนยัน</button>
+  <div id="lockStatus"></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P13 · บทบาท: คุม timer · ใบ้สูตร</summary>
+    <div class="tc-body">
+      <b>เปิด crisis:</b> "VOID เข้าใกล้แล้ว · 3 นาที"<br>
+      <b>ใบ้สูตร:</b> ถ้ามีทีมตัน · ชี้ P10 "Dr.Hubble บอกอะไร"<br>
+      <b>ถามนำ:</b> "v คืออะไร · H₀ คืออะไร · D หาได้ยังไง"<br>
+      <b>หลัง 1 นาที:</b> ห้ามใบ้ · บังคับให้คิดเอง<br>
+      <b>Item:</b> ใช้ ⏱️ Warp Fuel ได้ → +60s · กดปุ่มเอง
+    </div>
+  </details>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Items.mountPicker('#itemPicker', {
+      useOn: 'p13',
+      onUse: r => { if (r.effect && r.effect.startsWith('timerRelax')) timeLeft += 60; }
+    });
+    startChase();
+  }, 50);
+
+  let timeLeft = EP_CONFIG.balance.chaseTimerSec || 180;
+  let finished = false;
+  let retries = 0;
+  let voidPct = 0;
+
+  function startChase() {
+    const timerEl = document.getElementById('timer');
+    const bar = document.getElementById('chaseBar');
+    const voidEl = document.getElementById('voidDist');
+    const iv = setInterval(() => {
+      if (finished) { clearInterval(iv); return; }
+      timeLeft--;
+      voidPct = Math.min(100, Math.floor((1 - timeLeft / 180) * 100));
+      voidEl.textContent = voidPct < 30 ? 'FAR' : voidPct < 60 ? 'CLOSING' : voidPct < 85 ? 'VERY CLOSE' : '⚠️ IMMINENT';
+      const m = Math.floor(timeLeft/60), s = timeLeft%60;
+      timerEl.textContent = `${m}:${String(s).padStart(2,'0')}`;
+      bar.classList.toggle('warn', timeLeft <= 30);
+      // corruption tick ต่อ chase
+      if (timeLeft > 0 && timeLeft % 10 === 0) Corruption.add(2);
+      if (timeLeft <= 0) { clearInterval(iv); failChase('timeout'); }
+    }, 1000);
+  }
+
+  function finishPage() {
+    if (finished) return;
+    const dA = +document.getElementById('dA').value;
+    const dB = +document.getElementById('dB').value;
+    const dC = +document.getElementById('dC').value;
+    const check = (el, want) => { el.classList.remove('correct','wrong'); el.classList.add(Math.abs(+el.value - want) < 2 ? 'correct' : 'wrong'); };
+    check(document.getElementById('dA'), 100);
+    check(document.getElementById('dB'), 50);
+    check(document.getElementById('dC'), 200);
+
+    const correct = [dA, dB, dC].filter((v, i) => Math.abs(v - [100,50,200][i]) < 2).length;
+    const lock = document.querySelector('input[name="lock"]:checked');
+
+    const lockStatus = document.getElementById('lockStatus');
+
+    if (correct >= 2 && lock && lock.value === 'alpha') {
+      finished = true;
+      const timeUsed = (180 - timeLeft) * 1000;
+      Game.award({ base: 60, timeMs: timeUsed, page:'p13', objective:'K3' });
+      Obj.hit('P4', { page:'p13' });
+      Obj.hit('A3', { page:'p13' });
+      lockStatus.className = 'lock-status ok';
+      lockStatus.textContent = '✅ SHIP LOCK ENGAGED · WARP SUCCESS';
+      Book.savePageData('p13', { dA, dB, dC, correct, lock: lock.value, retries, timeMs: timeUsed });
+      // คะแนน: คำนวณ 3 ระยะ + เลือก lock ถูก = 4 คะแนน
+      Book.completePage('p13', {
+        score: correct + 1, max: 4,
+        msg: `คำนวณถูก ${correct}/3 ระยะ · เลือก Lock ถูก · ${retries === 0 ? 'ครั้งแรกผ่าน!' : 'retry ' + retries + ' ครั้ง'}`
+      });
+      const fb = document.getElementById('finishBtn');
+      fb.classList.add('done'); fb.disabled = true; fb.textContent = '✓ SHIP LOCKED';
+    } else {
+      retries++;
+      Game.recordRetry('p13');
+      Game.penalty({ amount: 10, page:'p13', objective:'K3', skipBet: true });
+      Corruption.add(10);
+      lockStatus.className = 'lock-status fail';
+      const expected = ['α D=100 (7000/70)', 'β D=50 (3500/70)', 'γ D=200 (14000/70)'];
+      const wrongList = [];
+      if (Math.abs(dA - 100) >= 2) wrongList.push(expected[0]);
+      if (Math.abs(dB - 50)  >= 2) wrongList.push(expected[1]);
+      if (Math.abs(dC - 200) >= 2) wrongList.push(expected[2]);
+      const lockMsg = (!lock || lock.value !== 'alpha') ? ' · Lock ต้องเลือก α (D=100)' : '';
+      lockStatus.innerHTML = `❌ ผิด · retry #${retries} · VOID เข้าใกล้<br>` +
+        `<span style="font-size:12px;opacity:0.85">ต้องแก้: ${wrongList.join(' · ') || '—'}${lockMsg}</span>`;
+      // หลัง retry ≥ 2 · ปลด gate ให้ไปต่อได้ (penalty -30 · ไม่บล็อกชั้นเรียน)
+      if (retries >= 2 && !Book.state.gates.p13) {
+        finished = true;
+        Game.penalty({ amount: 30, page:'p13', objective:'A3', skipBet: true });
+        Obj.miss('A3', { page:'p13' });
+        Book.savePageData('p13', { dA, dB, dC, lock: lock?.value || null, retries, gaveUp: true });
+        Book.completePage('p13', { score: 0, max: 4, msg: `retry ${retries} ครั้ง · ไปต่อได้ · กลับมาทบทวน v=H₀D ใน P17` });
+        const fb = document.getElementById('finishBtn');
+        fb.classList.add('done'); fb.disabled = true; fb.textContent = '⏭ ไปต่อ (เก็บโจทย์ไว้ทบทวน)';
+        lockStatus.innerHTML += '<br><span style="font-size:11px;color:var(--accent-gold)">🔓 ปลดให้ไปต่อแล้ว · กด "ต่อไป →"</span>';
+      }
+    }
+  }
+
+  function failChase(reason) {
+    finished = true;
+    const lockStatus = document.getElementById('lockStatus');
+    lockStatus.className = 'lock-status fail';
+    lockStatus.textContent = '💀 VOID จับได้ · ลองใหม่ หรือไปต่อ (penalty -30)';
+    Game.penalty({ amount: 30, page:'p13', objective:'A3', skipBet: true });
+    Obj.miss('A3', { page:'p13' });
+    Book.completePage('p13', { score: 0, max: 4, msg: 'ไม่เป็นไร · ลองใหม่ได้ในหน้าถัดไป' });
+  }
+</script>
+
+</body>
+</html>

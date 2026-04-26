@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P18 · Star Map Reveal</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .full-map { background:radial-gradient(ellipse at center,#000814 0%,#000 80%); border:1.5px solid #ffcb6b; border-radius:14px; padding:18px; margin:14px 0; min-height:380px; position:relative; overflow:hidden; }
+  .full-star { position:absolute; transform:translate(-50%,-50%); cursor:pointer; transition:all .15s; }
+  .full-star:hover { transform:translate(-50%,-50%) scale(1.3); z-index:5; }
+  .full-star .orb { border-radius:50%; box-shadow:0 0 18px currentColor; }
+  .full-star .info { position:absolute; left:120%; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.9); border:1px solid #2a3050; border-radius:8px; padding:6px 10px; font-size:11px; color:#e8ecf8; white-space:nowrap; pointer-events:none; opacity:0; transition:opacity .15s; }
+  .full-star:hover .info, .full-star.tapped .info { opacity:1; }
+  .full-star.danger .orb { box-shadow:0 0 20px currentColor, 0 0 40px currentColor; }
+  .full-star.danger::after { content:'⚠'; position:absolute; top:-14px; left:50%; transform:translateX(-50%); color:#ff5c7a; font-size:14px; animation:warn 1s infinite; }
+  @keyframes warn { 50% { opacity:0.4; } }
+  .sos-marker { animation:sosBlink 1.4s infinite; }
+  @keyframes sosBlink { 50% { box-shadow:0 0 30px #ff5c7a, 0 0 60px #ff5c7a; transform:translate(-50%,-50%) scale(1.3); } }
+  .stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:12px 0; }
+  .stat-cell { padding:10px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; text-align:center; }
+  .stat-cell .v { font-family:Orbitron; font-size:22px; font-weight:700; }
+  .stat-cell .l { font-size:11px; color:#9aa3c0; letter-spacing:0.1em; font-family:Orbitron; }
+</style>
+</head>
+<body data-page="p18" data-type="story">
+<div class="page">
+
+  <span class="lbl story">🗺️ ACT D · STAR MAP REVEAL</span>
+  <h1>แผนที่ดาวฉบับสมบูรณ์</h1>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ตอนนี้เรามีข้อมูลครบ — <b>สี · อุณหภูมิ · มวล · วาระสุดท้าย</b> ของดาวทุกดวงบนเส้นทาง ·
+      <b style="color:#fff;">แตะดูดาวแต่ละดวง</b>เพื่อทบทวนก่อนเลือกเส้นทาง"
+    </span>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-cell"><div class="v" style="color:#ffcb6b;">7</div><div class="l">ดาว</div></div>
+    <div class="stat-cell"><div class="v" style="color:#ff5c7a;">3</div><div class="l">อันตราย</div></div>
+    <div class="stat-cell"><div class="v" style="color:#7effb2;">4</div><div class="l">ปลอดภัย</div></div>
+  </div>
+
+  <div class="full-map" id="map"></div>
+
+  <div class="card danger" id="alert" style="display:none;">
+    <div class="void-voice">
+      "ฉันเห็นเจ้าวิเคราะห์เก่งดีนี่ · แต่ดาวบางดวง... ก็ไม่ได้เป็นอย่างที่เห็นเสมอ · ระวัง"
+    </div>
+  </div>
+
+  <div class="callout success">
+    <span class="star">🎯</span> <b>เกณฑ์เลือกเส้นทาง:</b><br>
+    <span style="font-size:14px; color:#bcffd6; font-weight:400;">
+      • เลี่ยงดาว <b>O · B</b> (ร้อน · ละลายเกราะ)<br>
+      • เลี่ยงดาว <b>มวล > 9 M☉</b> (แรงโน้มถ่วงสูง · ดูดยาน)<br>
+      • ทางที่ผ่านดาว <b>K · M มวลน้อย</b> = ปลอดภัยสุด
+    </span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P18</summary>
+    <div class="body">
+      <b>เปิด VOID:</b> หลังแตะดู 4 ดวง · VOID จะมา taunt → เปิด p19 (face-to-face)<br>
+      <b>เน้น:</b> ทบทวนทั้งสี และ มวล ก่อนเลือกเส้นทาง
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ ใครเรียกฉัน?</button>
+  </div>
+  <div class="gate-hint">หน้าทบทวน · ครูคุมจังหวะ</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const ROUTE = (EP_CONFIG.routeStars || []);
+const POSITIONS = [
+  { x:18, y:24 }, { x:32, y:42 }, { x:48, y:30 }, { x:60, y:50 },
+  { x:42, y:62 }, { x:64, y:74 }, { x:80, y:58 }
+];
+const map = document.getElementById('map');
+const tapped = new Set();
+
+ROUTE.forEach((s,i)=>{
+  const pos = POSITIONS[i];
+  const dangerous = s.tempK > 10000 || s.mass > 9;
+  const d = document.createElement('div');
+  d.className = 'full-star' + (dangerous ? ' danger' : '');
+  d.style.left = pos.x + '%'; d.style.top = pos.y + '%';
+  d.dataset.id = s.id;
+  d.onclick = () => {
+    d.classList.add('tapped');
+    tapped.add(s.id);
+    if (window.SFX) SFX.play('tap');
+    if (tapped.size >= 4) document.getElementById('alert').style.display = 'block';
+  };
+  d.innerHTML = `
+    <div class="orb" style="width:${20 + s.mass}px; height:${20 + s.mass}px; background:${s.hex}; color:${s.hex};"></div>
+    <div class="info">
+      <b>${s.label}</b> · ${s.type}-type · ${s.tempK.toLocaleString()} K · ${s.mass} M☉
+      ${dangerous ? '<br><span style="color:#ff5c7a;">⚠ อันตราย</span>' : '<br><span style="color:#7effb2;">✓ ปลอดภัย</span>'}
+    </div>
+  `;
+  map.appendChild(d);
+});
+
+// SOS marker
+const sos = document.createElement('div');
+sos.className = 'full-star sos-marker';
+sos.style.left = '92%'; sos.style.top = '50%';
+sos.innerHTML = `<div class="orb" style="width:24px; height:24px; background:#ff5c7a; color:#ff5c7a; box-shadow:0 0 20px #ff5c7a;"></div>`;
+map.appendChild(sos);
+const sosLab = document.createElement('div');
+sosLab.style.cssText = 'position:absolute; left:92%; top:60%; transform:translate(-50%,0); color:#ff5c7a; font-family:Orbitron; font-size:11px; font-weight:700;';
+sosLab.textContent = '📡 พ่อ';
+map.appendChild(sosLab);
+
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p19-voidface.html');
+  if (window.PaceClient) Gate.wireButton('p18', btn, 'p19-voidface.html');
+}, 200);
+</script>
+</body></html>

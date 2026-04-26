@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Engage Hook + CC-05 · พลังงาน SHM (แผน 5)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fffbeb;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #d97706;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#78350f}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#d97706;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.section{margin:18px 0}
+.section h2{font-size:18px;color:#78350f;border-left:5px solid #d97706;padding-left:10px;margin-bottom:12px}
+.hook-box{background:linear-gradient(135deg,#78350f,#d97706);border-radius:14px;padding:20px 22px;color:#fff;margin-bottom:20px}
+.hook-box h3{font-size:17px;margin-bottom:10px}
+.hook-box p{font-size:14px;opacity:.95;line-height:1.7}
+.hook-q{background:rgba(255,255,255,.15);border-radius:10px;padding:12px 16px;margin-top:12px;font-size:15px;font-weight:700}
+.cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:680px){.cc-grid{grid-template-columns:1fr}}
+.char-card{border-radius:12px;padding:16px;border:2.5px solid transparent;transition:.2s}
+.char-card.a{background:#fff5f5;border-color:#fc8181}
+.char-card.b{background:#f0fff4;border-color:#68d391}
+.char-card.c{background:#fffbeb;border-color:#fcd34d}
+.char-card.d{background:#e0f2fe;border-color:#7dd3fc}
+.char-name{font-weight:800;font-size:15px;margin-bottom:6px}
+.char-name.a{color:#c53030}.char-name.b{color:#276749}.char-name.c{color:#78350f}.char-name.d{color:#075985}
+.char-bubble{background:#fff;border-radius:8px;padding:10px 12px;font-size:14px;font-style:italic;border:1px solid rgba(0,0,0,.08);margin-bottom:10px}
+.char-vote{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px}
+.char-vote label{display:flex;align-items:center;gap:5px;font-size:13.5px;cursor:pointer;padding:3px 8px;border-radius:6px}
+.char-vote label:hover{background:rgba(0,0,0,.05)}
+.char-vote input{accent-color:#d97706}
+.q-area{background:#fef3c7;border-left:6px solid #d97706;padding:12px 16px;border-radius:8px;margin:12px 0;font-size:14.5px}
+.ans-ta{width:100%;padding:8px 12px;border:1.5px solid #fcd34d;border-radius:8px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px}
+.ans-in{border:none;border-bottom:1.5px solid #d97706;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:5px 8px;border-radius:6px;font-size:14.5px;margin:3px 0}
+.opt:hover{background:rgba(217,119,6,.08)}
+.opt input{margin-top:4px;flex-shrink:0;accent-color:#d97706}
+.check-bank{background:#fff;border:1.5px solid #fcd34d;border-radius:10px;padding:10px 14px;margin-top:8px}
+.check-bank label{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:14px;margin:2px 0}
+.check-bank label:hover{background:rgba(217,119,6,.08)}
+.check-bank input[type=checkbox]{accent-color:#d97706;margin-top:4px;flex-shrink:0}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #d97706;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#78350f;font-weight:600}
+.c-btn.active{background:#d97706;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #78350f}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fcd34d;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fef3c7 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.dropdown{padding:6px 10px;border:1.5px solid #fcd34d;border-radius:8px;font-family:inherit;font-size:14px;background:#fff;color:#1a202c}
+.score-bar{background:#fef3c7;border-radius:10px;padding:12px 16px;margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.submit-btn{background:#d97706;color:#fff;border:none;border-radius:10px;padding:10px 28px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.submit-btn:hover{background:#b45309}
+.svgbox{background:#fef3c7;border:1.5px solid #fcd34d;border-radius:10px;padding:12px;margin:12px 0;text-align:center}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.submit-btn{display:none}}
+</style></head>
+<body data-ws-id="shm-plan5-engage">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🎬 Engage Hook + CC-05 · Concept Cartoon พลังงาน SHM</h1>
+      <div class="meta"><span class="tag">SHM แผน 5</span><span class="tag">E1 Engage</span> คาบที่ 9 · 10 นาที · M5.1, M5.2</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <!-- Hook -->
+  <div class="section">
+    <div class="hook-box">
+      <h3>🎬 Hook: ชิงช้าของ Galileo ณ อาสนวิหาร Pisa (~1583)</h3>
+      <p>Galileo สังเกตโคมระย้าในอาสนวิหาร Pisa แกว่งไปมา เขาจับชีพจรตัวเองเป็นนาฬิกา แล้วพบว่า <strong>ไม่ว่าแกว่งไกลหรือใกล้แค่ไหน — ใช้เวลาต่อรอบเท่ากัน!</strong><br>
+      ชิงช้าสาธารณะ หลอดไฟแขวนเพดาน เชือกกระโดด ล้วนซ่อน SHM ที่สวยงามไว้ภายใน<br>
+      <strong>คำถาม: ถ้าชิงช้าไม่มีแรงเสียดทานเลย — พลังงานจะหายไปไหม? จะแกว่งตลอดกาลได้จริงไหม?</strong></p>
+      <div class="hook-q">💬 ความคิดแรกของคุณ? <input type="text" id="hook-ans" style="border:none;border-bottom:2px solid rgba(255,255,255,.6);background:transparent;color:#fff;font-size:15px;width:60%;font-family:inherit;padding:2px 6px" placeholder="พิมพ์ที่นี่..."></div>
+    </div>
+
+    <div class="q-area">
+      <b>🎯 ระดมสมอง:</b> นึกถึงสิ่งที่คุณรู้จาก ม.4 เกี่ยวกับพลังงาน — ข้อใดถูกต้อง? (ตอบก่อนเรียนแผน 5)
+      <div class="check-bank" style="margin-top:8px">
+        <label><input type="checkbox" data-correct="true"> KE + PE = คงที่ ในระบบไม่มีแรงเสียดทาน</label>
+        <label><input type="checkbox" data-correct="false"> พลังงานถูก "ใช้" ไปในการเคลื่อนที่ จึงค่อยๆ ลดลง</label>
+        <label><input type="checkbox" data-correct="true"> พลังงานแปลงรูปจาก KE ↔ PE ได้โดยไม่สูญหาย (ระบบอนุรักษ์)</label>
+        <label><input type="checkbox" data-correct="false"> วัตถุที่หยุดนิ่งไม่มีพลังงานใดๆ</label>
+        <label><input type="checkbox" data-correct="true"> กฎอนุรักษ์พลังงานกล ใช้ได้เมื่อไม่มีแรงเสียดทาน</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Concept Cartoon CC-05 -->
+  <div class="section">
+    <h2>🎭 Concept Cartoon CC-05 · "ลูกตุ้ม" — ใครพูดถูก?</h2>
+    <div class="q-area"><b>📖 สถานการณ์:</b> เพื่อน 4 คนกำลังดูลูกตุ้มอย่างง่าย (ไม่มีแรงเสียดทาน) แกว่งไปมา แต่ละคนมีความเห็นต่างกันเกี่ยวกับพลังงาน ตอบคำถามต่อไปนี้</div>
+
+    <div class="svgbox">
+      <svg viewBox="0 0 600 160" width="580" height="155">
+        <!-- Pendulum central -->
+        <line x1="300" y1="10" x2="300" y2="80" stroke="#78350f" stroke-width="2"/>
+        <circle cx="300" cy="90" r="12" fill="#d97706"/>
+        <text x="300" y="94" text-anchor="middle" font-size="11" fill="#fff" font-family="Sarabun" font-weight="bold">m</text>
+        <!-- Arc indicator -->
+        <path d="M260,40 Q300,10 340,40" fill="none" stroke="#fcd34d" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <text x="300" y="130" text-anchor="middle" font-size="12" fill="#64748b" font-family="Sarabun">← แกว่งไปมา →</text>
+        <!-- Characters -->
+        <!-- A (left-top) -->
+        <circle cx="60" cy="50" r="20" fill="#fc8181"/>
+        <text x="60" y="54" text-anchor="middle" font-size="14" fill="#fff" font-family="Sarabun" font-weight="800">เอ</text>
+        <line x1="80" y1="50" x2="130" y2="70" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+        <!-- B (left-bottom) -->
+        <circle cx="60" cy="120" r="20" fill="#68d391"/>
+        <text x="60" y="124" text-anchor="middle" font-size="14" fill="#fff" font-family="Sarabun" font-weight="800">บี</text>
+        <line x1="80" y1="115" x2="140" y2="105" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+        <!-- C (right-top) -->
+        <circle cx="540" cy="50" r="20" fill="#fcd34d"/>
+        <text x="540" y="54" text-anchor="middle" font-size="14" fill="#78350f" font-family="Sarabun" font-weight="800">ซี</text>
+        <line x1="520" y1="50" x2="470" y2="70" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+        <!-- D (right-bottom) -->
+        <circle cx="540" cy="120" r="20" fill="#7dd3fc"/>
+        <text x="540" y="124" text-anchor="middle" font-size="14" fill="#075985" font-family="Sarabun" font-weight="800">ดี</text>
+        <line x1="520" y1="115" x2="460" y2="105" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+      </svg>
+    </div>
+
+    <div class="cc-grid">
+      <div class="char-card a">
+        <div class="char-name a">👤 เอ พูดว่า...</div>
+        <div class="char-bubble">"ที่ปลายสุดของการแกว่ง ลูกตุ้มหยุดชั่วขณะ — ตอนนั้น KE สูงสุด เพราะแรงดึงกลับสูงสุดที่สุดด้วย!"</div>
+        <div class="char-vote">
+          <span style="font-size:13px;color:#718096">ฉันคิดว่าเอ:</span>
+          <label><input type="radio" name="cc-a" value="correct"> ถูก</label>
+          <label><input type="radio" name="cc-a" value="partial"> ถูกบางส่วน</label>
+          <label><input type="radio" name="cc-a" value="wrong"> ผิด</label>
+        </div>
+      </div>
+      <div class="char-card b">
+        <div class="char-name b">👤 บี พูดว่า...</div>
+        <div class="char-bubble">"ฉันไม่เห็นด้วย! ที่ปลายสุด v = 0 ดังนั้น KE = ½mv² = 0 แต่ PE = ½kA² สูงสุด! KE สูงสุดที่ตำแหน่งสมดุลต่างหาก!"</div>
+        <div class="char-vote">
+          <span style="font-size:13px;color:#718096">ฉันคิดว่าบี:</span>
+          <label><input type="radio" name="cc-b" value="correct"> ถูก</label>
+          <label><input type="radio" name="cc-b" value="partial"> ถูกบางส่วน</label>
+          <label><input type="radio" name="cc-b" value="wrong"> ผิด</label>
+        </div>
+      </div>
+      <div class="char-card c">
+        <div class="char-name c">👤 ซี พูดว่า...</div>
+        <div class="char-bubble">"ไม่ว่าจะระบบไหนก็ตาม พลังงานกลย่อมหายไปทีละน้อย เพราะการเคลื่อนที่ 'ใช้' พลังงาน ถ้าแกว่งนานพอลูกตุ้มจะหยุดเอง แม้ไม่มีอากาศ!"</div>
+        <div class="char-vote">
+          <span style="font-size:13px;color:#718096">ฉันคิดว่าซี:</span>
+          <label><input type="radio" name="cc-c" value="correct"> ถูก</label>
+          <label><input type="radio" name="cc-c" value="partial"> ถูกบางส่วน</label>
+          <label><input type="radio" name="cc-c" value="wrong"> ผิด</label>
+        </div>
+      </div>
+      <div class="char-card d">
+        <div class="char-name d">👤 ดี พูดว่า...</div>
+        <div class="char-bubble">"ฉันคิดว่าบีถูก และเพิ่มเติมว่า — พลังงานรวม E = KE+PE คงที่เสมอตราบที่ไม่มีแรงเสียดทาน ชิงช้าในอุดมคติแกว่งตลอดกาลได้จริง!"</div>
+        <div class="char-vote">
+          <span style="font-size:13px;color:#718096">ฉันคิดว่าดี:</span>
+          <label><input type="radio" name="cc-d" value="correct"> ถูก</label>
+          <label><input type="radio" name="cc-d" value="partial"> ถูกบางส่วน</label>
+          <label><input type="radio" name="cc-d" value="wrong"> ผิด</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Analysis questions -->
+    <div class="section">
+      <h2>📝 วิเคราะห์ Concept Cartoon</h2>
+
+      <div class="q-area" style="margin-bottom:12px">
+        <b>Q1:</b> ใครถูกต้องที่สุด? (เลือก 1)
+        <div style="margin-top:8px">
+          <label class="opt"><input type="radio" name="q-best" value="a"> เอ — KE สูงสุดที่ปลายสุด</label>
+          <label class="opt"><input type="radio" name="q-best" value="b"> บี — KE=0 ที่ปลายสุด KE สูงสุดที่สมดุล</label>
+          <label class="opt"><input type="radio" name="q-best" value="d"> ดี — บวกกับ E รวมคงที่</label>
+          <label class="opt"><input type="radio" name="q-best" value="bd"> บี+ดี พูดถูกต้องด้วยกัน</label>
+        </div>
+      </div>
+
+      <div class="q-area" style="margin-bottom:12px">
+        <b>Q2:</b> ข้อใดถูกต้องเกี่ยวกับ KE และ PE ใน SHM? (ติ๊กทุกข้อที่ถูก · ถูก 5 / ลวง 3)
+        <div class="check-bank">
+          <label><input type="checkbox" data-correct="true"> ที่ y = 0 (สมดุล): KE สูงสุด = ½kA², PE = 0</label>
+          <label><input type="checkbox" data-correct="true"> ที่ y = ±A (ปลาย): KE = 0, PE สูงสุด = ½kA²</label>
+          <label><input type="checkbox" data-correct="true"> E = KE + PE = ½kA² = คงที่ตลอดการเคลื่อนที่</label>
+          <label><input type="checkbox" data-correct="true"> ที่ y = A/√2: KE = PE = E/2</label>
+          <label><input type="checkbox" data-correct="true"> v_max = ωA เกิดที่ y = 0</label>
+          <label><input type="checkbox" data-correct="false"> KE สูงสุดที่ y = ±A เพราะแรงคืนตัวสูงสุด</label>
+          <label><input type="checkbox" data-correct="false"> ระบบไม่มีเสียดทานยังสูญเสียพลังงานตามเวลา</label>
+          <label><input type="checkbox" data-correct="false"> E ∝ A (เพิ่ม A สองเท่า E เพิ่มสองเท่า)</label>
+        </div>
+        <button onclick="checkBank(this)" style="margin-top:8px;background:#fef3c7;border:1.5px solid #d97706;border-radius:8px;padding:5px 14px;font-family:inherit;font-size:13px;cursor:pointer;color:#78350f;font-weight:700">ตรวจคำตอบ</button>
+        <div id="bank-result" style="margin-top:6px;font-size:13.5px;font-weight:700"></div>
+      </div>
+
+      <div class="q-area" style="margin-bottom:12px">
+        <b>Q3:</b> ข้อใดต่อไปนี้คือ "Misconception" ของเอ และซี? (เลือก dropdown)
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+          <div>เอ มี Misconception เกี่ยวกับ:
+            <select class="dropdown" id="q3-a" style="margin-left:8px">
+              <option value="">-- เลือก --</option>
+              <option value="m51">M5.1: สับสน KE/PE ที่ปลายสุด</option>
+              <option value="m52">M5.2: พลังงานหายไปแม้ไม่มีเสียดทาน</option>
+              <option value="m53">M5.3: E ∝ A ไม่ใช่ A²</option>
+              <option value="m54">M5.4: นับ PE ซ้ำในสปริงดิ่ง</option>
+            </select>
+          </div>
+          <div>ซี มี Misconception เกี่ยวกับ:
+            <select class="dropdown" id="q3-c" style="margin-left:8px">
+              <option value="">-- เลือก --</option>
+              <option value="m51">M5.1: สับสน KE/PE ที่ปลายสุด</option>
+              <option value="m52">M5.2: พลังงานหายไปแม้ไม่มีเสียดทาน</option>
+              <option value="m53">M5.3: E ∝ A ไม่ใช่ A²</option>
+              <option value="m54">M5.4: นับ PE ซ้ำในสปริงดิ่ง</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-area" style="margin-bottom:12px">
+        <b>Q4:</b> วาดแผนภาพแสดง KE และ PE ที่ตำแหน่งต่างๆ ของลูกตุ้ม (ปลายซ้าย / สมดุล / ปลายขวา) — ใช้ bar chart
+        <div class="canvas-toolbar">
+          <button class="c-btn active" id="tbc1p" onclick="setTool('cc-canvas','pencil',this)">✏️</button>
+          <button class="c-btn" id="tbc1e" onclick="setTool('cc-canvas','eraser',this)">⬜</button>
+          <div class="c-color active" style="background:#1a202c" onclick="setColor('cc-canvas','#1a202c',this)"></div>
+          <div class="c-color" style="background:#d97706" onclick="setColor('cc-canvas','#d97706',this)"></div>
+          <div class="c-color" style="background:#059669" onclick="setColor('cc-canvas','#059669',this)"></div>
+          <div class="c-color" style="background:#dc2626" onclick="setColor('cc-canvas','#dc2626',this)"></div>
+          <button class="c-btn" onclick="clearCanvas('cc-canvas')" style="margin-left:auto;color:#c53030">🗑️</button>
+        </div>
+        <canvas id="cc-canvas" data-bg="lined" width="940" height="220"></canvas>
+        <div style="font-size:12.5px;color:#718096;margin-top:4px">💡 วาด bar สีเขียว = KE · สีส้ม = PE · ระบุตำแหน่ง y=−A, y=0, y=+A</div>
+      </div>
+
+      <div class="q-area">
+        <b>Q5:</b> อธิบายให้ "ซี" เข้าใจว่าทำไมพลังงานไม่หายในระบบอุดมคติ
+        <textarea class="ans-ta" rows="4" id="q5-ans" placeholder="ใช้หลักการทางฟิสิกส์อธิบาย: กฎอนุรักษ์พลังงาน · แรงสปริงเป็นแรงอนุรักษ์ · KE↔PE..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#fef3c7;border:2px dashed #fcd34d;border-radius:12px;padding:14px;text-align:center;margin-top:16px">
+    <button class="submit-btn" onclick="submitCC()">📤 ส่ง CC-05</button>
+    <div style="margin-top:8px" id="cc-submit-msg"></div>
+  </div>
+
+  <div style="text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #fde68a;padding-top:8px">
+    CC-05 · Engage · SHM แผน 5 · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+  </div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+  function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+  function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function en(e){e.preventDefault();canvasState[id].drawing=false;}
+  c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);
+  c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});
+}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>initCanvas('cc-canvas'));
+
+function checkBank(btn){
+  const bank=btn.closest('.q-area').querySelector('.check-bank');
+  const labels=bank.querySelectorAll('label');
+  let correct=0,total=0;
+  labels.forEach(l=>{
+    const cb=l.querySelector('input[type=checkbox]');
+    const isCorrect=cb.dataset.correct==='true';
+    const isChecked=cb.checked;
+    if(isCorrect===isChecked)correct++;
+    total++;
+    l.style.background=isChecked?(isCorrect?'rgba(5,150,105,.12)':'rgba(220,38,38,.1)'):'';
+    l.style.borderRadius='6px';
+  });
+  document.getElementById('bank-result').innerHTML=`✅ ${correct}/${total} ข้อถูก`;
+  document.getElementById('bank-result').style.color=correct>=6?'#059669':'#d97706';
+}
+
+const SHEET_NAME='CC05_SHM_Plan5';
+const API_URL='https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+function submitCC(){
+  const d={sheet:SHEET_NAME,payload:{}};
+  ['s-name','s-num','s-room','s-grp'].forEach(id=>{d.payload[id]=document.getElementById(id)?.value||'';});
+  d.payload.hook_ans=document.getElementById('hook-ans')?.value||'';
+  ['a','b','c','d'].forEach(ch=>{const el=document.querySelector(`[name="cc-${ch}"]:checked`);d.payload[`cc_${ch}`]=el?el.value:'';});
+  const best=document.querySelector('[name="q-best"]:checked');d.payload.q_best=best?best.value:'';
+  d.payload.q3_a=document.getElementById('q3-a')?.value||'';
+  d.payload.q3_c=document.getElementById('q3-c')?.value||'';
+  d.payload.q5_ans=document.getElementById('q5-ans')?.value||'';
+  const cv=document.getElementById('cc-canvas');d.payload.canvas_img=cv?cv.toDataURL('image/png'):'';
+  d.payload.timestamp=new Date().toISOString();
+  if(API_URL.includes('YOUR_DEPLOYMENT')){
+    const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`CC05_${d.payload['s-name']||'student'}.json`;a.click();
+    document.getElementById('cc-submit-msg').innerHTML='<span style="color:#d97706">💾 บันทึก JSON แล้ว</span>';return;
+  }
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(d)})
+    .then(()=>{document.getElementById('cc-submit-msg').innerHTML='<span style="color:#059669">✅ ส่งสำเร็จ!</span>';})
+    .catch(()=>{document.getElementById('cc-submit-msg').innerHTML='<span style="color:#dc2626">❌ ส่งไม่สำเร็จ</span>';});
+}
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P19 · Post-test + Badge</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .cert { padding:26px; background:radial-gradient(ellipse at center, rgba(255,203,107,0.12), #0a0420); border:3px solid #ffcb6b; border-radius:16px; text-align:center; margin:14px 0; }
+  .cert .badge { font-size:72px; filter:drop-shadow(0 0 24px rgba(255,203,107,0.5)); }
+  .cert h2 { font-family:Orbitron,sans-serif; color:#ffcb6b; font-size:24px; letter-spacing:0.15em; margin:10px 0; }
+  .log-field { width:100%; min-height:70px; padding:10px; background:rgba(0,0,0,0.3); border:1px solid #444; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:14px; box-sizing:border-box; resize:vertical; margin:6px 0; }
+  .log-field:focus { border-color:#64d8ff; outline:none; }
+
+  /* Post-test UI */
+  .mtag { padding:1px 8px; font-size:10px; border-radius:10px; background:rgba(255,92,122,0.1); color:#ff8fa5; border:1px solid rgba(255,92,122,0.3); font-family:Orbitron,sans-serif; letter-spacing:0.1em; }
+  .cri-row { display:flex; gap:6px; margin-top:10px; padding:8px; background:rgba(0,0,0,0.25); border-radius:8px; border:1px dashed rgba(212,184,255,0.4); }
+  .cri-label { font-size:11px; color:#d4b8ff; letter-spacing:0.12em; font-family:Orbitron,sans-serif; align-self:center; margin-right:4px; }
+  .cri-btn { flex:1; padding:8px; background:rgba(212,184,255,0.06); border:1px solid rgba(212,184,255,0.3); color:#c8cde0; border-radius:6px; cursor:pointer; font-family:inherit; font-size:12px; }
+  .cri-btn.on { background:rgba(212,184,255,0.2); border-color:#d4b8ff; color:#fff; }
+  .progress-line { font-size:12px; color:#9aa3c0; text-align:center; margin:8px 0; }
+
+  /* Analytics strip */
+  .mgrid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:14px 0; }
+  @media(max-width:540px) { .mgrid { grid-template-columns:1fr; } }
+  .mcell { padding:10px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; border-radius:10px; text-align:left; font-size:12px; color:#c8cde0; }
+  .mcell b { color:#ffcb6b; font-family:Orbitron,sans-serif; letter-spacing:0.08em; }
+  .mcell .big { font-size:22px; color:#7effb2; font-family:Orbitron,monospace; display:block; margin-top:4px; }
+  .mcell .big.neg { color:#ff5c7a; }
+  .mcell .big.zero { color:#c8cde0; }
+  .mcell .flag { font-size:11px; display:block; margin-top:4px; color:#9aa3c0; }
+  .mcell .flag.persist { color:#ff8fa5; }
+  .mcell .flag.resolved { color:#7effb2; }
+</style>
+</head>
+<body data-page="p19" data-type="reflection">
+<div class="page">
+  <div class="lbl">📝 END · TRANSFORMATION</div>
+  <h1>ปิดภารกิจ</h1>
+
+  <div class="card">
+    <h3>📝 Post-test · 6 ข้อ (คู่ขนานกับ Pre-test)</h3>
+    <div class="narrative" style="font-size:13px;margin:6px 0 10px;">
+      ข้อคล้าย pre-test แต่ดวงดาว/ตัวเลขต่างกัน · ตอบ + เลือก<b>ความมั่นใจ</b>ด้วยนะ
+    </div>
+    <div id="quiz"></div>
+    <div class="progress-line" id="progress">ตอบแล้ว 0 / 6</div>
+  </div>
+
+  <div class="card">
+    <h3>📜 Captain's Log · 2 ช่อง (คนเดียว · เขียนตามใจ)</h3>
+    <div>ถึงพ่อ:</div>
+    <textarea class="log-field" id="f1" placeholder="เขียนถึงพ่อ..."></textarea>
+    <div>ฉันเปลี่ยนไปยังไงหลัง EP03:</div>
+    <textarea class="log-field" id="f2" placeholder="ฉันรู้ว่า..."></textarea>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Post-test</summary>
+    <div class="body">
+      <b>ใช้ทำอะไร</b>: คำนวณ gain ต่อ misconception · ไม่ใช่แค่คะแนนรวม<br>
+      <b>อ่าน cert ตอนจบ</b>: ถ้าเห็น "🟢 ปลดได้" = เด็กแก้ misconception นั้นจริง · ถ้าเห็น "🔴 ยังติด" = ต้องกลับไปช่วยรายบุคคล<br>
+      <b>CRI</b>:<br>
+      · ผิด + มั่นใจ → misconception ฝังลึก (สอนใหม่)<br>
+      · ผิด + ลังเล/เดา → ไม่รู้ (เติมความรู้พอ)<br>
+      · ถูก + ลังเล/เดา → ลัคกี้ (ต้องทบทวน)<br>
+      · ถูก + มั่นใจ → เข้าใจจริง<br>
+      <b>Export JSON</b>: เก็บเข้า Sheet เพื่อทำสถิติในงานวิจัย · วPA ใช้ได้ทันที
+    </div>
+  </details>
+
+  <div class="cert" id="cert" style="display:none;">
+    <div class="badge">✨</div>
+    <h2>LIGHT DETECTIVE</h2>
+    <div style="color:#c8cde0;font-size:14px;">EP03 · เสียงร้องจากอดีต</div>
+    <div id="certBody" style="margin-top:10px;color:#9aa3c0;font-size:13px;"></div>
+    <div class="mgrid" id="mgrid"></div>
+    <div id="criBreakdown" style="text-align:left;color:#c8cde0;font-size:12px;margin-top:8px;"></div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn" onclick="exportJSON()">💾 Export JSON</button>
+      <button class="btn" onclick="exportPNG()">📸 Certificate PNG</button>
+    </div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn">💾 ส่งผลทั้งหมด</button>
+    <button class="next-btn" id="nextBtn">▶ กลับหน้าแรก</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+// Post-test · parallel form of pretest (p01) · ข้อเทียบกัน 1:1 ต่อ M-code
+const QS = [
+  { id:'Q1', m:'M1',
+    q:'Canopus (m = −0.7) · Vega (m = +0.03) · ใครสว่างปรากฎกว่า?',
+    a:['Canopus (m ติดลบ)', 'Vega (m เกือบ 0 · เป็นบวกเบา)', 'เท่ากัน'],
+    c:0,
+  },
+  { id:'Q2', m:'M1',
+    q:'ดาว X: m = 4 · ดาว Y: m = 0 · ข้อใด<b>ถูก</b>?',
+    a:['Y สว่างปรากฎกว่า (m ต่ำกว่า)', 'X สว่างปรากฎกว่า (m สูงกว่า)', 'สว่างเท่ากัน'],
+    c:0,
+  },
+  { id:'Q3', m:'M2',
+    q:'Rigel (m = +0.1, M = −7.0) · Procyon (m = +0.4, M = +2.7) · ใคร<b>ปล่อยแสงจริง</b>มากกว่า?',
+    a:['Rigel (เทียบ M · M ติดลบมากกว่ามาก)', 'Procyon (m ทั้งคู่ใกล้กัน)', 'Rigel (m ต่ำกว่าเล็กน้อย)'],
+    c:0,
+  },
+  { id:'Q4', m:'M2',
+    q:'ข้อใด<b>จริง</b>?',
+    a:['m ต่ำ = ปล่อยแสงจริงเยอะเสมอ',
+       'M ต่ำ = ปล่อยแสงจริงเยอะ · m ขึ้นกับระยะด้วย จึงสรุปจาก m อย่างเดียวไม่ได้',
+       'ดาวยิ่งใกล้ ยิ่งปล่อยแสงเยอะ'],
+    c:1,
+  },
+  { id:'Q5', m:'M3',
+    q:'ดาวดวงหนึ่งอยู่ห่าง <b>100 pc</b> · แปลว่าอะไร?',
+    a:['ระยะทาง ~326 ปีแสง',
+       'แสงใช้เวลาเดินทาง 100 ปี',
+       'ดาวนี้มีอายุ 100 ปี'],
+    c:0,
+  },
+  { id:'Q6', m:'M3',
+    q:'parallax = 0.01" · d = ? และเป็นหน่วยอะไร?',
+    a:['100 pc · หน่วยระยะทาง',
+       '100 ปี · หน่วยเวลา',
+       '0.01 pc · หน่วยมุม'],
+    c:0,
+  },
+];
+
+const CRI_LABELS = [
+  { v:1, t:'🎲 เดา' },
+  { v:2, t:'🤔 ลังเล' },
+  { v:3, t:'💡 แน่ใจ' },
+];
+
+const state = {}; // { Q1: {ans, cri} }
+
+function render() {
+  document.getElementById('quiz').innerHTML = QS.map((q,i)=>`
+    <div class="q-card" data-q="${q.id}">
+      <div><b>${i+1}.</b> ${q.q}</div>
+      <div style="display:flex;gap:6px;margin-top:6px;"><span class="mtag">${q.m}</span></div>
+      <div class="choice-row" data-i="${i}">
+        ${q.a.map((c,ci)=>`<button class="choice-btn" onclick="pickAns(${i},${ci})">${c}</button>`).join('')}
+      </div>
+      <div class="cri-row" data-cri="${i}">
+        <span class="cri-label">มั่นใจ?</span>
+        ${CRI_LABELS.map(l=>`<button class="cri-btn" onclick="pickCri(${i},${l.v})">${l.t}</button>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function pickAns(qi, ai) {
+  const qid = QS[qi].id;
+  state[qid] = state[qid] || {};
+  state[qid].ans = ai;
+  document.querySelectorAll(`[data-i="${qi}"] .choice-btn`).forEach((b, bi) => {
+    b.style.borderColor = (bi === ai) ? '#64d8ff' : '';
+    b.style.background = (bi === ai) ? 'rgba(100,216,255,0.15)' : '';
+  });
+  updateProgress();
+}
+
+function pickCri(qi, val) {
+  const qid = QS[qi].id;
+  state[qid] = state[qid] || {};
+  state[qid].cri = val;
+  document.querySelectorAll(`[data-cri="${qi}"] .cri-btn`).forEach((b, bi) => {
+    b.classList.toggle('on', CRI_LABELS[bi].v === val);
+  });
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = Object.values(state).filter(s => s.ans != null && s.cri != null).length;
+  document.getElementById('progress').textContent = `ตอบแล้ว ${done} / ${QS.length}`;
+  document.getElementById('progress').style.color = done === QS.length ? '#7effb2' : '#9aa3c0';
+}
+
+render();
+
+// CRI classification per item
+function classify(correct, cri) {
+  // cri: 1=guess · 2=unsure · 3=confident
+  if (correct && cri >= 3) return 'known';
+  if (correct && cri <= 2) return 'lucky';
+  if (!correct && cri >= 3) return 'misconception';
+  return 'nokn'; // no knowledge
+}
+
+function computePost() {
+  const items = QS.map((q,i) => {
+    const s = state[q.id] || {};
+    const correct = s.ans === q.c;
+    return { id:q.id, m:q.m, ans:s.ans, cri:s.cri, correct, cls: classify(correct, s.cri) };
+  });
+  const correctCount = items.filter(x => x.correct).length;
+  const byM = { M1:{n:0,correct:0,cri:[]}, M2:{n:0,correct:0,cri:[]}, M3:{n:0,correct:0,cri:[]} };
+  items.forEach(x => {
+    const b = byM[x.m];
+    b.n += 1;
+    if (x.correct) b.correct += 1;
+    b.cri.push(x.cri || 0);
+  });
+  return { items, correctCount, byM };
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p19',
+    nextHref: 'shop.html',
+    getPayload: () => {
+      const done = Object.values(state).filter(s => s.ans != null && s.cri != null).length;
+      if (done < QS.length) {
+        alert(`ตอบ + เลือกความมั่นใจครบ ${QS.length} ข้อก่อน (ตอนนี้ ${done}/${QS.length})`);
+        throw new Error('incomplete');
+      }
+      const post = computePost();
+      const pre = Submit.load('p01');
+      return {
+        tag: 'posttest',
+        items: post.items,
+        correct: post.correctCount,
+        total: QS.length,
+        byMisconception: post.byM,
+        answers: Object.fromEntries(post.items.map(x => [x.id, x.ans])),
+        pretest: pre,
+        log: { toFather: document.getElementById('f1').value, toSelf: document.getElementById('f2').value },
+        gain: post.correctCount - (pre.correct || 0),
+      };
+    },
+    onSubmit: () => {
+      const post = computePost();
+      const pre = Submit.load('p01') || {};
+      const preCorrect = pre.correct || 0;
+      const preTotal = pre.total || QS.length;
+      const gain = post.correctCount - preCorrect;
+
+      // Compute per-misconception gain + resolution flags
+      const preByM = (pre.byMisconception) || { M1:{correct:0,n:2}, M2:{correct:0,n:2}, M3:{correct:0,n:2} };
+      const cards = ['M1','M2','M3'].map(code => {
+        const preC = (preByM[code] && preByM[code].correct) || 0;
+        const postC = (post.byM[code] && post.byM[code].correct) || 0;
+        const mGain = postC - preC;
+        const n = (post.byM[code] && post.byM[code].n) || 2;
+        // classification
+        const wrongConfident = post.items.filter(x => x.m === code && !x.correct && x.cri >= 3).length;
+        let flag = '';
+        if (mGain > 0 && postC === n) flag = '<span class="flag resolved">🟢 ปลด misconception นี้ได้</span>';
+        else if (wrongConfident > 0) flag = '<span class="flag persist">🔴 ยังติด (' + wrongConfident + ' ข้อ · ผิดแบบมั่นใจ)</span>';
+        else if (postC === n) flag = '<span class="flag resolved">🟢 เข้าใจ (ถูกครบ)</span>';
+        else flag = '<span class="flag">🟡 ยังไม่แน่น</span>';
+        const labels = { M1:'เลขน้อย = หรี่?', M2:'สว่างปรากฎ = สว่างจริง?', M3:'parsec = เวลา?' };
+        const cls = mGain > 0 ? '' : (mGain < 0 ? 'neg' : 'zero');
+        const sign = mGain > 0 ? '+' : '';
+        return '<div class="mcell"><b>' + code + ' · ' + labels[code] + '</b>'
+             + '<span class="big ' + cls + '">' + sign + mGain + '</span>'
+             + '<span style="font-size:11px;color:#9aa3c0;">pre ' + preC + '/' + n + ' → post ' + postC + '/' + n + '</span>'
+             + flag + '</div>';
+      });
+
+      document.getElementById('cert').style.display = 'block';
+      document.getElementById('certBody').innerHTML =
+        'Post: <b style="color:#7effb2;">' + post.correctCount + '/' + QS.length + '</b>' +
+        ' · Pre: <b>' + preCorrect + '/' + preTotal + '</b>' +
+        ' · Gain รวม: <b style="color:' + (gain >= 0 ? '#7effb2' : '#ff5c7a') + ';">' + (gain >= 0 ? '+' : '') + gain + '</b>';
+      document.getElementById('mgrid').innerHTML = cards.join('');
+
+      // CRI class breakdown
+      const counts = { known:0, lucky:0, misconception:0, nokn:0 };
+      post.items.forEach(x => counts[x.cls] += 1);
+      document.getElementById('criBreakdown').innerHTML =
+        '<div style="padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;margin-top:8px;">'
+        + '<b style="color:#d4b8ff;font-family:Orbitron,sans-serif;font-size:11px;letter-spacing:0.1em;">CRI · CONFIDENCE × CORRECT</b><br>'
+        + '<div style="margin-top:6px;line-height:1.8;">'
+        + '💡 ถูก+มั่นใจ (รู้จริง): <b style="color:#7effb2;">' + counts.known + '</b>' + ' · '
+        + '🍀 ถูก+ลังเล (ลัคกี้): <b>' + counts.lucky + '</b><br>'
+        + '🔴 ผิด+มั่นใจ (misconception): <b style="color:#ff5c7a;">' + counts.misconception + '</b>' + ' · '
+        + '❔ ผิด+ลังเล (ไม่รู้): <b>' + counts.nokn + '</b>'
+        + '</div></div>';
+    },
+  });
+}, 200);
+
+function exportJSON() {
+  const bundle = {
+    ep: 'ep03',
+    all: Object.fromEntries(['p01','p02','p05','p08','p09','p12','p15','p16','p17','p18','p19','warprun'].map(p => [p, Submit.load(p)])),
+    chain: Chain.all(),
+    items: ShopItems.load(),
+    coin: Coin.get(),
+    photon: Photon.get(),
+    at: Date.now(),
+  };
+  const blob = new Blob([JSON.stringify(bundle, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'cosmoslog_ep03_' + Date.now() + '.json';
+  a.click();
+}
+
+function exportPNG() {
+  const c = document.createElement('canvas'); c.width = 800; c.height = 500;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#0a0420'; ctx.fillRect(0,0,800,500);
+  ctx.strokeStyle = '#ffcb6b'; ctx.lineWidth = 4; ctx.strokeRect(20,20,760,460);
+  ctx.fillStyle = '#ffcb6b'; ctx.textAlign = 'center';
+  ctx.font = 'bold 34px Arial'; ctx.fillText('✨ LIGHT DETECTIVE ✨', 400, 120);
+  ctx.fillStyle = '#e8ecf8'; ctx.font = '18px Arial';
+  ctx.fillText('COSMOS LOG · EP03 · เสียงร้องจากอดีต', 400, 170);
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '14px Arial';
+  ctx.fillText(new Date().toLocaleString('th-TH'), 400, 360);
+  c.toBlob(blob => { const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cert_ep03.png'; a.click(); });
+}
+</script>
+</body></html>

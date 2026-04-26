@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน 1.1 · คำนวณ f, T, ω (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#312e81}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.formula{background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:10px;padding:12px 16px;margin:10px 0;text-align:center;font-size:16px}
+.formula code{font-family:'Cambria Math',serif;font-size:17px;color:#3730a3;font-weight:700;margin:0 10px}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
+.item .num{display:inline-block;background:#4f46e5;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
+.item .statement{background:#fff;border:1.5px dashed #a5b4fc;border-radius:10px;padding:12px;font-size:15.5px;margin:8px 0;color:#1e1b4b}
+.step{background:#fff;border:1.5px solid #c7d2fe;border-radius:8px;padding:10px 12px;margin-top:8px}
+.step-lbl{font-weight:700;color:#3730a3;margin-bottom:4px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center;background:#fff}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#eef2ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #4f46e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-calc-1.1">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบงาน 1.1 — คำนวณ f, T, ω</h1>
+      <div class="meta"><span class="tag">SHM แผน 1</span><span class="tag">E4 Elaborate</span> 5 ข้อ · ทำเดี่ยว 8' → เฉลยรวม 3' · allowUpload</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำสั่ง:</b> ใช้ความสัมพันธ์ระหว่าง f, T, ω คำนวณหาค่าที่โจทย์ถาม แสดงวิธีคิดอย่างชัดเจน · <b>วัตถุประสงค์:</b> K1.2, P1.2 · <b>เกณฑ์ผ่าน:</b> ถูกต้อง ≥ 3/5 ข้อ</div>
+
+  <div class="formula">
+    <code>f = 1/T</code> · <code>T = 1/f</code> · <code>ω = 2πf = 2π/T</code> · หน่วย: f → Hz · T → s · ω → rad/s
+  </div>
+
+  <!-- ข้อ 1 -->
+  <div class="item">
+    <div><span class="num">1</span><b>อนุภาคตัวหนึ่งสั่นแบบ SHM ครบ 20 รอบในเวลา 40 วินาที · จงหาความถี่ f และคาบ T</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb1p" onclick="setTool('c1','pencil',this)">✏️</button><button class="c-btn" id="tb1e" onclick="setTool('c1','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div><div class="c-color" style="background:#4f46e5" onclick="setColor('c1','#4f46e5',this)"></div><button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c1" data-bg="lined" width="900" height="120"></canvas>
+      <textarea id="a1" class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..."></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T = <input class="ans-in" id="t1"> s · f = <input class="ans-in" id="f1"> Hz</div>
+    <div class="hint">💡 Hint: T = เวลาทั้งหมด / จำนวนรอบ</div>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="item">
+    <div><span class="num">2</span><b>หมอจับชีพจรผู้ป่วยได้ 29 ครั้งใน 20 วินาที · จงหาคาบ T และความถี่ f ของการเต้นของหัวใจ</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb2p" onclick="setTool('c2','pencil',this)">✏️</button><button class="c-btn" id="tb2e" onclick="setTool('c2','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div><div class="c-color" style="background:#4f46e5" onclick="setColor('c2','#4f46e5',this)"></div><button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c2" data-bg="lined" width="900" height="120"></canvas>
+      <textarea id="a2" class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..."></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T = <input class="ans-in" id="t2"> s · f = <input class="ans-in" id="f2"> Hz</div>
+  </div>
+
+  <!-- ข้อ 3 -->
+  <div class="item">
+    <div><span class="num">3</span><b>เครื่องยนต์ลูกสูบหมุน 3,200 รอบ/นาที · จงหาคาบ T (วินาที) และความถี่ f (Hz)</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️</button><button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div><div class="c-color" style="background:#4f46e5" onclick="setColor('c3','#4f46e5',this)"></div><button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c3" data-bg="lined" width="900" height="120"></canvas>
+      <textarea id="a3" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> f = <input class="ans-in" id="f3"> Hz · T = <input class="ans-in" id="t3"> s</div>
+    <div class="hint">💡 Hint: แปลง "รอบ/นาที" → "รอบ/วินาที" ก่อน (หารด้วย 60)</div>
+  </div>
+
+  <!-- ข้อ 4 -->
+  <div class="item">
+    <div><span class="num">4</span><b>ลูกตุ้มนาฬิกามีคาบ T = 2.0 วินาที · จงหาความถี่เชิงมุม ω (rad/s)</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb4p" onclick="setTool('c4','pencil',this)">✏️</button><button class="c-btn" id="tb4e" onclick="setTool('c4','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div><div class="c-color" style="background:#4f46e5" onclick="setColor('c4','#4f46e5',this)"></div><button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c4" data-bg="lined" width="900" height="120"></canvas>
+      <textarea id="a4" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> ω = <input class="ans-in" id="w4"> rad/s (ตอบในรูป π ได้)</div>
+  </div>
+
+  <!-- ข้อ 5 -->
+  <div class="item">
+    <div><span class="num">5</span><b>ส้อมเสียงสั่นด้วยความถี่ f = 50 Hz · จงหาคาบ T และความถี่เชิงมุม ω</b></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" id="tb5p" onclick="setTool('c5','pencil',this)">✏️</button><button class="c-btn" id="tb5e" onclick="setTool('c5','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div><div class="c-color" style="background:#4f46e5" onclick="setColor('c5','#4f46e5',this)"></div><button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c5" data-bg="lined" width="900" height="120"></canvas>
+      <textarea id="a5" class="ans-ta" rows="2"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> T = <input class="ans-in" id="t5"> s · ω = <input class="ans-in" id="w5"> rad/s</div>
+  </div>
+
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">✅ Self-check:</b> ฉันตอบถูก ........ / 5 ข้อ · ข้อที่อยากให้ครูอธิบายเพิ่ม: ..................................................
+  </div>
+
+  <div class="foot">ใบงาน 1.1 · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

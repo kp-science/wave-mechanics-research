@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 4 — การกระจัด ความเร็ว ความเร่ง และเฟส (Phase Relationships)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Sarabun', sans-serif; background: #fff1f2; color: #1a202c; font-size: 15px; line-height: 1.6; }
+
+  .hero { background: linear-gradient(135deg, #881337 0%, #be123c 50%, #f43f5e 100%); color: white; padding: 36px 40px 28px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -60px; right: -60px; width: 320px; height: 320px; background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 70%); border-radius: 50%; }
+  .hero-wave { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; overflow: hidden; }
+  .hero-top { display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+  .hero-badge { background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); border-radius: 16px; padding: 10px 20px; text-align: center; min-width: 110px; }
+  .hero-badge .plan-num { font-size: 36px; font-weight: 800; line-height: 1; }
+  .hero-badge .plan-label { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .hero-info { flex: 1; }
+  .hero-info h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+  .hero-info .subtitle { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .tag { background: rgba(255,255,255,0.18); border-radius: 20px; padding: 3px 12px; font-size: 13px; white-space: nowrap; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.2); }
+  .meta-item { display: flex; align-items: center; gap: 6px; font-size: 14px; opacity: 0.92; }
+  .meta-icon { font-size: 18px; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 40px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+  .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0; }
+  .card-icon { font-size: 22px; }
+  .card-title { font-size: 17px; font-weight: 700; color: #1a202c; }
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #718096; margin-bottom: 4px; }
+
+  .concept-box { background: linear-gradient(135deg, #ffe4e6, #fecdd3); border-left: 5px solid #e11d48; border-radius: 12px; padding: 16px 18px; margin-bottom: 20px; font-size: 15px; line-height: 1.75; }
+
+  .con-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+  @media (max-width: 760px) { .con-grid { grid-template-columns: 1fr; } }
+  .con-card { border-radius: 12px; padding: 16px; position: relative; overflow: hidden; }
+  .con-card.a { background: #ffe4e6; border-left: 4px solid #e11d48; }
+  .con-card.b { background: #fecdd3; border-left: 4px solid #be123c; }
+  .con-card.c { background: #fff1f2; border-left: 4px solid #f43f5e; }
+  .con-card-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+  .con-card-sub { font-size: 13px; color: #4a5568; }
+  .con-card-note { font-size: 12.5px; color: #718096; margin-top: 6px; }
+  .con-svg-box { background: white; border-radius: 10px; padding: 10px; margin-top: 10px; text-align: center; }
+  .formula { background: white; border-radius: 8px; padding: 8px 12px; margin-top: 8px; font-family: 'Cambria Math', 'Times New Roman', serif; font-size: 15px; text-align: center; color: #881337; font-weight: 600; }
+
+  .timeline-wrap { margin-top: 6px; }
+  .phase { display: flex; gap: 14px; margin-bottom: 16px; position: relative; }
+  .phase::before { content: ''; position: absolute; left: 24px; top: 52px; bottom: -16px; width: 2px; background: #e2e8f0; }
+  .phase:last-child::before { display: none; }
+  .phase-dot { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800; color: white; z-index: 1; }
+  .phase-dot.tlc { background: #7e57c2; }
+  .phase-dot.ft { background: #e11d48; }
+  .phase-dot.engage { background: #2e7d32; }
+  .phase-dot.explore { background: #be123c; }
+  .phase-dot.explain { background: #c62828; }
+  .phase-dot.elaborate { background: #8d6e63; }
+  .phase-dot.mj { background: #4e342e; }
+  .phase-dot.et { background: #059669; }
+  .phase-dot.jig { background: #3b82f6; }
+  .phase-dot.act { background: #0ea5e9; }
+  .phase-name.act { color: #075985; }
+  .prior-box { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 10px; padding: 12px; margin: 8px 0; }
+  .prior-box h5 { color: #075985; font-size: 13px; margin-bottom: 6px; }
+  .prior-box .src-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+  .prior-box .src-tag { background: white; border: 1px solid #7dd3fc; border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #0369a1; font-weight: 600; }
+  .phase-dot.goal { background: #16a34a; }
+  .phase-name.goal { color: #166534; }
+  .goal-box { background: #f0fdf4; border: 2px solid #16a34a; border-radius: 10px; padding: 12px; margin: 8px 0; }
+  .goal-box h5 { color: #166534; font-size: 13px; margin-bottom: 6px; }
+  .goal-box .goal-item { background: white; border-left: 3px solid #16a34a; padding: 6px 10px; margin: 4px 0; font-size: 13px; border-radius: 4px; }
+  .activity-badge.goal { background: #dcfce7; color: #166534; }
+  .analogy-box { background: #f0f9ff; border: 2px solid #0ea5e9; border-radius: 10px; padding: 12px; margin-top: 8px; }
+  .analogy-grid { display: grid; grid-template-columns: 1fr 60px 1fr; gap: 8px; align-items: center; margin-top: 8px; }
+  @media (max-width: 760px) { .analogy-grid { grid-template-columns: 1fr; } }
+  .analogy-card { background: white; border-radius: 8px; padding: 10px; font-size: 12.5px; }
+  .analogy-card.old { border-top: 3px solid #10b981; }
+  .analogy-card.new { border-top: 3px solid #e11d48; }
+  .analogy-arrow { text-align: center; font-size: 22px; color: #0ea5e9; font-weight: 800; }
+  .phase-body { flex: 1; }
+  .phase-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+  .phase-name { font-size: 17px; font-weight: 700; }
+  .phase-name.tlc { color: #5e35b1; }
+  .phase-name.ft { color: #881337; }
+  .phase-name.engage { color: #1b5e20; }
+  .phase-name.explore { color: #881337; }
+  .phase-name.explain { color: #b71c1c; }
+  .phase-name.elaborate { color: #5d4037; }
+  .phase-name.mj { color: #3e2723; }
+  .phase-name.et { color: #047857; }
+  .phase-name.jig { color: #1e40af; }
+  .phase-time { background: #edf2f7; border-radius: 20px; padding: 2px 10px; font-size: 12.5px; color: #4a5568; font-weight: 600; }
+  .vpa-badge { background: #ffe4e6; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #881337; font-weight: 600; }
+  .obj-badge { background: #fff4cc; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #8a6d00; font-weight: 700; }
+  .misc-badge { background: #ffe4d6; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #b53c00; font-weight: 700; }
+  .activity-badge { background: #dbeafe; border-radius: 20px; padding: 2px 10px; font-size: 12px; color: #1e40af; font-weight: 700; }
+  .phase-activities { list-style: none; }
+  .phase-activities li { display: grid; grid-template-columns: 140px 1fr; gap: 12px; align-items: start; padding: 6px 0; border-bottom: 1px dashed #edf2f7; font-size: 14px; color: #2d3748; }
+  .phase-activities li:last-child { border-bottom: none; }
+  .li-tool { justify-self: end; display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+  .li-text { position: relative; padding-left: 18px; }
+  .li-text::before { content: '▸'; position: absolute; left: 0; color: #a0aec0; }
+
+  .tool-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1.5px solid #fda4af; color: #881337; border-radius: 8px; padding: 2px 8px; font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+  .tool-chip.sim { border-color: #9f7aea; color: #553c9a; background: #faf5ff; }
+  .tool-chip.cc { border-color: #ed8936; color: #9c4221; background: #fffaf0; }
+  .tool-chip.poe { border-color: #38a169; color: #276749; background: #f0fff4; }
+  .tool-chip.tl { border-color: #805ad5; color: #553c9a; background: #faf5ff; }
+  .tool-chip.mj { border-color: #8b5a2b; color: #744210; background: #fffbeb; }
+  .tool-chip.ft { border-color: #e11d48; color: #881337; background: #ffe4e6; }
+  .tool-chip.work { border-color: #48bb78; color: #276749; background: #f0fff4; }
+  .tool-chip.hook { border-color: #ef4444; color: #991b1b; background: #fef2f2; }
+  .tool-chip.cmap { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+  .tool-chip.et { border-color: #059669; color: #047857; background: #d1fae5; }
+  .tool-chip.key { border-color: #6b7280; color: #374151; background: #f3f4f6; }
+  .tool-chip.jig { border-color: #1e40af; color: #1e40af; background: #dbeafe; }
+  .tool-chip.vec { border-color: #7c3aed; color: #6b21a8; background: #f3e8ff; }
+
+  .comp-badge { display: inline-flex; align-items: center; gap: 3px; background: #ffe4e6; color: #881337; border: 1px solid #fda4af; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+  .char-badge { display: inline-flex; align-items: center; gap: 3px; background: #fefcbf; color: #744210; border: 1px solid #ecc94b; border-radius: 20px; padding: 2px 8px; font-size: 11.5px; font-weight: 600; }
+
+  .misc-box { background: #fff5f5; border: 1.5px solid #fc8181; border-radius: 12px; padding: 14px; margin-top: 14px; }
+  .misc-title { font-weight: 700; color: #c53030; font-size: 14px; display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+  .misc-item { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .misc-id { background: #c53030; color: white; border-radius: 8px; padding: 2px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+  .misc-id.star { background: #9c4221; }
+  .misc-id.critical { background: #7f1d1d; }
+  .misc-text { font-size: 13.5px; color: #2d3748; }
+  .misc-correct { font-size: 13px; color: #276749; font-weight: 600; margin-top: 3px; }
+
+  .assess-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .assess-table th { background: #e11d48; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .assess-table td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .assess-table tr:nth-child(even) td { background: #fff1f2; }
+
+  .vpa-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 10px; }
+  .vpa-table th { background: #881337; color: white; padding: 8px 10px; text-align: left; font-weight: 600; }
+  .vpa-table td { padding: 8px 10px; border-bottom: 1px solid #fecdd3; vertical-align: top; }
+  .vpa-table tr:nth-child(even) td { background: #fff1f2; }
+  .vpa-num { background: #e11d48; color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .e5-tag { display: inline-block; border-radius: 6px; padding: 1px 8px; font-size: 11.5px; font-weight: 600; color: white; }
+  .e5-tlc { background: #7e57c2; }
+  .e5-ft { background: #e11d48; }
+  .e5-engage { background: #2e7d32; }
+  .e5-explore { background: #be123c; }
+  .e5-explain { background: #c62828; }
+  .e5-elaborate { background: #8d6e63; }
+  .e5-mj { background: #4e342e; }
+  .e5-et { background: #059669; }
+  .e5-jig { background: #1e40af; }
+
+  .tool-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f4f8; font-size: 14px; }
+  .tool-item:last-child { border-bottom: none; }
+  .tool-num { background: #e11d48; color: white; border-radius: 50%; width: 26px; height: 26px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .tool-item.core { background: #fff1f2; border-radius: 6px; padding: 8px 10px; margin: 2px 0; border-bottom: none; }
+  .tool-item.plus { background: #f0fdf4; border-radius: 6px; padding: 8px 10px; margin: 2px 0; border-bottom: none; border-left: 3px solid #059669; }
+  .tool-item.plus .tool-num { background: #059669; }
+
+  .obj-group { margin-bottom: 14px; }
+  .obj-group:last-child { margin-bottom: 0; }
+  .obj-type { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; padding: 3px 12px; border-radius: 20px; margin-bottom: 8px; }
+  .obj-type.k { background: #fecdd3; color: #881337; }
+  .obj-type.p { background: #c6f6d5; color: #1c4532; }
+  .obj-type.a { background: #feebc8; color: #652b19; }
+  .obj-list { list-style: none; }
+  .obj-list li { padding: 4px 0 4px 26px; position: relative; font-size: 14px; color: #2d3748; }
+  .obj-list li::before { content: '✓'; position: absolute; left: 0; color: #38a169; font-weight: 700; }
+  .obj-code { display: inline-block; background: #881337; color: #fff; border-radius: 4px; font-size: 11px; padding: 1px 6px; margin-right: 4px; font-weight: 700; }
+  .obj-code.p { background: #1c4532; }
+  .obj-code.a { background: #652b19; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .comp-item { background: #f7fafc; border-radius: 10px; padding: 10px 12px; font-size: 13.5px; display: flex; align-items: center; gap: 8px; }
+  .comp-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .rubric-strip { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .rubric-score { flex: 1; min-width: 80px; border-radius: 10px; padding: 10px; text-align: center; border: 2px solid transparent; }
+  .rubric-score .score-num { font-size: 26px; font-weight: 800; line-height: 1; }
+  .rubric-score .score-desc { font-size: 12px; margin-top: 4px; }
+  .rubric-score:nth-child(1) { background: #fff5f5; border-color: #fc8181; color: #c53030; }
+  .rubric-score:nth-child(2) { background: #fffaf0; border-color: #f6ad55; color: #c05621; }
+  .rubric-score:nth-child(3) { background: #f0fff4; border-color: #9ae6b4; color: #276749; }
+  .rubric-score:nth-child(4) { background: #ffe4e6; border-color: #fda4af; color: #881337; }
+
+  .footer { text-align: center; padding: 20px; color: #a0aec0; font-size: 13px; border-top: 1px solid #e2e8f0; margin-top: 10px; }
+
+  .section-heading { font-size: 20px; font-weight: 800; color: #1a202c; margin: 28px 0 14px; padding-left: 14px; border-left: 5px solid #e11d48; }
+
+  .sim-banner { background: linear-gradient(90deg, #881337, #f43f5e); border-radius: 12px; padding: 14px 18px; margin: 14px 0; color: white; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .sim-banner-icon { font-size: 28px; }
+  .sim-banner-title { font-weight: 700; font-size: 15px; }
+  .sim-banner-sub { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+  .sim-badge { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; padding: 4px 12px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+
+  .svg-label { font-family: 'Sarabun', sans-serif; font-size: 9.5px; font-weight: 700; }
+
+  .priority-banner { background: linear-gradient(90deg, #991b1b, #dc2626); color: white; padding: 12px 16px; border-radius: 10px; margin: 14px 0; display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .priority-banner .icon { font-size: 20px; }
+
+  .jigsaw-box { background: #eff6ff; border: 2px solid #3b82f6; border-radius: 12px; padding: 14px; margin: 10px 0; }
+  .jigsaw-title { color: #1e40af; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+  .jigsaw-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  @media (max-width: 760px) { .jigsaw-grid { grid-template-columns: 1fr 1fr; } }
+  .jigsaw-card { background: white; border-radius: 8px; padding: 10px; border-top: 3px solid #3b82f6; font-size: 12.5px; }
+  .jigsaw-card h5 { color: #1e40af; font-size: 13px; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">4</div>
+      <div class="plan-label">แผนการสอน ⭐</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px; opacity:0.75; margin-bottom:4px; font-weight:600; letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 8 การเคลื่อนที่แบบ SHM · ม.5</p>
+      <h1>การกระจัด ความเร็ว ความเร่ง และเฟส</h1>
+      <div class="subtitle">หน่วย SHM · แผน 4/6 · คาบที่ 7–8 · <strong>Priority ⭐ (Misconception 75%)</strong></div>
+      <div class="hero-tags">
+        <span class="tag">🎯 5E + Jigsaw</span>
+        <span class="tag">🤝 Peer Teaching</span>
+        <span class="tag">🎨 Vector Drawing</span>
+        <span class="tag">🖼 Gallery Walk</span>
+        <span class="tag">🧠 วPA ด้าน 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ M4.1 ★★ (75%)</span>
+        <span class="tag">💻 SIM04 Phase Explorer</span>
+        <span class="tag">📦 10 ชิ้น (6+4)</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item"><span class="meta-icon">⏱</span> <strong>คาบ 7–8 · 100 นาที</strong></div>
+    <div class="meta-item"><span class="meta-icon">👨‍🏫</span> นายโกเมน ปาปะโถ</div>
+    <div class="meta-item"><span class="meta-icon">📚</span> สสวท. ฟิสิกส์ เล่ม 3 · 8.4</div>
+    <div class="meta-item"><span class="meta-icon">🎯</span> ตัวชี้วัด ว2.3 ม.5/4</div>
+    <div class="meta-item"><span class="meta-icon">🏫</span> โรงเรียนสตรีวิทยา</div>
+  </div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none"><path d="M0,20 C200,0 400,40 600,20 C800,0 1000,40 1200,20 L1200,40 L0,40 Z" fill="#fff1f2"/></svg>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="priority-banner">
+    <span class="icon">⭐</span>
+    <span>แผนสำคัญสุดของหน่วย — Misconception M4.1 "ที่ปลายสุด v=0 และ a=0" พบ <strong>75%</strong> ในงานวิจัย (Tumanggor 2020) · ใช้ Jigsaw + Vector Drawing + SIM04 โจมตีตรง ๆ</span>
+  </div>
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    ใน SHM ปริมาณ <strong>การกระจัด y, ความเร็ว v และความเร่ง a</strong> เป็นฟังก์ชันไซน์ที่มี<strong>เฟสต่างกัน 90°</strong><br>
+    • <strong>y = A sin(ωt+φ)</strong> · <strong>v = Aω cos(ωt+φ)</strong> · <strong>a = −Aω² sin(ωt+φ)</strong><br>
+    • <strong>a = −ω²y</strong> — ความเร่งสวนทิศกับการกระจัดเสมอ (ชี้กลับสมดุล)<br>
+    • <strong>ที่สมดุล (y=0):</strong> v สูงสุด = Aω · a = 0 (แก้ M4.2)<br>
+    • <strong>ที่ปลายสุด (y=±A):</strong> v = 0 · a สูงสุด = Aω² (ชี้กลับสมดุล) (แก้ M4.1 ★★)<br>
+    • <strong>v กับ a เฟสต่าง 90°</strong> ไม่เป็นทิศเดียวกันเสมอ (แก้ M4.3, M4.4)<br>
+    • <strong>v = ω√(A²−y²)</strong> ใช้หา v ที่ตำแหน่ง y ใด ๆ (ไม่ต้องรู้ t)
+  </div>
+
+  <div class="con-grid">
+    <div class="con-card a">
+      <div class="con-card-title">📈 กราฟ y, v, a เฟสต่าง 90°</div>
+      <div class="con-card-sub">3 เส้นซ้อน · เส้นเวลาเดียวกัน</div>
+      <div class="con-svg-box">
+        <svg viewBox="0 0 220 100" width="210" height="90">
+          <line x1="10" y1="50" x2="215" y2="50" stroke="#cbd5e0" stroke-width="1"/>
+          <line x1="10" y1="10" x2="10" y2="90" stroke="#cbd5e0" stroke-width="1"/>
+          <!-- y = sin (red) -->
+          <path d="M10,50 Q35,10 60,50 T110,50 T160,50 T210,50" stroke="#e11d48" stroke-width="2" fill="none"/>
+          <!-- v = cos (green) -->
+          <path d="M10,10 Q35,50 60,90 T110,10 T160,90 T210,10" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+          <!-- a = -sin (blue) -->
+          <path d="M10,50 Q35,90 60,50 T110,50 T160,50 T210,50" stroke="#2563eb" stroke-width="2" fill="none" stroke-dasharray="2,2" transform="scale(1,-1) translate(0,-100)"/>
+          <text x="213" y="50" class="svg-label" fill="#e11d48" text-anchor="start">y</text>
+          <text x="213" y="20" class="svg-label" fill="#059669" text-anchor="start">v</text>
+          <text x="213" y="85" class="svg-label" fill="#2563eb" text-anchor="start">a</text>
+        </svg>
+      </div>
+      <div class="con-card-note">เฟสต่าง 90° · <strong>แก้ M4.3</strong></div>
+    </div>
+    <div class="con-card b">
+      <div class="con-card-title">🎯 ค่าสูงสุด ณ ตำแหน่ง</div>
+      <div class="con-card-sub">ที่สมดุล vs ที่ปลายสุด</div>
+      <div class="con-svg-box">
+        <svg viewBox="0 0 220 100" width="210" height="90">
+          <defs><marker id="v1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#059669"/></marker><marker id="a1" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#2563eb"/></marker></defs>
+          <line x1="20" y1="50" x2="200" y2="50" stroke="#cbd5e0" stroke-width="1"/>
+          <line x1="110" y1="25" x2="110" y2="75" stroke="#64748b" stroke-width="1.5"/>
+          <circle cx="30" cy="50" r="8" fill="#e11d48"/><text x="30" y="85" class="svg-label" fill="#881337" text-anchor="middle">y=−A</text>
+          <line x1="30" y1="40" x2="60" y2="40" stroke="#2563eb" stroke-width="2" marker-end="url(#a1)"/>
+          <text x="45" y="32" class="svg-label" fill="#2563eb" text-anchor="middle">a max</text>
+          <circle cx="110" cy="50" r="8" fill="#e11d48" opacity="0.5"/><text x="110" y="85" class="svg-label" fill="#881337" text-anchor="middle">y=0</text>
+          <line x1="110" y1="40" x2="160" y2="40" stroke="#059669" stroke-width="2" marker-end="url(#v1)"/>
+          <text x="135" y="32" class="svg-label" fill="#059669" text-anchor="middle">v max</text>
+          <circle cx="190" cy="50" r="8" fill="#e11d48"/><text x="190" y="85" class="svg-label" fill="#881337" text-anchor="middle">y=+A</text>
+        </svg>
+      </div>
+      <div class="con-card-note"><strong>ที่ปลาย v=0 แต่ a max! · แก้ M4.1 ★</strong></div>
+    </div>
+    <div class="con-card c">
+      <div class="con-card-title">📊 สมการเวลาใด ๆ</div>
+      <div class="formula">y = A sin(ωt+φ)</div>
+      <div class="formula">v = Aω cos(ωt+φ)</div>
+      <div class="formula">a = −Aω² sin(ωt+φ)</div>
+      <div class="formula">a = −ω²y</div>
+      <div class="con-card-note">ค่าสูงสุด: y=A · v=Aω · a=Aω²</div>
+    </div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 4 — <strong>จุดยากที่สุดของหน่วย</strong> (Tumanggor 2020 · Zavala · Somroob 2016)</div>
+    <div class="misc-item">
+      <span class="misc-id critical">M4.1 ★★</span>
+      <div>
+        <div class="misc-text">❌ <em>"ที่ปลายสุด v = 0 และ a = 0 (เพราะหยุด)"</em> <span style="font-size:11px;color:#718096;">[พบ <strong>75%</strong> · Tumanggor 2020 · Somroob 2016]</span></div>
+        <div class="misc-correct">✅ ที่ปลายสุด: <strong>v = 0 จริง แต่ a สูงสุด = Aω²</strong> (ชี้กลับสมดุล) · หยุดชั่วขณะก่อนกลับ ไม่ใช่หยุดถาวร · SIM04 แสดงเวกเตอร์ชัด</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id star">M4.2 ★</span>
+      <div>
+        <div class="misc-text">❌ <em>"ที่สมดุล v = 0 (คิดว่าหยุด)"</em> <span style="font-size:11px;color:#718096;">[Albert.io · AP Physics]</span></div>
+        <div class="misc-correct">✅ ที่สมดุล: <strong>v สูงสุด = Aω · a = 0</strong> · วัตถุเคลื่อนที่เร็วที่สุดและไม่มีแรงกระทำ</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M4.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"v กับ a เฟสเดียวกัน (เคลื่อนที่ไปพร้อมกัน)"</em> <span style="font-size:11px;color:#718096;">[Zavala et al.]</span></div>
+        <div class="misc-correct">✅ v กับ a <strong>เฟสต่าง 90°</strong> · SIM04 แสดง 3 เส้นซ้อน (y-v-a) กับเส้นเวลา เห็นเฟสชัด</div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M4.4</span>
+      <div>
+        <div class="misc-text">❌ <em>"a ชี้ทิศเดียวกับ v เสมอ"</em> <span style="font-size:11px;color:#718096;">[AP Physics]</span></div>
+        <div class="misc-correct">✅ a = −ω²y ชี้<strong>กลับสมดุล</strong>เสมอ · เมื่อ v กำลังช้าลง (ใกล้ปลาย) a สวนทางกับ v · เมื่อ v กำลังเร็วขึ้น (ใกล้สมดุล) a ตามทาง v</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><span class="card-title">KPA</span></div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K4.1</span>เขียนสมการ y = A sin(ωt+φ), v = Aω cos(ωt+φ), a = −Aω² sin(ωt+φ) · ระบุค่าสูงสุด · F4 ≥ 80%</li>
+          <li><span class="obj-code">K4.2</span>อธิบายความสัมพันธ์ a = −ω²y และเฟสต่าง 90° ระหว่าง y, v, a (M4.1–M4.3) · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P4.1</span>ใช้ SIM04 Phase Explorer + วาดเวกเตอร์ y, v, a ณ 4 ตำแหน่ง (canvas) · Rubric ≥ 3/4</li>
+          <li><span class="obj-code p">P4.2</span>อ่าน/เขียนกราฟ 3 เส้นซ้อน y-t, v-t, a-t · หา v ที่ y ใด ๆ ด้วย v=ω√(A²−y²) · ใบงาน ≥ 5/8 ข้อ</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A4.1</span>Peer Teaching — อธิบายให้เพื่อนกลุ่มอื่นฟังใน Jigsaw · OB-01</li>
+          <li><span class="obj-code a">A4.2</span>เห็นคุณค่าของกราฟเป็นเครื่องมือเข้าใจฟิสิกส์ (M4.3) · MJ-04 ≥ 70%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">💪</span><span class="card-title">สมรรถนะ & คุณลักษณะ · รูปแบบสอน</span></div>
+      <div class="comp-grid">
+        <div class="comp-item"><span class="comp-dot" style="background:#3182ce"></span>การสื่อสาร</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#805ad5"></span>การคิด</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#e53e3e"></span>การแก้ปัญหา</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#dd6b20"></span>ทักษะชีวิต</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#e11d48"></span>การใช้เทคโนโลยี</div>
+        <div class="comp-item"><span class="comp-dot" style="background:#1e88e5"></span>รวมพลัง/ทีม</div>
+      </div>
+      <div class="jigsaw-box" style="margin-top:14px;">
+        <div class="jigsaw-title">🧩 รูปแบบการสอนหลัก: Jigsaw + Peer Teaching + Vector Drawing</div>
+        <div style="font-size:12.5px; color:#4a5568;">แบ่งกลุ่มบ้าน 4 คน → แต่ละคนเป็น <strong>ผู้เชี่ยวชาญ</strong> 1 ประเด็น → ไปกลุ่มเชี่ยวชาญ → กลับมาสอนเพื่อนในกลุ่มบ้าน</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + Jigsaw + Gallery Walk · 11 ขั้น)</h2>
+  <div class="card">
+    <div class="timeline-wrap">
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name tlc">TLC ก่อนเรียน</span><span class="phase-time">⏱ 0–5</span><span class="vpa-badge">วPA 4, 7</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">ครูถามเชื่อมแผน 2-3: "เรารู้ ω จาก l, g หรือ m, k · ทีนี้ ณ เวลา t ใด ๆ y, v, a เป็นเท่าไร?"</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot act">ACT</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name act">🧠 Activate — ทบทวนความรู้เดิม (Analogy "Reference Circle")</span><span class="phase-time">⏱ 5–12 นาที</span><span class="obj-badge">A4.2</span><span class="vpa-badge">วPA <strong>2</strong> ★</span><span class="activity-badge">🔄 Analogy</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">
+              <div class="prior-box">
+                <h5>🔗 ความรู้เดิมที่ต้องทบทวนก่อนเข้าบทสมการ y, v, a</h5>
+                <div style="font-size:13px;color:#0c4a6e;">ต้องเรียกคืน: <strong>แผน 1-3</strong> (ω จากลูกตุ้ม/สปริง) + ม.4 (การเคลื่อนที่วงกลม + sin/cos) + คณิต (อนุพันธ์ sin/cos)</div>
+                <div class="src-row">
+                  <span class="src-tag">📘 แผน 1 · ω = 2πf</span>
+                  <span class="src-tag">📘 แผน 2-3 · ω ของระบบ</span>
+                  <span class="src-tag">🎯 ม.4 · วงกลมสม่ำเสมอ</span>
+                  <span class="src-tag">📐 คณิต · d/dt sin=cos</span>
+                </div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">🔄 <strong>Analogy "Reference Circle" (5')</strong> · ครูเปิดภาพ + animation · อธิบายว่า <strong>SHM = เงาของวงกลมสม่ำเสมอ</strong> (projection บนแกน x)
+              <div class="analogy-box">
+                <div style="font-weight:700;color:#075985;font-size:13px;">🔁 ความเชื่อมโยง: วงกลม (เดิม) → SHM (ใหม่)</div>
+                <div class="analogy-grid">
+                  <div class="analogy-card old">
+                    <strong style="color:#065f46;">🟢 วงกลมสม่ำเสมอ (รู้แล้ว)</strong><br>
+                    มุม θ = ωt<br>
+                    x = R cos(ωt)<br>
+                    y = R sin(ωt)<br>
+                    v = Rω · a = Rω² (เข้าศูนย์)
+                  </div>
+                  <div class="analogy-arrow">⟹</div>
+                  <div class="analogy-card new">
+                    <strong style="color:#881337;">🔴 SHM (ใหม่)</strong><br>
+                    y(t) = A sin(ωt+φ)<br>
+                    v(t) = Aω cos(ωt+φ)<br>
+                    a(t) = −Aω² sin(ωt+φ)<br>
+                    <strong>= projection ของวงกลม</strong>
+                  </div>
+                </div>
+              </div>
+
+      <!-- Goal Setting -->
+      <div class="phase">
+        <div class="phase-dot goal">GOAL</div>
+        <div class="phase-body">
+          <div class="phase-head">
+            <span class="phase-name goal">🎯 Goal — เป้าหมายการเรียนวันนี้ (Can-Do Statements + Priority Goal (M4.1))</span>
+            <span class="phase-time">⏱ 2–5 นาที</span>
+            <span class="vpa-badge">วPA 1, 4</span>
+            <span class="activity-badge goal">💡 Can-Do Statements + Priority Goal (M4.1)</span>
+          </div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">
+              <div class="goal-box">
+                <h5>🎯 ฉันจะ... ได้ (แผน Priority ⭐)</h5>
+                <div class="goal-item">💡 <strong>ฉันจะ</strong>วาดเวกเตอร์ y, v, a ณ 4 ตำแหน่ง (y=−A, −A/2, 0, +A) <strong>ได้</strong></div>
+                <div class="goal-item">💡 <strong>ฉันจะ</strong>อธิบายว่าที่ปลายสุด v=0 แต่ a สูงสุด (แก้ M4.1 ⭐ 75%) <strong>ได้</strong></div>
+                <div class="goal-item">💡 <strong>ฉันจะ</strong>อ่านกราฟ 3 เส้นซ้อน (y, v, a) และบอกเฟสต่าง 90° <strong>ได้</strong></div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">💡 แผนนี้เป็น Priority ⭐ ของหน่วย (Misconception 75%) · นักเรียนเขียน 3 "ฉันจะ..." ลง Jigsaw worksheet · ตอนจบคาบต้อง ✓ ครบ 3 ข้อถึงจะผ่าน</span></li>
+          </ul>
+        </div>
+      </div>
+
+            </span></li>
+            <li><span class="li-tool"></span><span class="li-text">💡 <strong>Think (3')</strong> · ครูถาม "ถ้าเรารู้ x, v, a ของวงกลม · ใช้ projection จะได้สูตรของ SHM อย่างไร?" นักเรียนคิดเงียบ · ครูไม่เฉลย (เป็น Hook สู่ E1)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F4</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name ft">Pre-test — Four-tier F4 <span style="font-size:12px;color:#718096;font-weight:400;">① ใบกิจกรรม</span></span><span class="phase-time">⏱ 5–15</span><span class="obj-badge">K4.1, K4.2</span><span class="misc-badge">M4.1–M4.4</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 01_Pretest</span></span><span class="li-text">Four-tier 6 ข้อ · เน้น M4.1 "ที่ปลายสุด a = ?" (เฉลย max) + M4.2 "ที่สมดุล v = ?" (เฉลย max)</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot engage">E1</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name engage">Engage — Hook + POE Quick <span style="font-size:12px;color:#718096;font-weight:400;">⑦ ใบกิจกรรม</span></span><span class="phase-time">⏱ 15–25</span><span class="obj-badge">P4.1</span><span class="misc-badge">M4.1, M4.2</span><span class="activity-badge">🎬 Video Hook</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip hook">🎬 02_Engage</span></span><span class="li-text">🎬 <strong>Hook · วิดีโอ slow-motion สปริงสั่น 15'' + ชิงช้า</strong> · ถามตรง: "ตรงจุดสุดของชิงช้า ความเร็วเป็นเท่าไร? ความเร่งเป็นเท่าไร?" (trap M4.1)</span></li>
+            <li><span class="li-tool"></span><span class="li-text">✍️ เขียน <strong>Predict ส่วนตัว</strong> (2') — ทุกคนตอบก่อนดู sim · ส่งเข้าระบบเก็บข้อมูล baseline</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot jig">JIG</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name jig">Explore — Jigsaw "ผู้เชี่ยวชาญ 4 ประเด็น" <span style="font-size:12px;color:#718096;font-weight:400;">③ ใบกิจกรรม</span></span><span class="phase-time">⏱ 25–55</span><span class="obj-badge">P4.1, P4.2, A4.1</span><span class="misc-badge">M4.1–M4.4</span><span class="activity-badge">🧩 Jigsaw</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"></span><span class="li-text">
+              <div class="jigsaw-box">
+                <div class="jigsaw-title">🧩 Jigsaw 3 ขั้นตอน (30 นาที)</div>
+                <div class="jigsaw-grid">
+                  <div class="jigsaw-card"><h5>Expert 1</h5>สมการ y(t) + กราฟ y-t · ใช้ SIM04 สังเกต A, ω</div>
+                  <div class="jigsaw-card"><h5>Expert 2</h5>สมการ v(t) + กราฟ v-t · v max ที่สมดุล (M4.2)</div>
+                  <div class="jigsaw-card"><h5>Expert 3</h5>สมการ a(t) + กราฟ a-t · a max ที่ปลาย (M4.1★)</div>
+                  <div class="jigsaw-card"><h5>Expert 4</h5>ความสัมพันธ์ a=−ω²y + เฟสต่าง 90° (M4.3, M4.4)</div>
+                </div>
+                <div style="font-size:12px; color:#1e40af; margin-top:8px;">① Home 4' (แบ่งหน้าที่) → ② Expert 14' (เรียนเฉพาะด้านในกลุ่มเชี่ยวชาญ ใช้ SIM04) → ③ กลับ Home 12' (Peer Teaching ทีละคน)</div>
+              </div>
+            </span></li>
+            <li><span class="li-tool"><span class="tool-chip sim">🚀 SIM04</span></span><span class="li-text">ใช้ SIM04 Phase Explorer เน้น: คลิกตำแหน่งใด ๆ → โชว์เวกเตอร์ y, v, a · กราฟ 3 เส้นซ้อน · ปุ่ม "ไปสมดุล"/"ไปปลาย" เห็นตัวอย่างชัด</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot explain">E3</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name explain">Explain — Gallery Walk + Vector Drawing <span style="font-size:12px;color:#718096;font-weight:400;">④ ใบกิจกรรม</span></span><span class="phase-time">⏱ 55–70</span><span class="obj-badge">K4.1, K4.2</span><span class="misc-badge">M4.1–M4.4</span><span class="activity-badge">🖼 Gallery Walk</span><span class="activity-badge">🎨 Vector Drawing</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip vec">🎨 Vec-04</span></span><span class="li-text">🎨 <strong>Vector Drawing (canvas)</strong> · นักเรียนวาดลูกศร y, v, a บน sim canvas ณ 4 ตำแหน่ง (y=−A, y=−A/2, y=0, y=+A) · ส่งเข้าระบบเก็บภาพ → ตรวจด้วย rubric</span></li>
+            <li><span class="li-tool"><span class="tool-chip cmap">🗺 04_ConceptMap</span></span><span class="li-text">🖼 <strong>Gallery Walk</strong> · แต่ละกลุ่มโพสต์ Concept Map บนผนังห้อง (kinesthetic minimal) · เวียนอ่านและเขียน sticky note ให้เพื่อน · ครูสรุปจุดร่วม-จุดต่าง</span></li>
+            <li><span class="li-tool"></span><span class="li-text">🏆 ครูสรุป derivation y=A sin(ωt) → v=dy/dt=Aω cos(ωt) → a=dv/dt=−Aω² sin(ωt) = −ω²y</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot elaborate">E4</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name elaborate">Elaborate — แบบฝึก + Challenge <span style="font-size:12px;color:#718096;font-weight:400;">⑤ ใบกิจกรรม</span></span><span class="phase-time">⏱ 70–83</span><span class="obj-badge">K4.1, P4.2</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip work">📄 05_Exercise</span></span><span class="li-text">📐 <strong>แบบฝึก 8 ข้อ</strong> — (1) หา v, a ที่ t=0.5 s (2) v ที่ y=A/2 (3) เวลาใดที่ v max (4) อ่านกราฟ y-t บอก A, T, φ (5) วาดกราฟ v-t จาก y-t (6) หา a ที่ y=+A (แก้ M4.1) (7) เปรียบเทียบ v กับ a ทิศเดียวกันไหม (8) Challenge: หา φ จาก y(0) ≠ 0</span></li>
+            <li><span class="li-tool"><span class="tool-chip work">📄 06_CaseStudy</span></span><span class="li-text">🔍 <strong>Case: เครื่องวัดแผ่นดินไหว (seismograph)</strong> · y, v, a สัมพันธ์อย่างไรกับสัญญาณที่บันทึก</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot et">ET</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name et">Exit Ticket <span style="font-size:12px;color:#718096;font-weight:400;">⑨ ใบกิจกรรม</span></span><span class="phase-time">⏱ 83–86</span><span class="misc-badge">M4.1</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip et">🎟 07_ExitTicket</span></span><span class="li-text">3 ข้อ — (1) "ที่ y=+A: v=? a=?" (2) "ที่ y=0: v=? a=?" (3) วาดเวกเตอร์ y,v,a ที่ y=−A/2</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot tlc">TLC</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name tlc">TLC หลังเรียน</span><span class="phase-time">⏱ 86–90</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip tl">🚦 TL-01</span></span><span class="li-text">ยกบัตร 🟢🟡🔴 · เป้าเขียว ≥ 60%</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot ft">F4</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name ft">Post-test — Four-tier F4 <span style="font-size:12px;color:#718096;font-weight:400;">⑥ ใบกิจกรรม</span></span><span class="phase-time">⏱ 90–97</span><span class="misc-badge">M4.1–M4.4</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip ft">📝 09_Posttest</span></span><span class="li-text">Four-tier 6 ข้อซ้ำ · ⟨g⟩ · เป้าหมาย Sound ≥ 80% · <strong>M4.1 ลด ≥ 30%</strong> (เพราะเป็นแผน priority) · เฉลยที่ <strong>10_AnswerKey</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-dot mj">MJ</div>
+        <div class="phase-body">
+          <div class="phase-head"><span class="phase-name mj">Journal 3-2-1 <span style="font-size:12px;color:#718096;font-weight:400;">⑧ ใบกิจกรรม</span></span><span class="phase-time">⏱ 97–100</span></div>
+          <ul class="phase-activities">
+            <li><span class="li-tool"><span class="tool-chip mj">📓 08_Journal</span></span><span class="li-text"><strong>3</strong> สิ่งเรียนรู้ (เน้น misconception ที่ถูกแก้) · <strong>2</strong> การประยุกต์ (seismograph · accelerometer มือถือ) · <strong>1</strong> คำถาม</li>
+            <li><span class="li-tool"></span><span class="li-text">🔗 Hook แผน 5: "ถ้า v กับ a สวนทาง · พลังงานไปไหน?" 🌱</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อและแหล่งการเรียนรู้ — ใบกิจกรรม 10 ชิ้น (6+4)</h2>
+  <div class="sim-banner">
+    <div class="sim-banner-icon">🚀</div>
+    <div style="flex:1;">
+      <div class="sim-banner-title">Simulation หลัก — KP Science SIM04 Phase Explorer ⭐ (Priority สูงสุด)</div>
+      <div class="sim-banner-sub">3 เวกเตอร์ y, v, a ซ้อน · กราฟ 3 เส้น + เส้นเวลาเคลื่อน · ปุ่ม Jump to "สมดุล"/"ปลาย" · Misconception Trap ก่อนเล่น</div>
+    </div>
+    <span class="sim-badge">SIM04 · Phase Explorer ⭐</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📦</span><span class="card-title">Core 6 · ใบกิจกรรมหลัก</span></div>
+      <div class="tool-item core"><span class="tool-num">1</span><strong>01_Pretest_4tier.html</strong> — Four-tier 6 ข้อ · เน้น M4.1 (75%)</div>
+      <div class="tool-item core"><span class="tool-num">2</span><strong>แผน4_Infographic.html</strong> — Hub หลัก (ไฟล์นี้)</div>
+      <div class="tool-item core"><span class="tool-num">3</span><strong>03_Jigsaw_PhaseExplorer.html</strong> — Jigsaw 4 expert + SIM04 embed</div>
+      <div class="tool-item core"><span class="tool-num">4</span><strong>05_Exercise_Phase.html</strong> — แบบฝึก 8 ข้อ + Vector Drawing</div>
+      <div class="tool-item core"><span class="tool-num">5</span><strong>08_Journal_321.html</strong> — Metacognitive (→ แผน 5)</div>
+      <div class="tool-item core"><span class="tool-num">6</span><strong>09_Posttest_4tier.html</strong> — ชุดเดียวกับ Pretest · ⟨g⟩</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">➕</span><span class="card-title">+4 · ใบกิจกรรมเสริม</span></div>
+      <div class="tool-item plus"><span class="tool-num">7</span><strong>02_Engage_Hook.html</strong> — Slow-mo video + Predict · Driving Question</div>
+      <div class="tool-item plus"><span class="tool-num">8</span><strong>04_ConceptMap_VectorDraw.html</strong> — Gallery Walk + Canvas Vector Drawing 4 ตำแหน่ง</div>
+      <div class="tool-item plus"><span class="tool-num">9</span><strong>07_ExitTicket.html</strong> — Quick check 3 ข้อ (M4.1 focus)</div>
+      <div class="tool-item plus"><span class="tool-num">10</span><strong>10_AnswerKey.html</strong> — เฉลย + คำอธิบายแก้ misconception 4 ตัว</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="card-header"><span class="card-icon">⭐</span><span class="card-title">Enrichment + เชื่อมสู่แผนถัดไป</span></div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:14px;">
+      <div style="background:#ffe4e6; border:1.5px solid #fda4af; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#881337; font-size:14px; margin-bottom:8px;">🌍 y, v, a ในชีวิตจริง</div>
+        <div style="display:grid; gap:8px;">
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #e11d48;">
+            <div style="font-weight:700; color:#881337; font-size:13px;">📱 Accelerometer มือถือ</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">วัด a ของมือถือ · ใช้ระบบหน้าจอหมุนอัตโนมัติ · ใช้นับก้าว (step counter)</div>
+          </div>
+          <div style="background:white; border-radius:8px; padding:10px; border-left:3px solid #be123c;">
+            <div style="font-weight:700; color:#9f1239; font-size:13px;">🌋 Seismograph</div>
+            <div style="font-size:12.5px; color:#4a5568; margin-top:4px;">บันทึก y-t ของแผ่นดินไหว · ใช้อนุพันธ์หา v, a · วัดความรุนแรงแผ่นดินไหว</div>
+          </div>
+        </div>
+      </div>
+      <div style="background:#fff1f2; border:1.5px solid #fda4af; border-radius:10px; padding:14px;">
+        <div style="font-weight:700; color:#881337; font-size:14px; margin-bottom:6px;">🔗 เชื่อมสู่แผนถัดไป</div>
+        <div style="font-size:13px; color:#2d3748;">
+          • <strong>แผน 5:</strong> พลังงาน — KE = ½mv² ใช้ v จากแผน 4 · PE = ½ky² ใช้ y<br>
+          • <strong>แผน 6:</strong> Damping — สมการเปลี่ยนเป็น A(t) ลดตามเวลา
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📏 การวัดและประเมินผล</h2>
+  <div class="card">
+    <table class="assess-table">
+      <thead><tr><th>วัตถุประสงค์</th><th>ตัวแปรที่วัด</th><th>เครื่องมือ</th><th>เกณฑ์ผ่าน</th></tr></thead>
+      <tbody>
+        <tr><td><strong>K4.1 · K4.2</strong></td><td>สมการ y,v,a · เฟส 90° · a=−ω²y</td><td>01_Pretest · 09_Posttest · 07_ExitTicket</td><td>Sound ≥ 80% · M4.1 ลด ≥ <strong>30%</strong> · ⟨g⟩ ≥ 0.4</td></tr>
+        <tr><td><strong>P4.1 · P4.2</strong></td><td>ใช้ SIM04 · วาดเวกเตอร์ · อ่านกราฟ</td><td>03_Jigsaw · 04_VectorDraw · 05_Exercise</td><td>Rubric ≥ 3/4 · ใบงาน ≥ 5/8 ข้อ</td></tr>
+        <tr><td><strong>A4.1</strong></td><td>Peer Teaching ใน Jigsaw</td><td>OB-01 · Peer feedback sticky note</td><td>≥ 80% "ดี"</td></tr>
+        <tr><td><strong>A4.2</strong></td><td>เห็นคุณค่ากราฟ</td><td>08_Journal</td><td>≥ 70% Conceptual Change</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="section-heading">🔗 วPA ด้านที่ 1 (8 ตัวชี้วัด)</h2>
+  <div class="card">
+    <table class="vpa-table">
+      <thead><tr><th style="width:40px;">#</th><th>ตัวชี้วัด</th><th>หลักฐาน</th><th style="width:130px;">ขั้น</th></tr></thead>
+      <tbody>
+        <tr><td><span class="vpa-num">1</span></td><td><strong>เข้าถึง/เข้าใจบทเรียน</strong></td><td>02_Hook slow-mo · SIM04 · เวกเตอร์เห็นชัด</td><td><span class="e5-tag e5-engage">E1</span></td></tr>
+        <tr style="background:#e0f2fe;"><td><span class="vpa-num">2</span> ⭐</td><td><strong>เชื่อมโยงความรู้เดิม</strong></td><td><strong>🧠 ACT · ทบทวนชัดเจน:</strong> Analogy "Reference Circle" → SHM = projection ของวงกลม · ทบทวนแผน 1-3 (ω) + ม.4 (วงกลม, sin/cos) + คณิต (อนุพันธ์) · ตาราง side-by-side วงกลม vs SHM</td><td><span class="e5-tag" style="background:#0ea5e9;">ACT</span> <span class="e5-tag e5-ft">F4</span></td></tr>
+        <tr><td><span class="vpa-num">3</span></td><td><strong>สร้างความรู้เอง</strong></td><td>Jigsaw (Expert → Home) · SIM04 · Vector Drawing</td><td><span class="e5-tag e5-jig">JIG</span> <span class="e5-tag e5-explain">E3</span></td></tr>
+        <tr><td><span class="vpa-num">4</span></td><td><strong>กระตุ้นแรงจูงใจ</strong></td><td>Video slow-mo · Misconception Trap · Driving Question</td><td><span class="e5-tag e5-engage">E1</span></td></tr>
+        <tr><td><span class="vpa-num">5</span></td><td><strong>พัฒนาทักษะ/นวัตกรรม</strong></td><td>SIM04 (priority) · Vector Drawing Canvas · Jigsaw · Gallery Walk</td><td><span class="e5-tag e5-jig">JIG</span> <span class="e5-tag e5-explain">E3</span></td></tr>
+        <tr><td><span class="vpa-num">6</span></td><td><strong>ข้อมูลป้อนกลับ</strong></td><td>07_ExitTicket · Peer sticky · Posttest ⟨g⟩ · 10_AnswerKey</td><td><span class="e5-tag e5-et">ET</span> <span class="e5-tag e5-ft">F4</span></td></tr>
+        <tr><td><span class="vpa-num">7</span></td><td><strong>SRL</strong></td><td>Expert ต้องจัดการเวลา · กลับมา Peer Teaching</td><td><span class="e5-tag e5-jig">JIG</span></td></tr>
+        <tr><td><span class="vpa-num">8</span></td><td><strong>ต่อยอด/ประยุกต์</strong></td><td>06_CaseStudy seismograph · MJ-04 accelerometer</td><td><span class="e5-tag e5-elaborate">E4</span> <span class="e5-tag e5-mj">MJ</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    แผน 4/6 · การกระจัด ความเร็ว ความเร่ง · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569<br>
+    <span style="color:#e11d48; font-weight:700;">Theme: Rose (ชมพูแดง) ⭐</span> · รูปแบบหลัก: <strong>Jigsaw + Peer Teaching + Vector Drawing + Gallery Walk</strong> · งานวิจัย: Tumanggor (2020) 75% · Zavala · Somroob (2016)
+  </div>
+
+</div>
+</body>
+</html>

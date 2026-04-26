@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P08 · Magnitude Lab</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* === Lab stepper · ใช้ pattern เดียวกับ P05 === */
+  .lab-steps { display:flex; gap:6px; margin:10px 0 14px; flex-wrap:wrap; }
+  .lab-step { flex:1; min-width:72px; padding:6px 4px; background:rgba(100,216,255,0.05); border:1px solid #2a3050; border-radius:8px; text-align:center; font-size:10px; color:#6a7394; letter-spacing:0.05em; font-family:Orbitron,sans-serif; }
+  .lab-step.active { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; box-shadow:0 0 12px rgba(255,203,107,0.2); }
+  .lab-step.done { background:rgba(126,255,178,0.08); border-color:#7effb2; color:#7effb2; }
+  .lab-step .coin { display:block; font-size:9px; color:#ffcb6b; font-family:monospace; margin-top:2px; }
+
+  .step-card { padding:16px; background:rgba(22,27,58,0.7); border:1px solid rgba(120,140,220,0.3); border-radius:12px; margin:14px 0; }
+  .step-title { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; text-transform:uppercase; }
+  .step-hint { font-size:13px; color:#9aa3c0; margin:6px 0 12px; line-height:1.7; }
+
+  /* Q-prompt · ตัวใหญ่ */
+  .q-prompt { font-size:17px; font-weight:700; color:#ffcb6b; line-height:1.6; margin:14px 0 6px; padding:10px 14px; background:rgba(255,203,107,0.08); border-left:4px solid #ffcb6b; border-radius:0 10px 10px 0; }
+  .q-prompt .icon { font-size:20px; margin-right:6px; }
+  .q-prompt b { color:#fff; }
+  .q-sub { font-size:13px; color:#c8cde0; margin:4px 0 12px; padding-left:12px; }
+
+  /* === Light meter canvas === */
+  #stage, #stage2 { width:100%; height:300px; background:radial-gradient(circle at center, rgba(20,15,40,0.8), #000); border:1px solid #2a3050; border-radius:12px; display:block; }
+  .slider-row { display:grid; grid-template-columns:auto 1fr auto; gap:10px; align-items:center; margin:10px 0; padding:10px; background:rgba(0,0,0,0.3); border-radius:8px; }
+  .slider-row label { color:#d4b8ff; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.1em; }
+  .slider-row .val { color:#ffcb6b; font-family:monospace; font-size:14px; min-width:80px; text-align:right; }
+  input[type=range] { width:100%; }
+  .readout-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+  @media(max-width:520px){ .readout-grid { grid-template-columns:1fr; } }
+  .readout { padding:10px 14px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; border-radius:8px; }
+  .readout .k { font-size:10px; color:#9aa3c0; letter-spacing:0.1em; font-family:Orbitron,sans-serif; }
+  .readout .v { font-size:20px; color:#7effb2; font-family:monospace; margin-top:2px; }
+
+  /* === Target list === */
+  .target-card { padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; margin:8px 0; display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
+  .target-card.active { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .target-card.locked { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .target-card .name { font-weight:700; color:#e8ecf8; }
+  .target-card .pval { color:#d4b8ff; font-family:monospace; font-size:12px; }
+  .btn-measure { padding:6px 12px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; color:#64d8ff; border-radius:6px; font-size:12px; font-family:inherit; cursor:pointer; }
+
+  /* === Magnitude scale ruler (Step 4) === */
+  .mag-ruler { position:relative; width:100%; height:60px; background:linear-gradient(to right, #fff, #ffd, #fa3, #831, #200); border-radius:30px; margin:14px 0 30px; box-shadow:inset 0 2px 8px rgba(0,0,0,0.5); }
+  .mag-ruler::before, .mag-ruler::after { content:''; position:absolute; top:62px; font-size:11px; color:#9aa3c0; font-family:monospace; }
+  .mag-ruler::before { left:0; content:'m = −2 (สว่าง)'; }
+  .mag-ruler::after { right:0; content:'m = +6 (จาง · ตาเปล่าสุด)'; }
+  .mag-tick { position:absolute; top:-4px; bottom:-4px; width:1px; background:rgba(0,0,0,0.4); }
+  .mag-tick .lbl { position:absolute; top:65px; left:50%; transform:translateX(-50%); font-size:10px; color:#6a7394; font-family:monospace; }
+  .star-token { position:absolute; top:-12px; padding:4px 8px; background:#0a0420; border:2px solid #64d8ff; border-radius:14px; font-size:11px; color:#64d8ff; cursor:grab; transform:translateX(-50%); user-select:none; transition:border-color .15s; }
+  .star-token.placed-ok { border-color:#7effb2; color:#7effb2; }
+  .star-token.placed-bad { border-color:#ff5c7a; color:#ff5c7a; }
+  .star-token:active { cursor:grabbing; }
+  .star-tray { display:flex; flex-wrap:wrap; gap:8px; padding:10px; background:rgba(0,0,0,0.3); border:1px dashed #2a3050; border-radius:10px; margin:14px 0; min-height:50px; }
+  .star-tray .lbl-tray { width:100%; font-size:11px; color:#9aa3c0; margin-bottom:4px; }
+  .star-tray .star-token { position:static; transform:none; top:auto; }
+
+  textarea.lab-note { width:100%; min-height:70px; padding:10px 12px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:13px; line-height:1.6; box-sizing:border-box; resize:vertical; }
+
+  .step-nav { display:flex; gap:10px; margin-top:14px; }
+  .step-nav button { flex:1; padding:10px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; }
+  .step-nav .back { background:rgba(100,100,140,0.1); border:1px solid #444; color:#9aa3c0; }
+  .step-nav .fwd { background:rgba(126,255,178,0.1); border:1px solid #7effb2; color:#7effb2; }
+  .step-nav .fwd:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .kpa-chip { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; letter-spacing:0.1em; margin-right:4px; }
+  .kpa-chip.k { background:rgba(100,216,255,0.1); color:#64d8ff; border:1px solid rgba(100,216,255,0.3); }
+  .kpa-chip.p { background:rgba(126,255,178,0.1); color:#7effb2; border:1px solid rgba(126,255,178,0.3); }
+  .kpa-chip.a { background:rgba(255,203,107,0.1); color:#ffcb6b; border:1px solid rgba(255,203,107,0.3); }
+  .kpa-chip.c { background:rgba(212,184,255,0.1); color:#d4b8ff; border:1px solid rgba(212,184,255,0.3); }
+
+  /* === Statement classification === */
+  .stmt-list { display:flex; flex-direction:column; gap:10px; }
+  .stmt-item { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; transition:all .15s; }
+  .stmt-item.classified-ok { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-item.classified-bad { border-color:#ff5c7a; background:rgba(255,92,122,0.06); }
+  .stmt-text { font-size:14px; color:#e8ecf8; line-height:1.55; }
+  .stmt-toggle { display:flex; gap:4px; }
+  .stmt-btn { padding:8px 12px; min-width:46px; border-radius:8px; cursor:pointer; font-family:Orbitron,sans-serif; font-size:13px; font-weight:700; border:2px solid; background:transparent; transition:all .12s; }
+  .stmt-btn.tick { color:#7effb2; border-color:rgba(126,255,178,0.4); }
+  .stmt-btn.cross { color:#ff5c7a; border-color:rgba(255,92,122,0.4); }
+  .stmt-btn.tick.on { background:rgba(126,255,178,0.25); border-color:#7effb2; }
+  .stmt-btn.cross.on { background:rgba(255,92,122,0.25); border-color:#ff5c7a; }
+  .stmt-feedback { grid-column:1 / -1; font-size:12px; padding:6px 10px; border-radius:6px; margin-top:6px; }
+  .stmt-feedback.ok { color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-feedback.bad { color:#ff8fa5; background:rgba(255,92,122,0.06); }
+  .stmt-btn:disabled { cursor:not-allowed; opacity:0.7; }
+
+  /* === Mystery box reward banner === */
+  .reward-banner-p08 { display:flex; align-items:center; gap:10px; padding:10px 14px; margin:10px 0;
+    background:linear-gradient(135deg, rgba(255,215,0,0.08), rgba(126,255,178,0.06));
+    border:1px dashed rgba(255,215,0,0.5); border-radius:10px; font-size:12px; color:#ffd; }
+  .reward-banner-p08 .gift { font-size:22px; filter:drop-shadow(0 0 8px rgba(255,215,0,0.6)); animation:giftBob 1.8s ease-in-out infinite; }
+  @keyframes giftBob { 50% { transform:translateY(-3px) rotate(-5deg); } }
+  .reward-banner-p08 b.t1 { color:#7effb2; }
+  .reward-banner-p08 b.t2 { color:#ffcb6b; }
+  .reward-banner-p08 b.t3 { color:#ff8fa5; }
+
+  /* === Note submit button === */
+  .note-submit-row { padding:12px; margin:14px 0; background:rgba(255,203,107,0.06); border:1px dashed rgba(255,203,107,0.4); border-radius:10px; text-align:center; }
+  .note-submit-btn { padding:12px 26px; background:linear-gradient(135deg, #ffcb6b, #ff5c7a); border:none; color:#0a0420;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:13px; letter-spacing:0.15em; border-radius:10px; cursor:pointer;
+    box-shadow:0 6px 22px rgba(255,203,107,0.4); transition:all .2s; }
+  .note-submit-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 10px 28px rgba(255,203,107,0.55); }
+  .note-submit-btn:disabled { opacity:0.4; cursor:not-allowed; box-shadow:none; background:#444; color:#999; }
+
+  /* === Mystery box modal === */
+  .reward-modal { position:fixed; inset:0; z-index:9100; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(ellipse at center, rgba(255,215,0,0.18), rgba(2,3,10,0.94) 70%); backdrop-filter:blur(8px); animation:modalIn 0.4s; }
+  @keyframes modalIn { from{opacity:0;} }
+  .reward-card { width:90%; max-width:480px; padding:30px 24px; background:rgba(10,5,20,0.95); border:3px solid #ffd700;
+    border-radius:20px; box-shadow:0 0 80px rgba(255,215,0,0.5); text-align:center; animation:cardIn 0.6s; }
+  @keyframes cardIn { 0%{transform:scale(0.5) rotateY(180deg); opacity:0;} 100%{transform:scale(1) rotateY(0); opacity:1;} }
+  .reward-card h2 { font-family:Orbitron,sans-serif; font-size:24px; color:#ffd700; letter-spacing:0.18em; margin:0 0 6px;
+    text-shadow:0 0 20px rgba(255,215,0,0.6); }
+  .tier-tag { display:inline-block; padding:4px 14px; border-radius:14px; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.2em; margin-bottom:16px; }
+  .tier-tag.t1 { background:rgba(126,255,178,0.18); border:1px solid #7effb2; color:#7effb2; }
+  .tier-tag.t2 { background:rgba(255,203,107,0.18); border:1px solid #ffcb6b; color:#ffcb6b; }
+  .tier-tag.t3 { background:rgba(255,92,122,0.18); border:1px solid #ff8fa5; color:#ff8fa5; }
+  .mystery-box-p08 { width:140px; height:140px; margin:10px auto 18px; position:relative; cursor:pointer;
+    background:linear-gradient(135deg, #6a4c93, #b980ff); border:3px solid #ffd700; border-radius:18px;
+    box-shadow:0 0 40px rgba(255,215,0,0.5); display:flex; align-items:center; justify-content:center; font-size:64px;
+    animation:boxFloat 2s ease-in-out infinite; transition:transform .3s; }
+  .mystery-box-p08:hover { transform:scale(1.05); }
+  .mystery-box-p08.opened { animation:boxOpen 0.6s forwards; pointer-events:none; }
+  @keyframes boxFloat { 50% { transform:translateY(-8px); box-shadow:0 12px 50px rgba(255,215,0,0.7); } }
+  @keyframes boxOpen { 50% { transform:scale(1.4) rotate(15deg); filter:brightness(2);} 100% { transform:scale(0); opacity:0; } }
+  .reward-slots { display:grid; gap:10px; margin-top:18px; }
+  .reward-slot { padding:14px; background:rgba(0,0,0,0.4); border:2px solid #2a3050; border-radius:12px;
+    display:flex; align-items:center; gap:14px; opacity:0; transform:translateY(20px); transition:all .4s; }
+  .reward-slot.show { opacity:1; transform:translateY(0); }
+  .reward-slot.coin { border-color:#ffcb6b; box-shadow:0 0 20px rgba(255,203,107,0.3); }
+  .reward-slot.energy { border-color:#7effb2; box-shadow:0 0 20px rgba(126,255,178,0.3); }
+  .reward-slot.item { border-color:#d4b8ff; box-shadow:0 0 20px rgba(212,184,255,0.3); }
+  .reward-slot .ricon { font-size:36px; flex-shrink:0; }
+  .reward-slot .rname { font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.18em; color:#9aa3c0; }
+  .reward-slot .rval { font-family:Orbitron,monospace; font-size:20px; color:#fff; font-weight:700; }
+  .reward-slot.coin .rval { color:#ffcb6b; }
+  .reward-slot.energy .rval { color:#7effb2; }
+  .reward-slot.item .rval { color:#d4b8ff; }
+  .reward-slot .rdesc { font-size:11px; color:#9aa3c0; margin-top:2px; }
+  .reward-close { margin-top:18px; padding:12px 26px; background:rgba(126,255,178,0.18); border:2px solid #7effb2;
+    color:#7effb2; border-radius:10px; cursor:pointer; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.15em; }
+  .reward-close:hover { background:rgba(126,255,178,0.3); }
+  .reward-close:disabled { opacity:0.4; cursor:not-allowed; }
+  .reward-stats-line { font-size:12px; color:#9aa3c0; margin-top:8px; }
+  .reward-stats-line b { color:#fff; }
+
+  /* === Reflection checkbox === */
+  .check-list { display:flex; flex-direction:column; gap:8px; }
+  .check-item { padding:10px 14px; background:rgba(100,216,255,0.04); border:2px solid rgba(120,140,220,0.3); border-radius:8px; cursor:pointer; user-select:none; display:flex; align-items:flex-start; gap:10px; }
+  .check-item.on { background:rgba(126,255,178,0.12); border-color:#7effb2; }
+  .check-item .box { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; min-width:22px; border:2px solid #64d8ff; border-radius:5px; font-size:14px; color:#7effb2; font-weight:700; }
+  .check-item.on .box { background:#7effb2; border-color:#7effb2; color:#0a0420; }
+  .check-item .label { font-size:13px; color:#e8ecf8; line-height:1.5; }
+
+  /* === Explore Tabs === */
+  .explore-tabs { display:flex; gap:4px; margin:10px 0 0; }
+  .etab { flex:1; padding:10px 6px; background:rgba(100,216,255,0.06); border:1px solid #2a3050; border-bottom:none; color:#9aa3c0; border-radius:8px 8px 0 0; cursor:pointer; font-size:12px; font-family:inherit; transition:all .15s; position:relative; }
+  .etab.pending-pulse:not(.done):not(.on) { background:rgba(255,203,107,0.10); border-color:#ffcb6b; color:#ffcb6b; animation:tabPulse 1.4s ease-in-out infinite; }
+  .etab.pending-pulse:not(.done):not(.on)::after { content:'👈'; position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:14px; animation:tabPoint 1s ease-in-out infinite; }
+  @keyframes tabPulse { 50% { box-shadow:0 0 14px rgba(255,203,107,0.55); background:rgba(255,203,107,0.2); } }
+  @keyframes tabPoint { 50% { transform:translateY(-50%) translateX(-4px); } }
+  .etab:hover { color:#fff; }
+  .etab.on { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; font-weight:700; }
+  .etab.done { background:rgba(126,255,178,0.1); border-color:#7effb2; color:#7effb2; }
+  .etab.done.on { background:rgba(126,255,178,0.2); }
+  .etab-pane { display:none; padding:14px 0; border-top:2px solid #ffcb6b; }
+  .etab-pane.on { display:block; }
+  .full-name { font-size:11px; color:#9aa3c0; margin-bottom:8px; padding:6px 10px; background:rgba(0,0,0,0.3); border-left:2px solid #d4b8ff; border-radius:0 6px 6px 0; line-height:1.6; }
+  .full-name b { color:#d4b8ff; }
+
+  /* === Brightness Match Lab === */
+  #matchCanvas { width:100%; height:280px; background:radial-gradient(circle at 30% 30%, rgba(20,15,40,0.5), #000); border:1px solid #2a3050; border-radius:10px; cursor:crosshair; display:block; }
+  .match-tray { display:flex; flex-wrap:wrap; gap:8px; padding:12px; background:rgba(0,0,0,0.3); border:1px dashed #2a3050; border-radius:10px; margin:10px 0; min-height:50px; }
+  .match-tray .lbl { width:100%; font-size:12px; color:#9aa3c0; }
+  .match-token { padding:6px 14px; background:rgba(100,216,255,0.1); border:2px solid #64d8ff; color:#64d8ff; border-radius:14px; font-family:monospace; font-size:13px; cursor:grab; user-select:none; font-weight:700; }
+  .match-token:active { cursor:grabbing; }
+  .match-token.placed { opacity:0.3; pointer-events:none; }
+  .match-progress { font-size:12px; color:#9aa3c0; text-align:center; padding:6px; }
+
+  /* === Distance Sim Lab === */
+  #distCanvas { width:100%; height:240px; background:radial-gradient(ellipse at center, rgba(20,15,40,0.6), #000); border:1px solid #2a3050; border-radius:10px; display:block; }
+  .dist-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:10px 0; }
+  @media(max-width:560px){ .dist-grid { grid-template-columns:1fr; } }
+  .dist-card { padding:12px; background:rgba(0,0,0,0.35); border:1px solid #2a3050; border-radius:8px; }
+  .dist-card.deneb { border-left:3px solid #64d8ff; }
+  .dist-card.sirius { border-left:3px solid #ffcb6b; }
+  .dist-card .name { font-weight:700; font-size:14px; margin-bottom:6px; }
+  .dist-card .row { display:flex; justify-content:space-between; font-family:monospace; font-size:12px; padding:2px 0; }
+  .dist-card .row b { color:#7effb2; }
+  .dist-card .row.locked b { color:#d4b8ff; }
+  .dist-card input[type=range] { width:100%; margin:6px 0; }
+  .ranking-panel { padding:12px 14px; background:linear-gradient(135deg, rgba(255,203,107,0.08), rgba(212,184,255,0.08)); border:1px solid rgba(255,203,107,0.3); border-radius:10px; margin:10px 0; }
+  .ranking-panel .row { display:flex; justify-content:space-between; align-items:center; padding:4px 0; }
+  .ranking-panel .row b { color:#ffcb6b; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.1em; }
+  .ranking-panel .winner { padding:2px 8px; border-radius:10px; font-size:11px; font-family:monospace; }
+  .ranking-panel .winner.deneb { background:rgba(100,216,255,0.2); color:#64d8ff; }
+  .ranking-panel .winner.sirius { background:rgba(255,203,107,0.2); color:#ffcb6b; }
+  .swap-counter { font-size:11px; color:#9aa3c0; text-align:center; margin-top:6px; padding:4px 8px; background:rgba(0,0,0,0.3); border-radius:6px; }
+  .swap-counter b { color:#7effb2; }
+
+  /* === Coin toast === */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px; background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s ease-out; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px) scale(0.8); opacity:0; } to { transform:translateX(-50%) translateY(0) scale(1); opacity:1; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+  .coin-toast .big { font-size:18px; }
+</style>
+</head>
+<body data-page="p08" data-type="puzzle">
+<div class="page">
+  <div class="lbl puzzle">🌟 MAGNITUDE LAB · 7 นาที · วัดแสงด้วยตา</div>
+  <h1>แล็บอ่านความสว่าง · m scale</h1>
+
+  <div style="margin:8px 0;">
+    <span class="kpa-chip k">K1 m scale</span>
+    <span class="kpa-chip p">P1 สังเกต</span>
+    <span class="kpa-chip p">P3 วิเคราะห์</span>
+    <span class="kpa-chip c">4C คิดวิพากษ์</span>
+    <span class="kpa-chip a">A4 จิตวิทย์</span>
+  </div>
+
+  <div class="reward-banner-p08">
+    <div class="gift">🎁</div>
+    <div>
+      <b>หน้านี้มีกล่องสุ่มท้ายขั้น Lab Note (ขั้น 5)</b><br>
+      ตอบ Lab Note ผิด 0 → <b class="t1">เต็ม 3 ชิ้น</b> (🪙+⚡+🎁) · ผิด 1-3 → <b class="t2">2 ชิ้น</b> (จำนวนลด) · ผิด 4+ → <b class="t3">1 ชิ้น</b>
+    </div>
+  </div>
+
+  <div class="lab-steps" id="labSteps">
+    <div class="lab-step" data-s="0">1·PREDICT</div>
+    <div class="lab-step" data-s="1">2·EXPLORE</div>
+    <div class="lab-step" data-s="2">3·MEASURE</div>
+    <div class="lab-step" data-s="3">4·ANALYZE</div>
+    <div class="lab-step" data-s="4">5·NOTE</div>
+    <div class="lab-step" data-s="5">6·PEER</div>
+  </div>
+
+  <!-- STEP 0 · PREDICT -->
+  <div class="step-card" data-step="0">
+    <div class="step-title">🔮 Step 1 · Predict · <span style="color:#9aa3c0;font-size:11px;">ไม่มีผิดถูก</span></div>
+    <div class="narrative">
+      ก่อนเปิดเครื่องวัดแสง · <b>เดาก่อน</b> · ในกลุ่ม 5 ดาว: Sirius · Vega · Deneb · Polaris · ตาเปล่าสุด (m=6)
+    </div>
+    <div class="q-prompt"><span class="icon">🧠</span>สมมติฐาน 1 · ดวงไหน<b>สว่างปรากฎที่สุด</b>?</div>
+    <div class="choice-row" id="predBrightest"></div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>สมมติฐาน 2 · ค่า m ที่<b>น้อย/ติดลบ</b>มาก แปลว่า?</div>
+    <div class="choice-row" id="predRule"></div>
+    <div class="step-nav">
+      <button class="fwd" id="next0" disabled>▶ เปิด Light Meter →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1 · EXPLORE · 3 tabs (Light Meter + Brightness Match + m vs M Distance) -->
+  <div class="step-card" data-step="1" style="display:none;">
+    <div class="step-title">🛰️ Step 2 · Explore · <span style="color:#9aa3c0;font-size:11px;">3 มินิแล็บ · ทำให้ครบ</span></div>
+
+    <div class="full-name">
+      <b>m = อันดับความสว่างปรากฎ</b> (apparent magnitude · เปลี่ยนตามระยะ)<br>
+      <b>M = อันดับความสว่างสัมบูรณ์</b> (absolute magnitude · ปล่อยแสงจริง · ไม่เปลี่ยนตามระยะ)
+    </div>
+
+    <div class="explore-tabs">
+      <button class="etab on" data-tab="meter" onclick="switchTab('meter')">🛰️ Light Meter</button>
+      <button class="etab" data-tab="match" onclick="switchTab('match')">🔗 Brightness Match</button>
+      <button class="etab" data-tab="dist" onclick="switchTab('dist')">📏 m vs M (ระยะ)</button>
+    </div>
+    <div id="exploreStatus" style="display:flex;gap:8px;flex-wrap:wrap;font-size:12px;padding:8px 12px;background:rgba(0,0,0,0.3);border:1px dashed #2a3050;border-radius:8px;margin:8px 0;">
+      <span id="stMeter" style="color:#9aa3c0;">⏳ Meter: ลาก slider + ตอบคำถาม</span>
+      <span style="color:#444;">·</span>
+      <span id="stMatch" style="color:#9aa3c0;">⏳ Match: จับคู่ 5/5</span>
+      <span style="color:#444;">·</span>
+      <span id="stDist" style="color:#9aa3c0;">⏳ Dist: เลื่อนระยะให้ m สลับ ≥ 1 ครั้ง</span>
+    </div>
+
+    <!-- Tab A · Light Meter -->
+    <div class="etab-pane on" data-pane="meter">
+      <div class="step-hint">ลาก slider <b>m</b> · สังเกตว่าดาวบน canvas <b>เปลี่ยนความสว่าง</b>อย่างไร</div>
+      <canvas id="stage" width="700" height="300"></canvas>
+      <div class="slider-row">
+        <label>m</label>
+        <input type="range" id="mSlider" min="-6" max="12" step="0.1" value="0">
+        <span class="val" id="mVal">0.0</span>
+      </div>
+      <div class="readout-grid">
+        <div class="readout"><div class="k">CURRENT m</div><div class="v" id="mVal2">0.0</div></div>
+        <div class="readout"><div class="k">มองเห็นด้วยตาเปล่า?</div><div class="v" id="visibleHint" style="font-size:14px;">เห็นชัด</div></div>
+      </div>
+      <div class="q-prompt"><span class="icon">🧠</span>สังเกต · เมื่อ <b>m เพิ่ม (เป็นบวกมากขึ้น)</b> · ดาวจะ ...</div>
+      <div class="choice-row" id="relObserve"></div>
+    </div>
+
+    <!-- Tab B · Brightness Match -->
+    <div class="etab-pane" data-pane="match" style="display:none;">
+      <div class="step-hint">มี <b>5 ดาว</b> ความสว่างต่างกัน · ลาก label <b>m=...</b> ในถาดด้านล่าง<br>มาทับดาวที่<b>ตรงกับความสว่างนั้น</b> · จับคู่ครบ 5 = 🪙5</div>
+      <canvas id="matchCanvas" width="700" height="280"></canvas>
+      <div class="match-progress" id="matchProgress">จับคู่แล้ว 0 / 5</div>
+      <div class="match-tray" id="matchTray">
+        <div class="lbl">🏷️ ลาก label เหล่านี้ขึ้นไปวางบนดาวที่<b>ตรงกัน</b>:</div>
+      </div>
+    </div>
+
+    <!-- Tab C · m vs M Distance Lab -->
+    <div class="etab-pane" data-pane="dist" style="display:none;">
+      <div class="step-hint">
+        ดาว 2 ดวงปล่อยแสงจริง<b>ไม่เท่ากัน</b> (M ต่างกัน) · ลาก slider เลื่อนเข้า-ออก ดู <b>m เปลี่ยน · M ไม่เปลี่ยน</b><br>
+        🎯 <b>ภารกิจ</b>: หาตำแหน่งระยะที่ <b>m</b> ของ 2 ดาว<b>สลับลำดับกัน</b> (เกิด swap ≥ 1 ครั้ง = 🪙5)
+      </div>
+      <canvas id="distCanvas" width="700" height="240"></canvas>
+      <div class="dist-grid">
+        <div class="dist-card deneb">
+          <div class="name">🔵 Deneb (สว่างจริงมาก · M ติดลบมาก)</div>
+          <div class="row locked"><span>M (absolute · ไม่เปลี่ยน)</span><b>−8.4</b></div>
+          <div class="row"><span>m (apparent magnitude)</span><b id="denebM">+1.25</b></div>
+          <div class="row"><span>ระยะ d (pc)</span><b id="denebD">802</b></div>
+          <input type="range" id="denebSlider" min="0" max="3.2" step="0.01" value="2.904">
+        </div>
+        <div class="dist-card sirius">
+          <div class="name">🟡 Sirius (สว่างจริงน้อยกว่า · M=+1.4)</div>
+          <div class="row locked"><span>M (absolute · ไม่เปลี่ยน)</span><b>+1.4</b></div>
+          <div class="row"><span>m (apparent magnitude)</span><b id="siriusM">−1.46</b></div>
+          <div class="row"><span>ระยะ d (pc)</span><b id="siriusD">2.64</b></div>
+          <input type="range" id="siriusSlider" min="0" max="3.2" step="0.01" value="0.421">
+        </div>
+      </div>
+      <div class="ranking-panel">
+        <div class="row"><b>เห็นเด่นกว่า (ปรากฎ · m)</b>
+          <span class="winner" id="winnerM">—</span></div>
+        <div class="row"><b>ปล่อยแสงจริงเยอะ (M)</b>
+          <span class="winner deneb">🔵 Deneb (M=−8.4 · ไม่เปลี่ยน!)</span></div>
+        <div class="swap-counter">🔄 ลำดับ m สลับแล้ว: <b id="swapCount">0</b> ครั้ง · เป้าหมาย ≥ 1</div>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(0)">← กลับ</button>
+      <button class="fwd" id="next1" disabled>▶ วัดดาว 3 ดวง →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 · MEASURE -->
+  <div class="step-card" data-step="2" style="display:none;">
+    <div class="step-title">🎯 Step 3 · Measure · <span style="color:#9aa3c0;font-size:11px;">ปรับ m จนภาพตรงเป้า</span></div>
+    <div class="step-hint">
+      แต่ละดาวมีภาพ "ความสว่างที่เห็นจากกล้อง" · เลื่อน slider จน <b>ดาวบน canvas ของเรา</b> ดูเหมือนภาพเป้า · กดบันทึก (±0.4)
+    </div>
+
+    <div class="readout-grid" style="margin:6px 0;">
+      <div class="readout">
+        <div class="k">🎯 TARGET (ภาพถ่ายจริง)</div>
+        <canvas id="targetCanvas" width="160" height="100" style="margin-top:4px;"></canvas>
+      </div>
+      <div class="readout">
+        <div class="k">🛰️ ของเรา (ปรับ m)</div>
+        <canvas id="stage2" width="160" height="100" style="margin-top:4px;"></canvas>
+      </div>
+    </div>
+
+    <div class="slider-row">
+      <label>m</label>
+      <input type="range" id="mSlider2" min="-6" max="12" step="0.05" value="0">
+      <span class="val" id="mVal3">0.0</span>
+    </div>
+
+    <div id="targets"></div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(1)">← กลับ</button>
+      <button class="fwd" id="next2" disabled>▶ วิเคราะห์ผล →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 · ANALYZE · drag-drop on magnitude ruler -->
+  <div class="step-card" data-step="3" style="display:none;">
+    <div class="step-title">📊 Step 4 · Analyze · <span style="color:#9aa3c0;font-size:11px;">ลากดาวลงไม้บรรทัด m</span></div>
+    <div class="step-hint">
+      ลากชื่อดาวจากใต้ลงบนไม้บรรทัด · วางที่ตำแหน่ง <b>m ของดาวนั้น</b> · ±0.5 = ผ่าน
+    </div>
+
+    <div class="mag-ruler" id="magRuler"></div>
+    <div class="star-tray" id="starTray">
+      <div class="lbl-tray">🌟 ลากชื่อดาวขึ้นไปวางบนไม้บรรทัด ↑</div>
+    </div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>ทำนาย · ดาว X m=+8 vs ดาว Y m=+3 · ใคร<b>สว่างปรากฎมากกว่า</b>?</div>
+    <div class="choice-row" id="predictApply"></div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(2)">← กลับ</button>
+      <button class="fwd" id="next3" disabled>▶ บันทึกแล็บ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 · NOTE · statement classification -->
+  <div class="step-card" data-step="4" style="display:none;">
+    <div class="step-title">📓 Step 5 · Lab Note · <span style="color:#9aa3c0;font-size:11px;">ประเมินทุกข้อ</span></div>
+
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">🔍</span>ข้อสังเกตข้อใดเป็น<b>การสังเกตทางวิทยาศาสตร์ที่ใช้ได้</b>?</div>
+      <div class="q-sub">กด <b>✓</b> ใช้ได้ · <b>✗</b> ผิด/อ่อน · ครบทั้ง 5 ข้อ</div>
+      <div class="stmt-list" id="obsList"></div>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">📐</span>ข้อใด<b>สรุปกฎ m scale</b> ได้ถูกต้อง?</div>
+      <div class="q-sub">ระวัง trap (misconception) ปะปน · ครบทั้ง 4 ข้อ</div>
+      <div class="stmt-list" id="ruleList"></div>
+    </div>
+
+    <div class="note-submit-row">
+      <button class="note-submit-btn" id="noteSubmitBtn" onclick="submitNote()" disabled>🔒 ตอบครบ 9 ข้อก่อน</button>
+      <div style="font-size:11px;color:#9aa3c0;margin-top:8px;">⚠ กดส่งแล้วแก้ไขไม่ได้ · จะเปิด <b>กล่องสุ่ม</b> ทันที</div>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <div class="q-prompt"><span class="icon">🔮</span>เทียบ<b>สมมติฐาน</b>กับ<b>ผลจริง</b> · ติ๊กข้อที่ตรงกับตัวเอง</div>
+      <div class="q-sub">ติ๊กได้หลายข้อ · ตอบตามจริง · ไม่มีผิดถูก</div>
+      <div id="reflectCmp" style="font-size:13px;color:#c8cde0;margin:6px 0 10px;padding:10px 14px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px dashed #2a3050;"></div>
+      <div class="check-list" id="reflectHypo"></div>
+    </div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(3)">← กลับ</button>
+      <button class="fwd" id="next4" disabled>▶ ช่วงคุยกับเพื่อน →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 · PEER -->
+  <div class="step-card" data-step="5" style="display:none;">
+    <div class="step-title">👥 Step 6 · Peer Apply · <span style="color:#9aa3c0;font-size:11px;">คุยทีมก่อน · แล้วตอบ</span></div>
+
+    <div style="padding:10px 12px;background:rgba(255,203,107,0.1);border:1px solid #ffcb6b;border-radius:8px;color:#ffcb6b;margin:6px 0;">
+      📣 <b>หยุด · คุยในทีม 1 นาที</b><br>
+      <span style="color:#e8ecf8;font-size:12px;">ครูจะกระตุ้นให้แลกคำตอบ · ถ้าต่างกัน · ให้เหตุผลโน้มน้าวเพื่อน</span>
+    </div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🎯</span>โจทย์ท้าย · Canopus m=−0.74 vs Vega m=+0.03 · ใคร<b>สว่างปรากฎ</b>มากกว่า?</div>
+    <div class="choice-row" id="applyQ"></div>
+
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">💬</span>เพื่อนในทีมตอบ<b>ตรงกับคุณ</b>ไหม?</div>
+    <div class="choice-row" id="peerCheck"></div>
+
+    <div class="btn-pair">
+      <button class="submit-btn">💾 ส่งแล็บรายงาน</button>
+      <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+    </div>
+    <div class="gate-hint">🪙 รวม coin จากทั้ง 6 step · ครูเปิด gate เมื่อทุกคนส่ง</div>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · Magnitude Lab (P08)</summary>
+    <div class="body">
+      <b>7 นาที · 6 steps</b> · inquiry · student-centered<br>
+      <b>VOID misconception ที่จับ</b>:<br>
+      · M1 "เลขน้อย = หรี่" → trap ใน obs Q4, rule Q3<br>
+      · M2 leak "สว่างปรากฎ = สว่างจริง" → trap ใน obs Q3<br>
+      · "m = ระยะ" → trap ใน obs Q5<br>
+      <b>วPA aligned</b>:<br>
+      · ด้าน 1 Active Learning + Inquiry ✓<br>
+      · ด้าน 2 differentiated · นักเรียนปรับ slider ตามความเข้าใจ ✓<br>
+      · ด้าน 3 ใช้ digital tool + formative data ✓<br>
+      <b>KPA</b>: K1 (m scale) · P1 (สังเกต) · P3 (วิเคราะห์ ranking) · A4 (จิตวิทย์)<br>
+      <b>4C</b>: critical thinking + collaboration + communication + creativity ครบ<br>
+      <b>🪙 Coin reward (55 max)</b>:<br>
+      · Step 1 PREDICT: 0<br>
+      · Step 2 EXPLORE: 0-13 · 3 มินิแล็บ (Meter 3 + Match 5 + Dist 5)<br>
+      · Step 3 MEASURE: 0-15 · 5/ดาว 1-shot<br>
+      · Step 4 ANALYZE: 0-8 · ruler 4 + apply 4<br>
+      · Step 5 NOTE: 0-14 · 9 stmts + bonus 5<br>
+      · Step 6 PEER: 0-5<br>
+      <b>Calculator</b>: 🧮 FAB ลอย · เด็กเปิดได้เอง · รองรับ log สำหรับเปรียบสว่างจริง
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== STAR DATA ==================== */
+const STARS = [
+  { id:'sirius',  name:'Sirius',     m:-1.46 },
+  { id:'vega',    name:'Vega',       m:0.03 },
+  { id:'deneb',   name:'Deneb',      m:1.25 },
+  { id:'polaris', name:'Polaris',    m:1.98 },
+  { id:'eye',     name:'ตาเปล่าสุด', m:6 },
+];
+const STAR_NAMES = STARS.map(s => s.name);
+
+// Targets to measure (visual brightness match): 3 stars with known m
+const MEASURE_TARGETS = [
+  { id:'sirius',  name:'Sirius',  m:-1.46, tol:0.4 },
+  { id:'vega',    name:'Vega',    m:0.03,  tol:0.4 },
+  { id:'polaris', name:'Polaris', m:1.98,  tol:0.4 },
+];
+
+const state = {
+  step: 0,
+  stepsDone: new Set(),
+  // 0 PREDICT
+  predBrightest: null,
+  predRule: null,
+  // 1 EXPLORE · 3 tabs
+  activeTab: 'meter',
+  exploreM: 0,
+  exploredMRange: { min: Infinity, max: -Infinity },
+  relObserve: null,
+  // Tab B · Brightness Match
+  matchPlaced: {},  // m label → starId (or starId → m)
+  matchAttempts: 0,
+  matchDone: false,
+  // Tab C · m vs M Distance
+  denebD: 802,
+  siriusD: 2.64,
+  swapCount: 0,
+  prevMRanking: null,
+  distExplored: false,
+  // Tab completion · for step gate
+  tabsDone: { meter:false, match:false, dist:false },
+  // Per-tab coin awards · prevent double-count
+  tabCoins: { meter:null, match:null, dist:null },
+  // 2 MEASURE
+  measureM: 0,
+  measured: {},          // id → m value
+  measureAttempts: {},
+  activeIdx: 0,
+  // 3 ANALYZE
+  ruler: {},             // id → x position (0..1) on ruler · -2..6 mapped
+  applyAns: null,
+  // 4 NOTE
+  obsClass: {},
+  ruleClass: {},
+  reflectHypo: [],
+  noteSubmitted: false,
+  noteRewards: null,
+  noteRewardTier: null,
+  // 5 PEER
+  peerQ: null,
+  peerCheck: null,
+  // coin
+  stepCoins: {},
+  startedAt: Date.now(),
+};
+
+/* ==================== STAR DRAWING (light meter) ==================== */
+// Map m → visual brightness/size. m=-6 huge & bright · m=+12 invisible
+function drawStar(canvas, m) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // bg starfield
+  if (!canvas._bg) {
+    canvas._bg = Array.from({length: Math.round(W * H * 0.0008)}, () => ({
+      x: Math.random()*W, y: Math.random()*H, r: Math.random()*0.6+0.2,
+    }));
+  }
+  ctx.fillStyle = '#fff';
+  for (const s of canvas._bg) { ctx.globalAlpha = s.r * 0.4; ctx.fillRect(s.x, s.y, 1, 1); }
+  ctx.globalAlpha = 1;
+
+  // Star size formula: clamped log-ish scale
+  // m=-6 → r=42, m=0 → r=18, m=6 → r=4, m=12 → r=0.6
+  const r = Math.max(0.6, 4 + (6 - m) * 3);
+  const cx = W/2, cy = H/2;
+
+  // Glow halo (multi-layer)
+  if (r > 1) {
+    const haloR = r * 4;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, haloR);
+    const intensity = Math.max(0, Math.min(1, (4 - m) / 10));
+    grad.addColorStop(0, `rgba(255,240,200,${intensity * 0.7})`);
+    grad.addColorStop(0.3, `rgba(255,220,150,${intensity * 0.3})`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, haloR, 0, Math.PI*2); ctx.fill();
+  }
+
+  // Star core
+  ctx.fillStyle = m < 0 ? '#fff' : (m < 3 ? '#ffe7b3' : '#ffb87a');
+  ctx.shadowColor = '#fff';
+  ctx.shadowBlur = Math.max(0, 25 - m * 3);
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Diffraction spikes (only for bright stars)
+  if (r > 5) {
+    ctx.strokeStyle = `rgba(255,255,255,${Math.max(0, 0.9 - m*0.15)})`;
+    ctx.lineWidth = 1;
+    const spike = r * 3;
+    ctx.beginPath();
+    ctx.moveTo(cx - spike, cy); ctx.lineTo(cx + spike, cy);
+    ctx.moveTo(cx, cy - spike); ctx.lineTo(cx, cy + spike);
+    ctx.stroke();
+  }
+
+  // m label
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '11px monospace'; ctx.textAlign = 'left';
+  ctx.fillText('m = ' + (m >= 0 ? '+' : '') + m.toFixed(2), 8, H - 10);
+}
+
+function visibleHintFor(m) {
+  if (m < -3) return '☀ จัดจ้านเหมือนพระอาทิตย์';
+  if (m < 0)  return '✨ สว่างปรากฎ · เห็นชัดมาก';
+  if (m < 3)  return '🌟 ชัดเจน · เด่นบนฟ้า';
+  if (m < 6)  return '⭐ พอเห็น · จาง';
+  if (m < 9)  return '🔭 ต้องใช้กล้องส่อง';
+  return '👁️ มองไม่เห็นด้วยตาเปล่า';
+}
+
+/* anim loop */
+function animLoop() {
+  if (state.step === 1) drawStar(document.getElementById('stage'), state.exploreM);
+  else if (state.step === 2) {
+    const tgt = MEASURE_TARGETS[state.activeIdx];
+    if (tgt) drawStar(document.getElementById('targetCanvas'), tgt.m);
+    drawStar(document.getElementById('stage2'), state.measureM);
+  }
+  requestAnimationFrame(animLoop);
+}
+
+/* ==================== STEP NAV + COIN HELPERS ==================== */
+function go(s) {
+  state.step = s;
+  document.querySelectorAll('.step-card').forEach(el => {
+    el.style.display = (+el.dataset.step === s) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.lab-step').forEach(el => {
+    const idx = +el.dataset.s;
+    el.classList.toggle('active', idx === s);
+    el.classList.toggle('done', state.stepsDone.has(idx));
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  renderStep(s);
+  if (s === 1 && typeof updateExploreGate === 'function') updateExploreGate();
+}
+
+function markDone(s) {
+  state.stepsDone.add(s);
+  const el = document.querySelector(`.lab-step[data-s="${s}"]`);
+  if (el) {
+    el.classList.add('done');
+    const c = state.stepCoins[s];
+    if (c != null && !el.querySelector('.coin')) {
+      const span = document.createElement('span');
+      span.className = 'coin';
+      span.textContent = '🪙' + c;
+      el.appendChild(span);
+    }
+  }
+}
+
+function awardStepCoin(stepIdx, amount, label) {
+  if (state.stepCoins[stepIdx] != null) return;
+  state.stepCoins[stepIdx] = amount;
+  if (amount > 0 && typeof Coin !== 'undefined' && Coin.add) {
+    Coin.add(amount, 'p08-step' + stepIdx);
+  }
+  showCoinToast(amount, label);
+  const el = document.querySelector(`.lab-step[data-s="${stepIdx}"]`);
+  if (el && !el.querySelector('.coin')) {
+    const span = document.createElement('span');
+    span.className = 'coin';
+    span.textContent = '🪙' + amount;
+    el.appendChild(span);
+  }
+}
+
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 <span class="big">+' + amount + '</span>' : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => { el.style.opacity = 0; }, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* ==================== STEP 0 · PREDICT ==================== */
+function renderPredict() {
+  const elB = document.getElementById('predBrightest');
+  elB.innerHTML = STAR_NAMES.map((n,i) =>
+    `<button class="choice-btn" onclick="pickPred('predBrightest',${i})">${n}</button>`).join('');
+  if (state.predBrightest != null) {
+    elB.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.predBrightest));
+  }
+  const elR = document.getElementById('predRule');
+  const opts = ['สว่างมาก', 'หรี่มาก', 'ขนาดใหญ่', 'ใกล้โลก'];
+  elR.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPred('predRule',${i})">${o}</button>`).join('');
+  if (state.predRule != null) {
+    elR.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.predRule));
+  }
+  updatePredGate();
+}
+window.pickPred = (key, i) => {
+  state[key] = i;
+  if (key === 'predBrightest') {
+    document.querySelectorAll('#predBrightest .choice-btn').forEach((b,bi) => b.classList.toggle('correct', bi===i));
+  } else {
+    document.querySelectorAll('#predRule .choice-btn').forEach((b,bi) => b.classList.toggle('correct', bi===i));
+  }
+  updatePredGate();
+};
+function updatePredGate() {
+  const ok = state.predBrightest != null && state.predRule != null;
+  document.getElementById('next0').disabled = !ok;
+  if (ok) markDone(0);
+}
+document.getElementById('next0').onclick = () => go(1);
+
+/* ==================== STEP 1 · EXPLORE ==================== */
+const mSlider = document.getElementById('mSlider');
+mSlider.addEventListener('input', () => {
+  const m = parseFloat(mSlider.value);
+  state.exploreM = m;
+  document.getElementById('mVal').textContent = m.toFixed(1);
+  document.getElementById('mVal2').textContent = m.toFixed(2);
+  document.getElementById('visibleHint').textContent = visibleHintFor(m);
+  state.exploredMRange.min = Math.min(state.exploredMRange.min, m);
+  state.exploredMRange.max = Math.max(state.exploredMRange.max, m);
+  updateExploreGate();
+});
+
+function renderExploreObserve() {
+  const el = document.getElementById('relObserve');
+  const opts = ['สว่างขึ้น', 'หรี่ลง', 'ไม่เปลี่ยน'];
+  el.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickRelObs(${i})">${o}</button>`).join('');
+  if (state.relObserve != null) {
+    el.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.relObserve));
+  }
+}
+window.pickRelObs = (i) => {
+  state.relObserve = i;
+  document.querySelectorAll('#relObserve .choice-btn').forEach((b,bi) => b.classList.toggle('correct', bi===i));
+  updateExploreGate();
+};
+function updateExploreGate() {
+  // Meter tab status (lower threshold: range > 4 instead of > 5)
+  const played = (state.exploredMRange.max - state.exploredMRange.min) > 4;
+  const answered = state.relObserve != null;
+  state.tabsDone.meter = played && answered;
+  markTabDone('meter', state.tabsDone.meter);
+  // Update status indicators
+  const sm = document.getElementById('stMeter');
+  if (sm) {
+    if (state.tabsDone.meter) { sm.textContent = '✅ Meter: ผ่าน'; sm.style.color = '#7effb2'; }
+    else if (!played && answered) { sm.textContent = '⏳ Meter: ลาก slider ให้กว้างกว่านี้'; sm.style.color = '#ffcb6b'; }
+    else if (played && !answered) { sm.textContent = '⏳ Meter: ตอบคำถาม "ดาวจะ..."'; sm.style.color = '#ffcb6b'; }
+    else { sm.textContent = '⏳ Meter: ลาก slider + ตอบคำถาม'; sm.style.color = '#9aa3c0'; }
+  }
+  const sma = document.getElementById('stMatch');
+  if (sma) {
+    if (state.tabsDone.match) { sma.textContent = '✅ Match: ผ่าน'; sma.style.color = '#7effb2'; }
+    else { const c = MATCH_STARS ? MATCH_STARS.filter(s => state.matchPlaced && state.matchPlaced[s.id] === s.m).length : 0; sma.textContent = '⏳ Match: จับคู่ ' + c + '/5'; sma.style.color = '#9aa3c0'; }
+  }
+  const sd = document.getElementById('stDist');
+  if (sd) {
+    if (state.tabsDone.dist) { sd.textContent = '✅ Dist: ผ่าน'; sd.style.color = '#7effb2'; }
+    else { sd.textContent = '⏳ Dist: เลื่อนระยะให้ m สลับ (' + (state.swapCount || 0) + '/1)'; sd.style.color = '#9aa3c0'; }
+  }
+  // All 3 tabs must be done to advance
+  const allDone = state.tabsDone.meter && state.tabsDone.match && state.tabsDone.dist;
+  const nextBtn = document.getElementById('next1');
+  nextBtn.disabled = !allDone;
+  // Pulse highlight on tabs that aren't done (only when ≥1 is done · prompt user to switch)
+  const anyDone = state.tabsDone.meter || state.tabsDone.match || state.tabsDone.dist;
+  ['meter','match','dist'].forEach(tab => {
+    const btn = document.querySelector('.etab[data-tab="' + tab + '"]');
+    if (!btn) return;
+    btn.classList.toggle('pending-pulse', anyDone && !state.tabsDone[tab]);
+  });
+  if (allDone) {
+    nextBtn.textContent = '▶ วัดดาว 3 ดวง →';
+    markDone(1);
+  } else {
+    const missing = [];
+    if (!state.tabsDone.meter) missing.push('Meter');
+    if (!state.tabsDone.match) missing.push('Match');
+    if (!state.tabsDone.dist) missing.push('Dist');
+    nextBtn.textContent = '🔒 เหลือ: ' + missing.join(', ');
+  }
+}
+window.updateExploreGate = updateExploreGate;
+
+function markTabDone(tab, done) {
+  const btn = document.querySelector('.etab[data-tab="' + tab + '"]');
+  if (btn) btn.classList.toggle('done', !!done);
+}
+window.switchTab = function(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.etab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.etab-pane').forEach(p => {
+    p.classList.toggle('on', p.dataset.pane === tab);
+    p.style.display = (p.dataset.pane === tab) ? 'block' : 'none';
+  });
+  if (tab === 'match') initMatchLab();
+  if (tab === 'dist') initDistLab();
+};
+
+// Step 1 total coin = sum of all 3 tab awards (already added immediately when each tab completes)
+function calcStep1Coin() {
+  return (state.tabCoins.meter || 0) + (state.tabCoins.match || 0) + (state.tabCoins.dist || 0);
+}
+document.getElementById('next1').onclick = () => {
+  // Award Meter tab coin (if not already awarded)
+  if (state.tabCoins.meter == null) {
+    const meterCoin = state.relObserve === 1 ? 3 : 0;
+    state.tabCoins.meter = meterCoin;
+    if (meterCoin > 0 && typeof Coin !== 'undefined') Coin.add(meterCoin, 'p08-meter');
+    showCoinToast(meterCoin, 'Light Meter · Q สังเกต');
+  }
+  // Set stepCoins for stepper badge (sum)
+  const total = calcStep1Coin();
+  state.stepCoins[1] = total;
+  // Update stepper badge directly
+  const stepEl = document.querySelector('.lab-step[data-s="1"]');
+  if (stepEl && !stepEl.querySelector('.coin')) {
+    const span = document.createElement('span');
+    span.className = 'coin';
+    span.textContent = '🪙' + total;
+    stepEl.appendChild(span);
+  }
+  go(2);
+};
+
+/* ============================================================
+ * TAB B · Brightness Match Lab
+ * 5 stars on canvas at fixed brightness · drag m-labels onto matching
+ * ============================================================ */
+const MATCH_STARS = [
+  { id:'a', m:-2,    pos:{x:120, y:90}  },
+  { id:'b', m:0,     pos:{x:280, y:60}  },
+  { id:'c', m:+2,    pos:{x:430, y:130} },
+  { id:'d', m:+4,    pos:{x:580, y:80}  },
+  { id:'e', m:+6,    pos:{x:200, y:210} },
+];
+
+function initMatchLab() {
+  const canvas = document.getElementById('matchCanvas');
+  if (!canvas._inited) {
+    canvas._inited = true;
+    drawMatchStars();
+    renderMatchTray();
+    setupMatchDrop(canvas);
+  } else {
+    drawMatchStars();
+    renderMatchTray();
+  }
+}
+
+function drawMatchStars() {
+  const canvas = document.getElementById('matchCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // bg starfield
+  if (!canvas._bg) {
+    canvas._bg = Array.from({length:60}, () => ({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*0.6+0.2 }));
+  }
+  ctx.fillStyle = '#fff';
+  for (const s of canvas._bg) { ctx.globalAlpha = s.r * 0.4; ctx.fillRect(s.x, s.y, 1, 1); }
+  ctx.globalAlpha = 1;
+
+  // draw each star
+  MATCH_STARS.forEach(s => {
+    const r = Math.max(0.6, 4 + (6 - s.m) * 3);
+    // halo
+    if (r > 1) {
+      const grad = ctx.createRadialGradient(s.pos.x, s.pos.y, 0, s.pos.x, s.pos.y, r * 4);
+      const intensity = Math.max(0, Math.min(1, (4 - s.m) / 10));
+      grad.addColorStop(0, `rgba(255,240,200,${intensity * 0.7})`);
+      grad.addColorStop(0.3, `rgba(255,220,150,${intensity * 0.3})`);
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(s.pos.x, s.pos.y, r * 4, 0, Math.PI*2); ctx.fill();
+    }
+    // core
+    ctx.fillStyle = s.m < 0 ? '#fff' : (s.m < 3 ? '#ffe7b3' : '#ffb87a');
+    ctx.shadowColor = '#fff'; ctx.shadowBlur = Math.max(0, 25 - s.m * 3);
+    ctx.beginPath(); ctx.arc(s.pos.x, s.pos.y, r, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    // label · star ID
+    ctx.fillStyle = '#9aa3c0'; ctx.font = '11px monospace'; ctx.textAlign = 'center';
+    ctx.fillText('ดาว ' + s.id.toUpperCase(), s.pos.x, s.pos.y + r + 14);
+    // if matched · show placed label
+    const placedM = state.matchPlaced[s.id];
+    if (placedM != null) {
+      const correct = placedM === s.m;
+      ctx.fillStyle = correct ? '#7effb2' : '#ff5c7a';
+      ctx.font = 'bold 12px monospace';
+      ctx.fillText('m=' + (placedM >= 0 ? '+' : '') + placedM + (correct ? ' ✓' : ' ✗'), s.pos.x, s.pos.y - r - 10);
+    }
+  });
+}
+
+function renderMatchTray() {
+  const tray = document.getElementById('matchTray');
+  tray.innerHTML = '<div class="lbl">🏷️ ลาก label เหล่านี้ขึ้นไปวางบนดาวที่<b>ตรงกัน</b>:</div>';
+  const correctlyPlaced = MATCH_STARS.map(s => state.matchPlaced[s.id] === s.m ? s.m : null).filter(x => x != null);
+  MATCH_STARS.forEach(s => {
+    const placedM = correctlyPlaced.includes(s.m);
+    const tok = document.createElement('div');
+    tok.className = 'match-token' + (placedM ? ' placed' : '');
+    tok.draggable = !placedM;
+    tok.textContent = 'm = ' + (s.m >= 0 ? '+' : '') + s.m;
+    tok.dataset.m = s.m;
+    tok.ondragstart = (e) => { e.dataTransfer.setData('m', String(s.m)); e.dataTransfer.setData('text/plain', String(s.m)); };
+    if (!placedM && typeof TouchDrag !== 'undefined') TouchDrag.makeDraggable(tok, () => String(s.m));
+    tray.appendChild(tok);
+  });
+  // progress
+  const correctCount = MATCH_STARS.filter(s => state.matchPlaced[s.id] === s.m).length;
+  const ph = document.getElementById('matchProgress');
+  ph.textContent = 'จับคู่ถูก ' + correctCount + ' / ' + MATCH_STARS.length;
+  ph.style.color = correctCount === MATCH_STARS.length ? '#7effb2' : '#9aa3c0';
+  if (correctCount === MATCH_STARS.length && !state.matchDone) {
+    state.matchDone = true;
+    state.tabsDone.match = true;
+    markTabDone('match', true);
+    updateExploreGate();
+    // Award once: bonus reduced if too many wrong attempts (>5 = wasted)
+    if (state.tabCoins.match == null) {
+      const overAttempts = Math.max(0, state.matchAttempts - MATCH_STARS.length);
+      const coin = Math.max(2, 5 - Math.floor(overAttempts / 2));  // 5 base · -1 per 2 wrong attempts · floor 2
+      state.tabCoins.match = coin;
+      if (typeof Coin !== 'undefined') Coin.add(coin, 'p08-match');
+      showCoinToast(coin, 'Brightness Match · 5/5 ✓ (' + state.matchAttempts + ' attempts)');
+    }
+  }
+}
+
+/* Shared placement: works for both mouse-drop and touch-end · clientX/Y in viewport coords */
+function tryPlaceMatch(droppedM, clientX, clientY) {
+  if (isNaN(droppedM)) return false;
+  const canvas = document.getElementById('matchCanvas');
+  if (!canvas) return false;
+  const rect = canvas.getBoundingClientRect();
+  if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return false;
+  const x = (clientX - rect.left) * (canvas.width / rect.width);
+  const y = (clientY - rect.top) * (canvas.height / rect.height);
+  let nearest = null, minDist = 60;
+  for (const s of MATCH_STARS) {
+    const d = Math.hypot(s.pos.x - x, s.pos.y - y);
+    if (d < minDist) { nearest = s; minDist = d; }
+  }
+  if (!nearest) return false;
+  state.matchAttempts++;
+  state.matchPlaced[nearest.id] = droppedM;
+  drawMatchStars();
+  renderMatchTray();
+  return true;
+}
+
+function setupMatchDrop(canvas) {
+  canvas.addEventListener('dragover', (e) => e.preventDefault());
+  canvas.addEventListener('drop', (e) => {
+    e.preventDefault();
+    let raw = e.dataTransfer.getData('m');
+    if (!raw) raw = e.dataTransfer.getData('text/plain');
+    tryPlaceMatch(parseFloat(raw), e.clientX, e.clientY);
+  });
+  if (typeof TouchDrag !== 'undefined') {
+    TouchDrag.makeDropTarget(canvas, (mStr, cx, cy) => tryPlaceMatch(parseFloat(mStr), cx, cy));
+  }
+}
+
+/* ============================================================
+ * TAB C · m vs M Distance Lab
+ * 2 stars · adjust distance sliders · m changes · M doesn't
+ * ============================================================ */
+function initDistLab() {
+  if (!document.getElementById('denebSlider')._wired) {
+    document.getElementById('denebSlider')._wired = true;
+    document.getElementById('denebSlider').addEventListener('input', updateDistLab);
+    document.getElementById('siriusSlider').addEventListener('input', updateDistLab);
+  }
+  drawDistLab();
+  updateDistLab();
+}
+
+function computeApparent(M, d) { return M + 5 * Math.log10(d / 10); }
+
+function updateDistLab() {
+  const denebD = Math.pow(10, parseFloat(document.getElementById('denebSlider').value));
+  const siriusD = Math.pow(10, parseFloat(document.getElementById('siriusSlider').value));
+  state.denebD = denebD;
+  state.siriusD = siriusD;
+  const denebM = computeApparent(-8.4, denebD);
+  const siriusM = computeApparent(+1.4, siriusD);
+  document.getElementById('denebM').textContent = (denebM >= 0 ? '+' : '') + denebM.toFixed(2);
+  document.getElementById('siriusM').textContent = (siriusM >= 0 ? '+' : '') + siriusM.toFixed(2);
+  document.getElementById('denebD').textContent = denebD < 10 ? denebD.toFixed(2) : Math.round(denebD);
+  document.getElementById('siriusD').textContent = siriusD < 10 ? siriusD.toFixed(2) : Math.round(siriusD);
+  // ranking by m
+  const winnerEl = document.getElementById('winnerM');
+  const denebBrighter = denebM < siriusM;  // smaller m = brighter
+  const ranking = denebBrighter ? 'deneb' : 'sirius';
+  winnerEl.className = 'winner ' + ranking;
+  winnerEl.textContent = denebBrighter
+    ? '🔵 Deneb (m=' + denebM.toFixed(2) + ')'
+    : '🟡 Sirius (m=' + siriusM.toFixed(2) + ')';
+  // detect swap
+  if (state.prevMRanking != null && state.prevMRanking !== ranking) {
+    state.swapCount++;
+    document.getElementById('swapCount').textContent = state.swapCount;
+    if (state.swapCount >= 1 && !state.distExplored) {
+      state.distExplored = true;
+      state.tabsDone.dist = true;
+      markTabDone('dist', true);
+      updateExploreGate();
+      // Award once
+      if (state.tabCoins.dist == null) {
+        state.tabCoins.dist = 5;
+        if (typeof Coin !== 'undefined') Coin.add(5, 'p08-dist');
+        showCoinToast(5, 'Distance Lab · เห็น swap!');
+      }
+    }
+  }
+  state.prevMRanking = ranking;
+  drawDistLab();
+}
+
+function drawDistLab() {
+  const canvas = document.getElementById('distCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  if (!canvas._bg) {
+    canvas._bg = Array.from({length:50}, () => ({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*0.5+0.2 }));
+  }
+  ctx.fillStyle = '#fff';
+  for (const s of canvas._bg) { ctx.globalAlpha = s.r * 0.4; ctx.fillRect(s.x, s.y, 1, 1); }
+  ctx.globalAlpha = 1;
+
+  // Earth indicator at bottom-center
+  ctx.fillStyle = '#64d8ff';
+  ctx.beginPath(); ctx.arc(W/2, H - 20, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '10px Sarabun'; ctx.textAlign = 'center';
+  ctx.fillText('🌍 Earth', W/2, H - 4);
+
+  // Two stars · positioned at distance proportional to log d (visual)
+  const drawDistStar = (m, color, name, xRatio) => {
+    const x = W * xRatio;
+    const r = Math.max(0.8, 4 + (6 - m) * 3);
+    // halo
+    if (r > 1) {
+      const grad = ctx.createRadialGradient(x, 80, 0, x, 80, r * 4);
+      const intensity = Math.max(0, Math.min(1, (4 - m) / 10));
+      grad.addColorStop(0, color.replace('1)', intensity * 0.7 + ')'));
+      grad.addColorStop(0.3, color.replace('1)', intensity * 0.3 + ')'));
+      grad.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath(); ctx.arc(x, 80, r * 4, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = color;
+    ctx.shadowColor = color; ctx.shadowBlur = Math.max(0, 20 - m * 2);
+    ctx.beginPath(); ctx.arc(x, 80, r, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#e8ecf8'; ctx.font = 'bold 12px Sarabun';
+    ctx.fillText(name, x, 80 - r - 10);
+    ctx.fillStyle = '#9aa3c0'; ctx.font = '11px monospace';
+    ctx.fillText('m=' + (m >= 0 ? '+' : '') + m.toFixed(2), x, 80 + r + 18);
+  };
+  const denebM_curr = computeApparent(-8.4, state.denebD);
+  const siriusM_curr = computeApparent(+1.4, state.siriusD);
+  drawDistStar(denebM_curr, 'rgba(180,220,255,1)', 'Deneb (M=−8.4)', 0.3);
+  drawDistStar(siriusM_curr, 'rgba(255,230,180,1)', 'Sirius (M=+1.4)', 0.7);
+}
+
+/* ==================== STEP 2 · MEASURE ==================== */
+const mSlider2 = document.getElementById('mSlider2');
+mSlider2.addEventListener('input', () => {
+  state.measureM = parseFloat(mSlider2.value);
+  document.getElementById('mVal3').textContent = state.measureM.toFixed(2);
+});
+
+function renderMeasureTargets() {
+  document.getElementById('targets').innerHTML = MEASURE_TARGETS.map((t,i) => {
+    const locked = state.measured[t.id] != null;
+    const active = state.activeIdx === i && !locked;
+    return `<div class="target-card ${active?'active':''} ${locked?'locked':''}">
+      <div>
+        <div class="name">${t.name}</div>
+        <div class="pval">${locked ? '✓ บันทึก: m = ' + state.measured[t.id].toFixed(2) : (active ? 'วัดตอนนี้' : 'รอคิว')}</div>
+      </div>
+      ${locked
+        ? '<span style="font-size:18px;">✅</span>'
+        : active
+          ? `<button class="btn-measure" onclick="lockMeasure(${i})">📸 บันทึก m</button>`
+          : `<button class="btn-measure" onclick="focusTarget(${i})">→ เลือก</button>`}
+    </div>`;
+  }).join('');
+}
+window.focusTarget = (i) => { state.activeIdx = i; renderMeasureTargets(); };
+window.lockMeasure = (i) => {
+  const t = MEASURE_TARGETS[i];
+  state.measureAttempts[t.id] = (state.measureAttempts[t.id] || 0) + 1;
+  const within = Math.abs(state.measureM - t.m) < t.tol;
+  if (!within) {
+    alert('ภาพยังไม่ตรง · ต่างจากเป้า ±' + t.tol + ' · ลองอีก');
+    return;
+  }
+  state.measured[t.id] = state.measureM;
+  const next = MEASURE_TARGETS.findIndex(x => state.measured[x.id] == null);
+  if (next >= 0) state.activeIdx = next;
+  renderMeasureTargets();
+  updateMeasureGate();
+};
+function updateMeasureGate() {
+  const done = Object.keys(state.measured).length === MEASURE_TARGETS.length;
+  document.getElementById('next2').disabled = !done;
+  if (done) {
+    markDone(2);
+    // Chain · push m_sos to P09B master decode (use Sirius for SOS surrogate · m=+1.25 from real Deneb data)
+    if (typeof Chain !== 'undefined') Chain.set('m_sos', 1.25);
+  }
+}
+function calcStep2Coin() {
+  let coin = 0;
+  MEASURE_TARGETS.forEach(t => {
+    const n = state.measureAttempts[t.id] || 99;
+    if (n === 1) coin += 5;
+    else if (n === 2) coin += 3;
+    else if (state.measured[t.id] != null) coin += 1;
+  });
+  return coin;
+}
+document.getElementById('next2').onclick = () => {
+  const oneShot = Object.values(state.measureAttempts).filter(n => n === 1).length;
+  awardStepCoin(2, calcStep2Coin(), 'Measure · 1-shot ' + oneShot + '/3');
+  go(3);
+};
+
+/* ==================== STEP 3 · ANALYZE · drag star tokens onto ruler ==================== */
+function mPosToX(m) { return ((m + 2) / 8) * 100; }  // m=-2 → 0%, m=+6 → 100%
+function xPercentToM(p) { return p/100 * 8 - 2; }
+
+function renderRuler() {
+  const ruler = document.getElementById('magRuler');
+  // Add ticks
+  ruler.innerHTML = '';
+  for (let m = -2; m <= 6; m++) {
+    const tick = document.createElement('div');
+    tick.className = 'mag-tick';
+    tick.style.left = mPosToX(m) + '%';
+    tick.innerHTML = '<span class="lbl">' + (m >= 0 ? '+' : '') + m + '</span>';
+    ruler.appendChild(tick);
+  }
+  // Add tokens already placed on ruler
+  STARS.forEach(s => {
+    if (state.ruler[s.id] != null) {
+      const token = makeToken(s);
+      token.style.left = state.ruler[s.id] + '%';
+      const placedM = xPercentToM(state.ruler[s.id]);
+      const ok = Math.abs(placedM - s.m) < 0.5;
+      token.classList.add(ok ? 'placed-ok' : 'placed-bad');
+      ruler.appendChild(token);
+    }
+  });
+  // Refill tray with unplaced
+  const tray = document.getElementById('starTray');
+  tray.innerHTML = '<div class="lbl-tray">🌟 ลากชื่อดาวขึ้นไปวางบนไม้บรรทัด ↑</div>';
+  STARS.forEach(s => {
+    if (state.ruler[s.id] == null) tray.appendChild(makeToken(s));
+  });
+  // Drop zone events on ruler
+  ruler.ondragover = (e) => { e.preventDefault(); };
+  ruler.ondrop = (e) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('star');
+    if (!id) return;
+    const rect = ruler.getBoundingClientRect();
+    let x = ((e.clientX - rect.left) / rect.width) * 100;
+    x = Math.max(0, Math.min(100, x));
+    state.ruler[id] = x;
+    renderRuler();
+    updateAnalyzeGate();
+  };
+  tray.ondragover = (e) => { e.preventDefault(); };
+  tray.ondrop = (e) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('star');
+    if (id) {
+      delete state.ruler[id];
+      renderRuler();
+      updateAnalyzeGate();
+    }
+  };
+}
+function makeToken(star) {
+  const tok = document.createElement('div');
+  tok.className = 'star-token';
+  tok.draggable = true;
+  tok.dataset.id = star.id;
+  tok.textContent = star.name;
+  tok.ondragstart = (e) => { e.dataTransfer.setData('star', star.id); };
+  return tok;
+}
+function renderApplyQ() {
+  const el = document.getElementById('predictApply');
+  const opts = ['ดาว X (m=+8)', 'ดาว Y (m=+3)', 'เท่ากัน'];
+  el.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickApply(${i})">${o}</button>`).join('');
+  if (state.applyAns != null) {
+    el.querySelectorAll('.choice-btn').forEach((b,i) => {
+      b.disabled = true;
+      if (i === 1) b.classList.add('correct');
+      else if (i === state.applyAns) b.classList.add('wrong');
+    });
+  }
+}
+window.pickApply = (i) => {
+  if (state.applyAns != null) return;
+  state.applyAns = i;
+  renderApplyQ();
+  if (i !== 1) VoidHunter.wrongAnswer('p08');
+  updateAnalyzeGate();
+};
+function updateAnalyzeGate() {
+  const allPlaced = STARS.every(s => state.ruler[s.id] != null);
+  const applied = state.applyAns != null;
+  document.getElementById('next3').disabled = !(allPlaced && applied);
+  if (allPlaced && applied) markDone(3);
+}
+function calcStep3Coin() {
+  let coin = 0;
+  // Ruler placement: 4 if all 5 within tolerance
+  const allOk = STARS.every(s => {
+    const placedM = xPercentToM(state.ruler[s.id] || -999);
+    return Math.abs(placedM - s.m) < 0.5;
+  });
+  if (allOk) coin += 4;
+  if (state.applyAns === 1) coin += 4;
+  return coin;
+}
+document.getElementById('next3').onclick = () => {
+  awardStepCoin(3, calcStep3Coin(), 'Analyze · ruler+apply');
+  go(4);
+};
+
+/* ==================== STEP 4 · NOTE · statement classification ==================== */
+const OBS_STMTS = [
+  { id:'o1', text:'Sirius (m=−1.46) สว่างกว่า Polaris (m=+1.98) เมื่อมองด้วยตาเปล่า', correct:true,
+    why:'✓ ใช้ได้ · เทียบ m ตรง · m ติดลบ = สว่างกว่า' },
+  { id:'o2', text:'ดาวเปลี่ยนสีตอนเลื่อน slider · สีบอกความสว่าง', correct:false,
+    why:'✗ อ่อน · สีในแล็บนี้เป็นแค่ visualization · ไม่ใช่ data' },
+  { id:'o3', text:'Sirius สว่างที่สุดบนฟ้า ดังนั้น Sirius ปล่อยแสงจริงเยอะที่สุด', correct:false,
+    why:'✗ misconception M2 · m บอกแค่<b>ปรากฎ (m)</b> · ไม่บอก<b>ปล่อยแสงจริง</b>' },
+  { id:'o4', text:'อันดับความสว่างปรากฎ (m) บวกมาก = ดาวจาง · ตาเปล่าอาจเห็นไม่ได้ที่ m > 6', correct:true,
+    why:'✓ ใช้ได้ · อันดับความสว่างปรากฎ = 6 คือ eye limit ในแล็บนี้' },
+  { id:'o5', text:'อันดับความสว่างปรากฎ (m) บอกว่าดาวอยู่ห่างจากโลกเท่าไหร่', correct:false,
+    why:'✗ misconception · อันดับความสว่างปรากฎ (m) คือความสว่างที่ปรากฎ · ไม่ใช่ระยะ (ใช้ d ตอน parallax)' },
+];
+const RULE_STMTS = [
+  { id:'r1', text:'อันดับความสว่างปรากฎ (m) ยิ่งน้อย/ติดลบ = ยิ่งสว่างปรากฎ (logarithmic scale)', correct:true,
+    why:'✓ ถูก · ระบุทิศของ scale + ระบุ log' },
+  { id:'r2', text:'อันดับความสว่างปรากฎ ต่างกัน 5 = สว่างต่างกัน 100 เท่า', correct:true,
+    why:'✓ ถูก · กฎของ Pogson 1856' },
+  { id:'r3', text:'อันดับความสว่างปรากฎ ติดลบ = ดาวหรี่ลง (เลขน้อยกว่า)', correct:false,
+    why:'✗ misconception M1 · กลับทิศ · m ติดลบ = สว่างกว่า' },
+  { id:'r4', text:'อันดับความสว่างปรากฎ คือเลขที่บอกขนาดของดาว', correct:false,
+    why:'✗ ผิด · m บอก<b>อันดับความสว่างปรากฎ (m)</b> · ไม่บอกขนาด (เส้นผ่านศูนย์กลาง)' },
+];
+
+function renderStmtList(containerId, stmts, classMap) {
+  const el = document.getElementById(containerId);
+  const submitted = state.noteSubmitted;
+  el.innerHTML = stmts.map(s => {
+    const choice = classMap[s.id];
+    // Only reveal correctness AFTER submission
+    let itemClass = '';
+    let fb = '';
+    if (submitted && choice) {
+      const isCorrect = choice === (s.correct?'tick':'cross');
+      itemClass = isCorrect ? 'classified-ok' : 'classified-bad';
+      fb = `<div class="stmt-feedback ${isCorrect ? 'ok' : 'bad'}">${s.why}</div>`;
+    } else if (choice) {
+      // Just show selected state (neutral · no correct/wrong color)
+      itemClass = '';
+    }
+    const lock = submitted ? 'disabled' : '';
+    return `<div class="stmt-item ${itemClass}" data-id="${s.id}">
+      <div class="stmt-text">${s.text}</div>
+      <div class="stmt-toggle">
+        <button class="stmt-btn tick ${choice==='tick'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','tick')" ${lock}>✓</button>
+        <button class="stmt-btn cross ${choice==='cross'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','cross')" ${lock}>✗</button>
+      </div>
+      ${fb}
+    </div>`;
+  }).join('');
+}
+window.classifyStmt = (containerId, stmtId, choice) => {
+  if (state.noteSubmitted) return;  // locked after submit
+  const map = containerId === 'obsList' ? state.obsClass : state.ruleClass;
+  map[stmtId] = choice;
+  if (containerId === 'obsList') renderStmtList('obsList', OBS_STMTS, state.obsClass);
+  else renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+  updateNoteGate();
+};
+
+function renderReflect() {
+  const guessB = state.predBrightest != null ? STAR_NAMES[state.predBrightest] : '?';
+  const ruleOpts = ['สว่างมาก', 'หรี่มาก', 'ขนาดใหญ่', 'ใกล้โลก'];
+  const guessR = state.predRule != null ? ruleOpts[state.predRule] : '?';
+  document.getElementById('reflectCmp').innerHTML =
+    '<b>Predict (Step 1)</b> · สว่างสุด: <span style="color:#d4b8ff;">' + guessB + '</span>' +
+    ' · m ติดลบ = <span style="color:#d4b8ff;">' + guessR + '</span><br>' +
+    '<b>Actual</b> · สว่างสุด: <span style="color:#7effb2;">Sirius</span>' +
+    ' · m ติดลบ = <span style="color:#7effb2;">สว่างมาก</span>';
+  const items = [
+    { id:'bright', label:'ฉันทาย<b>ดาวสว่างสุด</b>ถูก (Sirius)' },
+    { id:'rule',   label:'ฉันเข้าใจกฎ "m ติดลบ = สว่างมาก" ตั้งแต่ก่อนแล็บ' },
+    { id:'surprise', label:'ฉันเซอร์ไพรส์เรื่อง scale กลับทิศ (เล็ก = สว่าง)' },
+    { id:'changed',  label:'ฉันเปลี่ยนความเข้าใจหลังทำแล็บ' },
+  ];
+  const el = document.getElementById('reflectHypo');
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  el.innerHTML = items.map(it => {
+    const on = state.reflectHypo.includes(it.id);
+    return '<div class="check-item ' + (on?'on':'') + '" onclick="toggleReflect(\''+it.id+'\')">' +
+           '<span class="box">' + (on?'✓':'') + '</span>' +
+           '<span class="label">' + it.label + '</span></div>';
+  }).join('');
+}
+window.toggleReflect = (id) => {
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  const i = state.reflectHypo.indexOf(id);
+  if (i >= 0) state.reflectHypo.splice(i, 1);
+  else state.reflectHypo.push(id);
+  renderReflect();
+  updateNoteGate();
+};
+
+function updateNoteGate() {
+  const allObs = OBS_STMTS.every(s => state.obsClass[s.id] != null);
+  const allRule = RULE_STMTS.every(s => state.ruleClass[s.id] != null);
+  const allClassified = allObs && allRule;
+  const reflectOk = Array.isArray(state.reflectHypo) && state.reflectHypo.length > 0;
+  // Submit button: enabled when all 9 classified · before submit
+  const submitBtn = document.getElementById('noteSubmitBtn');
+  if (submitBtn) {
+    if (state.noteSubmitted) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '✓ ตรวจแล้ว · ดูผลด้านบน';
+    } else {
+      submitBtn.disabled = !allClassified;
+      submitBtn.textContent = allClassified
+        ? '🎁 ส่งคำตอบ + เปิดกล่องสุ่ม!'
+        : '🔒 ตอบครบ 9 ข้อก่อน';
+    }
+  }
+  // Next button: enabled when submitted + reflect chosen
+  const ok = state.noteSubmitted && reflectOk;
+  document.getElementById('next4').disabled = !ok;
+  if (ok) markDone(4);
+}
+
+window.submitNote = function() {
+  if (state.noteSubmitted) return;
+  const allObs = OBS_STMTS.every(s => state.obsClass[s.id] != null);
+  const allRule = RULE_STMTS.every(s => state.ruleClass[s.id] != null);
+  if (!allObs || !allRule) return;
+  state.noteSubmitted = true;
+  renderStmtList('obsList', OBS_STMTS, state.obsClass);
+  renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+  updateNoteGate();
+  // Trigger mystery box
+  setTimeout(() => showP08MysteryBox(), 500);
+};
+
+/* ==================== MYSTERY BOX (after Lab Note submit) ==================== */
+function computeNoteWrong() {
+  const obsW = OBS_STMTS.filter(s => state.obsClass[s.id] !== (s.correct?'tick':'cross')).length;
+  const ruleW = RULE_STMTS.filter(s => state.ruleClass[s.id] !== (s.correct?'tick':'cross')).length;
+  return obsW + ruleW;
+}
+function p08RewardTier(wrong) {
+  if (wrong === 0) return { tier:1, slots:3, label:'PERFECT · เต็มที่!', cls:'t1', coin:[20,40], photon:[20,40], itemPool:'all' };
+  if (wrong <= 3) return { tier:2, slots:2, label:'GOOD · ลดจำนวน', cls:'t2', coin:[10,25], photon:[10,25], itemPool:'all' };
+  return { tier:3, slots:1, label:'PASS · 1 ชิ้น', cls:'t3', coin:[5,15], photon:[5,15], itemPool:'cheap' };
+}
+function rollP08Reward(tier) {
+  const rand = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  const types = ['coin','energy','item'].sort(() => Math.random()-0.5).slice(0, tier.slots);
+  const out = [];
+  types.forEach(t => {
+    if (t === 'coin') out.push({ type:'coin', icon:'🪙', name:'COIN', value:rand(tier.coin[0], tier.coin[1]), desc:'เงินสำหรับ shop' });
+    else if (t === 'energy') out.push({ type:'energy', icon:'⚡', name:'PHOTON', value:rand(tier.photon[0], tier.photon[1]), desc:'พลังงาน beacon' });
+    else if (t === 'item') {
+      const items = (window.EP_CONFIG && EP_CONFIG.shop && EP_CONFIG.shop.items) || [];
+      const pool = tier.itemPool === 'cheap' ? items.filter(it => it.cost <= 60) : items;
+      const it = pool[rand(0, Math.max(0, pool.length-1))] || items[0];
+      out.push({ type:'item', icon: it ? it.icon : '🎁', name:'ITEM', value: it ? it.name : '???', itemId: it && it.id, desc: it ? it.desc : '' });
+    }
+  });
+  return out;
+}
+function applyP08Rewards(rewards) {
+  rewards.forEach(r => {
+    if (r.type === 'coin' && typeof Coin !== 'undefined') Coin.add(r.value, 'p08-mystery');
+    else if (r.type === 'energy' && typeof Photon !== 'undefined') Photon.add(r.value, 'p08-mystery');
+    else if (r.type === 'item' && r.itemId && typeof ShopItems !== 'undefined' && ShopItems.grant) ShopItems.grant(r.itemId);
+  });
+}
+function showP08MysteryBox() {
+  const wrong = computeNoteWrong();
+  const total = OBS_STMTS.length + RULE_STMTS.length;
+  const tier = p08RewardTier(wrong);
+  const rewards = rollP08Reward(tier);
+  state.noteRewards = rewards;
+  state.noteRewardTier = tier.tier;
+  const overlay = document.createElement('div');
+  overlay.className = 'reward-modal';
+  overlay.id = 'p08RewardModal';
+  overlay.innerHTML = `
+    <div class="reward-card">
+      <h2>🎁 MYSTERY BOX</h2>
+      <div class="tier-tag ${tier.cls}">TIER ${tier.tier} · ${tier.label}</div>
+      <div class="reward-stats-line">Lab Note · ตอบทั้งหมด <b>${total}</b> ข้อ · ผิด <b style="color:${wrong===0?'#7effb2':wrong<=3?'#ffcb6b':'#ff8fa5'};">${wrong}</b> ข้อ → ได้ <b>${tier.slots}</b> ชิ้น</div>
+      <div class="mystery-box-p08" id="p08MBox" title="คลิกเปิด!">📦</div>
+      <div style="font-size:12px;color:#9aa3c0;" id="p08BoxHint">▼ คลิกกล่องเพื่อเปิด ▼</div>
+      <div class="reward-slots" id="p08RewardSlots"></div>
+      <button class="reward-close" id="p08RewardClose" disabled onclick="closeP08Reward()">ปิด · ทำต่อ</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  document.getElementById('p08MBox').onclick = () => openP08MysteryBox(rewards);
+}
+function openP08MysteryBox(rewards) {
+  const box = document.getElementById('p08MBox');
+  if (!box || box.classList.contains('opened')) return;
+  box.classList.add('opened');
+  document.getElementById('p08BoxHint').style.display = 'none';
+  applyP08Rewards(rewards);
+  const host = document.getElementById('p08RewardSlots');
+  rewards.forEach((r, i) => {
+    setTimeout(() => {
+      const slot = document.createElement('div');
+      slot.className = 'reward-slot ' + r.type;
+      slot.innerHTML = `
+        <div class="ricon">${r.icon}</div>
+        <div style="text-align:left;flex:1;">
+          <div class="rname">${r.name}</div>
+          <div class="rval">${r.type === 'item' ? r.value : '+' + r.value}</div>
+          ${r.desc ? '<div class="rdesc">'+r.desc+'</div>' : ''}
+        </div>
+      `;
+      host.appendChild(slot);
+      void slot.offsetWidth;
+      slot.classList.add('show');
+    }, 300 + i * 500);
+  });
+  setTimeout(() => { document.getElementById('p08RewardClose').disabled = false; }, 300 + rewards.length * 500 + 200);
+}
+window.closeP08Reward = function() {
+  const m = document.getElementById('p08RewardModal');
+  if (m) m.remove();
+};
+function calcStep4Coin() {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  let coin = obsOk + ruleOk;
+  if (obsOk === OBS_STMTS.length && ruleOk === RULE_STMTS.length) coin += 5;
+  return coin;
+}
+document.getElementById('next4').onclick = () => {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  awardStepCoin(4, calcStep4Coin(), 'Note · ' + (obsOk+ruleOk) + '/9 ถูก');
+  go(5);
+};
+
+/* ==================== STEP 5 · PEER ==================== */
+function renderPeerQs() {
+  const applyEl = document.getElementById('applyQ');
+  // Canopus m=−0.74 vs Vega m=+0.03 → Canopus สว่างกว่า (m ติดลบกว่า)
+  const opts = ['Canopus (m=−0.74)', 'Vega (m=+0.03)', 'เท่ากัน'];
+  applyEl.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPeerQ(${i})">${o}</button>`).join('');
+  if (state.peerQ != null) {
+    applyEl.querySelectorAll('.choice-btn').forEach((b,i) => {
+      b.disabled = true;
+      if (i === 0) b.classList.add('correct');
+      else if (i === state.peerQ) b.classList.add('wrong');
+    });
+  }
+  const peerEl = document.getElementById('peerCheck');
+  const peerOpts = ['ตรงกัน · confident', 'ต่างกัน · ได้อภิปราย', 'คนในทีมยังไม่เสร็จ'];
+  peerEl.innerHTML = peerOpts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPeerCheck(${i})">${o}</button>`).join('');
+  if (state.peerCheck != null) {
+    peerEl.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.peerCheck));
+  }
+}
+window.pickPeerQ = (i) => {
+  if (state.peerQ != null) return;
+  state.peerQ = i;
+  renderPeerQs();
+  if (i === 0) Photon.add(15, 'p08-peer');
+  else VoidHunter.wrongAnswer('p08');
+  awardStepCoin(5, state.peerQ === 0 ? 5 : 0, i === 0 ? 'Peer apply ถูก' : 'Peer apply ผิด');
+  updatePeerGate();
+};
+window.pickPeerCheck = (i) => {
+  state.peerCheck = i;
+  renderPeerQs();
+  updatePeerGate();
+};
+function updatePeerGate() {
+  const ok = state.peerQ != null && state.peerCheck != null;
+  if (ok) markDone(5);
+}
+
+/* ==================== RENDER DISPATCH ==================== */
+function renderStep(s) {
+  if (s === 0) renderPredict();
+  else if (s === 2) renderMeasureTargets();
+  else if (s === 3) { renderRuler(); renderApplyQ(); }
+  else if (s === 4) {
+    renderStmtList('obsList', OBS_STMTS, state.obsClass);
+    renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+    renderReflect();
+    updateNoteGate();
+  }
+  else if (s === 5) renderPeerQs();
+  else if (s === 1) renderExploreObserve();
+}
+
+renderStep(0);
+animLoop();
+
+/* ==================== SUBMIT ==================== */
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p08',
+    nextHref: 'p09-absolute.html',
+    getPayload: () => {
+      const allDone = state.stepsDone.size >= 5 && state.peerQ != null && state.peerCheck != null;
+      if (!allDone) { alert('ทำให้ครบทุก step ก่อนส่ง'); throw new Error('incomplete'); }
+      const obsCorrect = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+      const ruleCorrect = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+      const total = Object.values(state.stepCoins).reduce((a,b)=>a+b, 0);
+      const perfect = state.stepCoins[1]>=13 && state.stepCoins[2]===15 &&
+                      state.stepCoins[3]===8 && state.stepCoins[4]===14 && state.stepCoins[5]===5;
+      return {
+        tag: 'magnitude-lab',
+        durationSec: Math.round((Date.now()-state.startedAt)/1000),
+        hypothesis: { brightest: STAR_NAMES[state.predBrightest], rule: state.predRule },
+        explore: { mRange: state.exploredMRange, relObserve: state.relObserve },
+        tabCoins: state.tabCoins,
+        matchAttempts: state.matchAttempts,
+        swapCount: state.swapCount,
+        measured: state.measured,
+        measureAttempts: state.measureAttempts,
+        ruler: state.ruler,
+        applyAns: state.applyAns,
+        obsClass: state.obsClass, ruleClass: state.ruleClass,
+        obsCorrect, obsTotal: OBS_STMTS.length,
+        ruleCorrect, ruleTotal: RULE_STMTS.length,
+        reflectHypo: state.reflectHypo,
+        peerQ: state.peerQ, peerCheck: state.peerCheck,
+        stepCoins: state.stepCoins,
+        coinTotal: total,
+        perfect,
+        // legacy fields
+        correct: (state.applyAns===1?1:0) + (state.peerQ===0?1:0),
+        total: 2,
+      };
+    },
+    isPerfect: () => false,  // we use per-step award
+    onSubmit: () => {
+      const total = Object.values(state.stepCoins).reduce((a,b)=>a+b, 0);
+      alert('✓ ส่งแล้ว · 🪙 รวม ' + total + ' coin · ดูแยก step ที่ stepper');
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p08-to-p09', 'p09-absolute.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P14 · Evolution Order</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .track-pick { display:flex; flex-wrap:wrap; gap:6px; margin:14px 0; }
+  .track-btn { flex:1; min-width:100px; padding:8px 6px; background:rgba(0,0,0,0.4); border:2px solid; border-radius:8px; cursor:pointer; font-family:Orbitron; font-size:11px; text-align:center; -webkit-tap-highlight-color:transparent; }
+  .track-btn.active { box-shadow:0 0 14px currentColor; }
+
+  .phase-pool { padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; }
+  .phase-pool .h { font-family:Orbitron; font-size:11px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:8px; }
+  .phase-cards { display:flex; flex-wrap:wrap; gap:10px; min-height:60px; justify-content:center; }
+  .phase-card {
+    padding:10px 14px; min-height:60px; min-width:120px;
+    background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9));
+    border:2px solid rgba(120,140,220,0.5); border-radius:10px;
+    color:#e8ecf8; cursor:grab; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none;
+    transition:all .15s; text-align:center; font-size:13px; font-weight:700;
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+  }
+  .phase-card .vis-wrap { display:flex; align-items:center; justify-content:center; height:50px; }
+  .slot .placed-star { display:flex; align-items:center; justify-content:center; height:30px; margin-top:2px; }
+  .slot .placed-host { font-size:11.5px; color:#e8ecf8; line-height:1.3; margin-top:2px; }
+
+  /* Star visualization (same as p13) */
+  .star-vis { border-radius:50%; box-shadow:0 0 14px currentColor; position:relative; }
+  .star-vis.proto { background:radial-gradient(circle at 35% 35%, #d8a888, #5a3a18 70%, transparent); color:#aa6644; opacity:0.5; }
+  .star-vis.brown { background:radial-gradient(circle at 35% 35%, #b08866, #5a3a18 70%); color:#8b6645; }
+  .star-vis.m-ms { background:radial-gradient(circle at 35% 35%, #ff9e7a, #cc4422); color:#ff7a55; }
+  .star-vis.k-ms { background:radial-gradient(circle at 35% 35%, #ffc488, #aa5522); color:#ffaa55; }
+  .star-vis.g-ms { background:radial-gradient(circle at 35% 35%, #fff8c8, #ffd96b 50%, #aa6622); color:#ffd96b; }
+  .star-vis.o-ms { background:radial-gradient(circle at 35% 35%, #d4e0ff, #6a8aff 50%, #2a3a7a); color:#9bb8ff; }
+  .star-vis.red-giant { background:radial-gradient(circle at 35% 35%, #ffaa66, #ff5530 60%, #5a1a08); color:#ff7a55; }
+  .star-vis.supergiant { background:radial-gradient(circle at 35% 35%, #ffaa66, #ff3818 60%, #5a1a08); color:#ff5c3a; }
+  .star-vis.nebula { background:radial-gradient(circle, rgba(212,184,255,0.7), rgba(255,143,165,0.5), transparent); color:#d4b8ff; filter:blur(1.5px); animation:nebPulse 3s infinite; }
+  @keyframes nebPulse { 50% { transform:scale(1.1); } }
+  .star-vis.supernova { background:radial-gradient(circle, #fff, #ffcb6b 30%, #ff5c7a 60%, transparent); color:#fff; box-shadow:0 0 30px #fff, 0 0 50px #ffcb6b; animation:novaPulse 1.4s infinite; }
+  .star-vis.hypernova { background:radial-gradient(circle, #fff, #b980ff 30%, #ff5c7a 60%, transparent); color:#fff; box-shadow:0 0 36px #fff, 0 0 60px #b980ff; animation:novaPulse 1s infinite; }
+  @keyframes novaPulse { 50% { transform:scale(1.15); } }
+  .star-vis.white-dwarf { background:radial-gradient(circle, #fff, #ddeeff 60%, #aabbdd); color:#fff; box-shadow:0 0 12px #fff; }
+  .star-vis.black-dwarf { background:radial-gradient(circle at 35% 35%, #4a3a5a, #1a1226 70%, #000); color:#3a3050; box-shadow:0 0 6px rgba(60,40,90,0.4); }
+  .star-vis.neutron { background:radial-gradient(circle, #fff8c8, #ffcb6b 50%, #aa6622); color:#ffcb6b; box-shadow:0 0 16px #ffcb6b; }
+  .star-vis.blackhole { background:#000; color:#000; box-shadow:0 0 0 2px #b980ff, 0 0 22px #b980ff; }
+  .star-vis.blackhole::before { content:''; position:absolute; inset:-8px; border-radius:50%; border:2px dashed #ff5c7a; animation:bhSpin 4s linear infinite; }
+  @keyframes bhSpin { 100% { transform:rotate(360deg); } }
+  .phase-card:active, .phase-card.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .phase-card.placed { opacity:0.3; pointer-events:none; }
+
+  .order-slots { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin:14px 0; }
+  @media(max-width:680px) { .order-slots { grid-template-columns:repeat(3,1fr); } }
+  .slot {
+    padding:8px; min-height:90px;
+    background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:10px;
+    text-align:center; transition:all .15s;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .slot.over { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .slot.filled { border-style:solid; }
+  .slot.correct { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .slot.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.08); }
+  .slot .num { font-family:Orbitron; font-size:10px; color:#9aa3c0; letter-spacing:0.15em; }
+  .slot .arrow { color:#6a7394; font-size:14px; }
+</style>
+</head>
+<body data-page="p14" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🎁 ACT C · CONSOLIDATION 1</span>
+  <h1>Evolution Order · จัดลำดับวิวัฒนาการ</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K2</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "<b>เลือก track</b> ที่ต้องการ · ลาก phase ทั้งหมดมาเรียงลำดับให้ถูกต้อง · จัดถูกครั้งแรก = Mystery Box ใหญ่"
+    </span>
+  </div>
+
+  <div class="track-pick" id="trackPick"></div>
+
+  <div class="phase-pool">
+    <div class="h">📦 PHASE CARDS · ลากลงช่อง</div>
+    <div class="phase-cards" id="phaseCards"></div>
+  </div>
+
+  <div class="order-slots" id="slots"></div>
+
+  <div class="status" id="hint">เลือก track · ลากเรียงให้ครบ</div>
+
+  <button class="compare-btn" id="cmpBtn" onclick="check()" disabled
+    style="width:100%; padding:18px; min-height:60px; background:linear-gradient(135deg, rgba(255,203,107,0.18), rgba(126,255,178,0.18)); border:2px solid #ffcb6b; color:#ffe2a8; border-radius:14px; font-family:Orbitron; font-size:16px; font-weight:700; letter-spacing:0.12em; cursor:pointer; margin-top:8px;">
+    🔍 ตรวจ
+  </button>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P14</summary>
+    <div class="body">
+      <b>วัตถุประสงค์:</b> ลำดับ phase ของแต่ละ track · เน้น <b>Sun-like</b> (เพราะคือดวงอาทิตย์เรา)<br>
+      <b>กลไก:</b> เลือก track · ลาก phase · กด ตรวจ · ถูกครั้งแรก = bonus
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">เรียงถูกอย่างน้อย 1 track → กดส่ง</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const TRACKS = (EP_CONFIG.massTracks || []);
+
+/* Map stage name → visual class + size px */
+function stageVisual(stageName) {
+  const s = stageName.toLowerCase();
+  if (s.includes('proto')) return { cls:'proto', size:24 };
+  if (s.includes('cool brown') || s.includes('brown')) return { cls:'brown', size:18 };
+  if (s.includes('red dwarf')) return { cls:'m-ms', size:20 };
+  if (s.includes('main sequence (m')) return { cls:'m-ms', size:24 };
+  if (s.includes('main sequence (g/k') || s.includes('main sequence (g')) return { cls:'g-ms', size:28 };
+  if (s.includes('main sequence (o/b') || s.includes('main sequence (o')) return { cls:'o-ms', size:32 };
+  if (s.includes('main sequence')) return { cls:'g-ms', size:28 };
+  if (s.includes('red giant')) return { cls:'red-giant', size:42 };
+  if (s.includes('supergiant')) return { cls:'supergiant', size:48 };
+  if (s.includes('planetary nebula')) return { cls:'nebula', size:42 };
+  if (s.includes('hypernova')) return { cls:'hypernova', size:46 };
+  if (s.includes('supernova')) return { cls:'supernova', size:42 };
+  if (s.includes('white dwarf')) return { cls:'white-dwarf', size:12 };
+  if (s.includes('black dwarf')) return { cls:'black-dwarf', size:12 };
+  if (s.includes('neutron')) return { cls:'neutron', size:10 };
+  if (s.includes('black hole')) return { cls:'blackhole', size:18 };
+  return { cls:'g-ms', size:24 };
+}
+
+let curTrack = -1;
+let placed = {}; // {slot: phase}
+let attempts = {};
+let perfectTracks = new Set();
+let checkedTracks = new Set();   // tracks ที่กด "ตรวจ" แล้ว (ทุก track ต้องตรวจก่อนส่ง)
+
+const trackPick = document.getElementById('trackPick');
+trackPick.innerHTML = TRACKS.map((t,i) => `
+  <div class="track-btn" data-i="${i}" style="border-color:${t.color}; color:${t.color};" onclick="pickTrack(${i})">
+    ${t.icon} ${t.track}
+  </div>
+`).join('');
+
+function pickTrack(i) {
+  curTrack = i;
+  const t = TRACKS[i];
+  placed = {};
+  document.querySelectorAll('.track-btn').forEach((el,j)=>el.classList.toggle('active', j===i));
+  // Render phases shuffled
+  const shuffled = t.stages.map((s,k)=>({s,k})).sort(()=>Math.random()-0.5);
+  document.getElementById('phaseCards').innerHTML = shuffled.map(p => {
+    const v = stageVisual(p.s);
+    return `
+      <div class="phase-card" id="ph-${p.k}" data-k="${p.k}" draggable="true">
+        <div class="vis-wrap"><div class="star-vis ${v.cls}" style="width:${v.size}px; height:${v.size}px;"></div></div>
+        <div>${p.s}</div>
+      </div>
+    `;
+  }).join('');
+  // Render slots
+  document.getElementById('slots').innerHTML = t.stages.map((_,k)=>`
+    <div class="slot" data-k="${k}" id="sl-${k}">
+      <div class="num">PHASE ${k+1}</div>
+      <div class="arrow">↓</div>
+      <div class="placed-host" id="sl-${k}-h" style="margin-top:4px; font-size:11px; color:#e8ecf8;"></div>
+    </div>
+  `).join('');
+  setupDrag();
+  document.getElementById('cmpBtn').disabled = true;
+  document.getElementById('hint').className='status';
+  const remain = TRACKS.length - checkedTracks.size;
+  document.getElementById('hint').innerHTML =
+    `💡 ลากครบ ${t.stages.length} phase แล้วกด "ตรวจ" · เหลืออีก <b>${remain}</b>/5 track ต้องตรวจให้ครบ`;
+}
+window.pickTrack = pickTrack;
+
+function setupDrag() {
+  const t = TRACKS[curTrack];
+  t.stages.forEach((_,k) => {
+    const card = document.getElementById('ph-' + k);
+    if (!card) return;
+    card.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', k);
+      ev.dataTransfer.setData('text/plain', k);
+      card.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(card, () => k+'');
+  });
+  t.stages.forEach((_,k) => {
+    const sl = document.getElementById('sl-' + k);
+    sl.addEventListener('dragover', ev => { ev.preventDefault(); sl.classList.add('over'); });
+    sl.addEventListener('dragleave', () => sl.classList.remove('over'));
+    sl.addEventListener('drop', ev => {
+      ev.preventDefault(); sl.classList.remove('over');
+      const ki = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(parseInt(ki), k);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(sl, ki => tryPlace(parseInt(ki), k));
+  });
+}
+
+function tryPlace(phaseIdx, slot) {
+  if (Object.values(placed).includes(phaseIdx)) return;
+  if (placed[slot] != null) return;
+  placed[slot] = phaseIdx;
+  const t = TRACKS[curTrack];
+  const stageName = t.stages[phaseIdx];
+  const v = stageVisual(stageName);
+  document.getElementById('sl-' + slot + '-h').innerHTML =
+    `<div class="placed-star"><div class="star-vis ${v.cls}" style="width:${v.size}px; height:${v.size}px;"></div></div>` +
+    `<div>${stageName}</div>`;
+  document.getElementById('sl-' + slot).classList.add('filled');
+  document.getElementById('ph-' + phaseIdx).classList.add('placed');
+  if (window.SFX) SFX.play('tap');
+  if (Object.keys(placed).length === t.stages.length) {
+    document.getElementById('cmpBtn').disabled = false;
+  }
+}
+
+function check() {
+  const t = TRACKS[curTrack];
+  attempts[curTrack] = (attempts[curTrack]||0) + 1;
+  let nC = 0;
+  Object.entries(placed).forEach(([slot, ph]) => {
+    const correct = (parseInt(slot) === ph);
+    if (correct) nC++;
+    document.getElementById('sl-' + slot).classList.add(correct?'correct':'wrong');
+  });
+  if (window.SFX) SFX.play(nC === t.stages.length ? 'correct' : 'wrong');
+
+  if (nC === t.stages.length) {
+    perfectTracks.add(curTrack);
+    checkedTracks.add(curTrack);
+    document.querySelector(`.track-btn[data-i="${curTrack}"]`).classList.add('visited');
+    const remain = TRACKS.length - checkedTracks.size;
+    document.getElementById('hint').className='status ok';
+    document.getElementById('hint').innerHTML = (remain > 0)
+      ? `✓ track "${t.track}" ถูกต้อง · เหลืออีก <b>${remain}</b> track ต้องตรวจให้ครบ`
+      : `✓ ตรวจครบ 5 tracks แล้ว · กดส่งได้`;
+    document.getElementById('result').style.display='block';
+    document.getElementById('result').innerHTML = `<span class="star">✓</span> ตรวจแล้ว ${checkedTracks.size}/5 · ผ่าน ${perfectTracks.size}/5`;
+    // Enable submit only when all 5 tracks have been checked
+    document.getElementById('submitBtn').disabled = (checkedTracks.size < TRACKS.length);
+  } else {
+    document.getElementById('hint').className='status bad';
+    document.getElementById('hint').innerHTML = `✗ ผิด ${t.stages.length-nC} ตำแหน่ง · ลองใหม่`;
+    setTimeout(() => {
+      Object.keys(placed).forEach(slot => {
+        if (parseInt(slot) !== placed[slot]) {
+          const ph = placed[slot];
+          delete placed[slot];
+          document.getElementById('sl-'+slot).classList.remove('filled','wrong');
+          document.getElementById('sl-'+slot+'-h').innerHTML='';
+          document.getElementById('ph-'+ph).classList.remove('placed');
+        }
+      });
+      document.getElementById('cmpBtn').disabled = true;
+    }, 1300);
+  }
+}
+window.check = check;
+
+// auto-pick Sun-like
+pickTrack(2);
+
+Submit.wirePair({
+  page:'p14',
+  nextHref:'p15-mass-endpoint.html',
+  getPayload:()=>{
+    const firstTry = Object.entries(attempts).filter(([k,v]) => v===1 && perfectTracks.has(parseInt(k))).length;
+    return { perfect:[...perfectTracks], attempts, firstTry };
+  },
+  isPerfect:(p)=>p.firstTry >= 1,
+  onSubmit:(status,n)=>{
+    setTimeout(()=>{
+      const wrongs = perfectTracks.size === 0 ? 5 : (perfectTracks.size < 3 ? 3 : 0);
+      if (window.MysteryBox) MysteryBox.roll({ wrongs, page:'p14' });
+    }, 800);
+    if (window.Photon && Photon.add) Photon.add(20);
+  }
+});
+</script>
+</body></html>

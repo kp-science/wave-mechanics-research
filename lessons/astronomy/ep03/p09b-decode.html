@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P09B · MASTER DECODE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:#02030a; }
+
+  /* Console aesthetic */
+  .console-frame { padding:18px; background:linear-gradient(180deg, #0a0820 0%, #050310 100%);
+    border:2px solid #ffcb6b; border-radius:14px; margin:14px 0;
+    box-shadow:0 0 30px rgba(255,203,107,0.15), inset 0 0 60px rgba(255,203,107,0.04); }
+  .console-head { display:flex; justify-content:space-between; align-items:center; padding-bottom:10px; border-bottom:1px solid rgba(255,203,107,0.3); margin-bottom:14px; }
+  .console-title { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; letter-spacing:0.2em; }
+  .console-status { font-family:monospace; font-size:11px; color:#7effb2; }
+  .console-status.locked { color:#ff5c7a; }
+
+  /* Lab values evidence */
+  .evidence-row { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; margin:10px 0; }
+  @media(max-width:540px){ .evidence-row { grid-template-columns:1fr; } }
+  .ev-card { padding:10px 14px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; }
+  .ev-card.known { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .ev-card.missing { border-color:#ff5c7a; background:rgba(255,92,122,0.06); }
+  .ev-card .lbl { font-family:Orbitron,sans-serif; font-size:10px; letter-spacing:0.15em; color:#9aa3c0; }
+  .ev-card .val { font-family:monospace; font-size:18px; color:#ffcb6b; }
+  .ev-card .src { font-size:10px; color:#6a7394; }
+
+  /* Star catalog table */
+  .catalog { width:100%; border-collapse:collapse; font-size:13px; margin:10px 0;
+    background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:8px; overflow:hidden; }
+  .catalog th { padding:8px 10px; background:rgba(255,203,107,0.1); color:#ffcb6b;
+    font-family:Orbitron,sans-serif; font-size:10px; letter-spacing:0.1em; text-align:center; }
+  .catalog td { padding:8px 10px; border-top:1px solid #1f2540; text-align:center; }
+  .catalog td.name { text-align:left; font-weight:700; color:#e8ecf8; }
+  .catalog td.num { font-family:monospace; color:#ffcb6b; }
+  .catalog tr.sos { background:rgba(255,203,107,0.12); }
+  .catalog tr.sos td { color:#ffd88a; }
+  .catalog tr.sos td.name::before { content:'★ '; color:#ff5c7a; }
+
+  /* Decode interface */
+  .decode-row { display:grid; grid-template-columns:1fr auto; gap:14px; align-items:center;
+    padding:14px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; border-radius:10px; margin:10px 0; }
+  .decode-row.locked { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .decode-row.bad { border-color:#ff5c7a; background:rgba(255,92,122,0.06); animation:badShake .3s; }
+  @keyframes badShake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+  .decode-row .info { font-size:13px; line-height:1.6; }
+  .decode-row .info b { color:#fff; }
+  .decode-row .info .hint { font-size:11px; color:#9aa3c0; }
+  .decode-row input { padding:10px 14px; width:80px; background:rgba(0,0,0,0.6); border:2px solid #2a3050;
+    color:#7effb2; font-family:Orbitron,monospace; font-size:24px; text-align:center; border-radius:8px; }
+  .decode-row input:focus { border-color:#ffcb6b; outline:none; }
+
+  /* Master code display */
+  .master-display { padding:18px; text-align:center; background:linear-gradient(135deg, rgba(255,203,107,0.08), rgba(255,92,122,0.08));
+    border:2px dashed rgba(255,203,107,0.4); border-radius:12px; margin:14px 0; }
+  .master-code { font-family:Orbitron,monospace; font-size:36px; letter-spacing:0.3em; color:#ffcb6b;
+    text-shadow:0 0 20px rgba(255,203,107,0.5); padding:10px 0; }
+  .master-code.unlocked { color:#7effb2; text-shadow:0 0 30px rgba(126,255,178,0.7); }
+  .master-code .digit { display:inline-block; padding:0 10px; min-width:40px; }
+  .master-code .digit.empty { color:#444; }
+
+  .submit-decode { padding:14px 30px; background:linear-gradient(135deg, #ffcb6b, #ff5c7a); border:none;
+    color:#000; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.15em; font-size:14px;
+    border-radius:10px; cursor:pointer; box-shadow:0 6px 20px rgba(255,203,107,0.4); }
+  .submit-decode:disabled { opacity:0.4; cursor:not-allowed; box-shadow:none; }
+  .submit-decode:hover:not(:disabled) { transform:translateY(-2px); }
+
+  /* Hint */
+  .hint-row { padding:10px 14px; background:rgba(212,184,255,0.06); border:1px dashed #d4b8ff; border-radius:8px; margin:10px 0;
+    display:flex; gap:10px; align-items:center; font-size:12px; color:#d4b8ff; }
+  .hint-row button { padding:6px 12px; background:rgba(212,184,255,0.15); border:1px solid #d4b8ff; color:#d4b8ff;
+    border-radius:6px; cursor:pointer; font-size:11px; font-family:inherit; }
+  .hint-revealed { padding:6px 10px; background:rgba(0,0,0,0.4); border-left:3px solid #d4b8ff; border-radius:0 6px 6px 0; margin:6px 0; font-size:13px; color:#e8ecf8; }
+
+  /* MAP REVEAL */
+  .map-reveal { padding:24px; background:radial-gradient(ellipse at center, rgba(126,255,178,0.12), #02030a 70%);
+    border:3px solid #7effb2; border-radius:16px; margin:14px 0; animation:mapIn 1s ease-out; }
+  @keyframes mapIn { 0%{opacity:0;transform:scale(0.8);filter:blur(10px);} 100%{opacity:1;transform:scale(1);filter:blur(0);} }
+  .map-reveal h2 { font-family:Orbitron,sans-serif; color:#7effb2; font-size:20px; letter-spacing:0.15em; text-align:center; margin-bottom:12px; }
+  #starMap { width:100%; height:340px; background:radial-gradient(ellipse at 50% 50%, rgba(20,15,40,0.5), #000);
+    border:1px solid #2a3050; border-radius:12px; display:block; }
+  .father-msg { padding:14px; background:rgba(0,0,0,0.5); border-left:3px solid #ffcb6b; border-radius:0 10px 10px 0;
+    color:#ffd88a; font-style:italic; line-height:1.7; margin:12px 0; }
+
+  /* Coin toast */
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px;
+    background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px;
+    font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999;
+    box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px); opacity:0; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+
+  /* Glitch text effect */
+  .glitch { position:relative; }
+  .glitch::before, .glitch::after { content:attr(data-text); position:absolute; left:0; top:0; opacity:0.7; }
+  .glitch::before { color:#ff5c7a; transform:translate(-2px, 0); }
+  .glitch::after  { color:#64d8ff; transform:translate(2px, 0); }
+</style>
+</head>
+<body data-page="p09b" data-type="puzzle">
+<div class="page">
+
+  <div class="lbl puzzle">🔐 MASTER DECODE · 3 นาที · กล่องสุดท้ายของพ่อ</div>
+  <h1>ปลดรหัส · เปิดแผนที่</h1>
+
+  <div class="narrative" style="font-size:13px;color:#c8cde0;line-height:1.7;">
+    🛰️ Ship computer ส่งข้อมูล 3 ค่าจาก lab ก่อนหน้า · กล่องของพ่อจะเปิดด้วย
+    <b style="color:#ffcb6b;">รหัส 3 หลัก</b> · ที่เป็น<b>อันดับ</b>ของ SOS ใน 3 มิติ
+  </div>
+
+  <!-- Console: Lab evidence pulled from Chain -->
+  <div class="console-frame">
+    <div class="console-head">
+      <span class="console-title">📡 LAB DATA · CHAIN-PULLED</span>
+      <span class="console-status" id="dataStatus">CONNECTED</span>
+    </div>
+    <div class="evidence-row" id="evidenceRow"></div>
+  </div>
+
+  <!-- Star Catalog -->
+  <h3 style="color:#ffcb6b;font-family:Orbitron,sans-serif;font-size:13px;letter-spacing:0.15em;margin:18px 0 8px;">⭐ STAR CATALOG · 5 ดวง</h3>
+  <table class="catalog">
+    <thead>
+      <tr><th>ดาว</th><th>d (pc)</th><th>m (apparent)</th><th>M (absolute)</th></tr>
+    </thead>
+    <tbody id="catalogBody"></tbody>
+  </table>
+  <div style="font-size:11px;color:#9aa3c0;text-align:center;margin-bottom:14px;">
+    ⚠ ใช้ค่าใน catalog เปรียบเทียบ · หา <b>อันดับของ SOS</b> ในแต่ละมิติ
+  </div>
+
+  <!-- Decode interface · 3 rank inputs -->
+  <h3 style="color:#ffcb6b;font-family:Orbitron,sans-serif;font-size:13px;letter-spacing:0.15em;margin:18px 0 8px;">🔢 INPUT RANKS · ใส่อันดับ</h3>
+
+  <div class="decode-row" id="row1">
+    <div class="info">
+      <b>หลัก 1 · อันดับระยะ d</b><br>
+      <span class="hint">ดาวที่ <b>ไกลโลกที่สุด</b> = อันดับ 1 · ใกล้ที่สุด = อันดับ 5</span>
+    </div>
+    <input type="number" id="rank1" min="1" max="5" placeholder="?" />
+  </div>
+
+  <div class="decode-row" id="row2">
+    <div class="info">
+      <b>หลัก 2 · อันดับ m (apparent)</b><br>
+      <span class="hint"><b>สว่างปรากฎ</b>มากที่สุด = อันดับ 1 · m ติดลบที่สุด = อันดับ 1</span>
+    </div>
+    <input type="number" id="rank2" min="1" max="5" placeholder="?" />
+  </div>
+
+  <div class="decode-row" id="row3">
+    <div class="info">
+      <b>หลัก 3 · อันดับ M (absolute)</b><br>
+      <span class="hint"><b>ปล่อยแสงจริง</b>มากที่สุด = อันดับ 1 · M ติดลบที่สุด = อันดับ 1</span>
+    </div>
+    <input type="number" id="rank3" min="1" max="5" placeholder="?" />
+  </div>
+
+  <div class="master-display">
+    <div style="font-size:11px;color:#9aa3c0;letter-spacing:0.2em;font-family:Orbitron,sans-serif;">MASTER CODE</div>
+    <div class="master-code" id="masterCode">
+      <span class="digit empty" id="d1">_</span>
+      <span class="digit empty" id="d2">_</span>
+      <span class="digit empty" id="d3">_</span>
+    </div>
+    <button class="submit-decode" id="btnDecode" onclick="tryDecode()" disabled>🔓 เปิดกล่อง</button>
+  </div>
+
+  <div class="hint-row">
+    💡 ใบ้ · cost 10 ✦ · เผยอันดับ 1 มิติ · เหลือ <b id="hintsLeft">2</b> ครั้ง
+    <button id="btnHint" onclick="useHint()">ขอใบ้</button>
+  </div>
+  <div id="hintsBox"></div>
+
+  <!-- MAP REVEAL (hidden until decoded) -->
+  <div class="map-reveal" id="mapReveal" style="display:none;">
+    <h2>🗺 MAP UNLOCKED</h2>
+    <canvas id="starMap" width="700" height="340"></canvas>
+    <div class="father-msg" id="fatherMsg"></div>
+  </div>
+
+  <div class="btn-pair" id="submitBar" style="display:none;">
+    <button class="submit-btn">💾 ส่งรายงาน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · MASTER DECODE (P09B)</summary>
+    <div class="body">
+      <b>Beat สำคัญ</b>: รวม output จาก 3 lab (P05+P08+P09) · ปลดล็อกกล่องสุดท้าย<br>
+      <b>กลไก</b>: เปลี่ยนค่าดิบ → "อันดับ" ใน catalog · ทักษะ analyze + compare<br>
+      <b>เฉลย</b>: SOS ranks = 1 (farthest) · 3 (m) · 1 (M) → CODE "1-3-1"<br>
+      <b>ถ้านักเรียนข้าม lab</b>: ค่าจะใช้ default · ระบบบอกใน Status "ESTIMATED"<br>
+      <b>🪙 Coin (max 18)</b>:<br>
+      · try-1 ถูก: 12<br>
+      · try-2 ถูก: 6<br>
+      · try-3+ ถูก: 2<br>
+      · ไม่ใช้ hint: +3<br>
+      · เร็ว < 90 วิ: +3<br>
+      <b>ผิด</b>: −5 HP (VOIDHUNTER -10%) · เด็กต้องคิดใหม่ ไม่ลอง brute force
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+/* ==================== STAR CATALOG ==================== */
+// Sorted intentionally · code computation references this
+const CATALOG = [
+  { id:'sos',     name:'★ SOS (mystery)', d:400,  m:1.25,  M:-8.4 },
+  { id:'sirius',  name:'Sirius',          d:2.64, m:-1.46, M:1.4 },
+  { id:'vega',    name:'Vega',            d:7.68, m:0.03,  M:0.58 },
+  { id:'polaris', name:'Polaris',         d:133,  m:1.98,  M:-3.6 },
+  { id:'proxima', name:'Proxima',         d:1.30, m:11,    M:15.5 },
+];
+
+/* Compute SOS ranks · 1 = top */
+function computeSosRanks() {
+  const dRank = [...CATALOG].sort((a,b) => b.d - a.d).findIndex(s => s.id === 'sos') + 1;     // farthest=1
+  const mRank = [...CATALOG].sort((a,b) => a.m - b.m).findIndex(s => s.id === 'sos') + 1;     // smallest m=1 (brightest)
+  const MRank = [...CATALOG].sort((a,b) => a.M - b.M).findIndex(s => s.id === 'sos') + 1;     // smallest M=1 (most luminous)
+  return { dRank, mRank, MRank };
+}
+const SOS_RANKS = computeSosRanks();
+
+/* ==================== STATE ==================== */
+const state = {
+  attempts: 0,
+  hintsLeft: 2,
+  hintsUsed: 0,
+  hintsRevealed: [],
+  solved: false,
+  startedAt: Date.now(),
+  coinAwarded: 0,
+};
+
+/* ==================== INIT · pull chain values ==================== */
+function pullChainData() {
+  const dSos = (typeof Chain !== 'undefined' && Chain.get('d_sos_pc')) || 400;
+  const mSos = (typeof Chain !== 'undefined' && Chain.get('m_sos')) || 1.25;
+  const MSos = (typeof Chain !== 'undefined' && Chain.get('M_sos')) || -8.4;
+  const dKnown = typeof Chain !== 'undefined' && Chain.get('d_sos_pc') != null;
+  const mKnown = typeof Chain !== 'undefined' && Chain.get('m_sos') != null;
+  const MKnown = typeof Chain !== 'undefined' && Chain.get('M_sos') != null;
+
+  document.getElementById('evidenceRow').innerHTML = `
+    <div class="ev-card ${dKnown?'known':'missing'}">
+      <div class="lbl">d · ระยะทาง</div>
+      <div class="val">${dSos} pc</div>
+      <div class="src">${dKnown ? 'จาก P05 lab ✓' : '⚠ ESTIMATED · ทำ P05 lab ก่อน'}</div>
+    </div>
+    <div class="ev-card ${mKnown?'known':'missing'}">
+      <div class="lbl">m · สว่างปรากฎ</div>
+      <div class="val">${mSos > 0 ? '+' : ''}${mSos}</div>
+      <div class="src">${mKnown ? 'จาก P08 lab ✓' : '⚠ ESTIMATED'}</div>
+    </div>
+    <div class="ev-card ${MKnown?'known':'missing'}">
+      <div class="lbl">M · สว่างจริง</div>
+      <div class="val">${MSos > 0 ? '+' : ''}${MSos}</div>
+      <div class="src">${MKnown ? 'จาก P09 lab ✓' : '⚠ ESTIMATED'}</div>
+    </div>
+  `;
+  if (!dKnown || !mKnown || !MKnown) {
+    document.getElementById('dataStatus').textContent = 'PARTIAL · ESTIMATED';
+    document.getElementById('dataStatus').classList.add('locked');
+  }
+}
+
+/* ==================== Render catalog ==================== */
+function renderCatalog() {
+  document.getElementById('catalogBody').innerHTML = CATALOG.map(s => {
+    const sosClass = s.id === 'sos' ? 'sos' : '';
+    return `<tr class="${sosClass}">
+      <td class="name">${s.name}</td>
+      <td class="num">${s.d}</td>
+      <td class="num">${s.m >= 0 ? '+' : ''}${s.m}</td>
+      <td class="num">${s.M >= 0 ? '+' : ''}${s.M}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ==================== Input handling ==================== */
+['rank1','rank2','rank3'].forEach((id,i) => {
+  const inp = document.getElementById(id);
+  inp.addEventListener('input', () => {
+    const v = inp.value;
+    const dEl = document.getElementById('d' + (i+1));
+    if (v >= 1 && v <= 5) {
+      dEl.textContent = v;
+      dEl.classList.remove('empty');
+    } else {
+      dEl.textContent = '_';
+      dEl.classList.add('empty');
+    }
+    updateDecodeButton();
+  });
+});
+function updateDecodeButton() {
+  const r1 = parseInt(document.getElementById('rank1').value);
+  const r2 = parseInt(document.getElementById('rank2').value);
+  const r3 = parseInt(document.getElementById('rank3').value);
+  const valid = [r1,r2,r3].every(v => v >= 1 && v <= 5);
+  document.getElementById('btnDecode').disabled = !valid || state.solved;
+}
+
+/* ==================== Decode attempt ==================== */
+window.tryDecode = function() {
+  if (state.solved) return;
+  state.attempts++;
+  const r1 = parseInt(document.getElementById('rank1').value);
+  const r2 = parseInt(document.getElementById('rank2').value);
+  const r3 = parseInt(document.getElementById('rank3').value);
+
+  const ok1 = r1 === SOS_RANKS.dRank;
+  const ok2 = r2 === SOS_RANKS.mRank;
+  const ok3 = r3 === SOS_RANKS.MRank;
+
+  // visual feedback per row
+  document.getElementById('row1').classList.toggle('locked', ok1);
+  document.getElementById('row1').classList.toggle('bad', !ok1);
+  document.getElementById('row2').classList.toggle('locked', ok2);
+  document.getElementById('row2').classList.toggle('bad', !ok2);
+  document.getElementById('row3').classList.toggle('locked', ok3);
+  document.getElementById('row3').classList.toggle('bad', !ok3);
+
+  if (ok1 && ok2 && ok3) {
+    state.solved = true;
+    document.getElementById('masterCode').classList.add('unlocked');
+    if (typeof VoidHunter !== 'undefined') VoidHunter.change(+15, 'p09b-decode');
+    awardSolveCoin();
+    if (typeof Chain !== 'undefined') {
+      Chain.set('master_decode_solved', true);
+      Chain.set('d_father_pc', 100);  // pre-set for P13
+    }
+    if (typeof Photon !== 'undefined') Photon.add(40, 'p09b-decode');
+    setTimeout(revealMap, 600);
+  } else {
+    if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p09b');
+    showCoinToast(0, '✗ รหัสไม่ตรง · ' + ((ok1?1:0)+(ok2?1:0)+(ok3?1:0)) + '/3 หลัก');
+  }
+};
+
+function awardSolveCoin() {
+  let coin = 0;
+  if (state.attempts === 1) coin = 12;
+  else if (state.attempts === 2) coin = 6;
+  else coin = 2;
+  if (state.hintsUsed === 0) coin += 3;
+  const elapsed = (Date.now() - state.startedAt) / 1000;
+  if (elapsed < 90) coin += 3;
+  state.coinAwarded = coin;
+  if (typeof Coin !== 'undefined' && coin > 0) Coin.add(coin, 'p09b-decode');
+  showCoinToast(coin, 'รวม Decode · try ' + state.attempts);
+}
+
+/* ==================== Hint ==================== */
+window.useHint = function() {
+  if (state.hintsLeft <= 0 || state.solved) return;
+  if (typeof Photon !== 'undefined' && Photon.get() < 10) {
+    alert('photon ไม่พอ · ต้องการ 10 ✦');
+    return;
+  }
+  if (typeof Photon !== 'undefined') Photon.spend(10, 'p09b-hint');
+  state.hintsLeft--;
+  state.hintsUsed++;
+  document.getElementById('hintsLeft').textContent = state.hintsLeft;
+  // reveal one rank that hasn't been revealed
+  const order = ['d','m','M'];
+  const remaining = order.filter(o => !state.hintsRevealed.includes(o));
+  const pick = remaining[0];
+  state.hintsRevealed.push(pick);
+  let text = '';
+  if (pick === 'd') text = '📏 d อันดับ = <b>' + SOS_RANKS.dRank + '</b> (SOS ' + (SOS_RANKS.dRank === 1 ? 'ไกลที่สุด' : 'ไม่ได้ไกลสุด') + ')';
+  else if (pick === 'm') text = '👁️ m อันดับ = <b>' + SOS_RANKS.mRank + '</b>';
+  else text = '⚡ M อันดับ = <b>' + SOS_RANKS.MRank + '</b>';
+  document.getElementById('hintsBox').innerHTML += '<div class="hint-revealed">💡 ' + text + '</div>';
+  if (state.hintsLeft === 0) document.getElementById('btnHint').disabled = true;
+};
+
+/* ==================== TOAST ==================== */
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 +' + amount : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* ==================== MAP REVEAL ==================== */
+function revealMap() {
+  document.getElementById('mapReveal').style.display = 'block';
+  document.getElementById('fatherMsg').innerHTML = `
+    "ลูกของพ่อ... ถ้าเปิดกล่องนี้ได้ · แปลว่าเรียนรู้ครบแล้ว<br>
+    พ่ออยู่ที่ระยะ <b>100 pc</b> ในกลุ่มดาว <b>Cygnus</b> · ทิศตะวันออกของ Deneb<br>
+    supernova ของดาว SOS จะกลบสัญญาณพ่อภายใน <b>73 วัน</b><br>
+    เร่ง · ใช้ triangulation หาให้เจอ"<br>
+    <span style="font-size:11px;color:#9aa3c0;">— Aravind</span>
+  `;
+  drawStarMap();
+  document.getElementById('submitBar').style.display = 'flex';
+}
+
+function drawStarMap() {
+  const canvas = document.getElementById('starMap');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  // Background
+  for (let i = 0; i < 80; i++) {
+    ctx.fillStyle = 'rgba(255,255,255,' + (Math.random() * 0.6 + 0.1) + ')';
+    ctx.fillRect(Math.random() * W, Math.random() * H, 1, 1);
+  }
+  // Cygnus constellation (cross shape · stylized)
+  const cx = W * 0.6, cy = H * 0.45;
+  const cygnus = [
+    { name:'Deneb', x:cx, y:cy, r:9, color:'#dde8ff' },
+    { name:'Sadr',  x:cx-50, y:cy+80, r:6, color:'#fff' },
+    { name:'Gienah',x:cx-110, y:cy+30, r:5, color:'#fff' },
+    { name:'Albireo', x:cx-160, y:cy+150, r:4, color:'#ffd' },
+    { name:'Delta', x:cx+80, y:cy+30, r:5, color:'#fff' },
+    { name:'Zeta',  x:cx+150, y:cy+150, r:4, color:'#ffd' },
+  ];
+  // Lines · cross shape
+  ctx.strokeStyle = 'rgba(100,216,255,0.4)'; ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath();
+  ctx.moveTo(cygnus[3].x, cygnus[3].y); ctx.lineTo(cygnus[2].x, cygnus[2].y);
+  ctx.lineTo(cygnus[1].x, cygnus[1].y); ctx.lineTo(cygnus[4].x, cygnus[4].y); ctx.lineTo(cygnus[5].x, cygnus[5].y);
+  ctx.moveTo(cygnus[0].x, cygnus[0].y); ctx.lineTo(cygnus[1].x, cygnus[1].y);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Draw stars
+  cygnus.forEach(s => {
+    const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+    grad.addColorStop(0, s.color);
+    grad.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = s.color;
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
+    if (s.name === 'Deneb') {
+      ctx.fillStyle = '#ffd88a'; ctx.font = 'bold 12px Sarabun';
+      ctx.fillText('★ ' + s.name + ' (SOS)', s.x + 14, s.y + 4);
+    } else {
+      ctx.fillStyle = 'rgba(200,205,224,0.8)'; ctx.font = '10px Sarabun';
+      ctx.fillText(s.name, s.x + 8, s.y + 3);
+    }
+  });
+
+  // Father location pin · east of Deneb (right side)
+  const fx = cx + 50, fy = cy - 30;
+  // pulsing target ring
+  ctx.strokeStyle = '#7effb2'; ctx.lineWidth = 2;
+  ctx.setLineDash([3, 4]);
+  ctx.beginPath(); ctx.arc(fx, fy, 22, 0, Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(fx, fy, 14, 0, Math.PI*2); ctx.stroke();
+  ctx.setLineDash([]);
+  // pin
+  ctx.fillStyle = '#7effb2';
+  ctx.beginPath();
+  ctx.moveTo(fx, fy + 8);
+  ctx.lineTo(fx - 6, fy - 4);
+  ctx.lineTo(fx + 6, fy - 4);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#7effb2'; ctx.font = 'bold 12px Sarabun';
+  ctx.fillText('📍 พ่อ · 100 pc', fx + 14, fy - 8);
+
+  // Constellation label
+  ctx.fillStyle = '#64d8ff'; ctx.font = 'bold 14px Orbitron, sans-serif';
+  ctx.fillText('CYGNUS · กลุ่มดาวหงส์', 16, 26);
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '11px Sarabun';
+  ctx.fillText('ทิศตะวันออกของ Deneb', 16, 44);
+
+  // Distance scale
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '10px monospace';
+  ctx.fillText('SOS · 400 pc', W - 110, H - 16);
+  ctx.fillText('FATHER · 100 pc', W - 110, H - 4);
+}
+
+/* ==================== INIT ==================== */
+pullChainData();
+renderCatalog();
+
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p09b',
+    nextHref: 'p10-hubble.html',
+    getPayload: () => {
+      if (!state.solved) { alert('ยังไม่ได้ปลดรหัส · ลองใส่อันดับให้ครบ'); throw new Error('locked'); }
+      return {
+        tag: 'master-decode',
+        durationSec: Math.round((Date.now()-state.startedAt)/1000),
+        attempts: state.attempts,
+        hintsUsed: state.hintsUsed,
+        coinTotal: state.coinAwarded,
+        ranks: { dRank: SOS_RANKS.dRank, mRank: SOS_RANKS.mRank, MRank: SOS_RANKS.MRank },
+        solved: state.solved,
+        // legacy
+        correct: 1, total: 1,
+      };
+    },
+    isPerfect: () => false,
+    onSubmit: () => {
+      alert('✓ ส่งแล้ว · 🪙 +' + state.coinAwarded + ' · 🗺 พิกัดพ่อบันทึกแล้ว');
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p09b-to-p10', 'p10-hubble.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

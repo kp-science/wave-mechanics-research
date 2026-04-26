@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P12 · Proto Star</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .proto-stage { padding:20px; background:radial-gradient(ellipse at center, rgba(185,128,255,0.12), #000 75%); border:1.5px solid #b980ff; border-radius:14px; margin:14px 0; text-align:center; min-height:220px; position:relative; }
+  .proto-orb { display:inline-block; border-radius:50%; transition:all 1s ease; box-shadow:0 0 30px currentColor; }
+  .proto-info { font-family:monospace; color:#9aa3c0; margin-top:14px; font-size:13px; }
+  .mass-slider-row { padding:10px; margin:14px 0; background:rgba(0,0,0,0.3); border-radius:10px; }
+  input[type=range].big {
+    width:100%; height:48px; -webkit-appearance:none; background:transparent; touch-action:manipulation;
+    --thumb-color:#ffd96b;
+    transition: --thumb-color .2s;
+  }
+  input[type=range].big::-webkit-slider-runnable-track {
+    height:8px; border-radius:4px;
+    background:linear-gradient(to right, #8b6645 0%, #8b6645 20%, #cc4422 20%, #cc4422 40%, #ffd96b 40%, #ffd96b 60%, #64a8ff 60%, #64a8ff 80%, #b980ff 80%, #b980ff 100%);
+  }
+  input[type=range].big::-moz-range-track {
+    height:8px; border-radius:4px;
+    background:linear-gradient(to right, #8b6645 0%, #8b6645 20%, #cc4422 20%, #cc4422 40%, #ffd96b 40%, #ffd96b 60%, #64a8ff 60%, #64a8ff 80%, #b980ff 80%, #b980ff 100%);
+  }
+  input[type=range].big::-webkit-slider-thumb {
+    -webkit-appearance:none; width:40px; height:40px; border-radius:50%;
+    background:var(--thumb-color); box-shadow:0 0 18px var(--thumb-color), inset -4px -4px 8px rgba(0,0,0,0.3);
+    cursor:grab; margin-top:-16px; border:2px solid rgba(255,255,255,0.4);
+  }
+  input[type=range].big::-moz-range-thumb {
+    width:40px; height:40px; border-radius:50%;
+    background:var(--thumb-color); box-shadow:0 0 18px var(--thumb-color), inset -4px -4px 8px rgba(0,0,0,0.3);
+    cursor:grab; border:2px solid rgba(255,255,255,0.4);
+  }
+  .mass-tier { padding:10px 14px; border-radius:10px; margin:8px 0; border:2px solid; transition:all .2s; }
+  .mass-tier.active { box-shadow:0 0 18px currentColor; transform:scale(1.02); }
+  .mass-tier .lbl { font-family:Orbitron; font-size:12px; letter-spacing:0.12em; }
+  .mass-tier .desc { font-size:12px; color:#9aa3c0; margin-top:4px; }
+</style>
+</head>
+<body data-page="p12" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">⭐ ACT C · PROTOSTAR</span>
+  <h1>Proto Star · มวลตัดสินขนาด</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K2</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "Proto Star = ก้อนแก๊สที่ยุบตัวจากเนบิวลา · ยังไม่จุดฟิวชัน · แต่
+      <b style="color:#fff;">มวลของมันตอนนี้</b> = ตัวกำหนด<b style="color:#fff;">ทุกอย่างของดาวในอนาคต</b>"
+    </span>
+  </div>
+
+  <div class="proto-stage">
+    <div id="orbWrap"></div>
+    <div class="proto-info">
+      มวล <b style="color:#b980ff;" id="massVal">1.0</b> M☉ ·
+      ขนาด <b style="color:#b980ff;" id="sizeVal">1.0</b> R☉ ·
+      <span id="trackName" style="color:#ffcb6b;">Sun-like</span>
+    </div>
+  </div>
+
+  <div class="mass-slider-row">
+    <div style="font-size:12px; color:#9aa3c0; letter-spacing:0.1em; font-family:Orbitron;">เลื่อนปรับมวล Proto Star (M☉) · ผ่านครบ 5 ช่วงเพื่อปลดล็อก</div>
+    <input type="range" class="big" id="slider" min="0" max="100" step="1" value="50">
+    <div style="display:flex; justify-content:space-between; font-family:monospace; font-size:11px; color:#9aa3c0;">
+      <span>🟫 0.05</span><span>🔴 0.3</span><span>🟡 1</span><span>🔵 15</span><span>⚫ 40</span>
+    </div>
+  </div>
+
+  <div id="tiers"></div>
+
+  <div class="callout success" id="result" style="display:none;">
+    <span class="star">✓</span> <b>เห็นแล้วใช่ไหม?</b> มวลของ Proto Star ตัดสิน<b style="color:#fff;">เส้นทางวิวัฒนาการ</b> ทั้งชีวิตของดาว<br>
+    <span style="font-size:14px; color:#bcffd6; font-weight:400;">
+      หน้าถัดไป — ทดลอง 5 เส้นทาง · ได้ปลายทางต่างกัน
+    </span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P12</summary>
+    <div class="body">
+      <b>กลไก:</b> Slider ใช้ log scale (10^x) ดังนั้นใช้ exp(value/10) ในการคำนวณ<br>
+      <b>เป้าหมาย:</b> ให้นักเรียนเลื่อนผ่านครบ 5 ช่วง · ปลดปุ่มถัดไป
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">เลื่อนผ่านครบ 5 ช่วงมวล → ปลดล็อกถัดไป</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const TIERS = (EP_CONFIG.massTracks || []);
+const tierHost = document.getElementById('tiers');
+tierHost.innerHTML = TIERS.map((t,i) => `
+  <div class="mass-tier" id="tier-${i}" style="border-color:${t.color}; color:${t.color};">
+    <div class="lbl">${t.icon} ${t.range} · ${t.track}</div>
+    <div class="desc">${t.note}</div>
+  </div>
+`).join('');
+
+const visited = new Set();
+const slider = document.getElementById('slider');
+// 5 tiers · 20% each · slider 0-100
+function getMass(v){
+  if (v < 20) return 0.04 + (v/20) * 0.04;            // Brown 0.04-0.08
+  if (v < 40) return 0.08 + ((v-20)/20) * 0.42;       // Red dwarf 0.08-0.5
+  if (v < 60) return 0.5 + ((v-40)/20) * 8.5;         // Sun-like 0.5-9
+  if (v < 80) return 9 + ((v-60)/20) * 16;            // High-mass 9-25
+  return 25 + ((v-80)/20) * 25;                       // Very high 25-50
+}
+function getTier(m){
+  if (m < 0.08) return 0;
+  if (m < 0.5) return 1;
+  if (m < 9) return 2;
+  if (m < 25) return 3;
+  return 4;
+}
+function update() {
+  const m = getMass(+slider.value);
+  const tIdx = getTier(m);
+  const t = TIERS[tIdx];
+  visited.add(tIdx);
+  const size = m < 0.08 ? 24 : (m < 0.5 ? 36 : (m < 9 ? 60 : (m < 25 ? 90 : 130)));
+  // Update slider thumb color to match current tier
+  slider.style.setProperty('--thumb-color', t.color);
+  document.getElementById('orbWrap').innerHTML =
+    `<div class="proto-orb" style="width:${size}px;height:${size}px; background:radial-gradient(circle at 35% 35%,${t.color},#000); color:${t.color};"></div>`;
+  document.getElementById('massVal').textContent = m < 0.1 ? m.toFixed(3) : m.toFixed(1);
+  document.getElementById('sizeVal').textContent = (size/60).toFixed(2);
+  document.getElementById('trackName').textContent = t.track;
+  document.getElementById('trackName').style.color = t.color;
+  document.querySelectorAll('.mass-tier').forEach((el,j)=>el.classList.toggle('active', j === tIdx));
+  // Submit ready when 5 tiers visited
+  if (visited.size >= 5) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('result').style.display = 'block';
+  }
+}
+slider.addEventListener('input', update);
+update();
+
+Submit.wirePair({
+  page:'p12',
+  nextHref:'p13-mass-tracks.html',
+  getPayload:()=>({ visited:[...visited], maxValue:+slider.value }),
+  isPerfect:(p)=>p.visited.length === 5,
+  onSubmit:(status,n)=>{
+    if (window.Photon && Photon.add) Photon.add(15);
+    if (status==='perfect' && n) {
+      const t=document.createElement('div'); t.className='coin-toast'; t.textContent=`🎉 +${n} 🪙`;
+      document.body.appendChild(t); setTimeout(()=>t.remove(),2400);
+    }
+  }
+});
+</script>
+</body></html>

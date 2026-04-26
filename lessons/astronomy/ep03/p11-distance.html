@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P11 · 🌟 Midpoint TEACH</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .safe-banner { padding:12px;background:rgba(126,255,178,0.1);border:1px solid #7effb2;color:#7effb2;border-radius:10px;text-align:center;font-family:Orbitron,sans-serif;font-size:12px;letter-spacing:0.15em;margin:10px 0;}
+  .slide { display:none; padding:18px; background:rgba(22,27,58,0.7); border-left:4px solid #d4b8ff; border-radius:0 12px 12px 0; margin:12px 0; }
+  .slide.active { display:block; }
+  .slide .num { color:#d4b8ff; font-family:Orbitron,sans-serif; font-size:11px; letter-spacing:0.2em; }
+  .slide h3 { color:#64d8ff; margin:6px 0 10px; font-size:18px; }
+  .understand-btn { display:block; margin:14px auto 0; padding:12px 28px; background:rgba(212,184,255,0.1); border:2px solid #d4b8ff; color:#d4b8ff; border-radius:10px; cursor:pointer; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.1em; }
+  .understand-btn.done { background:#d4b8ff; color:#000; }
+</style>
+</head>
+<body data-page="p11" data-type="story">
+<div class="page">
+  <div class="lbl">🌟 MIDPOINT · Dr.Hubble สอน 5 นาที</div>
+  <h1>absolute magnitude · parsec</h1>
+
+  <div class="safe-banner">🛡️ SAFE HAVEN · VOIDHUNTER หยุด · ฟังได้เต็มที่</div>
+
+  <div class="slide active" data-n="1">
+    <div class="num">SLIDE 1 / 3</div>
+    <h3>apparent (m) vs absolute (M)</h3>
+    <div style="line-height:1.8;color:#c8cde0;">
+      <b>m (อันดับความสว่างปรากฎ)</b> = ขึ้นกับระยะ · ดาวใกล้ดูสว่าง · ดาวไกลดูหรี่<br>
+      <b>M</b> = ถ้าย้ายทุกดาวมา <b>10 pc</b> เท่ากัน · คือ<b>ความสว่างจริง</b>
+    </div>
+    <button class="understand-btn" onclick="next(1)">✓ เข้าใจแล้ว</button>
+  </div>
+
+  <div class="slide" data-n="2">
+    <div class="num">SLIDE 2 / 3</div>
+    <h3>ตารางเทียบ m−M ↔ d</h3>
+    <table class="star-table"><tr><th>m − M</th><th>d (pc)</th></tr>
+    <tr><td class="num">0</td><td class="num">10</td></tr>
+    <tr><td class="num">5</td><td class="num">100</td></tr>
+    <tr><td class="num">10</td><td class="num">1,000</td></tr>
+    </table>
+    <div style="color:#7effb2;margin-top:8px;">💡 ไม่คำนวณ · ใช้ตารางอย่างเดียว</div>
+    <button class="understand-btn" onclick="next(2)">✓ เข้าใจแล้ว</button>
+  </div>
+
+  <div class="slide" data-n="3">
+    <div class="num">SLIDE 3 / 3</div>
+    <h3>หน่วยระยะ</h3>
+    <div style="line-height:1.9;color:#c8cde0;">
+      <b>1 pc = 3.26 ly</b><br>
+      parsec ย่อจาก <b>par</b>allax-<b>sec</b>ond<br>
+      <span style="color:#ff8fa5;">❌ <b>ไม่ใช่หน่วยเวลา</b></span> (VOID โกหก)
+    </div>
+    <div style="padding:12px;background:rgba(255,203,107,0.08);border-radius:10px;margin:12px 0;color:#ffcb6b;font-style:italic;">
+      Dr.Hubble: "...และนี่คือเหตุผลที่<b>พ่อของเธอ</b>สอนอารยาเรื่องนี้ก่อนออกภารกิจ"
+    </div>
+    <button class="understand-btn" onclick="next(3)">✓ เข้าใจครบทั้งหมด</button>
+  </div>
+
+  <div class="card" id="doneCard" style="display:none;">
+    <div class="status ok">🎖️ <b>ได้ Hubble Badge</b> · ฟังครบ 3 slide · ใช้ที่ P16 จับ trap ฟรี</div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.3;">(ไม่ต้องส่ง)</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ฟังให้ครบก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+function next(n) {
+  document.querySelector(`.slide[data-n="${n}"]`).classList.remove('active');
+  const btn = document.querySelector(`.slide[data-n="${n}"] .understand-btn`);
+  if (btn) { btn.classList.add('done'); btn.disabled = true; }
+  const nxt = document.querySelector(`.slide[data-n="${n+1}"]`);
+  if (nxt) { nxt.classList.add('active'); }
+  else {
+    // done all 3
+    document.getElementById('doneCard').style.display = 'block';
+    const owned = ShopItems.load();
+    if (!owned.hubbleBadge) {
+      owned.hubbleBadge = { uses: 1, boughtAt: Date.now() };
+      ShopItems.save(owned);
+    }
+    const nb = document.getElementById('nextBtn');
+    Gate.soloMode(nb, 'p12-father.html');
+    if (window.PaceClient) Gate.wireButton('p11', nb, 'p12-father.html');
+    setTimeout(() => {
+      if (typeof Transition !== 'undefined') Transition.wireNext(nb, 'p11-to-p12', 'p12-father.html');
+    }, 100);
+  }
+}
+
+// safe haven · meter freeze · bonus
+setTimeout(() => { VoidHunter.change(+10, 'midpoint-heal'); }, 300);
+</script>
+</body></html>

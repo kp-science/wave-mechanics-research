@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P18 · Frame Dragging</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .reunion { padding:30px 20px; text-align:center; background:radial-gradient(ellipse at center,rgba(255,203,107,0.18),#000 75%); border:1.5px solid #ffcb6b; border-radius:14px; margin:14px 0; }
+  .reunion .glow { font-size:54px; filter:drop-shadow(0 0 30px #ffcb6b); }
+</style>
+</head>
+<body data-page="p25" data-type="story">
+<div class="page">
+
+  <span class="lbl story">💫 ACT 5 · RESCUE · FRAME DRAGGING</span>
+  <h1 id="pageTitle">กู้พ่อกลับมา</h1>
+
+  <div id="endingHost"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P18</summary>
+    <div class="body">
+      <b>ใช้ผล Boss:</b> Ending จาก Energy ที่เหลือ (A+/A/B/C) → กระทบเนื้อเรื่อง<br>
+      <b>ก่อนไป P19:</b> นักเรียนต้องเห็น<b>คุณค่าความรู้</b>ที่ใช้กู้พ่อสำเร็จ<br>
+      <b>เปิด cliffhanger EP05:</b> เป้าหมายต่อไปของ VOID = ดวงอาทิตย์
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ ทำ Post-test</button>
+  </div>
+  <div class="gate-hint">หน้าตอนจบ · ครูคุมจังหวะ</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const result = Chain.get('boss.result') || { ending:'B', energy:50 };
+const host = document.getElementById('endingHost');
+
+const SCRIPTS = {
+  'A+': {
+    title: 'STAR LEGACY · ครอบครัวที่กลับมาเต็ม',
+    body: [
+      { v:'leader', t:'"Frame dragging window เปิด · ส่ง escape pod ตอนนี้!" Black Dwarf Shell ดูดซับ GRB ทันเวลา · ยานปลอดภัย' },
+      { v:'father', t:'"อารยา... ลูกพ่อ · พ่อภูมิใจในตัวลูก · ลูกใช้สมการแทนสายตา · พ่อก็คงทำแบบนั้นถ้ามีโอกาสอีก"' },
+      { v:'narr',   t:'ทีมพาพ่ออารยากลับยานสำเร็จ · VOID ถอย · กลืนหายเข้าหลุมดำตัวเอง · ดาวเบเทลจุสจริงในท้องฟ้าโลกยังอยู่ · อย่างน้อย... <b style="color:#ffcb6b;">ในคืนนี้</b>' },
+    ],
+    glow:'🚀👨💛'
+  },
+  'A': {
+    title: 'FATHER\'S RETURN · พ่อกลับมาแล้ว',
+    body: [
+      { v:'leader', t:'"พ่ออารยาปลอดภัย · ยานบาดเจ็บแต่ยังบินได้ · GRB ผ่านเข้ามาบาดส่วนหาง · เราโชคดี"' },
+      { v:'father', t:'"ลูก... ขอบใจที่ไม่ลืมความรู้ที่พ่อสอน · จำไว้: <b>มวลตัดสินทุกอย่าง</b>"' },
+      { v:'narr',   t:'ทีมพาพ่อกลับ · VOID ถอย · ทีมยังต้องซ่อมยาน แต่ทุกคนปลอดภัย' },
+    ],
+    glow:'🚀👨'
+  },
+  'B': {
+    title: 'BARELY ALIVE · เฉียดฉิว',
+    body: [
+      { v:'leader', t:'"พลังงานหมดก่อนถึง frame dragging window · ทีมต้องถอย · พ่อยังอยู่ใน accretion disk"' },
+      { v:'narr',   t:'ทีมรอดชีวิตแต่<b style="color:#ff8fa5;">พ่อยังต้องช่วยอีกครั้ง</b> · บางทีใน EP ต่อไป · บางทีไม่' },
+    ],
+    glow:'🚀'
+  },
+  'C': {
+    title: 'SWALLOWED · ลองใหม่',
+    body: [
+      { v:'narr', t:'ยานพังในสนามแรงโน้มถ่วง · ภาพดับ · LEMAÎTRE: "Mission failed · จะลองอีกครั้งไหม?"' },
+      { v:'narr', t:'<b>คำแนะนำ:</b> ตอบเร็วขึ้น · ใช้ Black Dwarf Shell · ทบทวน OBAFGKM ก่อนเริ่ม' },
+    ],
+    glow:'❌'
+  },
+};
+
+const sc = SCRIPTS[result.ending] || SCRIPTS['B'];
+document.getElementById('pageTitle').textContent = sc.title;
+host.innerHTML = `
+  <div class="reunion">
+    <div class="glow">${sc.glow}</div>
+    <div style="font-family:Orbitron; color:#ffcb6b; font-size:18px; letter-spacing:0.18em; margin:14px 0;">ENDING · ${result.ending}</div>
+    <div style="color:#9aa3c0; font-family:monospace; font-size:13px;">Energy เหลือ ${result.energy}</div>
+  </div>
+  <div class="card">
+    ${sc.body.map(b => {
+      if (b.v === 'leader') return `<div class="leader-voice">${b.t}</div>`;
+      if (b.v === 'father') return `<div class="father-voice">${b.t}</div>`;
+      return `<div class="narrative">${b.t}</div>`;
+    }).join('')}
+  </div>
+  ${result.ending !== 'C' ? `
+  <div class="card danger">
+    <div class="father-voice" style="border-color:#ff5c7a;">
+      "VOID ไม่ได้ฝึกซ้อมที่นายพราน · มันฝึกซ้อมเพื่อ<b style="color:#fff;">ดวงอาทิตย์</b> ·
+      G-type · 5,780 K · ตามทฤษฎีจะเป็น white dwarf อย่างสงบ · แต่ถ้า VOID เพิ่มมวล..."
+    </div>
+  </div>
+  <div class="cinematic">
+    <div class="title">🌅 NEXT EPISODE 🌅</div>
+    <div class="sub">EP05 · "หัวใจที่เต้นผิดจังหวะ" · ระบบสุริยะ · ดวงอาทิตย์ · CME · 18 ชั่วโมง</div>
+  </div>
+  ` : ''}
+`;
+
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p26-journal.html');
+  if (window.PaceClient) Gate.wireButton('p25', btn, 'p26-journal.html');
+}, 200);
+</script>
+</body></html>

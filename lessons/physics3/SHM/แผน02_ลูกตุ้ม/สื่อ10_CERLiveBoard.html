@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>CER Live Board — ลูกตุ้ม (SHM แผน 2)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #0d9488;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#115e59}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#0d9488;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ccfbf1;border-left:6px solid #0d9488;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.situ-pick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:8px 0}
+.situ-pick label{background:#fff;border:1.5px solid #5eead4;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13.5px}
+.situ-pick label:has(input:checked){background:#ccfbf1;border-color:#0d9488;font-weight:700}
+.cer{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+.card{border-radius:12px;padding:14px 18px}
+.card.c{background:#e0e7ff;border-left:6px solid #4f46e5}
+.card.e{background:#fff3e0;border-left:6px solid #ef6c00}
+.card.r{background:#ccfbf1;border-left:6px solid #0d9488}
+.card h2{font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card.c h2{color:#3730a3}.card.e h2{color:#c05621}.card.r h2{color:#115e59}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #5eead4;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #5eead4;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 29px,#f0fdfa 30px),repeating-linear-gradient(to bottom,#fff 0,#fff 29px,#f0fdfa 30px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #0d9488;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#115e59;font-weight:600}
+.c-btn.active{background:#0d9488;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #0d9488}
+.hint{font-size:13px;color:#555;font-style:italic;margin-top:4px}
+.group-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;margin-top:12px}
+.group-box b{color:#166534}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan2-cer">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📡 CER Live Board — ลูกตุ้มอย่างง่าย</h1>
+      <div class="meta"><span class="tag">SHM แผน 2</span><span class="tag">E3 Explain</span> 15 นาที · กลุ่มส่ง CER ขึ้น Live Board</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>สมาชิก</b> <input type="text" id="s-members" style="border:1.5px solid #5eead4;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:240px" placeholder="4 ชื่อ"></label>
+    </div>
+  </div>
+
+  <div class="info"><b>วัตถุประสงค์:</b> K2.1 · K2.2 · P2.2 · <b>วPA:</b> 3, 5, 6 · <b>รูปแบบ:</b> ตอบ 1 คำถาม (กลุ่มละ 1 ข้อ) ด้วย Claim–Evidence–Reasoning</div>
+
+  <div class="q"><b>🎯 คำถามหลัก:</b> "ทำไมคาบลูกตุ้มไม่ขึ้นกับมวล?" หรือ "ทำไม T ∝ √l ไม่ใช่ T ∝ l?" · <b>พิสูจน์ด้วย CER</b> · อ้างข้อมูลจาก SIM02 (3 ฐาน) + กราฟ T² vs l เป็นหลักฐาน</div>
+
+  <div><b>เลือกคำถามที่กลุ่มอภิปราย (กลุ่มละ 1 ข้อ):</b></div>
+  <div class="situ-pick">
+    <label><input type="radio" name="situ"> ① ทำไม T ไม่ขึ้นกับมวล m? (ฐาน A · M2.1)</label>
+    <label><input type="radio" name="situ"> ② ทำไม T ไม่ขึ้นกับแอมพลิจูด A ที่มุมเล็ก? (ฐาน B · M2.2)</label>
+    <label><input type="radio" name="situ"> ③ ทำไม T ∝ √l ไม่ใช่ T ∝ l? (ฐาน C · M2.3)</label>
+    <label><input type="radio" name="situ"> ④ ทำไมที่มุม &gt; 15° จึงไม่ใช่ SHM แท้? (ฐาน B · M2.4)</label>
+    <label><input type="radio" name="situ"> ⑤ ถ้าเอานาฬิกาลูกตุ้มไปดวงจันทร์ เดินเร็วหรือช้า เพราะอะไร?</label>
+    <label><input type="radio" name="situ"> ⑥ ทำไมกราฟ T² vs l เป็นเส้นตรง แต่ T vs l ไม่?</label>
+  </div>
+
+  <div class="cer">
+    <!-- Claim -->
+    <div class="card c">
+      <h2>🎯 C · Claim (ข้อสรุป 1 ประโยค)</h2>
+      <div class="hint">ตอบชัดเจน ไม่อ้อม · เริ่มจาก "กลุ่มของเรายืนยันว่า..."</div>
+      <textarea id="cer-claim" class="ans-ta" rows="2" placeholder="เช่น: คาบลูกตุ้มไม่ขึ้นกับมวล m..."></textarea>
+    </div>
+
+    <!-- Evidence -->
+    <div class="card e">
+      <h2>🔬 E · Evidence (หลักฐานจาก SIM02 + ตาราง + กราฟ)</h2>
+      <div class="hint">บันทึกตัวเลขจริง: T ของ 3 ลูก (ฐาน A) · T ที่มุมต่าง ๆ (ฐาน B) · ตาราง T² vs l + ความชันกราฟ (ฐาน C)</div>
+      <textarea id="cer-evidence" class="ans-ta" rows="4" placeholder="จาก SIM02 ฐาน A: m = 0.5, 1.0, 2.0 kg · T = 2.006, 2.006, 2.006 s ทุกลูก · จากฐาน C กราฟ T² vs l เส้นตรง ความชัน ≈ 4.02..."></textarea>
+      <div style="margin-top:8px"><b>✏️ วาดกราฟที่เป็นหลักฐาน (T² vs l หรือ T vs m):</b></div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tbp" onclick="setTool('cerGraph','pencil',this)">✏️</button>
+        <button class="c-btn" id="tbe" onclick="setTool('cerGraph','eraser',this)">⬜</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('cerGraph','#1a202c',this)"></div>
+        <div class="c-color" style="background:#0d9488" onclick="setColor('cerGraph','#0d9488',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('cerGraph','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cerGraph')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cerGraph" data-bg="grid" width="940" height="320"></canvas>
+    </div>
+
+    <!-- Reasoning -->
+    <div class="card r">
+      <h2>🧠 R · Reasoning (เหตุผล เชื่อม C กับ E)</h2>
+      <div class="hint">โยงเข้าหลักการ: T = 2π√(l/g) · derivation F = ma · −mg sin θ = ma · m ตัดออก (M2.1) · sin θ ≈ θ (M2.2/M2.4)</div>
+      <textarea id="cer-reasoning" class="ans-ta" rows="5" placeholder="ตามกฎการเคลื่อนที่ของนิวตัน F = ma · ที่มุมเล็ก F_restore = −mg sin θ ≈ −mgθ = −(mg/l)x · เมื่อ a = F/m = −(g/l)x · m ตัดออกทั้งคู่ · ดังนั้น a (และ T) ไม่ขึ้นกับ m..."></textarea>
+    </div>
+  </div>
+
+  <div class="group-box">
+    <b>📡 วิธีส่ง Live Board:</b> กลุ่มใช้ QR/ลิงก์ของครู → วาง CER ของกลุ่ม → ครูฉาย autorefresh เปรียบเทียบ 6 คำถาม → สรุปพร้อมกันว่า T = 2π√(l/g) ขึ้นกับ l, g เท่านั้น (ที่มุมเล็ก)
+  </div>
+
+  <div style="background:#ccfbf1;border:1.5px solid #5eead4;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:14px">
+    <b style="color:#115e59">🎯 เกณฑ์การให้คะแนน CER (ครูใช้ · 0–3):</b>
+    <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
+      <tr style="background:#0d9488;color:#fff"><th style="padding:6px 8px;border:1px solid #0f766e;width:18%">ระดับ</th><th style="padding:6px 8px;border:1px solid #0f766e">คำอธิบาย</th></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #5eead4"><b>3 · ครบถ้วน</b></td><td style="padding:6px 8px;border:1px solid #5eead4">Claim ชัด · Evidence อ้างข้อมูล SIM02 + กราฟ · Reasoning derive สูตร/อ้าง sin θ ≈ θ</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #5eead4"><b>2 · ดี</b></td><td style="padding:6px 8px;border:1px solid #5eead4">มี 3 ส่วน · แต่ Reasoning ขาด derivation หรืออ้างสูตรไม่ชัด</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #5eead4"><b>1 · พอใช้</b></td><td style="padding:6px 8px;border:1px solid #5eead4">Claim + Evidence · Reasoning ลอย ๆ หรือขาด</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #5eead4"><b>0 · ต้องปรับปรุง</b></td><td style="padding:6px 8px;border:1px solid #5eead4">ไม่ส่ง · ตอบไม่สัมพันธ์กับคำถาม</td></tr>
+    </table>
+  </div>
+
+  <div class="foot">CER Live Board · SHM แผน 2 · ลูกตุ้มอย่างง่าย · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='grid';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function drawAxes(id){const c=document.getElementById(id);const ctx=c.getContext('2d');const w=c.width,h=c.height;ctx.save();ctx.strokeStyle='#94a3b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(40,h-30);ctx.lineTo(w-20,h-30);ctx.moveTo(40,20);ctx.lineTo(40,h-30);ctx.stroke();ctx.fillStyle='#115e59';ctx.font='700 13px Sarabun';ctx.fillText('y',10,18);ctx.fillText('x',w-18,h-10);ctx.fillText('0',28,h-14);ctx.restore();}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}drawAxes(id);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="grid"]').forEach(c=>{initCanvas(c.id);drawAxes(c.id);});});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

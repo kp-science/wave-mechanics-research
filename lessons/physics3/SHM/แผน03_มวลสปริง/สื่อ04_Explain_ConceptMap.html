@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>Concept Map · มวล-สปริง (SHM แผน 3)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fff7ed;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#9a3412}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#ea580c;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.id-row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0;align-items:center}
+.id-row label{font-size:13px;font-weight:600;color:#555;display:flex;gap:6px;align-items:center}
+.id-row input{padding:6px 10px;border:1.5px solid #fdba74;border-radius:6px;font-family:inherit;font-size:14px;width:150px}
+.id-row input.short{width:70px}
+.info{background:#ffedd5;border-left:6px solid #ea580c;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.sec-title{font-size:18px;font-weight:800;color:#9a3412;margin:20px 0 10px;padding-left:12px;border-left:5px solid #ea580c}
+
+/* Concept Map canvas area */
+#cmapWrap{position:relative;width:100%;background:#f8fafc;border:2px solid #fed7aa;border-radius:12px;overflow:hidden;margin:14px 0}
+#cmapCanvas{display:block;width:100%;cursor:default}
+.cmap-toolbar{display:flex;gap:8px;flex-wrap:wrap;padding:10px;background:#ffedd5;border-radius:8px;margin-bottom:8px;align-items:center}
+.c-btn{background:#fff;border:2px solid #ea580c;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#9a3412;font-weight:600;transition:all .15s}
+.c-btn:hover,.c-btn.active{background:#ea580c;color:#fff}
+.node-pool{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:#fff7ed;border-radius:10px;margin-bottom:10px;border:1.5px dashed #fdba74}
+.node-chip{background:#ea580c;color:#fff;border-radius:20px;padding:6px 14px;font-size:14px;font-weight:700;cursor:grab;user-select:none;box-shadow:0 2px 6px rgba(234,88,12,.25);white-space:nowrap}
+.node-chip:active{cursor:grabbing;opacity:.7}
+#cmapInstr{font-size:13px;color:#6b7280;margin-bottom:6px}
+
+/* Graphic Organizer */
+.go-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.go-table th{background:#9a3412;color:#fff;padding:8px 12px;text-align:center;font-weight:700}
+.go-table th.spring{background:#ea580c}
+.go-table th.pend{background:#0d9488}
+.go-table td{border:1.5px solid #fed7aa;padding:8px 10px;text-align:center;vertical-align:middle}
+.go-table tr:nth-child(even) td{background:#fff7ed}
+.go-table td input,.go-table td select{width:95%;padding:4px 6px;border:1px solid #fdba74;border-radius:5px;font-family:inherit;font-size:14px;text-align:center;background:#fff}
+.go-table td select{text-align:left}
+.row-label{font-weight:700;color:#374151;text-align:left;padding-left:12px}
+
+/* Relation canvas */
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fdba74;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fff7ed 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+
+/* submit */
+.submit-bar{background:linear-gradient(135deg,#9a3412,#ea580c);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.btn-submit{background:#fff;color:#9a3412;border:none;font-family:inherit;font-size:17px;font-weight:800;padding:10px 26px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#ffedd5}
+.status{margin-top:10px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+.opt{display:flex;align-items:center;gap:8px;margin:4px 0;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:14px;border:1.5px solid transparent;transition:all .15s}
+.opt:hover{background:#ffedd5;border-color:#fdba74}
+.opt:has(input:checked){background:#ffedd5;border-color:#ea580c;font-weight:600}
+.opt input{accent-color:#ea580c}
+/* drag zones */
+.dd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media(max-width:650px){.dd-wrap{grid-template-columns:1fr}}
+.dd-pool{background:#fff8e1;border:2px dashed #f9a825;border-radius:10px;padding:10px;min-height:60px;grid-column:1/-1}
+.dd-pool-title{font-weight:700;color:#7a5800;font-size:13px;margin-bottom:6px}
+.dd-zone{background:#fff7ed;border:2px dashed #fdba74;border-radius:10px;padding:10px;min-height:90px}
+.dd-zone.drop-over{border-color:#ea580c;background:#ffedd5}
+.dd-zone-title{font-weight:700;font-size:13px;color:#9a3412;margin-bottom:6px}
+.dd-item{display:inline-block;background:#fff;border:1.5px solid #fdba74;border-radius:8px;padding:5px 12px;margin:4px;cursor:grab;font-size:13.5px;user-select:none;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dd-item:active{cursor:grabbing;opacity:.6}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.cmap-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🗺️ Concept Map + Graphic Organizer · มวล-สปริง</h1>
+      <div class="meta"><span class="tag">SHM แผน 3</span><span class="tag">Explain Phase</span> ลากวางโยงความสัมพันธ์ · เปรียบเทียบสปริง vs ลูกตุ้ม</div>
+    </div>
+    <div class="meta" style="color:#9a3412;font-weight:700">E3 Explain · 55–70 นาที</div>
+  </div>
+  <div class="id-row">
+    <label>ชื่อ <input type="text" id="s-name" placeholder="ชื่อนักเรียน"></label>
+    <label>เลขที่ <input type="text" id="s-num" class="short" placeholder="1"></label>
+    <label>ห้อง <input type="text" id="s-room" class="short" placeholder="5/1"></label>
+  </div>
+
+  <!-- ===== Concept Map Canvas ===== -->
+  <div class="sec-title">🗺️ ส่วนที่ 1 — Interactive Concept Map (ลากวาง)</div>
+  <div class="info"><b>วิธีใช้:</b> ลาก node จากกล่องสีส้มมาวางบนแผนที่ · คลิก "วาดลูกศร" แล้วลากระหว่าง node เพื่อเชื่อมความสัมพันธ์ · พิมพ์ label บนลูกศรได้</div>
+
+  <div id="cmapInstr">🟠 ลาก node มาวางบนพื้นที่แผนที่ด้านล่าง</div>
+  <div class="node-pool" id="nodePool">
+    <div class="node-chip" draggable="true" data-label="F = −kx">F = −kx</div>
+    <div class="node-chip" draggable="true" data-label="k (N/m)">k (N/m)</div>
+    <div class="node-chip" draggable="true" data-label="m (kg)">m (kg)</div>
+    <div class="node-chip" draggable="true" data-label="T (s)">T (s)</div>
+    <div class="node-chip" draggable="true" data-label="ω (rad/s)">ω (rad/s)</div>
+    <div class="node-chip" draggable="true" data-label="f (Hz)">f (Hz)</div>
+    <div class="node-chip" draggable="true" data-label="x (m)">x (m)</div>
+    <div class="node-chip" draggable="true" data-label="SHM">SHM</div>
+    <div class="node-chip" draggable="true" data-label="k_eff อนุกรม">k_eff อนุกรม</div>
+    <div class="node-chip" draggable="true" data-label="k_eff ขนาน">k_eff ขนาน</div>
+  </div>
+  <div class="cmap-toolbar">
+    <button class="c-btn active" id="modeMove" onclick="setMapMode('move')">✋ เลื่อน node</button>
+    <button class="c-btn" id="modeArrow" onclick="setMapMode('arrow')">➡️ วาดลูกศร</button>
+    <button class="c-btn" id="modeErase" onclick="setMapMode('erase')">🗑️ ลบ</button>
+    <button class="c-btn" onclick="clearMap()">❌ ล้างทั้งหมด</button>
+    <span style="font-size:13px;color:#555">tip: คลิก node เพื่อพิมพ์ label</span>
+  </div>
+  <div id="cmapWrap">
+    <canvas id="cmapCanvas" width="1000" height="420"></canvas>
+  </div>
+
+  <!-- ===== Drag-Drop: จับคู่สูตร ===== -->
+  <div class="sec-title">🔗 ส่วนที่ 2 — จับคู่สูตรกับความหมาย (Drag-Drop)</div>
+  <div class="dd-wrap">
+    <div class="dd-pool">
+      <div class="dd-pool-title">📦 กล่องสูตร — ลากไปวางในช่องที่ถูกต้อง</div>
+      <div id="formulaPool">
+        <div class="dd-item" draggable="true" data-id="f1">T = 2π√(m/k)</div>
+        <div class="dd-item" draggable="true" data-id="f2">ω = √(k/m)</div>
+        <div class="dd-item" draggable="true" data-id="f3">f = (1/2π)√(k/m)</div>
+        <div class="dd-item" draggable="true" data-id="f4">k_eff = k₁k₂/(k₁+k₂)</div>
+        <div class="dd-item" draggable="true" data-id="f5">k_eff = k₁+k₂</div>
+        <div class="dd-item" draggable="true" data-id="f6">F = −kx</div>
+        <div class="dd-item" draggable="true" data-id="f7">T = 2π√(l/g)</div>
+        <div class="dd-item" draggable="true" data-id="f8">x₀ = mg/k</div>
+      </div>
+    </div>
+    <div class="dd-zone" id="z1" data-ans="f1,f7">
+      <div class="dd-zone-title">📌 สูตรคาบ T ของระบบ SHM</div>
+    </div>
+    <div class="dd-zone" id="z2" data-ans="f2,f3">
+      <div class="dd-zone-title">📌 ω และ f ของมวล-สปริง</div>
+    </div>
+    <div class="dd-zone" id="z3" data-ans="f4">
+      <div class="dd-zone-title">📌 k_eff ของสปริงอนุกรม</div>
+    </div>
+    <div class="dd-zone" id="z4" data-ans="f5">
+      <div class="dd-zone-title">📌 k_eff ของสปริงขนาน</div>
+    </div>
+    <div class="dd-zone" id="z5" data-ans="f6">
+      <div class="dd-zone-title">📌 กฎของฮุค</div>
+    </div>
+    <div class="dd-zone" id="z6" data-ans="f8">
+      <div class="dd-zone-title">📌 equilibrium ใหม่ สปริงแนวดิ่ง</div>
+    </div>
+  </div>
+  <button class="c-btn" onclick="checkDD()" style="margin:8px 0">🔍 ตรวจ Drag-Drop</button>
+  <div id="ddResult" style="background:#ffedd5;border-radius:8px;padding:8px 12px;margin:6px 0;display:none;font-weight:700;color:#9a3412"></div>
+
+  <!-- ===== Graphic Organizer ===== -->
+  <div class="sec-title">📊 ส่วนที่ 3 — Graphic Organizer: เปรียบเทียบ 2 ระบบ SHM</div>
+  <div class="info">เติมข้อมูลในตาราง · ใช้ dropdown หรือพิมพ์ตรง · M3.4: สปริง T ขึ้นกับ m ต่างจากลูกตุ้ม</div>
+  <table class="go-table">
+    <thead>
+      <tr>
+        <th style="width:22%;background:#374151">หัวข้อ</th>
+        <th class="spring">🔧 ระบบมวล-สปริง</th>
+        <th class="pend">🕰️ ลูกตุ้มอย่างง่าย</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="row-label">แรงคืนตัว</td>
+        <td><input id="go_spring_force" placeholder="F = ?"></td>
+        <td><input id="go_pend_force" placeholder="F = ?"></td>
+      </tr>
+      <tr>
+        <td class="row-label">สูตรคาบ T</td>
+        <td><input id="go_spring_T" placeholder="T = ?"></td>
+        <td><input id="go_pend_T" placeholder="T = ?"></td>
+      </tr>
+      <tr>
+        <td class="row-label">T ขึ้นกับ m?</td>
+        <td><select id="go_spring_m"><option value="">เลือก...</option><option>✅ ขึ้นกับ m (T ∝ √m)</option><option>❌ ไม่ขึ้นกับ m</option></select></td>
+        <td><select id="go_pend_m"><option value="">เลือก...</option><option>✅ ขึ้นกับ m</option><option>❌ ไม่ขึ้นกับ m (m ตัดออก)</option></select></td>
+      </tr>
+      <tr>
+        <td class="row-label">T ขึ้นกับอะไร?</td>
+        <td><input id="go_spring_dep" placeholder="ขึ้นกับ m และ k"></td>
+        <td><input id="go_pend_dep" placeholder="ขึ้นกับ l และ g"></td>
+      </tr>
+      <tr>
+        <td class="row-label">T ขึ้นกับ A?</td>
+        <td><select id="go_spring_A"><option value="">เลือก...</option><option>✅ ขึ้นกับ A</option><option>❌ ไม่ขึ้นกับ A (SHM ideal)</option></select></td>
+        <td><select id="go_pend_A"><option value="">เลือก...</option><option>✅ ขึ้นกับ A</option><option>❌ ไม่ขึ้นกับ A (มุมเล็ก)</option></select></td>
+      </tr>
+      <tr>
+        <td class="row-label">แนวดิ่ง T เปลี่ยนไหม?</td>
+        <td><select id="go_spring_vert"><option value="">เลือก...</option><option>✅ T เปลี่ยน (ใช้สูตรใหม่)</option><option>❌ T ไม่เปลี่ยน (equilibrium เลื่อน แต่ T = 2π√(m/k))</option></select></td>
+        <td><input id="go_pend_vert" placeholder="ไม่เกี่ยวข้อง"></td>
+      </tr>
+      <tr>
+        <td class="row-label">ตัวอย่างในชีวิตจริง</td>
+        <td><input id="go_spring_ex" placeholder="เช่น โช้คอัพ เครื่องชั่ง..."></td>
+        <td><input id="go_pend_ex" placeholder="เช่น นาฬิกาลูกตุ้ม..."></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ===== Derivation POE-E ===== -->
+  <div class="sec-title">✏️ ส่วนที่ 4 — Derivation (สรุป POE-E ฐาน A)</div>
+  <div style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:12px;padding:14px;margin:10px 0">
+    <div style="font-size:14.5px;font-weight:700;color:#166534;margin-bottom:10px">สรุปการ derive: จาก F = −kx → สมการ SHM → T</div>
+    <div style="background:#fff;border-radius:8px;padding:10px;border-left:3px solid #16a34a;font-size:14px;line-height:2.2">
+      แรงคืนตัว F = −kx · กฎ Newton: <input id="d1" style="width:120px;border:none;border-bottom:1.5px solid #86efac;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="F = ma"> = −kx<br>
+      ดังนั้น a = −(<input id="d2" style="width:80px;border:none;border-bottom:1.5px solid #86efac;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="k/m">)x<br>
+      เปรียบ a = −ω²x ∴ ω = <input id="d3" style="width:100px;border:none;border-bottom:1.5px solid #86efac;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="√(k/m)"> rad/s<br>
+      T = 2π/ω = <input id="d4" style="width:130px;border:none;border-bottom:1.5px solid #86efac;padding:2px;font-family:inherit;font-size:14px;text-align:center" placeholder="2π√(m/k)"> s
+    </div>
+  </div>
+  <div style="margin-top:8px;font-size:13.5px;color:#555">เขียนหรือวาดประกอบการ derive เพิ่มเติม:</div>
+  <div class="cmap-toolbar" style="margin-top:8px">
+    <button class="c-btn active" id="modeD_pen" onclick="setDrawMode('D','pen')">✏️ ปากกา</button>
+    <button class="c-btn" onclick="setDrawMode('D','eraser')">🧹 ยางลบ</button>
+    <input type="range" min="1" max="16" value="3" oninput="dsz.D=this.value" style="width:70px">
+    <button class="c-btn" onclick="clearDraw('cD')">🗑️ ล้าง</button>
+  </div>
+  <canvas id="cD" data-bg="lined" width="960" height="200"></canvas>
+
+  <div class="submit-bar">
+    <h3>📤 ส่ง Concept Map + Graphic Organizer</h3>
+    <button class="btn-submit" onclick="submitCM()">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="foot">Concept Map + GO · SHM แผน 3 · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL_HERE';
+const SHEET='CM3_SHM_Plan3';
+
+/* ===== Concept Map ===== */
+const canvas=document.getElementById('cmapCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=canvas.offsetWidth||1000;
+
+let nodes=[], arrows=[], mapMode='move';
+let draggingNode=null,dragOff={x:0,y:0};
+let arrowFrom=null,arrowMouse={x:0,y:0};
+
+function setMapMode(m){
+  mapMode=m;
+  ['modeMove','modeArrow','modeErase'].forEach(id=>{
+    document.getElementById(id)?.classList.toggle('active',id==='mode'+m.charAt(0).toUpperCase()+m.slice(1));
+  });
+}
+function clearMap(){nodes=[];arrows=[];renderMap();}
+
+function renderMap(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // bg grid
+  ctx.strokeStyle='#f3f4f6';ctx.lineWidth=1;
+  for(let x=0;x<canvas.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+  for(let y=0;y<canvas.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+  // arrows
+  arrows.forEach(a=>{
+    const from=nodes.find(n=>n.id===a.from), to=nodes.find(n=>n.id===a.to);
+    if(!from||!to)return;
+    drawArrow(from.x,from.y,to.x,to.y,a.label||'');
+  });
+  // live arrow preview
+  if(mapMode==='arrow'&&arrowFrom){
+    const fn=nodes.find(n=>n.id===arrowFrom);
+    if(fn) drawArrow(fn.x,fn.y,arrowMouse.x,arrowMouse.y,'',true);
+  }
+  // nodes
+  nodes.forEach(n=>{
+    ctx.fillStyle=n.color||'#ea580c';
+    ctx.beginPath();ctx.roundRect(n.x-50,n.y-18,100,36,10);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 13px Sarabun,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.label,n.x,n.y);
+  });
+}
+
+function drawArrow(x1,y1,x2,y2,label,dashed=false){
+  ctx.save();
+  if(dashed){ctx.setLineDash([6,4]);}
+  ctx.strokeStyle=dashed?'#aaa':'#9a3412';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  // arrowhead
+  const angle=Math.atan2(y2-y1,x2-x1);
+  ctx.setLineDash([]);ctx.fillStyle=dashed?'#aaa':'#9a3412';
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-12*Math.cos(angle-0.4),y2-12*Math.sin(angle-0.4));
+  ctx.lineTo(x2-12*Math.cos(angle+0.4),y2-12*Math.sin(angle+0.4));
+  ctx.closePath();ctx.fill();
+  // label
+  if(label){
+    ctx.fillStyle='#374151';ctx.font='12px Sarabun,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(label,(x1+x2)/2,(y1+y2)/2-10);
+  }
+  ctx.restore();
+}
+
+function getNodeAt(x,y){return nodes.find(n=>Math.abs(n.x-x)<52&&Math.abs(n.y-y)<20);}
+
+function getCanvasPos(e){
+  const r=canvas.getBoundingClientRect();
+  const t=e.touches?e.touches[0]:e;
+  return{x:(t.clientX-r.left)*(canvas.width/r.width),y:(t.clientY-r.top)*(canvas.height/r.height)};
+}
+
+canvas.addEventListener('mousedown',e=>{
+  const p=getCanvasPos(e);
+  if(mapMode==='move'){
+    draggingNode=getNodeAt(p.x,p.y);
+    if(draggingNode){dragOff={x:p.x-draggingNode.x,y:p.y-draggingNode.y};}
+  }else if(mapMode==='arrow'){
+    const n=getNodeAt(p.x,p.y);
+    if(n){arrowFrom=n.id;arrowMouse={x:p.x,y:p.y};}
+  }else if(mapMode==='erase'){
+    const n=getNodeAt(p.x,p.y);
+    if(n){nodes=nodes.filter(nd=>nd.id!==n.id);arrows=arrows.filter(a=>a.from!==n.id&&a.to!==n.id);}
+    renderMap();
+  }
+});
+canvas.addEventListener('mousemove',e=>{
+  const p=getCanvasPos(e);
+  if(mapMode==='move'&&draggingNode){draggingNode.x=p.x-dragOff.x;draggingNode.y=p.y-dragOff.y;renderMap();}
+  if(mapMode==='arrow'&&arrowFrom){arrowMouse=p;renderMap();}
+});
+canvas.addEventListener('mouseup',e=>{
+  const p=getCanvasPos(e);
+  if(mapMode==='arrow'&&arrowFrom){
+    const to=getNodeAt(p.x,p.y);
+    if(to&&to.id!==arrowFrom){
+      const lbl=prompt('label ลูกศร (เช่น "∝", "= 2π√", "ขึ้นกับ" หรือเว้นว่างได้):','');
+      arrows.push({from:arrowFrom,to:to.id,label:lbl||''});
+    }
+    arrowFrom=null;renderMap();
+  }
+  draggingNode=null;
+});
+canvas.addEventListener('mouseleave',()=>{draggingNode=null;if(mapMode==='arrow'){arrowFrom=null;renderMap();}});
+canvas.addEventListener('dblclick',e=>{
+  const p=getCanvasPos(e);
+  const n=getNodeAt(p.x,p.y);
+  if(n){const lbl=prompt('แก้ label node:',n.label);if(lbl!==null)n.label=lbl;renderMap();}
+});
+
+// Drag from pool
+document.getElementById('nodePool').querySelectorAll('.node-chip').forEach(chip=>{
+  chip.addEventListener('dragstart',e=>{e.dataTransfer.setData('label',chip.dataset.label);});
+});
+canvas.addEventListener('dragover',e=>{e.preventDefault();});
+canvas.addEventListener('drop',e=>{
+  e.preventDefault();
+  const lbl=e.dataTransfer.getData('label');
+  const p=getCanvasPos(e);
+  if(!nodes.find(n=>n.label===lbl)){
+    nodes.push({id:Date.now(),label:lbl,x:p.x,y:p.y,color:'#ea580c'});
+    renderMap();
+  }
+});
+
+/* ===== Drag-Drop สูตร ===== */
+let dragId=null;
+document.getElementById('formulaPool').querySelectorAll('.dd-item').forEach(item=>{
+  item.addEventListener('dragstart',e=>{dragId=item.dataset.id;item.style.opacity='.5';});
+  item.addEventListener('dragend',()=>{item.style.opacity='1';});
+});
+document.querySelectorAll('.dd-zone').forEach(zone=>{
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drop-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drop-over'));
+  zone.addEventListener('drop',e=>{
+    e.preventDefault();zone.classList.remove('drop-over');
+    const item=document.querySelector(`[data-id="${dragId}"]`);
+    if(item)zone.appendChild(item);
+    dragId=null;
+  });
+});
+
+function checkDD(){
+  let ok=0,total=0;
+  document.querySelectorAll('.dd-zone').forEach(zone=>{
+    const ans=(zone.dataset.ans||'').split(',');
+    const placed=Array.from(zone.querySelectorAll('.dd-item')).map(i=>i.dataset.id);
+    ans.forEach(a=>{
+      total++;
+      if(placed.includes(a))ok++;
+      else;
+    });
+  });
+  const el=document.getElementById('ddResult');
+  el.style.display='block';
+  el.textContent=`ถูกต้อง ${ok}/${total} สูตร · ${ok===total?'🎉 สมบูรณ์!':'ลองตรวจสอบอีกครั้ง'}`;
+}
+
+/* ===== Draw canvas ===== */
+const dcv={}; const dct={}; const dsz={D:3}; const dmodes={D:'pen'};
+function initDraw(id){
+  const c=document.getElementById(id);if(!c)return;
+  dcv[id]=c;const ct=c.getContext('2d');ct.lineCap='round';ct.lineJoin='round';dct[id]=ct;
+  let drawing=false,last=null;
+  const gp=e=>{const r=c.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(c.width/r.width),y:(t.clientY-r.top)*(c.height/r.height)};};
+  const start=e=>{e.preventDefault();drawing=true;last=gp(e);};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=gp(e);const k=id.replace('c','');
+    ct.globalCompositeOperation=dmodes[k]==='eraser'?'destination-out':'source-over';
+    ct.strokeStyle='#1a202c';ct.lineWidth=dsz[k]||3;ct.beginPath();ct.moveTo(last.x,last.y);ct.lineTo(p.x,p.y);ct.stroke();last=p;};
+  const end=()=>{drawing=false;last=null;};
+  c.addEventListener('mousedown',start);c.addEventListener('mousemove',move);
+  c.addEventListener('mouseup',end);c.addEventListener('mouseleave',end);
+  c.addEventListener('touchstart',start,{passive:false});
+  c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',end);
+}
+function setDrawMode(key,m){dmodes[key]=m;}
+function clearDraw(id){if(dct[id])dct[id].clearRect(0,0,dcv[id].width,dcv[id].height);}
+
+function gv(id){return document.getElementById(id)?.value||'';}
+function gsv(id){const el=document.getElementById(id);return el?el.options[el.selectedIndex]?.value||'':'';}
+
+function submitCM(){
+  const name=document.getElementById('s-name').value.trim();
+  if(!name){alert('กรุณากรอกชื่อก่อน');return;}
+  const ddZones={};
+  document.querySelectorAll('.dd-zone').forEach(z=>{
+    ddZones[z.id]=Array.from(z.querySelectorAll('.dd-item')).map(i=>i.dataset.id).join(',');
+  });
+  const payload={
+    sheet:SHEET, student_name:name,
+    student_no:gv('s-num'), class:gv('s-room'),
+    map_nodes:JSON.stringify(nodes.map(n=>n.label)),
+    map_arrows:JSON.stringify(arrows),
+    dd_zones:JSON.stringify(ddZones),
+    go_spring_force:gv('go_spring_force'), go_pend_force:gv('go_pend_force'),
+    go_spring_T:gv('go_spring_T'), go_pend_T:gv('go_pend_T'),
+    go_spring_m:gsv('go_spring_m'), go_pend_m:gsv('go_pend_m'),
+    go_spring_dep:gv('go_spring_dep'), go_pend_dep:gv('go_pend_dep'),
+    go_spring_A:gsv('go_spring_A'), go_pend_A:gsv('go_pend_A'),
+    go_spring_vert:gsv('go_spring_vert'),
+    go_spring_ex:gv('go_spring_ex'), go_pend_ex:gv('go_pend_ex'),
+    derive_1:gv('d1'),derive_2:gv('d2'),derive_3:gv('d3'),derive_4:gv('d4'),
+    canvas_map:canvas.toDataURL('image/png'),
+    canvas_derive:dcv['cD']?dcv['cD'].toDataURL('image/png'):''
+  };
+  if(API_URL.includes('YOUR_APPS_SCRIPT')){
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download=`CM3_${name}.json`;a.click();
+    showStatus('success','💾 บันทึก .json แล้ว');return;
+  }
+  showStatus('loading','⏳ กำลังส่ง...');
+  fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(payload)})
+    .then(()=>showStatus('success','✅ ส่งสำเร็จ!'))
+    .catch(()=>showStatus('error','❌ ส่งไม่สำเร็จ'));
+}
+function showStatus(t,m){const el=document.getElementById('status');el.className='status '+t;el.textContent=m;}
+
+initDraw('cD');
+renderMap();
+</script>
+</body></html>

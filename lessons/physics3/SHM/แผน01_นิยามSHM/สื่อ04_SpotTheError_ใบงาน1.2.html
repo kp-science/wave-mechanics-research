@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน 1.2 · Spot the Error (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #c62828;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#7f1d1d}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#c62828;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.plan{background:#4f46e5}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.item{border:2px solid #e0e0e0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
+.item .num{display:inline-block;background:#c62828;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.claim-stack{position:relative;background:#fff1f2;border:1.5px solid #fecaca;border-left:6px solid #dc2626;border-radius:8px;margin:8px 0;overflow:hidden}
+.claim-content{padding:12px 14px;font-size:15px;position:relative;z-index:1;color:#2d3748;font-style:italic}
+.claim-stack canvas.claim-overlay{position:absolute;top:0;left:0;width:100%;height:100%;background:transparent;z-index:2;touch-action:none;cursor:crosshair}
+.section-heading{font-weight:800;font-size:15px;margin:12px 0 6px;color:#3730a3;display:flex;align-items:center;gap:6px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#eef2ff 28px);touch-action:none;cursor:crosshair;margin-top:4px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #c7d2fe;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,.claim-overlay{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-spot-1.2">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>🔍 ใบงาน 1.2 — Spot the Error</h1>
+      <div class="meta"><span class="tag plan">SHM แผน 1</span><span class="tag">E4 Elaborate</span> 7 นาที · ทำเดี่ยว 4' → อภิปรายคู่ 3'</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำสั่ง:</b> แต่ละข้อมีข้อความ "ผิด" 1 จุด · (ก) ขีดทับ/วงกลมจุดที่ผิดบนข้อความ · (ข) อธิบายที่ถูกต้อง + แสดงเหตุผลอิงหลักการ F = −kx · <b>วัตถุประสงค์:</b> K1.1, P1.1 · <b>Misconception:</b> M1.1, M1.2, M1.3</div>
+
+  <!-- ข้อ 1 M1.1 -->
+  <div class="item">
+    <div><span class="num">1</span><b>ข้อความ</b> <span class="mis-tag">M1.1 — periodic ≠ SHM</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิดบนข้อความ</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb1mp" onclick="setTool('cm1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1me" onclick="setTool('cm1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm1','#dc2626',this)"></div>
+      <div class="c-color" style="background:#1a202c" onclick="setColor('cm1','#1a202c',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm1')" style="margin-left:auto;color:#c53030">🗑️ ล้าง</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"ลูกเหล็กที่หมุนเป็นวงกลมสม่ำเสมอในแนวระดับ ถือเป็นการเคลื่อนที่แบบ SHM เพราะมันเคลื่อนที่ซ้ำทางเดิมทุกรอบ และใช้เวลาเท่ากันทุกรอบ"</div>
+      <canvas id="cm1" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) ที่ถูกต้องคือ + เหตุผล</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb1p" onclick="setTool('c1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb1e" onclick="setTool('c1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c1','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c1" data-bg="lined" width="900" height="140"></canvas>
+    <textarea id="a1" class="ans-ta" rows="2" placeholder="ที่ถูกคือ... เพราะ F เข้าสู่ศูนย์กลางของวงกลมสม่ำเสมอไม่ ∝ x..."></textarea>
+  </div>
+
+  <!-- ข้อ 2 M1.2 -->
+  <div class="item">
+    <div><span class="num">2</span><b>ข้อความ</b> <span class="mis-tag">M1.2 — แรงคืนตัว ≠ แรงเสียดทาน</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิดบนข้อความ</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb2mp" onclick="setTool('cm2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2me" onclick="setTool('cm2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm2','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"การแกว่งของลูกตุ้มเป็น SHM เพราะมีแรงเสียดทานของอากาศเป็นแรงคืนตัวที่ดึงลูกตุ้มกลับสู่ตำแหน่งสมดุลเสมอ"</div>
+      <canvas id="cm2" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) ที่ถูกต้องคือ + เหตุผล</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb2p" onclick="setTool('c2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb2e" onclick="setTool('c2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c2','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c2" data-bg="lined" width="900" height="140"></canvas>
+    <textarea id="a2" class="ans-ta" rows="2" placeholder="ที่ถูกคือ... แรงคืนตัวของลูกตุ้มคือองค์ประกอบแรงโน้มถ่วงในแนวการเคลื่อนที่ (−mg sin θ) ไม่ใช่แรงเสียดทาน..."></textarea>
+  </div>
+
+  <!-- ข้อ 3 M1.3 -->
+  <div class="item">
+    <div><span class="num">3</span><b>ข้อความ</b> <span class="mis-tag">M1.3 — SHM ไม่จำกัดทิศ</span></div>
+    <div class="section-heading">🔍 (ก) มาร์คจุดที่ผิดบนข้อความ</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3mp" onclick="setTool('cm3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3me" onclick="setTool('cm3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#dc2626" onclick="setColor('cm3','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cm3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <div class="claim-stack">
+      <div class="claim-content">"มวลที่แขวนกับสปริงในแนวดิ่ง เมื่อดึงลงแล้วปล่อยจะเคลื่อนที่ขึ้น-ลงซ้ำ แต่ไม่ใช่ SHM เพราะ SHM ต้องเกิดในแนวระดับเท่านั้น (แนวดิ่งมี mg ทำให้ผิดเงื่อนไข)"</div>
+      <canvas id="cm3" class="claim-overlay" width="900" height="130"></canvas>
+    </div>
+    <div class="section-heading">✍️ (ข) ที่ถูกต้องคือ + เหตุผล</div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tb3p" onclick="setTool('c3','pencil',this)">✏️</button>
+      <button class="c-btn" id="tb3e" onclick="setTool('c3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('c3','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="900" height="140"></canvas>
+    <textarea id="a3" class="ans-ta" rows="2" placeholder="ที่ถูกคือ... สปริงแนวดิ่งเป็น SHM โดยเปลี่ยนตำแหน่งสมดุลใหม่ที่ mg = kx₀ · รอบตำแหน่งสมดุลใหม่ F = −kx..."></textarea>
+  </div>
+
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">🎯 สรุป 1 ประโยค:</b> "เงื่อนไข 3 ข้อของ SHM คือ ____________________________________________________________"
+    <input type="text" id="summary" style="width:100%;margin-top:6px;padding:6px 10px;border:1.5px solid #86efac;border-radius:6px;font-family:inherit;font-size:14px">
+  </div>
+
+  <div class="foot">ใบงาน 1.2 · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.classList.contains('overlay')||c.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:c.classList.contains('overlay')?'#dc2626':'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P14 · BOSS · VOID Damage Race</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  .race-bar { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; padding:12px 14px; background:rgba(255,92,122,0.10); border:2px solid var(--accent-red); border-radius:12px; margin:14px 0; font-family:'Orbitron',sans-serif; }
+  .race-bar .cell { text-align:center; }
+  .race-bar .cell .lbl { font-size:10px; letter-spacing:0.15em; color:var(--text-dim); }
+  .race-bar .cell .val { font-size:22px; color:var(--accent-gold); }
+  .race-bar.warn { animation: blink .5s infinite; }
+  @keyframes blink { 0%,100%{background:rgba(255,92,122,0.10)} 50%{background:rgba(255,92,122,0.30)} }
+
+  .question-card { padding:18px; background:var(--bg-card); border:2px solid var(--border); border-radius:12px; margin:14px 0; }
+  .question-card .q-text { font-size:17px; line-height:1.5; margin-bottom:14px; }
+  .choice-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .choice-btn { padding:14px 16px; background:rgba(100,216,255,0.06); border:2px solid var(--border); color:var(--text); border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit; text-align:left; transition: transform .12s, border-color .12s; }
+  .choice-btn:hover { border-color:var(--accent); transform: translateY(-2px); }
+  .choice-btn.correct { border-color:var(--accent-green); background:rgba(126,255,178,0.15); }
+  .choice-btn.wrong { border-color:var(--accent-red); background:rgba(255,92,122,0.15); }
+  .choice-btn:disabled { cursor:default; }
+
+  .boost-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin:10px 0; }
+  .boost-btn { padding:10px 12px; background:rgba(255,203,107,0.08); border:1px solid rgba(255,203,107,0.4); color:var(--accent-gold); border-radius:8px; cursor:pointer; font-family:inherit; font-size:12px; text-align:left; }
+  .boost-btn:hover:not(:disabled) { background:rgba(255,203,107,0.18); }
+  .boost-btn.armed { border-color:var(--accent-gold); background:rgba(255,203,107,0.25); box-shadow: 0 0 0 2px rgba(255,203,107,0.4); }
+  .boost-btn:disabled { opacity:0.35; cursor:not-allowed; }
+  .boost-btn .b-name { font-weight:700; }
+  .boost-btn .b-desc { font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+  .shot-feedback { padding:12px 16px; border-radius:10px; text-align:center; font-family:'Orbitron',sans-serif; letter-spacing:0.1em; margin:10px 0; min-height: 24px; }
+  .shot-feedback.hit { background:rgba(126,255,178,0.15); border:1px solid var(--accent-green); color:var(--accent-green); }
+  .shot-feedback.crit { background:rgba(255,203,107,0.18); border:2px solid var(--accent-gold); color:var(--accent-gold); font-size:18px; box-shadow:0 0 20px rgba(255,203,107,0.4); }
+  .shot-feedback.miss { background:rgba(255,92,122,0.15); border:1px solid var(--accent-red); color:var(--accent-red); }
+
+  .summary-box { padding:24px; background:linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.06)); border:2px solid var(--accent); border-radius:14px; text-align:center; margin:16px 0; }
+  .summary-box .big { font-family:'Orbitron',sans-serif; font-size:32px; color:var(--accent-gold); margin:8px 0; }
+  .summary-box table { margin:12px auto; font-family:monospace; font-size:13px; color:var(--text-dim); }
+  .summary-box td { padding:3px 12px; text-align:left; }
+
+  .shake { animation: shakeX .3s ease-in-out; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* VOID charge bar */
+  .void-charge { display:flex; align-items:center; gap:12px; padding:10px 14px; background:rgba(185,128,255,0.10); border:1px solid rgba(185,128,255,0.4); border-radius:10px; margin:10px 0; font-family:'Orbitron',monospace; font-size:13px; }
+  .void-charge .vc-label { color:var(--accent-2); font-weight:700; min-width:130px; }
+  .void-charge .vc-bar { flex:1; height:14px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:7px; overflow:hidden; position:relative; }
+  .void-charge .vc-fill { height:100%; background:linear-gradient(90deg, var(--accent-2), var(--accent-red)); transition: width .9s linear; }
+  .void-charge .vc-num { color:var(--accent-gold); min-width:50px; text-align:right; }
+  .void-charge.firing { animation: vcFire .4s ease-out; }
+  @keyframes vcFire { 0%{box-shadow:0 0 0 0 rgba(255,92,122,0.9)} 100%{box-shadow:0 0 30px 10px rgba(255,92,122,0)} }
+
+  .shield-display { display:inline-flex; gap:4px; padding:6px 12px; background:rgba(100,216,255,0.08); border:1px solid var(--accent); border-radius:14px; font-family:'Orbitron',monospace; font-size:12px; color:var(--accent); margin-left:10px; }
+</style>
+</head>
+<body data-page="p14" data-type="mixed">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label mixed">องก์ 3 · Scene 14 · 🐉 CLIMAX · DAMAGE RACE</div>
+  <h1 class="page-title">VOID · Co-op Damage Race</h1>
+  <div class="obj-tags">
+    <span class="obj-tag k">K1·K2·K4</span>
+    <span class="obj-tag p">P3 · ตัดสินเร็ว</span>
+    <span class="obj-tag a">A2·A4 · กล้าวิพากษ์</span>
+  </div>
+
+  <div class="narrative">
+    <p>🎙️ ครู: "<b>3 นาที</b> · ทุกทีมยิง VOID พร้อมกัน · <b>ทีมที่ตอบถูกมากที่สุด · damage สูงสุด ชนะ</b>"</p>
+    <p style="color:var(--text-dim)">กดยิง → สุ่มคำถาม 2 ตัวเลือก · <b>ถูก = -10 HP boss · เสีย -5 energy/ยิง</b> · <b>ผิด = MISS · เสีย -6 energy (+20%)</b> · ใช้ไอเทมเพิ่ม damage ได้ก่อนตอบ</p>
+    <p style="color:var(--accent-2);font-size:12px">⚡ <b>VOID ชาร์จพลังทุก 10 วิ</b> → ยิง beam · ลด energy ทีม -10 · 🛡️ <b>โล่กันได้ 1 ดาเมจ/ชิ้น</b> · ไม่มีโล่ → energy หาย</p>
+  </div>
+
+  <div id="boss-hud"></div>
+
+  <div class="race-bar" id="raceBar">
+    <div class="cell"><div class="lbl">⏱ TIME LEFT</div><div class="val" id="raceTimer">3:00</div></div>
+    <div class="cell"><div class="lbl">💥 TOTAL DAMAGE</div><div class="val" id="raceDmg" style="color:var(--accent-green)">0</div></div>
+    <div class="cell"><div class="lbl">🎯 HIT / 🚫 MISS</div><div class="val" id="raceShots" style="font-size:18px">0/0</div></div>
+  </div>
+
+  <div class="void-charge" id="voidCharge">
+    <div class="vc-label">⚡ VOID ชาร์จ</div>
+    <div class="vc-bar"><div class="vc-fill" id="vcFill" style="width:0%"></div></div>
+    <div class="vc-num" id="vcNum">10s</div>
+    <div class="shield-display" id="shieldDisp" title="โล่ที่เหลือ">🛡️ × <b id="shieldNum">0</b></div>
+  </div>
+
+  <div id="boostPanel">
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">🎒 ไอเทม boost · กดก่อนยิงเพื่อเพิ่ม damage รอบเดียว</div>
+    <div class="boost-row" id="boostRow"></div>
+  </div>
+
+  <div id="shotFeedback" class="shot-feedback" style="display:none"></div>
+
+  <div id="puzzleArea">
+    <!-- start screen + question card -->
+  </div>
+
+  <div id="summaryArea"></div>
+
+  <details class="teacher-cue" open>
+    <summary>🎙️ Teacher Cue · P14 · 🎭 DM mode</summary>
+    <div class="tc-body">
+      <b>เปิด:</b> "3 นาที · ทำ damage ให้สูงสุด · ทีมไหนชนะ?" (ใส่เสียง VOID)<br>
+      <b>ระหว่าง:</b> เดินดู · ห้ามเฉลย · กดเพิ่มเวลาด้วย Warp Fuel item ได้<br>
+      <b>ปิด:</b> ประกาศ damage ทุกทีม · ใส่ rank ใน Leaderboard (📊 TEAMS) · ทีมชนะได้ Badge bonus<br>
+      <b>หลังจบ:</b> "Decoder ใช้ตอนคำถามมั่นใจ ไม่ใช่สุ่ม" (สอน metacognition)<br>
+      <b>🖼️ เจน:</b> [IMG-P14abc] VOID 3 phases (HP สูง · กลาง · ใกล้ตาย)
+    </div>
+  </details>
+
+  <div style="margin-top:20px;text-align:center">
+    <button class="finish-btn" id="nextBtn" onclick="goNext()" disabled>✨ ไปต่อ (รอจบ damage race)</button>
+  </div>
+</div></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/boss.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ==================== State ==================== */
+  const RACE_DURATION = 180; // 3 นาที
+  const SHOT_COST = 5;       // ค่ายิง · เสียทุกครั้ง · กันกดมั่ว
+  const WRONG_PENALTY_PCT = 0.20; // ผิด = เสียเพิ่ม 20% ของ cost
+  const VOID_CHARGE_SEC = 10; // ชาร์จทุก 10 วิ
+  const VOID_BEAM_DMG = 10;
+  let timeLeft = RACE_DURATION;
+  let totalDmg = 0;
+  let hits = 0, misses = 0;
+  let energySpent = 0;     // energy ที่เสียไปกับการยิง (รวมถูกผิด)
+  let armedBoost = null;
+  let answering = false;
+  let raceFinished = false;
+  let usedQuestions = new Set();
+  let timerHandle = null;
+  let bossChargeT = VOID_CHARGE_SEC;
+  let shieldCount = 0;
+  let voidBeamsAbsorbed = 0;
+  let voidBeamsHit = 0;
+
+  /* ==================== Boost config (ระบุอัตราชัด) ==================== */
+  const BOOSTS = {
+    decoder: { icon:'📡', name:'Decoder',     mult:2.5, desc:'damage ×2.5 · ใช้ 1 ครั้ง' },
+    lens:    { icon:'🔍', name:'Hubble Lens', mult:2.0, desc:'damage ×2.0 · ใช้ 1 ครั้ง' },
+    fuel:    { icon:'⏱️', name:'Warp Fuel',   mult:1.5, desc:'damage ×1.5 · ใช้ 1 ครั้ง' },
+  };
+  // map item id (จาก inventory) → boost key
+  const ITEM_TO_BOOST = { decoder:'decoder', hubbleLens:'lens', warpFuel:'fuel' };
+
+  /* ==================== Question pool · 24 ข้อ · 2 ตัวเลือก ==================== */
+  const QUESTIONS = [
+    // Galaxy classification
+    { q:'Milky Way จัดเป็นกาแล็กซีประเภทใด?', a:['Spiral มีคาน (SBb)','Elliptical (E5)'], correct:0 },
+    { q:'กาแล็กซีรูปวงรีไม่มีคาน · มี code อะไร?', a:['Sa/Sb/Sc','E0–E7'], correct:1 },
+    { q:'Tuning Fork diagram จำแนกกาแล็กซีโดยใคร?', a:['Edwin Hubble','Henrietta Leavitt'], correct:0 },
+    { q:'กาแล็กซี Irregular มักมีลักษณะอย่างไร?', a:['รูปร่างไม่สมมาตร · สร้างดาวมาก','สมมาตรสมบูรณ์ · ดาวเก่า'], correct:0 },
+    { q:'แขน Spiral ที่ Sun อยู่คือ?', a:['Orion arm','Perseus arm'], correct:0 },
+
+    // Milky Way structure
+    { q:'เส้นผ่านศูนย์กลาง Milky Way ประมาณ?', a:['100,000 ปีแสง','1,000 ปีแสง'], correct:0 },
+    { q:'Sun อยู่ห่างจากใจกลาง MW ประมาณ?', a:['26,000 ปีแสง','100 ปีแสง'], correct:0 },
+    { q:'จำนวนดาวใน Milky Way ประมาณ?', a:['200–400 พันล้าน','10 ล้าน'], correct:0 },
+    { q:'ใจกลาง Milky Way มีอะไรอยู่?', a:['Sagittarius A* (หลุมดำมวลยิ่งยวด)','ดาวฤกษ์ทั่วไปดวงเดียว'], correct:0 },
+    { q:'แสง infrared ช่วยมองเห็น MW ได้ดีเพราะ?', a:['ทะลุฝุ่นในจาน','สะท้อนน้ำในอวกาศ'], correct:0 },
+
+    // Hubble's Law / parsec
+    { q:'กฎฮับเบิลคือสมการใด?', a:['v = H₀ × D','v = D / t'], correct:0 },
+    { q:'ค่า H₀ มาตรฐานคือ?', a:['~70 km/s/Mpc','~70 km/s'], correct:0 },
+    { q:'1 parsec ≈ กี่ปีแสง?', a:['3.26','100'], correct:0 },
+    { q:'parsec เป็นหน่วยของอะไร?', a:['ระยะ','เวลา'], correct:0 },
+    { q:'1 Mpc เท่ากับ?', a:['1,000,000 parsec','1,000,000 วินาที'], correct:0 },
+    { q:'ถ้า v = 7,000 km/s · D เท่าไร (H₀=70)?', a:['100 Mpc','10 Mpc'], correct:0 },
+    { q:'ถ้า D = 50 Mpc · v ประมาณ?', a:['3,500 km/s','500 km/s'], correct:0 },
+    { q:'กาแล็กซีไกลขึ้น · v มีแนวโน้ม?', a:['สูงขึ้น (ถอยเร็วขึ้น)','ลดลง'], correct:0 },
+
+    // Misconception killers
+    { q:'แถบขาวบนฟ้ายามค่ำคือ?', a:['ดาวจำนวนมากในจาน MW','เมฆในชั้นบรรยากาศ'], correct:0 },
+    { q:'Sun อยู่ใจกลาง Milky Way?', a:['ไม่ · อยู่ขอบในแขน Orion','ใช่ · ทุกดาวโคจรรอบเรา'], correct:0 },
+    { q:'Spiral กับ Elliptical ต่างกันแค่สี?', a:['ไม่ · ต่างที่โครงสร้าง·มวล·อายุ','ใช่ · เหมือนกันหมด'], correct:0 },
+    { q:'parsec คือเวลาที่แสงเดินทาง 1 ปี?', a:['ไม่ · นั่นคือ light-year','ใช่'], correct:0 },
+    { q:'Milky Way คือกาแล็กซีเดียวในจักรวาล?', a:['ไม่ · มีนับแสนล้านกาแล็กซี','ใช่'], correct:0 },
+    { q:'Andromeda (M31) คือ?', a:['กาแล็กซีเพื่อนบ้าน · กำลังเข้าหา MW','ดาวฤกษ์ใกล้ Sun'], correct:0 },
+  ];
+
+  /* ==================== Init ==================== */
+  setTimeout(() => {
+    Book.state.ep='ep02'; Book.save();
+    Book.state.boss = null; Book.save();
+    // HP สูง · ตีไม่ตายในเวลา 3 นาที · เน้นวัด accuracy + damage ระหว่างทีม
+    Boss.init({ hp:9999, phases:[{hp:9999, claim:'VOID · ทดสอบความรู้ทีม'}] });
+    renderBoosts();
+    renderStartScreen();
+  }, 50);
+
+  function renderStartScreen() {
+    document.getElementById('puzzleArea').innerHTML = `
+      <div style="text-align:center; padding:30px; background:var(--bg-card); border:2px dashed var(--border); border-radius:12px; margin:14px 0">
+        <div style="font-size:18px;color:var(--accent);font-family:Orbitron,sans-serif;letter-spacing:0.1em;margin-bottom:14px">🎯 พร้อมยิง VOID</div>
+        <p style="color:var(--text-dim);font-size:13px">มี 24 คำถาม · ตอบให้ได้มากที่สุดใน 3 นาที<br>กด <b>"เริ่มยิง"</b> เพื่อเปิด timer · จะหยุดไม่ได้</p>
+        <button class="finish-btn" style="margin-top:14px" onclick="startRace()">▶ เริ่มยิง · 3 นาที</button>
+      </div>
+    `;
+  }
+
+  function startRace() {
+    // ดึงโล่จาก inventory เข้า counter (1 ชิ้น = 1 ครั้ง) · consume เลย เพราะใช้บนหน้านี้
+    if (Items.has && Items.has('shield') && !Items.isUsed('shield')) {
+      shieldCount = 1;
+      Items.use('shield', { on: 'p14' });
+    }
+    renderShieldHUD();
+    renderVoidCharge();
+
+    timerHandle = setInterval(() => {
+      if (raceFinished) { clearInterval(timerHandle); return; }
+      timeLeft--;
+      const m = Math.floor(timeLeft/60), s = timeLeft%60;
+      document.getElementById('raceTimer').textContent = `${m}:${String(s).padStart(2,'0')}`;
+      document.getElementById('raceBar').classList.toggle('warn', timeLeft <= 30);
+      if (timeLeft % 15 === 0) Corruption.add(2);
+
+      // VOID charge cycle
+      bossChargeT--;
+      if (bossChargeT <= 0) {
+        bossFires();
+        bossChargeT = VOID_CHARGE_SEC;
+      }
+      renderVoidCharge();
+
+      if (timeLeft <= 0) { clearInterval(timerHandle); endRace('timeout'); }
+    }, 1000);
+    nextQuestion();
+  }
+
+  function renderVoidCharge() {
+    const pct = Math.round(((VOID_CHARGE_SEC - bossChargeT) / VOID_CHARGE_SEC) * 100);
+    const fill = document.getElementById('vcFill');
+    const num = document.getElementById('vcNum');
+    if (fill) fill.style.width = pct + '%';
+    if (num) num.textContent = bossChargeT + 's';
+  }
+
+  function renderShieldHUD() {
+    const sn = document.getElementById('shieldNum');
+    if (sn) sn.textContent = shieldCount;
+    const sd = document.getElementById('shieldDisp');
+    if (sd) sd.style.opacity = shieldCount > 0 ? '1' : '0.4';
+  }
+
+  function bossFires() {
+    Book.playSound('beam', { volume: 0.45 });
+    const charge = document.getElementById('voidCharge');
+    if (charge) { charge.classList.add('firing'); setTimeout(()=>charge.classList.remove('firing'), 450); }
+    const fb = document.getElementById('shotFeedback');
+    fb.style.display = 'block';
+    if (shieldCount > 0) {
+      shieldCount--;
+      voidBeamsAbsorbed++;
+      fb.className = 'shot-feedback hit';
+      fb.textContent = `🛡️ Shield ดูดซับ VOID beam · เหลือโล่ ${shieldCount} ชิ้น`;
+    } else {
+      voidBeamsHit++;
+      Book.addEnergy(-VOID_BEAM_DMG, 'void-beam');
+      fb.className = 'shot-feedback miss';
+      fb.textContent = `💢 VOID BEAM โดน · -${VOID_BEAM_DMG} energy · ไม่มีโล่กัน`;
+      const rb = document.querySelector('.race-bar');
+      if (rb) { rb.classList.add('shake'); setTimeout(()=>rb.classList.remove('shake'), 400); }
+    }
+    renderShieldHUD();
+    // ถ้า energy หมด → จบ race
+    const worstCost = SHOT_COST + Math.round(SHOT_COST * WRONG_PENALTY_PCT);
+    if (Book.state.energy < worstCost) endRace('no-energy');
+  }
+
+  /* ==================== Question rendering ==================== */
+  function pickQuestion() {
+    const pool = QUESTIONS.filter((_, i) => !usedQuestions.has(i));
+    if (pool.length === 0) { usedQuestions.clear(); return pickQuestion(); }
+    const idx = QUESTIONS.indexOf(pool[Math.floor(Math.random() * pool.length)]);
+    usedQuestions.add(idx);
+    return { q: QUESTIONS[idx], i: idx };
+  }
+
+  function nextQuestion() {
+    if (raceFinished) return;
+    // ⚡ เช็ค energy ก่อนยิง · ต้องพอ worst-case (cost ผิด = 6)
+    const worstCost = SHOT_COST + Math.round(SHOT_COST * WRONG_PENALTY_PCT);
+    if (Book.state.energy < worstCost) { endRace('no-energy'); return; }
+    answering = true;
+    const { q, i } = pickQuestion();
+    // randomize choice order
+    const order = Math.random() < 0.5 ? [0,1] : [1,0];
+    document.getElementById('puzzleArea').innerHTML = `
+      <div class="question-card">
+        <div class="q-text">❓ <b>${q.q}</b></div>
+        <div class="choice-row">
+          ${order.map(k => `<button class="choice-btn" data-k="${k}" data-correct="${k === q.correct}">${q.a[k]}</button>`).join('')}
+        </div>
+      </div>
+    `;
+    document.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => answerQuestion(btn));
+    });
+  }
+
+  function answerQuestion(btn) {
+    if (!answering) return;
+    answering = false;
+    const isCorrect = btn.dataset.correct === 'true';
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.correct === 'true') b.classList.add('correct');
+      else if (b === btn) b.classList.add('wrong');
+    });
+
+    const fb = document.getElementById('shotFeedback');
+    fb.style.display = 'block';
+
+    /* ==== ENERGY COST · ทุกการยิงเสีย energy · ผิด = เสียเพิ่ม 20% ==== */
+    const baseCost = SHOT_COST;
+    const wrongExtra = Math.round(baseCost * WRONG_PENALTY_PCT);  // 20% ของ 5 = 1
+    const cost = isCorrect ? baseCost : (baseCost + wrongExtra);
+    Book.addEnergy(-cost, isCorrect ? 'shot-cost' : 'shot-cost+wrong');
+    energySpent += cost;
+
+    if (isCorrect) {
+      hits++;
+      Book.addCoin(1, 'p14-hit');
+      let dmg = 10;
+      let label = `🎯 HIT · -${dmg} HP · -${cost} ⚡ · +1 🪙`;
+      if (armedBoost) {
+        const b = BOOSTS[armedBoost];
+        dmg = Math.round(dmg * b.mult);
+        label = `💥 ${b.icon} ${b.name} · ×${b.mult} · -${dmg} HP · เสีย -${cost} energy`;
+        consumeBoost(armedBoost);
+      }
+      totalDmg += dmg;
+      Boss.damage({ amount: dmg, reason: 'race-hit' });
+      fb.className = 'shot-feedback ' + (armedBoost ? 'crit' : 'hit');
+      fb.textContent = label;
+    } else {
+      misses++;
+      fb.className = 'shot-feedback miss';
+      fb.textContent = `❌ MISS · ผิด · damage 0 · เสีย -${cost} energy (+20%)`;
+      // (VOID counter ย้ายไปเป็น charge cycle ทุก 10 วิ · ไม่ใช้ miss-counter แล้ว)
+      if (armedBoost) { armedBoost = null; renderBoosts(); }
+    }
+
+    document.getElementById('raceDmg').textContent = totalDmg;
+    document.getElementById('raceShots').textContent = `${hits}/${misses}`;
+
+    // boss ตาย หรือ ยังไม่ตาย → ไปคำถามถัดไป (เร่งจังหวะ)
+    if (Boss.current().won) { endRace('defeat'); return; }
+    setTimeout(() => { if (!raceFinished) nextQuestion(); }, 900);
+  }
+
+  /* ==================== Boost UI ==================== */
+  function renderBoosts() {
+    const row = document.getElementById('boostRow');
+    const owned = Book.state.inventory || [];
+    const usable = owned
+      .map(it => ITEM_TO_BOOST[it.id])
+      .filter(k => k && BOOSTS[k] && !Items.isUsed(Object.keys(ITEM_TO_BOOST).find(x => ITEM_TO_BOOST[x] === k)));
+    if (usable.length === 0) {
+      row.innerHTML = '<div style="color:var(--text-faint);font-size:12px;padding:8px">— ไม่มีไอเทม boost · ยิงปกติ damage ฐาน 10 —</div>';
+      return;
+    }
+    row.innerHTML = usable.map(k => {
+      const b = BOOSTS[k];
+      const armed = (armedBoost === k) ? ' armed' : '';
+      return `<button class="boost-btn${armed}" data-k="${k}">
+        <div class="b-name">${b.icon} ${b.name} · ×${b.mult}</div>
+        <div class="b-desc">${b.desc}</div>
+      </button>`;
+    }).join('');
+    row.querySelectorAll('.boost-btn').forEach(btn => btn.addEventListener('click', () => {
+      armedBoost = (armedBoost === btn.dataset.k) ? null : btn.dataset.k;
+      renderBoosts();
+    }));
+  }
+
+  function consumeBoost(key) {
+    const itemId = Object.keys(ITEM_TO_BOOST).find(x => ITEM_TO_BOOST[x] === key);
+    if (itemId && Items.has(itemId) && !Items.isUsed(itemId)) Items.use(itemId, { on:'p14' });
+    armedBoost = null;
+    renderBoosts();
+  }
+
+  /* ==================== End ==================== */
+  function endRace(reason) {
+    if (raceFinished) return;
+    raceFinished = true;
+    if (timerHandle) clearInterval(timerHandle);
+    const bossHp = Boss.current().hp;
+    const maxHp = Boss.current().maxHp;
+    const pct = Math.round((totalDmg / maxHp) * 100);
+    const won = (reason === 'defeat');
+
+    Book.savePageData('p14', { totalDmg, hits, misses, bossHp, won, reason, durationSec: RACE_DURATION - timeLeft });
+    Book.completePage('p14', { score: totalDmg, max: maxHp, msg: `damage ${totalDmg}/${maxHp} (${pct}%) · hit ${hits} · miss ${misses}` });
+    Obj.hit('A4', { page:'p14' });
+    if (won) Obj.hit('A2', { page:'p14' });
+    // sync leaderboard ของทีมตัวเอง
+    if (Book.state.teamId) Leaderboard.adjust(Book.state.teamId, totalDmg, 'p14-race');
+
+    // 🪙 Bonus coins ตามผลงาน · accuracy ≥80% +5 · ≥60% +3 · accuracy ปกติ +0
+    const totalShots = hits + misses;
+    const accuracy = totalShots ? Math.round((hits / totalShots) * 100) : 0;
+    let bonusCoins = 0;
+    if (accuracy >= 80) bonusCoins = 10;
+    else if (accuracy >= 60) bonusCoins = 5;
+    if (bonusCoins) Book.addCoin(bonusCoins, 'p14-accuracy-bonus');
+
+    document.getElementById('puzzleArea').innerHTML = '';
+    document.getElementById('shotFeedback').style.display = 'none';
+
+    // 🏆 RANK DIALOG · ถามครู/ทีมว่าอันดับในห้อง · จากนั้น tiered reward
+    showRankDialog({ hits, accuracy, bonusCoins, hitCoins: hits, totalShots, totalDmg, won, reason });
+    return;
+  }
+
+  /* ==================== Rank Dialog + Tiered Rewards ==================== */
+  function showRankDialog(ctx) {
+    const wrap = document.createElement('div');
+    wrap.id = 'rank-dialog';
+    wrap.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;display:flex;align-items:center;justify-content:center';
+    wrap.innerHTML = `
+      <div style="max-width:520px;padding:28px;background:var(--bg-card);border:2px solid var(--accent-gold);border-radius:14px;text-align:center">
+        <div style="font-family:Orbitron,sans-serif;letter-spacing:0.15em;color:var(--accent-gold);font-size:13px;margin-bottom:8px">🏆 RANK IN CLASS</div>
+        <h3 style="margin:6px 0 4px;color:var(--accent)">ทีมเราอันดับที่เท่าไหร่ในห้อง?</h3>
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:16px">ครู: ประกาศอันดับตามคะแนน damage · ทีมกดตามอันดับ · #1-2 ได้ Loot Box · #3+ ได้เหรียญ/พลังตามอันดับ</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0">
+          <button class="rank-btn" data-rank="1" style="padding:14px;background:rgba(255,203,107,0.25);border:2px solid var(--accent-gold);color:var(--accent-gold);border-radius:10px;cursor:pointer;font-family:inherit;font-weight:700">🥇 #1<br><span style="font-size:10px;font-weight:400">🎁 Loot Box</span></button>
+          <button class="rank-btn" data-rank="2" style="padding:14px;background:rgba(192,192,192,0.15);border:2px solid #c0c0c0;color:#c0c0c0;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:700">🥈 #2<br><span style="font-size:10px;font-weight:400">🎁 Loot Box</span></button>
+          <button class="rank-btn" data-rank="3" style="padding:14px;background:rgba(205,127,50,0.15);border:2px solid #cd7f32;color:#cd7f32;border-radius:10px;cursor:pointer;font-family:inherit;font-weight:700">🥉 #3<br><span style="font-size:10px;font-weight:400">+30🪙 +20⚡</span></button>
+          <button class="rank-btn" data-rank="4" style="padding:14px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);border-radius:10px;cursor:pointer;font-family:inherit">#4<br><span style="font-size:10px">+20🪙 +15⚡</span></button>
+          <button class="rank-btn" data-rank="5" style="padding:14px;background:var(--bg-card);border:1px solid var(--border);color:var(--text);border-radius:10px;cursor:pointer;font-family:inherit">#5+<br><span style="font-size:10px">+10🪙 +10⚡</span></button>
+          <button class="rank-btn" data-rank="0" style="padding:14px;background:transparent;border:1px dashed var(--border);color:var(--text-dim);border-radius:10px;cursor:pointer;font-family:inherit;font-size:12px">ข้าม<br><span style="font-size:10px">(พื้นฐาน)</span></button>
+        </div>
+      </div>`;
+    document.body.appendChild(wrap);
+    wrap.querySelectorAll('.rank-btn').forEach(btn => btn.addEventListener('click', () => {
+      const rank = +btn.dataset.rank;
+      wrap.remove();
+      applyRankReward(rank, ctx);
+    }));
+  }
+
+  function applyRankReward(rank, ctx) {
+    Book.savePageData('p14-rank', { rank });
+    if (rank === 1 || rank === 2) {
+      Book.openLootBox({
+        title: 'อันดับ #' + rank,
+        onDone: () => showRewardStage(ctx)
+      });
+    } else {
+      const tiers = { 3: { coin:30, energy:20 }, 4: { coin:20, energy:15 }, 5: { coin:10, energy:10 }, 0: { coin:5, energy:5 } };
+      const t = tiers[rank] || tiers[0];
+      Book.addCoin(t.coin, 'p14-rank-' + rank);
+      Book.addEnergy(t.energy, 'p14-rank-' + rank);
+      const toast = document.createElement('div');
+      toast.style.cssText = 'position:fixed;top:100px;left:50%;transform:translateX(-50%);padding:14px 20px;background:var(--bg-card);border:2px solid var(--accent);border-radius:10px;z-index:9998;font-family:Orbitron,monospace;color:var(--accent)';
+      toast.innerHTML = `อันดับ #${rank === 0 ? '?' : rank} · +${t.coin} 🪙 +${t.energy} ⚡`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2200);
+      setTimeout(() => showRewardStage(ctx), 1400);
+    }
+  }
+
+  /* ==================== Reward Stage ==================== */
+  function showRewardStage({ hits, accuracy, bonusCoins, hitCoins, totalShots, totalDmg, won, reason }) {
+    const totalCoinsEarned = hitCoins + bonusCoins;
+    const summaryArea = document.getElementById('summaryArea');
+    summaryArea.innerHTML = `
+      <div class="summary-box" style="border-color:var(--accent-gold)">
+        <div style="font-family:Orbitron,sans-serif;letter-spacing:0.15em;color:var(--accent-gold);font-size:14px">🎁 REWARD STAGE · เก็บรางวัล</div>
+        <div style="font-size:60px;margin:14px 0">🪙</div>
+        <div class="big" id="rewardCount">+0 🪙</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-bottom:14px">
+          🎯 ${hits} hits × 1 = +${hitCoins} 🪙<br>
+          📈 accuracy ${accuracy}% bonus = +${bonusCoins} 🪙<br>
+          <b style="color:var(--accent-gold)">รวม +${totalCoinsEarned} 🪙</b>
+        </div>
+        <div style="font-size:11px;color:var(--text-faint);margin-bottom:10px">เหรียญใช้แลก energy ที่ <b>🪙 pill บน HUD</b> · 5 🪙 = +10 ⚡</div>
+        <button class="finish-btn" id="continueRewardBtn" style="margin-top:8px">▶ ดูสรุปคะแนน</button>
+      </div>
+    `;
+    // animate count up
+    let n = 0;
+    const target = totalCoinsEarned;
+    const iv = setInterval(() => {
+      if (n >= target) { clearInterval(iv); return; }
+      n++;
+      document.getElementById('rewardCount').textContent = `+${n} 🪙`;
+    }, target > 0 ? Math.max(40, 800 / target) : 1000);
+
+    document.getElementById('continueRewardBtn').addEventListener('click', () => {
+      showFinalSummary({ hits, accuracy, totalShots, totalDmg, won, reason, totalCoinsEarned });
+    });
+  }
+
+  function showFinalSummary({ hits, accuracy, totalShots, totalDmg, won, reason, totalCoinsEarned }) {
+    const bossHp = Boss.current().hp;
+    const maxHp = Boss.current().maxHp;
+    const pct = Math.round((totalDmg / maxHp) * 100);
+    const headColor = reason==='no-energy' ? 'var(--accent-red)' : 'var(--accent-gold)';
+    const headText = reason === 'no-energy'
+      ? '⚡ Energy หมด · ทีมยิงต่อไม่ได้ · จบ race'
+      : '⏰ จบ 3 นาที · สรุปคะแนนทีม';
+    document.getElementById('summaryArea').innerHTML = `
+      <div class="summary-box">
+        <div style="color:${headColor};font-family:Orbitron,sans-serif;letter-spacing:0.1em;font-size:14px">${headText}</div>
+        <div class="big">${totalDmg} <span style="font-size:14px;color:var(--text-dim)">damage</span></div>
+        <table>
+          <tr><td>🎯 ตอบถูก</td><td><b>${hits}</b> ครั้ง</td></tr>
+          <tr><td>🚫 ตอบผิด</td><td><b>${misses}</b> ครั้ง</td></tr>
+          <tr><td>📈 ความแม่นยำ</td><td><b>${accuracy}%</b></td></tr>
+          <tr><td>🪙 เหรียญเก็บได้</td><td><b>+${totalCoinsEarned}</b> 🪙</td></tr>
+          <tr><td>⚡ Energy เสีย</td><td><b>-${energySpent}</b></td></tr>
+          <tr><td>💢 VOID beam โดน</td><td><b>${voidBeamsHit}</b> ครั้ง</td></tr>
+          <tr><td>🛡️ Shield ดูดซับ</td><td><b>${voidBeamsAbsorbed}</b> ครั้ง</td></tr>
+          <tr><td>📊 Efficiency</td><td><b>${energySpent ? (totalDmg/energySpent).toFixed(2) : '0'}</b> dmg/⚡</td></tr>
+        </table>
+        <div style="margin-top:14px;padding:12px;background:rgba(100,216,255,0.08);border-radius:8px;color:var(--accent);font-size:13px;line-height:1.6">
+          📊 <b>ครู:</b> เปิด <b>TEAMS</b> บน HUD · จดคะแนนทีมอื่นมาเทียบ<br>
+          เกณฑ์ชนะ: damage สูงสุด หรือ accuracy สูงสุด · ครูเลือก
+        </div>
+      </div>
+    `;
+    const nb = document.getElementById('nextBtn');
+    nb.disabled = false;
+    nb.textContent = '🚀 ไปต่อ · Warp Out';
+  }
+
+  /* ==================== Stub (legacy summary skipped via return above) ==================== */
+  function _skipped() {
+    const totalShots = hits + misses;
+    const accuracy = totalShots ? Math.round((hits / totalShots) * 100) : 0;
+    const headColor = reason==='no-energy' ? 'var(--accent-red)' : 'var(--accent-gold)';
+    const headText = reason === 'no-energy'
+      ? '⚡ Energy หมด · ทีมยิงต่อไม่ได้ · จบ race'
+      : '⏰ จบ 3 นาที · สรุปคะแนนทีม';
+    document.getElementById('summaryArea').innerHTML = `
+      <div class="summary-box">
+        <div style="color:${headColor};font-family:Orbitron,sans-serif;letter-spacing:0.1em;font-size:14px">
+          ${headText}
+        </div>
+        <div class="big">${totalDmg} <span style="font-size:14px;color:var(--text-dim)">damage</span></div>
+        <table>
+          <tr><td>🎯 ตอบถูก</td><td><b>${hits}</b> ครั้ง</td></tr>
+          <tr><td>🚫 ตอบผิด</td><td><b>${misses}</b> ครั้ง</td></tr>
+          <tr><td>📈 ความแม่นยำ</td><td><b>${accuracy}%</b></td></tr>
+          <tr><td>⚡ Energy เสียจากยิง</td><td><b>-${energySpent}</b></td></tr>
+          <tr><td>💢 VOID beam โดน</td><td><b>${voidBeamsHit}</b> ครั้ง · -${voidBeamsHit*VOID_BEAM_DMG} energy</td></tr>
+          <tr><td>🛡️ Shield ดูดซับ</td><td><b>${voidBeamsAbsorbed}</b> ครั้ง</td></tr>
+          <tr><td>📊 Efficiency</td><td><b>${energySpent ? (totalDmg/energySpent).toFixed(2) : '0'}</b> dmg/⚡</td></tr>
+        </table>
+        <div style="margin-top:14px;padding:12px;background:rgba(100,216,255,0.08);border-radius:8px;color:var(--accent);font-size:13px;line-height:1.6">
+          📊 <b>ครู:</b> เปิด <b>TEAMS</b> บน HUD · จดคะแนนทีมอื่นมาเทียบ<br>
+          เกณฑ์ชนะ: <b>damage สูงสุด</b> หรือ <b>accuracy สูงสุด</b> · ครูเลือกตามบริบท
+        </div>
+      </div>
+    `;
+    const nb = document.getElementById('nextBtn');
+    nb.disabled = false;
+    nb.textContent = '🚀 ไปต่อ · Warp Out';
+  }
+
+  function goNext() { Book.next(); }
+</script>
+
+</body>
+</html>

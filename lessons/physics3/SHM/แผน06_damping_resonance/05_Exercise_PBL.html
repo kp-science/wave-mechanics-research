@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercise + PBL Mini Project — Damping & Resonance (SHM แผน 6)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#faf5ff;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1050px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 14px rgba(76,29,149,.1);padding:26px 30px}
+.head{border-bottom:3px solid #7c3aed;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:21px;color:#4c1d95}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#7c3aed;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#ede9fe;border-left:6px solid #7c3aed;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.id-box input:focus{outline:none;border-color:#7c3aed}
+.section-title{font-size:18px;font-weight:800;color:#4c1d95;margin:22px 0 10px;padding-left:12px;border-left:5px solid #7c3aed}
+.item{border:2px solid #ddd6fe;border-radius:12px;padding:16px 20px;margin:16px 0;background:#fdfcff}
+.item .no{display:inline-block;background:#7c3aed;color:#fff;border-radius:6px;padding:3px 12px;font-size:13px;font-weight:800}
+.item .skill{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.skill.calc{background:#ddd6fe;color:#4c1d95}
+.skill.theory{background:#fde68a;color:#78350f}
+.skill.pbl{background:#d1fae5;color:#065f46}
+.item .stem{font-size:16px;margin:10px 0;font-weight:600;color:#2d3748;line-height:1.7}
+.sub{margin:10px 0 6px;padding-left:12px;border-left:3px solid #a78bfa;font-size:15px}
+.sub b{color:#4c1d95}
+.ans-ta{width:100%;padding:10px 12px;border:1.5px solid #c4b5fd;border-radius:8px;font-family:inherit;font-size:15px;resize:vertical;margin-top:4px;min-height:70px}
+.ans-ta:focus{outline:none;border-color:#7c3aed}
+.ans-in{border:none;border-bottom:1.5px solid #a78bfa;padding:3px 8px;font-family:inherit;font-size:15px;width:110px;text-align:center;background:transparent}
+.ans-in:focus{outline:none;border-color:#7c3aed}
+select.drop{border:1.5px solid #c4b5fd;border-radius:8px;padding:6px 12px;font-family:inherit;font-size:14px;background:#fff;cursor:pointer;min-width:180px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;padding:7px 10px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;font-size:15px;transition:all .15s}
+.opt:hover{border-color:#7c3aed;background:#f5f3ff}
+.opt:has(input:checked){background:#ede9fe;border-color:#7c3aed;font-weight:600}
+.opt input{margin-top:3px;flex-shrink:0;accent-color:#7c3aed}
+.checkbox-bank{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+@media(max-width:640px){.checkbox-bank{grid-template-columns:1fr}}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #7c3aed;border-radius:8px;padding:4px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#4c1d95;font-weight:600}
+.c-btn.active{background:#7c3aed;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4c1d95}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#f5f3ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c4b5fd;border-radius:10px;background:white;touch-action:none;cursor:crosshair;margin-top:6px}
+.hint{font-size:13px;color:#6b7280;font-style:italic;margin-top:4px}
+.formula-box{background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:14px}
+.formula-box b{color:#4c1d95}
+.pbl-card{border:2px solid #10b981;border-radius:12px;padding:14px 16px;background:#ecfdf5;margin:10px 0;cursor:pointer;transition:all .2s}
+.pbl-card:has(input:checked){border-color:#059669;background:#d1fae5;border-width:3px}
+.pbl-card h4{color:#065f46;font-size:15px;margin-bottom:6px}
+.pbl-card p{font-size:13.5px;color:#374151}
+.pbl-card input[type=radio]{display:none}
+.pbl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+@media(max-width:640px){.pbl-grid{grid-template-columns:1fr}.id-box{grid-template-columns:1fr 1fr}}
+.pbl-work{background:#ecfdf5;border:2px solid #10b981;border-radius:12px;padding:16px 18px;margin:12px 0}
+.pbl-work h3{color:#065f46;font-size:16px;margin-bottom:10px}
+.submit-bar{background:linear-gradient(135deg,#4c1d95,#7c3aed);border-radius:14px;padding:18px 22px;margin:22px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:17px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#4c1d95;border:none;font-family:inherit;font-size:16px;font-weight:800;padding:11px 28px;border-radius:10px;cursor:pointer}
+.btn-submit:hover{background:#f5f3ff}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#a78bfa;font-size:12px;margin-top:16px;border-top:1px solid #ede9fe;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none}.canvas-toolbar,.submit-bar{display:none}}
+</style></head>
+<body>
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 Exercise · Damping &amp; Resonance + PBL Mini Project</h1>
+      <div class="meta"><span class="tag">SHM แผน 6</span><span class="tag" style="background:#059669">ใบกิจกรรม 05</span> Elaborate · 7 ข้อคำนวณ/ทฤษฎี + PBL 4 โจทย์ · 20 นาที</div>
+    </div>
+    <div class="meta" style="color:#4c1d95;font-weight:700">💜 บันทึกอัตโนมัติ</div>
+  </div>
+
+  <div class="info">🎯 <b>จุดประสงค์:</b> คำนวณ Damped SHM · Q-factor · Resonance condition · วิเคราะห์ Case Study · เลือก PBL Mini Project 1 โจทย์</div>
+  <div class="formula-box">
+    📐 <b>สูตรสำคัญ:</b> A(t) = A₀e^(−bt/2m) · ω_d = √(ω₀² − (b/2m)²) · Q = mω₀/b = ω₀/Δω · Resonance: f_drive = f_natural · ω₀ = √(k/m)
+  </div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="student_name" required></label>
+    <label>เลขที่ <input type="number" id="student_no" required></label>
+    <label>ห้อง <input type="text" id="class" placeholder="5/1" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <h2 class="section-title">📝 ส่วน 1 · แบบฝึกหัด 7 ข้อ</h2>
+
+  <!-- ข้อ 1 Theory M6.1 -->
+  <div class="item">
+    <div><span class="no">ข้อ 1</span> <span class="skill theory">ทฤษฎี · M6.1 Damping (K6.1)</span></div>
+    <div class="stem">ลูกตุ้มสปริง (m = 0.5 kg · k = 50 N/m) แกว่งอยู่ในน้ำมัน (b = 0.2 N·s/m) · <strong>เลือกข้อที่ถูกต้องทั้งหมด:</strong></div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q1" value="a" data-correct="true"> ① ω₀ = √(k/m) = 10 rad/s · f_natural = 10/(2π) ≈ 1.59 Hz</label>
+      <label class="opt"><input type="checkbox" name="q1" value="b" data-correct="false"> ② ω_d จะน้อยกว่า ω₀ อย่างชัดเจนเมื่อ b = 0.2</label>
+      <label class="opt"><input type="checkbox" name="q1" value="c" data-correct="true"> ③ ω_d = √(ω₀² − (b/2m)²) = √(100 − 0.04) ≈ 9.998 rad/s ≈ ω₀</label>
+      <label class="opt"><input type="checkbox" name="q1" value="d" data-correct="false"> ④ Damping ทำให้ f ลดลงอย่างเห็นได้ชัดทุกกรณี (M6.1)</label>
+      <label class="opt"><input type="checkbox" name="q1" value="e" data-correct="true"> ⑤ แอมพลิจูดจะลดเป็น 1/e ของเดิมเมื่อ t = 2m/b = 5 s</label>
+      <label class="opt"><input type="checkbox" name="q1" value="f" data-correct="false"> ⑥ เมื่อ b เพิ่ม T ลดลงตามสัดส่วนเสมอ</label>
+    </div>
+    <div class="sub" style="margin-top:10px"><b>เขียนอธิบายว่าทำไม M6.1 จึงเป็น Misconception:</b></div>
+    <textarea class="ans-ta" id="q1-exp" rows="2" placeholder="M6.1 ผิดเพราะ... ที่จริงแล้ว ω_d = √(ω₀²−(b/2m)²) ซึ่ง..."></textarea>
+  </div>
+
+  <!-- ข้อ 2 Calc — A(t) -->
+  <div class="item">
+    <div><span class="no">ข้อ 2</span> <span class="skill calc">คำนวณ · Canvas (K6.1)</span></div>
+    <div class="stem">ระบบ Damped SHM มีพารามิเตอร์: m = 2 kg · b = 0.4 N·s/m · A₀ = 8 cm · <strong>จงหาแอมพลิจูดที่เวลาต่างๆ</strong></div>
+    <div class="sub"><b>(2.1)</b> A ที่ t = 5 s: A = A₀e^(−bt/2m) = 8 × e^(−<input class="ans-in" id="q2-exp" style="width:80px">) = <input class="ans-in" id="q2-a5"> cm</div>
+    <div class="sub"><b>(2.2)</b> A ที่ t = 10 s = <input class="ans-in" id="q2-a10"> cm · t = 20 s = <input class="ans-in" id="q2-a20"> cm</div>
+    <div class="sub"><b>(2.3)</b> ที่เวลาใด A = A₀/2 = 4 cm? t = <input class="ans-in" id="q2-thalf"> s <span class="hint">(hint: ln(2) = 0.693)</span></div>
+    <div class="sub"><b>(2.4) วิธีคิด + วาดกราฟ A(t):</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c2','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('c2','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('c2','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c2" data-bg="lined" width="980" height="300"></canvas>
+  </div>
+
+  <!-- ข้อ 3 Calc — Q-factor -->
+  <div class="item">
+    <div><span class="no">ข้อ 3</span> <span class="skill calc">คำนวณ · Q-factor (K6.1)</span></div>
+    <div class="stem">สปริง m = 0.3 kg · k = 120 N/m · b = 0.6 N·s/m · <strong>จงหา Q-factor และ bandwidth</strong></div>
+    <div class="sub"><b>(3.1)</b> ω₀ = <input class="ans-in" id="q3-w0"> rad/s · f₀ = <input class="ans-in" id="q3-f0"> Hz</div>
+    <div class="sub"><b>(3.2)</b> Q = mω₀/b = <input class="ans-in" id="q3-q"></div>
+    <div class="sub"><b>(3.3)</b> Bandwidth Δf = f₀/Q = <input class="ans-in" id="q3-bw"> Hz <span class="hint">(ความกว้าง peak resonance)</span></div>
+    <div class="sub"><b>(3.4)</b> ถ้าเพิ่ม b เป็น 2 เท่า → Q ใหม่ = <input class="ans-in" id="q3-q2"> · peak resonance จะ
+      <select class="drop" id="q3-peak"><option value="">--</option><option value="sharp">แหลมขึ้น (narrower bandwidth)</option><option value="flat">แบนลง (wider bandwidth)</option><option value="same">เท่าเดิม</option></select>
+    </div>
+    <div class="sub"><b>(3.5) วิธีคิด:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c3','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c3','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c3','#1a202c',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('c3','#7c3aed',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c3')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c3" data-bg="lined" width="980" height="280"></canvas>
+  </div>
+
+  <!-- ข้อ 4 Theory — Resonance Condition -->
+  <div class="item">
+    <div><span class="no">ข้อ 4</span> <span class="skill theory">ทฤษฎี · Resonance Condition (K6.2 · M6.2 · M6.3)</span></div>
+    <div class="stem">จับคู่สถานการณ์กับผลที่เกิดขึ้น — <strong>ลากจากซ้ายไปวางขวา (หรือเลือก Dropdown)</strong></div>
+
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0" class="match-row">
+      <div style="background:#ede9fe;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;color:#4c1d95">🔴 f_drive = 0.5 × f_natural</div>
+      <span>↔</span>
+      <div><select class="drop" id="m1"><option value="">-- เลือกผล --</option><option value="a">A สูงสุด — Resonance!</option><option value="b">A ต่ำ — ระบบไม่รับพลังงาน</option><option value="c">A ปานกลาง</option><option value="d">ระบบหยุดนิ่ง</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0">
+      <div style="background:#ede9fe;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;color:#4c1d95">🟢 f_drive = f_natural</div>
+      <span>↔</span>
+      <div><select class="drop" id="m2"><option value="">-- เลือกผล --</option><option value="a">A สูงสุด — Resonance!</option><option value="b">A ต่ำ — ระบบไม่รับพลังงาน</option><option value="c">A ปานกลาง</option><option value="d">ระบบหยุดนิ่ง</option></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin:6px 0">
+      <div style="background:#ede9fe;border-radius:8px;padding:8px 12px;font-size:14px;font-weight:600;color:#4c1d95">🔵 f_drive = 3 × f_natural (แรงมากมาก)</div>
+      <span>↔</span>
+      <div><select class="drop" id="m3"><option value="">-- เลือกผล --</option><option value="a">A สูงสุด — Resonance!</option><option value="b">A ต่ำ — ระบบไม่รับพลังงาน</option><option value="c">A ปานกลาง</option><option value="d">ระบบหยุดนิ่ง</option></select></div>
+    </div>
+    <div class="sub" style="margin-top:10px"><b>อธิบาย: ทำไมข้อ M6.3 "แรงมากสุดจึง resonance" จึงเป็น Misconception?</b></div>
+    <textarea class="ans-ta" id="q4-exp" rows="2" placeholder="ที่จริง resonance เกิดเมื่อ... ไม่ใช่เมื่อ... เพราะ..."></textarea>
+  </div>
+
+  <!-- ข้อ 5 Calc — Tacoma Case -->
+  <div class="item">
+    <div><span class="no">ข้อ 5</span> <span class="skill calc">คำนวณ + Case Study (P6.1)</span></div>
+    <div class="stem">สะพาน Tacoma Narrows (1940): ยาว 853 m · f_natural ≈ 0.2 Hz · ลมพัดด้วย speed 64 km/h สร้าง Vortex shedding ที่ f_wind ≈ 0.2 Hz</div>
+    <div class="sub"><b>(5.1)</b> T_natural = 1/f_natural = <input class="ans-in" id="q5-T"> s · ω_natural = <input class="ans-in" id="q5-w"> rad/s</div>
+    <div class="sub"><b>(5.2)</b> f_wind = <input class="ans-in" id="q5-fw"> Hz · เทียบกับ f_natural:
+      <select class="drop" id="q5-match"><option value="">--</option><option value="yes">ตรงกัน → Resonance</option><option value="no-high">สูงกว่า → ไม่ Resonance</option><option value="no-low">ต่ำกว่า → ไม่ Resonance</option></select>
+    </div>
+    <div class="sub"><b>(5.3)</b> ถ้า A₀ = 0.5 m และ b เล็กมาก (underdamped) · หลัง 30 s ถ้าไม่มี resonance A ≈ <input class="ans-in" id="q5-a30"> m · แต่ด้วย resonance A เพิ่มถึง <input class="ans-in" id="q5-ares"> (ตามข้อมูลจริง)</div>
+    <div class="sub"><b>(5.4)</b> บทเรียนวิศวกรรม — ระบุสิ่งที่วิศวกรต้องทำให้ต่างจาก Tacoma:</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q5lesson" value="a" data-correct="true"> ① ออกแบบ f_natural ของสะพานให้ห่างจาก f ลมในพื้นที่</label>
+      <label class="opt"><input type="checkbox" name="q5lesson" value="b" data-correct="false"> ② สร้างสะพานให้หนาและหนักที่สุดเพื่อต้านลม</label>
+      <label class="opt"><input type="checkbox" name="q5lesson" value="c" data-correct="true"> ③ เพิ่ม structural damping เพื่อจำกัด A</label>
+      <label class="opt"><input type="checkbox" name="q5lesson" value="d" data-correct="false"> ④ ทาสีพิเศษที่ดูดซับพลังงานลม</label>
+      <label class="opt"><input type="checkbox" name="q5lesson" value="e" data-correct="true"> ⑤ ทดสอบ aerodynamic stability ในอุโมงค์ลม</label>
+      <label class="opt"><input type="checkbox" name="q5lesson" value="f" data-correct="true"> ⑥ ติดตั้ง TMD (Tuned Mass Damper) เช่น Taipei 101</label>
+    </div>
+    <div class="sub"><b>วิธีคิดข้อ 5.1-5.3:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c5','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c5','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('c5','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('c5','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c5" data-bg="lined" width="980" height="280"></canvas>
+  </div>
+
+  <!-- ข้อ 6 Damping Types -->
+  <div class="item">
+    <div><span class="no">ข้อ 6</span> <span class="skill theory">ประเภท Damping — Drag-Drop + Dropdown (K6.1)</span></div>
+    <div class="stem">จำแนกลักษณะของ Damping แต่ละประเภท</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0">
+      <div style="background:#fff3e0;border:2px solid #f97316;border-radius:10px;padding:12px;font-size:14px">
+        <strong style="color:#c2410c">📉 Underdamped</strong><br>
+        <div style="margin:6px 0">ลักษณะ: <select class="drop" id="d1-char" style="min-width:100%;margin-top:4px"><option value="">--</option><option value="osc-decay">แกว่งแล้วค่อย ๆ หยุด</option><option value="no-osc-fast">หยุดเร็วไม่แกว่ง</option><option value="no-osc-slow">หยุดช้าไม่แกว่ง</option></select></div>
+        <div>ตัวอย่าง: <input style="width:100%;border:none;border-bottom:1.5px solid #f97316;font-family:inherit;font-size:13.5px;background:transparent;padding:2px" id="d1-ex" placeholder="เช่น นาฬิกาลูกตุ้ม..."></div>
+      </div>
+      <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:10px;padding:12px;font-size:14px">
+        <strong style="color:#166534">🎯 Critically Damped</strong><br>
+        <div style="margin:6px 0">ลักษณะ: <select class="drop" id="d2-char" style="min-width:100%;margin-top:4px"><option value="">--</option><option value="osc-decay">แกว่งแล้วค่อย ๆ หยุด</option><option value="no-osc-fast">หยุดเร็วที่สุดโดยไม่แกว่ง</option><option value="no-osc-slow">หยุดช้าไม่แกว่ง</option></select></div>
+        <div>ตัวอย่าง: <input style="width:100%;border:none;border-bottom:1.5px solid #16a34a;font-family:inherit;font-size:13.5px;background:transparent;padding:2px" id="d2-ex" placeholder="เช่น โช้คอัพรถยนต์..."></div>
+      </div>
+      <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:10px;padding:12px;font-size:14px">
+        <strong style="color:#1e40af">🐌 Overdamped</strong><br>
+        <div style="margin:6px 0">ลักษณะ: <select class="drop" id="d3-char" style="min-width:100%;margin-top:4px"><option value="">--</option><option value="osc-decay">แกว่งแล้วค่อย ๆ หยุด</option><option value="no-osc-fast">หยุดเร็วที่สุดโดยไม่แกว่ง</option><option value="no-osc-slow">คืนสมดุลช้ากว่า critically damped ไม่แกว่ง</option></select></div>
+        <div>ตัวอย่าง: <input style="width:100%;border:none;border-bottom:1.5px solid #2563eb;font-family:inherit;font-size:13.5px;background:transparent;padding:2px" id="d3-ex" placeholder="เช่น ประตูหนักปิดช้า..."></div>
+      </div>
+    </div>
+    <div class="sub"><b>โช้คอัพรถยนต์ควรเป็น damping ประเภทใด? เพราะ?</b></div>
+    <textarea class="ans-ta" id="q6-shockab" rows="2" placeholder="โช้คอัพควรเป็น... เพราะถ้าเป็น underdamped จะ... ถ้าเป็น overdamped จะ..."></textarea>
+  </div>
+
+  <!-- ข้อ 7 ประยุกต์ MRI -->
+  <div class="item">
+    <div><span class="no">ข้อ 7</span> <span class="skill calc">คำนวณ + ประยุกต์ (K6.2 · P6.1)</span></div>
+    <div class="stem">MRI Scanner ใช้ Nuclear Magnetic Resonance (NMR) ที่สนามแม่เหล็ก B = 1.5 Tesla · ความถี่ resonance ของ proton (Larmor frequency): f = γ × B / (2π) · โดย γ = 2.675 × 10⁸ rad/(s·T)</div>
+    <div class="sub"><b>(7.1)</b> คำนวณ f_larmor = γB/(2π) ≈ <input class="ans-in" id="q7-f"> MHz</div>
+    <div class="sub"><b>(7.2)</b> ถ้าใช้ B = 3.0 Tesla (MRI ชั้นดี) → f ใหม่ = <input class="ans-in" id="q7-f3"> MHz</div>
+    <div class="sub"><b>(7.3)</b> ทำไม MRI ต้องใช้ f ที่แม่นยำมาก? (เลือกทุกข้อที่ถูก)</div>
+    <div class="checkbox-bank">
+      <label class="opt"><input type="checkbox" name="q7" value="a" data-correct="true"> ① f ต้องตรง f_larmor ของ proton ใน tissue นั้น ๆ เพื่อ resonance</label>
+      <label class="opt"><input type="checkbox" name="q7" value="b" data-correct="false"> ② f ที่มากกว่า = ภาพชัดกว่า เสมอ</label>
+      <label class="opt"><input type="checkbox" name="q7" value="c" data-correct="true"> ③ Proton ใน soft tissue (H₂O) vs fat มี f ต่างกันเล็กน้อย ช่วยแยก tissue</label>
+      <label class="opt"><input type="checkbox" name="q7" value="d" data-correct="false"> ④ f ไม่สำคัญ ขอแค่กำลังสัญญาณแรงพอ</label>
+    </div>
+    <div class="sub"><b>วิธีคำนวณข้อ 7.1–7.2:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('c7','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('c7','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('c7','#1a202c',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('c7','#7c3aed',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('c7')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="c7" data-bg="lined" width="980" height="260"></canvas>
+  </div>
+
+  <!-- PBL Section -->
+  <h2 class="section-title">🔧 ส่วน 2 · PBL Mini Project (เลือก 1 โจทย์)</h2>
+
+  <div class="pbl-grid">
+    <label class="pbl-card">
+      <input type="radio" name="pbl-choice" value="P1">
+      <h4>🏗️ โจทย์ P1 — ออกแบบ Tuned Mass Damper (TMD)</h4>
+      <p>ตึก 100 m สูง m_bldg = 50,000 ton · f_natural ≈ 0.5 Hz · แผ่นดินไหวมา f = 0.5 Hz · <strong>หา m_TMD และ k_TMD</strong> ให้ dampen resonance ได้ · (hint: m_TMD ≈ 1–5% ของ m_bldg)</p>
+    </label>
+    <label class="pbl-card">
+      <input type="radio" name="pbl-choice" value="P2">
+      <h4>🌉 โจทย์ P2 — สะพานแขวนไม่ Tacoma</h4>
+      <p>สะพานใหม่ยาว 500 m · ลมในพื้นที่มี f_vortex ≈ 0.15–0.25 Hz · <strong>ออกแบบ f_natural ของสะพาน</strong> ให้ปลอดภัย พร้อมระบุ structural damping ที่ต้องการ</p>
+    </label>
+    <label class="pbl-card">
+      <input type="radio" name="pbl-choice" value="P3">
+      <h4>🏥 โจทย์ P3 — ระบบ MRI ขนาดเล็ก</h4>
+      <p>ออกแบบ "Desktop MRI" B = 0.5 Tesla · <strong>คำนวณ f_larmor ของ proton และ carbon-13</strong> · อธิบายว่าทำไม NMR resonance ช่วยแยก tissue ได้ · ชี้จุดที่ต้องใช้ f แม่นยำ ± 10 Hz</p>
+    </label>
+    <label class="pbl-card">
+      <input type="radio" name="pbl-choice" value="P4">
+      <h4>⏰ โจทย์ P4 — นาฬิกาลูกตุ้ม + Damping</h4>
+      <p>นาฬิกาลูกตุ้ม T = 1 s · เสียดสีทำให้ A ลด 2% ต่อรอบ · <strong>ออกแบบระบบ escapement</strong> ที่เติมพลังงานพอดีเพื่อรักษา A คงที่ · ทำไม critically damped จึงไม่เหมาะ?</p>
+    </label>
+  </div>
+
+  <div class="pbl-work">
+    <h3>📝 งาน PBL Mini (20 นาที)</h3>
+    <div class="sub"><b>โจทย์ที่เลือก:</b> <select class="drop" id="pbl-confirm"><option value="">-- ยืนยันโจทย์ --</option><option value="P1">P1 TMD ตึก</option><option value="P2">P2 สะพานแขวน</option><option value="P3">P3 MRI</option><option value="P4">P4 นาฬิกา</option></select></div>
+    <div class="sub"><b>กำหนดให้ / ตั้งสมมติฐาน:</b></div>
+    <textarea class="ans-ta" id="pbl-given" rows="2" placeholder="กำหนดให้: m = ... · f_natural = ... · สมมติว่า..."></textarea>
+    <div class="sub"><b>การคำนวณ / การออกแบบ (วาดบน canvas):</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" onclick="setTool('cPBL','pencil',this)">✏️</button>
+      <button class="c-btn" onclick="setTool('cPBL','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('cPBL','#1a202c',this)"></div>
+      <div class="c-color" style="background:#059669" onclick="setColor('cPBL','#059669',this)"></div>
+      <div class="c-color" style="background:#7c3aed" onclick="setColor('cPBL','#7c3aed',this)"></div>
+      <div class="c-color" style="background:#dc2626" onclick="setColor('cPBL','#dc2626',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('cPBL')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="cPBL" data-bg="lined" width="980" height="360"></canvas>
+    <div class="sub" style="margin-top:10px"><b>สรุปผลการออกแบบ + ข้อจำกัด:</b></div>
+    <textarea class="ans-ta" id="pbl-conclusion" rows="3" placeholder="ผลการออกแบบ: ... · ข้อจำกัด: ... · สิ่งที่ต้องพัฒนาต่อ: ..."></textarea>
+    <div class="sub"><b>เชื่อมโยงกับแผน SHM 1–5 (ใช้ความรู้จากแผนใดบ้าง?):</b></div>
+    <textarea class="ans-ta" id="pbl-connect" rows="2" placeholder="โจทย์นี้ใช้ความรู้จากแผน... เรื่อง... คือ..."></textarea>
+  </div>
+
+  <div class="submit-bar">
+    <h3>📤 ส่งใบ Exercise + PBL</h3>
+    <button class="btn-submit" onclick="submitAll()">ส่งคำตอบ ▶</button>
+    <div class="status" id="submitStatus"></div>
+  </div>
+
+  <div class="foot">Exercise + PBL · SHM แผน 6 Damping & Resonance · ว30203 ฟิสิกส์ 3 · ม.5 · โรงเรียนสตรีวิทยา<br>
+  K6.1, K6.2, P6.1, P6.2 · <span style="color:#7c3aed;font-weight:700">Theme: Deep Purple 🏁</span></div>
+</div>
+
+<script>
+const API_URL='YOUR_APPS_SCRIPT_URL';
+const SHEET='Exercise_SHM_Plan6';
+const tools={},colors={};
+const CANVASES=['c2','c3','c5','c7','cPBL'];
+
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');
+  tools[id]='pencil';colors[id]='#1a202c';
+  let drawing=false,lx=0,ly=0;
+  if(c.getAttribute('data-bg')==='grid'){
+    const gs=30;ctx.strokeStyle='#ede9fe';ctx.lineWidth=1;
+    for(let x=0;x<=c.width;x+=gs){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,c.height);ctx.stroke();}
+    for(let y=0;y<=c.height;y+=gs){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(c.width,y);ctx.stroke();}
+  }
+  const pos=e=>{const r=c.getBoundingClientRect(),sx=c.width/r.width,sy=c.height/r.height;
+    if(e.touches)return{x:(e.touches[0].clientX-r.left)*sx,y:(e.touches[0].clientY-r.top)*sy};
+    return{x:(e.clientX-r.left)*sx,y:(e.clientY-r.top)*sy};};
+  const down=e=>{e.preventDefault();drawing=true;const p=pos(e);lx=p.x;ly=p.y;};
+  const move=e=>{if(!drawing)return;e.preventDefault();const p=pos(e);
+    ctx.beginPath();ctx.strokeStyle=tools[id]==='eraser'?'#fff':colors[id];
+    ctx.lineWidth=tools[id]==='eraser'?20:2.5;ctx.lineCap='round';
+    ctx.moveTo(lx,ly);ctx.lineTo(p.x,p.y);ctx.stroke();lx=p.x;ly=p.y;};
+  const up=()=>{drawing=false;saveCanvas(id);};
+  c.addEventListener('mousedown',down);c.addEventListener('mousemove',move);c.addEventListener('mouseup',up);
+  c.addEventListener('touchstart',down,{passive:false});c.addEventListener('touchmove',move,{passive:false});c.addEventListener('touchend',up);
+}
+function setTool(id,t,btn){tools[id]=t;const tb=btn.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,c,el){colors[id]=c;tools[id]='pencil';const tb=el.closest('.canvas-toolbar');if(tb)tb.querySelectorAll('.c-color').forEach(e=>e.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const c=document.getElementById(id);c.getContext('2d').clearRect(0,0,c.width,c.height);localStorage.removeItem('canvas6_'+id);}
+function saveCanvas(id){try{localStorage.setItem('canvas6_'+id,document.getElementById(id).toDataURL());}catch(e){}}
+function loadCanvas(id){const data=localStorage.getItem('canvas6_'+id);if(!data)return;const c=document.getElementById(id),ctx=c.getContext('2d');const img=new Image();img.src=data;img.onload=()=>ctx.drawImage(img,0,0);}
+
+async function submitAll(){
+  const name=document.getElementById('student_name').value;
+  if(!name){alert('กรุณากรอกชื่อ');return;}
+  const data={sheet:SHEET,name,no:document.getElementById('student_no').value,room:document.getElementById('class').value,date:document.getElementById('test_date').value,timestamp:new Date().toISOString()};
+  ['q2-exp','q2-a5','q2-a10','q2-a20','q2-thalf','q3-w0','q3-f0','q3-q','q3-bw','q3-q2','q5-T','q5-w','q5-fw','q5-a30','q5-ares','q7-f','q7-f3','q1-exp','q4-exp','q6-shockab','pbl-given','pbl-conclusion','pbl-connect'].forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value||'';});
+  ['q3-peak','m1','m2','m3','d1-char','d2-char','d3-char','q5-match','pbl-confirm'].forEach(id=>{const el=document.getElementById(id);if(el)data[id]=el.value||'';});
+  ['pbl-choice'].forEach(n=>{const el=document.querySelector(`[name=${n}]:checked`);data[n]=el?el.value:'';});
+  CANVASES.forEach(id=>{data['canvas_'+id]=document.getElementById(id)?.toDataURL('image/png')||'';});
+  const statusEl=document.getElementById('submitStatus');
+  statusEl.className='status loading';statusEl.textContent='⏳ กำลังส่ง...';
+  if(API_URL==='YOUR_APPS_SCRIPT_URL'){
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`Exercise6_${name}_${Date.now()}.json`;a.click();
+    statusEl.className='status success';statusEl.textContent='✅ ดาวน์โหลด JSON สำเร็จ';return;
+  }
+  try{await fetch(API_URL,{method:'POST',mode:'no-cors',body:JSON.stringify(data)});statusEl.className='status success';statusEl.textContent='✅ ส่งสำเร็จ!';}
+  catch(e){statusEl.className='status error';statusEl.textContent='❌ ส่งไม่ได้';}
+}
+window.addEventListener('load',()=>{
+  CANVASES.forEach(id=>{initCanvas(id);loadCanvas(id);});
+  const d=document.getElementById('test_date');if(!d.value)d.value=new Date().toISOString().split('T')[0];
+});
+</script>
+</body></html>

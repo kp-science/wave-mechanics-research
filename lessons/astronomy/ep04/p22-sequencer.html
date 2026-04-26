@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P22 · Story Sequencer</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .ev-pool { padding:14px; background:rgba(0,0,0,0.3); border:1.5px dashed #2a3050; border-radius:12px; margin:14px 0; }
+  .ev-pool .h { font-family:Orbitron; font-size:11px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:8px; }
+  .ev-cards { display:flex; flex-wrap:wrap; gap:8px; min-height:60px; justify-content:center; }
+  .ev-card {
+    padding:10px 14px; min-height:54px; min-width:160px; max-width:240px;
+    background:linear-gradient(160deg,rgba(22,27,58,0.9),rgba(8,10,24,0.9));
+    border:2px solid rgba(120,140,220,0.5); border-radius:10px;
+    color:#e8ecf8; cursor:grab; user-select:none;
+    -webkit-tap-highlight-color:transparent; touch-action:none;
+    transition:all .15s; font-size:13px;
+  }
+  .ev-card:active, .ev-card.dragging { cursor:grabbing; transform:scale(1.05); border-color:#ffcb6b; }
+  .ev-card.placed { opacity:0.3; pointer-events:none; }
+
+  .seq-slots { display:grid; grid-template-columns:1fr; gap:6px; margin:14px 0; max-width:600px; margin-left:auto; margin-right:auto; }
+  .sslot {
+    padding:14px; min-height:60px;
+    background:rgba(0,0,0,0.4); border:2px dashed #2a3050; border-radius:10px;
+    transition:all .15s; display:flex; align-items:center; gap:12px;
+  }
+  .sslot.over { border-color:#ffcb6b; background:rgba(255,203,107,0.08); }
+  .sslot.filled { border-style:solid; }
+  .sslot.correct { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .sslot.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.08); }
+  .sslot .num { font-family:Orbitron; color:#ffcb6b; font-size:14px; min-width:30px; }
+  .sslot .text { font-size:13.5px; color:#e8ecf8; flex:1; }
+</style>
+</head>
+<body data-page="p22" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">📖 ACT D · STORY SEQUENCER</span>
+  <h1>เรียงลำดับเหตุการณ์ EP04</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1-K4</span><span class="kpa-chip a">A1</span>
+  </div>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ก่อนเดินทางจริง · มาทบทวนภารกิจตั้งแต่ต้น · <b>ลากเหตุการณ์เรียงลำดับ 1→8</b>"
+    </span>
+  </div>
+
+  <div class="ev-pool">
+    <div class="h">📦 เหตุการณ์ · ลากลงช่อง</div>
+    <div class="ev-cards" id="evCards"></div>
+  </div>
+
+  <div class="seq-slots" id="slots"></div>
+
+  <button class="compare-btn" id="cmpBtn" onclick="check()" disabled
+    style="width:100%; padding:18px; min-height:60px; background:linear-gradient(135deg, rgba(255,203,107,0.18), rgba(126,255,178,0.18)); border:2px solid #ffcb6b; color:#ffe2a8; border-radius:14px; font-family:Orbitron; font-size:16px; font-weight:700; cursor:pointer; margin-top:8px;">
+    🔍 ตรวจ
+  </button>
+
+  <div class="callout success" id="result" style="display:none;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P22</summary>
+    <div class="body">
+      <b>วัตถุประสงค์:</b> ทบทวน flow การเรียนรู้ทั้ง EP04 · ผูก lab → ภารกิจ
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">เรียงครบ + กดตรวจ → กดส่ง → ไป Shop</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const EVENTS = [
+  { id:0, t:'รับสัญญาณ SOS · เห็นแผนที่ดาว 7 สี' },
+  { id:1, t:'เคนเสนอแผน · แยกวิเคราะห์ 2 แบบ (สี + มวล)' },
+  { id:2, t:'เรียนรหัสสี OBAFGKM + จัดดาวจริง' },
+  { id:3, t:'เรียน 5 เส้นทางวิวัฒนาการตามมวล' },
+  { id:4, t:'อ่านบันทึกพ่อ · พบดาวอันตรายปลอม' },
+  { id:5, t:'เผชิญ VOID · รู้ว่าพ่ออยู่ที่ไหน' },
+  { id:6, t:'เลือก 1 ใน 4 เส้นทาง' },
+  { id:7, t:'ขับยานเดินทาง · กู้พ่อ' },
+];
+const SHUFFLED = EVENTS.slice().sort(()=>Math.random()-0.5);
+const placed = {};
+
+document.getElementById('evCards').innerHTML = SHUFFLED.map(e=>`
+  <div class="ev-card" id="ec-${e.id}" data-id="${e.id}" draggable="true">${e.t}</div>
+`).join('');
+
+document.getElementById('slots').innerHTML = EVENTS.map((_,i)=>`
+  <div class="sslot" id="ss-${i}" data-i="${i}">
+    <span class="num">${i+1}.</span>
+    <span class="text" id="ss-${i}-t"></span>
+  </div>
+`).join('');
+
+function setupDrag() {
+  EVENTS.forEach(e => {
+    const c = document.getElementById('ec-' + e.id);
+    if (!c) return;
+    c.addEventListener('dragstart', ev => {
+      ev.dataTransfer.setData('cid', e.id);
+      ev.dataTransfer.setData('text/plain', e.id);
+      c.classList.add('dragging');
+      if (window.SFX) SFX.play('tap');
+    });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+    if (window.TouchDrag) TouchDrag.makeDraggable(c, () => e.id+'');
+  });
+  EVENTS.forEach((_,i) => {
+    const s = document.getElementById('ss-' + i);
+    s.addEventListener('dragover', ev => { ev.preventDefault(); s.classList.add('over'); });
+    s.addEventListener('dragleave', () => s.classList.remove('over'));
+    s.addEventListener('drop', ev => {
+      ev.preventDefault(); s.classList.remove('over');
+      const eid = ev.dataTransfer.getData('cid') || ev.dataTransfer.getData('text/plain');
+      tryPlace(parseInt(eid), i);
+    });
+    if (window.TouchDrag) TouchDrag.makeDropTarget(s, eid => tryPlace(parseInt(eid), i));
+  });
+}
+
+function tryPlace(eid, slot) {
+  if (placed[slot] != null) return;
+  if (Object.values(placed).includes(eid)) return;
+  placed[slot] = eid;
+  document.getElementById('ss-' + slot + '-t').textContent = EVENTS[eid].t;
+  document.getElementById('ss-' + slot).classList.add('filled');
+  document.getElementById('ec-' + eid).classList.add('placed');
+  if (window.SFX) SFX.play('tap');
+  if (Object.keys(placed).length === EVENTS.length) {
+    document.getElementById('cmpBtn').disabled = false;
+  }
+}
+
+function check() {
+  let nC = 0;
+  Object.entries(placed).forEach(([slot, eid]) => {
+    const correct = (parseInt(slot) === eid);
+    if (correct) nC++;
+    document.getElementById('ss-' + slot).classList.add(correct ? 'correct' : 'wrong');
+  });
+  if (window.SFX) SFX.play(nC === EVENTS.length ? 'correct' : 'wrong');
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').innerHTML =
+    `<span class="star">📊</span> เรียงถูก ${nC}/${EVENTS.length}`;
+  document.getElementById('submitBtn').disabled = false;
+}
+window.check = check;
+setTimeout(setupDrag, 300);
+
+Submit.wirePair({
+  page:'p22',
+  nextHref:'p23-shop.html',
+  getPayload:()=>{
+    const c = Object.entries(placed).filter(([s,e])=>parseInt(s)===e).length;
+    return { placed, correct:c, total:EVENTS.length };
+  },
+  isPerfect:(p)=>p.correct===p.total,
+  onSubmit:(status,n)=>{
+    if (window.Photon && Photon.add) Photon.add(15);
+  }
+});
+</script>
+</body></html>

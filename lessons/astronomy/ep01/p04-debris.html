@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P04 · วิเคราะห์ซาก · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.dnd-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 24px 0; }
+@media (max-width: 800px) { .dnd-wrap { grid-template-columns: 1fr; } }
+.dnd-col h4 { font-family: 'Orbitron'; font-size: 12px; letter-spacing: 0.2em; color: var(--accent-gold); margin-bottom: 14px; }
+.fragment, .meaning-slot {
+  padding: 14px 16px; border-radius: 10px; margin: 8px 0;
+  transition: all 0.2s; font-size: 14px; user-select: none;
+}
+.fragment {
+  background: linear-gradient(135deg, rgba(100,216,255,0.1), rgba(185,128,255,0.1));
+  border: 1px solid var(--border-strong); cursor: grab;
+}
+.fragment.placed { opacity: 0.4; cursor: default; }
+.meaning-slot {
+  min-height: 60px; background: rgba(0,0,0,0.3);
+  border: 2px dashed var(--border); color: var(--text-dim);
+}
+.meaning-slot.drag-over { border-color: var(--accent); background: rgba(100,216,255,0.08); }
+.meaning-slot.filled { border-style: solid; color: var(--text); }
+.meaning-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.08); }
+.meaning-slot.wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.08); }
+.meaning-slot .hint { font-size: 11px; color: var(--accent); font-family: 'Orbitron'; letter-spacing: 0.15em; margin-bottom: 6px; opacity: 0.6; }
+.timer { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+  background: rgba(255,92,122,0.1); border: 1px solid rgba(255,92,122,0.4);
+  border-radius: 100px; font-family: 'Orbitron'; font-size: 14px; color: var(--accent-red); margin-bottom: 16px; }
+.timer.ok { color: var(--accent-green); background: rgba(126,255,178,0.1); border-color: rgba(126,255,178,0.4); }
+</style>
+</head>
+<body data-page="p04">
+<main class="page"><div class="page-inner">
+
+<div class="page-label puzzle">◤ PAGE 04 / 16 · PUZZLE · 7 นาที</div>
+<h1 class="page-title">ซากปริศนา</h1>
+<h2 class="page-sub">FRAGMENT ANALYSIS · 5 PIECES → 5 CATEGORIES</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag do">อำนวย</span><span>เดินดู · ถามว่า "สังเกตอะไรเป็นพิเศษ?" · ปล่อยให้ทีมใช้ common sense</span></div>
+    <div class="role"><span class="tag dont">ห้าม</span><span>ใช้คำว่า "redshift" · "CMB" · "Isotropy" ฯลฯ · Experience Before Labeling</span></div>
+    <div class="role"><span class="tag say">ทิป</span><span>ถ้าทีมงง ใบ้ว่า "ลองดูว่าชิ้นไหนพูดเรื่อง 'สี' เรื่อง 'อุณหภูมิ' เรื่อง 'ทิศทาง'"</span></div>
+  </div>
+</div>
+
+<div class="timer" id="timer">⏱ 03:00</div>
+
+<div class="dialog-box lem" data-speaker="LEMAÎTRE">
+  <div class="txt">ลากชิ้นซากทางซ้าย · วางในช่องความหมายทางขวา · <b>ยังไม่ต้องรู้ชื่อทางวิทยาศาสตร์</b> · แค่จัดกลุ่มตามลักษณะที่เห็น</div>
+</div>
+
+<div class="dnd-wrap">
+  <div class="dnd-col">
+    <h4>◦ FRAGMENTS · ลากจากที่นี่</h4>
+    <div id="fragments"></div>
+  </div>
+  <div class="dnd-col">
+    <h4>◦ หมวดข้อมูล · วางลงช่องที่ถูกต้อง</h4>
+    <div id="meanings"></div>
+  </div>
+</div>
+
+<div class="center mt-20">
+  <button class="btn primary" id="check-btn" onclick="check()">🔍 ตรวจคำตอบ</button>
+</div>
+
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag p">P2 ตีความข้อมูล</span>
+  <span class="ped-tag">วPA 2 · เชื่อมประสบการณ์</span>
+  <span class="ped-tag">Experience Phase</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+const FRAGMENTS = [
+  { id: 'f1', label: 'ชิ้น A · แสงสะท้อนเป็นสีแดงเข้ม · ยิ่งมาจากไกล ยิ่งแดง', match: 'm1' },
+  { id: 'f2', label: 'ชิ้น B · เย็นจัด −270°C · แผ่พลังงานอ่อนคงที่', match: 'm2' },
+  { id: 'f3', label: 'ชิ้น C · ปล่อยสัญญาณออกทุกทิศทาง · ไม่มีทิศใดแรงกว่า', match: 'm3' },
+  { id: 'f4', label: 'ชิ้น D · ประกอบด้วยธาตุเบาเท่านั้น (H, He) · ไม่พบธาตุหนัก', match: 'm4' },
+  { id: 'f5', label: 'ชิ้น E · ขนาดเพิ่มขึ้นต่อเนื่อง · พลังงานต่อปริมาตรลดลง', match: 'm5' },
+];
+const MEANINGS = [
+  { id: 'm1', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · แสงและสี',                   hint: 'LIGHT / COLOR' },
+  { id: 'm2', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · อุณหภูมิและพลังงาน',           hint: 'TEMPERATURE' },
+  { id: 'm3', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · ทิศทางและการกระจาย',           hint: 'DIRECTION' },
+  { id: 'm4', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · สสารและองค์ประกอบ',            hint: 'MATERIAL' },
+  { id: 'm5', label: 'ข้อมูลกลุ่มนี้เกี่ยวกับ · ขนาดและการเปลี่ยนแปลง',         hint: 'SIZE / CHANGE' },
+];
+
+let startTime = Date.now();
+
+function initGame() {
+  const shuffled = [...MEANINGS].sort(() => Math.random() - 0.5);
+  document.getElementById('fragments').innerHTML = FRAGMENTS.map(f => `
+    <div class="fragment" draggable="true" data-id="${f.id}">${f.label}</div>
+  `).join('');
+  document.getElementById('meanings').innerHTML = shuffled.map(m => `
+    <div class="meaning-slot" data-id="${m.id}">
+      <div class="hint">${m.hint}</div>
+      <div>${m.label}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.fragment').forEach(el => {
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', el.dataset.id);
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+  });
+  document.querySelectorAll('.meaning-slot').forEach(el => {
+    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('text/plain');
+      const frag = FRAGMENTS.find(f => f.id === id);
+      const fragEl = document.querySelector(`.fragment[data-id="${id}"]`);
+      el.dataset.placed = id;
+      el.classList.add('filled');
+      el.innerHTML = `<div class="hint">${MEANINGS.find(m => m.id === el.dataset.id).hint}</div><div style="color:var(--accent)">⇢ ${frag.label}</div>`;
+      fragEl.classList.add('placed');
+      fragEl.draggable = false;
+    });
+  });
+  startTimer();
+}
+function startTimer() {
+  let t = 180;
+  const el = document.getElementById('timer');
+  const iv = setInterval(() => {
+    t--;
+    if (t <= 0) { clearInterval(iv); el.textContent = '⏱ 00:00'; return; }
+    const m = Math.floor(t/60).toString().padStart(2,'0');
+    const s = (t%60).toString().padStart(2,'0');
+    el.textContent = `⏱ ${m}:${s}`;
+    if (t > 60) el.classList.add('ok'); else el.classList.remove('ok');
+  }, 1000);
+}
+function check() {
+  let correct = 0;
+  document.querySelectorAll('.meaning-slot').forEach(slot => {
+    const placed = slot.dataset.placed;
+    const rightFrag = FRAGMENTS.find(f => f.match === slot.dataset.id);
+    if (placed && placed === rightFrag.id) { slot.classList.add('correct'); correct++; }
+    else if (placed) { slot.classList.add('wrong'); }
+  });
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const reward = correct >= 4 ? 5 : correct >= 2 ? 3 : 1;
+  Book.savePageData('p04', { correct, elapsed });
+  Book.addEnergy(reward, `P04 Debris: ${correct}/5`);
+  Book.state.data.debrisBranch = correct >= 4 ? 'main' : 'asteroid';
+  Book.save();
+  Book.completePage('p04');
+  const branch = correct >= 4 ? 'MAIN SHIP' : 'ASTEROID DRIFT';
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal ${correct >= 4 ? 'main' : 'asteroid'}">
+      <h3>${correct >= 4 ? '✓' : '⚠'} จับถูก ${correct}/5 · ${branch}</h3>
+      <p>${correct >= 4 ? 'ยานกลับมาเสถียร · เดินหน้าต่อ' : 'ยานลอยเข้าแถบดาวเคราะห์น้อย · แต่จะได้มุมมองใหม่'}</p>
+      <p style="color: var(--accent-gold)">+${reward} Energy · ใช้เวลา ${elapsed} วินาที</p>
+    </div>`;
+  document.getElementById('check-btn').disabled = true;
+}
+initGame();
+</script>
+</body>
+</html>

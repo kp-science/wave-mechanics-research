@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P09 · m vs M Lab</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* === Lab core (reuse pattern) === */
+  .lab-steps { display:flex; gap:6px; margin:10px 0 14px; flex-wrap:wrap; }
+  .lab-step { flex:1; min-width:72px; padding:6px 4px; background:rgba(100,216,255,0.05); border:1px solid #2a3050; border-radius:8px; text-align:center; font-size:10px; color:#6a7394; letter-spacing:0.05em; font-family:Orbitron,sans-serif; }
+  .lab-step.active { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; box-shadow:0 0 12px rgba(255,203,107,0.2); }
+  .lab-step.done { background:rgba(126,255,178,0.08); border-color:#7effb2; color:#7effb2; }
+  .lab-step .coin { display:block; font-size:9px; color:#ffcb6b; font-family:monospace; margin-top:2px; }
+  .step-card { padding:16px; background:rgba(22,27,58,0.7); border:1px solid rgba(120,140,220,0.3); border-radius:12px; margin:14px 0; }
+  .step-title { font-family:Orbitron,sans-serif; font-size:14px; color:#ffcb6b; letter-spacing:0.15em; margin-bottom:10px; text-transform:uppercase; }
+  .step-hint { font-size:13px; color:#9aa3c0; margin:6px 0 12px; line-height:1.7; }
+  .q-prompt { font-size:17px; font-weight:700; color:#ffcb6b; line-height:1.6; margin:14px 0 6px; padding:10px 14px; background:rgba(255,203,107,0.08); border-left:4px solid #ffcb6b; border-radius:0 10px 10px 0; }
+  .q-prompt .icon { font-size:20px; margin-right:6px; }
+  .q-prompt b { color:#fff; }
+  .q-sub { font-size:13px; color:#c8cde0; margin:4px 0 12px; padding-left:12px; }
+  .full-name { font-size:11px; color:#9aa3c0; margin-bottom:8px; padding:6px 10px; background:rgba(0,0,0,0.3); border-left:2px solid #d4b8ff; border-radius:0 6px 6px 0; line-height:1.6; }
+  .full-name b { color:#d4b8ff; }
+  .step-nav { display:flex; gap:10px; margin-top:14px; }
+  .step-nav button { flex:1; padding:10px; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; }
+  .step-nav .back { background:rgba(100,100,140,0.1); border:1px solid #444; color:#9aa3c0; }
+  .step-nav .fwd { background:rgba(126,255,178,0.1); border:1px solid #7effb2; color:#7effb2; }
+  .step-nav .fwd:disabled { opacity:0.4; cursor:not-allowed; }
+  .kpa-chip { display:inline-block; padding:2px 8px; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; letter-spacing:0.1em; margin-right:4px; }
+  .kpa-chip.k { background:rgba(100,216,255,0.1); color:#64d8ff; border:1px solid rgba(100,216,255,0.3); }
+  .kpa-chip.p { background:rgba(126,255,178,0.1); color:#7effb2; border:1px solid rgba(126,255,178,0.3); }
+  .kpa-chip.a { background:rgba(255,203,107,0.1); color:#ffcb6b; border:1px solid rgba(255,203,107,0.3); }
+  .kpa-chip.c { background:rgba(212,184,255,0.1); color:#d4b8ff; border:1px solid rgba(212,184,255,0.3); }
+
+  /* Tabs */
+  .explore-tabs { display:flex; gap:4px; margin:10px 0 0; }
+  .etab { flex:1; padding:10px 6px; background:rgba(100,216,255,0.06); border:1px solid #2a3050; border-bottom:none; color:#9aa3c0; border-radius:8px 8px 0 0; cursor:pointer; font-size:12px; font-family:inherit; transition:all .15s; }
+  .etab:hover { color:#fff; }
+  .etab.on { background:rgba(255,203,107,0.15); border-color:#ffcb6b; color:#ffcb6b; font-weight:700; }
+  .etab.done { background:rgba(126,255,178,0.1); border-color:#7effb2; color:#7effb2; }
+  .etab-pane { display:none; padding:14px 0; border-top:2px solid #ffcb6b; }
+  .etab-pane.on { display:block; }
+
+  /* === Tab A · m→M calculator concept === */
+  .calc-row-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+  @media(max-width:520px){ .calc-row-2 { grid-template-columns:1fr; } }
+  .calc-input { padding:12px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:8px; }
+  .calc-input label { display:block; font-size:11px; color:#9aa3c0; font-family:Orbitron,sans-serif; letter-spacing:0.1em; margin-bottom:4px; }
+  .calc-input input[type=number] { width:100%; padding:8px 10px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; color:#7effb2; font-family:monospace; font-size:16px; border-radius:6px; box-sizing:border-box; }
+  .calc-input input[type=number]:focus { border-color:#ffcb6b; outline:none; }
+  .formula-box { padding:14px; background:rgba(212,184,255,0.08); border:1px solid #d4b8ff; border-radius:10px; margin:10px 0; text-align:center; font-family:'Orbitron',monospace; font-size:18px; color:#d4b8ff; }
+  .formula-box .live { color:#7effb2; }
+  .formula-box .small { font-size:12px; color:#9aa3c0; margin-top:6px; }
+
+  /* === Tab B · VOID Trap Hunter (game) === */
+  .void-arena { padding:18px; background:linear-gradient(135deg, rgba(255,92,122,0.08), rgba(0,0,0,0.5)); border:2px solid #ff5c7a; border-radius:14px; margin:10px 0; position:relative; min-height:200px; }
+  .void-arena.charging { animation:voidPulse 1.5s infinite; }
+  @keyframes voidPulse { 50% { box-shadow:0 0 30px rgba(255,92,122,0.5); border-color:#ffd; } }
+  .void-eye { position:absolute; top:10px; right:10px; font-size:24px; filter:drop-shadow(0 0 12px rgba(255,92,122,0.7)); }
+  .void-claim-text { font-size:18px; color:#ffd; line-height:1.6; min-height:60px; padding:14px 6px; }
+  .void-charge-bar { width:100%; height:6px; background:rgba(0,0,0,0.5); border-radius:3px; overflow:hidden; margin:8px 0; }
+  .void-charge-fill { height:100%; background:linear-gradient(90deg, #7effb2, #ffcb6b, #ff5c7a); transition:width .1s linear; }
+  .void-actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+  .void-btn { padding:14px; border-radius:10px; cursor:pointer; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; letter-spacing:0.08em; border:2px solid; }
+  .void-btn.trap { background:rgba(255,92,122,0.15); border-color:#ff5c7a; color:#ff5c7a; }
+  .void-btn.fact { background:rgba(126,255,178,0.15); border-color:#7effb2; color:#7effb2; }
+  .void-btn:hover { filter:brightness(1.3); }
+  .void-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  .void-feedback { padding:10px 14px; border-radius:8px; font-size:13px; margin-top:10px; line-height:1.5; }
+  .void-feedback.ok { background:rgba(126,255,178,0.1); border:1px solid #7effb2; color:#7effb2; }
+  .void-feedback.miss { background:rgba(255,92,122,0.1); border:1px solid #ff5c7a; color:#ff8fa5; }
+  .void-stats { display:flex; justify-content:space-between; padding:8px 12px; background:rgba(0,0,0,0.4); border-radius:8px; font-family:monospace; font-size:12px; color:#9aa3c0; margin:8px 0; }
+  .void-stats b { color:#ffcb6b; }
+
+  /* === Tab C · Real vs Apparent showdown === */
+  #showdownCanvas { width:100%; height:280px; background:radial-gradient(ellipse, rgba(20,15,40,0.5), #000); border:1px solid #2a3050; border-radius:10px; }
+  .showdown-cards { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+  @media(max-width:480px){ .showdown-cards { grid-template-columns:1fr; } }
+  .show-card { padding:12px; border:1px solid; border-radius:10px; }
+  .show-card.a { border-color:#64d8ff; background:rgba(100,216,255,0.06); }
+  .show-card.b { border-color:#ffcb6b; background:rgba(255,203,107,0.06); }
+  .show-card .row { display:flex; justify-content:space-between; font-family:monospace; font-size:12px; padding:2px 0; }
+  .show-card .row.hidden b { filter:blur(5px); cursor:pointer; }
+  .show-card .row.hidden b:hover { filter:none; }
+  .show-card .row b.revealed { color:#7effb2; }
+  .reveal-btn { padding:8px 14px; background:rgba(212,184,255,0.1); border:1px solid #d4b8ff; color:#d4b8ff; border-radius:8px; cursor:pointer; font-family:inherit; font-size:12px; width:100%; margin-top:8px; }
+
+  /* === Step 3 Measure (compute M) === */
+  .measure-row { display:grid; grid-template-columns:1fr auto; gap:10px; padding:12px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; margin:8px 0; align-items:center; }
+  .measure-row.locked { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .measure-row .info { font-size:13px; }
+  .measure-row .info b { color:#e8ecf8; }
+  .measure-row .info .data { color:#9aa3c0; font-family:monospace; font-size:11px; }
+  .measure-row .answer { display:flex; gap:6px; align-items:center; }
+  .measure-row input { padding:8px 10px; width:80px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; color:#ffcb6b; font-family:monospace; font-size:14px; border-radius:6px; }
+  .measure-row button { padding:8px 12px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; color:#64d8ff; border-radius:6px; cursor:pointer; font-size:12px; font-family:inherit; }
+  .measure-row .feedback { font-size:11px; color:#9aa3c0; margin-left:8px; }
+  .measure-row .feedback.ok { color:#7effb2; }
+  .measure-row .feedback.bad { color:#ff5c7a; }
+
+  /* === Step 4 dual-ruler === */
+  .dual-rulers { display:flex; flex-direction:column; gap:30px; margin:14px 0 30px; }
+  .ruler-block { position:relative; }
+  .ruler-block .ruler-label { position:absolute; top:-22px; left:0; font-family:Orbitron,sans-serif; font-size:12px; letter-spacing:0.1em; }
+  .ruler-block .ruler-label.m { color:#64d8ff; }
+  .ruler-block .ruler-label.M { color:#ffcb6b; }
+  .ruler { position:relative; width:100%; height:42px; border-radius:21px; box-shadow:inset 0 2px 8px rgba(0,0,0,0.5); }
+  .ruler.m { background:linear-gradient(to right, #fff, #ffd, #fa3, #831, #200); }
+  .ruler.M { background:linear-gradient(to right, #f5b, #fff, #ffd, #fa3, #732, #100); }
+  .ruler-tick { position:absolute; top:-4px; bottom:-4px; width:1px; background:rgba(0,0,0,0.4); }
+  .ruler-tick .lbl { position:absolute; top:46px; left:50%; transform:translateX(-50%); font-size:10px; color:#6a7394; font-family:monospace; }
+  .star-token { position:absolute; top:-12px; padding:4px 8px; background:#0a0420; border:2px solid #64d8ff; border-radius:14px; font-size:11px; color:#64d8ff; cursor:grab; transform:translateX(-50%); user-select:none; }
+  .star-token.placed-ok { border-color:#7effb2; color:#7effb2; }
+  .star-token.placed-bad { border-color:#ff5c7a; color:#ff5c7a; }
+  .star-tray { display:flex; flex-wrap:wrap; gap:8px; padding:10px; background:rgba(0,0,0,0.3); border:1px dashed #2a3050; border-radius:10px; margin:14px 0; min-height:50px; }
+  .star-tray .lbl-tray { width:100%; font-size:11px; color:#9aa3c0; margin-bottom:4px; }
+  .star-tray .star-token { position:static; transform:none; top:auto; }
+
+  /* === Statement classification === */
+  .stmt-list { display:flex; flex-direction:column; gap:10px; }
+  .stmt-item { display:grid; grid-template-columns:1fr auto; gap:12px; align-items:center; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #2a3050; border-radius:10px; }
+  .stmt-item.classified-ok { border-color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-item.classified-bad { border-color:#ff5c7a; background:rgba(255,92,122,0.06); }
+  .stmt-text { font-size:14px; color:#e8ecf8; line-height:1.55; }
+  .stmt-toggle { display:flex; gap:4px; }
+  .stmt-btn { padding:8px 12px; min-width:46px; border-radius:8px; cursor:pointer; font-family:Orbitron,sans-serif; font-size:13px; font-weight:700; border:2px solid; background:transparent; }
+  .stmt-btn.tick { color:#7effb2; border-color:rgba(126,255,178,0.4); }
+  .stmt-btn.cross { color:#ff5c7a; border-color:rgba(255,92,122,0.4); }
+  .stmt-btn.tick.on { background:rgba(126,255,178,0.25); border-color:#7effb2; }
+  .stmt-btn.cross.on { background:rgba(255,92,122,0.25); border-color:#ff5c7a; }
+  .stmt-feedback { grid-column:1/-1; font-size:12px; padding:6px 10px; border-radius:6px; margin-top:6px; }
+  .stmt-feedback.ok { color:#7effb2; background:rgba(126,255,178,0.06); }
+  .stmt-feedback.bad { color:#ff8fa5; background:rgba(255,92,122,0.06); }
+
+  /* Reflection */
+  .check-list { display:flex; flex-direction:column; gap:8px; }
+  .check-item { padding:10px 14px; background:rgba(100,216,255,0.04); border:2px solid rgba(120,140,220,0.3); border-radius:8px; cursor:pointer; user-select:none; display:flex; align-items:flex-start; gap:10px; }
+  .check-item.on { background:rgba(126,255,178,0.12); border-color:#7effb2; }
+  .check-item .box { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; min-width:22px; border:2px solid #64d8ff; border-radius:5px; font-size:14px; color:#7effb2; font-weight:700; }
+  .check-item.on .box { background:#7effb2; border-color:#7effb2; color:#0a0420; }
+
+  .coin-toast { position:fixed; top:90px; left:50%; transform:translateX(-50%); padding:10px 20px; background:linear-gradient(135deg, #ffcb6b, #ffd88a); color:#0a0420; border-radius:24px; font-family:Orbitron,sans-serif; font-weight:700; font-size:14px; z-index:9999; box-shadow:0 6px 24px rgba(255,203,107,0.6); animation:coinPop .4s ease-out; transition:opacity .5s; }
+  @keyframes coinPop { from { transform:translateX(-50%) translateY(-30px) scale(0.8); opacity:0; } to { transform:translateX(-50%) translateY(0) scale(1); opacity:1; } }
+  .coin-toast.zero { background:linear-gradient(135deg, #555, #777); color:#ddd; }
+  .coin-toast .big { font-size:18px; }
+</style>
+</head>
+<body data-page="p09" data-type="mixed">
+<div class="page">
+  <div class="lbl mixed">⚖️ MAGNITUDE SHOWDOWN LAB · 8 นาที · m vs M</div>
+  <h1>แล็บเปรียบสว่างจริง vs สว่างปรากฎ</h1>
+
+  <div style="margin:8px 0;">
+    <span class="kpa-chip k">K1 m</span>
+    <span class="kpa-chip k">K4 m-M=d</span>
+    <span class="kpa-chip p">P2 ทำนาย M</span>
+    <span class="kpa-chip p">P3 วิเคราะห์</span>
+    <span class="kpa-chip c">4C คิดวิพากษ์</span>
+    <span class="kpa-chip a">A2 กล้าวิพากษ์ VOID</span>
+  </div>
+
+  <div class="lab-steps" id="labSteps">
+    <div class="lab-step" data-s="0">1·PREDICT</div>
+    <div class="lab-step" data-s="1">2·EXPLORE</div>
+    <div class="lab-step" data-s="2">3·COMPUTE</div>
+    <div class="lab-step" data-s="3">4·ANALYZE</div>
+    <div class="lab-step" data-s="4">5·NOTE</div>
+    <div class="lab-step" data-s="5">6·PEER</div>
+  </div>
+
+  <!-- STEP 0 PREDICT -->
+  <div class="step-card" data-step="0">
+    <div class="step-title">🔮 Step 1 · Predict</div>
+    <div class="full-name">
+      <b>m = อันดับความสว่างปรากฎ</b> (apparent magnitude · ขึ้นกับระยะ)<br>
+      <b>M = อันดับความสว่างสัมบูรณ์</b> (absolute magnitude · ปล่อยแสงจริง · มาตรฐาน 10 pc)
+    </div>
+    <div class="card" style="border-color:#ff5c7a;">
+      <span class="void-voice">VOID: "ดาว A m=+1, d=100 pc · ต้องสว่างจริงกว่า ดาว B m=+3, d=5 pc สิ · เลขน้อยกว่าด้วย!"</span>
+    </div>
+    <div class="q-prompt"><span class="icon">🧠</span>สมมติฐาน · VOID พูด<b>ถูกหรือไม่</b>?</div>
+    <div class="choice-row" id="predVoid"></div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>สมมติฐาน · "สว่างปรากฎ"กับ"สว่างจริง" คือ<b>สิ่งเดียวกัน</b>หรือไม่?</div>
+    <div class="choice-row" id="predSame"></div>
+    <div class="step-nav">
+      <button class="fwd" id="next0" disabled>▶ เปิด 3 มินิแล็บ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 1 EXPLORE · 3 tabs -->
+  <div class="step-card" data-step="1" style="display:none;">
+    <div class="step-title">🛰️ Step 2 · Explore · 3 มินิแล็บ</div>
+    <div class="explore-tabs">
+      <button class="etab on" data-tab="calc" onclick="switchTab('calc')">🧮 m → M</button>
+      <button class="etab" data-tab="game" onclick="switchTab('game')">🎮 VOID Trap Hunter</button>
+      <button class="etab" data-tab="show" onclick="switchTab('show')">⚖️ Showdown</button>
+    </div>
+
+    <!-- Tab A: m to M calculator -->
+    <div class="etab-pane on" data-pane="calc">
+      <div class="step-hint">ป้อนค่า <b>m</b> และ <b>d</b> · สูตรจะคำนวณ <b>M</b> ให้สด ๆ · ทดลองเปลี่ยนค่าหลายๆ ครั้ง</div>
+      <div class="calc-row-2">
+        <div class="calc-input"><label>m (apparent magnitude)</label><input type="number" id="inpM" value="1.0" step="0.1"></div>
+        <div class="calc-input"><label>d (pc · ระยะทาง)</label><input type="number" id="inpD" value="10" step="1" min="0.1"></div>
+      </div>
+      <div class="formula-box">
+        M = m − 5 × log₁₀(d / 10)<br>
+        = <span id="calcStep1">1.0</span> − 5 × log₁₀(<span id="calcStep2">1</span>)<br>
+        = <span class="live" id="calcResult">1.00</span>
+        <div class="small" id="calcInterp">d = 10 pc → m และ M เท่ากันพอดี (ตามนิยาม)</div>
+      </div>
+      <div class="q-prompt"><span class="icon">🧠</span>สังเกต · ลองตั้ง d = 1000 pc · M จะเป็นบวกหรือลบมาก?
+      </div>
+      <div class="choice-row" id="calcQ"></div>
+    </div>
+
+    <!-- Tab B: VOID Trap Hunter Game -->
+    <div class="etab-pane" data-pane="game" style="display:none;">
+      <div class="step-hint">
+        🎯 <b>เกม</b> · VOID จะอ้างสิ่งต่างๆ · บางอันเป็น <span style="color:#ff5c7a;">trap (misconception)</span> บางอันเป็น <span style="color:#7effb2;">fact</span><br>
+        ⏱ มี <b>6 วินาที</b> ต่อข้อ · ตอบทัน + ถูก = +1 🪙 · ตอบช้า/ผิด = VOID ก้าว -10% · ครบ 6 ข้อจบเกม
+      </div>
+      <div class="void-stats">
+        <span>ข้อ <b id="gameQNum">0</b>/6</span>
+        <span>ถูก <b id="gameCorrect">0</b></span>
+        <span>ผิด/พลาด <b id="gameMissed">0</b></span>
+        <span>🪙 <b id="gameCoin">0</b></span>
+      </div>
+      <div class="void-arena" id="voidArena">
+        <div class="void-eye">👁️</div>
+        <div class="void-claim-text" id="voidClaim">กด ▶ เริ่มเกม เพื่อเริ่ม</div>
+        <div class="void-charge-bar"><div class="void-charge-fill" id="voidCharge" style="width:0%;"></div></div>
+        <div class="void-actions">
+          <button class="void-btn trap" id="btnTrap" onclick="answerVoid(true)" disabled>🚨 TRAP!</button>
+          <button class="void-btn fact" id="btnFact" onclick="answerVoid(false)" disabled>✅ FACT</button>
+        </div>
+        <div class="void-feedback" id="voidFeedback" style="display:none;"></div>
+      </div>
+      <button class="reveal-btn" id="startGame" onclick="startVoidGame()">▶ เริ่มเกม</button>
+    </div>
+
+    <!-- Tab C: Real vs Apparent showdown -->
+    <div class="etab-pane" data-pane="show" style="display:none;">
+      <div class="step-hint">
+        2 ดาวมี <b>m</b> ต่างกัน · ทำนาย M ของแต่ละดวงก่อน · กดเผย M เพื่อดูเฉลย
+      </div>
+      <canvas id="showdownCanvas" width="700" height="280"></canvas>
+      <div class="showdown-cards">
+        <div class="show-card a">
+          <div style="font-size:14px;font-weight:700;color:#64d8ff;margin-bottom:6px;">🔵 ดาว A (Vega)</div>
+          <div class="row"><span>m (apparent)</span><b>+0.03</b></div>
+          <div class="row"><span>d (ระยะ)</span><b>7.68 pc</b></div>
+          <div class="row hidden" id="rowAm"><span>M (absolute)</span><b onclick="revealM('A')">เผย M</b></div>
+        </div>
+        <div class="show-card b">
+          <div style="font-size:14px;font-weight:700;color:#ffcb6b;margin-bottom:6px;">🟡 ดาว B (Deneb)</div>
+          <div class="row"><span>m (apparent)</span><b>+1.25</b></div>
+          <div class="row"><span>d (ระยะ)</span><b>802 pc</b></div>
+          <div class="row hidden" id="rowBm"><span>M (absolute)</span><b onclick="revealM('B')">เผย M</b></div>
+        </div>
+      </div>
+      <div class="q-prompt"><span class="icon">🧠</span>ก่อนเผย · คุณคิดว่าดวงไหน <b>ปล่อยแสงจริง</b>มากกว่า?</div>
+      <div class="choice-row" id="showdownGuess"></div>
+      <div id="showdownReveal" style="display:none;padding:14px;background:rgba(212,184,255,0.1);border-radius:10px;margin:10px 0;">
+        <b style="color:#d4b8ff;">เฉลย</b>: Vega M=+0.58 · Deneb M=−8.4 → <b style="color:#ffcb6b;">Deneb ปล่อยแสงจริงมากกว่ามาก</b> (~20,000 เท่า)<br>
+        <span style="font-size:12px;color:#9aa3c0;">แม้ Vega ดูสว่างกว่าบนฟ้า (m น้อยกว่า) เพราะอยู่<b>ใกล้กว่า</b> ~100 เท่า</span>
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="back" onclick="go(0)">← กลับ</button>
+      <button class="fwd" id="next1" disabled>▶ คำนวณ M ของ 4 ดาว →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 COMPUTE M for 4 stars -->
+  <div class="step-card" data-step="2" style="display:none;">
+    <div class="step-title">🧮 Step 3 · Compute · <span style="color:#9aa3c0;font-size:11px;">หา M ของแต่ละดาว</span></div>
+    <div class="step-hint">
+      ใช้สูตร <b>M = m − 5×log₁₀(d/10)</b> · พิมพ์ค่า M (±0.3 ผ่าน) · 🧮 calculator FAB ใช้ได้ทุกเมื่อ (กด <b>C</b>)
+    </div>
+    <div id="measureList"></div>
+    <div class="step-nav">
+      <button class="back" onclick="go(1)">← กลับ</button>
+      <button class="fwd" id="next2" disabled>▶ วิเคราะห์ 2 scale →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 ANALYZE · dual rulers -->
+  <div class="step-card" data-step="3" style="display:none;">
+    <div class="step-title">📊 Step 4 · Analyze · 2 ไม้บรรทัด · m และ M</div>
+    <div class="step-hint">
+      ลากแต่ละดาวลงไม้บรรทัด <b>m</b> (ด้านบน) และ <b>M</b> (ด้านล่าง) · เห็นว่า<b>ลำดับต่างกัน</b>!
+    </div>
+    <div class="dual-rulers">
+      <div class="ruler-block">
+        <div class="ruler-label m">m · apparent (ปรากฎ)</div>
+        <div class="ruler m" id="rulerM"></div>
+      </div>
+      <div class="ruler-block">
+        <div class="ruler-label M">M · absolute (ปล่อยแสงจริง)</div>
+        <div class="ruler M" id="rulerCapM"></div>
+      </div>
+    </div>
+    <div class="star-tray" id="starTray">
+      <div class="lbl-tray">🌟 ลากชื่อดาวขึ้นไปวางบนไม้บรรทัด<b>ทั้ง 2</b> ↑</div>
+    </div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🧠</span>ทำนาย · ดวงไหน<b>ปล่อยแสงจริงเยอะที่สุด</b>?</div>
+    <div class="choice-row" id="predictApply"></div>
+    <div class="step-nav">
+      <button class="back" onclick="go(2)">← กลับ</button>
+      <button class="fwd" id="next3" disabled>▶ บันทึกแล็บ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4 NOTE -->
+  <div class="step-card" data-step="4" style="display:none;">
+    <div class="step-title">📓 Step 5 · Lab Note</div>
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">🔍</span>ข้อสังเกตข้อใดเป็น<b>การสังเกตทางวิทยาศาสตร์ที่ใช้ได้</b>?</div>
+      <div class="q-sub">กด ✓ ใช้ได้ · ✗ ผิด/อ่อน · ครบทั้ง 5 ข้อ</div>
+      <div class="stmt-list" id="obsList"></div>
+    </div>
+    <div style="margin-bottom:18px;">
+      <div class="q-prompt"><span class="icon">📐</span>ข้อใด<b>สรุปกฎ m vs M</b> ได้ถูกต้อง?</div>
+      <div class="q-sub">ครบทั้ง 4 ข้อ · ระวัง trap</div>
+      <div class="stmt-list" id="ruleList"></div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div class="q-prompt"><span class="icon">🔮</span>เทียบ<b>สมมติฐาน</b>กับ<b>ผลจริง</b></div>
+      <div id="reflectCmp" style="font-size:13px;color:#c8cde0;margin:6px 0 10px;padding:10px 14px;background:rgba(0,0,0,0.3);border-radius:8px;border:1px dashed #2a3050;"></div>
+      <div class="check-list" id="reflectHypo"></div>
+    </div>
+    <div class="step-nav">
+      <button class="back" onclick="go(3)">← กลับ</button>
+      <button class="fwd" id="next4" disabled>▶ ช่วงคุยกับเพื่อน →</button>
+    </div>
+  </div>
+
+  <!-- STEP 5 PEER -->
+  <div class="step-card" data-step="5" style="display:none;">
+    <div class="step-title">👥 Step 6 · Peer Apply</div>
+    <div style="padding:10px 12px;background:rgba(255,203,107,0.1);border:1px solid #ffcb6b;border-radius:8px;color:#ffcb6b;margin:6px 0;">
+      📣 <b>หยุด · คุยในทีม 1 นาที</b>
+    </div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">🎯</span>โจทย์ท้าย · ดาว Rigel (m=+0.13, d=264 pc) vs ดาว Sun (m=−26.74, d=4.8e−6 pc) · ใคร<b>ปล่อยแสงจริงเยอะกว่า</b>?</div>
+    <div class="choice-row" id="applyQ"></div>
+    <div class="q-prompt" style="margin-top:14px;"><span class="icon">💬</span>เพื่อนในทีมตอบ<b>ตรงกับคุณ</b>ไหม?</div>
+    <div class="choice-row" id="peerCheck"></div>
+    <div class="btn-pair">
+      <button class="submit-btn">💾 ส่งแล็บรายงาน</button>
+      <button class="next-btn" id="nextBtn" disabled>🔒 รอครู</button>
+    </div>
+    <div class="gate-hint">🪙 รวม coin จากทุก step · ครูเปิด gate</div>
+  </div>
+
+  <details class="tc">
+    <summary>👩‍🏫 Teacher Cue · m vs M Lab (P09)</summary>
+    <div class="body">
+      <b>เป้า</b>: ปลด misconception M2 "สว่างปรากฎ = สว่างจริง"<br>
+      <b>Game tab (VOID Trap Hunter)</b>: 6 ข้อ × 6 วิ · เร็ว · มี pressure · ใช้ pull attention<br>
+      <b>Showdown tab</b>: เด็กเห็น 2 ดาว m ต่างกัน · ทายปล่อยแสง · เผย M = epiphany moment<br>
+      <b>Calculator FAB</b>: เด็กเปิดเองได้ทุกเมื่อ (กด C) · log10 + 10^x สำหรับ distance modulus<br><br>
+      <b>🪙 Coin (55 max)</b>:<br>
+      · Step 1 PREDICT: 0<br>
+      · Step 2 EXPLORE: 0-13 (Calc Q 3 + Game 6 + Showdown 4)<br>
+      · Step 3 COMPUTE: 0-15 (4 ดาว × ตอบใน ≤2 ครั้ง)<br>
+      · Step 4 ANALYZE: 0-8 (rulers 4 + apply 4)<br>
+      · Step 5 NOTE: 0-14<br>
+      · Step 6 PEER: 0-5
+    </div>
+  </details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/calculator.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+const STARS = [
+  { id:'sirius',  name:'Sirius',  m:-1.46, d:2.64,   M:1.4 },
+  { id:'vega',    name:'Vega',    m:0.03,  d:7.68,   M:0.58 },
+  { id:'deneb',   name:'Deneb',   m:1.25,  d:802,    M:-8.4 },
+  { id:'polaris', name:'Polaris', m:1.98,  d:133,    M:-3.6 },
+  { id:'proxima', name:'Proxima', m:11,    d:1.30,   M:15.5 },
+];
+const STAR_NAMES_GUESS = ['Sirius', 'Vega', 'Deneb', 'Polaris', 'Proxima'];
+
+const COMPUTE_TARGETS = [
+  { id:'sirius',  name:'Sirius',  m:-1.46, d:2.64,  M:1.4,  tol:0.4 },
+  { id:'vega',    name:'Vega',    m:0.03,  d:7.68,  M:0.58, tol:0.4 },
+  { id:'deneb',   name:'Deneb',   m:1.25,  d:802,   M:-8.4, tol:0.5 },
+  { id:'polaris', name:'Polaris', m:1.98,  d:133,   M:-3.6, tol:0.4 },
+];
+
+const VOID_CLAIMS = [
+  { text:'ดาวที่<b>เห็นสว่างที่สุด</b>บนฟ้า = ดาวที่<b>ปล่อยแสงจริง</b>มากที่สุด', isTrap:true,
+    why:'Trap M2 · m คืออันดับความสว่างปรากฎ · ใกล้/ไกลทำให้ดูสว่างต่าง · ใช้ M เปรียบเทียบ' },
+  { text:'M ติดลบมาก = ปล่อยแสงจริงเยอะ (luminous)', isTrap:false,
+    why:'Fact · M scale เหมือน m · เลขน้อย/ลบ = สว่างกว่า' },
+  { text:'ดาวอยู่<b>ใกล้</b> = ปล่อยแสงจริง<b>เยอะกว่า</b>ดาวที่อยู่ไกลเสมอ', isTrap:true,
+    why:'Trap · ระยะ ≠ ความเข้มจริง · บางดาวไกลแต่ M ต่ำมาก (เช่น Deneb)' },
+  { text:'ถ้า m = M · ดาวจะอยู่ที่ระยะ 10 pc พอดี', isTrap:false,
+    why:'Fact · นิยามของ M คือ m เมื่อย้ายดาวไปที่ 10 pc' },
+  { text:'Sirius (m=−1.46) สว่างจริงกว่า Deneb (m=+1.25) เพราะ m น้อยกว่า', isTrap:true,
+    why:'Trap M2 · จริงๆ Deneb M=−8.4 vs Sirius M=+1.4 · Deneb สว่างจริงกว่ามาก' },
+  { text:'ถ้ารู้ m และ d ของดาว · คำนวณ M ได้แน่นอน', isTrap:false,
+    why:'Fact · ใช้ distance modulus formula' },
+];
+
+const state = {
+  step: 0,
+  stepsDone: new Set(),
+  predVoid: null, predSame: null,
+  // explore tabs
+  activeTab: 'calc',
+  calcM: 1, calcD: 10,
+  calcQAns: null,
+  game: { idx:-1, correct:0, missed:0, coin:0, finished:false, currentClaim:null, charging:null, claimStart:0 },
+  showdownGuess: null,
+  showdownRevealed: { A:false, B:false },
+  tabsDone: { calc:false, game:false, show:false },
+  tabCoins: { calc:null, game:null, show:null },
+  // compute
+  computeAns: {},     // id → user's M answer
+  computeAttempts: {},
+  // analyze
+  rulerSmall: {},     // id → x% on m ruler
+  rulerCap: {},       // id → x% on M ruler
+  applyAns: null,
+  // note
+  obsClass: {}, ruleClass: {}, reflectHypo: [],
+  // peer
+  peerQ: null, peerCheck: null,
+  stepCoins: {},
+  startedAt: Date.now(),
+};
+
+/* ==================== NAV / COIN HELPERS ==================== */
+function go(s) {
+  state.step = s;
+  document.querySelectorAll('.step-card').forEach(el => {
+    el.style.display = (+el.dataset.step === s) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.lab-step').forEach(el => {
+    const idx = +el.dataset.s;
+    el.classList.toggle('active', idx === s);
+    el.classList.toggle('done', state.stepsDone.has(idx));
+  });
+  window.scrollTo({ top:0, behavior:'smooth' });
+  renderStep(s);
+}
+function markDone(s) {
+  state.stepsDone.add(s);
+  const el = document.querySelector(`.lab-step[data-s="${s}"]`);
+  if (el) {
+    el.classList.add('done');
+    if (state.stepCoins[s] != null && !el.querySelector('.coin')) {
+      const span = document.createElement('span');
+      span.className = 'coin';
+      span.textContent = '🪙' + state.stepCoins[s];
+      el.appendChild(span);
+    }
+  }
+}
+function awardStepCoin(stepIdx, amount, label) {
+  if (state.stepCoins[stepIdx] != null) return;
+  state.stepCoins[stepIdx] = amount;
+  if (amount > 0 && typeof Coin !== 'undefined') Coin.add(amount, 'p09-step' + stepIdx);
+  showCoinToast(amount, label);
+  const el = document.querySelector(`.lab-step[data-s="${stepIdx}"]`);
+  if (el && !el.querySelector('.coin')) {
+    const span = document.createElement('span');
+    span.className = 'coin';
+    span.textContent = '🪙' + amount;
+    el.appendChild(span);
+  }
+}
+function showCoinToast(amount, label) {
+  const el = document.createElement('div');
+  el.className = 'coin-toast' + (amount === 0 ? ' zero' : '');
+  el.innerHTML = (amount > 0 ? '🪙 <span class="big">+' + amount + '</span>' : '○ +0') + ' · ' + label;
+  document.body.appendChild(el);
+  setTimeout(() => el.style.opacity = 0, 1600);
+  setTimeout(() => el.remove(), 2200);
+}
+
+/* ==================== STEP 0 PREDICT ==================== */
+function renderPredict() {
+  const elV = document.getElementById('predVoid');
+  const optsV = ['ถูก · A สว่างจริงกว่า', 'ผิด · B สว่างจริงกว่า', 'ไม่แน่ใจ ต้องคำนวณก่อน'];
+  elV.innerHTML = optsV.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPred('predVoid',${i})">${o}</button>`).join('');
+  if (state.predVoid != null) elV.querySelectorAll('.choice-btn').forEach((b,i)=>b.classList.toggle('correct', i===state.predVoid));
+
+  const elS = document.getElementById('predSame');
+  const optsS = ['สิ่งเดียวกัน', 'ต่างกัน · ใช้ตัวอักษรต่าง', 'ไม่รู้'];
+  elS.innerHTML = optsS.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPred('predSame',${i})">${o}</button>`).join('');
+  if (state.predSame != null) elS.querySelectorAll('.choice-btn').forEach((b,i)=>b.classList.toggle('correct', i===state.predSame));
+  updatePredGate();
+}
+window.pickPred = (key, i) => {
+  state[key] = i;
+  document.querySelectorAll(`#${key} .choice-btn`).forEach((b,bi) => b.classList.toggle('correct', bi===i));
+  updatePredGate();
+};
+function updatePredGate() {
+  const ok = state.predVoid != null && state.predSame != null;
+  document.getElementById('next0').disabled = !ok;
+  if (ok) markDone(0);
+}
+document.getElementById('next0').onclick = () => go(1);
+
+/* ==================== STEP 1 EXPLORE TABS ==================== */
+window.switchTab = function(tab) {
+  state.activeTab = tab;
+  document.querySelectorAll('.etab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.etab-pane').forEach(p => {
+    p.classList.toggle('on', p.dataset.pane === tab);
+    p.style.display = (p.dataset.pane === tab) ? 'block' : 'none';
+  });
+  if (tab === 'show') drawShowdown();
+};
+function markTabDone(tab, done) {
+  const btn = document.querySelector('.etab[data-tab="' + tab + '"]');
+  if (btn) btn.classList.toggle('done', !!done);
+}
+
+/* --- Tab A · m → M calc --- */
+function updateCalc() {
+  state.calcM = parseFloat(document.getElementById('inpM').value) || 0;
+  state.calcD = Math.max(0.001, parseFloat(document.getElementById('inpD').value) || 0.001);
+  const M = state.calcM - 5 * Math.log10(state.calcD / 10);
+  document.getElementById('calcStep1').textContent = state.calcM.toFixed(2);
+  document.getElementById('calcStep2').textContent = (state.calcD / 10).toFixed(2);
+  document.getElementById('calcResult').textContent = (M >= 0 ? '+' : '') + M.toFixed(2);
+  let interp = '';
+  if (Math.abs(state.calcD - 10) < 0.5) interp = 'd ≈ 10 pc → m ≈ M (ตามนิยาม)';
+  else if (state.calcD < 10) interp = 'd < 10 pc → ดาวใกล้กว่า · m เล็กกว่า M (ดูสว่างกว่าจริง)';
+  else interp = 'd > 10 pc → ดาวไกลกว่า · m ใหญ่กว่า M (ดูจางกว่าจริง)';
+  document.getElementById('calcInterp').textContent = interp;
+}
+document.getElementById('inpM').addEventListener('input', updateCalc);
+document.getElementById('inpD').addEventListener('input', updateCalc);
+function renderCalcQ() {
+  const el = document.getElementById('calcQ');
+  const opts = ['M เป็นบวกมาก', 'M เป็นลบมาก', 'M ไม่เปลี่ยน'];
+  // d=1000 pc, m=1 → M = 1 - 5*log10(100) = 1-10 = -9 → ลบมาก
+  el.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickCalcQ(${i})">${o}</button>`).join('');
+  if (state.calcQAns != null) {
+    el.querySelectorAll('.choice-btn').forEach((b,i) => {
+      b.disabled = true;
+      if (i === 1) b.classList.add('correct');
+      else if (i === state.calcQAns) b.classList.add('wrong');
+    });
+  }
+}
+window.pickCalcQ = (i) => {
+  if (state.calcQAns != null) return;
+  state.calcQAns = i;
+  renderCalcQ();
+  state.tabsDone.calc = true;
+  markTabDone('calc', true);
+  updateExploreGate();
+  if (state.tabCoins.calc == null) {
+    const c = (i === 1) ? 3 : 0;
+    state.tabCoins.calc = c;
+    if (c > 0 && typeof Coin !== 'undefined') Coin.add(c, 'p09-calc');
+    showCoinToast(c, c ? 'm→M Calc · Q ถูก' : 'm→M Calc · ผิด');
+  }
+};
+
+/* --- Tab B · VOID Trap Hunter game --- */
+window.startVoidGame = function() {
+  state.game.idx = -1;
+  state.game.correct = 0;
+  state.game.missed = 0;
+  state.game.coin = 0;
+  state.game.finished = false;
+  document.getElementById('startGame').style.display = 'none';
+  document.getElementById('voidArena').classList.add('charging');
+  nextVoidClaim();
+};
+function nextVoidClaim() {
+  state.game.idx++;
+  if (state.game.idx >= VOID_CLAIMS.length) {
+    endVoidGame();
+    return;
+  }
+  state.game.currentClaim = VOID_CLAIMS[state.game.idx];
+  document.getElementById('voidClaim').innerHTML = state.game.currentClaim.text;
+  document.getElementById('btnTrap').disabled = false;
+  document.getElementById('btnFact').disabled = false;
+  document.getElementById('voidFeedback').style.display = 'none';
+  document.getElementById('gameQNum').textContent = state.game.idx + 1;
+  state.game.claimStart = Date.now();
+  // Start charge bar
+  if (state.game.charging) cancelAnimationFrame(state.game.charging);
+  const tick = () => {
+    const elapsed = Date.now() - state.game.claimStart;
+    const pct = Math.min(100, elapsed / 6000 * 100);
+    document.getElementById('voidCharge').style.width = pct + '%';
+    if (pct >= 100) {
+      // miss · auto answer null
+      handleVoidAnswer(null);
+    } else {
+      state.game.charging = requestAnimationFrame(tick);
+    }
+  };
+  state.game.charging = requestAnimationFrame(tick);
+}
+window.answerVoid = function(asTrap) {
+  if (state.game.finished) return;
+  handleVoidAnswer(asTrap);
+};
+function handleVoidAnswer(asTrap) {
+  if (state.game.charging) cancelAnimationFrame(state.game.charging);
+  document.getElementById('btnTrap').disabled = true;
+  document.getElementById('btnFact').disabled = true;
+  const claim = state.game.currentClaim;
+  const fbEl = document.getElementById('voidFeedback');
+  if (asTrap == null) {
+    state.game.missed++;
+    fbEl.className = 'void-feedback miss';
+    fbEl.textContent = '⏱ MISS! · ' + claim.why;
+    if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p09');
+  } else {
+    const correct = (asTrap === claim.isTrap);
+    if (correct) {
+      state.game.correct++;
+      state.game.coin++;
+      fbEl.className = 'void-feedback ok';
+      fbEl.textContent = '✓ ถูก! · ' + claim.why;
+    } else {
+      state.game.missed++;
+      fbEl.className = 'void-feedback miss';
+      fbEl.textContent = '✗ ผิด! · ' + claim.why;
+      if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p09');
+    }
+  }
+  fbEl.style.display = 'block';
+  document.getElementById('gameCorrect').textContent = state.game.correct;
+  document.getElementById('gameMissed').textContent = state.game.missed;
+  document.getElementById('gameCoin').textContent = state.game.coin;
+  setTimeout(nextVoidClaim, 1800);
+}
+function endVoidGame() {
+  state.game.finished = true;
+  document.getElementById('voidArena').classList.remove('charging');
+  document.getElementById('voidClaim').innerHTML = '🏁 จบเกม · ถูก ' + state.game.correct + '/6 · 🪙 ได้ ' + state.game.coin + ' coin';
+  document.getElementById('voidCharge').style.width = '0%';
+  state.tabsDone.game = true;
+  markTabDone('game', true);
+  updateExploreGate();
+  if (state.tabCoins.game == null) {
+    const c = state.game.coin;
+    state.tabCoins.game = c;
+    if (c > 0 && typeof Coin !== 'undefined') Coin.add(c, 'p09-game');
+    showCoinToast(c, 'VOID Trap Hunter · ' + state.game.correct + '/6');
+  }
+}
+
+/* --- Tab C · Showdown --- */
+function drawShowdown() {
+  const canvas = document.getElementById('showdownCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  if (!canvas._bg) {
+    canvas._bg = Array.from({length:60}, () => ({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*0.6+0.2 }));
+  }
+  ctx.fillStyle = '#fff';
+  for (const s of canvas._bg) { ctx.globalAlpha = s.r * 0.4; ctx.fillRect(s.x, s.y, 1, 1); }
+  ctx.globalAlpha = 1;
+  // Vega (m=0.03) on left
+  drawShowStar(ctx, W*0.3, H*0.45, 0.03, '#fff', 'Vega');
+  // Deneb (m=1.25) on right
+  drawShowStar(ctx, W*0.7, H*0.45, 1.25, '#dde8ff', 'Deneb');
+  // Earth at bottom
+  ctx.fillStyle = '#64d8ff'; ctx.beginPath(); ctx.arc(W/2, H-20, 6, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '11px Sarabun'; ctx.textAlign = 'center';
+  ctx.fillText('🌍 Earth (เห็น 2 ดาวด้วย m ใกล้กัน)', W/2, H-4);
+}
+function drawShowStar(ctx, cx, cy, m, color, name) {
+  const r = Math.max(0.6, 4 + (6 - m) * 3);
+  if (r > 1) {
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 4);
+    const intensity = Math.max(0, Math.min(1, (4 - m) / 10));
+    grad.addColorStop(0, `rgba(255,240,200,${intensity * 0.7})`);
+    grad.addColorStop(0.3, `rgba(255,220,150,${intensity * 0.3})`);
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, r * 4, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.fillStyle = color;
+  ctx.shadowColor = color; ctx.shadowBlur = Math.max(0, 25 - m * 3);
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = '#e8ecf8'; ctx.font = 'bold 13px Sarabun'; ctx.textAlign = 'center';
+  ctx.fillText(name, cx, cy - r - 12);
+  ctx.fillStyle = '#9aa3c0'; ctx.font = '11px monospace';
+  ctx.fillText('m=' + (m >= 0 ? '+' : '') + m.toFixed(2), cx, cy + r + 16);
+}
+function renderShowdownGuess() {
+  const el = document.getElementById('showdownGuess');
+  const opts = ['Vega', 'Deneb', 'พอกัน'];
+  el.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickShowdown(${i})">${o}</button>`).join('');
+  if (state.showdownGuess != null) {
+    el.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.showdownGuess));
+  }
+}
+window.pickShowdown = (i) => {
+  state.showdownGuess = i;
+  document.querySelectorAll('#showdownGuess .choice-btn').forEach((b,bi)=>b.classList.toggle('correct', bi===i));
+  updateShowGate();
+};
+window.revealM = (which) => {
+  state.showdownRevealed[which] = true;
+  if (which === 'A') {
+    document.getElementById('rowAm').innerHTML = '<span>M (absolute)</span><b class="revealed">+0.58</b>';
+  } else {
+    document.getElementById('rowBm').innerHTML = '<span>M (absolute)</span><b class="revealed">−8.4</b>';
+  }
+  if (state.showdownRevealed.A && state.showdownRevealed.B) {
+    document.getElementById('showdownReveal').style.display = 'block';
+    state.tabsDone.show = true;
+    markTabDone('show', true);
+    updateExploreGate();
+    if (state.tabCoins.show == null) {
+      // Award based on correct guess (Deneb is correct)
+      const c = state.showdownGuess === 1 ? 4 : (state.showdownGuess != null ? 2 : 0);
+      state.tabCoins.show = c;
+      if (c > 0 && typeof Coin !== 'undefined') Coin.add(c, 'p09-show');
+      showCoinToast(c, 'Showdown · ' + (state.showdownGuess === 1 ? 'ทายถูก!' : 'รับชม'));
+    }
+  }
+};
+function updateShowGate() {
+  // gate handled in revealM
+}
+
+function updateExploreGate() {
+  const allDone = state.tabsDone.calc && state.tabsDone.game && state.tabsDone.show;
+  document.getElementById('next1').disabled = !allDone;
+  if (allDone) markDone(1);
+}
+document.getElementById('next1').onclick = () => {
+  // sum tab coins for stepper badge
+  const total = (state.tabCoins.calc||0) + (state.tabCoins.game||0) + (state.tabCoins.show||0);
+  state.stepCoins[1] = total;
+  const stepEl = document.querySelector('.lab-step[data-s="1"]');
+  if (stepEl && !stepEl.querySelector('.coin')) {
+    const span = document.createElement('span');
+    span.className = 'coin';
+    span.textContent = '🪙' + total;
+    stepEl.appendChild(span);
+  }
+  go(2);
+};
+
+/* ==================== STEP 2 COMPUTE ==================== */
+function renderComputeList() {
+  document.getElementById('measureList').innerHTML = COMPUTE_TARGETS.map((t,i) => {
+    const ans = state.computeAns[t.id];
+    const locked = ans != null && Math.abs(ans - t.M) < t.tol;
+    return `<div class="measure-row ${locked?'locked':''}">
+      <div class="info">
+        <b>${t.name}</b>
+        <div class="data">m = ${t.m >= 0 ? '+' : ''}${t.m} · d = ${t.d} pc</div>
+      </div>
+      <div class="answer">
+        <input type="number" step="0.1" placeholder="M=?" id="ans_${t.id}" value="${ans != null ? ans : ''}" ${locked?'disabled':''}>
+        <button onclick="submitCompute('${t.id}')" ${locked?'disabled':''}>${locked ? '✓' : 'ตอบ'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+window.submitCompute = (id) => {
+  const t = COMPUTE_TARGETS.find(x => x.id === id);
+  const v = parseFloat(document.getElementById('ans_' + id).value);
+  if (isNaN(v)) { alert('พิมพ์ตัวเลข'); return; }
+  state.computeAttempts[id] = (state.computeAttempts[id] || 0) + 1;
+  state.computeAns[id] = v;
+  if (Math.abs(v - t.M) >= t.tol) {
+    alert('ค่า M ยังไม่ตรง · ลองคิดใหม่ (ใช้ 🧮 calc · กด C)');
+    return;
+  }
+  renderComputeList();
+  updateComputeGate();
+};
+function updateComputeGate() {
+  const allOk = COMPUTE_TARGETS.every(t => {
+    const a = state.computeAns[t.id];
+    return a != null && Math.abs(a - t.M) < t.tol;
+  });
+  document.getElementById('next2').disabled = !allOk;
+  if (allOk) {
+    markDone(2);
+    // Chain · push M_sos to P09B master decode (using Deneb's M = -8.4)
+    if (typeof Chain !== 'undefined') Chain.set('M_sos', -8.4);
+  }
+}
+function calcStep2Coin() {
+  let coin = 0;
+  COMPUTE_TARGETS.forEach(t => {
+    const n = state.computeAttempts[t.id] || 99;
+    if (n === 1) coin += 4;       // 4 stars × 4 = 16, but we cap at 15
+    else if (n === 2) coin += 2;
+    else coin += 1;
+  });
+  return Math.min(15, coin);
+}
+document.getElementById('next2').onclick = () => {
+  const oneShot = Object.values(state.computeAttempts).filter(n => n === 1).length;
+  awardStepCoin(2, calcStep2Coin(), 'Compute · 1-shot ' + oneShot + '/4');
+  go(3);
+};
+
+/* ==================== STEP 3 ANALYZE · DUAL RULERS ==================== */
+function mPosToX_m(m) { return ((m + 2) / 14) * 100; }   // m: -2..+12
+function mPosToX_M(M) { return ((M + 10) / 28) * 100; }  // M: -10..+18
+function xPercentToM_m(x) { return x/100 * 14 - 2; }
+function xPercentToM_M(x) { return x/100 * 28 - 10; }
+
+function renderRulers() {
+  const r1 = document.getElementById('rulerM');
+  const r2 = document.getElementById('rulerCapM');
+  r1.innerHTML = ''; r2.innerHTML = '';
+  // ticks for m (-2..+12 step 2)
+  for (let m = -2; m <= 12; m += 2) {
+    const t = document.createElement('div'); t.className = 'ruler-tick';
+    t.style.left = mPosToX_m(m) + '%';
+    t.innerHTML = '<span class="lbl">' + (m>=0?'+':'') + m + '</span>';
+    r1.appendChild(t);
+  }
+  // ticks for M (-10..+18 step 4)
+  for (let M = -10; M <= 18; M += 4) {
+    const t = document.createElement('div'); t.className = 'ruler-tick';
+    t.style.left = mPosToX_M(M) + '%';
+    t.innerHTML = '<span class="lbl">' + (M>=0?'+':'') + M + '</span>';
+    r2.appendChild(t);
+  }
+  // tokens already on rulers
+  STARS.forEach(s => {
+    if (state.rulerSmall[s.id] != null) {
+      const tok = makeToken(s, 'm');
+      tok.style.left = state.rulerSmall[s.id] + '%';
+      const ok = Math.abs(xPercentToM_m(state.rulerSmall[s.id]) - s.m) < 1.0;
+      tok.classList.add(ok?'placed-ok':'placed-bad');
+      r1.appendChild(tok);
+    }
+    if (state.rulerCap[s.id] != null) {
+      const tok = makeToken(s, 'M');
+      tok.style.left = state.rulerCap[s.id] + '%';
+      const ok = Math.abs(xPercentToM_M(state.rulerCap[s.id]) - s.M) < 1.5;
+      tok.classList.add(ok?'placed-ok':'placed-bad');
+      r2.appendChild(tok);
+    }
+  });
+  // Tray (unplaced anywhere · still need to put both)
+  const tray = document.getElementById('starTray');
+  tray.innerHTML = '<div class="lbl-tray">🌟 ลากชื่อดาวขึ้นไปวางบนไม้บรรทัด<b>ทั้ง 2</b> ↑</div>';
+  STARS.forEach(s => {
+    const onM = state.rulerSmall[s.id] != null;
+    const onCap = state.rulerCap[s.id] != null;
+    if (!onM || !onCap) {
+      const tok = makeToken(s);
+      const note = !onM && !onCap ? '' : !onM ? ' (ยังขาด m)' : ' (ยังขาด M)';
+      tok.textContent = s.name + note;
+      tray.appendChild(tok);
+    }
+  });
+  setupDropZone(r1, 'm');
+  setupDropZone(r2, 'M');
+  setupDropZone(tray, 'tray');
+}
+function makeToken(star, scale) {
+  const tok = document.createElement('div');
+  tok.className = 'star-token';
+  tok.draggable = true;
+  tok.dataset.id = star.id;
+  if (scale) tok.dataset.scale = scale;
+  tok.textContent = star.name;
+  tok.ondragstart = (e) => { e.dataTransfer.setData('star', star.id); };
+  return tok;
+}
+function setupDropZone(el, type) {
+  el.ondragover = (e) => e.preventDefault();
+  el.ondrop = (e) => {
+    e.preventDefault();
+    const id = e.dataTransfer.getData('star');
+    if (!id) return;
+    if (type === 'tray') {
+      delete state.rulerSmall[id];
+      delete state.rulerCap[id];
+    } else {
+      const rect = el.getBoundingClientRect();
+      let x = ((e.clientX - rect.left) / rect.width) * 100;
+      x = Math.max(0, Math.min(100, x));
+      if (type === 'm') state.rulerSmall[id] = x;
+      else state.rulerCap[id] = x;
+    }
+    renderRulers();
+    updateAnalyzeGate();
+  };
+}
+function renderApplyQ() {
+  const el = document.getElementById('predictApply');
+  const opts = ['Sirius', 'Vega', 'Deneb', 'Polaris', 'Proxima'];
+  el.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickApply(${i})">${o}</button>`).join('');
+  if (state.applyAns != null) {
+    el.querySelectorAll('.choice-btn').forEach((b,i) => {
+      b.disabled = true;
+      if (i === 2) b.classList.add('correct');  // Deneb M=-8.4
+      else if (i === state.applyAns) b.classList.add('wrong');
+    });
+  }
+}
+window.pickApply = (i) => {
+  if (state.applyAns != null) return;
+  state.applyAns = i;
+  renderApplyQ();
+  if (i !== 2 && typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p09');
+  updateAnalyzeGate();
+};
+function updateAnalyzeGate() {
+  const allPlaced = STARS.every(s => state.rulerSmall[s.id] != null && state.rulerCap[s.id] != null);
+  const applied = state.applyAns != null;
+  document.getElementById('next3').disabled = !(allPlaced && applied);
+  if (allPlaced && applied) markDone(3);
+}
+function calcStep3Coin() {
+  let coin = 0;
+  const allMOk = STARS.every(s => Math.abs(xPercentToM_m(state.rulerSmall[s.id] || -999) - s.m) < 1.0);
+  const allCapOk = STARS.every(s => Math.abs(xPercentToM_M(state.rulerCap[s.id] || -999) - s.M) < 1.5);
+  if (allMOk) coin += 2;
+  if (allCapOk) coin += 2;
+  if (state.applyAns === 2) coin += 4;
+  return coin;
+}
+document.getElementById('next3').onclick = () => {
+  awardStepCoin(3, calcStep3Coin(), 'Analyze · 2 rulers + apply');
+  go(4);
+};
+
+/* ==================== STEP 4 NOTE ==================== */
+const OBS_STMTS = [
+  { id:'o1', text:'Vega (m=+0.03) ดูสว่างกว่า Deneb (m=+1.25) เพราะใกล้กว่ามาก', correct:true,
+    why:'✓ ใช้ได้ · m คืออันดับความสว่างปรากฎ · ระยะมีผล' },
+  { id:'o2', text:'Sirius เป็นดาวที่ปล่อยแสงมากที่สุดในกาแล็กซี เพราะ m ติดลบสุด', correct:false,
+    why:'✗ Trap M2 · ติดลบของ m ≠ ปล่อยแสงจริงเยอะ · Sirius M=+1.4 ธรรมดา' },
+  { id:'o3', text:'M ของ Deneb ติดลบมาก (−8.4) แม้จะอยู่ไกล เพราะปล่อยแสงจริงเยอะ', correct:true,
+    why:'✓ ใช้ได้ · M ไม่ขึ้นกับระยะ · เป็น intrinsic luminosity' },
+  { id:'o4', text:'Proxima Centauri ใกล้สุดแต่ M=+15.5 หมายความว่าปล่อยแสงน้อย', correct:true,
+    why:'✓ ใช้ได้ · ดาว red dwarf ปล่อยแสงน้อย แม้อยู่ใกล้' },
+  { id:'o5', text:'ถ้าย้าย Deneb ไปไว้ที่ 10 pc · m ของมันจะเท่ากับ M = −8.4', correct:true,
+    why:'✓ ถูก · เป็นนิยามของ M' },
+];
+const RULE_STMTS = [
+  { id:'r1', text:'M = m − 5×log₁₀(d/10)', correct:true,
+    why:'✓ Distance modulus formula · จำสูตรนี้' },
+  { id:'r2', text:'ถ้า d > 10 pc · M < m เสมอ (M ติดลบกว่า)', correct:true,
+    why:'✓ ถูก · log10(d/10) > 0 · ลบจาก m → M น้อยกว่า' },
+  { id:'r3', text:'m และ M เป็นค่าเดียวกัน', correct:false,
+    why:'✗ misconception · m ขึ้นกับระยะ · M ไม่ขึ้น' },
+  { id:'r4', text:'ดาวสว่างที่สุดบนฟ้า = ดาวที่ปล่อยแสงจริงเยอะที่สุด', correct:false,
+    why:'✗ Trap M2 หลักของบทเรียนนี้ · ดูแค่ M เท่านั้น' },
+];
+function renderStmtList(containerId, stmts, classMap) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = stmts.map(s => {
+    const choice = classMap[s.id];
+    const itemClass = choice ? (choice === (s.correct?'tick':'cross') ? 'classified-ok' : 'classified-bad') : '';
+    const fb = choice
+      ? `<div class="stmt-feedback ${choice === (s.correct?'tick':'cross') ? 'ok' : 'bad'}">${s.why}</div>`
+      : '';
+    return `<div class="stmt-item ${itemClass}">
+      <div class="stmt-text">${s.text}</div>
+      <div class="stmt-toggle">
+        <button class="stmt-btn tick ${choice==='tick'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','tick')">✓</button>
+        <button class="stmt-btn cross ${choice==='cross'?'on':''}" onclick="classifyStmt('${containerId}','${s.id}','cross')">✗</button>
+      </div>
+      ${fb}
+    </div>`;
+  }).join('');
+}
+window.classifyStmt = (containerId, stmtId, choice) => {
+  const map = containerId === 'obsList' ? state.obsClass : state.ruleClass;
+  map[stmtId] = choice;
+  if (containerId === 'obsList') renderStmtList('obsList', OBS_STMTS, state.obsClass);
+  else renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+  updateNoteGate();
+};
+function renderReflect() {
+  const guessV = state.predVoid != null ? ['ถูก','ผิด','ไม่แน่ใจ'][state.predVoid] : '?';
+  const guessS = state.predSame != null ? ['สิ่งเดียวกัน','ต่างกัน','ไม่รู้'][state.predSame] : '?';
+  document.getElementById('reflectCmp').innerHTML =
+    '<b>Predict</b> · VOID พูด: <span style="color:#d4b8ff;">' + guessV + '</span>' +
+    ' · "สว่างปรากฎ = สว่างจริง": <span style="color:#d4b8ff;">' + guessS + '</span><br>' +
+    '<b>Actual</b> · VOID ผิด · 2 อย่างต่างกันคนละเรื่อง';
+  const items = [
+    { id:'rejectVoid', label:'ฉันรู้ว่า VOID ผิดตั้งแต่ก่อนแล็บ' },
+    { id:'fooled',     label:'ฉันเคยเชื่อว่า "ดาวสว่างปรากฎ = ปล่อยแสงเยอะ" มาก่อน' },
+    { id:'epiphany',   label:'แล็บนี้ทำให้เข้าใจชัดว่า m ≠ M' },
+    { id:'confident',  label:'ตอนนี้ฉันมั่นใจกับสูตร distance modulus' },
+  ];
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  document.getElementById('reflectHypo').innerHTML = items.map(it => {
+    const on = state.reflectHypo.includes(it.id);
+    return '<div class="check-item ' + (on?'on':'') + '" onclick="toggleReflect(\''+it.id+'\')">' +
+           '<span class="box">' + (on?'✓':'') + '</span>' +
+           '<span class="label" style="font-size:13px;color:#e8ecf8;line-height:1.5;">' + it.label + '</span></div>';
+  }).join('');
+}
+window.toggleReflect = (id) => {
+  if (!Array.isArray(state.reflectHypo)) state.reflectHypo = [];
+  const i = state.reflectHypo.indexOf(id);
+  if (i >= 0) state.reflectHypo.splice(i, 1);
+  else state.reflectHypo.push(id);
+  renderReflect();
+  updateNoteGate();
+};
+function updateNoteGate() {
+  const allObs = OBS_STMTS.every(s => state.obsClass[s.id] != null);
+  const allRule = RULE_STMTS.every(s => state.ruleClass[s.id] != null);
+  const reflectOk = Array.isArray(state.reflectHypo) && state.reflectHypo.length > 0;
+  const ok = allObs && allRule && reflectOk;
+  document.getElementById('next4').disabled = !ok;
+  if (ok) markDone(4);
+}
+function calcStep4Coin() {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  let coin = obsOk + ruleOk;
+  if (obsOk === OBS_STMTS.length && ruleOk === RULE_STMTS.length) coin += 5;
+  return coin;
+}
+document.getElementById('next4').onclick = () => {
+  const obsOk = OBS_STMTS.filter(s => state.obsClass[s.id] === (s.correct?'tick':'cross')).length;
+  const ruleOk = RULE_STMTS.filter(s => state.ruleClass[s.id] === (s.correct?'tick':'cross')).length;
+  awardStepCoin(4, calcStep4Coin(), 'Note · ' + (obsOk+ruleOk) + '/9 ถูก');
+  go(5);
+};
+
+/* ==================== STEP 5 PEER ==================== */
+function renderPeerQs() {
+  // Sun M=+4.83 vs Rigel M=-7 → Rigel ปล่อยแสงจริงเยอะกว่า
+  const applyEl = document.getElementById('applyQ');
+  const opts = ['Rigel (M=−7.0)', 'Sun (M=+4.83)', 'พอกัน'];
+  applyEl.innerHTML = opts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPeerQ(${i})">${o}</button>`).join('');
+  if (state.peerQ != null) {
+    applyEl.querySelectorAll('.choice-btn').forEach((b,i) => {
+      b.disabled = true;
+      if (i === 0) b.classList.add('correct');
+      else if (i === state.peerQ) b.classList.add('wrong');
+    });
+  }
+  const peerEl = document.getElementById('peerCheck');
+  const peerOpts = ['ตรงกัน', 'ต่างกัน · ได้อภิปราย', 'ทีมยังไม่เสร็จ'];
+  peerEl.innerHTML = peerOpts.map((o,i) =>
+    `<button class="choice-btn" onclick="pickPeerCheck(${i})">${o}</button>`).join('');
+  if (state.peerCheck != null) {
+    peerEl.querySelectorAll('.choice-btn').forEach((b,i) => b.classList.toggle('correct', i===state.peerCheck));
+  }
+}
+window.pickPeerQ = (i) => {
+  if (state.peerQ != null) return;
+  state.peerQ = i;
+  renderPeerQs();
+  if (i === 0 && typeof Photon !== 'undefined') Photon.add(15, 'p09-peer');
+  else if (typeof VoidHunter !== 'undefined') VoidHunter.wrongAnswer('p09');
+  awardStepCoin(5, i === 0 ? 5 : 0, i === 0 ? 'Peer ถูก' : 'Peer ผิด');
+  updatePeerGate();
+};
+window.pickPeerCheck = (i) => {
+  state.peerCheck = i;
+  renderPeerQs();
+  updatePeerGate();
+};
+function updatePeerGate() {
+  if (state.peerQ != null && state.peerCheck != null) markDone(5);
+}
+
+/* ==================== RENDER DISPATCH ==================== */
+function renderStep(s) {
+  if (s === 0) renderPredict();
+  else if (s === 1) { updateCalc(); renderCalcQ(); renderShowdownGuess(); drawShowdown(); }
+  else if (s === 2) renderComputeList();
+  else if (s === 3) { renderRulers(); renderApplyQ(); }
+  else if (s === 4) {
+    renderStmtList('obsList', OBS_STMTS, state.obsClass);
+    renderStmtList('ruleList', RULE_STMTS, state.ruleClass);
+    renderReflect();
+    updateNoteGate();
+  }
+  else if (s === 5) renderPeerQs();
+}
+
+renderStep(0);
+
+/* ==================== SUBMIT ==================== */
+setTimeout(() => {
+  Submit.wirePair({
+    page: 'p09',
+    nextHref: 'p09b-decode.html',
+    getPayload: () => {
+      const allDone = state.stepsDone.size >= 5 && state.peerQ != null && state.peerCheck != null;
+      if (!allDone) { alert('ทำให้ครบทุก step ก่อนส่ง'); throw new Error('incomplete'); }
+      const total = Object.values(state.stepCoins).reduce((a,b)=>a+b, 0);
+      return {
+        tag: 'mvsm-lab',
+        durationSec: Math.round((Date.now()-state.startedAt)/1000),
+        hypothesis: { predVoid: state.predVoid, predSame: state.predSame },
+        tabCoins: state.tabCoins,
+        gameStats: { correct: state.game.correct, missed: state.game.missed, coin: state.game.coin },
+        showdownGuess: state.showdownGuess,
+        computeAns: state.computeAns,
+        computeAttempts: state.computeAttempts,
+        rulerSmall: state.rulerSmall,
+        rulerCap: state.rulerCap,
+        applyAns: state.applyAns,
+        obsClass: state.obsClass, ruleClass: state.ruleClass,
+        reflectHypo: state.reflectHypo,
+        peerQ: state.peerQ, peerCheck: state.peerCheck,
+        stepCoins: state.stepCoins,
+        coinTotal: total,
+        // legacy
+        correct: (state.applyAns===2?1:0) + (state.peerQ===0?1:0),
+        total: 2,
+      };
+    },
+    isPerfect: () => false,
+    onSubmit: () => {
+      const total = Object.values(state.stepCoins).reduce((a,b)=>a+b, 0);
+      alert('✓ ส่งแล้ว · 🪙 รวม ' + total + ' coin');
+    },
+  });
+  setTimeout(() => {
+    const nb = document.querySelector('.next-btn');
+    if (nb && typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p09-to-p09b', 'p09b-decode.html');
+    }
+  }, 400);
+}, 200);
+</script>
+</body></html>

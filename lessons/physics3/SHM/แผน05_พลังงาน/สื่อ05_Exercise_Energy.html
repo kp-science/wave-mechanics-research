@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน 5.1 · คำนวณพลังงาน SHM (แผน 5)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fffbeb;color:#1a202c;font-size:16px;line-height:1.6;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #d97706;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#78350f}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#d97706;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.formula-box{background:#fef3c7;border:2px solid #fcd34d;border-radius:12px;padding:12px 18px;margin:10px 0;text-align:center;font-size:15px}
+.formula-box code{font-family:'Cambria Math','Times New Roman',serif;font-size:17px;color:#78350f;font-weight:700;margin:0 8px}
+.item{border:2px solid #fcd34d;border-radius:12px;padding:16px 18px;margin:14px 0;background:#fffbeb}
+.item .num{display:inline-flex;align-items:center;justify-content:center;background:#d97706;color:#fff;border-radius:50%;width:32px;height:32px;font-weight:800;font-size:15px;margin-right:8px;flex-shrink:0}
+.item .num.challenge{background:#78350f}
+.item-title{font-weight:700;color:#1a202c;font-size:15px}
+.step{background:#fff;border:1.5px solid #fcd34d;border-radius:8px;padding:10px 14px;margin-top:10px}
+.step-lbl{font-weight:700;color:#78350f;margin-bottom:4px;font-size:14px}
+.ans-ta{width:100%;padding:7px 10px;border:1.5px solid #fcd34d;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;margin-top:4px}
+.ans-in{border:none;border-bottom:1.5px solid #d97706;padding:3px 6px;font-family:inherit;font-size:15px;width:100px;text-align:center}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #d97706;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#78350f;font-weight:600}
+.c-btn.active{background:#d97706;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #78350f}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #fcd34d;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#fef3c7 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #fcd34d;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 24px,#fef3c7 25px),repeating-linear-gradient(to bottom,#fff 0,#fff 24px,#fef3c7 25px);touch-action:none;cursor:crosshair;margin-top:6px}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;padding:4px 8px;border-radius:6px;font-size:14.5px;margin:3px 0}
+.opt:hover{background:rgba(217,119,6,.08)}
+.opt input{margin-top:4px;flex-shrink:0;accent-color:#d97706}
+.dropdown{padding:5px 10px;border:1.5px solid #fcd34d;border-radius:8px;font-family:inherit;font-size:14px;background:#fff}
+.check-bank{background:#fff;border:1.5px solid #fcd34d;border-radius:10px;padding:8px 12px;margin-top:6px}
+.check-bank label{display:flex;align-items:flex-start;gap:8px;padding:4px 8px;border-radius:6px;cursor:pointer;font-size:14px;margin:2px 0}
+.check-bank label:hover{background:rgba(217,119,6,.08)}
+.check-bank input[type=checkbox]{accent-color:#d97706;margin-top:4px;flex-shrink:0}
+.misc-tag{background:#ffe4d6;color:#b53c00;border-radius:6px;padding:2px 8px;font-size:11.5px;font-weight:700;margin-left:6px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar,button{display:none}}
+</style></head>
+<body data-ws-id="shm-plan5-exercise">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบงาน 5.1 — คำนวณพลังงานใน SHM</h1>
+      <div class="meta"><span class="tag">SHM แผน 5</span><span class="tag">E4 Elaborate</span> 8 ข้อ · 13' · K5.1, K5.2, P5.2</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #fcd34d;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <code>E = ½kA²</code><code>KE = ½mv²</code><code>PE = ½ky²</code><code>v = ω√(A²−y²)</code><code>v_max = ωA</code>
+  </div>
+
+  <!-- ข้อ 1 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">1</span><span class="item-title">สปริง k = 200 N/m ติดมวล m = 0.5 kg แอมพลิจูด A = 0.10 m · หาพลังงานกลรวม E, ความเร็วสูงสุด v_max และ ω</span></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c1','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c1','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c1','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c1','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c1')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c1" data-bg="lined" width="940" height="180"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="E = ½kA² = ... · ω = √(k/m) = ... · v_max = ωA = ..."></textarea>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
+      <span>E = <input class="ans-in" placeholder=""> J</span>
+      <span>ω = <input class="ans-in" placeholder=""> rad/s</span>
+      <span>v_max = <input class="ans-in" placeholder=""> m/s</span>
+    </div>
+    <div class="hint">💡 ω = √(k/m) · v_max = ωA · E = ½kA² = ½mv²_max</div>
+  </div>
+
+  <!-- ข้อ 2 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">2</span><span class="item-title">จากข้อ 1 (k=200, m=0.5, A=0.1, ω=20) · หาความเร็ว v ที่ y = A/2 = 0.05 m ด้วยสมการอนุรักษ์พลังงาน</span></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด (ใช้ ½mv² + ½ky² = ½kA²):</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c2','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c2','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c2','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c2','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c2')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c2" data-bg="lined" width="940" height="180"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="½mv² = ½kA² − ½ky² = ½k(A²−y²) → v = ..."></textarea>
+    </div>
+    <div style="margin-top:8px">
+      v(y=A/2) = <input class="ans-in" placeholder=""> m/s
+      · เป็น <input class="ans-in" style="width:60px"> % ของ v_max
+    </div>
+    <div class="hint">💡 v = ω√(A²−y²) = 20√(0.01−0.0025) = 20×0.0866 = 1.73 m/s ≈ 86.6% ของ v_max=2</div>
+  </div>
+
+  <!-- ข้อ 3 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">3</span><span class="item-title">สปริงเดิม (k=200, m=0.5) เพิ่มแอมพลิจูดจาก A₁=0.10 m เป็น A₂=0.20 m · E₂ เป็นกี่เท่าของ E₁?<span class="misc-tag">M5.3</span></span></div>
+    <div style="margin-top:8px">
+      <label class="opt"><input type="radio" name="q3"> 2 เท่า (E ∝ A)</label>
+      <label class="opt"><input type="radio" name="q3"> 4 เท่า (E ∝ A²) ✓</label>
+      <label class="opt"><input type="radio" name="q3"> √2 เท่า</label>
+      <label class="opt"><input type="radio" name="q3"> เท่าเดิม (E ไม่ขึ้นกับ A)</label>
+    </div>
+    <div class="step"><div class="step-lbl">🧮 คำนวณยืนยัน:</div>
+      <textarea class="ans-ta" rows="2" placeholder="E₁ = ½(200)(0.1²) = 1 J · E₂ = ½(200)(0.2²) = 4 J → E₂/E₁ = ..."></textarea>
+    </div>
+    <div style="margin-top:8px">E₁ = <input class="ans-in"> J · E₂ = <input class="ans-in"> J · อัตราส่วน E₂/E₁ = <input class="ans-in"></div>
+  </div>
+
+  <!-- ข้อ 4 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">4</span><span class="item-title">อ่านกราฟ KE vs y: กราฟพาราโบลาหงาย ตัดแกน y ที่ y = ±0.15 m และค่าสูงสุด KE_max = 2.25 J · หา k และ A<span class="misc-tag">M5.1</span></span></div>
+    <div style="background:#fef3c7;border-left:4px solid #d97706;padding:10px 14px;border-radius:8px;margin:8px 0;font-size:14px">
+      💡 จาก KE = ½mω²(A²−y²) = ½k(A²−y²) · ที่ y=±A: KE=0 → A = 0.15 m · ที่ y=0: KE_max = ½kA² → k = ?
+    </div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c4','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c4','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c4','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c4','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c4')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c4" data-bg="lined" width="940" height="180"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="A = 0.15 m (ตรงตัดแกน x) · KE_max = ½kA² = 2.25 → k = 2×2.25/(0.15²) = ..."></textarea>
+    </div>
+    <div style="margin-top:8px">A = <input class="ans-in"> m · k = <input class="ans-in"> N/m · E = <input class="ans-in"> J</div>
+  </div>
+
+  <!-- ข้อ 5 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">5</span><span class="item-title">ระบบมวล-สปริง (E=1.00 J, k=50, A=0.2 m) · หาตำแหน่ง y ที่ KE = PE (พลังงานเท่ากันพอดี)</span></div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด (KE = PE → ½E = ½kA² → ½ky² = ½×½kA² → y² = A²/2 → y = ?):</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c5','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c5','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c5','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c5','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c5')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c5" data-bg="lined" width="940" height="180"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="KE = PE → ½k(A²−y²) = ½ky² → A²−y²=y² → 2y²=A² → y=±A/√2 = ..."></textarea>
+    </div>
+    <div style="margin-top:8px">y (ที่ KE=PE) = ± <input class="ans-in"> m ≈ ± <input class="ans-in"> m (ทศนิยม 3 ตำแหน่ง)</div>
+    <div class="hint">💡 y = A/√2 = 0.2/1.414 ≈ 0.141 m (ไม่ใช่ A/2 = 0.10 m)</div>
+  </div>
+
+  <!-- ข้อ 6 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">6</span><span class="item-title">สปริงแนวดิ่ง (k=100 N/m, m=0.5 kg) ดึงมวลลง 0.08 m จากสมดุลใหม่แล้วปล่อย · ทำไมจึงใช้ E = ½kA² แทนที่จะต้องบวก PE โน้มถ่วงด้วย?<span class="misc-tag">M5.4</span></span></div>
+    <div style="margin-top:8px">
+      <label class="opt"><input type="radio" name="q6"> ก. เพราะแรงโน้มถ่วงไม่ทำงานในแนวดิ่ง</label>
+      <label class="opt"><input type="radio" name="q6"> ข. เพราะเมื่อวัด x จากสมดุลใหม่ ½mv²+½kx²=½kA² (PE โน้มถ่วงถูกรวมในการ derive แล้ว)</label>
+      <label class="opt"><input type="radio" name="q6"> ค. เพราะสปริงแนวดิ่งกับแนวราบใช้สูตรต่างกัน</label>
+      <label class="opt"><input type="radio" name="q6"> ง. เพราะ A น้อยมากจึงละ PE โน้มถ่วงได้</label>
+    </div>
+    <div class="step" style="margin-top:8px"><div class="step-lbl">✍️ อธิบายเพิ่มเติม:</div>
+      <textarea class="ans-ta" rows="3" placeholder="สมดุลใหม่ที่ kx₀ = mg · ถ้าตั้ง x=0 ที่นั่น แรงสุทธิ = −k(x₀+x)+mg = −kx → กฎ SHM เดิม → E = ½kA² สมบูรณ์..."></textarea>
+    </div>
+    <div style="margin-top:8px">E ของระบบนี้ = ½(100)(0.08²) = <input class="ans-in"> J</div>
+  </div>
+
+  <!-- ข้อ 7 -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num">7</span><span class="item-title">ลูกตุ้มอย่างง่าย (l=1.0 m, m=0.2 kg, g=9.8, θ_max=10°) vs สปริง (k=19.6 N/m, m=0.2 kg, A=0.174 m) · เปรียบเทียบ E ของทั้งสอง</span></div>
+    <div class="step"><div class="step-lbl">🧮 คำนวณ E ของแต่ละระบบ:</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c7','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c7','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c7','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c7','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c7')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c7" data-bg="lined" width="940" height="200"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="ลูกตุ้ม: E=mgl(1−cosθ)=... J · สปริง: E=½kA²=... J · เปรียบเทียบ..."></textarea>
+    </div>
+    <div style="margin-top:8px">E ลูกตุ้ม = <input class="ans-in"> J · E สปริง = <input class="ans-in"> J · ต่างกัน = <input class="ans-in" style="width:60px"> %</div>
+    <div class="hint">💡 E ลูกตุ้ม = mgl(1−cosθ) = 0.2×9.8×1.0×(1−cos10°) ≈ 0.030 J · A_ลูกตุ้ม = l·sinθ ≈ 0.174 m</div>
+  </div>
+
+  <!-- ข้อ 8 Challenge -->
+  <div class="item">
+    <div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px"><span class="num challenge">8</span><span class="item-title">🏆 Challenge — หาตำแหน่ง y ที่ KE = 3×PE</span></div>
+    <div style="background:#fff3e0;border-left:4px solid #ef6c00;padding:10px 14px;border-radius:8px;margin:8px 0;font-size:14px">
+      สปริง k, m, A ใดๆ · หา y ในรูป A
+    </div>
+    <div class="step"><div class="step-lbl">🧮 แสดงวิธีคิด (KE = 3PE → ½k(A²−y²) = 3×½ky² → ?):</div>
+      <div class="canvas-toolbar"><button class="c-btn active" onclick="setTool('c8','pencil',this)">✏️</button><button class="c-btn" onclick="setTool('c8','eraser',this)">⬜</button><div class="c-color active" style="background:#1a202c" onclick="setColor('c8','#1a202c',this)"></div><div class="c-color" style="background:#d97706" onclick="setColor('c8','#d97706',this)"></div><button class="c-btn" onclick="clearCanvas('c8')" style="margin-left:auto;color:#c53030">🗑️</button></div>
+      <canvas id="c8" data-bg="lined" width="940" height="200"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="A²−y² = 3y² → A² = 4y² → y² = A²/4 → y = ±A/2"></textarea>
+    </div>
+    <div style="margin-top:8px">y (ที่ KE=3PE) = ± <input class="ans-in" placeholder="A/2"> · ตรวจสอบ: ที่ y=A/2 PE = <input class="ans-in"> J, KE = <input class="ans-in"> J (ถ้า A=0.2, k=50)</div>
+    <div class="hint">💡 y = ±A/2 — เปรียบเทียบกับ y = ±A/√2 (ที่ KE=PE) · ค่าต่างกัน!</div>
+  </div>
+
+  <!-- Self-check -->
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">✅ Self-check:</b> ฉันตอบถูก <input type="number" min="0" max="8" style="width:50px;padding:4px 8px;border:1px solid #86efac;border-radius:6px"> / 8 ข้อ
+    · ข้อที่อยากให้ครูอธิบายเพิ่ม: <input type="text" style="width:60%;padding:4px 8px;border:1px solid #86efac;border-radius:6px">
+  </div>
+
+  <div style="background:#fef3c7;border:2px dashed #fcd34d;border-radius:12px;padding:14px;text-align:center;margin-top:14px">
+    <button onclick="window.print()" style="background:#fef3c7;border:1.5px solid #d97706;border-radius:8px;padding:8px 20px;font-family:inherit;font-size:14px;cursor:pointer;color:#78350f;font-weight:700;margin-right:8px">🖨️ พิมพ์</button>
+  </div>
+  <div style="text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #fde68a;padding-top:8px">
+    ใบงาน 5.1 · SHM แผน 5 · พลังงาน SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569
+  </div>
+</div>
+
+<script>
+const cS={};
+function initCanvas(id){
+  const c=document.getElementById(id);if(!c)return;
+  const ctx=c.getContext('2d');cS[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:true};
+  function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+  function st(e){e.preventDefault();cS[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+  function mv(e){e.preventDefault();const s=cS[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+  function en(e){e.preventDefault();cS[id].drawing=false;}
+  c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);
+  c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});
+}
+function setTool(id,t,btn){cS[id].tool=t;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){cS[id].color=col;cS[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){cS[id].ctx.globalCompositeOperation='source-over';cS[id].ctx.clearRect(0,0,document.getElementById(id).width,document.getElementById(id).height);}
+document.addEventListener('DOMContentLoaded',()=>{['c1','c2','c4','c5','c7','c8'].forEach(id=>initCanvas(id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P02 · Team Setup · COSMOS LOG EP01</title>
+<link rel="stylesheet" href="../shared/book.css?v=5">
+<style>
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 20px; }
+.team-tile {
+  aspect-ratio: 1; border-radius: 16px; border: 2px solid var(--team-color);
+  background: linear-gradient(160deg, rgba(22,27,58,0.8), rgba(8,10,24,0.9));
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  gap: 8px; cursor: pointer; transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.team-tile::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at center, var(--team-color) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.team-tile:hover::before { opacity: 0.15; }
+.team-tile.selected { box-shadow: 0 0 30px var(--team-color); }
+.team-tile.selected::before { opacity: 0.25; }
+.team-tile .icon { font-size: 40px; z-index: 1; }
+.team-tile .name {
+  font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 13px;
+  letter-spacing: 0.15em; color: var(--team-color); z-index: 1;
+}
+</style>
+</head>
+<body data-page="p02">
+<main class="page"><div class="page-inner">
+
+<div class="page-label">◤ PAGE 02 / 16 · SETUP · 2 นาที</div>
+<h1 class="page-title">เลือกยานของทีมคุณ</h1>
+<h2 class="page-sub">TEAM SELECTION · COSMOS ACADEMY</h2>
+
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">จัด</span><span>แบ่งทีมละ 4-5 คน · ให้เลือกยาน · ตั้งชื่อทีม · เลือกบทบาทหลัก 1 คน</span></div>
+    <div class="role"><span class="tag do">อำนวย</span><span>ถ้าทีมตัดสินใจนานเกิน 2 นาที ให้ใบ้หรือสุ่ม</span></div>
+  </div>
+</div>
+
+<p class="muted">แต่ละทีมจะได้รับยานประจำตัว · ชื่อทีม · และตัดสินใจร่วมกันเป็นกลุ่มตลอดภารกิจ</p>
+
+<div class="team-grid" id="team-grid"></div>
+
+<div class="form-row">
+  <label>⚡ ชื่อยาน / ชื่อทีม</label>
+  <input type="text" id="team-name" placeholder="เช่น · Stellar Nomads · Void Hunters">
+</div>
+
+<div class="form-row">
+  <label>🎭 บทบาทหลัก</label>
+  <select id="team-role">
+    <option value="">-- เลือกบทบาท --</option>
+    <option value="NAV">NAV · Navigator (แผนที่กาแล็กซี)</option>
+    <option value="ENG">ENG · Spectral Engineer (วิเคราะห์แสง)</option>
+    <option value="MED">MED · Astrobiologist (ระบบสุริยะ)</option>
+    <option value="MECH">MECH · Warp Mechanic (จรวด-วงโคจร)</option>
+  </select>
+</div>
+
+<div class="info-card">
+  <h4>📋 กฎการเล่น</h4>
+  <p>• ทุกหน้ามีภารกิจ · ทำเสร็จได้ <b>Energy</b></p>
+  <p>• เลือก "ผิด" ไม่ใช่ล้มเหลว · จะไปผจญภัยในเส้นทางพิเศษ</p>
+  <p>• จบภารกิจ · ได้ <b>Journey Map</b> ของทีม · ใช้ใน EP02</p>
+</div>
+
+<div class="center mt-20">
+  <button class="btn primary" onclick="submitTeam()">✓ ยืนยันทีม · เริ่มภารกิจ</button>
+</div>
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag a">A2 ทีมเวิร์ก</span>
+  <span class="ped-tag">วPA 4 · แรงจูงใจ</span>
+  <span class="ped-tag">วPA 7 · บรรยากาศ</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js"></script>
+<script>
+function renderGrid() {
+  const grid = document.getElementById('team-grid');
+  grid.innerHTML = TEAMS.map(t => `
+    <div class="team-tile" style="--team-color:${t.color}" data-id="${t.id}" onclick="selectTeam(${t.id})">
+      <div class="icon">${t.icon}</div>
+      <div class="name">TEAM ${t.name.toUpperCase()}</div>
+    </div>`).join('');
+  if (Book.state.teamId) {
+    document.querySelector(`.team-tile[data-id="${Book.state.teamId}"]`)?.classList.add('selected');
+    document.getElementById('team-name').value = Book.state.teamName || '';
+    document.getElementById('team-role').value = Book.state.role || '';
+  }
+}
+function selectTeam(id) {
+  Book.state.teamId = id;
+  document.querySelectorAll('.team-tile').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`.team-tile[data-id="${id}"]`).classList.add('selected');
+  Book.save(); Book.updateHUD();
+}
+function submitTeam() {
+  if (!Book.state.teamId) { alert('กรุณาเลือกยานก่อน'); return; }
+  const name = document.getElementById('team-name').value.trim();
+  const role = document.getElementById('team-role').value;
+  if (!name) { alert('กรุณาตั้งชื่อทีม'); return; }
+  if (!role) { alert('กรุณาเลือกบทบาท'); return; }
+  Book.state.teamName = name;
+  Book.state.role = role;
+  Book.save(); Book.updateHUD();
+  Book.addEnergy(2, 'Team formed');
+  Book.completePage('p02');
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main">
+      <h3>✓ ทีม ${name} พร้อมออกเดินทาง</h3>
+      <p>บทบาทหลัก: ${role} · กด "ต่อไป →" เข้าสู่ภารกิจ</p>
+    </div>`;
+}
+renderGrid();
+</script>
+</body>
+</html>

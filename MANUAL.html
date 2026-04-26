@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KP Command Center</title>
+<style>
+  :root {
+    --bg: #0a0e1a; --bg-2: #0f172a;
+    --surface: rgba(30, 41, 59, 0.6); --surface-solid: #1e293b;
+    --border: rgba(148, 163, 184, 0.15); --border-strong: rgba(148, 163, 184, 0.3);
+    --text: #e2e8f0; --dim: #94a3b8;
+    --blue: #38bdf8; --purple: #a78bfa; --pink: #f472b6;
+    --green: #34d399; --orange: #fb923c; --red: #f87171;
+    --code-bg: #0b1220;
+    --gradient-hero: linear-gradient(135deg, #38bdf8, #a78bfa 50%, #f472b6);
+    --g-blue: linear-gradient(135deg, #1e3a8a, #0c4a6e);
+    --g-purple: linear-gradient(135deg, #4c1d95, #581c87);
+    --g-green: linear-gradient(135deg, #064e3b, #065f46);
+    --g-orange: linear-gradient(135deg, #7c2d12, #9a3412);
+    --g-pink: linear-gradient(135deg, #9d174d, #be185d);
+    --g-red: linear-gradient(135deg, #7f1d1d, #991b1b);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Sarabun", "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.7;
+    background-image:
+      radial-gradient(at 10% 0%, rgba(56, 189, 248, 0.08), transparent 50%),
+      radial-gradient(at 90% 10%, rgba(167, 139, 250, 0.08), transparent 50%),
+      radial-gradient(at 50% 100%, rgba(244, 114, 182, 0.06), transparent 50%);
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(20px);
+    background: rgba(10, 14, 26, 0.85);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top {
+    display: flex; align-items: center; gap: 24px;
+    max-width: 1400px; margin: 0 auto; padding: 14px 32px;
+  }
+  .logo {
+    font-size: 18px; font-weight: 800; white-space: nowrap;
+    background: var(--gradient-hero); -webkit-background-clip: text;
+    background-clip: text; color: transparent;
+  }
+  .search-wrap { flex: 1; position: relative; max-width: 600px; }
+  .search-input {
+    width: 100%; background: var(--surface);
+    border: 1px solid var(--border-strong); border-radius: 10px;
+    padding: 10px 16px 10px 40px; color: var(--text); font-size: 14px;
+    outline: none; transition: all 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+  }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--dim); }
+  .search-kbd {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: var(--surface-solid); border: 1px solid var(--border);
+    border-radius: 5px; padding: 2px 7px; font-size: 11px; color: var(--dim); font-family: monospace;
+  }
+  .stats { display: flex; gap: 16px; font-size: 13px; color: var(--dim); }
+  .stats strong { color: var(--blue); }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex; gap: 4px; max-width: 1400px; margin: 0 auto;
+    padding: 0 32px; overflow-x: auto; scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 12px 18px; background: transparent; border: none;
+    color: var(--dim); font-size: 14px; cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.15s;
+    white-space: nowrap; display: inline-flex; align-items: center; gap: 8px;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--blue); border-bottom-color: var(--blue); font-weight: 600;
+  }
+  .tab-badge {
+    background: var(--surface-solid); padding: 1px 8px; border-radius: 99px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tab.active .tab-badge { background: var(--blue); color: var(--bg); }
+
+  /* ===== CONTAINER ===== */
+  .container { max-width: 1400px; margin: 0 auto; padding: 32px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ===== HERO ===== */
+  .hero {
+    padding: 40px 48px;
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(167, 139, 250, 0.1));
+    border: 1px solid var(--border-strong); border-radius: 20px;
+    margin-bottom: 32px; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at top right, rgba(244, 114, 182, 0.15), transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 42px; line-height: 1.2; font-weight: 800; margin-bottom: 12px;
+    background: var(--gradient-hero); -webkit-background-clip: text;
+    background-clip: text; color: transparent;
+  }
+  .hero p { color: var(--dim); font-size: 16px; max-width: 700px; }
+  .hero-stats { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+  .hero-stat {
+    padding: 14px 20px; background: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border); border-radius: 12px; min-width: 130px;
+  }
+  .hero-stat .num { font-size: 28px; font-weight: 800; color: var(--blue); line-height: 1; }
+  .hero-stat .label { font-size: 12px; color: var(--dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ===== QUICK START ===== */
+  .qs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 24px; }
+  .qs-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px; transition: all 0.2s;
+    cursor: pointer;
+  }
+  .qs-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+  .qs-card .num {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--g-blue); display: inline-flex;
+    align-items: center; justify-content: center; font-weight: 700;
+    font-size: 14px; margin-bottom: 12px;
+  }
+  .qs-card h4 { font-size: 16px; color: var(--text); margin-bottom: 6px; }
+  .qs-card p { font-size: 13px; color: var(--dim); }
+  .qs-card code {
+    display: block; margin-top: 10px; padding: 6px 10px;
+    background: var(--code-bg); border-radius: 6px;
+    font-size: 12px; color: var(--blue);
+  }
+
+  /* ===== FILTER ===== */
+  .filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+  }
+  .filter-btn {
+    padding: 8px 16px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 999px;
+    color: var(--text); font-size: 13px; cursor: pointer;
+    transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+    font-family: inherit;
+  }
+  .filter-btn:hover { border-color: var(--border-strong); }
+  .filter-btn.active {
+    background: var(--blue); color: var(--bg); border-color: var(--blue); font-weight: 600;
+  }
+  .filter-btn .count {
+    background: rgba(0,0,0,0.2); padding: 1px 7px; border-radius: 99px; font-size: 11px;
+  }
+  .filter-btn.active .count { background: rgba(0,0,0,0.3); }
+
+  /* ===== CARD GRID ===== */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--surface); backdrop-filter: blur(10px);
+    border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px; transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--border-strong); transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 3px; background: var(--card-accent, var(--blue));
+  }
+  .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .card-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .card-name {
+    font-family: "SF Mono", Consolas, monospace; font-size: 15px;
+    font-weight: 600; color: var(--blue);
+  }
+  .card-desc { color: var(--text); font-size: 14px; margin-top: 4px; }
+  .card-args {
+    font-family: monospace; font-size: 12px; color: var(--dim);
+    background: var(--code-bg); padding: 8px 12px; border-radius: 6px;
+    margin-top: 12px; overflow-x: auto; white-space: nowrap;
+  }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .tag {
+    padding: 2px 10px; border-radius: 999px; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .tag-macro { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+  .tag-micro { background: rgba(56, 189, 248, 0.15); color: var(--blue); }
+  .tag-meta { background: rgba(251, 146, 60, 0.15); color: var(--orange); }
+  .tag-pattern { background: rgba(244, 114, 182, 0.15); color: var(--pink); }
+  .tag-phys { background: rgba(167, 139, 250, 0.15); color: var(--purple); }
+  .tag-astro { background: rgba(56, 189, 248, 0.15); color: var(--blue); }
+  .tag-web { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+  .tag-game { background: rgba(251, 146, 60, 0.15); color: var(--orange); }
+  .tag-state { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+
+  .card[data-cat="phys"] { --card-accent: var(--purple); }
+  .card[data-cat="astro"] { --card-accent: var(--blue); }
+  .card[data-cat="web"] { --card-accent: var(--green); }
+  .card[data-cat="game"] { --card-accent: var(--orange); }
+  .card[data-cat="pattern"] { --card-accent: var(--pink); }
+  .card[data-cat="meta"] { --card-accent: var(--red); }
+  .card[data-cat="state"] { --card-accent: var(--red); }
+
+  /* ===== CONTENT ===== */
+  h2 { font-size: 24px; margin-bottom: 16px; }
+  h3 { font-size: 18px; color: var(--text); margin: 28px 0 12px; }
+  h4 { font-size: 15px; color: var(--blue); margin: 20px 0 8px; }
+  p + p { margin-top: 12px; }
+
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px; overflow-x: auto;
+    font-size: 13px; line-height: 1.6;
+  }
+  pre code { font-family: "SF Mono", monospace; color: var(--text); }
+  code {
+    font-family: "SF Mono", monospace; font-size: 0.9em;
+    color: var(--blue); background: var(--code-bg);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  .flow-box {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 24px;
+    font-family: "SF Mono", monospace; font-size: 13px; line-height: 1.7;
+    white-space: pre-wrap; overflow-x: auto; color: var(--text);
+    margin: 16px 0;
+  }
+  .flow-box .h { color: var(--pink); font-weight: 600; }
+  .flow-box .c { color: var(--green); }
+  .flow-box .dim { color: var(--dim); }
+  .flow-box .y { color: var(--orange); }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  th {
+    background: rgba(56, 189, 248, 0.08); color: var(--blue);
+    font-weight: 600; text-align: left; padding: 12px 16px;
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  td { padding: 12px 16px; border-top: 1px solid var(--border); font-size: 14px; }
+
+  .tip, .warn, .info {
+    padding: 16px 20px; border-radius: 12px; margin: 20px 0;
+    border-left: 4px solid; display: flex; gap: 12px;
+  }
+  .tip { background: rgba(56, 189, 248, 0.08); border-color: var(--blue); }
+  .warn { background: rgba(248, 113, 113, 0.08); border-color: var(--red); }
+  .info { background: rgba(167, 139, 250, 0.08); border-color: var(--purple); }
+  .tip-icon { font-size: 20px; flex-shrink: 0; }
+
+  .hidden { display: none !important; }
+  .no-results {
+    text-align: center; padding: 60px 20px; color: var(--dim); display: none;
+  }
+  .no-results.show { display: block; }
+
+  mark { background: rgba(251, 146, 60, 0.3); color: var(--orange); padding: 0 2px; border-radius: 3px; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 768px) {
+    .header-top { flex-wrap: wrap; }
+    .hero { padding: 24px; }
+    .hero h1 { font-size: 28px; }
+    .container { padding: 20px 16px; }
+    .stats { display: none; }
+    .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">⚡ KP Command Center</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="ค้นหาคำสั่ง · พิมพ์ชื่อหรือคีย์เวิร์ด (⌘K)" autocomplete="off">
+      <span class="search-kbd">⌘K</span>
+    </div>
+    <div class="stats">
+      <div><strong id="cmdCount">34</strong> commands</div>
+      <div><strong>2</strong> patterns</div>
+    </div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="home">🏠 ภาพรวม</button>
+    <button class="tab" data-tab="commands">⚡ คำสั่ง <span class="tab-badge">34</span></button>
+    <button class="tab" data-tab="workflows">🎯 Workflows</button>
+    <button class="tab" data-tab="patterns">🎨 Patterns</button>
+    <button class="tab" data-tab="state">🧠 State &amp; Memory</button>
+    <button class="tab" data-tab="tokens">💰 Token Tips</button>
+    <button class="tab" data-tab="files">📂 โครงสร้างไฟล์</button>
+    <button class="tab" data-tab="code">💻 โค้ด &amp; ตัวอย่าง</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ============= TAB: HOME ============= -->
+  <div class="panel active" id="panel-home">
+    <section class="hero">
+      <h1>Slash Commands Reference</h1>
+      <p>ระบบคำสั่งสำหรับสร้างบทเรียนฟิสิกส์ ดาราศาสตร์ และจัดการเว็บ <code>kp-science.github.io</code> · ออกแบบให้ประหยัด token · ตรงจุด · ขยายต่อได้ด้วย Pattern Library และ State Memory</p>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="num">34</div><div class="label">Commands</div></div>
+        <div class="hero-stat"><div class="num">7</div><div class="label">Categories</div></div>
+        <div class="hero-stat"><div class="num">2</div><div class="label">Patterns</div></div>
+        <div class="hero-stat"><div class="num">~18k</div><div class="label">Tokens/แผน</div></div>
+      </div>
+    </section>
+
+    <h2>🚀 Quick Start — เริ่มจากอะไร?</h2>
+    <div class="qs-grid">
+      <div class="qs-card" onclick="switchTab('state')">
+        <div class="num">1</div>
+        <h4>เปิด chat ใหม่?</h4>
+        <p>โหลดบริบทล่าสุดของวิชาก่อนเริ่มงาน</p>
+        <code>/catchup astronomy</code>
+      </div>
+      <div class="qs-card" onclick="switchTab('workflows')">
+        <div class="num">2</div>
+        <h4>สร้างแผนฟิสิกส์ใหม่?</h4>
+        <p>Macro จบในคำสั่งเดียว</p>
+        <code>/phys-full waves 11 "..."</code>
+      </div>
+      <div class="qs-card" onclick="switchTab('patterns')">
+        <div class="num">3</div>
+        <h4>เปิดวิชาใหม่?</h4>
+        <p>ใช้ pattern ที่มี + batch Q&amp;A</p>
+        <code>/pattern-use astronomy-game bio</code>
+      </div>
+      <div class="qs-card" onclick="switchTab('commands')">
+        <div class="num">4</div>
+        <h4>หาคำสั่ง?</h4>
+        <p>Search + filter ตามหมวด</p>
+        <code>กด ⌘K เพื่อค้นหา</code>
+      </div>
+    </div>
+
+    <h2 style="margin-top: 40px;">📋 สรุปหมวดหมู่</h2>
+    <table>
+      <tr><th>หมวด</th><th>จำนวน</th><th>ใช้เมื่อ</th></tr>
+      <tr><td>🔵 Physics</td><td>4</td><td>สร้างแผน Wave/SHM 5E+POE</td></tr>
+      <tr><td>🟣 Astronomy</td><td>4</td><td>หน้าดาราศาสตร์ COSMOS LOG + เกม</td></tr>
+      <tr><td>🌐 Web</td><td>9</td><td>ลงทะเบียนเนื้อหา + verify + deploy</td></tr>
+      <tr><td>🎮 Game (Generic)</td><td>3</td><td>เกมสำหรับวิชาใหม่ (ไม่ hardcode)</td></tr>
+      <tr><td>🎨 Pattern</td><td>6</td><td>จัดการ Pattern Library · เปิดวิชาใหม่</td></tr>
+      <tr><td>🧠 State</td><td>4</td><td>Living memory ต่อวิชา · resume/save</td></tr>
+      <tr><td>🛠️ Meta</td><td>4</td><td>Extract pattern · แก้คำสั่ง · status</td></tr>
+    </table>
+  </div>
+
+  <!-- ============= TAB: COMMANDS ============= -->
+  <div class="panel" id="panel-commands">
+    <h2>⚡ คำสั่งทั้งหมด (34)</h2>
+    <p style="color: var(--dim); margin-bottom: 20px;">พิมพ์ค้นหาด้านบน · หรือเลือก filter ด้านล่าง</p>
+
+    <div class="filter-row" id="filterBar">
+      <button class="filter-btn active" data-filter="all">ทั้งหมด <span class="count">34</span></button>
+      <button class="filter-btn" data-filter="phys">🔵 Physics <span class="count">4</span></button>
+      <button class="filter-btn" data-filter="astro">🟣 Astronomy <span class="count">4</span></button>
+      <button class="filter-btn" data-filter="web">🌐 Web <span class="count">9</span></button>
+      <button class="filter-btn" data-filter="game">🎮 Game <span class="count">3</span></button>
+      <button class="filter-btn" data-filter="pattern">🎨 Pattern <span class="count">6</span></button>
+      <button class="filter-btn" data-filter="state">🧠 State <span class="count">4</span></button>
+      <button class="filter-btn" data-filter="meta">🛠️ Meta <span class="count">4</span></button>
+    </div>
+
+    <div class="no-results" id="noResults">
+      <div style="font-size: 48px;">🤔</div>
+      <h3>ไม่พบคำสั่ง</h3>
+      <p>ลองค้นคำอื่นหรือกด "ทั้งหมด"</p>
+    </div>
+
+    <div class="grid" id="cmdGrid">
+
+      <!-- PHYSICS -->
+      <div class="card" data-cat="phys" data-keywords="phys full macro ครบวงจร 5e poe wave shm แผน ฟิสิกส์">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-purple);">🔵</span><span class="card-name">/phys-full</span></div>
+        <div class="card-desc">สร้างแผนฟิสิกส์ครบวงจร (Step 1-7) + deploy</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt; "&lt;หัวข้อ&gt;" [--no-confirm]</div>
+        <div class="card-tags"><span class="tag tag-macro">Macro</span><span class="tag tag-phys">Physics</span></div>
+      </div>
+      <div class="card" data-cat="phys" data-keywords="phys plan new micro skeleton">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-purple);">📝</span><span class="card-name">/phys-plan-new</span></div>
+        <div class="card-desc">สร้าง skeleton แผน (โฟลเดอร์ + Infographic)</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt; "&lt;หัวข้อ&gt;"</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-phys">Physics</span></div>
+      </div>
+      <div class="card" data-cat="phys" data-keywords="phys media add poe calc spot fourtier สื่อ">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-purple);">➕</span><span class="card-name">/phys-media-add</span></div>
+        <div class="card-desc">เพิ่มสื่อ 1 ชิ้น (POE/Calc/Spot/F)</div>
+        <div class="card-args">&lt;subject&gt; &lt;N&gt; &lt;POE|Calc|Spot|F&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-phys">Physics</span></div>
+      </div>
+      <div class="card" data-cat="phys" data-keywords="phys check checklist ตรวจ bug">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-purple);">✅</span><span class="card-name">/phys-check</span></div>
+        <div class="card-desc">Pre-push checklist 13 ข้อ</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-phys">Physics</span></div>
+      </div>
+
+      <!-- ASTRO -->
+      <div class="card" data-cat="astro" data-keywords="astro full macro ดาราศาสตร์ cosmos log ep01 ep02">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-blue);">🌌</span><span class="card-name">/astro-full</span></div>
+        <div class="card-desc">สร้างหน้าดาราศาสตร์ครบวงจร</div>
+        <div class="card-args">&lt;ep01|ep02&gt; &lt;N&gt; "&lt;ชื่อ&gt;"</div>
+        <div class="card-tags"><span class="tag tag-macro">Macro</span><span class="tag tag-astro">Astro</span></div>
+      </div>
+      <div class="card" data-cat="astro" data-keywords="astro page new book cosmos log teacher cue">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-blue);">📄</span><span class="card-name">/astro-page-new</span></div>
+        <div class="card-desc">สร้าง 1 หน้า (Book-page + COSMOS LOG)</div>
+        <div class="card-args">&lt;ep&gt; &lt;N&gt; "&lt;ชื่อ&gt;"</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-astro">Astro</span></div>
+      </div>
+      <div class="card" data-cat="astro" data-keywords="astro ep02 item heal damage buff key">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-blue);">💎</span><span class="card-name">/astro-ep02-item</span></div>
+        <div class="card-desc">เพิ่ม item ในเกม EP02</div>
+        <div class="card-args">&lt;name&gt; [--type]</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-astro">Astro</span></div>
+      </div>
+      <div class="card" data-cat="astro" data-keywords="astro ep02 boss hp phase บอส">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-blue);">👹</span><span class="card-name">/astro-ep02-boss</span></div>
+        <div class="card-desc">เพิ่ม/แก้ boss ในเกม EP02</div>
+        <div class="card-args">&lt;boss&gt; [--action] [--hp]</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-astro">Astro</span></div>
+      </div>
+
+      <!-- WEB -->
+      <div class="card" data-cat="web" data-keywords="web full macro register verify deploy">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">🌐</span><span class="card-name">/web-full</span></div>
+        <div class="card-desc">Register + verify + deploy ครบ</div>
+        <div class="card-args">&lt;subject&gt; &lt;N&gt; --msg "..."</div>
+        <div class="card-tags"><span class="tag tag-macro">Macro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web register worksheet schema viewfile">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">📋</span><span class="card-name">/web-reg-worksheet</span></div>
+        <div class="card-desc">เพิ่ม schema ใน worksheets.js</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web register media folder linkout">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">📁</span><span class="card-name">/web-reg-media</span></div>
+        <div class="card-desc">เพิ่ม entry ใน media.js</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web register question fourtier misconception">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">❓</span><span class="card-name">/web-reg-question</span></div>
+        <div class="card-desc">เพิ่ม Four-tier ใน questions.js</div>
+        <div class="card-args">&lt;waves|SHM&gt; &lt;N&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web register astro ดาราศาสตร์ ep">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">🪐</span><span class="card-name">/web-reg-astro</span></div>
+        <div class="card-desc">Register หน้าดาราศาสตร์</div>
+        <div class="card-args">&lt;ep01|ep02&gt; [&lt;pageN&gt;]</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web register subject วิชาใหม่">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">📚</span><span class="card-name">/web-reg-subject</span></div>
+        <div class="card-desc">ลงทะเบียนวิชาใหม่</div>
+        <div class="card-args">&lt;subject-id&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web verify bracket balance file">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">🔎</span><span class="card-name">/web-verify</span></div>
+        <div class="card-desc">Verify ก่อน deploy</div>
+        <div class="card-args">&lt;subject&gt; &lt;N&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web deploy commit push github">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">🚀</span><span class="card-name">/web-deploy</span></div>
+        <div class="card-desc">Commit + push ขึ้น GitHub Pages</div>
+        <div class="card-args">"&lt;commit message&gt;"</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web edit index line">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">✏️</span><span class="card-name">/web-edit-index</span></div>
+        <div class="card-desc">แก้ index.html เฉพาะส่วน</div>
+        <div class="card-args">&lt;section&gt; | --line=a-b</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+      <div class="card" data-cat="web" data-keywords="web edit classroom render">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-green);">🏫</span><span class="card-name">/web-edit-classroom</span></div>
+        <div class="card-desc">แก้ KP-Classroom.html เฉพาะ function</div>
+        <div class="card-args">&lt;render-fn&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-web">Web</span></div>
+      </div>
+
+      <!-- GAME -->
+      <div class="card" data-cat="game" data-keywords="game page new generic วิชาใหม่">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-orange);">🎮</span><span class="card-name">/game-page-new</span></div>
+        <div class="card-desc">สร้างหน้าเกมวิชาใดก็ได้</div>
+        <div class="card-args">&lt;subject&gt; &lt;ep&gt; &lt;N&gt; "&lt;ชื่อ&gt;"</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-game">Generic</span></div>
+      </div>
+      <div class="card" data-cat="game" data-keywords="game item generic วิชา">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-orange);">💠</span><span class="card-name">/game-item</span></div>
+        <div class="card-desc">เพิ่ม item (ทุกวิชา)</div>
+        <div class="card-args">&lt;subject&gt; &lt;name&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-game">Generic</span></div>
+      </div>
+      <div class="card" data-cat="game" data-keywords="game boss generic วิชา">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-orange);">⚔️</span><span class="card-name">/game-boss</span></div>
+        <div class="card-desc">เพิ่ม/แก้ boss (ทุกวิชา)</div>
+        <div class="card-args">&lt;subject&gt; &lt;name&gt;</div>
+        <div class="card-tags"><span class="tag tag-micro">Micro</span><span class="tag tag-game">Generic</span></div>
+      </div>
+
+      <!-- PATTERN -->
+      <div class="card" data-cat="pattern" data-keywords="pattern list ดู patterns tree">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">📦</span><span class="card-name">/pattern-list</span></div>
+        <div class="card-desc">แสดง patterns ทั้งหมด</div>
+        <div class="card-args">(no args)</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span></div>
+      </div>
+      <div class="card" data-cat="pattern" data-keywords="pattern use scaffold วิชาใหม่ เริ่ม">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">🎯</span><span class="card-name">/pattern-use</span></div>
+        <div class="card-desc">สร้างวิชาใหม่จาก pattern (batch Q&amp;A + auto STATE.md)</div>
+        <div class="card-args">&lt;pattern&gt; &lt;subject-id&gt;</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span><span class="tag tag-macro">Macro</span></div>
+      </div>
+      <div class="card" data-cat="pattern" data-keywords="pattern fork copy clone">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">🍴</span><span class="card-name">/pattern-fork</span></div>
+        <div class="card-desc">คัดลอก pattern เดิมเป็นชื่อใหม่</div>
+        <div class="card-args">&lt;base&gt; &lt;new-name&gt;</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span></div>
+      </div>
+      <div class="card" data-cat="pattern" data-keywords="pattern save extract บันทึก">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">💾</span><span class="card-name">/pattern-save</span></div>
+        <div class="card-desc">บันทึกการปรับจากวิชาเป็น pattern ใหม่</div>
+        <div class="card-args">&lt;subject&gt; --name --base</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span></div>
+      </div>
+      <div class="card" data-cat="pattern" data-keywords="pattern edit manifest questions template">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">🔧</span><span class="card-name">/pattern-edit</span></div>
+        <div class="card-desc">แก้ manifest/questions ของ pattern</div>
+        <div class="card-args">&lt;pattern&gt; [file]</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span></div>
+      </div>
+      <div class="card" data-cat="pattern" data-keywords="pattern diff compare เทียบ">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-pink);">🔀</span><span class="card-name">/pattern-diff</span></div>
+        <div class="card-desc">เทียบ 2 patterns</div>
+        <div class="card-args">&lt;a&gt; &lt;b&gt;</div>
+        <div class="card-tags"><span class="tag tag-pattern">Pattern</span></div>
+      </div>
+
+      <!-- STATE -->
+      <div class="card" data-cat="state" data-keywords="resume เริ่ม chat ใหม่ load briefing สถานะ">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">🧠</span><span class="card-name">/catchup</span></div>
+        <div class="card-desc">โหลด STATE ก่อนเริ่มงาน · ใช้ตอนเปิด chat ใหม่</div>
+        <div class="card-args">&lt;subject-id&gt;</div>
+        <div class="card-tags"><span class="tag tag-state">State</span></div>
+      </div>
+      <div class="card" data-cat="state" data-keywords="state save update บันทึก จบ session">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">💾</span><span class="card-name">/state-save</span></div>
+        <div class="card-desc">อัปเดต STATE.md หลังจบ session</div>
+        <div class="card-args">&lt;subject&gt; "&lt;ที่ทำ&gt;" [--private]</div>
+        <div class="card-tags"><span class="tag tag-state">State</span></div>
+      </div>
+      <div class="card" data-cat="state" data-keywords="state edit story rules decisions">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">✏️</span><span class="card-name">/state-edit</span></div>
+        <div class="card-desc">แก้ story/rules/decisions ตรง ๆ</div>
+        <div class="card-args">&lt;subject&gt; [--private]</div>
+        <div class="card-tags"><span class="tag tag-state">State</span></div>
+      </div>
+      <div class="card" data-cat="state" data-keywords="state view show ดู สถานะ">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">👁️</span><span class="card-name">/state-view</span></div>
+        <div class="card-desc">แสดง STATE.md (default: สรุป)</div>
+        <div class="card-args">&lt;subject&gt; [--full] [--private]</div>
+        <div class="card-tags"><span class="tag tag-state">State</span></div>
+      </div>
+
+      <!-- META -->
+      <div class="card" data-cat="meta" data-keywords="ask help หา คำสั่ง ลืม ถาม แนะนำ">
+        <div class="card-head"><span class="card-icon" style="background:var(--g-pink);">❓</span><span class="card-name">/ask</span></div>
+        <div class="card-desc">หาคำสั่งที่ต้องใช้ · บอกว่าอยากทำอะไร ผมแนะนำให้</div>
+        <div class="card-args">"&lt;สิ่งที่อยากทำ&gt;" (optional)</div>
+        <div class="card-tags"><span class="tag tag-meta">Meta</span><span class="tag tag-macro">Helper</span></div>
+      </div>
+
+      <div class="card" data-cat="meta" data-keywords="status git log สรุป สถานะโปรเจกต์">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">📊</span><span class="card-name">/status</span></div>
+        <div class="card-desc">สรุปสถานะโปรเจกต์ (git + ls)</div>
+        <div class="card-args">[physics|astro|web|all]</div>
+        <div class="card-tags"><span class="tag tag-meta">Meta</span></div>
+      </div>
+      <div class="card" data-cat="meta" data-keywords="pattern extract วิเคราะห์ memory">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">🔬</span><span class="card-name">/pattern-extract</span></div>
+        <div class="card-desc">วิเคราะห์ pattern จากไฟล์ → memory</div>
+        <div class="card-args">&lt;file-path&gt;</div>
+        <div class="card-tags"><span class="tag tag-meta">Meta</span></div>
+      </div>
+      <div class="card" data-cat="meta" data-keywords="pattern apply target">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">🎨</span><span class="card-name">/pattern-apply</span></div>
+        <div class="card-desc">Apply pattern → ไฟล์</div>
+        <div class="card-args">&lt;memory&gt; &lt;target&gt;</div>
+        <div class="card-tags"><span class="tag tag-meta">Meta</span></div>
+      </div>
+      <div class="card" data-cat="meta" data-keywords="cmd update command แก้คำสั่ง">
+        <div class="card-head"><span class="card-icon" style="background: var(--g-red);">⚙️</span><span class="card-name">/cmd-update</span></div>
+        <div class="card-desc">แก้ไฟล์คำสั่ง</div>
+        <div class="card-args">&lt;command&gt; "&lt;change&gt;"</div>
+        <div class="card-tags"><span class="tag tag-meta">Meta</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============= TAB: WORKFLOWS ============= -->
+  <div class="panel" id="panel-workflows">
+    <h2>🎯 Workflows — ตัวอย่างการใช้งาน</h2>
+
+    <h3>🔵 สร้างแผน Wave ใหม่ (Macro - เร็วสุด)</h3>
+    <div class="flow-box"><span class="h">/phys-full</span> waves 11 <span class="c">"คลื่นแม่เหล็กไฟฟ้า"</span> --no-confirm
+
+<span class="dim">✓ Step 1-2  โฟลเดอร์ + Infographic (theme: indigo)
+✓ Step 3    POE-11
+✓ Step 4    Calc 11.1 + Spot 11.2
+✓ Step 5    F_11 Four-tier
+✓ Step 6    อัปเดต tools/worksheets/questions/media.js
+✓ Step 7    commit + push
+⏱ 1 คำสั่ง · ~15k tokens</span></div>
+
+    <h3>🟣 สร้างหน้าดาราศาสตร์ (Hybrid)</h3>
+    <div class="flow-box"><span class="h">/catchup</span> astronomy
+<span class="dim">   → ได้ briefing · story rules ล่าสุด · ทำถึงหน้าไหน</span>
+
+<span class="h">/astro-page-new</span> ep02 14 <span class="c">"First Corruption"</span>
+<span class="h">/web-reg-astro</span> ep02
+<span class="h">/web-deploy</span> <span class="c">"EP02 p14"</span>
+
+<span class="h">/state-save</span> astronomy <span class="c">"เสร็จ p14 · ปรับ Void สีเข้ม"</span>
+<span class="dim">   → update STATE.md · decisions log</span></div>
+
+    <h3>🎨 เปิดวิชาใหม่จาก Pattern</h3>
+    <div class="flow-box"><span class="h">/pattern-list</span>
+<span class="dim">   📦 astronomy-game · wave-5e-poe</span>
+
+<span class="h">/pattern-use</span> astronomy-game bio
+<span class="dim">   [ผม] 14 คำถาม · โปรดตอบเป็น YAML ในข้อความเดียว</span>
+
+<span class="c">subject_id: bio
+series_name: CELL LOG
+world: "ยานจิ๋วในร่างกาย"
+protagonist: "นักชีววิทยาระดับจิ๋ว"
+antagonist: Virus-X
+theme_color: "#34d399"
+...</span>
+
+<span class="dim">   ✓ scaffold lessons/bio/ + content/bio/
+   ✓ STATE.md + _private/state/bio_notes.md สร้างอัตโนมัติ
+   ✓ Register subjects.js</span>
+
+<span class="h">/game-page-new</span> bio ep01 1 <span class="c">"เข้าสู่เซลล์"</span></div>
+
+    <h3>🧠 Resume จาก chat ที่ขาดไป</h3>
+    <div class="flow-box"><span class="dim"># เปิด chat ใหม่ · ไม่รู้ว่าก่อนหน้านี้ทำถึงไหน</span>
+
+<span class="h">/catchup</span> astronomy
+
+<span class="y">📊 astronomy — EP02 in progress</span>
+<span class="dim">✅ Done: p01-p13 (ล่าสุด 2026-04-23)
+🚧 Next: p14 corruption encounter
+⚠️ Story ล่าสุด:
+   • Protagonist = นักสำรวจยาน Cosmos-VII
+   • Antagonist = Void Entity (ใหม่)
+   • Teacher Cue ย้ายลงล่าง
+🔑 Decisions:
+   • 2026-04-22: Teacher Cue → lower
+   • 2026-04-20: star map → memory fragments
+❓ Open: EP03 ต่อเลย หรือพัก bio?
+→ แนะนำ: /astro-page-new ep02 14 "..."</span></div>
+
+    <h3>🔄 ย้าย pattern ข้ามวิชา</h3>
+    <div class="flow-box"><span class="h">/pattern-extract</span> lessons/astronomy/ep01/p13-shiplock.html --name=journal-321
+<span class="h">/cmd-update</span> phys-media-add <span class="c">"เพิ่ม --style=journal-321"</span>
+<span class="h">/phys-media-add</span> waves 11 POE --style=journal-321</div>
+  </div>
+
+  <!-- ============= TAB: PATTERNS ============= -->
+  <div class="panel" id="panel-patterns">
+    <h2>🎨 Pattern Library</h2>
+    <p>แต่ละวิชามี <strong>pattern</strong> (โครงสร้าง + template + คำถามที่ต้องเตรียม) เวลาเปิดวิชาใหม่ให้เลือก pattern ที่อยากใช้ · ระบบถามข้อมูลชุดเดียวแล้ว scaffold อัตโนมัติ</p>
+
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><strong>กฎ:</strong> ถ้าวิชาใหม่ใช้โครงเหมือนเดิม → ใช้ pattern เดิม · ถ้าปรับโครงจนต่าง → บันทึกเป็น pattern ใหม่ (fork) · วิชาถัดไปใช้ pattern ใหม่ได้เลย</div>
+    </div>
+
+    <h3>Patterns ที่มีตอนนี้</h3>
+    <table>
+      <tr><th>Pattern</th><th>Type</th><th>ใช้สำหรับ</th></tr>
+      <tr><td><code>astronomy-game</code></td><td>game</td><td>เกมสำรวจ · COSMOS LOG · EP01 narrative + EP02 game layer</td></tr>
+      <tr><td><code>wave-5e-poe</code></td><td>lesson-plan</td><td>แผน 5E+POE · Four-tier · Infographic ต่อแผน</td></tr>
+    </table>
+
+    <h3>โครงสร้างไฟล์ของ Pattern</h3>
+    <pre><code>.claude/patterns/&lt;pattern-name&gt;/
+├── manifest.md          ← frontmatter: name, base, description, template_sources
+├── questions.json       ← คำถามที่ถามผู้ใช้ตอน /pattern-use
+└── [templates]          ← ชี้ไฟล์จริงใน lessons/ (ไม่ duplicate)
+
+.claude/patterns/_templates/
+├── STATE.md             ← template STATE สำหรับวิชาใหม่ (public)
+└── STATE_private.md     ← template private notes</code></pre>
+
+    <h3>🌱 Flow เปิดวิชาใหม่</h3>
+    <div class="flow-box"><span class="dim">[1]</span> <span class="h">/pattern-list</span>
+<span class="dim">[2]</span> <span class="h">/pattern-use</span> astronomy-game bio
+<span class="dim">    → ผมแสดง 14 คำถาม · คุณตอบ YAML ครั้งเดียว
+[3] ผม scaffold lessons/bio/ + STATE.md + Register subjects
+[4]</span> <span class="h">/game-page-new</span> bio ep01 1 "..."
+<span class="dim">    ...
+[5] ถ้าปรับโครงจน fork ได้</span>
+    <span class="h">/pattern-save</span> bio --name=bio-exploration --base=astronomy-game</div>
+
+    <div class="info">
+      <span class="tip-icon">ℹ️</span>
+      <div><strong>ทำไม batch Q&amp;A:</strong> ตอบทั้งหมดในข้อความเดียว ไม่ต้องถามทีละข้อ → ลด round-trip ~5x · ประหยัด token</div>
+    </div>
+  </div>
+
+  <!-- ============= TAB: STATE ============= -->
+  <div class="panel" id="panel-state">
+    <h2>🧠 State &amp; Memory — Living memory ต่อวิชา</h2>
+    <p>แต่ละวิชามี STATE.md ที่เก็บ "ตอนนี้ทำถึงไหน · story ล่าสุด · decisions" · ใช้ตอนเปิด chat ใหม่เพื่อให้ผมรู้บริบททันที ไม่ต้องอ่านไฟล์ทั้งหมด</p>
+
+    <h3>🎯 ปัญหาที่ State แก้</h3>
+    <table>
+      <tr><th>ปัญหา</th><th>วิธีแก้</th></tr>
+      <tr><td>เปิด chat ใหม่ · ไม่รู้ทำถึงไหน</td><td><code>/catchup &lt;subject&gt;</code> โหลด briefing</td></tr>
+      <tr><td>Story เปลี่ยนระหว่างทาง · bible เก่า</td><td>STATE.md เป็น live · override bible</td></tr>
+      <tr><td>ตัดสินใจไปแล้วลืม</td><td>Decisions log append-only · มีประวัติ</td></tr>
+      <tr><td>MEMORY.md global บวม</td><td>Global เก็บ pointer · content อยู่ที่ STATE.md</td></tr>
+    </table>
+
+    <h3>🏗️ 2 ชั้น (Public + Private)</h3>
+    <div class="two-col">
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+        <h4 style="color: var(--green);">🌐 Public — lessons/&lt;subject&gt;/STATE.md</h4>
+        <p style="font-size: 13px;">ข้อมูลทางเทคนิค · commit ไป git · มีประวัติ · ย้ายเครื่องอัตโนมัติ</p>
+        <ul style="font-size: 13px; margin-top: 8px; padding-left: 20px; color: var(--dim);">
+          <li>Story state, decisions, next tasks</li>
+          <li>Completed list</li>
+          <li>Open questions (ทั่วไป)</li>
+        </ul>
+      </div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+        <h4 style="color: var(--red);">🔒 Private — _private/state/&lt;subject&gt;_notes.md</h4>
+        <p style="font-size: 13px;">ไม่ commit · ส่วนตัว 100% · <code>_private/</code> อยู่ใน .gitignore แล้ว</p>
+        <ul style="font-size: 13px; margin-top: 8px; padding-left: 20px; color: var(--dim);">
+          <li>ความเห็นเกี่ยวกับนักเรียน</li>
+          <li>Idea ยังไม่ตกผลึก</li>
+          <li>Budget / ปัญหาส่วนตัว</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>📝 โครงสร้าง STATE.md</h3>
+    <pre><code># &lt;Subject&gt; — STATE
+Last updated: 2026-04-23
+
+## 🎯 Current focus
+EP02 · working on corruption page 14
+
+## 📖 Story state (live)
+- Protagonist: นักสำรวจยาน Cosmos-VII (⚠️ เปลี่ยนจากเดิม)
+- Antagonist: Void Entity
+### Story rules
+- Teacher Cue อยู่ด้านล่าง (ไม่ใช่ sidebar)
+
+## ✅ Done
+### EP02: p01-p13
+
+## 🚧 In progress
+- p14 corruption encounter
+
+## ⏭ Next
+1. p15-17 boss phases
+
+## 🔑 Decisions log (append-only)
+- 2026-04-22: Teacher Cue ลงล่าง
+- 2026-04-20: star map → memory fragments
+
+## ❓ Open questions
+- EP03 ต่อเลย หรือพัก bio?</code></pre>
+
+    <h3>🔄 Flow การใช้งาน</h3>
+    <div class="flow-box"><span class="y">ตอนเริ่ม chat ใหม่:</span>
+  <span class="h">/catchup</span> astronomy     <span class="dim">→ ได้ briefing · ไม่ต้องอ่านไฟล์ทั้งหมด</span>
+
+<span class="y">ระหว่างทำงาน (story/rule เปลี่ยน):</span>
+  <span class="h">/state-edit</span> astronomy  <span class="dim">→ บอกผมว่าปรับอะไร · ผม Edit STATE.md</span>
+
+<span class="y">จบ session:</span>
+  <span class="h">/state-save</span> astronomy <span class="c">"เสร็จ p14 · ปรับ Void สีเข้ม"</span>
+  <span class="dim">→ ผมย้าย p14 จาก In progress → Done · append decision · update timestamp</span>
+
+<span class="y">จดส่วนตัว:</span>
+  <span class="h">/state-save</span> astronomy <span class="c">"นักเรียนงงกับ corruption icon"</span> --private
+  <span class="dim">→ เขียนใน _private/state/ · ไม่ push</span></div>
+
+    <h3>💰 ประหยัด token อย่างไร</h3>
+    <table>
+      <tr><th>เทียบกับ</th><th>ประหยัด</th></tr>
+      <tr><td>อ่าน bible.html ทั้งไฟล์</td><td>STATE.md ~100 บรรทัด vs bible ~500 บรรทัด · ลด 80%</td></tr>
+      <tr><td>อ่านทุกหน้าเพื่อเข้าใจ story</td><td>STATE.md สรุปให้แล้ว · ลด 95%</td></tr>
+      <tr><td>เล่า context ทุก chat</td><td><code>/catchup</code> โหลดครั้งเดียว</td></tr>
+    </table>
+
+    <div class="warn">
+      <span class="tip-icon">⚠️</span>
+      <div>
+      <strong>ข้อควรระวัง</strong><br>
+      • STATE.md ห้ามยาวเกิน 200 บรรทัด · ย้ายส่วน Done เก่าไป <code>_history/</code><br>
+      • ไม่ใส่รายละเอียดเนื้อหาแต่ละหน้า · แค่ index + decisions<br>
+      • Decisions log = append-only · ห้ามลบของเก่า
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= TAB: TOKENS ============= -->
+  <div class="panel" id="panel-tokens">
+    <h2>💰 กลยุทธ์ประหยัด Token</h2>
+    <table>
+      <tr><th>กลยุทธ์</th><th>วิธี</th><th>ผล</th></tr>
+      <tr><td>ระบุ path ตรงเป้า</td><td>คำสั่งบอกไฟล์ที่ต้องอ่าน</td><td>ลด 50-70%</td></tr>
+      <tr><td>Edit &gt; Write</td><td>ส่ง diff แทนไฟล์เต็ม</td><td>ลด 80-95%</td></tr>
+      <tr><td>Line range</td><td><code>Read offset=1285 limit=50</code></td><td>ลด 90%+</td></tr>
+      <tr><td>Pattern = memory</td><td>โหลด lazy · update ครั้งเดียว</td><td>ลดซ้ำ</td></tr>
+      <tr><td><code>--no-confirm</code></td><td>ไม่ถามย้ำใน macro</td><td>ลด 20-30%</td></tr>
+      <tr><td>Batch Q&amp;A</td><td>ตอบชุดเดียว (pattern-use)</td><td>ลด round-trip 5x</td></tr>
+      <tr><td>STATE.md briefing</td><td>/catchup แทนอ่านทั้ง project</td><td>ลด 90%</td></tr>
+      <tr><td>Crop screenshot</td><td>เฉพาะจุดผิด</td><td>~1k vs 2.5k</td></tr>
+      <tr><td>บอก element/id</td><td>"แก้ <code>canvas#em-wave</code>"</td><td>~50 vs 2000</td></tr>
+    </table>
+
+    <h3>📊 Token cost ตามวิธี</h3>
+    <table>
+      <tr><th>วิธี</th><th>Token</th><th>เหมาะกับ</th></tr>
+      <tr><td>บอกชื่อ element</td><td>~50</td><td>รู้ id แน่ชัด</td></tr>
+      <tr><td>ข้อความอธิบาย</td><td>~200</td><td>อธิบายเป็นคำได้</td></tr>
+      <tr><td>Crop screenshot</td><td>~1,000</td><td>สี/layout ผิด</td></tr>
+      <tr><td>Screenshot เต็ม</td><td>~2,500</td><td>หลายจุดผิด</td></tr>
+      <tr><td>อ่านไฟล์ HTML ใหญ่</td><td>~5,000-15,000</td><td>หลีกเลี่ยง · ใช้ line range</td></tr>
+    </table>
+
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <div><strong>กฎทอง:</strong> ถ้ารู้ id → พิมพ์บอก (50 tokens) · ถ้าอธิบายยาก → crop screenshot (1k) · หลีกเลี่ยง screenshot เต็ม</div>
+    </div>
+  </div>
+
+  <!-- ============= TAB: FILES ============= -->
+  <div class="panel" id="panel-files">
+    <h2>📂 โครงสร้างไฟล์</h2>
+<pre><code>wave-mechanics-research/
+├── .claude/
+│   ├── commands/                  <span style="color:var(--dim)">← 34 slash commands</span>
+│   │   ├── phys-*.md              <span style="color:var(--dim)">(4)</span>
+│   │   ├── astro-*.md             <span style="color:var(--dim)">(4)</span>
+│   │   ├── web-*.md               <span style="color:var(--dim)">(9)</span>
+│   │   ├── game-*.md              <span style="color:var(--dim)">(3)</span>
+│   │   ├── pattern-*.md           <span style="color:var(--dim)">(6)</span>
+│   │   ├── state-*.md + resume.md <span style="color:var(--dim)">(4)</span>
+│   │   └── meta commands          <span style="color:var(--dim)">(4)</span>
+│   ├── patterns/                  <span style="color:var(--dim)">← Pattern library</span>
+│   │   ├── _templates/
+│   │   │   ├── STATE.md           <span style="color:var(--dim)">← template สำหรับวิชาใหม่</span>
+│   │   │   └── STATE_private.md
+│   │   ├── astronomy-game/
+│   │   └── wave-5e-poe/
+│   └── MANUAL.html                <span style="color:var(--dim)">← ไฟล์นี้</span>
+├── content/                        <span style="color:var(--dim)">← Web database</span>
+│   ├── subjects.js
+│   ├── physics3/{plans,tools,worksheets,questions,media}.js
+│   └── astronomy/
+├── lessons/                        <span style="color:var(--dim)">← Lesson content</span>
+│   ├── physics3/{waves,SHM}/แผนNN_*/
+│   ├── astronomy/{ep01,ep02}/
+│   │   └── STATE.md                <span style="color:var(--green)">← Living memory (public · in git)</span>
+│   └── shared/worksheet-core.js
+├── _private/                       <span style="color:var(--red)">← gitignored</span>
+│   └── state/&lt;subject&gt;_notes.md   <span style="color:var(--dim)">← Private notes</span>
+├── .gitignore                      <span style="color:var(--dim)">(_private/ excluded)</span>
+├── index.html
+└── KP-Classroom.html</code></pre>
+
+    <div class="warn">
+      <span class="tip-icon">⚠️</span>
+      <div>
+      <strong>ข้อควรระวัง</strong><br>
+      • <code>/web-deploy</code> ห้าม <code>git add -A</code> (อาจติดไฟล์ใน <code>_private/</code>)<br>
+      • <code>/web-edit-classroom</code> ห้าม Read ทั้งไฟล์ (หลักแสน tokens)<br>
+      • Pattern ใหม่ต้องทดสอบใน browser ก่อน deploy<br>
+      • STATE.md อย่าลืม <code>/state-save</code> หลังจบ session ทุกครั้ง
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============= TAB: CODE EXAMPLES (v2) ============= -->
+  <div class="panel" id="panel-code">
+
+    <style>
+      .code-hero { background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(167,139,250,0.08)); border: 1px solid var(--border-strong); border-radius: 16px; padding: 24px 28px; margin-bottom: 28px; }
+      .code-hero h2 { margin-bottom: 8px; }
+      .code-hero p { color: var(--dim); font-size: 14px; }
+
+      .legend { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px 24px; margin-bottom: 28px; }
+      .legend h3 { margin-top: 0; margin-bottom: 14px; font-size: 15px; color: var(--blue); }
+      .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+      .legend-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--code-bg); border-radius: 8px; font-size: 13px; }
+      .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+      .legend-label { font-family: "SF Mono", monospace; font-weight: 600; }
+      .legend-desc { color: var(--dim); font-size: 12px; margin-left: auto; }
+
+      .ex-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px 28px; margin-bottom: 24px; position: relative; overflow: hidden; scroll-margin-top: 160px; }
+      .ex-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--ex-color, var(--blue)); }
+      .ex-header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+      .ex-num { width: 36px; height: 36px; border-radius: 10px; background: var(--ex-color, var(--blue)); color: #0a0e1a; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; flex-shrink: 0; }
+      .ex-title { font-size: 17px; font-weight: 700; color: var(--text); }
+      .ex-subtitle { color: var(--dim); font-size: 14px; margin-bottom: 18px; margin-left: 50px; }
+
+      .code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; font-family: "SF Mono", Consolas, monospace; font-size: 13px; line-height: 2; overflow-x: auto; margin: 0 0 18px 0; white-space: pre; }
+      .code-block .line { display: block; }
+
+      .explain { display: grid; gap: 10px; margin-top: 4px; }
+      .explain-row { display: grid; grid-template-columns: minmax(auto, 180px) 1fr; gap: 14px; align-items: start; padding: 10px 14px; background: rgba(15,23,42,0.4); border-radius: 8px; border-left: 3px solid var(--row-color, var(--blue)); }
+      .explain-badge { font-family: "SF Mono", monospace; font-size: 12px; font-weight: 600; padding: 3px 10px; background: var(--code-bg); border-radius: 6px; color: var(--row-color, var(--blue)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .explain-text { font-size: 13px; line-height: 1.6; color: var(--text); }
+
+      .t-cmd { color: #e2e8f0; }
+      .t-slash { color: #a78bfa; font-weight: 600; }
+      .t-var { color: #f472b6; }
+      .t-flag { color: #fb923c; }
+      .t-path { color: #fbbf24; }
+      .t-str { color: #34d399; }
+      .t-out { color: #38bdf8; }
+      .t-cmt { color: #64748b; font-style: italic; }
+      .t-num { color: #fb7185; }
+      .t-op  { color: #a78bfa; }
+
+      .ex-1 { --ex-color: var(--purple); }
+      .ex-2 { --ex-color: var(--pink); }
+      .ex-3 { --ex-color: var(--red); }
+      .ex-4 { --ex-color: var(--green); }
+      .ex-5 { --ex-color: var(--blue); }
+      .ex-6 { --ex-color: var(--orange); }
+      .ex-7 { --ex-color: #fbbf24; }
+      .ex-8 { --ex-color: var(--green); }
+      .ex-9 { --ex-color: var(--blue); }
+      .ex-10 { --ex-color: var(--pink); }
+
+      .r-slash { --row-color: #a78bfa; }
+      .r-var   { --row-color: #f472b6; }
+      .r-flag  { --row-color: #fb923c; }
+      .r-path  { --row-color: #fbbf24; }
+      .r-str   { --row-color: #34d399; }
+      .r-out   { --row-color: #38bdf8; }
+      .r-cmd   { --row-color: #e2e8f0; }
+      .r-cmt   { --row-color: #64748b; }
+      .r-num   { --row-color: #fb7185; }
+      .r-op    { --row-color: #a78bfa; }
+
+      .code-toc { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-bottom: 28px; }
+      .code-toc a { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--text); text-decoration: none; font-size: 13px; transition: all 0.15s; }
+      .code-toc a:hover { border-color: var(--blue); transform: translateX(4px); }
+      .code-toc .toc-num { width: 24px; height: 24px; border-radius: 6px; background: var(--g-blue); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; flex-shrink: 0; color: var(--text); }
+    </style>
+
+    <div class="code-hero">
+      <h2>💻 โค้ด &amp; ตัวอย่าง</h2>
+      <p>แต่ละ example มี 2 ส่วน: <strong>โค้ด</strong> ด้านบน · <strong>คำอธิบายแต่ละส่วน</strong> ด้านล่างเป็นตาราง · สีใน badge ตรงกับสีในโค้ด</p>
+    </div>
+
+    <div class="legend">
+      <h3>🎨 ระบบสี (Color Legend)</h3>
+      <div class="legend-grid">
+        <div class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span><span class="legend-label t-slash">/command</span><span class="legend-desc">Slash command</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#e2e8f0"></span><span class="legend-label t-cmd">bash</span><span class="legend-desc">Command name</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#f472b6"></span><span class="legend-label t-var">value</span><span class="legend-desc">Argument / Variable</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#fb923c"></span><span class="legend-label t-flag">--flag</span><span class="legend-desc">Flag / Option</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#fbbf24"></span><span class="legend-label t-path">path/</span><span class="legend-desc">File path</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#34d399"></span><span class="legend-label t-str">"text"</span><span class="legend-desc">String</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#fb7185"></span><span class="legend-label t-num">123</span><span class="legend-desc">Number</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#a78bfa"></span><span class="legend-label t-op">&amp;&amp; | &gt;&gt;</span><span class="legend-desc">Operator</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span><span class="legend-label t-out">output</span><span class="legend-desc">Result / Output</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#64748b"></span><span class="legend-label t-cmt"># note</span><span class="legend-desc">Comment</span></div>
+      </div>
+    </div>
+
+    <div class="code-toc">
+      <a href="#ex1"><span class="toc-num">1</span>Slash command พื้นฐาน</a>
+      <a href="#ex2"><span class="toc-num">2</span>Batch Q&amp;A (YAML)</a>
+      <a href="#ex3"><span class="toc-num">3</span>State workflow</a>
+      <a href="#ex4"><span class="toc-num">4</span>Git deploy</a>
+      <a href="#ex5"><span class="toc-num">5</span>Memory symlink</a>
+      <a href="#ex6"><span class="toc-num">6</span>แก้ไฟล์ใหญ่</a>
+      <a href="#ex7"><span class="toc-num">7</span>gitignore check</a>
+      <a href="#ex8"><span class="toc-num">8</span>Bracket balance</a>
+      <a href="#ex9"><span class="toc-num">9</span>iCloud commands</a>
+      <a href="#ex10"><span class="toc-num">10</span>Session เต็ม</a>
+    </div>
+
+    <!-- EX 1 -->
+    <div class="ex-card ex-1" id="ex1">
+      <div class="ex-header"><div class="ex-num">1</div><div class="ex-title">สั่ง Slash Command พื้นฐาน</div></div>
+      <div class="ex-subtitle">โครงสร้าง: <code>/ชื่อ</code> + arguments + flags</div>
+      <pre class="code-block"><span class="t-slash">/phys-full</span> <span class="t-var">waves</span> <span class="t-num">11</span> <span class="t-str">"คลื่นแม่เหล็กไฟฟ้า"</span> <span class="t-flag">--no-confirm</span></pre>
+      <div class="explain">
+        <div class="explain-row r-slash"><span class="explain-badge">/phys-full</span><div class="explain-text"><strong>ชื่อคำสั่ง</strong> — Macro สร้างแผนครบวงจร</div></div>
+        <div class="explain-row r-var"><span class="explain-badge">waves</span><div class="explain-text"><strong>Argument #1</strong> — subject: <code>waves</code> หรือ <code>SHM</code></div></div>
+        <div class="explain-row r-num"><span class="explain-badge">11</span><div class="explain-text"><strong>Argument #2</strong> — หมายเลขแผน (ตัวเลข · ไม่ใส่คำพูด)</div></div>
+        <div class="explain-row r-str"><span class="explain-badge">"คลื่น..."</span><div class="explain-text"><strong>Argument #3</strong> — หัวข้อภาษาไทยใส่ <code>""</code> ครอบ</div></div>
+        <div class="explain-row r-flag"><span class="explain-badge">--no-confirm</span><div class="explain-text"><strong>Flag</strong> — ไม่ถามยืนยันระหว่างทาง</div></div>
+      </div>
+    </div>
+
+    <!-- EX 2 -->
+    <div class="ex-card ex-2" id="ex2">
+      <div class="ex-header"><div class="ex-num">2</div><div class="ex-title">Batch Q&amp;A (YAML) — ตอบครั้งเดียว</div></div>
+      <div class="ex-subtitle"><code>/pattern-use</code> ถาม 14 ข้อ · ตอบรวมในข้อความเดียว</div>
+      <pre class="code-block"><span class="t-cmt"># 1. สั่งคำสั่ง</span>
+<span class="t-slash">/pattern-use</span> <span class="t-var">astronomy-game</span> <span class="t-var">bio</span>
+
+<span class="t-cmt"># 2. ตอบ YAML ทั้งก้อน</span>
+<span class="t-var">subject_id</span>: <span class="t-str">bio</span>
+<span class="t-var">subject_display</span>: <span class="t-str">"ชีววิทยา ม.5"</span>
+<span class="t-var">series_name</span>: <span class="t-str">CELL LOG</span>
+<span class="t-var">world</span>: <span class="t-str">"ยานจิ๋วในร่างกาย"</span>
+<span class="t-var">protagonist</span>: <span class="t-str">"นักวิจัยระดับจิ๋ว"</span>
+<span class="t-var">antagonist</span>: <span class="t-str">Virus-X</span>
+<span class="t-var">theme_color</span>: <span class="t-str">"#34d399"</span>
+<span class="t-var">ep_count</span>: <span class="t-num">2</span></pre>
+      <div class="explain">
+        <div class="explain-row r-slash"><span class="explain-badge">/pattern-use</span><div class="explain-text">สร้างวิชาใหม่จาก pattern ที่มี</div></div>
+        <div class="explain-row r-var"><span class="explain-badge">astronomy-game</span><div class="explain-text">ชื่อ pattern ที่ใช้เป็น template</div></div>
+        <div class="explain-row r-var"><span class="explain-badge">bio</span><div class="explain-text">Subject ID ใหม่ — lowercase · ไม่เว้นวรรค</div></div>
+        <div class="explain-row r-var"><span class="explain-badge">key:</span><div class="explain-text"><strong>YAML key</strong> — ตามด้วย <code>:</code> และค่า</div></div>
+        <div class="explain-row r-str"><span class="explain-badge">"..."</span><div class="explain-text">ข้อความภาษาไทย/มีช่องว่าง ต้องใส่ <code>""</code></div></div>
+        <div class="explain-row r-num"><span class="explain-badge">2</span><div class="explain-text">Number — YAML รู้เองว่าเป็นตัวเลข</div></div>
+      </div>
+    </div>
+
+    <!-- EX 3 -->
+    <div class="ex-card ex-3" id="ex3">
+      <div class="ex-header"><div class="ex-num">3</div><div class="ex-title">State Workflow — เริ่ม/จบ session</div></div>
+      <div class="ex-subtitle"><code>/catchup</code> ก่อนเริ่ม · <code>/state-save</code> ก่อนจบ</div>
+      <pre class="code-block"><span class="t-cmt"># เริ่ม — โหลดบริบท</span>
+<span class="t-slash">/catchup</span> <span class="t-var">astronomy</span>
+
+<span class="t-cmt"># ทำงาน</span>
+<span class="t-slash">/astro-page-new</span> <span class="t-var">ep02</span> <span class="t-num">14</span> <span class="t-str">"First Corruption"</span>
+
+<span class="t-cmt"># จบ — บันทึก</span>
+<span class="t-slash">/state-save</span> <span class="t-var">astronomy</span> <span class="t-str">"เสร็จ p14 · ปรับ Void สีเข้ม"</span>
+
+<span class="t-cmt"># จดส่วนตัว (ไม่ push)</span>
+<span class="t-slash">/state-save</span> <span class="t-var">astronomy</span> <span class="t-str">"นักเรียนงง icon"</span> <span class="t-flag">--private</span></pre>
+      <div class="explain">
+        <div class="explain-row r-slash"><span class="explain-badge">/catchup</span><div class="explain-text">อ่าน STATE.md + notes · สรุปว่าทำถึงไหน</div></div>
+        <div class="explain-row r-slash"><span class="explain-badge">/state-save</span><div class="explain-text">Append เข้า STATE.md (Done, Decisions, timestamp)</div></div>
+        <div class="explain-row r-var"><span class="explain-badge">astronomy</span><div class="explain-text">Subject ID — ต้องมี <code>lessons/&lt;subject&gt;/STATE.md</code></div></div>
+        <div class="explain-row r-str"><span class="explain-badge">"..."</span><div class="explain-text">ข้อความอธิบาย · ผมแยกเป็น Done/Decisions/Next ให้</div></div>
+        <div class="explain-row r-flag"><span class="explain-badge">--private</span><div class="explain-text">เขียนใน <code>_private/state/</code> · gitignored</div></div>
+      </div>
+    </div>
+
+    <!-- EX 4 -->
+    <div class="ex-card ex-4" id="ex4">
+      <div class="ex-header"><div class="ex-num">4</div><div class="ex-title">Git Deploy — ขึ้น GitHub Pages</div></div>
+      <div class="ex-subtitle">คำสั่งที่ <code>/web-deploy</code> รันให้อัตโนมัติ</div>
+      <pre class="code-block"><span class="t-cmd">git</span> <span class="t-var">status</span>
+<span class="t-cmd">git</span> <span class="t-var">diff</span>
+<span class="t-cmd">git</span> <span class="t-var">add</span> <span class="t-path">content/physics3/</span> <span class="t-path">lessons/physics3/waves/แผน11_*/</span>
+<span class="t-cmd">git</span> <span class="t-var">commit</span> <span class="t-flag">-m</span> <span class="t-str">"feat(plan11): เพิ่มแผน"</span>
+<span class="t-cmd">git</span> <span class="t-var">push</span> <span class="t-var">origin</span> <span class="t-var">main</span>
+
+<span class="t-cmd">curl</span> <span class="t-flag">-sI</span> <span class="t-str">"https://kp-science.github.io/wave-mechanics-research/"</span>
+<span class="t-out"># HTTP/2 200</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">git status</span><div class="explain-text">ดูว่าไฟล์ไหนแก้/เพิ่ม</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">git add path</span><div class="explain-text">Stage เฉพาะ path · ⚠️ ห้าม <code>git add -A</code></div></div>
+        <div class="explain-row r-flag"><span class="explain-badge">-m "..."</span><div class="explain-text">Flag <code>-m</code> + message · ภาษาไทยได้</div></div>
+        <div class="explain-row r-path"><span class="explain-badge">path/*/</span><div class="explain-text"><code>*</code> = wildcard — match หลายโฟลเดอร์</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">curl -sI</span><div class="explain-text">ดู HTTP header · เช็คสถานะ · <code>-s</code>=silent, <code>-I</code>=head only</div></div>
+      </div>
+    </div>
+
+    <!-- EX 5 -->
+    <div class="ex-card ex-5" id="ex5">
+      <div class="ex-header"><div class="ex-num">5</div><div class="ex-title">Memory Symlink — ข้ามเครื่อง iCloud</div></div>
+      <div class="ex-subtitle">ย้าย memory เข้า project · สร้าง symlink ชี้กลับ</div>
+      <pre class="code-block"><span class="t-cmt"># 1. Copy memory → project</span>
+<span class="t-cmd">cp</span> <span class="t-flag">-r</span> <span class="t-path">~/.claude/projects/-Users-X-Documents------/memory</span> \
+      <span class="t-path">~/Documents/วิจัย/wave-mechanics-research/.claude/memory</span>
+
+<span class="t-cmt"># 2. ลบต้นฉบับ</span>
+<span class="t-cmd">rm</span> <span class="t-flag">-rf</span> <span class="t-path">~/.claude/projects/-Users-X-Documents------/memory</span>
+
+<span class="t-cmt"># 3. สร้าง symlink</span>
+<span class="t-cmd">ln</span> <span class="t-flag">-s</span> <span class="t-path">~/Documents/วิจัย/wave-mechanics-research/.claude/memory</span> \
+      <span class="t-path">~/.claude/projects/-Users-X-Documents------/memory</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">cp -r</span><div class="explain-text">copy recursive — copy ทั้งโฟลเดอร์ข้างใน</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">rm -rf</span><div class="explain-text">remove recursive force — ลบถาวร ⚠️ <strong>ไม่ถอย</strong></div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">ln -s</span><div class="explain-text">symbolic link — ชอร์ตคัท · ไฟล์จริงที่เดียว ใช้ได้หลาย path</div></div>
+        <div class="explain-row r-path"><span class="explain-badge">~/...</span><div class="explain-text"><code>~</code> = home folder · macOS = <code>/Users/&lt;username&gt;/</code></div></div>
+        <div class="explain-row r-op"><span class="explain-badge">\</span><div class="explain-text">Line continuation — บรรทัดถัดไปต่อเนื่อง</div></div>
+      </div>
+    </div>
+
+    <!-- EX 6 -->
+    <div class="ex-card ex-6" id="ex6">
+      <div class="ex-header"><div class="ex-num">6</div><div class="ex-title">แก้ไฟล์ใหญ่ไม่อ่านทั้งหมด (ลด 97%)</div></div>
+      <div class="ex-subtitle">ไฟล์ 4,000 บรรทัด = 55k tokens · อ่าน 85 บรรทัด = 1.2k tokens</div>
+      <pre class="code-block"><span class="t-cmt"># 1. หาบรรทัดเริ่มของ function</span>
+<span class="t-cmd">awk</span> <span class="t-str">'/^function renderPlanCards/ {print NR; exit}'</span> <span class="t-path">KP-Classroom.html</span>
+<span class="t-out"># ได้: 1285</span>
+
+<span class="t-cmt"># 2. หาบรรทัดจบ (function ถัดไป)</span>
+<span class="t-cmd">awk</span> <span class="t-str">'NR&gt;1285 &amp;&amp; /^function / {print NR-1; exit}'</span> <span class="t-path">KP-Classroom.html</span>
+<span class="t-out"># ได้: 1369</span>
+
+<span class="t-cmt"># 3. อ่านเฉพาะช่วงที่ต้องการ</span>
+<span class="t-cmd">sed</span> <span class="t-flag">-n</span> <span class="t-str">'1285,1369p'</span> <span class="t-path">KP-Classroom.html</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">awk</span><div class="explain-text">ค้น pattern · เร็วกว่า grep สำหรับงาน advanced</div></div>
+        <div class="explain-row r-str"><span class="explain-badge">'/regex/'</span><div class="explain-text"><code>^</code> = ขึ้นต้นบรรทัด · <code>NR</code> = line number</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">sed -n '…p'</span><div class="explain-text">Print เฉพาะบรรทัด range · <code>-n</code> = ไม่ print อื่น</div></div>
+        <div class="explain-row r-num"><span class="explain-badge">1285,1369</span><div class="explain-text">Line range — start,end · แสดง 85 บรรทัดนี้</div></div>
+        <div class="explain-row r-out"><span class="explain-badge"># ได้:</span><div class="explain-text">Comment แสดง output คาดหวัง (ช่วยอ่าน)</div></div>
+      </div>
+    </div>
+
+    <!-- EX 7 -->
+    <div class="ex-card ex-7" id="ex7">
+      <div class="ex-header"><div class="ex-num">7</div><div class="ex-title">gitignore — เพิ่ม rule + ตรวจ</div></div>
+      <div class="ex-subtitle">กันไฟล์ลับหลุด GitHub</div>
+      <pre class="code-block"><span class="t-cmt"># ตรวจ path โดน ignore ไหม</span>
+<span class="t-cmd">git</span> <span class="t-var">check-ignore</span> <span class="t-flag">-v</span> <span class="t-path">_private/notes.md</span>
+<span class="t-out"># .gitignore:5:_private/     _private/notes.md</span>
+
+<span class="t-cmt"># เพิ่ม rule (append ไม่ overwrite)</span>
+<span class="t-cmd">printf</span> <span class="t-str">'\n# Private\n_private/\n'</span> <span class="t-op">&gt;&gt;</span> <span class="t-path">.gitignore</span>
+
+<span class="t-cmt"># ดู 3 บรรทัดท้าย</span>
+<span class="t-cmd">tail</span> <span class="t-flag">-3</span> <span class="t-path">.gitignore</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">git check-ignore</span><div class="explain-text">เช็คว่า path โดน rule ไหน · <code>-v</code> = verbose</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">printf</span><div class="explain-text">พิมพ์ข้อความ · <code>\n</code> = ขึ้นบรรทัดใหม่</div></div>
+        <div class="explain-row r-op"><span class="explain-badge">&gt;&gt;</span><div class="explain-text"><strong>Append</strong> · <code>&gt;</code> เดี่ยว = overwrite ⚠️</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">tail -3</span><div class="explain-text">แสดง 3 บรรทัดท้าย · ตรวจ append สำเร็จ</div></div>
+      </div>
+    </div>
+
+    <!-- EX 8 -->
+    <div class="ex-card ex-8" id="ex8">
+      <div class="ex-header"><div class="ex-num">8</div><div class="ex-title">Bracket Balance — ตรวจ syntax JS</div></div>
+      <div class="ex-subtitle">นับ <code>{</code> และ <code>}</code> · ไม่เท่า = syntax error</div>
+      <pre class="code-block"><span class="t-cmd">python3</span> <span class="t-flag">-c</span> <span class="t-str">"t = open('content/physics3/worksheets.js').read()
+diff = t.count('{') - t.count('}')
+print('OK' if diff == 0 else f'MISMATCH ({diff})')"</span>
+<span class="t-out"># ได้: OK</span>
+
+<span class="t-cmt"># อีกวิธี — node syntax check</span>
+<span class="t-cmd">node</span> <span class="t-flag">-c</span> <span class="t-path">content/physics3/worksheets.js</span>
+<span class="t-out"># ไม่มี output = OK</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">python3 -c</span><div class="explain-text">รัน python inline · <code>-c</code> = command string</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">node -c</span><div class="explain-text">Check syntax เท่านั้น · error บอกบรรทัด</div></div>
+        <div class="explain-row r-str"><span class="explain-badge">.count(...)</span><div class="explain-text">Python method · นับ substring</div></div>
+      </div>
+    </div>
+
+    <!-- EX 9 -->
+    <div class="ex-card ex-9" id="ex9">
+      <div class="ex-header"><div class="ex-num">9</div><div class="ex-title">iCloud Commands — จัดการ sync</div></div>
+      <div class="ex-subtitle">กัน Finder แสดง ☁️ placeholder</div>
+      <pre class="code-block"><span class="t-cmt"># Force download</span>
+<span class="t-cmd">brctl</span> <span class="t-var">download</span> <span class="t-path">~/Documents/วิจัย/wave-mechanics-research/.claude/memory</span>
+
+<span class="t-cmt"># ดูสถานะ</span>
+<span class="t-cmd">brctl</span> <span class="t-var">status</span> <span class="t-path">&lt;path&gt;</span>
+
+<span class="t-cmt"># Evict = เก็บ cloud เท่านั้น</span>
+<span class="t-cmd">brctl</span> <span class="t-var">evict</span> <span class="t-path">&lt;path&gt;</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">brctl download</span><div class="explain-text">ดึงจาก cloud ลง local · เอา ☁️ ออก</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">brctl status</span><div class="explain-text">ดูว่า sync แล้วหรือยัง</div></div>
+        <div class="explain-row r-cmd"><span class="explain-badge">brctl evict</span><div class="explain-text">ผลักกลับ cloud · ประหยัด disk</div></div>
+      </div>
+    </div>
+
+    <!-- EX 10 -->
+    <div class="ex-card ex-10" id="ex10">
+      <div class="ex-header"><div class="ex-num">10</div><div class="ex-title">Session ตัวอย่างเต็ม (0 → deploy)</div></div>
+      <div class="ex-subtitle">Flow ปกติ ~15-30 นาที</div>
+      <pre class="code-block"><span class="t-cmt"># === Terminal ===</span>
+<span class="t-cmd">cd</span> <span class="t-path">~/Documents/วิจัย/wave-mechanics-research</span>
+<span class="t-cmd">claude</span>
+
+<span class="t-cmt"># === Claude Code ===</span>
+<span class="t-slash">/catchup</span> <span class="t-var">astronomy</span>
+<span class="t-slash">/astro-page-new</span> <span class="t-var">ep02</span> <span class="t-num">14</span> <span class="t-str">"First Corruption"</span>
+<span class="t-slash">/web-reg-astro</span> <span class="t-var">ep02</span>
+<span class="t-slash">/web-deploy</span> <span class="t-str">"EP02 p14 corruption"</span>
+<span class="t-slash">/state-save</span> <span class="t-var">astronomy</span> <span class="t-str">"เสร็จ p14"</span>
+<span class="t-slash">/exit</span>
+
+<span class="t-cmt"># === Terminal · ตรวจ deploy ===</span>
+<span class="t-cmd">curl</span> <span class="t-flag">-sI</span> <span class="t-str">"https://kp-science.github.io/wave-mechanics-research/"</span></pre>
+      <div class="explain">
+        <div class="explain-row r-cmd"><span class="explain-badge">cd &amp;&amp; claude</span><div class="explain-text">เข้า project · เปิด Claude Code</div></div>
+        <div class="explain-row r-slash"><span class="explain-badge">/catchup</span><div class="explain-text"><strong>เสมอ!</strong> ก่อนเริ่ม · โหลดบริบท</div></div>
+        <div class="explain-row r-slash"><span class="explain-badge">/state-save</span><div class="explain-text"><strong>เสมอ!</strong> ก่อนจบ · chat ถัดไปจะรู้เรื่อง</div></div>
+        <div class="explain-row r-slash"><span class="explain-badge">/exit</span><div class="explain-text">ออก Claude Code กลับสู่ terminal</div></div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top: 32px;">
+      <span class="tip-icon">💡</span>
+      <div><strong>เคล็ดลับอ่านโค้ด</strong> — ตาดู "สี" ก่อน · <span class="t-slash">ม่วง</span> = คำสั่ง · <span class="t-str">เขียว</span> = ข้อความที่ใส่เอง · <span class="t-flag">ส้ม</span> = option · <span class="t-path">เหลือง</span> = path · เข้าใจสีก่อน = เข้าใจครึ่งทาง</div>
+    </div>
+  </div>
+
+  <footer style="text-align: center; color: var(--dim); padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border);">
+    <div style="font-size: 13px;">KP Research · Command Center v3.0</div>
+    <div style="font-size: 12px; margin-top: 4px;">Physics · Astronomy · Pattern Library · State Memory</div>
+  </footer>
+
+</div>
+
+<script>
+  // ===== TABS =====
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+  function switchTab(id) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+    panels.forEach(p => p.classList.toggle('active', p.id === 'panel-' + id));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  tabs.forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+  window.switchTab = switchTab;
+
+  // ===== SEARCH & FILTER =====
+  const searchInput = document.getElementById('searchInput');
+  const cards = document.querySelectorAll('#cmdGrid .card');
+  const noResults = document.getElementById('noResults');
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cmdGrid = document.getElementById('cmdGrid');
+  const cmdCount = document.getElementById('cmdCount');
+  let currentFilter = 'all';
+
+  function applyFilter() {
+    const query = searchInput.value.trim().toLowerCase();
+    let visible = 0;
+
+    cards.forEach(card => {
+      const name = card.querySelector('.card-name').textContent.toLowerCase();
+      const desc = card.querySelector('.card-desc').textContent.toLowerCase();
+      const keywords = (card.dataset.keywords || '').toLowerCase();
+      const cat = card.dataset.cat;
+      const haystack = name + ' ' + desc + ' ' + keywords;
+      const matchesQuery = !query || haystack.includes(query);
+      const matchesFilter = currentFilter === 'all' || cat === currentFilter;
+      if (matchesQuery && matchesFilter) {
+        card.classList.remove('hidden');
+        visible++;
+        highlightMatch(card, query);
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+
+    noResults.classList.toggle('show', visible === 0);
+    cmdGrid.style.display = visible === 0 ? 'none' : '';
+    cmdCount.textContent = visible;
+
+    // If user searches, jump to Commands tab
+    if (query && !document.getElementById('panel-commands').classList.contains('active')) {
+      switchTab('commands');
+    }
+  }
+
+  function highlightMatch(card, query) {
+    ['.card-name', '.card-desc'].forEach(sel => {
+      const el = card.querySelector(sel);
+      if (el.dataset.original) el.innerHTML = el.dataset.original;
+    });
+    if (!query) return;
+    ['.card-name', '.card-desc'].forEach(sel => {
+      const el = card.querySelector(sel);
+      if (!el.dataset.original) el.dataset.original = el.innerHTML;
+      const text = el.dataset.original;
+      const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+      el.innerHTML = text.replace(re, '<mark>$1</mark>');
+    });
+  }
+
+  searchInput.addEventListener('input', applyFilter);
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.dataset.filter;
+      applyFilter();
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput) {
+      searchInput.value = '';
+      applyFilter();
+      searchInput.blur();
+    }
+  });
+
+  applyFilter();
+
+  // ===== COMMAND DETAILS MODAL =====
+  const cmdDetails = {
+    '/phys-full': {
+      flow: ['อ่าน template จากแผน reference (เช่นแผน 5)','สร้างโฟลเดอร์ + Infographic.html (theme ต่อแผน)','สร้าง POE / Calc / Spot / Four-tier','Edit content/physics3/{tools,worksheets,questions,media}.js','Verify + git commit + push'],
+      example: '/phys-full waves 11 "คลื่นแม่เหล็กไฟฟ้า" --no-confirm',
+      output: '✓ Step 1-2  แผน11_คลื่นแม่เหล็กไฟฟ้า/ + Infographic\n✓ Step 3    POE-11\n✓ Step 4    Calc 11.1 + Spot 11.2\n✓ Step 5    F_11 Four-tier\n✓ Step 6    4 content files updated\n✓ Step 7    commit abc123 · pushed\n→ https://kp-science.github.io/...',
+      note: 'Macro — 1 คำสั่งจบ ~15k tokens'
+    },
+    '/phys-plan-new': {
+      flow: ['สร้าง lessons/physics3/<subject>/แผนNN_<slug>/','สร้าง แผนN_Infographic.html (theme color ตาม plan)','ไม่สร้างสื่อ · รอ /phys-media-add'],
+      example: '/phys-plan-new waves 11 "คลื่นแม่เหล็กไฟฟ้า"',
+      output: '✓ สร้างโฟลเดอร์ แผน11_คลื่นแม่เหล็กไฟฟ้า/\n✓ แผน11_Infographic.html (theme: indigo)\n→ ต่อด้วย /phys-media-add waves 11 POE'
+    },
+    '/phys-media-add': {
+      flow: ['อ่าน template สื่อของแผน reference','สร้างไฟล์ 1 ใน 4 ชนิด: POE / Calc / Spot / F','ใส่ real form controls + identity inputs + worksheet-core.js'],
+      example: '/phys-media-add waves 11 POE',
+      output: '✓ สร้าง สื่อ02_POE-11_ใบบันทึกPOE.html\n  • radio/checkbox/textarea form\n  • canvas 200px\n  • data-ws-id="plan11-poe"'
+    },
+    '/phys-check': {
+      flow: ['grep ☐ characters (ต้องไม่มี)','grep canvas height (ต้อง ≥180)','ตรวจ script worksheet-core.js ครบ','ตรวจ schema ใน content/*.js','python3 bracket balance 4 ไฟล์'],
+      example: '/phys-check waves 11',
+      output: '✓ 1/13  No ☐ placeholder\n✓ 2/13  Canvas ≥180px\n✗ 3/13  Calc 11.1 มี .cell paper-style (line 45)\n✓ 4/13  worksheet-core.js OK\n...\n⚠️ 1 fail · แก้ก่อน push'
+    },
+    '/astro-full': {
+      flow: ['อ่าน reference page (pN-1) ใน ep เดียวกัน','สร้าง pNN-slug.html ตาม COSMOS LOG','Update lessons/astronomy/<ep>/index.html','git commit + push'],
+      example: '/astro-full ep02 14 "First Corruption"',
+      output: '✓ p14-first-corruption.html\n✓ Book-page flow + Teacher Cue\n✓ Register ep02/index.html\n✓ commit def456 · pushed'
+    },
+    '/astro-page-new': {
+      flow: ['อ่าน reference page เดียวกับ ep','อ่าน design bible (เฉพาะ section ที่เกี่ยว)','สร้าง pNN-slug.html ตาม pattern'],
+      example: '/astro-page-new ep01 20 "Event Horizon"',
+      output: '✓ สร้าง lessons/astronomy/ep01/p20-event-horizon.html\n  • Before / Activity / After sections\n  • Teacher Cue ด้านล่าง'
+    },
+    '/astro-ep02-item': {
+      flow: ['อ่าน shared/items.js เฉพาะ section ที่เพิ่ม','Edit เพิ่ม entry ใหม่'],
+      example: '/astro-ep02-item "Stellar Compass" --type=key',
+      output: "✓ เพิ่ม item ใน shared/items.js\n  {\n    id: 'stellar-compass',\n    type: 'key',\n    effect: { unlock: 'boss-room' }\n  }"
+    },
+    '/astro-ep02-boss': {
+      flow: ['อ่าน shared/boss.js','Edit HP/phase/attack pattern'],
+      example: '/astro-ep02-boss "Void Entity" --action=add --hp=500 --phase=3',
+      output: '✓ Boss added: Void Entity\n  HP: 500 · Phases: 3\n  Default attack pattern · แก้ต่อด้วย --action=edit'
+    },
+    '/web-full': {
+      flow: ['/web-reg-worksheet','/web-reg-media','/web-reg-question','/web-verify','/web-deploy'],
+      example: '/web-full waves 11 --msg "เพิ่มแผน 11"',
+      output: '✓ worksheets.js (+30 lines)\n✓ media.js (+25 lines)\n✓ questions.js (+3 questions)\n✓ Verify OK\n✓ commit abc123 · pushed\n→ deploy ~1-2 นาที'
+    },
+    '/web-reg-worksheet': {
+      flow: ['อ่าน worksheets.js เฉพาะ entry N-1 (match format)','Edit เพิ่ม entry N · ไม่ rewrite'],
+      example: '/web-reg-worksheet waves 11',
+      output: "✓ เพิ่ม entry 11 ใน worksheets.js (line 842-871)\n  11: {\n    poe: { title, viewFile, sheetPrefix, ... },\n    calc: { ... },\n    spot: { ... },\n    cer:  { ... }\n  }"
+    },
+    '/web-reg-media': {
+      flow: ['อ่าน media.js entry N-1','Edit เพิ่ม entry N พร้อม folder/title/meta/sections/linkOut'],
+      example: '/web-reg-media waves 11',
+      output: "✓ เพิ่ม entry 11 ใน media.js\n  folder: 'lessons/physics3/waves/แผน11_.../'\n  title: 'แผน 11 — คลื่นแม่เหล็กไฟฟ้า'\n  sections: [4 items]\n  linkOut: [7 items]"
+    },
+    '/web-reg-question': {
+      flow: ['อ่าน questions.js entry N-1','Edit เพิ่ม 3 ข้อ Four-tier (M_N.1-3)'],
+      example: '/web-reg-question waves 11',
+      output: '✓ เพิ่ม 3 ข้อ ใน questions.js\n  M_11.1 · คลื่น EM ความเร็ว\n  M_11.2 · สเปกตรัม\n  M_11.3 · การประยุกต์'
+    },
+    '/web-reg-astro': {
+      flow: ['Update lessons/astronomy/<ep>/index.html','เพิ่ม entry ใน content/astronomy/<ep>.js ถ้ามี'],
+      example: '/web-reg-astro ep01 20',
+      output: '✓ Link ใน ep01/index.html\n✓ content/astronomy/ep01.js entry added'
+    },
+    '/web-reg-subject': {
+      flow: ['อ่าน content/subjects.js ทั้งไฟล์ (สั้น)','Edit เพิ่ม entry ใหม่'],
+      example: '/web-reg-subject bio',
+      output: "✓ เพิ่ม entry ใน subjects.js\n  {\n    id: 'bio',\n    display: 'ชีววิทยา ม.5',\n    pattern: 'astronomy-game',\n    color: '#34d399',\n    enabled: true\n  }"
+    },
+    '/web-verify': {
+      flow: ['python3 bracket balance content pack','ls file ที่ schema อ้าง · ต้องมีจริง','grep data-ws-id · ต้อง unique','curl URL test'],
+      example: '/web-verify waves 11',
+      output: '✓ bracket balance 4/4 OK\n✓ 5 HTML files exist\n✓ data-ws-id unique\n✓ URL encoding OK'
+    },
+    '/web-deploy': {
+      flow: ['git status','git add เฉพาะ path (ไม่ใช่ -A)','git commit ภาษาไทย + Co-Authored-By','git push origin main'],
+      example: '/web-deploy "เพิ่มแผน 11 คลื่นแม่เหล็กไฟฟ้า"',
+      output: '✓ Staged: content/physics3/ lessons/physics3/waves/แผน11_*/\n✓ commit abc123\n✓ pushed origin main\n→ https://kp-science.github.io/wave-mechanics-research/\n⏱ deploy 1-2 นาที'
+    },
+    '/web-edit-index': {
+      flow: ['grep section marker หรือใช้ line range','Read เฉพาะ range · Edit ตรงจุด'],
+      example: '/web-edit-index hero --line=45-80',
+      output: '✓ แก้ index.html บรรทัด 45-80\n  (อ่านแค่ 36 บรรทัด ~500 tokens)'
+    },
+    '/web-edit-classroom': {
+      flow: ['awk หา function boundary','Read เฉพาะ function · Edit ตรงจุด'],
+      example: '/web-edit-classroom renderPlanCards',
+      output: '✓ เจอ function บรรทัด 1285-1369\n✓ Read 85 บรรทัด (~1.2k tokens)\n✓ Edit สำเร็จ'
+    },
+    '/game-page-new': {
+      flow: ['อ่าน pattern ที่ subject ใช้ (จาก subjects.js)','สร้าง pNN-slug.html ตาม template pattern'],
+      example: '/game-page-new bio ep01 1 "เข้าสู่เซลล์"',
+      output: '✓ lessons/bio/ep01/p01-enter-cell.html\n  • Theme: bio-green\n  • Series: CELL LOG'
+    },
+    '/game-item': {
+      flow: ['หา items.js ของ subject','Edit เพิ่ม entry'],
+      example: '/game-item bio "ATP Token" --type=heal',
+      output: "✓ เพิ่ม item ใน lessons/bio/shared/items.js\n  { id: 'atp-token', type: 'heal', ... }"
+    },
+    '/game-boss': {
+      flow: ['หา boss.js ของ subject','Edit add/modify boss'],
+      example: '/game-boss bio "Virus-X" --action=add --hp=300',
+      output: '✓ Boss: Virus-X (HP 300)\n  lessons/bio/shared/boss.js'
+    },
+    '/pattern-list': {
+      flow: ['ls .claude/patterns/','อ่าน frontmatter ของ manifest.md แต่ละ pattern'],
+      example: '/pattern-list',
+      output: '📦 Available patterns:\n├── astronomy-game   (base · game)       — COSMOS LOG\n└── wave-5e-poe     (base · lesson-plan) — 5E+POE'
+    },
+    '/pattern-use': {
+      flow: ['Phase 1: อ่าน questions.json · แสดงคำถาม','รอผู้ใช้ตอบ YAML ครั้งเดียว','Phase 2: parse คำตอบ · scaffold ไฟล์','สร้าง STATE.md อัตโนมัติ (public + private)','Register ใน subjects.js'],
+      example: '/pattern-use astronomy-game bio',
+      output: '[Phase 1] คำถาม 14 ข้อ ... [ผู้ใช้ตอบ YAML]\n[Phase 2]\n✓ lessons/bio/ + content/bio/\n✓ cell-log-series-bible.html\n✓ Copy shared/ (7 files)\n✓ STATE.md + _private/state/bio_notes.md\n✓ Register subjects.js'
+    },
+    '/pattern-fork': {
+      flow: ['cp -r pattern เดิม','แก้ manifest frontmatter (name, base)'],
+      example: '/pattern-fork astronomy-game bio-exploration',
+      output: '✓ Copy astronomy-game → bio-exploration\n✓ manifest.md updated:\n   name: bio-exploration\n   base: astronomy-game\n→ /pattern-edit bio-exploration'
+    },
+    '/pattern-save': {
+      flow: ['Diff ไฟล์ subject vs base pattern','สร้าง pattern ใหม่ที่มี overrides'],
+      example: '/pattern-save bio --name=bio-exploration --base=astronomy-game',
+      output: '✓ Pattern saved: bio-exploration\n  extends: astronomy-game\n  Overrides:\n    + organelle-map-template.html\n    ± page-template.html'
+    },
+    '/pattern-edit': {
+      flow: ['ls ไฟล์ใน pattern','เปิดไฟล์ที่ระบุ · ให้ผู้ใช้บอกว่าจะแก้อะไร'],
+      example: '/pattern-edit bio-exploration questions.json',
+      output: '📝 Opening questions.json\n  ปัจจุบันมี 14 คำถาม\n  → บอกว่าจะเพิ่ม/ลดข้อไหน'
+    },
+    '/pattern-diff': {
+      flow: ['ls ทั้ง 2 patterns','เทียบ file-level (ชื่อ + ขนาด)'],
+      example: '/pattern-diff astronomy-game bio-exploration',
+      output: '🔍 Only in bio-exploration:\n   + organelle-map-template.html\nModified:\n   ± page-template.html (+12%)\n   ± questions.json (-2 questions)'
+    },
+    '/catchup': {
+      flow: ['อ่าน lessons/<subject>/STATE.md','อ่าน _private/state/<subject>_notes.md ถ้ามี','git log -5 ของ subject','สรุป briefing สั้น ๆ'],
+      example: '/catchup astronomy',
+      output: '📊 astronomy — EP02 in progress\n✅ Done: p01-p13 (ล่าสุด 2026-04-23)\n🚧 Next: p14 corruption\n⚠️ Story: Protagonist = Cosmos-VII\n   Antagonist = Void Entity\n🔑 Decisions:\n   • 2026-04-22: Teacher Cue ลงล่าง\n❓ Open: EP03 ต่อ หรือพัก bio?\n→ /astro-page-new ep02 14 "..."'
+    },
+    '/state-save': {
+      flow: ['อ่าน STATE.md current','Parse argument (เข้าใจว่าทำอะไร)','Edit STATE.md เฉพาะ section ที่เปลี่ยน','Append decisions log + timestamp'],
+      example: '/state-save astronomy "เสร็จ p14 · ปรับ Void สีเข้ม"',
+      output: '✓ STATE.md updated\n  ✅ Done += p14 corruption\n  🔑 Decisions += 2026-04-23: Void สีเข้มขึ้น\n  Last updated: 2026-04-23'
+    },
+    '/state-edit': {
+      flow: ['เปิด STATE.md · ถามว่าจะแก้ section ไหน','Edit ตรงจุด'],
+      example: '/state-edit astronomy',
+      output: '📝 STATE.md · บอกว่าจะแก้อะไร:\n  1. Story state\n  2. Rules\n  3. Decisions log\n  4. Open questions'
+    },
+    '/state-view': {
+      flow: ['Read STATE.md','แสดงสรุป 4 sections (default) หรือทั้งไฟล์ถ้า --full'],
+      example: '/state-view astronomy',
+      output: '📄 astronomy STATE (last updated: 2026-04-23)\n🎯 EP02 · p14 in progress\n🚧 Next: p15 boss phases\n🔑 3 decisions ล่าสุด:\n   • Teacher Cue ลงล่าง\n   • star map → memory fragments\n   • boss HP 300→400'
+    },
+    '/status': {
+      flow: ['git log --oneline -10','git status','ls lessons/ · นับไฟล์'],
+      example: '/status all',
+      output: '📊 Project Status\nGit: 5 commits ahead · 2 files modified\nPhysics: 10 แผน waves · 6 แผน SHM\nAstro: EP01 19 pages · EP02 13 pages\nURL: https://kp-science.github.io/... ✅'
+    },
+    '/pattern-extract': {
+      flow: ['อ่านไฟล์ที่ระบุ','สรุป pattern spec','เสนอบันทึกเป็น memory'],
+      example: '/pattern-extract lessons/astronomy/ep01/p13-shiplock.html',
+      output: 'Pattern: shiplock-reflection\nKey features:\n  • 3-layer prompt (observe/feel/infer)\n  • Teacher Cue ลอย sidebar\n  • Scroll-snap sections\nSuggested memory: feedback_shiplock_pattern.md\n→ Confirm บันทึก?'
+    },
+    '/pattern-apply': {
+      flow: ['อ่าน memory pattern','อ่าน target file','Edit target ตาม pattern spec'],
+      example: '/pattern-apply shiplock-reflection lessons/physics3/waves/แผน11/POE-11.html',
+      output: '✓ Applied pattern to POE-11.html\n  + 3-layer reflection\n  ± Teacher Cue repositioned\n  + scroll-snap css'
+    },
+    '/ask': {
+      usage: `
+        <style>
+          .u-sec { margin-bottom: 24px; }
+          .u-h { font-size:14px; font-weight:700; color:var(--text); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+          .u-h-sub { color: var(--dim); font-size: 13px; font-weight: 400; }
+          .u-code { background:var(--code-bg); border:1px solid var(--border); border-radius:8px; padding:12px 16px; font-family:'SF Mono',monospace; font-size:13px; line-height:1.9; overflow-x:auto; white-space:pre-wrap; }
+          .u-code .s { color:#a78bfa; font-weight:600; }
+          .u-code .q { color:#34d399; }
+          .u-code .y { color:#fb923c; }
+          .u-code .n { color:#fb7185; }
+          .u-code .c { color:#64748b; font-style:italic; }
+          .u-code .o { color:#38bdf8; }
+          .u-arrow { color:var(--dim); font-size:13px; margin:8px 0 0 4px; }
+          .u-token { margin-top:20px; padding:14px 18px; background:rgba(52,211,153,0.08); border-left:3px solid var(--green); border-radius:8px; }
+          .u-token h4 { margin:0 0 6px; color:var(--green); font-size:13px; }
+          .u-token ul { margin:0; padding-left:20px; font-size:13px; color:var(--text); line-height:1.7; }
+        </style>
+
+        <div class="u-sec">
+          <div class="u-h">📝 แบบที่ 1 <span class="u-h-sub">— บอกว่าอยากทำอะไรเลย</span></div>
+          <pre class="u-code"><span class="s">/ask</span> <span class="q">"อยากเพิ่มแผนฟิสิกส์"</span>
+<span class="s">/ask</span> <span class="q">"จะเปิดวิชาใหม่"</span>
+<span class="s">/ask</span> <span class="q">"ดูว่าทำถึงไหน"</span>
+<span class="s">/ask</span> <span class="q">"เอาบทเรียนเข้าเว็บ"</span></pre>
+        </div>
+
+        <div class="u-sec">
+          <div class="u-h">💬 แบบที่ 2 <span class="u-h-sub">— สั่งเฉย ๆ ไม่มี argument</span></div>
+          <pre class="u-code"><span class="s">/ask</span></pre>
+          <div class="u-arrow">→ ผมจะถามว่า "อยากทำอะไรครับ?"</div>
+        </div>
+
+        <div class="u-sec">
+          <div class="u-h">📤 ผลลัพธ์ที่คาดหวัง</div>
+          <pre class="u-code"><span class="o">🎯 แนะนำ:</span>
+
+1️⃣ <span class="s">/phys-full</span> <span class="y">waves</span> <span class="n">&lt;N&gt;</span> <span class="q">"&lt;หัวข้อ&gt;"</span>
+   <span class="c">→ สร้างแผนครบวงจร (Macro)</span>
+   <span class="c">→ Token ~15k</span>
+
+2️⃣ <span class="s">/phys-plan-new</span> + <span class="s">/phys-media-add</span> + <span class="s">/phys-check</span>
+   <span class="c">→ ทำทีละขั้น (ตรวจทานระหว่างทาง)</span>
+
+💡 <span class="o">Tip:</span> ถ้ามาตรฐาน ใช้ #1 · ถ้าพิเศษ ใช้ #2</pre>
+        </div>
+
+        <div class="u-token">
+          <h4>💰 Token</h4>
+          <ul>
+            <li>อ่านแค่ frontmatter 5 บรรทัด × 38 ไฟล์ ≈ 2k tokens</li>
+            <li>ไม่ต้องเปิด MANUAL · ถาม Claude ได้เลย</li>
+          </ul>
+        </div>
+      `
+    },
+    '/cmd-update': {
+      flow: ['อ่าน .claude/commands/<name>.md','Edit เพิ่ม/แก้ตามที่อธิบาย'],
+      example: '/cmd-update phys-media-add "เพิ่ม --style=journal-321"',
+      output: '✓ Edited .claude/commands/phys-media-add.md\n  + Style patterns:\n    - journal-321 — memory feedback_journal_pattern'
+    }
+  };
+
+  // Modal HTML
+  const modalHtml = `
+    <div id="cmdModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,14,26,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closeModal()">
+      <div style="background:var(--bg-2);border:1px solid var(--border-strong);border-radius:20px;max-width:720px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5)">
+        <div style="padding:24px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;position:sticky;top:0;background:var(--bg-2);z-index:1;border-radius:20px 20px 0 0">
+          <div id="modalIcon" style="width:40px;height:40px;border-radius:10px;background:var(--g-blue);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0"></div>
+          <div style="flex:1">
+            <div id="modalName" style="font-family:'SF Mono',monospace;font-size:18px;font-weight:700;color:var(--blue)"></div>
+            <div id="modalDesc" style="color:var(--dim);font-size:13px;margin-top:2px"></div>
+          </div>
+          <button onclick="closeModal()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px">✕</button>
+        </div>
+        <div style="padding:24px 28px" id="modalBody">
+          <div id="modalSimple">
+            <h3 style="font-size:14px;color:var(--purple);margin-top:0;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">⚙️ Flow — ทำอะไรบ้าง</h3>
+            <ol id="modalFlow" style="padding-left:20px;color:var(--text);font-size:14px;line-height:1.9"></ol>
+
+            <h3 style="font-size:14px;color:var(--green);margin-top:28px;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">💬 ตัวอย่างคำสั่ง</h3>
+            <pre id="modalExample" style="background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-family:'SF Mono',monospace;font-size:13px;color:var(--text);overflow-x:auto;margin:0;white-space:pre-wrap"></pre>
+
+            <h3 style="font-size:14px;color:var(--blue);margin-top:28px;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px">📤 ผลลัพธ์ที่คาดหวัง</h3>
+            <pre id="modalOutput" style="background:var(--code-bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-family:'SF Mono',monospace;font-size:13px;color:var(--out,var(--blue));overflow-x:auto;margin:0;white-space:pre-wrap;line-height:1.7"></pre>
+
+            <div id="modalNoteWrap" style="display:none;margin-top:20px;padding:12px 16px;background:rgba(251,146,60,0.08);border-left:3px solid var(--orange);border-radius:8px;color:var(--text);font-size:13px">
+              <strong>💡 Note:</strong> <span id="modalNote"></span>
+            </div>
+          </div>
+          <div id="modalRich" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  const modal = document.getElementById('cmdModal');
+  function openModal(cmdName) {
+    const d = cmdDetails[cmdName];
+    if (!d) {
+      alert('รายละเอียดสำหรับ ' + cmdName + ' ยังไม่พร้อม');
+      return;
+    }
+    const card = [...document.querySelectorAll('#cmdGrid .card')].find(c =>
+      c.querySelector('.card-name').textContent.trim() === cmdName);
+    const icon = card ? card.querySelector('.card-icon').cloneNode(true) : null;
+    const desc = card ? card.querySelector('.card-desc').textContent : '';
+    const iconEl = document.getElementById('modalIcon');
+    iconEl.innerHTML = '';
+    if (icon) { iconEl.style.background = icon.style.background; iconEl.innerHTML = icon.innerHTML; }
+    document.getElementById('modalName').textContent = cmdName;
+    document.getElementById('modalDesc').textContent = desc;
+
+    const simple = document.getElementById('modalSimple');
+    const rich = document.getElementById('modalRich');
+
+    if (d.usage) {
+      // Rich mode — render custom HTML usage guide
+      simple.style.display = 'none';
+      rich.style.display = '';
+      rich.innerHTML = d.usage;
+    } else {
+      // Default simple mode
+      simple.style.display = '';
+      rich.style.display = 'none';
+      const flowEl = document.getElementById('modalFlow');
+      flowEl.innerHTML = '';
+      d.flow.forEach(s => { const li = document.createElement('li'); li.textContent = s; flowEl.appendChild(li); });
+      document.getElementById('modalExample').textContent = d.example;
+      document.getElementById('modalOutput').textContent = d.output;
+      const noteWrap = document.getElementById('modalNoteWrap');
+      if (d.note) { noteWrap.style.display = ''; document.getElementById('modalNote').textContent = d.note; }
+      else { noteWrap.style.display = 'none'; }
+    }
+    modal.style.display = 'flex';
+    document.querySelector('#cmdModal > div').scrollTop = 0;
+  }
+  function closeModal() { modal.style.display = 'none'; }
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+
+  // Make cards clickable
+  document.querySelectorAll('#cmdGrid .card').forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a')) return;
+      const name = card.querySelector('.card-name').textContent.trim();
+      openModal(name);
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+  });
+</script>
+
+</body>
+</html>

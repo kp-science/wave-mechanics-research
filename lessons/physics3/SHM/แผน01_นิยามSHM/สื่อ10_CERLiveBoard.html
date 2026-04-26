@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>CER Live Board — Claim/Evidence/Reasoning (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#312e81}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.info{background:#eef2ff;border-left:6px solid #4f46e5;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.situ-pick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+.situ-pick label{background:#fff;border:1.5px solid #c7d2fe;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:13.5px}
+.situ-pick label:has(input:checked){background:#eef2ff;border-color:#4f46e5;font-weight:700}
+.cer{display:grid;grid-template-columns:1fr;gap:12px;margin-top:12px}
+.card{border-radius:12px;padding:14px 18px}
+.card.c{background:#e0e7ff;border-left:6px solid #4f46e5}
+.card.e{background:#fff3e0;border-left:6px solid #ef6c00}
+.card.r{background:#e8f5e9;border-left:6px solid #2e7d32}
+.card h2{font-size:18px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card.c h2{color:#3730a3}.card.e h2{color:#c05621}.card.r h2{color:#1b5e20}
+.ans-ta{width:100%;padding:8px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14.5px;resize:vertical;margin-top:6px}
+canvas[data-bg="grid"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to right,#fff 0,#fff 29px,#eef2ff 30px),repeating-linear-gradient(to bottom,#fff 0,#fff 29px,#eef2ff 30px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #4f46e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5}
+.hint{font-size:13px;color:#555;font-style:italic;margin-top:4px}
+.group-box{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:10px 14px;margin-top:12px}
+.group-box b{color:#166534}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-cer">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📡 CER Live Board — Claim / Evidence / Reasoning</h1>
+      <div class="meta"><span class="tag">SHM แผน 1</span><span class="tag">E3 Explain</span> 10 นาที · กลุ่มส่ง CER ขึ้น Live Board · ครูฉาย Autorefresh</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>สมาชิก</b> <input type="text" id="s-members" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:240px" placeholder="4 ชื่อ"></label>
+    </div>
+  </div>
+
+  <div class="info"><b>วัตถุประสงค์:</b> K1.1 · P1.1 · <b>วPA:</b> 3, 5, 6 · <b>รูปแบบ:</b> ตอบ 1 สถานการณ์ (เลือกจาก 6 ตัวอย่างใน SIM01) ด้วยโครง Claim–Evidence–Reasoning</div>
+
+  <div class="q"><b>🎯 คำถามหลัก:</b> สถานการณ์ที่กลุ่มเลือก "เป็น SHM หรือไม่" — พิสูจน์ด้วย CER · อ้างกราฟ F-x จาก SIM01 เป็นหลักฐาน</div>
+
+  <div><b>เลือกสถานการณ์ที่กลุ่มอภิปราย (กลุ่มละ 1 ข้อ):</b></div>
+  <div class="situ-pick">
+    <label><input type="radio" name="situ"> ① ลูกตุ้มมุมเล็ก</label>
+    <label><input type="radio" name="situ"> ② ลูกตุ้มวงกลม (conical)</label>
+    <label><input type="radio" name="situ"> ③ ลูกบอลเด้งบนพื้น</label>
+    <label><input type="radio" name="situ"> ④ มวล-สปริงแนวระดับ</label>
+    <label><input type="radio" name="situ"> ⑤ มวล-สปริงแนวดิ่ง</label>
+    <label><input type="radio" name="situ"> ⑥ วงกลมสม่ำเสมอ</label>
+  </div>
+
+  <div class="cer">
+    <!-- Claim -->
+    <div class="card c">
+      <h2>🎯 C · Claim (ข้อสรุป 1 ประโยค)</h2>
+      <div class="hint">ตอบให้ชัด: "สถานการณ์นี้เป็น SHM / ไม่เป็น SHM" · อย่าอ้อม</div>
+      <textarea id="cer-claim" class="ans-ta" rows="2" placeholder="กลุ่มของเราคิดว่า สถานการณ์... เป็น/ไม่เป็น SHM เพราะ..."></textarea>
+    </div>
+
+    <!-- Evidence -->
+    <div class="card e">
+      <h2>🔬 E · Evidence (หลักฐานจาก SIM01)</h2>
+      <div class="hint">บันทึกหลักฐานเชิงรูปธรรม: กราฟ F-x เป็นเส้นตรงผ่าน (0,0) หรือไม่ · ความชัน · ขนาดแรงคงที่หรือแปรผัน</div>
+      <textarea id="cer-evidence" class="ans-ta" rows="3" placeholder="จาก SIM01 สังเกตว่า กราฟ F-x... ความชัน... เมื่อ x = 0 แรง... เมื่อ x เพิ่ม แรง..."></textarea>
+      <div style="margin-top:8px"><b>✏️ วาดกราฟ F-x ของสถานการณ์ที่เลือก:</b></div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" id="tbp" onclick="setTool('cerGraph','pencil',this)">✏️</button>
+        <button class="c-btn" id="tbe" onclick="setTool('cerGraph','eraser',this)">⬜</button>
+        <div class="c-color active" style="background:#1a202c" onclick="setColor('cerGraph','#1a202c',this)"></div>
+        <div class="c-color" style="background:#4f46e5" onclick="setColor('cerGraph','#4f46e5',this)"></div>
+        <div class="c-color" style="background:#e53e3e" onclick="setColor('cerGraph','#e53e3e',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cerGraph')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cerGraph" data-bg="grid" width="900" height="240"></canvas>
+    </div>
+
+    <!-- Reasoning -->
+    <div class="card r">
+      <h2>🧠 R · Reasoning (เหตุผล เชื่อม C กับ E ด้วยหลักการ)</h2>
+      <div class="hint">โยงเข้านิยาม SHM: "แรงคืนตัว F = −kx ∝ −x" · และอ้าง periodic ≠ SHM (M1.1) / SHM เกิดทุกทิศ (M1.3)</div>
+      <textarea id="cer-reasoning" class="ans-ta" rows="4" placeholder="ตามนิยาม SHM ต้องมี F = −kx... กราฟที่กลุ่มวาด... จึง (ยืนยัน/ปฏิเสธ) ว่าเป็น SHM เพราะ..."></textarea>
+    </div>
+  </div>
+
+  <div class="group-box">
+    <b>📡 วิธีส่ง Live Board:</b> กลุ่มใช้ QR/ลิงก์ของครู → วาง CER ของกลุ่ม → ครูฉายหน้าจอ autorefresh เปรียบเทียบ 6 สถานการณ์ → ชี้ให้เห็น periodic ≠ SHM · F = −kx คือเงื่อนไข
+  </div>
+
+  <div style="background:#eef2ff;border:1.5px solid #c7d2fe;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:14px">
+    <b style="color:#3730a3">🎯 เกณฑ์การให้คะแนน CER (ครูใช้ · 0–3):</b>
+    <table style="width:100%;border-collapse:collapse;margin-top:6px;font-size:13px">
+      <tr style="background:#4f46e5;color:#fff"><th style="padding:6px 8px;border:1px solid #4338ca;width:18%">ระดับ</th><th style="padding:6px 8px;border:1px solid #4338ca">คำอธิบาย</th></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #c7d2fe"><b>3 · ครบถ้วน</b></td><td style="padding:6px 8px;border:1px solid #c7d2fe">Claim ชัด · Evidence อ้างกราฟ F-x จาก SIM · Reasoning เชื่อมนิยาม F = −kx</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #c7d2fe"><b>2 · ดี</b></td><td style="padding:6px 8px;border:1px solid #c7d2fe">มี 3 ส่วน · แต่ Reasoning ยังไม่ชัดว่าต่างจาก periodic</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #c7d2fe"><b>1 · พอใช้</b></td><td style="padding:6px 8px;border:1px solid #c7d2fe">มี Claim + Evidence แต่ Reasoning ลอย ๆ หรือขาด</td></tr>
+      <tr><td style="padding:6px 8px;border:1px solid #c7d2fe"><b>0 · ต้องปรับปรุง</b></td><td style="padding:6px 8px;border:1px solid #c7d2fe">ไม่ส่ง · หรือตอบไม่สัมพันธ์กับสถานการณ์</td></tr>
+    </table>
+  </div>
+
+  <div class="foot">CER Live Board · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.dataset.bg==='grid';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function drawAxes(id){const c=document.getElementById(id);const ctx=c.getContext('2d');const w=c.width,h=c.height;const cx=w/2,cy=h/2;ctx.save();ctx.strokeStyle='#94a3b8';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(20,cy);ctx.lineTo(w-20,cy);ctx.moveTo(cx,20);ctx.lineTo(cx,h-20);ctx.stroke();ctx.fillStyle='#3730a3';ctx.font='700 13px Sarabun';ctx.fillText('F',cx+6,28);ctx.fillText('x',w-18,cy-6);ctx.fillText('0',cx+6,cy+14);ctx.restore();}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}drawAxes(id);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="grid"]').forEach(c=>{initCanvas(c.id);drawAxes(c.id);});});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

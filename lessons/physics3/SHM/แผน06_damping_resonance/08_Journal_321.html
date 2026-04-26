@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Journal 3-2-1 | SHM Unit Review | แผน 6</title>
+<style>
+:root {
+  --primary: #7c3aed;
+  --dark: #4c1d95;
+  --light: #ede9fe;
+  --bg: #faf5ff;
+  --card: #ffffff;
+  --border: #c4b5fd;
+  --text: #1e1b4b;
+  --muted: #6b7280;
+  --green: #059669;
+  --amber: #d97706;
+  --red: #dc2626;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Sarabun', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; }
+header { background: linear-gradient(135deg, var(--dark), var(--primary)); color: #fff; padding: 20px 24px; }
+header h1 { font-size: 1.5rem; font-weight: 700; }
+header p { font-size: 0.9rem; opacity: 0.85; margin-top: 4px; }
+.container { max-width: 1040px; margin: 0 auto; padding: 20px 16px 60px; }
+.id-bar { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+.id-bar label { font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 3px; }
+.id-bar input { border: 1px solid #d1d5db; border-radius: 6px; padding: 5px 9px; font-size: 0.9rem; font-family: inherit; }
+.id-bar input:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+section { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 20px; }
+section > h2 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.badge { display: inline-block; background: var(--primary); color: #fff; border-radius: 20px; padding: 2px 10px; font-size: 0.75rem; }
+.badge-num { background: var(--dark); color: #fff; border-radius: 50%; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+/* 3-2-1 cards */
+.journal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.j-card { border-radius: 10px; padding: 16px; }
+.j-card.three { background: #eff6ff; border: 2px solid #93c5fd; }
+.j-card.two   { background: #f0fdf4; border: 2px solid #86efac; }
+.j-card.one   { background: #fef3c7; border: 2px solid #fcd34d; }
+.j-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 10px; }
+.j-card.three h3 { color: #1d4ed8; }
+.j-card.two h3   { color: #15803d; }
+.j-card.one h3   { color: #92400e; }
+.j-card textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 8px; font-family: inherit; font-size: 0.85rem; resize: vertical; }
+.j-card textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+.item-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+.item-num { background: var(--primary); color: #fff; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; margin-top: 2px; }
+/* Plan review grid */
+.plan-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.plan-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.plan-card .plan-title { font-weight: 700; font-size: 0.9rem; color: var(--dark); margin-bottom: 8px; }
+.plan-card textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 7px; font-family: inherit; font-size: 0.85rem; resize: vertical; }
+/* Chip bank */
+.chip-section { }
+.chip-instruction { font-size: 0.85rem; color: var(--muted); margin-bottom: 12px; background: #f3f4f6; border-radius: 6px; padding: 8px 12px; }
+.chip-bank { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.chip { background: var(--light); border: 2px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 0.82rem; cursor: pointer; user-select: none; transition: all 0.18s; }
+.chip.selected-correct { background: #d1fae5; border-color: #10b981; color: #065f46; }
+.chip.selected-wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+.chip:hover { border-color: var(--primary); }
+.chip-result { font-size: 0.85rem; padding: 8px 12px; border-radius: 6px; display: none; }
+.chip-result.show { display: block; }
+.chip-result.pass { background: #d1fae5; color: #065f46; }
+.chip-result.fail { background: #fee2e2; color: #991b1b; }
+/* Canvas */
+.canvas-wrap { position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--border); margin-top: 8px; }
+canvas { display: block; cursor: crosshair; touch-action: none; }
+.canvas-toolbar { display: flex; gap: 6px; align-items: center; padding: 6px 10px; background: #f9f7ff; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.tool-btn { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; padding: 4px 10px; font-size: 0.78rem; cursor: pointer; font-family: inherit; }
+.tool-btn.active, .tool-btn:hover { background: var(--light); border-color: var(--primary); color: var(--dark); }
+.color-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.color-dot.active { border-color: var(--dark); box-shadow: 0 0 0 2px #fff inset; }
+/* Goal setting */
+.goal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.goal-item label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 5px; }
+.goal-item input, .goal-item select, .goal-item textarea { width: 100%; border: 1px solid #d1d5db; border-radius: 6px; padding: 7px 10px; font-family: inherit; font-size: 0.9rem; }
+.goal-item input:focus, .goal-item select:focus, .goal-item textarea:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+/* Emotion */
+.emotion-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.emo-card { border: 2px solid #e5e7eb; border-radius: 10px; padding: 10px 16px; cursor: pointer; text-align: center; transition: all 0.18s; }
+.emo-card input[type=radio] { display: none; }
+.emo-card .emo-icon { font-size: 1.8rem; }
+.emo-card .emo-label { font-size: 0.75rem; color: var(--muted); margin-top: 3px; }
+.emo-card:has(input:checked) { border-color: var(--primary); background: var(--light); }
+/* Submission */
+.submit-bar { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.btn { padding: 9px 20px; border-radius: 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family: inherit; border: none; transition: opacity 0.2s; }
+.btn:hover { opacity: 0.88; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-secondary { background: #e5e7eb; color: #374151; }
+.toast { position: fixed; bottom: 20px; right: 20px; background: #1e1b4b; color: #fff; padding: 10px 20px; border-radius: 8px; font-size: 0.85rem; display: none; z-index: 999; }
+/* Print */
+@media print {
+  header { background: #4c1d95 !important; -webkit-print-color-adjust: exact; }
+  .submit-bar, .canvas-toolbar .tool-btn, .chip-instruction { display: none; }
+  canvas { border: 1px solid #ccc !important; }
+  .chip { border: 1px solid #ccc !important; }
+  body { font-size: 13px; }
+}
+@media (max-width: 700px) {
+  .journal-grid { grid-template-columns: 1fr; }
+  .plan-grid { grid-template-columns: 1fr; }
+  .goal-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📔 Metacognitive Journal — 3-2-1 | SHM Unit Reflection</h1>
+  <p>แผน 6 · การหน่วงและการสั่นพ้อง · สรุปหน่วย SHM ทั้งหมด (แผน 1–6)</p>
+</header>
+
+<div class="container">
+
+  <!-- Identity -->
+  <div class="id-bar">
+    <div><label>ชื่อ–นามสกุล</label><input id="student_name" placeholder="ชื่อ นามสกุล" style="width:200px"></div>
+    <div><label>เลขที่</label><input id="student_no" placeholder="01" style="width:60px"></div>
+    <div><label>ห้อง</label><input id="class" placeholder="ม.4/1" style="width:80px"></div>
+    <div><label>วันที่</label><input id="test_date" type="date" style="width:140px"></div>
+  </div>
+
+  <!-- ===== SECTION A: 3-2-1 ===== -->
+  <section>
+    <h2><span class="badge-num">A</span> Journal 3-2-1 — สรุปหน่วย SHM</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px;">
+      สะท้อนสิ่งที่ได้เรียนตลอดหน่วย SHM ทั้ง 6 แผน ด้วย Format 3-2-1
+    </p>
+    <div class="journal-grid">
+      <!-- 3 things -->
+      <div class="j-card three">
+        <h3>🔵 3 สิ่งที่ได้เรียนรู้</h3>
+        <p style="font-size:0.78rem;color:#1d4ed8;margin-bottom:10px;">จากหน่วย SHM ทั้งหมด (แผน 1–6)</p>
+        <div class="item-row">
+          <span class="item-num">1</span>
+          <textarea id="learn1" rows="3" placeholder="สิ่งที่ได้เรียนรู้ข้อที่ 1..."></textarea>
+        </div>
+        <div class="item-row">
+          <span class="item-num">2</span>
+          <textarea id="learn2" rows="3" placeholder="สิ่งที่ได้เรียนรู้ข้อที่ 2..."></textarea>
+        </div>
+        <div class="item-row">
+          <span class="item-num">3</span>
+          <textarea id="learn3" rows="3" placeholder="สิ่งที่ได้เรียนรู้ข้อที่ 3..."></textarea>
+        </div>
+      </div>
+      <!-- 2 applications -->
+      <div class="j-card two">
+        <h3>🟢 2 การประยุกต์ที่ประทับใจ</h3>
+        <p style="font-size:0.78rem;color:#15803d;margin-bottom:10px;">SHM/การหน่วง/การสั่นพ้องในชีวิตจริงที่น่าสนใจ</p>
+        <div class="item-row">
+          <span class="item-num" style="background:#15803d">1</span>
+          <textarea id="app1" rows="4" placeholder="การประยุกต์ที่ 1: ชื่อ / อธิบาย / เหตุผลที่ประทับใจ..."></textarea>
+        </div>
+        <div class="item-row">
+          <span class="item-num" style="background:#15803d">2</span>
+          <textarea id="app2" rows="4" placeholder="การประยุกต์ที่ 2: ชื่อ / อธิบาย / เหตุผลที่ประทับใจ..."></textarea>
+        </div>
+      </div>
+      <!-- 1 question -->
+      <div class="j-card one">
+        <h3>🟡 1 คำถามสำหรับหน่วยถัดไป</h3>
+        <p style="font-size:0.78rem;color:#92400e;margin-bottom:10px;">คลื่นกล (Mechanical Waves) — คำถามที่อยากรู้</p>
+        <div class="item-row">
+          <span class="item-num" style="background:#d97706">?</span>
+          <textarea id="question1" rows="5" placeholder="คำถามที่ฉันอยากรู้เกี่ยวกับคลื่นกล เช่น เสียง แผ่นดินไหว..."></textarea>
+        </div>
+        <p style="font-size:0.78rem;color:#92400e;margin-top:10px;">เหตุผลที่สงสัย:</p>
+        <textarea id="question1_reason" rows="3" placeholder="เพราะ..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION B: Plan-by-Plan Review ===== -->
+  <section>
+    <h2><span class="badge-num">B</span> ทบทวนรายแผน — สิ่งที่จำได้ดีที่สุด</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">เขียนแนวคิดสำคัญ 1–2 ประโยคที่จำได้ดีที่สุดจากแต่ละแผน</p>
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-title">แผน 1 — การเคลื่อนที่แบบ SHM เบื้องต้น</div>
+        <textarea id="plan1_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 1..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="plan-title">แผน 2 — ลูกตุ้มและสปริง</div>
+        <textarea id="plan2_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 2..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="plan-title">แผน 3 — พลังงานใน SHM</div>
+        <textarea id="plan3_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 3..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="plan-title">แผน 4 — SHM กับวงกลม</div>
+        <textarea id="plan4_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 4..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="plan-title">แผน 5 — การแทรกสอด/ซ้อนทับ</div>
+        <textarea id="plan5_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 5..."></textarea>
+      </div>
+      <div class="plan-card">
+        <div class="plan-title">แผน 6 — การหน่วงและการสั่นพ้อง</div>
+        <textarea id="plan6_review" rows="2" placeholder="สิ่งที่จำได้จากแผน 6..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION C: Chip Self-assessment ===== -->
+  <section>
+    <h2><span class="badge-num">C</span> Self-assessment — เลือกข้อความที่ถูกต้อง</h2>
+    <div class="chip-instruction">
+      คำสั่ง: คลิกเลือกข้อความที่คิดว่าถูกต้องเกี่ยวกับ SHM ทั้งหมด แล้วกด "ตรวจ" เพื่อตรวจสอบ
+    </div>
+    <div class="chip-bank" id="chipBank">
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">ความถี่ธรรมชาติขึ้นกับสมบัติของระบบ ไม่ใช่แรงภายนอก</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">การหน่วงทำให้ความถี่เพิ่มขึ้นเสมอ</div>
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">การสั่นพ้องเกิดเมื่อความถี่ขับ = ความถี่ธรรมชาติ</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">แอมพลิจูดของ SHM คงที่ตลอดเวลาเสมอ</div>
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">ที่ตำแหน่งสมดุล ความเร็วมีค่าสูงสุด</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">การสั่นพ้องคือการสะท้อนของคลื่น</div>
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">พลังงานรวมของ SHM แปรผันตรงกับ A²</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">Q-factor สูง หมายถึงระบบหน่วงมาก</div>
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">ที่ตำแหน่งปลายทาง ความเร่งมีค่าสูงสุด</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">ลูกตุ้มอย่างง่ายมีคาบขึ้นกับมวล</div>
+      <div class="chip" data-correct="true" onclick="toggleChip(this)">Critical damping คืนสู่สมดุลเร็วที่สุดโดยไม่แกว่ง</div>
+      <div class="chip" data-correct="false" onclick="toggleChip(this)">การสั่นพ้องทำให้แรงในระบบมีค่าสูงสุดเสมอ</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="checkChips()">ตรวจคำตอบ</button>
+      <button class="btn btn-secondary" onclick="resetChips()">รีเซ็ต</button>
+      <div class="chip-result" id="chipResult"></div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION D: Mind Map Canvas ===== -->
+  <section>
+    <h2><span class="badge-num">D</span> Mind Map — ความสัมพันธ์แนวคิดในหน่วย SHM</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;">
+      วาด Mind Map แสดงความสัมพันธ์ของแนวคิดสำคัญทั้ง 6 แผน (ตัวอย่าง: SHM → พลังงาน → การหน่วง → การสั่นพ้อง)
+    </p>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_d" onclick="setTool('canvas_d','pencil')">✏️ วาด</button>
+        <button class="tool-btn" id="eraserBtn_d" onclick="setTool('canvas_d','eraser')">🧹 ลบ</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_d')">🗑️ ล้าง</button>
+        <span style="font-size:0.75rem;color:#6b7280;">ขนาดปากกา:</span>
+        <input type="range" min="1" max="12" value="2" id="size_canvas_d" style="width:70px">
+        <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_d','#1e1b4b',this)"></div>
+        <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_d','#7c3aed',this)"></div>
+        <div class="color-dot" style="background:#0369a1" onclick="setColor('canvas_d','#0369a1',this)"></div>
+        <div class="color-dot" style="background:#15803d" onclick="setColor('canvas_d','#15803d',this)"></div>
+        <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_d','#dc2626',this)"></div>
+        <div class="color-dot" style="background:#d97706" onclick="setColor('canvas_d','#d97706',this)"></div>
+      </div>
+      <canvas id="canvas_d" width="980" height="380" data-bg="mindmap"></canvas>
+    </div>
+  </section>
+
+  <!-- ===== SECTION E: Misconception Review ===== -->
+  <section>
+    <h2><span class="badge-num">E</span> สรุปความเข้าใจผิดที่เคยมี</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">ทบทวนความเข้าใจผิดที่พบบ่อยในหน่วย SHM — เลือก: ฉัน "เคยเข้าใจผิด" / "เข้าใจถูกมาตั้งแต่แรก" / "ยังไม่แน่ใจ"</h3>
+
+    <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+      <thead>
+        <tr style="background:var(--light)">
+          <th style="padding:8px 10px;text-align:left;border-bottom:2px solid var(--border)">ความเข้าใจผิด</th>
+          <th style="padding:8px;text-align:center;border-bottom:2px solid var(--border);color:#dc2626">เคยเข้าใจผิด</th>
+          <th style="padding:8px;text-align:center;border-bottom:2px solid var(--border);color:#15803d">เข้าใจถูก</th>
+          <th style="padding:8px;text-align:center;border-bottom:2px solid var(--border);color:#d97706">ยังไม่แน่ใจ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:8px 10px">M6.1 การหน่วงทำให้ความถี่เปลี่ยน</td>
+          <td style="text-align:center"><input type="radio" name="m61" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m61" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m61" value="unsure"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6;background:#fafafa">
+          <td style="padding:8px 10px">M6.2 การสั่นพ้อง = การสะท้อน</td>
+          <td style="text-align:center"><input type="radio" name="m62" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m62" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m62" value="unsure"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:8px 10px">M6.3 การสั่นพ้องทำให้แรงในระบบมีค่าสูงสุด</td>
+          <td style="text-align:center"><input type="radio" name="m63" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m63" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m63" value="unsure"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6;background:#fafafa">
+          <td style="padding:8px 10px">แอมพลิจูดขึ้นกับความถี่ใน SHM อิสระ</td>
+          <td style="text-align:center"><input type="radio" name="m_amp" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m_amp" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m_amp" value="unsure"></td>
+        </tr>
+        <tr style="border-bottom:1px solid #f3f4f6">
+          <td style="padding:8px 10px">คาบลูกตุ้มขึ้นกับมวล</td>
+          <td style="text-align:center"><input type="radio" name="m_pend" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m_pend" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m_pend" value="unsure"></td>
+        </tr>
+        <tr style="background:#fafafa">
+          <td style="padding:8px 10px">ความเร็วสูงสุดอยู่ที่ปลายทาง ไม่ใช่จุดสมดุล</td>
+          <td style="text-align:center"><input type="radio" name="m_vel" value="wrong"></td>
+          <td style="text-align:center"><input type="radio" name="m_vel" value="correct"></td>
+          <td style="text-align:center"><input type="radio" name="m_vel" value="unsure"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:14px">
+      <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px;">ความเข้าใจผิดที่ทำให้ฉันแปลกใจมากที่สุด และฉันเปลี่ยนความเข้าใจได้อย่างไร:</label>
+      <textarea id="misconception_reflection" rows="3" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px;font-family:inherit;font-size:0.85rem;" placeholder="เดิมฉันคิดว่า... แต่ตอนนี้ฉันเข้าใจว่า... เพราะ..."></textarea>
+    </div>
+  </section>
+
+  <!-- ===== SECTION F: Goal Setting ===== -->
+  <section>
+    <h2><span class="badge-num">F</span> ตั้งเป้าหมายสำหรับหน่วยคลื่นกล</h2>
+    <div class="goal-grid">
+      <div class="goal-item">
+        <label>วิธีการทบทวน SHM ที่ฉันจะใช้ก่อนสอบ</label>
+        <select id="review_method">
+          <option value="">-- เลือก --</option>
+          <option>ทำแบบฝึกหัดซ้ำ</option>
+          <option>วาด Mind Map</option>
+          <option>สอนเพื่อน (Peer Teaching)</option>
+          <option>อ่านตำรา</option>
+          <option>ดูวิดีโอซ้ำ</option>
+          <option>ทำโจทย์เพิ่มเติม</option>
+          <option>อื่นๆ</option>
+        </select>
+      </div>
+      <div class="goal-item">
+        <label>เวลาที่จะใช้ทบทวน SHM (นาที/สัปดาห์)</label>
+        <input type="number" id="study_time" min="0" max="600" placeholder="เช่น 60">
+      </div>
+      <div class="goal-item">
+        <label>แนวคิดที่ต้องการเข้าใจให้ลึกขึ้นสำหรับหน่วยคลื่น</label>
+        <textarea id="deepen_concept" rows="2" placeholder="เช่น การแทรกสอดของคลื่น..."></textarea>
+      </div>
+      <div class="goal-item">
+        <label>สิ่งที่ฉันจะพยายามเปลี่ยนในการเรียนหน่วยต่อไป</label>
+        <textarea id="change_habit" rows="2" placeholder="เช่น ถามคำถามมากขึ้น ทำการบ้านก่อนกำหนด..."></textarea>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION G: Emotion & Energy ===== -->
+  <section>
+    <h2><span class="badge-num">G</span> ความรู้สึกหลังเรียน SHM</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">เลือก 1 อีโมจิที่ตรงกับความรู้สึกของคุณหลังจากเรียนหน่วย SHM จบ</p>
+    <div class="emotion-row">
+      <label class="emo-card"><input type="radio" name="emotion" value="excited"><div class="emo-icon">🤩</div><div class="emo-label">ตื่นเต้น</div></label>
+      <label class="emo-card"><input type="radio" name="emotion" value="satisfied"><div class="emo-icon">😊</div><div class="emo-label">พอใจ</div></label>
+      <label class="emo-card"><input type="radio" name="emotion" value="okay"><div class="emo-icon">😐</div><div class="emo-label">พอไหว</div></label>
+      <label class="emo-card"><input type="radio" name="emotion" value="confused"><div class="emo-icon">😕</div><div class="emo-label">งงบ้าง</div></label>
+      <label class="emo-card"><input type="radio" name="emotion" value="tired"><div class="emo-icon">😴</div><div class="emo-label">เหนื่อย</div></label>
+      <label class="emo-card"><input type="radio" name="emotion" value="proud"><div class="emo-icon">💪</div><div class="emo-label">ภูมิใจ</div></label>
+    </div>
+    <div style="margin-top:12px">
+      <label style="font-size:0.85rem;color:var(--muted);display:block;margin-bottom:6px;">เหตุผลที่รู้สึกแบบนี้:</label>
+      <textarea id="emotion_reason" rows="2" style="width:100%;border:1px solid #d1d5db;border-radius:6px;padding:8px;font-family:inherit;font-size:0.85rem;" placeholder="เพราะ..."></textarea>
+    </div>
+  </section>
+
+  <!-- ===== SECTION H: Teacher Note Canvas ===== -->
+  <section>
+    <h2><span class="badge-num">H</span> บันทึกเพิ่มเติม / ข้อความถึงครู</h2>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;">เขียนอะไรก็ได้: คำถาม ความประทับใจ คำแนะนำ หรือสิ่งที่อยากบอกครู</p>
+    <div class="canvas-wrap">
+      <div class="canvas-toolbar">
+        <button class="tool-btn active" id="pencilBtn_h" onclick="setTool('canvas_h','pencil')">✏️ วาด</button>
+        <button class="tool-btn" id="eraserBtn_h" onclick="setTool('canvas_h','eraser')">🧹 ลบ</button>
+        <button class="tool-btn" onclick="clearCanvas('canvas_h')">🗑️ ล้าง</button>
+        <input type="range" min="1" max="12" value="2" id="size_canvas_h" style="width:70px">
+        <div class="color-dot active" style="background:#1e1b4b" onclick="setColor('canvas_h','#1e1b4b',this)"></div>
+        <div class="color-dot" style="background:#7c3aed" onclick="setColor('canvas_h','#7c3aed',this)"></div>
+        <div class="color-dot" style="background:#0369a1" onclick="setColor('canvas_h','#0369a1',this)"></div>
+        <div class="color-dot" style="background:#15803d" onclick="setColor('canvas_h','#15803d',this)"></div>
+        <div class="color-dot" style="background:#dc2626" onclick="setColor('canvas_h','#dc2626',this)"></div>
+      </div>
+      <canvas id="canvas_h" width="980" height="220" data-bg="lined"></canvas>
+    </div>
+  </section>
+
+  <!-- Submit -->
+  <div class="submit-bar">
+    <button class="btn btn-secondary" onclick="window.print()">🖨️ พิมพ์ PDF</button>
+    <button class="btn btn-secondary" onclick="downloadJSON()">⬇️ บันทึก JSON</button>
+    <button class="btn btn-primary" onclick="submitData()">📤 ส่งข้อมูล</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = 'YOUR_APPS_SCRIPT_URL';
+const SHEET   = 'MJ_SHM_Plan6';
+
+// ====== Canvas System ======
+const canvasState = {};
+function initCanvas(id) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const bg = c.dataset.bg;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, c.width, c.height);
+  if (bg === 'lined') {
+    ctx.strokeStyle = '#e0e7ff';
+    ctx.lineWidth = 0.8;
+    for (let y = 28; y < c.height; y += 28) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(c.width, y); ctx.stroke();
+    }
+    ctx.strokeStyle = '#c7d2fe'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(40, 0); ctx.lineTo(40, c.height); ctx.stroke();
+  } else if (bg === 'mindmap') {
+    // Center node hint
+    ctx.fillStyle = '#ede9fe';
+    ctx.beginPath(); ctx.ellipse(490, 190, 80, 40, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#4c1d95'; ctx.font = '13px Sarabun, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('SHM', 490, 190);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+    // Lightly draw 6 radiating lines
+    const angles = [0, 60, 120, 180, 240, 300];
+    const labels = ['แผน1','แผน2','แผน3','แผน4','แผน5','แผน6'];
+    ctx.strokeStyle = '#c4b5fd'; ctx.lineWidth = 1;
+    angles.forEach((a,i) => {
+      const rad = a * Math.PI / 180;
+      const ex = 490 + Math.cos(rad) * 170;
+      const ey = 190 + Math.sin(rad) * 140;
+      ctx.beginPath(); ctx.moveTo(490 + Math.cos(rad)*82, 190 + Math.sin(rad)*42);
+      ctx.lineTo(ex, ey); ctx.stroke();
+      ctx.fillStyle = '#a78bfa'; ctx.font = '11px Sarabun, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(labels[i], ex, ey);
+    });
+    ctx.textAlign = 'left';
+  }
+  canvasState[id] = canvasState[id] || { tool: 'pencil', color: '#1e1b4b', drawing: false };
+  const saved = localStorage.getItem('canvas_' + id);
+  if (saved) { const img = new Image(); img.onload = () => ctx.drawImage(img, 0, 0); img.src = saved; }
+  bindCanvas(c);
+}
+function bindCanvas(c) {
+  const id = c.id;
+  const getPos = (e) => {
+    const r = c.getBoundingClientRect();
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * (c.width / r.width), y: (src.clientY - r.top) * (c.height / r.height) };
+  };
+  const start = (e) => {
+    e.preventDefault();
+    const s = canvasState[id]; s.drawing = true;
+    const ctx = c.getContext('2d');
+    const p = getPos(e);
+    ctx.beginPath(); ctx.moveTo(p.x, p.y);
+    s.lastX = p.x; s.lastY = p.y;
+  };
+  const draw = (e) => {
+    e.preventDefault();
+    const s = canvasState[id]; if (!s.drawing) return;
+    const ctx = c.getContext('2d');
+    const p = getPos(e);
+    const sz = +document.getElementById('size_' + id)?.value || 2;
+    if (s.tool === 'eraser') {
+      ctx.clearRect(p.x - sz*4, p.y - sz*4, sz*8, sz*8);
+    } else {
+      ctx.strokeStyle = s.color; ctx.lineWidth = sz;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.beginPath(); ctx.moveTo(s.lastX, s.lastY);
+      ctx.lineTo(p.x, p.y); ctx.stroke();
+    }
+    s.lastX = p.x; s.lastY = p.y;
+  };
+  const stop = () => {
+    canvasState[id].drawing = false;
+    localStorage.setItem('canvas_' + id, c.toDataURL());
+  };
+  c.addEventListener('mousedown', start); c.addEventListener('mousemove', draw);
+  c.addEventListener('mouseup', stop); c.addEventListener('mouseleave', stop);
+  c.addEventListener('touchstart', start, { passive: false });
+  c.addEventListener('touchmove', draw, { passive: false });
+  c.addEventListener('touchend', stop);
+}
+function setTool(id, tool) {
+  canvasState[id] = canvasState[id] || {};
+  canvasState[id].tool = tool;
+  document.getElementById('pencilBtn_' + id.split('_')[1]).classList.toggle('active', tool==='pencil');
+  document.getElementById('eraserBtn_' + id.split('_')[1]).classList.toggle('active', tool==='eraser');
+}
+function setColor(id, color, el) {
+  canvasState[id] = canvasState[id] || {};
+  canvasState[id].color = color;
+  el.closest('.canvas-toolbar').querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+function clearCanvas(id) {
+  const c = document.getElementById(id);
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, c.width, c.height);
+  initCanvas(id);
+  localStorage.removeItem('canvas_' + id);
+}
+
+// ====== Chip Bank ======
+function toggleChip(el) {
+  el.classList.toggle('selected-correct', !el.classList.contains('selected-correct') && !el.classList.contains('selected-wrong'));
+  if (!el.classList.contains('selected-correct') && !el.classList.contains('selected-wrong')) {
+    el.classList.add('selected-correct');
+  } else if (el.classList.contains('selected-correct') && el.classList.contains('selected-wrong')) {
+    el.classList.remove('selected-wrong');
+  }
+  // Simple toggle
+  if (el.classList.contains('selected-correct') || el.classList.contains('selected-wrong')) {
+    el.classList.remove('selected-correct', 'selected-wrong');
+    el.classList.add('selected-correct');
+  }
+}
+// Simplified chip toggle
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.onclick = function() {
+      if (this.classList.contains('selected-correct') || this.classList.contains('selected-wrong')) {
+        this.classList.remove('selected-correct', 'selected-wrong');
+      } else {
+        this.classList.add('selected-correct');
+      }
+    };
+  });
+});
+function checkChips() {
+  const chips = document.querySelectorAll('#chipBank .chip');
+  let correct = 0; let total_correct = 0;
+  chips.forEach(c => {
+    const isCorrect = c.dataset.correct === 'true';
+    const selected = c.classList.contains('selected-correct');
+    if (isCorrect) total_correct++;
+    if (selected) {
+      c.classList.remove('selected-correct', 'selected-wrong');
+      c.classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
+      if (isCorrect) correct++;
+    } else {
+      c.classList.remove('selected-correct', 'selected-wrong');
+    }
+  });
+  const r = document.getElementById('chipResult');
+  r.className = 'chip-result show ' + (correct >= Math.floor(total_correct*0.7) ? 'pass' : 'fail');
+  r.textContent = `คะแนน: ${correct}/${total_correct} ข้อที่ถูกต้อง`;
+}
+function resetChips() {
+  document.querySelectorAll('#chipBank .chip').forEach(c => c.classList.remove('selected-correct','selected-wrong'));
+  const r = document.getElementById('chipResult'); r.className = 'chip-result';
+}
+
+// ====== Auto-save ======
+document.addEventListener('input', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) {
+    const data = {};
+    document.querySelectorAll('input[id],textarea[id],select[id]').forEach(el => { data[el.id] = el.value; });
+    localStorage.setItem('journal321_plan6', JSON.stringify(data));
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  // Set date
+  document.getElementById('test_date').value = new Date().toISOString().split('T')[0];
+  // Restore
+  const saved = localStorage.getItem('journal321_plan6');
+  if (saved) {
+    const data = JSON.parse(saved);
+    Object.keys(data).forEach(k => {
+      const el = document.getElementById(k);
+      if (el && el.tagName !== 'CANVAS') el.value = data[k];
+    });
+  }
+  // Init canvases
+  initCanvas('canvas_d');
+  initCanvas('canvas_h');
+});
+
+// ====== Collect Data ======
+function collectData() {
+  const chips = [];
+  document.querySelectorAll('#chipBank .chip').forEach(c => {
+    if (c.classList.contains('selected-correct') || c.classList.contains('selected-wrong')) chips.push(c.textContent.trim());
+  });
+  const emotion = document.querySelector('input[name="emotion"]:checked')?.value || '';
+  const mis = {};
+  ['m61','m62','m63','m_amp','m_pend','m_vel'].forEach(n => {
+    mis[n] = document.querySelector(`input[name="${n}"]:checked`)?.value || '';
+  });
+  return {
+    timestamp: new Date().toISOString(),
+    sheet: SHEET,
+    student_name: document.getElementById('student_name').value,
+    student_no: document.getElementById('student_no').value,
+    class: document.getElementById('class').value,
+    test_date: document.getElementById('test_date').value,
+    learn1: document.getElementById('learn1').value,
+    learn2: document.getElementById('learn2').value,
+    learn3: document.getElementById('learn3').value,
+    app1: document.getElementById('app1').value,
+    app2: document.getElementById('app2').value,
+    question1: document.getElementById('question1').value,
+    plan1_review: document.getElementById('plan1_review').value,
+    plan6_review: document.getElementById('plan6_review').value,
+    emotion,
+    review_method: document.getElementById('review_method').value,
+    study_time: document.getElementById('study_time').value,
+    selected_chips: chips.join(' | '),
+    misconceptions: JSON.stringify(mis),
+    canvas_mindmap: document.getElementById('canvas_d').toDataURL(),
+    canvas_note: document.getElementById('canvas_h').toDataURL(),
+  };
+}
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2800);
+}
+function downloadJSON() {
+  const data = collectData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `Journal321_${data.student_no || 'xx'}_Plan6.json`;
+  a.click();
+}
+function submitData() {
+  const data = collectData();
+  if (!data.student_name) { showToast('กรุณากรอกชื่อก่อนส่ง'); return; }
+  if (API_URL === 'YOUR_APPS_SCRIPT_URL') { downloadJSON(); showToast('ดาวน์โหลด JSON สำเร็จ (ยังไม่ได้ตั้งค่า URL)'); return; }
+  fetch(API_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+    .then(() => showToast('ส่งข้อมูลสำเร็จ ✓'))
+    .catch(() => { downloadJSON(); showToast('ส่งไม่ได้ — บันทึก JSON แทน'); });
+}
+</script>
+</body>
+</html>

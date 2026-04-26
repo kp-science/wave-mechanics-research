@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP04 · P04 · Spectrum Slider</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .spec-bar { width:100%; height:46px; border-radius:10px;
+    background:linear-gradient(to right, #ff5050 0%, #ff7a55 14%, #ffaa55 28%, #ffd96b 42%, #fff4d8 57%, #ffffff 71%, #bcd0ff 85%, #6a8aff 100%);
+    position:relative; margin:14px 0; box-shadow:0 0 16px rgba(100,140,255,0.2); }
+  .spec-marker { position:absolute; top:-6px; bottom:-6px; width:4px; background:#000; box-shadow:0 0 8px #fff; transition:left .15s; }
+  .spec-readout { padding:18px; background:rgba(0,0,0,0.45); border:2px solid #2a3050; border-radius:12px; text-align:center; }
+  .spec-readout .swatch { display:inline-block; width:80px; height:80px; border-radius:50%; box-shadow:0 0 30px currentColor; margin:8px; transition:all .3s; }
+  .spec-readout .name { font-family:Orbitron,sans-serif; font-size:14px; letter-spacing:0.15em; margin-top:8px; }
+  .spec-readout .temp { font-family:monospace; font-size:30px; color:#ffcb6b; margin:6px 0; }
+  .spec-readout .desc { color:#9aa3c0; font-size:12px; }
+  .slider-row { padding:10px; }
+  input[type=range].big {
+    width:100%; height:48px; -webkit-appearance:none; background:transparent;
+    touch-action:manipulation;
+  }
+  input[type=range].big::-webkit-slider-thumb { -webkit-appearance:none; width:36px; height:36px; border-radius:50%; background:#ffcb6b; box-shadow:0 0 16px #ffcb6b; cursor:grab; }
+  input[type=range].big::-moz-range-thumb { width:36px; height:36px; border-radius:50%; background:#ffcb6b; box-shadow:0 0 16px #ffcb6b; cursor:grab; border:none; }
+</style>
+</head>
+<body data-page="p04" data-type="puzzle">
+<div class="page">
+
+  <span class="lbl puzzle">🌈 LAB 1.1 · SPECTRUM SLIDER</span>
+  <h1>เลื่อนสี · ดูอุณหภูมิ</h1>
+  <div class="tags">
+    <span class="kpa-chip k">K1</span><span class="kpa-chip p">P1</span>
+  </div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <div class="narrative">
+      <b>เลื่อน slider</b> ดูว่าแต่ละสีของดาวมี<b class="key">อุณหภูมิประมาณเท่าใด</b> ·
+      สีไหนเป็นช่วงใดของ OBAFGKM
+    </div>
+  </div>
+
+  <div class="spec-bar">
+    <div class="spec-marker" id="marker" style="left:50%;"></div>
+  </div>
+  <div class="slider-row">
+    <input type="range" class="big" id="slider" min="0" max="100" value="50">
+    <div style="display:flex; justify-content:space-between; color:#9aa3c0; font-size:11px; font-family:monospace;">
+      <span>2,500 K</span><span>5,500 K</span><span>10,000 K</span><span>30,000+ K</span>
+    </div>
+  </div>
+
+  <div class="spec-readout">
+    <div class="swatch" id="swatch" style="background:#ffd96b; color:#ffd96b;"></div>
+    <div class="name" id="readName" style="color:#ffd96b;">G · เหลือง</div>
+    <div class="temp"><b id="readTemp">5,500</b> K</div>
+    <div class="desc" id="readDesc">คล้ายดวงอาทิตย์</div>
+  </div>
+
+  <div id="qBox" style="display:none;" class="card gold">
+    <div class="q-prompt"><b>ข้อ 1:</b> สีอะไร "ร้อนที่สุด"?</div>
+    <div class="choice-row">
+      <button class="choice-btn" onclick="answer(1,0)">สีแดง</button>
+      <button class="choice-btn" onclick="answer(1,1)">สีเหลือง</button>
+      <button class="choice-btn" onclick="answer(1,2)">สีน้ำเงิน</button>
+      <button class="choice-btn" onclick="answer(1,3)">สีขาว</button>
+    </div>
+    <div class="status" id="s1" style="display:none;"></div>
+
+    <div class="q-prompt" style="margin-top:18px;"><b>ข้อ 2:</b> สีอะไร "เย็นที่สุด"?</div>
+    <div class="choice-row">
+      <button class="choice-btn" onclick="answer(2,0)">สีน้ำเงิน</button>
+      <button class="choice-btn" onclick="answer(2,1)">สีขาว</button>
+      <button class="choice-btn" onclick="answer(2,2)">สีเหลือง</button>
+      <button class="choice-btn" onclick="answer(2,3)">สีแดง</button>
+    </div>
+    <div class="status" id="s2" style="display:none;"></div>
+  </div>
+
+  <div class="callout success" id="result" style="display:none;">
+    <span class="star">💡</span> <b>กฎเหล็กสีดาว:</b> สีของดาว = อุณหภูมิผิว · ไม่ได้บอกอายุ ขนาด หรือ มวล<br>
+    <b style="color:#fff;">น้ำเงินสุด = ร้อนสุด · แดงสุด = เย็นสุด</b>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P04</summary>
+    <div class="body">
+      <b>ตรงกันข้ามกับสามัญสำนึก:</b> เด็กเชื่อ "แดง = ร้อน" เพราะไฟแดงร้อน · แต่ในดาว แดง = เย็นสุด<br>
+      <b>เปิด:</b> ปลดล็อก quiz หลังเลื่อน slider ครบ (ทั้ง 7 ช่วง)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+  <div class="gate-hint">เลื่อน slider ให้ครบ 7 ช่วง + ตอบ 2 ข้อ → ปลดล็อกถัดไป</div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=1"></script>
+<script src="../shared/ep04-boot.js?v=2"></script>
+<script>
+const SPEC = [
+  { min:0,   max:7,   t:'M', color:'#ff7a55', name:'M · แดง',           tmin:2500,  tmax:3500,  desc:'เย็นสุด · เช่น เบเทลจุส' },
+  { min:7,   max:21,  t:'K', color:'#ffaa55', name:'K · ส้ม',            tmin:3500,  tmax:4900,  desc:'อบอุ่น · เช่น คาเพลลา' },
+  { min:21,  max:35,  t:'G', color:'#ffd96b', name:'G · เหลือง',         tmin:4900,  tmax:6000,  desc:'คล้ายดวงอาทิตย์ (5,780 K)' },
+  { min:35,  max:50,  t:'F', color:'#fff4d8', name:'F · ขาวแกมเหลือง',   tmin:6000,  tmax:7500,  desc:'เช่น รวงข้าว' },
+  { min:50,  max:64,  t:'A', color:'#ffffff', name:'A · ขาว',            tmin:7500,  tmax:10000, desc:'เช่น ซิริอัส, เวกา' },
+  { min:64,  max:85,  t:'B', color:'#bcd0ff', name:'B · น้ำเงินแกมขาว',  tmin:10000, tmax:30000, desc:'เช่น ไรเจล' },
+  { min:85,  max:101, t:'O', color:'#9bb8ff', name:'O · น้ำเงิน',        tmin:30000, tmax:50000, desc:'ร้อนสุด · เช่น อัลนีแทค' },
+];
+const visited = new Set();
+const slider = document.getElementById('slider');
+const ans = {};
+function update() {
+  const v = +slider.value;
+  document.getElementById('marker').style.left = v + '%';
+  const seg = SPEC.find(s => v >= s.min && v < s.max) || SPEC[SPEC.length-1];
+  // interpolate temp inside segment
+  const segPos = (v - seg.min) / (seg.max - seg.min);
+  const tval = Math.round(seg.tmin + (seg.tmax - seg.tmin) * segPos);
+  document.getElementById('swatch').style.background = seg.color;
+  document.getElementById('swatch').style.color = seg.color;
+  document.getElementById('readName').textContent = seg.name;
+  document.getElementById('readName').style.color = seg.color;
+  document.getElementById('readTemp').textContent = tval.toLocaleString();
+  document.getElementById('readDesc').textContent = seg.desc;
+  visited.add(seg.t);
+  if (visited.size >= 7 && !document.getElementById('qBox').dataset.shown) {
+    document.getElementById('qBox').style.display = 'block';
+    document.getElementById('qBox').dataset.shown = '1';
+  }
+}
+slider.addEventListener('input', update);
+update();
+
+function answer(qid, idx) {
+  const correctMap = {1:2, 2:3}; // Q1 น้ำเงิน=idx2 · Q2 แดง=idx3
+  const correct = (idx === correctMap[qid]);
+  ans[qid] = { picked:idx, correct };
+  document.querySelectorAll(`#qBox .choice-row`)[qid-1].querySelectorAll('button').forEach((b,j)=>{
+    b.disabled=true;
+    if (j === correctMap[qid]) b.classList.add('correct');
+    else if (j === idx) b.classList.add('wrong');
+  });
+  const s = document.getElementById('s'+qid);
+  s.style.display='block';
+  s.className = correct?'status ok':'status bad';
+  s.textContent = correct ? '✓ ถูก!' : ({1:'✗ น้ำเงินร้อนสุด (>30,000 K)', 2:'✗ แดงเย็นสุด (~2,500-3,500 K)'})[qid];
+  if (window.SFX) SFX.play(correct?'correct':'wrong');
+  if (Object.keys(ans).length >= 2) {
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('result').style.display='block';
+  }
+}
+window.answer = answer;
+
+Submit.wirePair({
+  page:'p04',
+  nextHref:'p05-drag-match.html',
+  getPayload:()=>{
+    const nC = Object.values(ans).filter(x=>x.correct).length;
+    return { ans, visited:[...visited], nCorrect:nC };
+  },
+  isPerfect:(p)=>p.nCorrect===2,
+  onSubmit:(status,n)=>{
+    if (window.Photon && Photon.add) Photon.add(15);
+    if (status==='perfect' && n) {
+      const t=document.createElement('div'); t.className='coin-toast'; t.textContent=`🎉 PERFECT · +${n} 🪙`;
+      document.body.appendChild(t); setTimeout(()=>t.remove(),2400);
+    }
+  }
+});
+</script>
+</body></html>

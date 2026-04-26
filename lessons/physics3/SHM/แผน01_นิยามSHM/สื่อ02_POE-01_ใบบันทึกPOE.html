@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>POE-01 ใบบันทึก Predict-Observe-Explain (SHM แผน 1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #4f46e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#312e81}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#4f46e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.sec{margin:14px 0;border-radius:12px;padding:14px 18px}
+.sec.p{background:#e0e7ff;border-left:6px solid #4f46e5}
+.sec.o{background:#fff3e0;border-left:6px solid #ef6c00}
+.sec.e{background:#e8f5e9;border-left:6px solid #2e7d32}
+.sec h2{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec.p h2{color:#3730a3}
+.sec.o h2{color:#c05621}
+.sec.e h2{color:#1b5e20}
+.badge{font-size:12.5px;padding:2px 10px;border-radius:12px;background:#fff;border:1px solid currentColor}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:10px 14px;border-radius:8px;margin-bottom:10px;font-size:14.5px}
+table{width:100%;border-collapse:collapse;margin:8px 0;font-size:14px}
+th,td{border:1.5px solid #94a3b8;padding:6px 8px;text-align:center;vertical-align:middle}
+thead th{background:#4f46e5;color:#fff;font-weight:600}
+td.situ{text-align:left;font-weight:600;color:#3730a3}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:4px 0;font-size:14px;padding:3px 8px;border-radius:6px}
+.opt:hover{background:rgba(79,70,229,0.08)}
+.opt input{margin-top:4px;flex-shrink:0}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #c7d2fe;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.line{border-bottom:1.5px solid #999;height:26px;margin:5px 0}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #c7d2fe;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#eef2ff 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #4f46e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#3730a3;font-weight:600}
+.c-btn.active{background:#4f46e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.c-color.active{border:3px solid #4f46e5;box-shadow:0 0 0 2px #fff,0 0 0 4px #4f46e5}
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:12px 14px;margin-top:12px}
+.mc-reflect h4{font-size:14.5px;font-weight:800;color:#92400e;margin-bottom:4px}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+.mc-wrong{font-style:italic;color:#2d3748}
+.mc-q{font-size:13px;font-weight:700;color:#3730a3;display:block;margin:6px 0 4px}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:4px 10px;cursor:pointer;font-size:13px;display:inline-flex;align-items:flex-start;gap:6px;margin:3px}
+.mc-opt:hover{border-color:#4f46e5;background:#eef2ff}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="shm-plan1-poe">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 POE-01 ใบบันทึก Predict–Observe–Explain</h1>
+      <div class="meta"><span class="tag">SHM แผน 1</span><span class="tag">ชุด A</span> คู่กับ Concept Cartoon "คลาสวิ่ง" + SIM01 SHM-Identifier</div>
+    </div>
+    <div class="meta" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" id="s-name" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" id="s-num" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" id="s-room" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" id="s-grp" style="border:1.5px solid #c7d2fe;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px;width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำถามหลัก:</b> จากสถานการณ์ใน Concept Cartoon "คลาสวิ่ง" และ SIM01 SHM-Identifier · สถานการณ์ใดเป็น SHM? เพราะอะไร?</div>
+
+  <!-- P Predict -->
+  <div class="sec p">
+    <h2>🔮 P · Predict (ทำนายก่อนดู SIM) <span class="badge">E1 Engage · 3 นาที</span></h2>
+    <div><b>ใน 4 ปรากฏการณ์จาก Concept Cartoon — ฉันคิดว่าข้อใดเป็น SHM บ้าง?</b> (ติ๊กได้มากกว่า 1)</div>
+    <div class="opt-row">
+      <label class="opt"><input type="checkbox" name="p-pred" value="fan"> พัดลมเพดานหมุน</label>
+      <label class="opt"><input type="checkbox" name="p-pred" value="ball"> ลูกบอลเด้งบนพื้น</label>
+      <label class="opt"><input type="checkbox" name="p-pred" value="pend"> ลูกตุ้มนาฬิกาแกว่ง</label>
+      <label class="opt"><input type="checkbox" name="p-pred" value="hand"> เข็มวินาทีเดิน</label>
+    </div>
+    <div style="margin-top:6px"><b>เพราะเหตุใด?</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
+    <label class="opt"><input type="radio" name="p-reason" value="R1"> ทุกการเคลื่อนที่ซ้ำทางเดิมเป็น SHM</label>
+    <label class="opt"><input type="radio" name="p-reason" value="R2"> SHM ต้องมีแรงดึงกลับตลอดเวลา (แรงอะไรก็ได้)</label>
+    <label class="opt"><input type="radio" name="p-reason" value="R3"> SHM ต้องมีแรงคืนตัว ∝ −x เท่านั้น (F = −kx)</label>
+    <label class="opt"><input type="radio" name="p-reason" value="R4"> SHM ต้องเกิดในแนวระดับเท่านั้น</label>
+    <label class="opt"><input type="radio" name="p-reason" value="R0"> อื่น ๆ (พิมพ์ด้านล่าง)</label>
+
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#3730a3">✍️ วาดกราฟ F-x ที่คิดว่าเป็น SHM:</span>
+      <button class="c-btn active" id="tbp1-p" onclick="setTool('canvasP1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tbp1-e" onclick="setTool('canvasP1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasP1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('canvasP1','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasP1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasP1" data-bg="lined" width="900" height="130"></canvas>
+    <textarea id="p-reason-text" class="ans-ta" rows="2" placeholder="หรือพิมพ์คำอธิบายที่นี่..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:8px"><b>ความมั่นใจในคำทำนาย:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="high"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="mid"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf" value="low"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- O Observe -->
+  <div class="sec o">
+    <h2>👁 O · Observe (สังเกตจาก SIM01) <span class="badge">E2 Explore · 10 นาที</span></h2>
+    <div style="background:#fff;border:1.5px dashed #c7d2fe;border-radius:8px;padding:8px 12px;margin:6px 0;font-size:13.5px;color:#3730a3">
+      <b>🛠 วิธีใช้ SIM01 SHM-Identifier:</b> เลือก 1 ใน 6 สถานการณ์จากเมนู → ปรับ slider <b>m, L, A, g</b> (Earth/Moon/Mars) → กด <b>▶ Start</b> → สังเกตกราฟ <b>F-x</b> (หลัก), <b>x-t</b> และ <b>v-t</b> (เสริม) · กด <b>↺ Reset</b> เพื่อเปลี่ยนสถานการณ์
+    </div>
+    <div><b>บันทึก 6 สถานการณ์จาก SIM01 SHM-Identifier</b> — ดูกราฟ F-x แล้วเติมตาราง · เปรียบเทียบกับ x-t/v-t</div>
+    <table>
+      <thead><tr><th style="width:6%">ที่</th><th style="width:24%">สถานการณ์ (ตาม SIM01)</th><th>F-x เส้นตรงผ่าน (0,0)?</th><th>x-t เป็นไซน์?</th><th>SHM ?</th><th>เหตุผลสั้น ๆ</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="situ">ลูกตุ้มแกว่งน้อย</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+        <tr><td>2</td><td class="situ">ลูกตุ้ม Conical</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+        <tr><td>3</td><td class="situ">ลูกบอลเด้ง</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+        <tr><td>4</td><td class="situ">สปริงแนวระดับ</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+        <tr><td>5</td><td class="situ">สปริงแนวดิ่ง</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+        <tr><td>6</td><td class="situ">วงกลมสม่ำเสมอ</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ ใช่ ☐ ไม่ใช่</td><td>☐ SHM ☐ ไม่ใช่</td><td></td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:6px;font-size:13px;color:#555"><b>💡 เทคนิค:</b> SIM โชว์ค่า x, F, v, t real-time · ลอง <b>ลด g</b> เป็น Moon/Mars แล้วดูว่ารูปแบบกราฟยังเหมือนเดิมไหม</div>
+    <div style="margin-top:8px"><b>วาดกราฟ F-x ของ 2 สถานการณ์ที่เป็น SHM กับ 1 สถานการณ์ที่ไม่ใช่ SHM:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbo1-p" onclick="setTool('canvasO1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tbo1-e" onclick="setTool('canvasO1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('canvasO1','#4f46e5',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasO1','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasO1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasO1" data-bg="lined" width="900" height="150"></canvas>
+  </div>
+
+  <!-- E Explain -->
+  <div class="sec e">
+    <h2>✍️ E · Explain (อธิบายเชื่อม P↔O) <span class="badge">E3 Explain · 7 นาที</span></h2>
+    <div><b>เปรียบเทียบ P กับ O:</b> คำทำนายกับผลจาก SIM ตรงกันหรือไม่?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="e-cmp" value="match"> ตรงกัน</label>
+      <label class="opt"><input type="radio" name="e-cmp" value="partial"> ตรงบางส่วน</label>
+      <label class="opt"><input type="radio" name="e-cmp" value="diff"> ไม่ตรง</label>
+    </div>
+    <div style="margin-top:8px"><b>อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร:</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe1-p" onclick="setTool('canvasE1','pencil',this)">✏️</button>
+      <button class="c-btn" id="tbe1-e" onclick="setTool('canvasE1','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE1','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('canvasE1','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE1')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE1" data-bg="lined" width="900" height="120"></canvas>
+    <textarea id="e-cmp-text" class="ans-ta" rows="2" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>✅ จากหลักฐาน (SIM01) ข้อใดถูกต้อง?</b> (ติ๊กทุกข้อที่ตรง)</div>
+    <div style="background:#fff;border:1px solid #c7d2fe;border-radius:8px;padding:8px 12px">
+      <label class="opt"><input type="checkbox"> SHM เป็นกรณีพิเศษของ periodic motion · periodic ไม่จำเป็นต้องเป็น SHM</label>
+      <label class="opt"><input type="checkbox"> SHM ต้องมีแรงคืนตัว F = −kx (ขนาดแปรผันตรงกับการกระจัด ทิศตรงข้าม)</label>
+      <label class="opt"><input type="checkbox"> วงกลมสม่ำเสมอไม่ใช่ SHM เพราะแรงเข้าสู่ศูนย์กลางไม่ ∝ x</label>
+      <label class="opt"><input type="checkbox"> SHM เกิดได้ทุกทิศ (แนวระดับ/แนวดิ่ง/เอียง) ตราบใดที่ F = −kx เป็นจริง</label>
+      <label class="opt"><input type="checkbox"> กราฟ F-x ของ SHM เป็น "เส้นตรง" ผ่านจุดกำเนิด ลาดลง (ความชัน = −k)</label>
+    </div>
+
+    <div style="margin-top:10px"><b>สรุปนิยาม SHM ด้วยคำของตัวเอง (≥ 3 ประโยค):</b></div>
+    <div class="canvas-toolbar">
+      <button class="c-btn active" id="tbe2-p" onclick="setTool('canvasE2','pencil',this)">✏️</button>
+      <button class="c-btn" id="tbe2-e" onclick="setTool('canvasE2','eraser',this)">⬜</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE2','#1a202c',this)"></div>
+      <div class="c-color" style="background:#4f46e5" onclick="setColor('canvasE2','#4f46e5',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE2')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE2" data-bg="lined" width="900" height="140"></canvas>
+    <textarea id="e-def" class="ans-ta" rows="3" placeholder="SHM คือ... เงื่อนไข... ตัวอย่าง..." style="margin-top:6px"></textarea>
+  </div>
+
+  <!-- Misconception reflection -->
+  <div class="mc-reflect">
+    <h4>🧠 สรุปแก้ Misconception (Posner Conceptual Change · 3 ขั้นต่อข้อ)</h4>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M1.1</span> <span class="mc-wrong">"การเคลื่อนที่ซ้ำรอบทุกแบบเป็น SHM"</span></div>
+      <span class="mc-q">① ก่อนเรียนฉันเคยคิดแบบนี้ไหม?</span>
+      <label class="mc-opt"><input type="radio" name="m1-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m1-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m1-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้องคือ:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m1-c"> SHM เป็นกรณีพิเศษของ periodic · ต้องมีแรงคืนตัว ∝ −x (วงกลมสม่ำเสมอเป็น periodic แต่ไม่ใช่ SHM)</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m1-c"> periodic motion ทั้งหมดคือ SHM ถ้าคาบคงที่</label></div>
+      <span class="mc-q">③ หลักฐาน (จาก SIM01):</span>
+      <textarea class="ans-ta" rows="2" placeholder="กราฟ F-x ของวงกลมสม่ำเสมอไม่ผ่าน (0,0) เป็นเส้นตรง..."></textarea>
+    </div>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M1.2</span> <span class="mc-wrong">"SHM ไม่ต้องมีแรงคืนตัว / แรงคืนตัว = แรงเสียดทาน"</span></div>
+      <span class="mc-q">① ก่อนเรียนฉันเคยคิดแบบนี้ไหม?</span>
+      <label class="mc-opt"><input type="radio" name="m2-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m2-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m2-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้องคือ:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m2-c"> SHM ต้องมีแรงคืนตัว F = −kx (แรงสปริง/โน้มถ่วงในแนวโค้ง) · แรงเสียดทานทำให้พลังงานลดลง ไม่ใช่แรงคืนตัว</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m2-c"> แรงเสียดทานเป็นสิ่งที่ทำให้เกิด SHM</label></div>
+      <span class="mc-q">③ หลักฐาน:</span>
+      <textarea class="ans-ta" rows="2" placeholder="จาก SIM มวล-สปริงกราฟ F-x เป็นเส้นตรงผ่าน (0,0)..."></textarea>
+    </div>
+
+    <div class="mc-item">
+      <div><span class="mc-code">M1.3</span> <span class="mc-wrong">"SHM ต้องเกิดในแนวระดับเท่านั้น"</span></div>
+      <span class="mc-q">① ก่อนเรียนฉันเคยคิดแบบนี้ไหม?</span>
+      <label class="mc-opt"><input type="radio" name="m3-h"> เคย</label>
+      <label class="mc-opt"><input type="radio" name="m3-h"> ไม่เคย</label>
+      <label class="mc-opt"><input type="radio" name="m3-h"> ไม่แน่ใจ</label>
+      <span class="mc-q">② แนวคิดที่ถูกต้องคือ:</span>
+      <div><label class="mc-opt" style="display:flex"><input type="radio" name="m3-c"> SHM เกิดได้ทุกทิศ · สปริงแนวดิ่งก็เป็น SHM โดยเปลี่ยนตำแหน่งสมดุลไปที่ mg = kx</label>
+      <label class="mc-opt" style="display:flex"><input type="radio" name="m3-c"> แนวดิ่งมี mg คงที่ทำให้ไม่ใช่ SHM</label></div>
+      <span class="mc-q">③ หลักฐาน:</span>
+      <textarea class="ans-ta" rows="2" placeholder="จาก SIM สปริงแนวดิ่งกราฟ F-x ผ่านจุดสมดุลใหม่..."></textarea>
+    </div>
+  </div>
+
+  <div class="foot">POE-01 · SHM แผน 1 · นิยาม SHM · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const c=document.getElementById(id);if(!c)return;const ctx=c.getContext('2d');const t=c.classList.contains('overlay')||c.dataset.bg==='lined';canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx,transparent:t};if(!t){ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);}
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=gp(e);ctx.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=canvasState[id];if(!s.drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);if(s.tool==='eraser'){ctx.globalCompositeOperation=s.transparent?'destination-out':'source-over';ctx.strokeStyle=s.transparent?'rgba(0,0,0,1)':'#fff';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=s.color;ctx.lineWidth=s.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();canvasState[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,col,el){canvasState[id].color=col;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('-p'));});}
+function clearCanvas(id){const s=canvasState[id];const c=document.getElementById(id);s.ctx.globalCompositeOperation='source-over';s.ctx.clearRect(0,0,c.width,c.height);if(!s.transparent){s.ctx.fillStyle='#fff';s.ctx.fillRect(0,0,c.width,c.height);}}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"], canvas.overlay').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

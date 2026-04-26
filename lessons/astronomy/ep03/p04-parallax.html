@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP03 · P04 · TEACH Parallax</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .parallax-sim { position:relative; width:100%; height:200px; background:radial-gradient(ellipse at center, rgba(100,216,255,0.05), #000 70%); border:1px solid #2a3050; border-radius:12px; overflow:hidden; }
+  .star-far { position:absolute; top:25%; font-size:14px; opacity:0.5; }
+  .star-near { position:absolute; top:55%; font-size:22px; transition:left .15s; }
+</style>
+</head>
+<body data-page="p04" data-type="story">
+<div class="page">
+  <div class="lbl">🎓 TEACH · ก่อนจะไปต่อ</div>
+  <h1>หาดาวไกลแค่ไหน? · <span style="color:#d4b8ff;">parallax</span></h1>
+
+  <div class="teach-pod">
+    <div class="avatar">🎩</div>
+    <div class="teacher-name">Dr.Hubble</div>
+    <div style="color:#c8cde0;line-height:1.7;">
+      *"ใช้นิ้วชี้หน้าตา · หลับตาสลับซ้าย-ขวา · <b>นิ้วกระโดด</b> ใช่ไหม?"*<br>
+      *"โลกก็ทำแบบเดียวกัน · 6 เดือนโคจรรอบดวงอาทิตย์ = ตาสองข้างของเรา"*
+    </div>
+
+    <div style="margin:14px 0;">
+      <label style="font-size:12px;color:#9aa3c0;">ลาก slider เพื่อเลื่อน "ตำแหน่งโลก"</label>
+      <div class="parallax-sim" id="sim">
+        <div class="star-far" style="left:25%;">⭐</div>
+        <div class="star-far" style="left:60%;">⭐</div>
+        <div class="star-far" style="left:85%;">⭐</div>
+        <div class="star-near" id="near" style="left:50%;">🌟</div>
+      </div>
+      <input type="range" min="0" max="100" value="50" id="slider" style="width:100%;margin-top:6px;">
+      <div style="font-family:monospace;text-align:center;color:#ffcb6b;margin-top:6px;">ดาวกระโดด: <span id="p">0.0</span>"</div>
+    </div>
+
+    <div class="key-idea">
+      💡 กฎเดียว: <b style="color:#fff;">d (pc) = 1 / p (arcsec)</b><br>
+      <span style="font-size:13px;color:#c8cde0;">ถ้า p = 1" → d = 1 pc · ถ้า p = 0.5" → d = 2 pc</span>
+    </div>
+
+    <div class="try-it">
+      🎯 <b>ลอง 1 ข้อ</b> · ดาวมี p = 0.2" · d = ?
+      <div class="choice-row" style="margin-top:8px;">
+        <button class="choice-btn" onclick="testAns(0)">2 pc</button>
+        <button class="choice-btn" onclick="testAns(1)">5 pc</button>
+        <button class="choice-btn" onclick="testAns(2)">20 pc</button>
+      </div>
+      <div id="testRes" class="status" style="margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:0.3;">(หน้านี้ไม่ส่ง · เข้าใจแล้วกด ▶)</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอครูเปิด</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/voidhunter.js"></script>
+<script src="../shared/photon.js?v=2"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/transition.js"></script>
+<script src="../shared/ep03-boot.js?v=2"></script>
+<script>
+const slider = document.getElementById('slider');
+slider.oninput = () => {
+  const v = parseInt(slider.value);
+  const shift = (v - 50) * 0.4;
+  document.getElementById('near').style.left = (50 - shift) + '%';
+  document.getElementById('p').textContent = (Math.abs(shift) / 10).toFixed(2);
+};
+
+function testAns(i) {
+  const correct = i === 1;
+  const res = document.getElementById('testRes');
+  if (correct) {
+    res.innerHTML = '<div class="ok">✓ d = 1/0.2 = 5 pc · เข้าใจแล้ว</div>';
+    Submit.record('p04', { test: 'passed', at: Date.now() });
+  } else {
+    res.innerHTML = '<div class="bad">✗ ลองอีก · d = 1 / p</div>';
+  }
+}
+
+setTimeout(() => {
+  const nb = document.getElementById('nextBtn');
+  Gate.soloMode(nb, 'p05-parallax10.html');
+  if (window.PaceClient) Gate.wireButton('p04', nb, 'p05-parallax10.html');
+  // Wrap with transition · Mission Briefing
+  setTimeout(() => {
+    if (typeof Transition !== 'undefined') {
+      Transition.wireNext(nb, 'p04-to-p05', 'p05-parallax10.html');
+    }
+  }, 100);
+}, 200);
+</script>
+</body></html>

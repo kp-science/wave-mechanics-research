@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>EP02 · P00 · Tutorial · พบ VOID ครั้งแรก</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<style>
+  /* ============ Boss image · cosmic VOID humanoid ============ */
+  .boss-stage {
+    position: relative;
+    padding: 20px;
+    background: radial-gradient(ellipse at 50% 50%, rgba(185,128,255,0.18), rgba(3,4,12,0.0) 70%), linear-gradient(180deg, #0a0420, #050214);
+    border: 2px solid rgba(185,128,255,0.4);
+    border-radius: 14px;
+    margin: 12px 0;
+    text-align: center;
+    overflow: hidden;
+  }
+  .boss-stage::before, .boss-stage::after {
+    content:''; position:absolute; top:0; bottom:0; width:60px;
+    background: linear-gradient(90deg, rgba(185,128,255,0.15), transparent);
+  }
+  .boss-stage::before { left:0; }
+  .boss-stage::after { right:0; transform:scaleX(-1); }
+  .boss-stage svg { display:inline-block; filter: drop-shadow(0 0 24px rgba(185,128,255,0.7)); }
+  .boss-stage.firing svg { animation: bossFireAnim .5s ease-out; }
+  @keyframes bossFireAnim {
+    0%   { filter: drop-shadow(0 0 24px rgba(185,128,255,0.7)); transform:scale(1); }
+    50%  { filter: drop-shadow(0 0 60px rgba(255,92,122,1)); transform:scale(1.06); }
+    100% { filter: drop-shadow(0 0 24px rgba(185,128,255,0.7)); transform:scale(1); }
+  }
+  .boss-name { font-family:'Orbitron',sans-serif; letter-spacing:0.2em; color:var(--accent-2); font-size:14px; margin-top:8px; }
+  .boss-hp-wrap { width:80%; max-width:480px; margin:8px auto; height:14px; background:rgba(0,0,0,0.5); border:1px solid var(--border); border-radius:7px; overflow:hidden; position:relative; }
+  .boss-hp-fill { height:100%; background:linear-gradient(90deg, #b980ff, #ff5c7a); transition:width .4s; }
+  .boss-hp-text { position:absolute; inset:0; text-align:center; font-family:'Orbitron',monospace; font-size:11px; color:#fff; text-shadow:0 0 4px #000; }
+
+  /* ============ Same race UI as p14 ============ */
+  .race-bar { display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; padding:10px 12px; background:rgba(255,92,122,0.10); border:2px solid var(--accent-red); border-radius:12px; margin:12px 0; font-family:'Orbitron',sans-serif; }
+  .race-bar .cell { text-align:center; }
+  .race-bar .cell .lbl { font-size:10px; letter-spacing:0.15em; color:var(--text-dim); }
+  .race-bar .cell .val { font-size:20px; color:var(--accent-gold); transition:color .3s; }
+  .race-bar .cell.flash .val { color:var(--accent-red); animation: flashRed .6s ease-out; }
+  @keyframes flashRed { 0%{transform:scale(1)} 30%{transform:scale(1.4); color:#ff5c7a} 100%{transform:scale(1)} }
+
+  .void-charge { display:flex; align-items:center; gap:12px; padding:10px 14px; background:rgba(185,128,255,0.10); border:1px solid rgba(185,128,255,0.4); border-radius:10px; margin:10px 0; font-family:'Orbitron',monospace; font-size:13px; }
+  .void-charge .vc-label { color:var(--accent-2); font-weight:700; min-width:130px; }
+  .void-charge .vc-bar { flex:1; height:14px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:7px; overflow:hidden; }
+  .void-charge .vc-fill { height:100%; background:linear-gradient(90deg, var(--accent-2), var(--accent-red)); transition: width .4s ease-in; }
+  .void-charge .vc-num { color:var(--accent-gold); min-width:50px; text-align:right; }
+  .void-charge.firing { animation: vcFire .4s ease-out; }
+  @keyframes vcFire { 0%{box-shadow:0 0 0 0 rgba(255,92,122,0.9)} 100%{box-shadow:0 0 30px 10px rgba(255,92,122,0)} }
+  .shield-display { display:inline-flex; gap:4px; padding:6px 12px; background:rgba(100,216,255,0.08); border:1px solid var(--accent); border-radius:14px; font-family:'Orbitron',monospace; font-size:12px; color:var(--accent); margin-left:10px; transition: all .3s; }
+  .shield-display.flash { background:rgba(126,255,178,0.25); border-color:var(--accent-green); color:var(--accent-green); transform:scale(1.1); }
+
+  .question-card { padding:16px; background:var(--bg-card); border:2px solid var(--border); border-radius:12px; margin:12px 0; }
+  .question-card .q-text { font-size:16px; line-height:1.5; margin-bottom:12px; }
+  .choice-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .choice-btn { padding:14px 16px; background:rgba(100,216,255,0.06); border:2px solid var(--border); color:var(--text); border-radius:10px; cursor:pointer; font-size:14px; font-family:inherit; text-align:left; transition: all .12s; }
+  .choice-btn:hover:not(:disabled) { border-color:var(--accent); transform: translateY(-2px); }
+  .choice-btn.correct { border-color:var(--accent-green); background:rgba(126,255,178,0.15); }
+  .choice-btn.wrong { border-color:var(--accent-red); background:rgba(255,92,122,0.15); }
+  .choice-btn:disabled { cursor:not-allowed; opacity:0.5; }
+
+  .boost-row { display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin:8px 0; }
+  .boost-btn { padding:10px 12px; background:rgba(255,203,107,0.08); border:1px solid rgba(255,203,107,0.4); color:var(--accent-gold); border-radius:8px; cursor:pointer; font-family:inherit; font-size:12px; text-align:left; transition: all .12s; }
+  .boost-btn:hover:not(:disabled) { background:rgba(255,203,107,0.18); }
+  .boost-btn.armed { border-color:var(--accent-gold); background:rgba(255,203,107,0.25); box-shadow: 0 0 0 2px rgba(255,203,107,0.4); }
+  .boost-btn:disabled { opacity:0.35; cursor:not-allowed; }
+  .boost-btn .b-name { font-weight:700; }
+  .boost-btn .b-desc { font-size:11px; color:var(--text-dim); margin-top:2px; }
+
+  .shot-feedback { padding:10px 14px; border-radius:10px; text-align:center; font-family:'Orbitron',sans-serif; letter-spacing:0.1em; margin:8px 0; min-height:22px; font-size:13px; }
+  .shot-feedback.hit { background:rgba(126,255,178,0.15); border:1px solid var(--accent-green); color:var(--accent-green); }
+  .shot-feedback.crit { background:rgba(255,203,107,0.18); border:2px solid var(--accent-gold); color:var(--accent-gold); font-size:16px; box-shadow:0 0 20px rgba(255,203,107,0.4); }
+  .shot-feedback.miss { background:rgba(255,92,122,0.15); border:1px solid var(--accent-red); color:var(--accent-red); }
+
+  .summary-box { padding:24px; background:linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.06)); border:2px solid var(--accent); border-radius:14px; text-align:center; margin:16px 0; }
+  .summary-box .big { font-family:'Orbitron',sans-serif; font-size:24px; color:var(--accent-gold); margin:8px 0; }
+  .void-voice { font-style:italic; color:#ffb5c2; display:block; padding:8px 12px; border-left:3px solid var(--accent-red); background:rgba(255,92,122,0.06); margin:8px 0; }
+
+  .shake { animation: shakeX .3s ease-in-out; }
+  @keyframes shakeX { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+  /* ============ Spotlight system ============ */
+  .spotlight-mask {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.78);
+    z-index: 9000;
+    pointer-events: auto;
+    transition: opacity .25s;
+  }
+  .spotlight-mask.hidden { opacity:0; pointer-events:none; }
+  .spotlight-target {
+    position: relative !important;
+    z-index: 9001 !important;
+    box-shadow: 0 0 0 4px var(--accent-gold), 0 0 40px var(--accent-gold) !important;
+    border-radius: 10px;
+    pointer-events: auto !important;
+    animation: spotlight-pulse 1.2s infinite;
+  }
+  @keyframes spotlight-pulse {
+    0%,100% { box-shadow: 0 0 0 4px var(--accent-gold), 0 0 30px rgba(255,203,107,0.6) !important; }
+    50%     { box-shadow: 0 0 0 4px var(--accent-gold), 0 0 60px rgba(255,203,107,1) !important; }
+  }
+  .spotlight-arrow {
+    position: fixed; font-size: 36px; z-index: 9002;
+    pointer-events: none;
+    text-shadow: 0 0 12px var(--accent-gold);
+    animation: arrow-bounce .7s infinite;
+  }
+  @keyframes arrow-bounce { 0%,100%{transform:translateX(0)} 50%{transform:translateX(-10px)} }
+  .spotlight-msg {
+    position: fixed; left:50%; bottom: 24px;
+    transform: translateX(-50%);
+    padding: 14px 22px;
+    background: linear-gradient(135deg, rgba(255,203,107,0.95), rgba(255,180,80,0.95));
+    color: #1a0f00;
+    border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    z-index: 9002;
+    max-width: 90vw;
+    text-align: center;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.7);
+    animation: msg-slide .35s ease-out;
+  }
+  .spotlight-msg .step-no {
+    display:inline-block; background:#000; color:var(--accent-gold);
+    padding:2px 8px; border-radius:10px; font-size:11px; margin-right:8px; font-family:'Orbitron',monospace;
+  }
+  .spotlight-msg .next-hint {
+    display:block; font-size:11px; color:rgba(0,0,0,0.6); margin-top:4px; font-weight:500;
+  }
+  @keyframes msg-slide { from{transform:translateX(-50%) translateY(20px); opacity:0} to{transform:translateX(-50%) translateY(0); opacity:1} }
+</style>
+</head>
+<body data-page="p00" data-type="story">
+
+<div class="page"><div class="page-inner">
+  <div class="page-label story">องก์ 0 · TUTORIAL · พบ VOID ครั้งแรก</div>
+  <h1 class="page-title">First Contact · ทดสอบระบบ targeting</h1>
+  <div class="obj-tags"><span class="obj-tag a">Tutorial · ไม่นับคะแนน · ไม่นับ corruption</span></div>
+
+  <!-- ===== INTRO (cinematic) ===== -->
+  <div id="introSection">
+    <div class="boss-stage" style="padding:30px">
+      <svg width="200" height="260" viewBox="0 0 200 260" aria-label="VOID figure">
+        <defs>
+          <radialGradient id="bossHalo" cx="50%" cy="40%" r="60%">
+            <stop offset="0%"  stop-color="#b980ff" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#b980ff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="galaxyChest" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"  stop-color="#fff"/>
+            <stop offset="20%" stop-color="#ffe8a3"/>
+            <stop offset="50%" stop-color="#ff8c5a"/>
+            <stop offset="100%" stop-color="#3a1f5a"/>
+          </radialGradient>
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a0830"/>
+            <stop offset="100%" stop-color="#0a0418"/>
+          </linearGradient>
+        </defs>
+        <!-- halo -->
+        <ellipse cx="100" cy="120" rx="95" ry="125" fill="url(#bossHalo)"/>
+        <!-- body silhouette: head + torso + arms -->
+        <path d="M100 20
+                 C 120 20 132 32 132 52
+                 C 132 70 124 82 116 88
+                 L 130 110
+                 C 145 115 160 140 160 165
+                 L 152 230
+                 L 130 230 L 124 200 L 118 230 L 100 230
+                 L 82 230 L 76 200 L 70 230 L 48 230
+                 L 40 165
+                 C 40 140 55 115 70 110
+                 L 84 88
+                 C 76 82 68 70 68 52
+                 C 68 32 80 20 100 20 Z"
+              fill="url(#bodyGrad)"
+              stroke="#b980ff" stroke-width="1.5"/>
+        <!-- glowing eyes -->
+        <ellipse cx="88" cy="48" rx="5" ry="3" fill="#fff" opacity="0.95"/>
+        <ellipse cx="112" cy="48" rx="5" ry="3" fill="#fff" opacity="0.95"/>
+        <!-- evil grin -->
+        <path d="M85 64 Q100 76 115 64" stroke="#fff" stroke-width="1.2" fill="none" opacity="0.7"/>
+        <!-- galaxy in chest -->
+        <g transform="translate(100 145) rotate(-18)">
+          <ellipse cx="0" cy="0" rx="32" ry="22" fill="url(#galaxyChest)"/>
+          <ellipse cx="0" cy="0" rx="18" ry="6" fill="#fff" opacity="0.4"/>
+          <circle cx="0" cy="0" r="3" fill="#fff"/>
+        </g>
+        <!-- shoulder spikes -->
+        <path d="M70 110 L 60 88 L 75 100 Z" fill="#b980ff" opacity="0.7"/>
+        <path d="M130 110 L 140 88 L 125 100 Z" fill="#b980ff" opacity="0.7"/>
+      </svg>
+      <div class="boss-name">⚠️ INCOMING · UNKNOWN ENTITY</div>
+    </div>
+
+    <div style="padding:14px;background:rgba(255,92,122,0.06);border:1px solid var(--accent-red);border-radius:10px;margin:12px 0">
+      <p style="margin:0">ยานเพิ่งออก hyperspace · radar จับสัญญาณคลื่นแปลกตรงหน้า…</p>
+      <span class="void-voice">"พบทีมเดิม… มาทดสอบ targeting ของพวกแกหน่อย" — VOID</span>
+      <p style="color:var(--text-dim);font-size:13px;margin-top:6px">นี่ <b>ไม่ใช่ตัวจริง</b> · เป็น VOID ฉาย hologram มาทดสอบระบบ · ทีมจะเรียน <b>กลไกยิง·ไอเทม·โล่</b> ให้ครบก่อนภารกิจจริง</p>
+    </div>
+
+    <div style="text-align:center;margin:18px 0">
+      <button class="finish-btn" onclick="startTutorial()">▶ เริ่ม Tutorial · ระบบจะ guide ทีละขั้น</button>
+    </div>
+
+    <details class="teacher-cue" open>
+      <summary>🎙️ Teacher Cue · P00 · บทบาท: Trainer</summary>
+      <div class="tc-body">
+        <b>เปิด:</b> "ก่อนภารกิจจริง · ทุกทีมต้องลองระบบก่อน · มีไฟส่อง guide ทุกขั้น · กดตามที่เห็น"<br>
+        <b>ระหว่าง:</b> ปล่อยทีมเล่น · ระบบ block อย่างอื่นหมด · ผิดไม่เป็นไร · นี่ tutorial<br>
+        <b>ปิด:</b> "ผ่านครบ → กด '✓ จบ Tutorial' → ไปฟังภารกิจจริง" → P01<br>
+        <b>เวลา:</b> ~3-5 นาที
+      </div>
+    </details>
+  </div>
+
+  <!-- ===== BATTLE STAGE ===== -->
+  <div id="battleSection" style="display:none">
+    <div class="boss-stage" id="bossStage">
+      <svg width="140" height="180" viewBox="0 0 200 260">
+        <defs>
+          <radialGradient id="bossHalo2" cx="50%" cy="40%" r="60%">
+            <stop offset="0%"  stop-color="#b980ff" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#b980ff" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="galaxyChest2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"  stop-color="#fff"/>
+            <stop offset="20%" stop-color="#ffe8a3"/>
+            <stop offset="50%" stop-color="#ff8c5a"/>
+            <stop offset="100%" stop-color="#3a1f5a"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="120" rx="95" ry="125" fill="url(#bossHalo2)"/>
+        <path d="M100 20 C 120 20 132 32 132 52 C 132 70 124 82 116 88 L 130 110 C 145 115 160 140 160 165 L 152 230 L 130 230 L 124 200 L 118 230 L 100 230 L 82 230 L 76 200 L 70 230 L 48 230 L 40 165 C 40 140 55 115 70 110 L 84 88 C 76 82 68 70 68 52 C 68 32 80 20 100 20 Z"
+              fill="#0a0418" stroke="#b980ff" stroke-width="1.5"/>
+        <ellipse cx="88" cy="48" rx="5" ry="3" fill="#fff"/>
+        <ellipse cx="112" cy="48" rx="5" ry="3" fill="#fff"/>
+        <path d="M85 64 Q100 76 115 64" stroke="#fff" stroke-width="1.2" fill="none" opacity="0.7"/>
+        <g transform="translate(100 145) rotate(-18)">
+          <ellipse cx="0" cy="0" rx="32" ry="22" fill="url(#galaxyChest2)"/>
+          <ellipse cx="0" cy="0" rx="18" ry="6" fill="#fff" opacity="0.4"/>
+          <circle cx="0" cy="0" r="3" fill="#fff"/>
+        </g>
+      </svg>
+      <div class="boss-name">👁️ VOID · TUTORIAL DUMMY</div>
+      <div class="boss-hp-wrap"><div class="boss-hp-fill" id="bossHpFill" style="width:100%"></div><span class="boss-hp-text" id="bossHpText">200/200</span></div>
+    </div>
+
+    <div class="race-bar" id="raceBar">
+      <div class="cell" id="cellEnergy"><div class="lbl">⚡ ENERGY</div><div class="val" id="bEnergy">50</div></div>
+      <div class="cell"><div class="lbl">💥 TOTAL DMG</div><div class="val" id="bDmg" style="color:var(--accent-green)">0</div></div>
+      <div class="cell"><div class="lbl">📋 STEP</div><div class="val" id="bStep" style="font-size:18px">1/10</div></div>
+    </div>
+
+    <div class="void-charge" id="voidCharge">
+      <div class="vc-label">⚡ VOID ชาร์จ</div>
+      <div class="vc-bar"><div class="vc-fill" id="vcFill" style="width:0%"></div></div>
+      <div class="vc-num" id="vcNum">รอ</div>
+      <div class="shield-display" id="shieldDisp" title="โล่ที่เหลือ">🛡️ × <b id="shieldNum">1</b></div>
+    </div>
+
+    <div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">🎒 ไอเทม tutorial</div>
+      <div class="boost-row" id="boostRow"></div>
+    </div>
+
+    <div id="shotFeedback" class="shot-feedback" style="display:none"></div>
+
+    <div id="puzzleArea"></div>
+  </div>
+
+  <div id="summaryArea"></div>
+
+  <button id="finishBtn" class="finish-btn" onclick="finishPage()" disabled style="margin-top:20px">🔒 ผ่าน tutorial ก่อน · ไปต่อ</button>
+</div></div>
+
+<!-- spotlight mask -->
+<div id="spotlightMask" class="spotlight-mask hidden"></div>
+
+<script src="../shared/book.js?v=15"></script>
+<script src="./config.js?v=7"></script>
+<script src="../shared/game.js?v=2"></script>
+<script src="../shared/items.js?v=2"></script>
+<script src="../shared/corruption.js?v=2"></script>
+<script src="../shared/leaderboard.js?v=2"></script>
+<script src="../shared/boss.js?v=2"></script>
+<script src="../shared/teacher-cards.js?v=2"></script>
+<script>
+  /* ============ State ============ */
+  const SCOUT_HP = 200;
+  const SHOT_COST = 5;
+  const WRONG_PCT = 0.20;
+  const VOID_BEAM_DMG = 10;
+
+  let scoutHp = SCOUT_HP;
+  let tutEnergy = 50;
+  let totalDmg = 0;
+  let shieldCount = 1;
+  let armedBoost = null;
+  let stepIdx = 0;
+  let stepLocked = true; // ระหว่าง spotlight ยังไม่ปลด · มี action ที่ต้องทำ
+  const TUT_ITEMS = {
+    decoder: { used:false, icon:'📡', name:'Decoder', mult:2.5, desc:'damage ×2.5' },
+    lens:    { used:false, icon:'🔍', name:'Lens',    mult:2.0, desc:'damage ×2.0' },
+  };
+  const TUT_Q = [
+    { q:'1 parsec ≈ ?', a:['3.26 ปีแสง','3.26 วินาที'], correct:0 },
+    { q:'Sun อยู่ในกาแล็กซีอะไร?', a:['Milky Way','Andromeda'], correct:0 },
+    { q:'กฎฮับเบิล (Hubble\'s Law) คือ?', a:['v = H₀ × D','v = D × t'], correct:0 },
+    { q:'parsec เป็นหน่วยของอะไร?', a:['ระยะ','เวลา'], correct:0 },
+    { q:'ทางช้างเผือกประมาณมีดาวกี่ดวง?', a:['200-400 พันล้าน','10 ล้าน'], correct:0 },
+    { q:'กาแล็กซี Spiral มีลักษณะอะไร?', a:['มีจาน + แขนกังหัน','รูปทรงกลมไม่มีแขน'], correct:0 },
+    { q:'แสงในสุญญากาศมีอัตราเร็ว?', a:['~300,000 km/s','~1,000 km/s'], correct:0 },
+    { q:'หน่วยระยะทางในจักรวาลที่ใหญ่กว่า ly?', a:['parsec, Mpc','วินาที, นาที'], correct:0 },
+  ];
+  let qIdx = 0;
+
+  /* ============ Spotlight ============ */
+  function setSpotlight(selector, msg, opts) {
+    opts = opts || {};
+    document.querySelectorAll('.spotlight-target').forEach(el => el.classList.remove('spotlight-target'));
+    document.querySelectorAll('.spotlight-arrow, .spotlight-msg').forEach(el => el.remove());
+    const mask = document.getElementById('spotlightMask');
+    if (!selector) { mask.classList.add('hidden'); return; }
+    mask.classList.remove('hidden');
+    const target = typeof selector === 'string' ? document.querySelector(selector) : selector;
+    if (!target) return;
+    target.classList.add('spotlight-target');
+    target.scrollIntoView({ behavior:'smooth', block:'center' });
+    setTimeout(() => {
+      const r = target.getBoundingClientRect();
+      const arrow = document.createElement('div');
+      arrow.className = 'spotlight-arrow';
+      arrow.textContent = '👉';
+      arrow.style.left = Math.max(8, r.left - 50) + 'px';
+      arrow.style.top  = (r.top + r.height/2 - 18) + 'px';
+      document.body.appendChild(arrow);
+      const m = document.createElement('div');
+      m.className = 'spotlight-msg';
+      m.innerHTML = `<span class="step-no">STEP ${stepIdx}/10</span>${msg}` +
+        (opts.next ? `<span class="next-hint">${opts.next}</span>` : '');
+      document.body.appendChild(m);
+    }, 350);
+  }
+
+  function clearSpotlight() {
+    document.querySelectorAll('.spotlight-target').forEach(el => el.classList.remove('spotlight-target'));
+    document.querySelectorAll('.spotlight-arrow, .spotlight-msg').forEach(el => el.remove());
+    document.getElementById('spotlightMask').classList.add('hidden');
+  }
+
+  /* ============ HUD ============ */
+  function renderHUD() {
+    document.getElementById('bEnergy').textContent = tutEnergy;
+    document.getElementById('bDmg').textContent = totalDmg;
+    document.getElementById('bStep').textContent = `${Math.min(stepIdx,10)}/10`;
+    document.getElementById('bossHpFill').style.width = ((scoutHp/SCOUT_HP)*100) + '%';
+    document.getElementById('bossHpText').textContent = `${scoutHp}/${SCOUT_HP}`;
+    document.getElementById('shieldNum').textContent = shieldCount;
+    document.getElementById('shieldDisp').style.opacity = shieldCount > 0 ? '1' : '0.4';
+  }
+  function flashCell(id) {
+    const c = document.getElementById(id);
+    c.classList.add('flash');
+    setTimeout(() => c.classList.remove('flash'), 700);
+  }
+  function flashShield() {
+    const s = document.getElementById('shieldDisp');
+    s.classList.add('flash');
+    setTimeout(() => s.classList.remove('flash'), 700);
+  }
+
+  function renderBoosts() {
+    const row = document.getElementById('boostRow');
+    const usable = Object.entries(TUT_ITEMS).filter(([k,v]) => !v.used);
+    if (usable.length === 0) { row.innerHTML = '<div style="color:var(--text-faint);font-size:12px;padding:8px">— ใช้ครบแล้ว · ยิงปกติได้ —</div>'; return; }
+    row.innerHTML = usable.map(([k,v]) => {
+      const armed = (armedBoost === k) ? ' armed' : '';
+      return `<button class="boost-btn${armed}" data-k="${k}">
+        <div class="b-name">${v.icon} ${v.name} · ×${v.mult}</div>
+        <div class="b-desc">${v.desc}</div>
+      </button>`;
+    }).join('');
+    row.querySelectorAll('.boost-btn').forEach(btn => btn.addEventListener('click', () => {
+      armedBoost = (armedBoost === btn.dataset.k) ? null : btn.dataset.k;
+      renderBoosts();
+      onUserAction('boost-armed', { id: btn.dataset.k });
+    }));
+  }
+
+  function renderQuestion() {
+    const q = TUT_Q[qIdx % TUT_Q.length]; qIdx++;
+    const order = [0,1];
+    document.getElementById('puzzleArea').innerHTML = `
+      <div class="question-card" id="qCard">
+        <div class="q-text">❓ <b>${q.q}</b></div>
+        <div class="choice-row">
+          ${order.map(k => `<button class="choice-btn" data-correct="${k === q.correct}">${q.a[k]}</button>`).join('')}
+        </div>
+      </div>
+    `;
+    document.querySelectorAll('.choice-btn').forEach(b => b.addEventListener('click', () => {
+      if (b.disabled) return;
+      const isCorrect = b.dataset.correct === 'true';
+      document.querySelectorAll('.choice-btn').forEach(x => {
+        x.disabled = true;
+        if (x.dataset.correct === 'true') x.classList.add('correct');
+        else if (x === b) x.classList.add('wrong');
+      });
+      onUserAction('answered', { correct: isCorrect });
+    }));
+  }
+
+  function showFeedback(text, kind) {
+    const fb = document.getElementById('shotFeedback');
+    fb.style.display = 'block';
+    fb.className = 'shot-feedback ' + kind;
+    fb.textContent = text;
+  }
+
+  function applyShot(isCorrect) {
+    const cost = isCorrect ? SHOT_COST : SHOT_COST + Math.round(SHOT_COST * WRONG_PCT);
+    tutEnergy = Math.max(0, tutEnergy - cost);
+    if (isCorrect) {
+      let dmg = 10;
+      let label = `🎯 HIT · -${dmg} HP · เสีย -${cost} energy`;
+      let kind = 'hit';
+      if (armedBoost) {
+        const b = TUT_ITEMS[armedBoost];
+        dmg = Math.round(dmg * b.mult);
+        label = `💥 ${b.icon} ${b.name} ×${b.mult} · -${dmg} HP · เสีย -${cost} energy`;
+        kind = 'crit';
+        b.used = true;
+        armedBoost = null;
+      }
+      scoutHp = Math.max(0, scoutHp - dmg);
+      totalDmg += dmg;
+      showFeedback(label, kind);
+    } else {
+      showFeedback(`❌ MISS · ผิด · damage 0 · เสีย -${cost} energy (+20%)`, 'miss');
+    }
+    flashCell('cellEnergy');
+    renderHUD();
+    renderBoosts();
+  }
+
+  /* ============ Boss fire (scripted) ============ */
+  function bossChargeAndFire(durationSec, onDone) {
+    const vcFill = document.getElementById('vcFill');
+    const vcNum = document.getElementById('vcNum');
+    let t = durationSec;
+    vcFill.style.transition = `width ${durationSec}s linear`;
+    vcFill.style.width = '100%';
+    const iv = setInterval(() => {
+      t--;
+      vcNum.textContent = Math.max(0,t) + 's';
+      if (t <= 0) { clearInterval(iv); fire(); }
+    }, 1000);
+    function fire() {
+      const stage = document.getElementById('bossStage');
+      stage.classList.add('firing'); setTimeout(()=>stage.classList.remove('firing'), 500);
+      const charge = document.getElementById('voidCharge');
+      charge.classList.add('firing'); setTimeout(()=>charge.classList.remove('firing'), 450);
+      if (shieldCount > 0) {
+        shieldCount--;
+        showFeedback(`🛡️ Shield ดูดซับ VOID beam · เหลือโล่ ${shieldCount} ชิ้น`, 'hit');
+        flashShield();
+      } else {
+        tutEnergy = Math.max(0, tutEnergy - VOID_BEAM_DMG);
+        showFeedback(`💢 VOID BEAM โดน · -${VOID_BEAM_DMG} energy · ไม่มีโล่กัน`, 'miss');
+        flashCell('cellEnergy');
+        const rb = document.querySelector('.race-bar');
+        rb.classList.add('shake'); setTimeout(()=>rb.classList.remove('shake'), 400);
+      }
+      renderHUD();
+      // reset bar for next charge
+      vcFill.style.transition = 'none';
+      vcFill.style.width = '0%';
+      vcNum.textContent = 'รอ';
+      if (onDone) setTimeout(onDone, 800);
+    }
+  }
+
+  /* ============ Tutorial steps ============ */
+  function startTutorial() {
+    document.getElementById('introSection').style.display = 'none';
+    document.getElementById('battleSection').style.display = '';
+    renderHUD();
+    renderBoosts();
+    renderQuestion();
+    stepIdx = 1;
+    runStep();
+  }
+
+  function runStep() {
+    renderHUD();
+    if (stepIdx === 1) {
+      // Step 1: เลือกคำตอบ (ไม่บังคับว่าต้องถูก)
+      setSpotlight('#qCard', '👉 อ่านคำถาม · กดคำตอบที่คิดว่าถูก', { next: 'ตอบถูก = -10 HP boss · ตอบผิด = MISS' });
+    } else if (stepIdx === 2) {
+      // Step 2: ดู energy ลด
+      setSpotlight('#cellEnergy', '⚡ ดู! Energy ลดทุกการยิง · ตอบถูก -5 · ตอบผิด -6 (+20%)', { next: 'กดที่ energy เพื่อไปต่อ' });
+    } else if (stepIdx === 3) {
+      // Step 3: เลือก boost
+      setSpotlight('.boost-btn[data-k="decoder"]', '👉 กด 📡 Decoder · จะเพิ่ม damage ×2.5 รอบถัดไป', { next: 'item ใช้ได้ครั้งเดียว · ใช้ตอนคำถามมั่นใจ' });
+    } else if (stepIdx === 4) {
+      // Step 4: ตอบคำถามใหม่ (จะใช้ boost)
+      renderQuestion();
+      setSpotlight('#qCard', '👉 ตอนนี้ติด Decoder อยู่ · กดคำตอบ · จะเห็น damage ×2.5', { next: 'ตอบถูกเพื่อเห็นผล boost' });
+    } else if (stepIdx === 5) {
+      // Step 5: ดู VOID charge
+      setSpotlight('#voidCharge', '⚡ VOID เริ่มชาร์จพลัง! · 3 วินาทีจะยิง · ดู bar เต็มกราฟ', { next: 'รอชม VOID ยิง' });
+      bossChargeAndFire(3, () => {
+        stepLocked = false;
+        nextStep();
+      });
+    } else if (stepIdx === 6) {
+      // Step 6: ดู shield absorb
+      setSpotlight('#shieldDisp', '🛡️ Shield ดูดซับ VOID beam · เหลือ 0 ชิ้น · พลังป้องกันหมดแล้ว', { next: 'กด shield เพื่อไปต่อ' });
+    } else if (stepIdx === 7) {
+      // Step 7: VOID ชาร์จอีกรอบ (เร็ว)
+      setSpotlight('#voidCharge', '⚡ VOID ชาร์จพลังอีกรอบ! · 3 วิ · คราวนี้ <b>ไม่มีโล่กัน</b>', { next: 'ดู energy ลดเมื่อ beam โดน' });
+      bossChargeAndFire(3, () => {
+        stepLocked = false;
+        nextStep();
+      });
+    } else if (stepIdx === 8) {
+      // Step 8: ดู energy ลดจาก beam
+      setSpotlight('#cellEnergy', '💢 ไม่มีโล่ → energy หาย -10 · จัดการ energy ดี ๆ', { next: 'กดที่ energy เพื่อไปต่อ' });
+    } else if (stepIdx === 9) {
+      // Step 9: ยิงต่อจนหมด energy
+      renderQuestion();
+      setSpotlight('#qCard', '👉 ลองยิงต่อ · ตอบหลายข้อ · ดูว่าจะเป็นยังไงเมื่อ energy หมด', { next: 'energy หมด = กดยิงไม่ได้' });
+    } else if (stepIdx === 10) {
+      // Step 10: lock everything · show finish
+      clearSpotlight();
+      document.querySelectorAll('.choice-btn, .boost-btn').forEach(b => b.disabled = true);
+      document.getElementById('puzzleArea').innerHTML = '';
+      document.getElementById('summaryArea').innerHTML = `
+        <div class="summary-box">
+          <div style="color:var(--accent-green);font-family:Orbitron,sans-serif;letter-spacing:0.1em;font-size:14px">✨ Tutorial complete · เข้าใจระบบครบแล้ว</div>
+          <div class="big">10/10 ขั้นผ่าน</div>
+          <p style="color:var(--text-dim);font-size:13px;margin:10px 0">
+            ตอนนี้รู้ทั้งหมด: <b>ยิง · MISS · boost · VOID charge · Shield · energy หมด</b><br>
+            BOSS ตัวจริงรอใน 100 นาทีข้างหน้า · เก็บไอเทมระหว่างทางให้ดี
+          </p>
+          <div style="padding:12px;background:rgba(255,92,122,0.06);border:1px dashed var(--accent-red);border-radius:8px;margin-top:12px">
+            <span class="void-voice" style="margin:0;padding:6px 10px">"จำไว้นะ... ตัวจริงไม่ใจดีแบบนี้" — VOID</span>
+          </div>
+        </div>
+      `;
+      const fb = document.getElementById('finishBtn');
+      fb.disabled = false;
+      fb.textContent = '✓ จบ Tutorial · เริ่มภารกิจจริง →';
+      setSpotlight('#finishBtn', '🎓 จบ Tutorial · กดไปต่อภารกิจจริง', { next: 'จะไป P01 entry ticket' });
+    }
+  }
+
+  function nextStep() {
+    stepIdx++;
+    runStep();
+  }
+
+  /* ============ User actions during tutorial ============ */
+  function onUserAction(type, data) {
+    if (type === 'answered') {
+      applyShot(data.correct);
+      // step 1: any answer → step 2
+      if (stepIdx === 1) { setTimeout(nextStep, 800); return; }
+      // step 4: any answer (after boost armed) → step 5
+      if (stepIdx === 4) { setTimeout(nextStep, 800); return; }
+      // step 9: keep answering until energy too low
+      if (stepIdx === 9) {
+        const worst = SHOT_COST + Math.round(SHOT_COST * WRONG_PCT);
+        if (tutEnergy < worst) {
+          setTimeout(() => {
+            showFeedback('⚡ Energy ไม่พอ · กดยิงต่อไม่ได้แล้ว', 'miss');
+            stepIdx = 10; runStep();
+          }, 800);
+        } else {
+          // continue · re-render question (still in step 9)
+          setTimeout(() => {
+            renderQuestion();
+            setSpotlight('#qCard', '👉 ยิงต่อ · จนกว่า energy จะหมด', { next: `เหลือ ${tutEnergy} energy` });
+          }, 800);
+        }
+        return;
+      }
+    }
+    if (type === 'boost-armed' && stepIdx === 3) {
+      setTimeout(nextStep, 500);
+    }
+  }
+
+  /* ============ Spotlight click handlers (step 2, 6, 8) ============ */
+  document.addEventListener('click', (e) => {
+    if (stepIdx === 2 && e.target.closest('#cellEnergy')) nextStep();
+    else if (stepIdx === 6 && e.target.closest('#shieldDisp')) nextStep();
+    else if (stepIdx === 8 && e.target.closest('#cellEnergy')) nextStep();
+  });
+
+  /* ============ Finish ============ */
+  function finishPage() {
+    Book.completePage('p00', { score: 10, max: 10, msg: 'Tutorial complete · เข้าใจระบบครบ' });
+    const fb = document.getElementById('finishBtn');
+    fb.classList.add('done'); fb.disabled = true; fb.textContent = '✓ ส่งแล้ว';
+    clearSpotlight();
+  }
+
+  setTimeout(() => { Book.state.ep='ep02'; Book.save(); }, 50);
+</script>
+
+</body>
+</html>
