@@ -1788,16 +1788,23 @@ async function unlockTool(toolKey){
 }
 
 // Generic iframe renderer สำหรับ tool ที่มี def.file (เช่น SHM)
-// path = KP_PLAN_MEDIA[currentPlan].folder + '/' + def.file
+// path resolution:
+//   - def.file ขึ้นต้น http(s) → ใช้ URL ตรง (external sim · เช่น kp-science.github.io)
+//   - ไม่งั้น → KP_PLAN_MEDIA[currentPlan].folder + '/' + def.file (ไฟล์ใน lessons/)
 function renderIframeFromMedia(body, toolKey, def){
-  const planMedia = (window.KP_PLAN_MEDIA || {})[state.currentPlan];
-  if (!planMedia || !planMedia.folder){
-    body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">⚠️ ไม่พบ media.folder ของแผน ${state.currentPlan}</div>`;
-    showView('view-tool'); return;
+  let path;
+  if (typeof def.file === 'string' && /^https?:\/\//i.test(def.file)){
+    path = def.file;  // external URL (ไม่ encode ซ้ำ — สมมติว่า encoded แล้ว)
+  } else {
+    const planMedia = (window.KP_PLAN_MEDIA || {})[state.currentPlan];
+    if (!planMedia || !planMedia.folder){
+      body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">⚠️ ไม่พบ media.folder ของแผน ${state.currentPlan}</div>`;
+      showView('view-tool'); return;
+    }
+    path = encodeURI(planMedia.folder + '/' + def.file);
   }
-  const path = planMedia.folder + '/' + def.file;
   const frame = document.createElement('iframe');
-  frame.src = encodeURI(path);
+  frame.src = path;
   frame.style.cssText = 'width:100%;height:1400px;min-height:800px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;display:block';
   frame.setAttribute('title', toolKey);
   frame.onerror = () => { body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">❌ โหลด iframe ไม่สำเร็จ: ${path}</div>`; };

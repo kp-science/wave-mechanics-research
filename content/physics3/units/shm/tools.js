@@ -17,12 +17,12 @@
 // ═══════════════════════════════════════════════════════════════════
 
 window.KP_PLAN_TOOLS = {
-  1: ['tl-pre','f1-pre','poe1','calc1','spot1','cer1','exercise1','tl-post','f1-post','mj1','upload'],
-  2: ['tl-pre','f2-pre','poe2','calc2','spot2','cer2','exercise2','tl-post','f2-post','mj2','upload'],
-  3: ['tl-pre','f3-pre','engage3','poe3','concept3','exercise3','case3','exit3','exercise3-ext','tl-post','mj3','upload'],
-  4: ['tl-pre','f4-pre','engage4','jigsaw4','concept4','exercise4','case4','exit4','exercise4-ext','tl-post','mj4','upload'],
-  5: ['tl-pre','f5-pre','engage5','tps5','concept5','exercise5','exit5','f5-post','exercise5-ext','tl-post','mj5','upload'],
-  6: ['tl-pre','f6-pre','engage6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','upload']
+  1: ['tl-pre','f1-pre','simlab1','poe1','calc1','spot1','cer1','exercise1','tl-post','f1-post','mj1','upload'],
+  2: ['tl-pre','f2-pre','simlab2','poe2','calc2','spot2','cer2','exercise2','tl-post','f2-post','mj2','upload'],
+  3: ['tl-pre','f3-pre','engage3','simlab3','poe3','concept3','exercise3','case3','exit3','exercise3-ext','tl-post','mj3','upload'],
+  4: ['tl-pre','f4-pre','engage4','simlab4','jigsaw4','concept4','exercise4','case4','exit4','exercise4-ext','tl-post','mj4','upload'],
+  5: ['tl-pre','f5-pre','engage5','simlab5','tps5','concept5','exercise5','exit5','f5-post','exercise5-ext','tl-post','mj5','upload'],
+  6: ['tl-pre','f6-pre','engage6','simlab6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','upload']
 };
 
 // ─────────────────────────────────────────────────────────────────
@@ -97,6 +97,15 @@ window.KP_TOOL_DEFS = {
   'exit4':   { ico:'🎫', name:'Exit Ticket · แผน 4', desc:'Formative check ปลายคาบ', sheet:'SHM_Exit_P4', color:'tc-mj', file:'สื่อ07_ExitTicket.html' },
   'exit5':   { ico:'🎫', name:'Exit Ticket · แผน 5', desc:'Formative check ปลายคาบ', sheet:'SHM_Exit_P5', color:'tc-mj', file:'สื่อ07_ExitTicket.html' },
   'exit6':   { ico:'🎫', name:'Exit Ticket · แผน 6', desc:'Formative check ปลายคาบ', sheet:'SHM_Exit_P6', color:'tc-mj', file:'07_ExitTicket.html' },
+
+  // ─── Simulations (KP Science · external iframe) ───
+  // ใช้ url-encoded URL · engine ตรวจ http(s) แล้วเปิดตรง ไม่ prepend folder
+  'simlab1': { ico:'🎮', name:'Simulation · SHM Identifier',          desc:'จำแนกการเคลื่อนที่แบบ SHM vs ไม่ใช่ SHM (KP Science)', sheet:'SHM_Sim_P1', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Demo/mechanics/SHM/SHM01_SHM-Identifier_protected.html' },
+  'simlab2': { ico:'🎮', name:'Simulation · Pendulum Timer',          desc:'วัดคาบลูกตุ้ม ปรับ l, g, มุม (KP Science Lab 6.1)',     sheet:'SHM_Sim_P2', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/6.1%20pendulum_timer.html' },
+  'simlab3': { ico:'🎮', name:'Simulation · SHM Spring Builder',      desc:'สร้างชุดทดลองมวล-สปริง · ทดสอบ T vs m, k (KP Science Lab 42)', sheet:'SHM_Sim_P3', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/42.%20shm-spring-builder.html' },
+  'simlab4': { ico:'🎮', name:'Simulation · SHM Phase Explorer',      desc:'ดูเฟส x, v, a + วงกลมอ้างอิง (KP Science Lab 43)',      sheet:'SHM_Sim_P4', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/43.%20shm-phase-explorer.html' },
+  'simlab5': { ico:'🎮', name:'Simulation · Pendulum Energy',         desc:'พลังงานจลน์-ศักย์-รวมของลูกตุ้ม (KP Science Lab 19)',  sheet:'SHM_Sim_P5', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/19.pendulum_energy_sim.html' },
+  'simlab6': { ico:'🎮', name:'Simulation · Damping & Resonance',     desc:'ปรับ damping coefficient + driving frequency (KP Science Lab 44)', sheet:'SHM_Sim_P6', color:'tc-poe', file:'https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2001/Mechacnics/44.%20shm-damping-resonance.html' },
 
   // ─── Metacognitive Journal (รายแผน · iframe ไฟล์ HTML ของ SHM) ───
   'mj1':     { ico:'📓', name:'MJ-01 · Journal 3-2-1', desc:'3 เข้าใจใหม่ · 2 น่าสนใจ · 1 คำถาม', sheet:'SHM_MJ_P1', color:'tc-mj', file:'สื่อ07_MJ-01_MetacognitiveJournal.html' },
