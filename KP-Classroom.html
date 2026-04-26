@@ -901,7 +901,7 @@ window.addEventListener('DOMContentLoaded', () => {
     // Restore last selected subject/topic
     try {
       const nav = JSON.parse(localStorage.getItem(LS_NAV) || 'null');
-      if (nav){ state.subject = nav.subject; state.topic = nav.topic; }
+      if (nav){ state.subject = nav.subject; state.topic = nav.topic; state.unit = nav.unit || null; }
     } catch(_){}
   }
 
@@ -909,6 +909,19 @@ window.addEventListener('DOMContentLoaded', () => {
   if (isTeacherAuthed()){
     enterTeacherMode();
   } else if (state.student){
+    // ถ้า session เคยเลือก subject/topic/unit ไว้ · แต่ URL ปัจจุบันไม่ตรง
+    // → redirect ไป URL ที่ตรงกับ session (กันเข้า ?course=physics3 แล้วเด้งหน้าผิด)
+    const savedSubject = state.subject;
+    const savedUnit    = state.unit || null;
+    const curUnit      = window.KP_UNIT || null;
+    if (savedSubject && (savedSubject !== window.KP_COURSE || savedUnit !== curUnit)){
+      const params = new URLSearchParams(location.search);
+      params.set('course', savedSubject);
+      if (savedUnit) params.set('unit', savedUnit);
+      else params.delete('unit');
+      location.search = params.toString();
+      return;  // หยุดที่นี่ · จะ reload เข้า init() รอบใหม่ด้วย URL ที่ถูก
+    }
     // ถ้า state.topic มีแล้ว (เคยเลือก) + ตรงกับ course ปัจจุบัน · ไปหน้าบ้านเลย
     // ไม่งั้นไปหน้าเลือกหัวข้อของวิชานี้
     if (state.topic && state.subject === window.KP_COURSE) showHome();
@@ -1119,7 +1132,8 @@ function selectTopic(subjectId, topicId){
 
   state.subject = subjectId;
   state.topic = topicId;
-  try { localStorage.setItem(LS_NAV, JSON.stringify({subject: subjectId, topic: topicId})); } catch(_){}
+  state.unit = topic.unit || null;
+  try { localStorage.setItem(LS_NAV, JSON.stringify({subject: subjectId, topic: topicId, unit: topic.unit || null})); } catch(_){}
 
   // ถ้า content pack ปัจจุบันตรงกับ subject + unit นี้ → แสดงบ้านตรงๆ ไม่ต้อง reload
   // เงื่อนไข: subject ตรง · unit ตรง (ทั้งสองฝั่งเป็น null = waves เดิม)
