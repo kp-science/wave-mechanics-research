@@ -1483,6 +1483,11 @@ function openTool(key){
     body.innerHTML += `<div class="warn-config">⚠️ <b>ครูยังไม่ได้ตั้งค่า API URL</b> — ข้อมูลจะไม่ถูกส่งจริง (จะบันทึกใน browser และ download .json แทน)</div>`;
   }
 
+  // ⭐ NEW: ถ้า tool มี def.file → เปิดไฟล์ HTML จากโฟลเดอร์สื่อของแผนใน iframe
+  // (ใช้สำหรับ SHM และ unit อื่นๆ ที่ไม่ใช้ engine-native renderer)
+  // ต้องอยู่ก่อน routes ของ engine-native (poe/matrix/spot/calc) เพื่อให้ unit override ได้
+  if (def && def.file) return renderIframeFromMedia(body, key, def);
+
   // Route by tool type
   if (key.startsWith('f') && key.includes('-pre'))  return renderFTForm(body, 'pre', key);
   if (key.startsWith('f') && key.includes('-post')) return renderFTForm(body, 'post', key);
@@ -1698,6 +1703,23 @@ function wsIdToSheet(wsId){
   // 1) Explicit iframe tools first (FT01, FT02, Review)
   const tk = WS_TO_TOOL[wsId];
   if (tk) return IFRAME_TOOLS[tk].sheet;
+  // 1.5) SHM unit pattern: shm-plan{N}-{tool}[-{suffix}] → SHM_<Cap>_P{N}
+  // ใช้แยก Sheet ของ SHM ออกจากคลื่นกล (เก็บคนละชีท)
+  const sm = wsId.match(/^shm-plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
+  if (sm){
+    const [, plan, tool] = sm;
+    const map = {
+      'cc':'CC','poe':'POE','calc':'Calc','spot':'Spot','tl':'TL','tl02':'TL','tl03':'TL','tl04':'TL','tl05':'TL',
+      'mj':'MJ','cer':'CER','exercise':'Exercise','exit':'Exit','journal':'MJ',
+      'pretest':'Pretest','post':'Post','posttest':'Post','et':'Exit','ex11':'Exercise',
+      'engage':'Engage','jigsaw':'Jigsaw','vecmap':'Concept','dataanalysis':'Concept',
+      'tps':'TPS','casestudy':'Case','sim06':'SIM','trafficlight':'TL',
+      'f1':'F_Fourtier','f2':'F_Fourtier','f3':'F_Fourtier','f4':'F_Fourtier','f5':'F_Fourtier','f6':'F_Fourtier'
+    };
+    const baseKey = tool.toLowerCase();
+    const prefix = map[baseKey] || (baseKey.charAt(0).toUpperCase() + baseKey.slice(1));
+    return `SHM_${prefix}_P${plan}`;
+  }
   // 2) Pattern parse
   const m = wsId.match(/^plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
   if (!m) return null;
@@ -1763,6 +1785,24 @@ async function unlockTool(toolKey){
   } catch(err){
     alert('❌ ตรวจรหัสไม่สำเร็จ: ' + err.message);
   }
+}
+
+// Generic iframe renderer สำหรับ tool ที่มี def.file (เช่น SHM)
+// path = KP_PLAN_MEDIA[currentPlan].folder + '/' + def.file
+function renderIframeFromMedia(body, toolKey, def){
+  const planMedia = (window.KP_PLAN_MEDIA || {})[state.currentPlan];
+  if (!planMedia || !planMedia.folder){
+    body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">⚠️ ไม่พบ media.folder ของแผน ${state.currentPlan}</div>`;
+    showView('view-tool'); return;
+  }
+  const path = planMedia.folder + '/' + def.file;
+  const frame = document.createElement('iframe');
+  frame.src = encodeURI(path);
+  frame.style.cssText = 'width:100%;height:1400px;min-height:800px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;display:block';
+  frame.setAttribute('title', toolKey);
+  frame.onerror = () => { body.innerHTML += `<div class="info" style="border-color:#c62828;background:#ffebee">❌ โหลด iframe ไม่สำเร็จ: ${path}</div>`; };
+  body.appendChild(frame);
+  showView('view-tool');
 }
 
 function renderIframe(body, toolKey){
