@@ -95,6 +95,8 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -107,12 +109,21 @@
   function finishPage() {
     // เก็บ pre-test answers เป็น baseline (ไม่ให้ energy · baseline จริง)
     const answers = {};
-    ['q1','q2','q3','q4','q5'].forEach(q => {
+    const correctMap = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'b' };
+    const epAnswers = [];
+    ['q1','q2','q3','q4','q5'].forEach((q,i) => {
       const chosen = document.querySelector(`input[name="${q}"]:checked`);
       answers[q] = chosen ? chosen.value : null;
+      const all = Array.from(document.querySelectorAll(`input[name="${q}"]`));
+      const idx = chosen ? all.findIndex(r => r === chosen) : -1;
+      epAnswers.push({
+        id:'Q'+(i+1), mcode:'EP02-'+q.toUpperCase(),
+        ans: idx, correct: chosen && chosen.value === correctMap[q]
+      });
     });
     Book.savePageData('p01', { preTest: answers, at: Date.now() });
     Book.completePage();
+    if (window.EPSync) EPSync.submit({ ep:2, test:'pre', answers: epAnswers });
     document.getElementById('status').textContent = '✓ บันทึกเรียบร้อย · กด "ต่อไป →" ที่ footer';
     const btn = document.getElementById('finishBtn');
     btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ เสร็จแล้ว';

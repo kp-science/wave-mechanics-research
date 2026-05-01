@@ -78,6 +78,8 @@
 <script src="../shared/photon.js?v=2"></script>
 <script src="../shared/role-view.js"></script>
 <script src="../shared/ep03-boot.js?v=2"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 // Pre-test 5 ข้อ · misconception (M) + วัตถุประสงค์ K (parallax + magnitude) · parallel กับ post-test
 const QUIZ = [
@@ -232,6 +234,13 @@ setTimeout(() => {
       byMisconception: byM,
       answers: Object.fromEntries(items.map(x => [x.id, x.ans])),
     });
+
+    // Sync to backend (Astronomy-2569 sheet)
+    if (window.EPSync) {
+      EPSync.submit({ ep:3, test:'pre', answers: items.map(x => ({
+        id:x.id, mcode:x.m, ans:x.ans, correct:x.correct
+      })) });
+    }
 
     // Reward · pre-test ไม่วัดถูกผิด · แค่ effort · +5 coin + +5 photon
     if (typeof Coin !== 'undefined' && Coin.add) {

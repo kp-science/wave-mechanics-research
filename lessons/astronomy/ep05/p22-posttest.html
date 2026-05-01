@@ -44,6 +44,8 @@
 <script src="../shared/mission-brief.js?v=1"></script>
 <script src="../shared/mystery-box.js?v=2"></script>
 <script src="../shared/ep05-boot.js?v=1"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 // Post-test 5 ข้อ · ใช้โจทย์เดียวกับ Pre-test (p01) เพื่อวัด gain ตรง 1:1
 const QS = [
@@ -79,6 +81,11 @@ setTimeout(()=>{
         ans['q'+i]={m:q.m, ans:val, correct:val===q.c};
         if(val===q.c) correct++;
       });
+      if (window.EPSync) {
+        EPSync.submit({ ep:5, test:'post', answers: QS.map((q,i)=>({
+          id:'Q'+(i+1), mcode:q.m, ans:ans['q'+i].ans, correct:ans['q'+i].correct
+        })) });
+      }
       return {answers:ans, correct, total:QS.length};
     },
     validate(p){ if(Object.values(p.answers).some(a=>a.ans===-1)){ alert('กรุณาตอบให้ครบ'); return false; } return true; },

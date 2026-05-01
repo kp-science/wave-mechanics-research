@@ -89,6 +89,8 @@
 <script src="../shared/mystery-box-v2.js"></script>
 <script src="config.js"></script>
 <script src="../shared/ep07-boot.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     Boot07.init({ pageId:'p27' });
@@ -140,6 +142,16 @@
           '<div class="stat-row"><span>Gain Score</span><b style="color:'+(gain>0?'var(--good)':'var(--bad)')+'">' + (gain>=0?'+':'') + gain + '</b></div>' +
           '</div>';
         KPA.research('gainScore', { pre:preScore, post:res.score, gain });
+        // Sync to backend
+        if (window.EPSync) {
+          const epAnswers = EP_CONFIG.pretest.map((q, i) => ({
+            id: 'Q'+(i+1),
+            mcode: q.tag || 'EP07-Q'+(i+1),
+            ans: (res.answers && res.answers[i] !== undefined) ? Number(res.answers[i]) : -1,
+            correct: (res.answers && Number(res.answers[i]) === q.answer)
+          }));
+          EPSync.submit({ ep:7, test:'post', answers: epAnswers });
+        }
       });
     };
 

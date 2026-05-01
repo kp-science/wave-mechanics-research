@@ -53,6 +53,8 @@
 <script src="../shared/reveal-after-submit.js"></script>
 <script src="config.js"></script>
 <script src="../shared/ep08-boot.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
   EP08Boot.init({ pageId:'p01' });
   const story = EP_CONFIG.story.p01 || {};
@@ -100,6 +102,14 @@
     if (window.KPA) {
       KPA.research('pretest', { score: correct, total: 10, pct, answers });
       KPA.log('K','K1','pretest done · ' + pct + '%');
+    }
+    if (window.EPSync) {
+      const epAnswers = EP_CONFIG.pretest.map((q, i) => ({
+        id:'Q'+(i+1), mcode:q.tag || 'EP08-Q'+(i+1),
+        ans: answers[i] !== null ? answers[i] : -1,
+        correct: answers[i] === q.answer
+      }));
+      EPSync.submit({ ep:8, test:'pre', answers: epAnswers });
     }
     document.getElementById('resultHost').innerHTML = `
       <div class="card card-gold" style="text-align:center;">

@@ -23,6 +23,9 @@ window.KP_CONFIG = {
   // ─── Backend (Apps Script Web App URL · แยกจาก Physics 3) ───
   apiUrl:       'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec',
 
+  // ─── Master Roster (login · ใช้ร่วมกับ physics3 · 1 sheet กลาง 'Master_Roster_2569') ───
+  rosterApiUrl: 'https://script.google.com/macros/s/AKfycbyhekgIs5ufh9KBsd-PKSqp0dc6WgSmaPauHppsKopKZf02aXBR6cnxQxDQuVkgUs_L4A/exec',
+
   // ─── Admin Password (Phase 4: server-side) ───
   // ⚠️ รหัสเก็บใน Apps Script Properties (ชื่อ 'TEACHER_PASSWORD')
   // ห้ามใส่รหัสในไฟล์นี้ (repo public)

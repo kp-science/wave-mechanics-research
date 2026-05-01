@@ -41,6 +41,8 @@
 <script src="../shared/learning-journal.js?v=1"></script>
 <script src="../shared/reveal-after-submit.js?v=1"></script>
 <script src="../shared/ep06-boot.js?v=1"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 // Pre-test 5 ข้อ · misconception (M) + วัตถุประสงค์ K
 window.EP06_PRETEST_QS = [
@@ -91,6 +93,11 @@ setTimeout(() => {
         ans['q'+i]={m:q.m, ans:val, correct:val===q.c};
         if(val===q.c) correct++;
       });
+      if (window.EPSync) {
+        EPSync.submit({ ep:6, test:'pre', answers: QS.map((q,i)=>({
+          id:'Q'+(i+1), mcode:q.m, ans:ans['q'+i].ans, correct:ans['q'+i].correct
+        })) });
+      }
       return {answers:ans, correct, total:QS.length};
     },
     validate(p){ if(Object.values(p.answers).some(a=>a.ans===-1)){ alert('กรุณาตอบให้ครบทุกข้อ'); return false; } return true; },

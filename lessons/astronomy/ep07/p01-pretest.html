@@ -40,6 +40,8 @@
 <script src="../shared/pbl-frame.js"></script>
 <script src="config.js"></script>
 <script src="../shared/ep07-boot.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     Boot07.init({ pageId:'p01' });
@@ -51,6 +53,16 @@
           '<p style="color:var(--text-mute);font-size:13px;">ระบบจะเปรียบเทียบกับ posttest หลังจบบทเพื่อวัด gain score</p>';
         KPA.log('K1', 'pretest-complete', { score:res.score, total:res.total, correct: res.score === res.total });
         KPA.vpa(2, { kind:'pretest', score:res.score, total:res.total });
+        // Sync to backend
+        if (window.EPSync) {
+          const epAnswers = EP_CONFIG.pretest.map((q, i) => ({
+            id: 'Q'+(i+1),
+            mcode: q.tag || 'EP07-Q'+(i+1),
+            ans: (res.answers && res.answers[i] !== undefined) ? Number(res.answers[i]) : -1,
+            correct: (res.answers && Number(res.answers[i]) === q.answer)
+          }));
+          EPSync.submit({ ep:7, test:'pre', answers: epAnswers });
+        }
       });
     };
   });

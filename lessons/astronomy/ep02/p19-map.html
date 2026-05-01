@@ -133,6 +133,8 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -147,13 +149,21 @@
   function submitPost() {
     postAnswers = {};
     let correct = 0;
+    const epAnswers = [];
+    let qIdx = 0;
     document.querySelectorAll('.pretest-q').forEach(q => {
       const qid = q.dataset.qid;
-      const ans = q.dataset.ans;
+      const ansChar = q.dataset.ans;
       const chosen = document.querySelector(`input[name="${qid}"]:checked`);
       postAnswers[qid] = chosen ? chosen.value : null;
-      if (chosen && chosen.value === ans) correct++;
+      const ok = chosen && chosen.value === ansChar;
+      if (ok) correct++;
+      const all = Array.from(document.querySelectorAll(`input[name="${qid}"]`));
+      const idx = chosen ? all.findIndex(r => r === chosen) : -1;
+      epAnswers.push({ id:'Q'+(qIdx+1), mcode:'EP02-'+qid.toUpperCase(), ans:idx, correct:ok });
+      qIdx++;
     });
+    if (window.EPSync) EPSync.submit({ ep:2, test:'post', answers: epAnswers });
 
     const isPerfect = (correct === 5);
     Book.savePageData('p19', { postTest: postAnswers, postCorrect: correct, perfect: isPerfect });

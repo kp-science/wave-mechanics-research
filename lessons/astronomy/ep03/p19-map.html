@@ -95,6 +95,8 @@
 <script src="../shared/photon.js?v=2"></script>
 <script src="../shared/role-view.js"></script>
 <script src="../shared/ep03-boot.js?v=2"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 // Post-test 5 ข้อ · ใช้โจทย์เดียวกับ Pre-test (p01) เพื่อวัด gain ตรง 1:1
 const QS = [
@@ -222,6 +224,11 @@ setTimeout(() => {
       }
       const post = computePost();
       const pre = Submit.load('p01');
+      if (window.EPSync) {
+        EPSync.submit({ ep:3, test:'post', answers: post.items.map(x => ({
+          id:x.id, mcode:x.m, ans:x.ans, correct:x.correct
+        })) });
+      }
       return {
         tag: 'posttest',
         items: post.items,

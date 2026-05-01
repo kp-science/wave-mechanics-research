@@ -83,6 +83,8 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 function submitEntry() {
   const ans = ['e1','e2','e3','e4','e5'].map(n => document.querySelector(`input[name="${n}"]:checked`));
@@ -93,6 +95,17 @@ function submitEntry() {
   Book.savePageData('p01', payload);
   Book.addEnergy(2, 'Entry Ticket');
   Book.completePage('p01');
+  // Sync to backend (Astronomy-2569)
+  if (window.EPSync) {
+    EPSync.submit({ ep:1, test:'pre', answers: ans.map((a,i)=>{
+      const valChar = a.value;
+      const ansIdx = valChar === 'c' ? -1 : -1; // we use letter values w1/w2/w3/c — map char→ index of label
+      // Determine ans index from radio order in DOM
+      const all = Array.from(document.querySelectorAll(`input[name="e${i+1}"]`));
+      const idx = all.findIndex(r => r === a);
+      return { id:'Q'+(i+1), mcode:'EP01-Q'+(i+1), ans:idx, correct:a.value === 'c' };
+    }) });
+  }
   document.getElementById('result').innerHTML = `
     <div class="branch-reveal main">
       <h3>✓ บันทึก Baseline แล้ว</h3>

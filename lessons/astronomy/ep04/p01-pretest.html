@@ -76,6 +76,8 @@
 <script src="../shared/mission-brief.js?v=1"></script>
 <script src="../shared/mystery-box.js?v=1"></script>
 <script src="../shared/ep04-boot.js?v=2"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 const QUIZ = [
   { id:'M1', mis:'M1', topic:'สี ↔ อุณหภูมิ',
@@ -159,6 +161,11 @@ Submit.wirePair({
   getPayload: () => {
     const arr = QUIZ.map((q, i) => ({ id:q.id, mis:q.mis, picked:answers[i], correct:answers[i]===q.c }));
     const nCorrect = arr.filter(x => x.correct).length;
+    if (window.EPSync) {
+      EPSync.submit({ ep:4, test:'pre', answers: QUIZ.map((q,i)=>({
+        id:q.id, mcode:q.mis, ans:answers[i], correct:answers[i]===q.c
+      })) });
+    }
     return { answers: arr, nCorrect, total: QUIZ.length };
   },
   isPerfect: (p) => p.nCorrect === QUIZ.length,

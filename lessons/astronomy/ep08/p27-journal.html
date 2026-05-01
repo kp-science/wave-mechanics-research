@@ -115,6 +115,8 @@
 <script src="../shared/s1-keyring.js"></script>
 <script src="config.js"></script>
 <script src="../shared/ep08-boot.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
   EP08Boot.init({ pageId:'p27' });
   try { localStorage.setItem('cosmosLog_ep08_lastPage', 'p27'); } catch(e){}
@@ -191,6 +193,14 @@
         `;
         post.appendChild(banner);
         if (window.KPA) KPA.research('posttest', { score: r, answers });
+        if (window.EPSync) {
+          const epAnswers = EP_CONFIG.pretest.map((q, k) => ({
+            id:'Q'+(k+1), mcode:q.tag || 'EP08-Q'+(k+1),
+            ans: answers[k] !== null ? answers[k] : -1,
+            correct: answers[k] === q.answer
+          }));
+          EPSync.submit({ ep:8, test:'post', answers: epAnswers });
+        }
       }
     });
     document.getElementById('postBtn').disabled = true;

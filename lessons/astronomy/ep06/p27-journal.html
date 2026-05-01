@@ -142,6 +142,8 @@
 <script src="../shared/learning-journal.js?v=1"></script>
 <script src="../shared/reveal-after-submit.js?v=1"></script>
 <script src="../shared/ep06-boot.js?v=1"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 const POOL_3 = [
   '6 ขั้นกำเนิดระบบสุริยะ', 'frost line · inner=หิน outer=ยักษ์', 'asteroid belt โล่ง 1M km',
@@ -235,10 +237,15 @@ setTimeout(()=>{
     getPayload(){
       const get = (id)=>[...document.querySelectorAll('#'+id+' .chip.selected')].map(e=>e.textContent);
       let postCorrect = 0;
+      const epAnswers = [];
       QS.forEach((q,i) => {
         const v = document.querySelector(`input[name="post${i}"]:checked`);
-        if(v && Number(v.value)===q.c) postCorrect++;
+        const val = v ? Number(v.value) : -1;
+        const ok = val === q.c;
+        if (ok) postCorrect++;
+        epAnswers.push({ id:'Q'+(i+1), mcode:q.m, ans:val, correct:ok });
       });
+      if (window.EPSync) EPSync.submit({ ep:6, test:'post', answers: epAnswers });
       return { l3:get('learn3'), l2:get('learn2'), l1:get('learn1'), badge:'scaleMaster', rank:'CAPTAIN+', postCorrect, postTotal:QS.length };
     },
     validate(p){

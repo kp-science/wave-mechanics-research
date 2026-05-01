@@ -40,6 +40,8 @@
 <script src="../shared/mission-brief.js?v=1"></script>
 <script src="../shared/mystery-box.js?v=2"></script>
 <script src="../shared/ep05-boot.js?v=1"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 // Pre-test 5 ข้อ · misconception (M) + วัตถุประสงค์ K (ความรู้)
 const QS = [
@@ -74,6 +76,13 @@ setTimeout(() => {
         ans['q'+i]={m:q.m, ans:val, correct:val===q.c};
         if(val===q.c) correct++;
       });
+      // sync to backend (Astronomy-2569 sheet)
+      if (window.EPSync) {
+        const epAnswers = QS.map((q,i) => ({
+          id:'Q'+(i+1), mcode:q.m, ans:ans['q'+i].ans, correct:ans['q'+i].correct
+        }));
+        EPSync.submit({ ep:5, test:'pre', answers: epAnswers });
+      }
       return {answers:ans, correct, total:QS.length};
     },
     validate(p){

@@ -160,6 +160,8 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/ep-sync.js?v=1"></script>
 <script>
 function renderMap() {
   // Badges from inventory
@@ -197,6 +199,14 @@ function submitPost() {
   const pre = Book.state.data.p01?.score ?? 0;
   const shift = post - pre;
   Book.savePageData('p16', { post, pre, shift });
+  // Sync to backend
+  if (window.EPSync) {
+    EPSync.submit({ ep:1, test:'post', answers: ps.map((a,i)=>{
+      const all = Array.from(document.querySelectorAll(`input[name="post${i+1}"]`));
+      const idx = all.findIndex(r => r === a);
+      return { id:'Q'+(i+1), mcode:'EP01-Q'+(i+1), ans:idx, correct:a.value === 'c' };
+    }) });
+  }
 
   let shiftColor = shift > 0 ? 'var(--accent-green)' : shift === 0 ? 'var(--accent-gold)' : 'var(--accent-red)';
   document.getElementById('shift-result').innerHTML = `
