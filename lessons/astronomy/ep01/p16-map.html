@@ -42,7 +42,7 @@
   <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · จบคาบ</div>
   <div class="teacher-cue-body" onclick="event.stopPropagation()">
     <div class="role"><span class="tag teach">ให้รางวัล</span><span>ประกาศ Badge ของแต่ละทีม · มอบสติกเกอร์หรือประกาศในห้อง</span></div>
-    <div class="role"><span class="tag do">Post-test</span><span>ให้ทำ Post-test 3 ข้อ (เดียวกับ Entry Ticket) · เทียบ pre/post = ข้อมูลวิจัย</span></div>
+    <div class="role"><span class="tag do">Post-test</span><span>ให้ทำ Post-test 5 ข้อ (เดียวกับ Entry Ticket) · เทียบ pre/post = ข้อมูลวิจัย</span></div>
     <div class="role"><span class="tag say">Debrief</span><span>ถามว่า "ความคิดเรื่องบิกแบงของทีมเปลี่ยนไปอย่างไร?" · บันทึก conceptual change</span></div>
     <div class="role"><span class="tag do">Side Quest</span><span>มอบหมายภารกิจนอกห้อง · ส่งภาพดวงจันทร์ · เขียนบันทึก 1 หน้า</span></div>
     <div class="role"><span class="tag do">Export</span><span>กด Export JSON ของทีม · เก็บเข้า Google Drive เพื่อใช้ใน EP02</span></div>
@@ -98,6 +98,22 @@
     <label class="radio-opt"><input type="radio" name="post3" value="c"><span>ควาร์ก → โปรตอน/นิวตรอน → นิวเคลียสฮีเลียม → อะตอมเป็นกลาง → กาแล็กซี</span></label>
     <label class="radio-opt"><input type="radio" name="post3" value="w2"><span>อะตอมเป็นกลาง → ควาร์ก → กาแล็กซี → โปรตอน</span></label>
     <label class="radio-opt"><input type="radio" name="post3" value="w3"><span>กาแล็กซี → โปรตอน → ควาร์ก → อะตอมเป็นกลาง</span></label>
+  </div>
+
+  <div class="entry-q" style="padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">4 · เอกภพปัจจุบันอายุประมาณเท่าไร?</div>
+    <label class="radio-opt"><input type="radio" name="post4" value="w1"><span>~ 4.6 พันล้านปี (เท่าโลก)</span></label>
+    <label class="radio-opt"><input type="radio" name="post4" value="c"><span>~ 13.8 พันล้านปี</span></label>
+    <label class="radio-opt"><input type="radio" name="post4" value="w2"><span>~ 1 ล้านปี</span></label>
+    <label class="radio-opt"><input type="radio" name="post4" value="w3"><span>คงที่ ไม่มีอายุ</span></label>
+  </div>
+
+  <div class="entry-q" style="padding: 14px 16px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0;">
+    <div style="font-weight:600; margin-bottom:8px;">5 · ข้อใดอธิบายเอกภพหลังบิกแบงได้ <b>ถูกต้อง</b>?</div>
+    <label class="radio-opt"><input type="radio" name="post5" value="w1"><span>เอกภพมีขอบ · นอกขอบเป็นที่ว่างเปล่า</span></label>
+    <label class="radio-opt"><input type="radio" name="post5" value="c"><span>เอกภพไม่มีขอบ · ขยายตัวทุกทิศทุกจุด · ไม่มีจุดศูนย์กลาง</span></label>
+    <label class="radio-opt"><input type="radio" name="post5" value="w2"><span>เอกภพหยุดขยายตัวมาตั้งแต่กำเนิด</span></label>
+    <label class="radio-opt"><input type="radio" name="post5" value="w3"><span>เอกภพหดตัวลงตลอดเวลา</span></label>
   </div>
 
   <div class="center">
@@ -175,11 +191,9 @@ function renderMap() {
 }
 
 function submitPost() {
-  const p1 = document.querySelector('input[name="post1"]:checked');
-  const p2 = document.querySelector('input[name="post2"]:checked');
-  const p3 = document.querySelector('input[name="post3"]:checked');
-  if (!p1 || !p2 || !p3) { alert('ตอบ 3 ข้อให้ครบ'); return; }
-  const post = [p1,p2,p3].filter(a => a.value === 'c').length;
+  const ps = ['post1','post2','post3','post4','post5'].map(n => document.querySelector(`input[name="${n}"]:checked`));
+  if (ps.some(a => !a)) { alert('ตอบ 5 ข้อให้ครบ'); return; }
+  const post = ps.filter(a => a.value === 'c').length;
   const pre = Book.state.data.p01?.score ?? 0;
   const shift = post - pre;
   Book.savePageData('p16', { post, pre, shift });
@@ -187,8 +201,8 @@ function submitPost() {
   let shiftColor = shift > 0 ? 'var(--accent-green)' : shift === 0 ? 'var(--accent-gold)' : 'var(--accent-red)';
   document.getElementById('shift-result').innerHTML = `
     <div class="shift-compare mt-20">
-      <div class="shift-card pre"><h6>◦ PRE-TEST (Entry · P01)</h6><div style="font-size:22px; color:var(--accent-2); font-family:'Orbitron';">${pre} / 3</div></div>
-      <div class="shift-card post"><h6>◦ POST-TEST (P16)</h6><div style="font-size:22px; color:var(--accent-green); font-family:'Orbitron';">${post} / 3</div></div>
+      <div class="shift-card pre"><h6>◦ PRE-TEST (Entry · P01)</h6><div style="font-size:22px; color:var(--accent-2); font-family:'Orbitron';">${pre} / 5</div></div>
+      <div class="shift-card post"><h6>◦ POST-TEST (P16)</h6><div style="font-size:22px; color:var(--accent-green); font-family:'Orbitron';">${post} / 5</div></div>
     </div>
     <div class="info-card" style="border-color: ${shiftColor}; text-align: center;">
       <h4 style="color: ${shiftColor};">CONCEPTUAL SHIFT · ${shift > 0 ? '+' : ''}${shift} ข้อ</h4>

@@ -39,8 +39,8 @@
     <div style="color:var(--text-dim);font-size:13px">Unlocked · COSMOS LOG · EP02</div>
   </div>
 
-  <!-- Post-test · 3 คำถามเดียวกับ P01 -->
-  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent-gold);letter-spacing:0.15em;margin-top:24px">🎯 Post-test · 3 ข้อเดียวกับ P01</h3>
+  <!-- Post-test · 5 ข้อเดียวกับ P01 (เทียบ gain 1:1) -->
+  <h3 style="font-family:Orbitron,sans-serif;color:var(--accent-gold);letter-spacing:0.15em;margin-top:24px">🎯 Post-test · 5 ข้อเดียวกับ P01</h3>
   <p style="color:var(--text-dim);font-size:13px">ตอบใหม่อีกครั้ง · เทียบกับ pre-test เพื่อดู conceptual change</p>
 
   <div class="pretest-q" data-qid="q1" data-ans="b">
@@ -64,12 +64,32 @@
   </div>
 
   <div class="pretest-q" data-qid="q3" data-ans="b">
-    <div><b>3.</b> ถ้ารู้ v · จะหาระยะ D ได้อย่างไร?</div>
+    <div><b>3.</b> Edwin Hubble จำแนกกาแล็กซีตามรูปร่างเป็นกี่กลุ่มหลัก?</div>
     <div class="q-opts">
-      <label><input type="radio" name="q3" value="a"> D = v × t</label>
-      <label><input type="radio" name="q3" value="b"> D = v / H₀</label>
-      <label><input type="radio" name="q3" value="c"> D = H₀ × v</label>
+      <label><input type="radio" name="q3" value="a"> 1 กลุ่ม (กังหันเท่านั้น)</label>
+      <label><input type="radio" name="q3" value="b"> 4 กลุ่ม: Elliptical · Spiral · Spiral-Bar · Irregular</label>
+      <label><input type="radio" name="q3" value="c"> 10 กลุ่ม</label>
       <label><input type="radio" name="q3" value="d"> ไม่แน่ใจ</label>
+    </div>
+  </div>
+
+  <div class="pretest-q" data-qid="q4" data-ans="b">
+    <div><b>4.</b> ดวงอาทิตย์อยู่ส่วนไหนของกาแล็กซีทางช้างเผือก?</div>
+    <div class="q-opts">
+      <label><input type="radio" name="q4" value="a"> ใจกลาง (bulge)</label>
+      <label><input type="radio" name="q4" value="b"> แขน Orion · ห่างจากใจกลาง ~26,000 ปีแสง</label>
+      <label><input type="radio" name="q4" value="c"> ขอบนอกสุดของกาแล็กซี</label>
+      <label><input type="radio" name="q4" value="d"> ไม่แน่ใจ</label>
+    </div>
+  </div>
+
+  <div class="pretest-q" data-qid="q5" data-ans="b">
+    <div><b>5.</b> ถ้ารู้ความเร็วถอยห่าง v ของกาแล็กซี · ใช้สูตรใดหาระยะ D ได้?</div>
+    <div class="q-opts">
+      <label><input type="radio" name="q5" value="a"> D = v × t</label>
+      <label><input type="radio" name="q5" value="b"> D = v / H₀ (กฎฮับเบิล)</label>
+      <label><input type="radio" name="q5" value="c"> D = H₀ × v</label>
+      <label><input type="radio" name="q5" value="d"> ไม่แน่ใจ</label>
     </div>
   </div>
 
@@ -135,19 +155,19 @@
       if (chosen && chosen.value === ans) correct++;
     });
 
-    const isPerfect = (correct === 3);
+    const isPerfect = (correct === 5);
     Book.savePageData('p19', { postTest: postAnswers, postCorrect: correct, perfect: isPerfect });
     Book.addEnergy(correct * 15, 'posttest');
     Obj.hit('K1', { page:'p19' }); Obj.hit('K2', { page:'p19' }); Obj.hit('K3', { page:'p19' });
 
-    Book.completePage('p19', { score: correct, max: 3, msg: `Post-test ถูก ${correct}/3${isPerfect ? ' · 🎁 PERFECT!' : ''}` });
+    Book.completePage('p19', { score: correct, max: 5, msg: `Post-test ถูก ${correct}/5${isPerfect ? ' · 🎁 PERFECT!' : ''}` });
     document.getElementById('postBtn').classList.add('done');
     document.getElementById('postBtn').disabled = true;
     document.getElementById('postBtn').textContent = '✓ ส่งแล้ว';
     document.getElementById('objReport').style.display = '';
     renderReport();
     // 🎁 All correct → loot box
-    if (isPerfect) setTimeout(() => Book.openLootBox({ title: 'Post-test PERFECT 3/3!' }), 700);
+    if (isPerfect) setTimeout(() => Book.openLootBox({ title: 'Post-test PERFECT 5/5!' }), 700);
   }
 
   function renderReport() {
@@ -170,7 +190,7 @@
 
     // Pre vs Post
     const preData = (Book.state.data.p01 || {}).preTest || {};
-    const correctMap = { q1:'b', q2:'b', q3:'b' };
+    const correctMap = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'b' };
     const fmt = (data) => Object.keys(correctMap).map(qid => {
       const ans = data[qid];
       const mark = ans === correctMap[qid] ? '✅' : ans ? '❌' : '–';

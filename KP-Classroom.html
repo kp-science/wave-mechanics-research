@@ -855,10 +855,14 @@ let state = {
 };
 
 // LocalStorage keys
+// ⚠️ Course-scoped keys (LS_SUB, LS_SETTINGS) ใช้ suffix `_<course>` เพื่อแยกข้อมูลของ
+//    แต่ละวิชา (physics3 vs astronomy) ไม่ให้ปนกันใน browser เดียว
+// ─ คงเดิม: LS_STU/LS_NAV (shared · นักเรียนคนเดียวกัน · session/route ครั้งล่าสุด)
+const _COURSE_SUFFIX = '_' + (window.KP_COURSE || 'physics3');
 const LS_STU = 'wave_student';
-const LS_SUB = 'wave_submitted';
-const LS_SETTINGS = 'wave_settings';  // cache gate settings · แก้ 3-4s lag ใน preview iframe
-const LS_NAV = 'wave_nav';  // {subject, topic} · จำหัวข้อที่เลือกล่าสุดไว้ resume หลัง reload
+const LS_SUB = 'wave_submitted' + _COURSE_SUFFIX;       // per-course: progress ของแผน
+const LS_SETTINGS = 'wave_settings' + _COURSE_SUFFIX;   // per-course: gate cache
+const LS_NAV = 'wave_nav';
 
 // ═══════════════════════════════════════════════════════════
 // BRANDING — เติมข้อมูลจาก KP_CONFIG ลง HTML
@@ -873,8 +877,19 @@ function applyBranding(){
   set('loginSubtitle',`${c.schoolFull} · ${c.teacher} · ปีการศึกษา ${c.year}`);
   set('chip-subject', `📘 ${c.subject} · ${c.subjectCode}`);
   set('teacher-meta', `${c.teacher} · ดูสรุปข้อมูลวิจัย real-time`);
-  // chip-topic = ชื่อหัวข้อใหญ่ของวิชา (เช่น "คลื่นกล")
-  // ใช้ title เป็น fallback เพราะ content pack คลื่นกลไม่ได้แยก topic กับ subject
+  // chip-topic = หัวข้อปัจจุบันของวิชาที่กำลังเรียน
+  // หา topic ใน KP_SUBJECTS ที่ตรง state หรือเป็น current ของ KP_COURSE
+  try {
+    const subj = (window.KP_SUBJECTS||[]).find(s => s.id === window.KP_COURSE);
+    if (subj){
+      const topics = subj.topics || [];
+      const cur = topics.find(t => t.id === (state && state.topic))
+               || topics.find(t => t.current)
+               || topics.find(t => t.status === 'open')
+               || topics[0];
+      if (cur) set('chip-topic', `${cur.icon || '📚'} ${cur.shortTitle || cur.title}`);
+    }
+  } catch(_){}
 }
 
 // ═══════════════════════════════════════════════════════════
