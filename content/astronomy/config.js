@@ -28,7 +28,7 @@ window.KP_CONFIG = {
   // ห้ามใส่รหัสในไฟล์นี้ (repo public)
 
   // ─── Scope ───
-  numPlans:     0, // ยังไม่มีแผน · จะเพิ่มเมื่อมี curriculum
+  numPlans:     8, // EP01–EP08 · COSMOS LOG · Season 1
 
   // ─── สถานะการเปิดสอน (default ถ้า server ไม่ตอบ) ───
   // จริงๆ ใช้ค่าจาก Apps Script Script Property (COURSE_STATUS) เป็นหลัก

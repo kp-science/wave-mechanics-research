@@ -74,13 +74,13 @@ window.KP_SUBJECTS = [
     bgGradient: 'linear-gradient(135deg,#6a1b9a,#4a148c)',
     topics: [
       {
-        id: 'u1',
-        title: 'หน่วยที่ 1',
-        shortTitle: 'หน่วย 1',
+        id: 'cosmos-log-s1',
+        title: 'COSMOS LOG · Season 1',
+        shortTitle: 'COSMOS LOG S1',
         icon: '🌠',
-        status: 'coming-soon',
-        numPlans: 0,
-        dbUrl: null
+        status: 'open',
+        numPlans: 8,
+        dbUrl: null  // ← null = ใช้ KP_CONFIG.apiUrl ของ astronomy
       }
     ]
   }
