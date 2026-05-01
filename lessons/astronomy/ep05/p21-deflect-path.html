@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P21 · Deflect · Visual Simulation</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-1 { background:rgba(185,128,255,.15); color:#b980ff; border:1px solid rgba(185,128,255,.4); }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+
+.sim-arena { position:relative; width:100%; height:280px; border-radius:14px; overflow:hidden; margin:10px 0;
+             background:radial-gradient(ellipse at left, rgba(255,138,61,0.15), transparent 60%);
+             border:1px solid rgba(255,203,107,0.3); }
+.sim-sun { position:absolute; left:6%; top:50%; transform:translate(-50%,-50%); width:60px; height:60px;
+           border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff5c7a); box-shadow:0 0 40px #ff5c7a; z-index:2; }
+.sim-earth { position:absolute; left:92%; top:50%; transform:translate(-50%,-50%); width:48px; height:48px;
+             border-radius:50%; background:radial-gradient(circle at 30% 30%, #7ad8ff 0%, #4ad0ff 25%, #2a78c8 55%, #1a4a8a 90%);
+             box-shadow:0 0 30px #5cb8ff, 0 0 60px rgba(92,184,255,0.4), inset -4px -4px 12px rgba(0,0,0,0.4);
+             z-index:3; animation:earthGlow 3s ease-in-out infinite; }
+.sim-earth::before { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:62px; height:62px; border-radius:50%; border:1.5px dashed rgba(126,255,178,0.4);
+  animation:earthOrbit 12s linear infinite; pointer-events:none; }
+.sim-earth::after { content:'🌍 EARTH'; position:absolute; top:54px; left:50%; transform:translateX(-50%);
+                    font-family:Orbitron,monospace; font-size:11px; color:#7ad8ff; letter-spacing:.16em;
+                    font-weight:700; text-shadow:0 0 8px #5cb8ff; padding:3px 10px;
+                    background:rgba(0,0,0,0.7); border-radius:6px; border:1px solid #5cb8ff; white-space:nowrap; }
+@keyframes earthGlow { 0%,100%{box-shadow:0 0 30px #5cb8ff, 0 0 60px rgba(92,184,255,0.4), inset -4px -4px 12px rgba(0,0,0,0.4);} 50%{box-shadow:0 0 44px #5cb8ff, 0 0 80px rgba(92,184,255,0.55), inset -4px -4px 12px rgba(0,0,0,0.4);} }
+@keyframes earthOrbit { from{transform:translate(-50%,-50%) rotate(0);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+/* L1 Lagrange marker line · เส้นทางจริงระหว่าง Sun-Earth (visual cue) */
+.sim-arena::after { content:''; position:absolute; left:8%; right:8%; top:50%; height:1px;
+  background:repeating-linear-gradient(90deg, rgba(255,203,107,0.25) 0 6px, transparent 6px 10px);
+  pointer-events:none; }
+/* Sun label */
+.sim-sun::after { content:'☀️ SUN'; position:absolute; top:66px; left:50%; transform:translateX(-50%);
+                  font-family:Orbitron,monospace; font-size:11px; color:#ffcb6b; letter-spacing:.16em;
+                  font-weight:700; padding:3px 10px; background:rgba(0,0,0,0.6); border-radius:6px;
+                  border:1px solid #ffcb6b; white-space:nowrap; }
+/* L1 Lagrange marker line · เส้นทางจริงระหว่าง Sun-Earth (visual cue) */
+.sim-arena::after { content:''; position:absolute; left:8%; right:8%; top:50%; height:1px;
+  background:repeating-linear-gradient(90deg, rgba(255,203,107,0.25) 0 6px, transparent 6px 10px);
+  pointer-events:none; }
+
+.sim-marker { position:absolute; transform:translate(-50%,-50%); cursor:pointer; transition:all .2s; z-index:5; }
+.sim-marker .icon { width:46px; height:46px; border-radius:50%; background:rgba(255,203,107,0.25);
+                    border:2px solid #ffcb6b; display:flex; align-items:center; justify-content:center;
+                    font-size:20px; backdrop-filter:blur(4px); transition:all .2s; }
+.sim-marker .lbl { position:absolute; left:50%; top:54px; transform:translateX(-50%); white-space:nowrap;
+                   font-family:Orbitron,monospace; font-size:10px; color:#ffcb6b; letter-spacing:.12em;
+                   background:rgba(0,0,0,.7); padding:3px 8px; border-radius:4px; }
+.sim-marker:hover .icon { transform:scale(1.1); border-color:#ff8a3d; box-shadow:0 0 14px #ff8a3d; }
+.sim-marker.chosen .icon { background:rgba(126,255,178,0.3); border-color:#7effb2; box-shadow:0 0 24px #7effb2; }
+
+.cme-pulse { position:absolute; left:6%; top:50%; transform:translate(-50%,-50%);
+             width:18px; height:18px; border-radius:50%; box-shadow:0 0 18px #ff5c7a;
+             background:radial-gradient(circle, #fff, #ff5c7a, #b21030); pointer-events:none; z-index:3; }
+
+.outcome { padding:14px; border-radius:12px; margin:10px 0; font-weight:600; text-align:center;
+           font-family:Orbitron,monospace; letter-spacing:.14em; font-size:14px; }
+.outcome.good { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.outcome.warn { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+.outcome.bad  { background:rgba(255,92,122,0.15); border:1px solid #ff5c7a; color:#ff5c7a; }
+
+.choice-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.choice-card { padding:12px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3);
+               cursor:pointer; transition:all .2s; }
+.choice-card:hover { border-color:#ffcb6b; transform:translateY(-2px); }
+.choice-card.active { border-color:#ff8a3d; background:rgba(255,138,61,0.12); }
+.choice-card .head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.choice-card .head .icon { font-size:22px; }
+.choice-card .head .name { font-family:Orbitron,monospace; font-size:12px; color:#ffcb6b; letter-spacing:.1em; }
+.choice-card .desc { font-size:12px; color:#9aa3c0; line-height:1.5; }
+.choice-card .danger-bar { display:flex; gap:2px; margin-top:8px; }
+.choice-card .danger-bar .seg { flex:1; height:5px; border-radius:2px; background:rgba(255,255,255,.1); }
+.choice-card .danger-bar .seg.on { background:linear-gradient(90deg, #ffcb6b, #ff5c7a); }
+.choice-card.tested .head::after { content:'✓ ทดลอง'; margin-left:auto; font-size:10px; color:#7effb2; font-family:Orbitron,monospace; letter-spacing:.1em; }
+
+.intro-banner { padding:14px; border-radius:14px; margin:10px 0;
+                background:linear-gradient(180deg, rgba(255,138,61,0.1), rgba(255,92,122,0.05));
+                border:1px solid #ff8a3d; }
+
+/* === MISSION GOAL CARD · ใหญ่ · เด่น · บอกภารกิจในประโยคเดียว === */
+.goal-card { position:relative; padding:22px 22px 18px; border-radius:18px; margin:14px 0;
+  background:linear-gradient(135deg, rgba(255,138,61,0.18), rgba(255,92,122,0.10), rgba(185,128,255,0.10));
+  border:3px solid #ff8a3d;
+  box-shadow:0 6px 30px rgba(255,138,61,0.3), inset 0 0 30px rgba(255,138,61,0.06); }
+.goal-card::before { content:'🎯 MISSION GOAL · อ่านก่อนเริ่ม';
+  position:absolute; top:-13px; left:18px; padding:4px 14px; border-radius:8px;
+  background:#ff8a3d; color:#1a0500; font-family:Orbitron,monospace; font-size:11px;
+  letter-spacing:.16em; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,0.5); }
+.goal-card .goal-q { font-size:18px; line-height:1.5; color:#fff; font-weight:700;
+  padding:14px 18px; border-radius:12px; background:rgba(0,0,0,0.45);
+  border-left:5px solid #ffd700; margin:8px 0 16px;
+  text-shadow:0 2px 6px rgba(0,0,0,0.6); }
+.goal-card .goal-q b { color:#ffd700; }
+.goal-steps { display:grid; grid-template-columns:1fr; gap:8px; }
+@media(min-width:560px){ .goal-steps { grid-template-columns:repeat(3, 1fr); } }
+.goal-step { padding:10px 12px; border-radius:10px; background:rgba(20,28,52,0.7);
+  border-left:3px solid #ffcb6b; }
+.goal-step .num { display:inline-block; width:22px; height:22px; border-radius:50%;
+  background:#ffcb6b; color:#1a0500; font-family:Orbitron,monospace; font-size:11px;
+  font-weight:800; text-align:center; line-height:22px; margin-right:6px; }
+.goal-step .stxt { font-size:12px; color:#fff; line-height:1.5; }
+.goal-step .stxt b { color:#ffcb6b; }
+.goal-physics { margin-top:12px; padding:10px 14px; border-radius:10px;
+  background:rgba(100,216,255,0.08); border:1px dashed #64d8ff;
+  font-size:12px; color:#d4f0ff; line-height:1.6; }
+.goal-physics b { color:#64d8ff; }
+</style>
+</head>
+<body data-page="p21" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🎁 BIG MYSTERY BOX · DEFLECT</span>
+  <h1>มี deflector 1 ตัว · วางที่ไหนเบี่ยง CME ออกจาก Earth ได้มากที่สุด?</h1>
+  <div class="tags"><span class="kpa-chip">P2</span><span class="kpa-chip">A2</span></div>
+
+  <!-- ============ PHASE 1 · เกริ่นนำ ============ -->
+  <div class="phase-tag phase-1">🎬 PHASE 1 · เกริ่นนำ</div>
+
+  <!-- 🎯 GOAL CARD · ใหญ่ เด่น อยู่บนสุด · บอกภารกิจในประโยคเดียว -->
+  <div class="goal-card">
+    <div class="goal-q">
+      เธอมี <b>deflector 1 ตัว</b> (อุปกรณ์ "เบี่ยงทิศ" CME) · จะวางที่ <b>จุดไหน</b> ใน 4 จุดที่ให้
+      เพื่อให้ CME <b>เบี่ยงออกจากโลกได้มากที่สุด</b>?
+    </div>
+    <div class="goal-steps">
+      <div class="goal-step">
+        <span class="num">1</span><span class="stxt"><b>ดูแผนที่</b> ด้านล่าง · 4 จุด (A/B/C/D)</span>
+      </div>
+      <div class="goal-step">
+        <span class="num">2</span><span class="stxt">กด <b>simulate</b> ≥ 2 จุด · เห็น CME วิ่งจริง</span>
+      </div>
+      <div class="goal-step">
+        <span class="num">3</span><span class="stxt">เลือกจุดที่ดีที่สุด · กด <b>ยืนยัน</b></span>
+      </div>
+    </div>
+    <div class="goal-physics">
+      💡 <b>หลักคิด:</b> deflector อยู่<u>ไกลจาก Earth</u> = มี<b>เวลา</b>เบี่ยงนาน + เบี่ยงนิดเดียวก็พลาดไกล (lever arm)
+      · อยู่<u>ใกล้/หลัง Earth</u> = ไม่ทัน · CME ทะลุ
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "deflector ของพ่อพร้อมแล้ว · มี 4 จุดที่วางได้ ·
+      <b style="color:#ff5c7a;">เลือกผิด = CME ผ่านโลก = grid blackout</b>"<br>
+      <b style="color:#ff8a3d;">อารยา:</b> "กดที่จุดทั้ง 4 ดู simulation · เห็น CME วิ่งจริง · ค่อยตัดสินใจ"
+    </span>
+  </div>
+
+  <div class="intro-banner">
+    <h3 style="color:#ff8a3d;margin:0 0 6px;">📋 รายละเอียด</h3>
+    <div style="font-size:13px;color:#ffd88a;line-height:1.6;">
+      เลือกจุดที่ deflector <b>เบี่ยง CME ออกจากโลก</b>ได้ · กด simulate <b>อย่างน้อย 2 จุด</b> · เลือกที่ดีที่สุด · ยืนยัน
+    </div>
+  </div>
+
+  <!-- ============ PHASE 2 · กิจกรรม ============ -->
+  <div class="phase-tag phase-2">🔬 PHASE 2 · กดทดลอง 4 จุด · เลือก 1</div>
+
+  <div class="card">
+    <h3>🌌 แผนที่ · ดวงอาทิตย์ → โลก</h3>
+    <div class="sim-arena" id="arena">
+      <div class="sim-sun"></div>
+      <div class="sim-earth"></div>
+      <div class="cme-pulse" id="cmePulse" style="display:none;"></div>
+    </div>
+    <div class="muted center" style="font-size:12px;margin-top:6px;">⚡ CME วิ่งจากดวงอาทิตย์ตรงไปโลก · กดจุดบนแผนที่หรือกาด์ดด้านล่างเพื่อ simulate</div>
+  </div>
+
+  <div class="choice-grid" id="choiceGrid"></div>
+
+  <div id="simResult"></div>
+
+  <div style="display:flex;gap:8px;margin:10px 0;">
+    <button id="confirmBtn" disabled>ยืนยันจุดที่เลือก</button>
+    <span id="result" class="muted" style="align-self:center;"></span>
+  </div>
+
+  <!-- ============ PHASE 3 ============ -->
+  <div id="phase3Wrap" style="display:none;">
+    <div class="phase-tag phase-3">✅ PHASE 3 · ทดสอบย่อย</div>
+    <div class="card cyan" id="quizCard"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P21</summary>
+    <div>
+      <b>กลไกใหม่:</b> นักเรียนต้อง simulate อย่างน้อย 2 จุดก่อน confirm · เห็น CME วิ่งจริง<br>
+      <b>คำตอบที่ดีที่สุด:</b> A · L1 Lagrange (เห็น CME ก่อน 1 ชม. · เบี่ยงทัน)<br>
+      <b>Mystery Box:</b> tier ขึ้นกับ danger value ของจุดที่เลือก (A=0 wrong tier1)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ยืนยัน + ตอบ quiz ก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const POINTS = [
+  { id:'A', label:'L1 Lagrange', icon:'🛰️', pos:[78,50], danger:0,
+    short:'จุดสมดุลระหว่าง Sun-Earth · ห่างโลก ~1.5M km',
+    detail:'อยู่ระหว่าง Sun-Earth · เห็น CME ก่อน ~1 ชม. · มีเวลาเบี่ยงทัน · ที่ตั้งจริงของ SOHO/DSCOVR',
+    sim:{ deflectAt:[78,50], result:'good', text:'✓ CME ถูกเบี่ยง · พ้นโลก · aurora สวยทั่วโลก', endLeft:'95%', endTop:'10%', endOpacity:0.4 } },
+  { id:'B', label:'Geostationary Orbit', icon:'📡', pos:[88,30], danger:3,
+    short:'วงโคจรค้างฟ้า · 36,000 km จากผิวโลก',
+    detail:'ใกล้โลกมาก · CME มาถึงเร็ว · เบี่ยงทันแค่เล็กน้อย · เสี่ยงดาวเทียมเสียถ้าวาง deflector ใกล้',
+    sim:{ deflectAt:[88,30], result:'warn', text:'⚠ เบี่ยงครึ่งทาง · ใกล้เกิน · CME กระทบโลกบางส่วน', endLeft:'92%', endTop:'42%', endOpacity:0.7 } },
+  { id:'C', label:'L2 Lagrange', icon:'🔭', pos:[97,30], danger:5,
+    short:'จุดสมดุล <u>หลังโลก</u> · 1.5M km นอกออกไป',
+    detail:'อยู่หลังโลก · CME ผ่านโลกไปแล้วถึงจะถึง L2 · ดักไม่ทัน · ที่ตั้งจริงของ JWST',
+    sim:{ deflectAt:[97,30], result:'bad', text:'✗ CME ผ่านโลกไปแล้ว · L2 ดักไม่ทัน · grid blackout', endLeft:'94%', endTop:'50%', endOpacity:1 } },
+  { id:'D', label:'Earth Field Only', icon:'🛡️', pos:[88,72], danger:8,
+    short:'พึ่งสนามแม่เหล็กโลกอย่างเดียว · ไม่มี deflector',
+    detail:'magnetosphere ไม่แรงพอกัน CME รุนแรง · ดาวเทียมเสีย · grid risk สูงสุด',
+    sim:{ deflectAt:[88,72], result:'bad', text:'✗ พลาสมาทะลุสนามโลก · ดาวเทียมเสีย 60% · ไฟฟ้าดับ', endLeft:'94%', endTop:'50%', endOpacity:1 } },
+];
+
+const arena = document.getElementById('arena');
+const choiceGrid = document.getElementById('choiceGrid');
+const simResult = document.getElementById('simResult');
+
+POINTS.forEach(p => {
+  const m = document.createElement('div'); m.className='sim-marker'; m.dataset.id=p.id;
+  m.style.left = p.pos[0]+'%'; m.style.top = p.pos[1]+'%';
+  m.innerHTML = `<div class="icon">${p.icon}</div><div class="lbl">${p.id}</div>`;
+  m.onclick = () => simulate(p.id);
+  arena.appendChild(m);
+});
+
+POINTS.forEach(p => {
+  const c = document.createElement('div'); c.className='choice-card'; c.dataset.id=p.id;
+  const dangerSegs = Array.from({length:8},(_,i)=>i<p.danger?'<div class="seg on"></div>':'<div class="seg"></div>').join('');
+  c.innerHTML = `
+    <div class="head">
+      <div class="icon">${p.icon}</div>
+      <div class="name">${p.id} · ${p.label}</div>
+    </div>
+    <div class="desc">${p.short}</div>
+    <button class="ghost" style="width:100%;margin-top:8px;font-size:12px;padding:8px;">▶ Simulate</button>
+    <div class="danger-bar">${dangerSegs}</div>
+  `;
+  c.querySelector('button').onclick = e => { e.stopPropagation(); simulate(p.id); };
+  c.onclick = () => simulate(p.id);
+  choiceGrid.appendChild(c);
+});
+
+let selectedId = null, confirmed = null;
+const simsRun = new Set();
+
+function simulate(id){
+  const p = POINTS.find(x => x.id===id);
+  selectedId = id;
+  document.querySelectorAll('.choice-card').forEach(c => c.classList.toggle('active', c.dataset.id===id));
+  document.querySelectorAll('.sim-marker').forEach(m => m.classList.toggle('chosen', m.dataset.id===id));
+
+  const cme = document.getElementById('cmePulse');
+  cme.style.display='block';
+  cme.style.transition='none';
+  cme.style.left='6%'; cme.style.top='50%'; cme.style.opacity='1';
+  cme.style.boxShadow='0 0 18px #ff5c7a';
+  void cme.offsetWidth;
+  // Phase 1: travel to deflect point
+  cme.style.transition='all 1.2s linear';
+  cme.style.left = p.sim.deflectAt[0]+'%';
+  cme.style.top  = p.sim.deflectAt[1]+'%';
+  SFX&&SFX.play('charge');
+
+  setTimeout(() => {
+    // Phase 2: outcome
+    cme.style.transition='all 1.2s ease-out';
+    cme.style.left = p.sim.endLeft;
+    cme.style.top  = p.sim.endTop;
+    cme.style.opacity = p.sim.endOpacity;
+    if(p.sim.result==='bad'){
+      cme.style.boxShadow='0 0 40px #ff5c7a, 0 0 80px #ff5c7a';
+      document.body.style.animation='cmeShake .3s';
+      setTimeout(()=>document.body.style.animation='',300);
+    }
+    simResult.innerHTML = `
+      <div class="outcome ${p.sim.result}">${p.sim.text}</div>
+      <div class="muted" style="font-size:12px;margin-top:6px;text-align:center;">📌 ${p.detail}</div>
+      <div class="muted" style="font-size:11px;margin-top:8px;text-align:center;">ทดลองแล้ว: <b style="color:#ffcb6b;">${simsRun.size+1}/4</b></div>
+    `;
+    simsRun.add(id);
+    document.querySelector(`.choice-card[data-id="${id}"]`).classList.add('tested');
+    if(simsRun.size >= 2) document.getElementById('confirmBtn').disabled = false;
+    SFX&&SFX.play(p.sim.result==='bad' ? 'hit' : 'correct');
+  }, 1300);
+}
+
+if(!document.getElementById('cmeShakeStyle')){
+  const s = document.createElement('style'); s.id='cmeShakeStyle';
+  s.textContent = '@keyframes cmeShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }';
+  document.head.appendChild(s);
+}
+
+document.getElementById('confirmBtn').onclick = () => {
+  if(!selectedId) return;
+  confirmed = selectedId;
+  document.getElementById('confirmBtn').disabled = true;
+  document.getElementById('confirmBtn').textContent = '✓ ยืนยัน: ' + confirmed;
+  document.getElementById('result').textContent = 'รอตอบ quiz · ส่งผลด้านล่าง';
+  document.getElementById('result').style.color = '#7effb2';
+  Chain.set('deflectChoice', confirmed);
+  document.getElementById('phase3Wrap').style.display='block';
+  mountQuiz();
+  SFX&&SFX.play('correct');
+};
+
+let quizPassed = false;
+function mountQuiz(){
+  Phase3.mount({
+    container: document.getElementById('quizCard'),
+    question: 'ทำไม L1 Lagrange ถึงเป็นจุดที่ดีที่สุดสำหรับวาง deflector?',
+    choices: [
+      { txt:'ใกล้โลกที่สุด', correct:false, hint:'D อยู่ใกล้โลกกว่า · แต่เบี่ยงไม่ทัน · ดู simulation อีกครั้ง' },
+      { txt:'อยู่ระหว่างดวงอาทิตย์-โลก · เห็น CME ก่อน 1 ชม. · มีเวลาเบี่ยงทัน', correct:true },
+      { txt:'มีดาวเทียมเยอะ ป้องกันได้ดี', correct:false, hint:'ไม่เกี่ยวกับจำนวนดาวเทียม · ดูตำแหน่งของ L1 ใน animation' },
+    ],
+    onCorrect: () => {
+      quizPassed = true;
+      document.getElementById('submitBtn').disabled = false;
+      document.getElementById('submitBtn').textContent = '📤 ส่งผล';
+    },
+  });
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p21', nextHref:'p22-posttest.html',
+    getPayload(){ const p = POINTS.find(x => x.id===confirmed); return { choice:confirmed, danger:p?p.danger:0, simsRun:simsRun.size, quizPassed }; },
+    validate(p){
+      if(simsRun.size<2){ alert('ทดลอง simulate อย่างน้อย 2 จุดก่อน'); return false; }
+      if(!p.choice){ alert('เลือกและยืนยันจุดเบี่ยงก่อน'); return false; }
+      if(!p.quizPassed){ alert('ตอบ quiz ย่อยให้ถูกก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.choice==='A' && p.quizPassed; },
+    onSubmit(){
+      const p = POINTS.find(x => x.id===confirmed);
+      if(window.MysteryBox && MysteryBox.roll) MysteryBox.roll({ wrongs: p.danger, page:'p21' });
+    }
+  });
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p22 · Materials Spinoff</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .heat-bar { width:100%; height:30px; border-radius:8px;
+    background:linear-gradient(90deg, #4a90e2, #ff8a3d, #ff0000);
+    margin:14px 0; position:relative; }
+  .heat-mark { position:absolute; top:-6px; left:80%; transform:translateX(-50%);
+    color:var(--bad); font-weight:700; font-size:12px; }
+  .pool { display:flex; flex-wrap:wrap; gap:10px; padding:12px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; margin:10px 0; }
+  .mat { background:var(--rocket-orange); color:#1a0e00;
+    padding:10px 14px; border-radius:10px; cursor:grab; font-weight:700; font-size:14px;
+    user-select:none; min-width:140px; text-align:center; }
+  .mat.placed { opacity:.4; cursor:default; }
+  .ship { background:#0a1226; border:2px dashed var(--electric); border-radius:14px;
+    height:120px; display:flex; align-items:center; justify-content:center;
+    color:var(--text-mute); margin:14px 0; font-size:16px; }
+  .ship.over { background:rgba(0,212,255,.1); border-color:var(--rocket-orange); }
+  .ship.placed { border-style:solid; color:#fff; background:rgba(255,138,61,.15); }
+</style>
+</head>
+<body data-page="p22">
+<div class="page">
+  <div class="act-badge">ACT D · 1/6 · MATERIALS</div>
+  <h1>วัสดุศาสตร์ · Heat Shield ทันบรรยากาศ Mars</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · เข้าบรรยากาศ Mars · 1500°C · ขาด heat shield = ยานละลาย!</div>
+    <div class="crisis-body">เลือกวัสดุที่ <b>ทนความร้อน + เบา</b> · พลาดข้อใดข้อหนึ่ง = พัง</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🧪 TOOL · NASA Spinoff Materials (ตำรา p98)</div>
+    <div class="tool-body">
+      <b>แอโรเจล</b>: เบาที่สุด · ฉนวนความร้อน 1000°C ·
+      <b>เมมโมรีโฟม</b>: ดูดซับแรง ·
+      <b>เลนส์คาร์บอน</b>: ทนรอย ·
+      <b>เซลล์สุริยะ</b>: พลังงาน
+    </div>
+  </div>
+
+  <div class="heat-bar">
+    <div class="heat-mark">🔥 1500°C</div>
+  </div>
+
+  <h3>🚀 ยาน · ลากวัสดุที่ใช่:</h3>
+  <div class="ship" id="ship">? วาง heat shield ที่นี่</div>
+
+  <h3>📦 คลังวัสดุ:</h3>
+  <div class="pool" id="pool"></div>
+
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    เมมโมรีโฟมในที่นอน · แอโรเจลในแจ็คเก็ตหมอเชนนาน · เลนส์แว่นตา · เซลล์สุริยะบนหลังคา · ทุกอย่างมาจากภารกิจ NASA · ตำรา p98
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p23-food.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p23 อาหาร</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p22' });
+    PBL.init({ id:'p22-materials' });
+
+    const mats = [
+      { id:'aerogel',     name:'แอโรเจล',     correct:true },
+      { id:'memoryfoam',  name:'เมมโมรีโฟม',  correct:false },
+      { id:'lenscarbon',  name:'เลนส์คาร์บอน', correct:false },
+      { id:'plastic',     name:'พลาสติก ABS',  correct:false }
+    ];
+    const pool = document.getElementById('pool');
+    mats.forEach(m => {
+      const el = document.createElement('div');
+      el.className='mat'; el.draggable=true; el.dataset.id=m.id;
+      el.textContent = m.name;
+      el.addEventListener('dragstart', e => e.dataTransfer.setData('text', m.id));
+      pool.appendChild(el);
+    });
+    const ship = document.getElementById('ship');
+    ship.addEventListener('dragover', e => { e.preventDefault(); ship.classList.add('over'); });
+    ship.addEventListener('dragleave', () => ship.classList.remove('over'));
+    ship.addEventListener('drop', e => {
+      e.preventDefault(); ship.classList.remove('over');
+      const id = e.dataTransfer.getData('text');
+      const m = mats.find(x => x.id === id);
+      ship.classList.add('placed');
+      ship.textContent = m.name;
+      const tok = pool.querySelector('[data-id="'+id+'"]');
+      tok.classList.add('placed'); tok.draggable=false;
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', m.correct?'correct':'wrong');
+      res.textContent = m.correct ? '✓ แอโรเจลทนได้ · ยานปลอดภัย · ลงพื้น Mars' : '× วัสดุไม่ทน · ยานละลาย';
+      KPA.log('K6','heat-shield',{ correct: m.correct, picked: id });
+      KPA.misconception('M7', m.correct?'resolved':'persistent');
+      PBL.attempt(m.correct, { picked: id });
+      if (m.correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    });
+  });
+</script>
+</body>
+</html>

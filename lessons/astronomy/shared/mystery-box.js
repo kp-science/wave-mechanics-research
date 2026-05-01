@@ -17,20 +17,29 @@
   const POOL_FULL = [
     { type:'coin', amount:30, icon:'🪙', label:'+30 Coins' },
     { type:'coin', amount:20, icon:'🪙', label:'+20 Coins' },
-    { type:'photon', amount:15, icon:'✦', label:'+15 Photon' },
-    { type:'photon', amount:10, icon:'✦', label:'+10 Photon' },
+    { type:'photon', amount:15, icon:'⚡', label:'+15 Photon' },
+    { type:'photon', amount:10, icon:'⚡', label:'+10 Photon' },
     { type:'coin', amount:25, icon:'🪙', label:'+25 Coins' },
+    { type:'energy', amount:30, icon:'⚡', label:'+30 ⚡ ENERGY (boss)' },
+    { type:'item', itemId:'whisper',     icon:'💡',  label:'LEMAITRE Whisper · ใบ้คำตอบ' },
+    { type:'item', itemId:'cloakSkip',   icon:'🌑',  label:'Cloak Skip · ข้ามคำถาม 1 ข้อ' },
+    { type:'item', itemId:'plasmaPulse', icon:'⚡×2',label:'Plasma Pulse · +5 thrust' },
+    { type:'item', itemId:'fluxSensor',  icon:'🧲',  label:'Flux Sensor · บล็อกผิด 1 ครั้ง' },
   ];
   const POOL_HALF = [
     { type:'coin', amount:15, icon:'🪙', label:'+15 Coins' },
     { type:'coin', amount:10, icon:'🪙', label:'+10 Coins' },
-    { type:'photon', amount:8, icon:'✦', label:'+8 Photon' },
-    { type:'photon', amount:5, icon:'✦', label:'+5 Photon' },
+    { type:'photon', amount:8, icon:'⚡', label:'+8 Photon' },
+    { type:'photon', amount:5, icon:'⚡', label:'+5 Photon' },
+    { type:'energy', amount:15, icon:'⚡', label:'+15 ⚡ ENERGY (boss)' },
+    { type:'item', itemId:'whisper',     icon:'💡', label:'LEMAITRE Whisper · ใบ้คำตอบ' },
+    { type:'item', itemId:'cloakSkip',   icon:'🌑', label:'Cloak Skip · ข้ามคำถาม' },
   ];
   const POOL_PASS = [
     { type:'coin', amount:10, icon:'🪙', label:'+10 Coins' },
     { type:'coin', amount:5,  icon:'🪙', label:'+5 Coins' },
-    { type:'photon', amount:3, icon:'✦', label:'+3 Photon' },
+    { type:'photon', amount:3, icon:'⚡', label:'+3 Photon' },
+    { type:'energy', amount:8, icon:'⚡', label:'+8 ⚡ ENERGY (boss)' },
   ];
 
   function pickN(pool, n) {
@@ -49,8 +58,40 @@
   }
 
   function awardDrop(d) {
-    if (d.type === 'coin' && global.Coin && Coin.add) Coin.add(d.amount);
-    else if (d.type === 'photon' && global.Photon && Photon.add) Photon.add(d.amount);
+    if (d.type === 'coin' && global.Coin && Coin.add) Coin.add(d.amount, 'mystery-box');
+    else if (d.type === 'photon' && global.Photon && Photon.add) Photon.add(d.amount, 'mystery-box');
+    else if (d.type === 'energy') {
+      // Add to boss extra-energy pool (Chain key · ep-aware via Chain wrapper if exists)
+      if (global.Chain && Chain.set && Chain.get) {
+        const cur = Number(Chain.get('bossExtraEnergy') || 0);
+        Chain.set('bossExtraEnergy', cur + d.amount);
+      } else {
+        try {
+          const k = 'cosmosLog_bossExtraEnergy';
+          const cur = parseInt(localStorage.getItem(k)||'0') || 0;
+          localStorage.setItem(k, String(cur + d.amount));
+        } catch {}
+      }
+    } else if (d.type === 'item' && global.ShopItems && ShopItems.grant) {
+      ShopItems.grant(d.itemId);
+      // sync to Chain.shopBought for boss to read
+      if (global.Chain && Chain.set && ShopItems.load) {
+        Chain.set('shopBought', ShopItems.load());
+      }
+    }
+  }
+
+  /* ตัด pool ตาม episode · ถ้าไม่มี EP_CONFIG.shop.items → ลบ item drops */
+  function filterPool(pool) {
+    const hasShop = global.EP_CONFIG && global.EP_CONFIG.shop && global.EP_CONFIG.shop.items;
+    return pool.filter(d => {
+      if (d.type === 'item' && !hasShop) return false;
+      if (d.type === 'item' && hasShop) {
+        // ตรวจว่า item id มีจริงใน shop ของ episode นี้
+        return hasShop.some(i => i.id === d.itemId);
+      }
+      return true;
+    });
   }
 
   const MysteryBox = {
@@ -82,7 +123,8 @@
     roll({ wrongs=0, page='', onClose }) {
       const tier = tierFromWrongs(wrongs);
       const meta = TIERS[tier];
-      const pool = tier==='perfect' ? POOL_FULL : (tier==='good' ? POOL_HALF : POOL_PASS);
+      const rawPool = tier==='perfect' ? POOL_FULL : (tier==='good' ? POOL_HALF : POOL_PASS);
+      const pool = filterPool(rawPool);
       const drops = pickN(pool, meta.drops);
 
       // Award rewards
@@ -101,6 +143,7 @@
             ทำผิด ${wrongs} ข้อ → ได้ ${meta.drops} รางวัล
           </div>
           <div id="mboxDrops" style="display:flex; flex-direction:column; gap:10px; margin:20px 0;"></div>
+          <div id="mboxTotals" style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.06em;"></div>
           <button id="mboxClose" style="padding:14px 28px; min-height:48px; background:rgba(255,203,107,0.15); border:2px solid ${meta.color}; color:${meta.color}; border-radius:12px; font-family:Orbitron,sans-serif; font-weight:700; letter-spacing:0.12em; cursor:pointer; font-size:14px; -webkit-tap-highlight-color:transparent;">
             ▶ รับรางวัล · ปิด
           </button>
@@ -116,6 +159,16 @@
           card.innerHTML = `${d.icon}  ${d.label}`;
           dropsHost.appendChild(card);
           if (global.SFX) global.SFX.play('snap');
+          // อัพเดต totals เมื่อแต่ละ drop ลง
+          const totals = ovl.querySelector('#mboxTotals');
+          const c = (global.Coin && Coin.get) ? Coin.get() : null;
+          const p = (global.Photon && Photon.get) ? Photon.get() : null;
+          const e = global.Chain && Chain.get ? (Number(Chain.get('bossExtraEnergy')||0)) : null;
+          totals.innerHTML = [
+            c!=null ? `<span style="padding:6px 12px;border-radius:999px;background:rgba(255,203,107,0.12);border:1px solid #ffcb6b;color:#ffcb6b;">🪙 ${c}</span>` : '',
+            p!=null ? `<span style="padding:6px 12px;border-radius:999px;background:rgba(126,255,178,0.12);border:1px solid #7effb2;color:#7effb2;">⚡ ${p}</span>` : '',
+            (e!=null && e>0) ? `<span style="padding:6px 12px;border-radius:999px;background:rgba(255,92,122,0.12);border:1px solid #ff5c7a;color:#ff8fa5;">⚡-boss +${e}</span>` : '',
+          ].join('');
         }, 400 + i * 350);
       });
 

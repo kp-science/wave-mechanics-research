@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P20 · Exoplanet</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.exo-card { padding:14px; border-radius:12px; margin:10px 0;
+            background:linear-gradient(180deg, rgba(126,255,178,0.10), rgba(20,28,52,0.6)); border:2px solid #7effb2; }
+.exo-card h4 { margin:0 0 6px; color:#7effb2; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.1em; }
+.match-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.match-cell { padding:12px; border-radius:10px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; }
+.match-cell.picked { border-color:#7effb2; background:rgba(126,255,178,0.15); }
+.match-cell.correct { border-color:#7effb2; background:rgba(126,255,178,0.20); }
+.match-cell.wrong { border-color:#ff5c7a; }
+</style>
+</head>
+<body data-page="p20" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🎁 EXOPLANET MYSTERY BOX</span>
+  <h1>Kepler-452b · TRAPPIST-1e</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "นอกระบบสุริยะของเรา · มีดาวเคราะห์ที่อาจอยู่ได้ · สองดวงเด่น ·
+      <b style="color:#7effb2;">จับคู่</b>ลักษณะให้ถูก"</span>
+  </div>
+
+  <div class="exo-card">
+    <h4>🪐 Kepler-452b · 1,400 ปีแสง</h4>
+    <ul style="margin:0; padding-left:18px; line-height:1.6; font-size:13px;">
+      <li>"ลูกพี่ลูกน้องของโลก"</li>
+      <li>โคจรรอบดาว <b>G-type</b> คล้ายดวงอาทิตย์</li>
+      <li>R ~1.6 โลก (super-Earth)</li>
+      <li>คาบโคจร ~385 วัน</li>
+    </ul>
+  </div>
+  <div class="exo-card" style="border-color:#64d8ff; background:linear-gradient(180deg, rgba(100,216,255,0.10), rgba(20,28,52,0.6));">
+    <h4 style="color:#64d8ff;">🪐 TRAPPIST-1e · 40 ปีแสง</h4>
+    <ul style="margin:0; padding-left:18px; line-height:1.6; font-size:13px;">
+      <li>1 ใน <b>7 ดาว</b>โคจรรอบ TRAPPIST-1</li>
+      <li>ดาวฤกษ์เป็น <b>M-dwarf</b> เย็นและเล็ก</li>
+      <li>R ~ขนาดโลก</li>
+      <li>หันด้านเดียวสู่ดาว (tidally locked)</li>
+    </ul>
+  </div>
+
+  <div class="card cyan">
+    <h3>🎯 ลักษณะข้างล่างเป็นของดวงไหน?</h3>
+    <div id="qHost"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P20</summary>
+    <div>4 ข้อ · จับคู่ ดู gain ความเข้าใจ exoplanet · ทำลาย M7 (ดาวฤกษ์ต่างชนิด → habitable ต่างกัน)</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'Kepler-452b vs TRAPPIST-1e · ใครเอื้อชีวิตมากกว่า?',
+    durationSec: 60,
+    chips: [
+      'Kepler-452b · ดาวฤกษ์เหมือนดวงอาทิตย์',
+      'TRAPPIST-1e · อยู่ใน HZ',
+      'TRAPPIST-1e · ใกล้กว่า 40 ปีแสง',
+      'Kepler-452b · ใหญ่กว่า 1.6 เท่า',
+      'ทั้งคู่ยังต้องตรวจบรรยากาศ'
+    ],
+    indicator: 'P3'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const QS = [
+  { q:'โคจร G-type · คาบ 385 วัน', a:'452b' },
+  { q:'tidally locked · หันด้านเดียว', a:'1e' },
+  { q:'ขนาดโลกพอดี · M-dwarf', a:'1e' },
+  { q:'super-Earth ~1.6 โลก', a:'452b' },
+];
+const ans = {};
+const host = document.getElementById('qHost');
+QS.forEach((q,i) => {
+  const card = document.createElement('div');
+  card.style.cssText='padding:10px; margin:8px 0; border-radius:10px; background:rgba(20,28,52,0.5); border:1px solid rgba(120,140,220,0.3);';
+  card.innerHTML = `<div style="margin-bottom:8px; font-size:13px;">${i+1}. ${q.q}</div>
+    <div class="match-grid">
+      <div class="match-cell" data-q="${i}" data-a="452b">Kepler-452b</div>
+      <div class="match-cell" data-q="${i}" data-a="1e">TRAPPIST-1e</div>
+    </div>`;
+  host.appendChild(card);
+});
+host.querySelectorAll('.match-cell').forEach(c => {
+  c.onclick = () => {
+    const qi = +c.dataset.q;
+    ans[qi] = c.dataset.a;
+    host.querySelectorAll(`.match-cell[data-q="${qi}"]`).forEach(x => x.classList.remove('picked'));
+    c.classList.add('picked');
+  };
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p20', nextHref:'p21-migration-vote.html',
+    getPayload(){
+      let correct = 0;
+      QS.forEach((q,i) => { if(ans[i]===q.a) correct++; });
+      return { ans, correct, total:QS.length };
+    },
+    validate(p){ if(Object.keys(ans).length<QS.length){ alert('ตอบให้ครบ 4 ข้อ'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){
+      QS.forEach((q,i) => {
+        const cells = host.querySelectorAll(`.match-cell[data-q="${i}"]`);
+        cells.forEach(c => {
+          if(c.dataset.a===q.a) c.classList.add('correct');
+          else if(c.classList.contains('picked')) c.classList.add('wrong');
+        });
+      });
+      if (window.MysteryBox && MysteryBox.roll) {
+        const wrongs = QS.length - Object.keys(ans).filter((_,i)=>ans[i]===QS[i].a).length;
+        setTimeout(() => MysteryBox.roll({ wrongs, page:'p20' }), 600);
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

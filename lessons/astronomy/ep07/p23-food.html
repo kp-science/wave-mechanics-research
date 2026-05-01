@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p23 · Food Spinoff</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .meals { display:grid; grid-template-columns:repeat(auto-fit, minmax(120px, 1fr)); gap:8px; margin:14px 0; }
+  .meal { background:var(--bg-card); border:2px dashed var(--line); border-radius:10px;
+    padding:10px; text-align:center; cursor:pointer; min-height:90px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-size:13px; transition:all .2s; }
+  .meal.fresh { border-color:#5a8a3a; }
+  .meal.fd { border-color:var(--rocket-orange); background:rgba(255,138,61,.1); }
+  .meal.selected { transform:scale(1.05); box-shadow:0 0 14px rgba(255,138,61,.4); }
+  .meal-icon { font-size:36px; }
+  .meal-status { font-size:11px; color:var(--text-mute); }
+  .ship-bag { background:#0a1226; border:1px dashed var(--steel-blue); border-radius:10px;
+    padding:14px; min-height:80px; display:flex; gap:8px; flex-wrap:wrap;
+    align-items:center; justify-content:center; margin:10px 0; }
+</style>
+</head>
+<body data-page="p23">
+<div class="page">
+  <div class="act-badge">ACT D · 2/6 · FOOD</div>
+  <h1>อาหาร · 7 วันบน Mars</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ทดลองส่งอาหาร 7 มื้อใส่ยาน · เลือกผิดประเภท = เน่าก่อนถึง</div>
+    <div class="crisis-body">บนยานไม่มีตู้เย็นใหญ่ · ต้องเลือกอาหารที่ <b>ทำแห้งเยือกแข็ง (freeze-dried)</b> + บรรจุภัณฑ์สุญญากาศ</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🍱 TOOL · Food Spinoff (ตำรา p98)</div>
+    <div class="tool-body">เทคโนโลยี <b>ทำแห้งเยือกแข็ง</b> ลดอุณหภูมิและความชื้น · อาหารน้ำหนักเบา · เก็บได้ปี · นมผงเด็กก็มาจากกระบวนการนี้</div>
+  </div>
+
+  <h3>🍽 เลือกอาหาร 7 มื้อ (ลากใส่กระเป๋ายาน):</h3>
+  <div class="meals" id="meals"></div>
+  <div class="ship-bag" id="bag"><span style="color:var(--text-mute);">กระเป๋ายาน · 0/7</span></div>
+
+  <div style="text-align:center;margin:12px 0;">
+    <button class="btn" id="check">✓ ออกเดินทาง</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Astronaut food 1960s ทดลองโดย Pillsbury · กลายเป็นเทคโนโลยีนมผงเด็ก · อาหารแคมป์ · ของในซองเทรล
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p24-medicine.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p24 การแพทย์</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p23' });
+    PBL.init({ id:'p23-food' });
+
+    const items = [
+      { id:'apple-fresh',    icon:'🍎', name:'แอปเปิ้ลสด', fd:false },
+      { id:'meat-fresh',     icon:'🍖', name:'เนื้อสด', fd:false },
+      { id:'sushi',          icon:'🍣', name:'ซูชิ', fd:false },
+      { id:'apple-fd',       icon:'🍎', name:'แอปเปิ้ลทำแห้ง', fd:true },
+      { id:'beef-fd',        icon:'🥩', name:'เนื้อทำแห้ง', fd:true },
+      { id:'rice-fd',        icon:'🍚', name:'ข้าว freeze-dry', fd:true },
+      { id:'milk-powder',    icon:'🥛', name:'นมผง', fd:true },
+      { id:'pasta-fd',       icon:'🍝', name:'พาสต้าแห้ง', fd:true },
+      { id:'soup-fd',        icon:'🍲', name:'ซุปทำแห้ง', fd:true },
+      { id:'fruit-bar',      icon:'🍫', name:'ฟรุตบาร์', fd:true }
+    ];
+    const meals = document.getElementById('meals');
+    const bag = document.getElementById('bag');
+    const picked = new Set();
+
+    items.forEach(it => {
+      const el = document.createElement('div');
+      el.className = 'meal ' + (it.fd ? 'fd' : 'fresh');
+      el.dataset.id = it.id;
+      el.innerHTML = `<div class="meal-icon">${it.icon}</div><div>${it.name}</div><div class="meal-status">${it.fd?'แห้ง':'สด'}</div>`;
+      el.onclick = () => {
+        if (picked.has(it.id)) {
+          picked.delete(it.id); el.classList.remove('selected');
+        } else if (picked.size < 7) {
+          picked.add(it.id); el.classList.add('selected');
+        }
+        bag.querySelector('span') && bag.firstChild.remove && (bag.innerHTML='');
+        bag.innerHTML = picked.size === 0
+          ? '<span style="color:var(--text-mute);">กระเป๋ายาน · 0/7</span>'
+          : [...picked].map(id => {
+              const x = items.find(i=>i.id===id);
+              return `<span style="background:#11182a;padding:4px 10px;border-radius:8px;border:1px solid var(--line);">${x.icon} ${x.name}</span>`;
+            }).join('') + `<span style="color:var(--text-mute);margin-left:8px;">${picked.size}/7</span>`;
+      };
+      meals.appendChild(el);
+    });
+
+    document.getElementById('check').onclick = () => {
+      if (picked.size !== 7) {
+        const r = document.getElementById('resultHost');
+        r.classList.add('show','wrong');
+        r.textContent = '× เลือกครบ 7 มื้อก่อน';
+        return;
+      }
+      const fdCount = [...picked].filter(id => items.find(i=>i.id===id).fd).length;
+      const correct = fdCount === 7;
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = correct ? '✓ ครบ 7 มื้อแบบ freeze-dry · เก็บนาน' : '× มีอาหารสด ' + (7-fdCount) + ' มื้อ · จะเน่า';
+      KPA.log('K6','food-pack',{ fdCount, correct });
+      PBL.attempt(correct, { picks:[...picked] });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    };
+  });
+</script>
+</body>
+</html>

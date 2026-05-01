@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p19 · Hall of Spinoff</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .hall { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin:14px 0; }
+  .item { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:14px;
+    text-align:center; transition:all .2s; }
+  .item .ic { font-size:36px; }
+  .item .nm { font-weight:700; font-size:15px; color:var(--genesis-gold); margin:6px 0; }
+  .item .use { font-size:12px; color:var(--text-mute); }
+  .item .from { font-size:11px; color:var(--cosmic-purple); margin-top:6px; }
+  .quiz { margin:14px 0; }
+  .quiz .opts { display:flex; flex-direction:column; gap:6px; }
+</style>
+</head>
+<body data-page="p19">
+<div class="page">
+  <div class="act-badge">ACT C · 7/8 · HALL · SPINOFF</div>
+  <h1>🧪 Hall of Spinoff · EP07</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <p style="color:var(--text-soft);">ทุก spinoff ที่ใช้กู้บิกแบงนี้มาจากภารกิจอวกาศจริง · M-FINAL-6: เทคโนฯ อวกาศคุ้มค่า</p>
+
+  <div class="hall">
+    <div class="item"><div class="ic">🛡️</div><div class="nm">Heat Shield</div><div class="use">ป้องกันความร้อน 1500°C เข้าสู่ Mars</div><div class="from">EP07 · Apollo</div></div>
+    <div class="item"><div class="ic">❤️</div><div class="nm">ปั๊มหัวใจเทียม</div><div class="use">ผู้ป่วยหัวใจล้มเหลว</div><div class="from">EP07 · NASA</div></div>
+    <div class="item"><div class="ic">🥡</div><div class="nm">Freeze-dry</div><div class="use">อาหารน้ำหนักเบา · เก็บนาน</div><div class="from">EP07 · Mars Mission</div></div>
+    <div class="item"><div class="ic">🧊</div><div class="nm">แอโรเจล</div><div class="use">ฉนวนกันความร้อน · เบาสุด</div><div class="from">EP07 · Stardust</div></div>
+    <div class="item"><div class="ic">🛰️</div><div class="nm">GPS / Comm Sat</div><div class="use">ระบุตำแหน่ง · สื่อสารโลก</div><div class="from">EP07 · MEO</div></div>
+    <div class="item"><div class="ic">🔭</div><div class="nm">Hubble / JWST</div><div class="use">ดูเอกภพย้อนเวลา</div><div class="from">EP07 · Telescope</div></div>
+  </div>
+
+  <div class="quiz">
+    <div class="card">
+      <p><b>Quiz:</b> M-FINAL-6 · "เทคโนฯ อวกาศไม่คุ้มค่า" จริงไหม?</p>
+      <div class="opts" id="qOpts">
+        <button class="chip qopt" data-v="0">ใช่ · ไม่คุ้ม · ใช้งบเยอะ</button>
+        <button class="chip qopt" data-v="1">ไม่จริง · spinoff คืนทุน · ใช้ในชีวิตจริงทุกวัน</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่งคำตอบ</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p19' });
+  EP08Page.story('p19');
+  EP08Page.markVisit('p19');
+
+  let pick = null;
+  document.getElementById('qOpts').addEventListener('click', e => {
+    const c = e.target.closest('.qopt'); if (!c) return;
+    pick = +c.dataset.v;
+    document.querySelectorAll('.qopt').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+  });
+  document.getElementById('submitBtn').onclick = () => {
+    const ok = pick === 1;
+    if (window.KPA) KPA.research('m_final_6', { pick, ok });
+    EP08Page.submit({ ok,
+      title: ok ? '✓ M-FINAL-6 เคลียร์' : '⚠️ ลองอีกครั้ง',
+      body:'<p>spinoff ที่ใช้ในชีวิตประจำวัน · มีรากจากภารกิจอวกาศจริง · เทคโนฯ อวกาศคืนทุนหลายร้อยเท่า</p>'
+    });
+  };
+</script>
+</body>
+</html>

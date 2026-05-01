@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p25 · Spinoff Quiz</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .qzgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .left, .right { background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:10px; }
+  .left h4, .right h4 { margin:0 0 8px; color:var(--rocket-orange); font-size:14px; }
+  .item { padding:8px 10px; background:#0a1226; border:1px solid var(--line-soft);
+    border-radius:8px; margin:6px 0; font-size:13px; cursor:pointer; }
+  .item.selected { background:var(--rocket-orange); color:#1a0e00; }
+  .item.matched { background:var(--good); color:#001; cursor:default; }
+  .pair-line { margin:6px 0; padding:6px; font-size:12px; color:var(--text-mute);
+    background:#0a1226; border-radius:6px; }
+  .pair-line.correct { color:var(--good); }
+  .pair-line.wrong { color:var(--bad); }
+</style>
+</head>
+<body data-page="p25">
+<div class="page">
+  <div class="act-badge">ACT D · 4/6 · QUIZ</div>
+  <h1>Spinoff Quiz · ของในบ้านมาจากอวกาศ</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ ATTITUDE TEST · ก่อนสู้ Boss · ทบทวนคุณค่าของเทคโนฯ อวกาศ</div>
+    <div class="crisis-body">จับคู่ "ของในชีวิตประจำวัน" ↔ "ภารกิจอวกาศ" ที่ก่อให้เกิดเทคโนโลยีนั้น (ตำรา p102)</div>
+  </div>
+
+  <div class="qzgrid">
+    <div class="left">
+      <h4>🏠 ของในบ้าน</h4>
+      <div id="leftCol"></div>
+    </div>
+    <div class="right">
+      <h4>🚀 มาจาก</h4>
+      <div id="rightCol"></div>
+    </div>
+  </div>
+
+  <h3>💡 จับคู่ที่ตอบแล้ว</h3>
+  <div id="pairs"></div>
+
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 OS-4 ปลดล็อก · 🧪 Spinoff Master</div>
+    เธอเข้าใจแล้วว่าเทคโนฯ อวกาศไม่ใช่ "เผาเงิน" · เป็นการลงทุนที่ก่อให้เกิดของใช้รอบตัว
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p26-boss.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p26 BOSS Triage</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p25' });
+    PBL.init({ id:'p25-spinoff-quiz' });
+
+    const pairs = [
+      { id:'mattress', item:'🛏️ ที่นอนเมมโมรีโฟม',     mission:'Apollo · ที่นั่งนักบิน' },
+      { id:'sunglasses', item:'😎 แว่นกันรอย',          mission:'Helmet visor astronaut' },
+      { id:'thermo', item:'🌡️ ปรอทวัดทางหู',           mission:'IR detection ดาวฤกษ์' },
+      { id:'aerogel', item:'🧥 แจ็คเก็ตกันหนาวบาง',     mission:'Stardust · เก็บฝุ่นดาวหาง' },
+      { id:'baby', item:'🍼 นมผงสูตรเด็ก',              mission:'อาหารนักบิน' },
+      { id:'firefit', item:'🔥 ชุดดับเพลิง',            mission:'ชุดดับไฟจรวด' },
+      { id:'solar', item:'☀️ เซลล์สุริยะหลังคาบ้าน',   mission:'พลังงานดาวเทียม' },
+      { id:'detect', item:'🚨 เครื่องตรวจควัน',         mission:'Skylab · ตรวจอันตรายในยาน' }
+    ];
+
+    const lEl = document.getElementById('leftCol');
+    const rEl = document.getElementById('rightCol');
+    const ps = document.getElementById('pairs');
+    const lBag = [...pairs].sort(()=> Math.random()-.5);
+    const rBag = [...pairs].sort(()=> Math.random()-.5);
+    let leftSel = null;
+    const matched = new Set();
+
+    lBag.forEach(p => {
+      const d = document.createElement('div');
+      d.className='item'; d.dataset.id = p.id; d.dataset.side='L';
+      d.textContent = p.item;
+      d.onclick = () => {
+        if (matched.has(p.id)) return;
+        document.querySelectorAll('.left .item').forEach(x => x.classList.remove('selected'));
+        d.classList.add('selected'); leftSel = p.id;
+      };
+      lEl.appendChild(d);
+    });
+    rBag.forEach(p => {
+      const d = document.createElement('div');
+      d.className='item'; d.dataset.id = p.id; d.dataset.side='R';
+      d.textContent = p.mission;
+      d.onclick = () => {
+        if (matched.has(p.id) || !leftSel) return;
+        const correct = leftSel === p.id;
+        const ent = document.createElement('div');
+        ent.className = 'pair-line ' + (correct?'correct':'wrong');
+        const litem = pairs.find(x => x.id === leftSel);
+        ent.textContent = (correct?'✓ ':'× ') + litem.item + ' ↔ ' + p.mission;
+        ps.appendChild(ent);
+        if (correct) {
+          matched.add(p.id);
+          d.classList.add('matched');
+          document.querySelector('.left [data-id="'+p.id+'"]').classList.add('matched');
+          CoinEnergy.reward('quickPollCorrect');
+        } else {
+          CoinEnergy.penalty('crisisFail');
+        }
+        KPA.log('K6','spinoff-pair',{ left:leftSel, right:p.id, correct });
+        PBL.attempt(correct, { left:leftSel, right:p.id });
+        leftSel = null;
+        document.querySelectorAll('.left .item').forEach(x => x.classList.remove('selected'));
+        if (matched.size === pairs.length) {
+          const res = document.getElementById('resultHost');
+          res.classList.add('show','correct');
+          res.textContent = '✓ จับคู่ครบ ' + pairs.length + ' คู่ · OS Spinoff Master ปลด';
+          Boot07.grantOS('os4');
+          KPA.misconception('M7','resolved',{ ctx:'spinoff-quiz' });
+          document.getElementById('transfer').style.display='block';
+          document.getElementById('next').style.display='';
+          PBL._enter('transfer');
+        }
+      };
+      rEl.appendChild(d);
+    });
+  });
+</script>
+</body>
+</html>

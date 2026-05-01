@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>FT-02 Four-tier Post · SHM ทั้งหน่วย</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto 24px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #c62828;padding-bottom:10px;margin-bottom:16px}
+.head h1{font-size:22px;color:#b71c1c}
+.tag{display:inline-block;background:#c62828;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.tag.unit{background:#6a1b9a}
+.info{background:#ffebee;border-left:6px solid #c62828;padding:10px 14px;border-radius:8px;margin:12px 0;font-size:14px}
+.id-box{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:10px;margin:12px 0}
+.id-box label{display:flex;flex-direction:column;font-size:13px;color:#555;font-weight:600}
+.id-box input{margin-top:4px;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;font-family:inherit;font-size:15px}
+.item{border:2px solid #cfd8e3;border-radius:12px;padding:14px 18px;margin:14px 0;background:#fff}
+.item .no{display:inline-block;background:#c62828;color:#fff;border-radius:6px;padding:2px 10px;font-size:13px;font-weight:800}
+.plan-tag{display:inline-block;background:#fff3e0;color:#e65100;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;margin-left:6px}
+.mis-tag{display:inline-block;background:#ffe4d6;color:#b53c00;font-size:12px;padding:2px 8px;border-radius:10px;font-weight:700;margin-left:6px}
+.stem{font-size:16px;margin:8px 0;font-weight:600}
+.tier{margin:10px 0;background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:10px 14px}
+.tier b{color:#b71c1c}
+.tier.t3 b{color:#1b5e20}
+.tier.t2 b,.tier.t4 b{color:#c05621}
+.opt{margin:5px 0;padding:4px 6px;border-radius:4px;cursor:pointer}
+.opt:hover{background:#ffebee}
+.opt input[type=radio]{margin-right:8px;transform:scale(1.1)}
+.cert{display:flex;gap:20px;flex-wrap:wrap}
+.cert label{cursor:pointer;padding:4px 10px;border-radius:4px}
+.submit-bar{background:linear-gradient(135deg,#b71c1c,#c62828);border-radius:12px;padding:18px 20px;margin:20px 0;text-align:center;color:#fff}
+.submit-bar h3{font-size:18px;margin-bottom:10px}
+.btn-submit{background:#fff;color:#b71c1c;border:none;font-family:inherit;font-size:18px;font-weight:800;padding:12px 30px;border-radius:10px;cursor:pointer}
+.btn-submit:disabled{background:#ccc;color:#666;cursor:not-allowed}
+.status{margin-top:12px;padding:10px;border-radius:8px;font-weight:700;display:none}
+.status.success{display:block;background:#c8e6c9;color:#1b5e20}
+.status.error{display:block;background:#ffcdd2;color:#b71c1c}
+.status.loading{display:block;background:#fff9c4;color:#f57f17}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:16px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.submit-bar{display:none}}
+</style></head>
+<body data-ws-id="shm-ft02-post">
+<div class="page">
+  <div class="head">
+    <h1>📝 FT-02 Four-tier Diagnostic · ทดสอบหลังเรียน (หน่วย SHM)</h1>
+    <div style="margin-top:6px"><span class="tag unit">SHM ทั้งหน่วย</span><span class="tag">Post-test</span> 12 ข้อ · ครอบ 6 แผน · M1.x – M6.x · parallel form ของ FT-01</div>
+  </div>
+
+  <div class="info"><b>หมายเหตุ:</b> โครงคล้าย FT-01 (Pre) แต่เปลี่ยนสถานการณ์โจทย์ — ใช้วัด normalized gain ⟨g⟩ = (Post − Pre)/(100 − Pre)</div>
+
+  <div class="id-box">
+    <label>ชื่อ-สกุล <input type="text" id="s-name" required></label>
+    <label>เลขที่ <input type="number" id="s-num" min="1" max="50" required></label>
+    <label>ห้อง <input type="text" id="s-room" required></label>
+    <label>วันที่ <input type="date" id="test_date"></label>
+  </div>
+
+  <form id="ftForm"><div id="questionsContainer"></div>
+
+  <div class="submit-bar">
+    <h3>✅ ตรวจคำตอบครบทุกข้อแล้ว กดปุ่มเพื่อส่ง</h3>
+    <button type="submit" class="btn-submit" id="btnSubmit">📤 ส่งคำตอบ</button>
+    <div class="status" id="status"></div>
+  </div>
+  </form>
+  <div class="foot">FT-02 · SHM Post-Unit · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// FT-02 Post · Parallel form of FT-01 (M code เดียวกัน · สถานการณ์ต่าง)
+// ═══════════════════════════════════════════════════════════════════
+const QUESTIONS = [
+  // ─── แผน 1 ──────────────────────────────────────
+  {plan:1, misc:'M1.1', stem:'เด็กกระโดดเชือกซ้ำ ๆ คาบเท่ากัน · เป็น SHM หรือไม่?',
+    opts:{'ก':'เป็น SHM เพราะคาบคงที่','ข':'ไม่เป็น เพราะแรงลัพธ์ที่เด็กได้รับไม่ ∝ −x','ค':'เป็น SHM เพราะมีจุดสูงสุด-ต่ำสุด','ง':'ไม่เป็น เพราะมีแรงโน้มถ่วง'},
+    reasons:['คาบคงที่ = SHM โดยอัตโนมัติ','SHM ต้อง F = −kx เท่านั้น · กระโดดเชือกมีแรงพื้น+แรงโน้มถ่วงไม่เป็น linear','การเคลื่อนที่ในแนวดิ่งไม่เป็น SHM','ทุกการเคลื่อนที่ที่มีแรงโน้มถ่วงไม่เป็น SHM'], answer:{t1:'ข',t3:1}},
+  {plan:1, misc:'K1.2', stem:'ระบบสั่นที่มี T = 0.5 s · ค่า f และ ω เป็นเท่าใด?',
+    opts:{'ก':'f = 0.5 Hz · ω = π rad/s','ข':'f = 2 Hz · ω = 4π rad/s','ค':'f = 2 Hz · ω = 2π rad/s','ง':'f = 0.5 Hz · ω = 4π rad/s'},
+    reasons:['f = T = 0.5','f = 1/T = 2 Hz · ω = 2πf = 4π rad/s','ω = 2π/T = 4π · f = 2π/T','f และ ω เท่ากันเสมอ'], answer:{t1:'ข',t3:1}},
+
+  // ─── แผน 2 ──────────────────────────────────────
+  {plan:2, misc:'M2.1', stem:'ลูกตุ้มเหล็ก กับ ลูกตุ้มไม้ ความยาวเท่ากัน · คาบเปรียบกัน?',
+    opts:{'ก':'เหล็กแกว่งช้ากว่า เพราะหนักกว่า','ข':'ไม้แกว่งช้ากว่า เพราะเบา','ค':'คาบเท่ากัน เพราะ T = 2π√(l/g) ไม่ขึ้นกับมวล','ง':'เหล็กแกว่งเร็วกว่า 2 เท่า'},
+    reasons:['มวลมาก = inertia มาก = ช้ากว่า','มวลน้อย = แรงดึงน้อย = ช้ากว่า','สูตรไม่มี m · มวลถูก cancel ใน mg = ma','ความหนาแน่นเหล็กมากกว่าทำให้ T น้อย'], answer:{t1:'ค',t3:2}},
+  {plan:2, misc:'M2.3', stem:'ลูกตุ้มยาว l ใช้คาบ T · ถ้าเพิ่มความยาวเป็น 4l · T ใหม่จะเป็น?',
+    opts:{'ก':'2T (เพราะ T ∝ √l)','ข':'4T (เพราะ T ∝ l)','ค':'T เท่าเดิม','ง':'T/2'},
+    reasons:['T ∝ l เชิงเส้น','T = 2π√(l/g) · l เพิ่ม 4 เท่า → T เพิ่ม √4 = 2 เท่า','ความยาวไม่กระทบ T','ยาวมาก = แกว่งเร็วขึ้น'], answer:{t1:'ก',t3:1}},
+
+  // ─── แผน 3 ──────────────────────────────────────
+  {plan:3, misc:'M3.1', stem:'ระบบมวล-สปริงในแนวดิ่ง vs แนวระดับ (m, k เดียวกัน) · T เปรียบกัน?',
+    opts:{'ก':'แนวดิ่ง T มากกว่า เพราะมี mg ดึง','ข':'แนวดิ่ง T น้อยกว่า','ค':'T เท่ากัน เพราะ T = 2π√(m/k) ไม่ขึ้นกับ g','ง':'แนวดิ่งไม่เป็น SHM'},
+    reasons:['mg เพิ่มแรงคืนตัว → T มาก','mg ลด k effective','สูตรไม่มี g · g แค่ shift จุดสมดุล ไม่กระทบคาบ','SHM ไม่ทำงานในแนวดิ่ง'], answer:{t1:'ค',t3:2}},
+  {plan:3, misc:'M3.2', stem:'มวล m ใช้สปริง k1 มี T1 · ใช้สปริงตัวใหม่ k2 = 9k1 (มวลเดิม) · T2 = ?',
+    opts:{'ก':'T2 = 9T1','ข':'T2 = T1/3','ค':'T2 = T1','ง':'T2 = 3T1'},
+    reasons:['T ∝ k เชิงเส้น','T = 2π√(m/k) · k เพิ่ม 9 เท่า → T ลด √9 = 3 เท่า → T2 = T1/3','k cancel กับ m','สปริงแข็งทำให้ช้าลง'], answer:{t1:'ข',t3:1}},
+
+  // ─── แผน 4 ──────────────────────────────────────
+  {plan:4, misc:'M4.2', stem:'มวล SHM · จุดที่ความเร็ว v มีค่าสูงสุด · ความเร่ง a เท่ากับ?',
+    opts:{'ก':'a = 0','ข':'a สูงสุด ทิศ +x','ค':'a สูงสุด ทิศ −x','ง':'a = ω²A (สูงสุด)'},
+    reasons:['v และ a สูงสุดที่จุดเดียวกัน','v สูงสุดที่ x = 0 · a = −ω²x = 0 ที่ x = 0','a สูงสุดเสมอที่ทุกจุด','v สูงสุดที่ปลาย → a สูงสุดด้วย'], answer:{t1:'ก',t3:1}},
+  {plan:4, misc:'M4.1', stem:'ในกราฟ x(t) = A sin(ωt) · ที่ t = 0 · v(0) และ a(0) เป็นเช่นไร?',
+    opts:{'ก':'v(0) = 0 · a(0) = 0','ข':'v(0) = ωA (สูงสุด) · a(0) = 0','ค':'v(0) = 0 · a(0) = ω²A','ง':'v(0) = ωA · a(0) = ω²A'},
+    reasons:['t=0 → x=0 → ทุกอย่าง = 0','x = A sinωt → v = Aω cosωt → v(0) = Aω · a = −Aω² sinωt → a(0) = 0','t=0 = ปลาย · v=0 · a สูงสุด','v และ a เฟสเดียวกัน · พีคพร้อม'], answer:{t1:'ข',t3:1}},
+
+  // ─── แผน 5 ──────────────────────────────────────
+  {plan:5, misc:'M5.1', stem:'มวลแกว่ง · ที่ x = A/2 · KE/E เป็นเศษส่วนเท่าใด? (E = ½kA²)',
+    opts:{'ก':'1/4 (เพราะ x = A/2)','ข':'3/4 (เพราะ E = KE + PE และ PE ที่นี่ = ¼E)','ค':'1/2','ง':'0 (KE = 0 ที่ x ≠ 0)'},
+    reasons:['KE ∝ x','E = ½kx² + ½mv² · PE(x=A/2) = ½k(A/2)² = ⅛kA² = ¼E · ดังนั้น KE = ¾E','KE และ PE เท่ากันทุกจุด','KE = 0 ที่ทุกจุดที่ไม่ใช่สมดุล'], answer:{t1:'ข',t3:1}},
+  {plan:5, misc:'M5.3', stem:'สปริง k = 100 N/m · A = 0.1 m · พลังงานทั้งหมด E เท่าใด?',
+    opts:{'ก':'E = ½(100)(0.1) = 5 J','ข':'E = ½(100)(0.1)² = 0.5 J','ค':'E = (100)(0.1)² = 1 J','ง':'E = ½(100)² (0.1) = 500 J'},
+    reasons:['E = ½kA','E = ½kA² = ½(100)(0.01) = 0.5 J','E = kA²','E = ½k²A'], answer:{t1:'ข',t3:1}},
+
+  // ─── แผน 6 ──────────────────────────────────────
+  {plan:6, misc:'M6.2', stem:'สะพาน Tacoma Narrows ถล่ม (1940) เป็นตัวอย่างของอะไร?',
+    opts:{'ก':'damping ที่มากเกิน','ข':'resonance ที่ความถี่ลมตรงกับ f_natural ของสะพาน','ค':'ไม่มี SHM ที่สะพาน','ง':'การชนของลม'},
+    reasons:['damping มากทำให้แตก','f ของลมพ้องกับ f ธรรมชาติของโครงสะพาน → amplitude สั่น เพิ่มจนพังโครงสร้าง','สะพานเป็นวัตถุแข็ง ไม่สั่น','ลมแรงทำให้พัง'], answer:{t1:'ข',t3:1}},
+  {plan:6, misc:'M6.1', stem:'ระบบ SHM ที่มี light damping (γ << ω) · กราฟ x(t) จะเป็นอย่างไร?',
+    opts:{'ก':'sin บริสุทธิ์ ไม่มีการลด','ข':'sin ที่มี envelope ลดเป็นเอกซ์โพเนนเชียล: x(t) = A₀e^(−γt) cos(ω′t)','ค':'เส้นตรง ลดทันที','ง':'sin ที่ amplitude เพิ่มเรื่อย'},
+    reasons:['light damping ไม่ส่งผล','amplitude ลดตาม e^(−γt) แต่ยังสั่นต่อ · T ใกล้เคียงเดิม','damping = หยุดทันที','damping ทำให้ amplitude เพิ่ม'], answer:{t1:'ข',t3:1}}
+];
+
+function renderQuestions(){
+  const html = QUESTIONS.map((q, i) => {
+    const n = i+1;
+    const optsHtml = Object.entries(q.opts).map(([k,v]) =>
+      `<div class="opt"><label><input type="radio" name="q${n}_t1" value="${k}" required> ${k}. ${v}</label></div>`
+    ).join('');
+    const reasonsHtml = q.reasons.map((r, ri) =>
+      `<div class="opt"><label><input type="radio" name="q${n}_t3" value="${ri}" required> ${ri+1}) ${r}</label></div>`
+    ).join('');
+    return `<div class="item">
+      <div><span class="no">ข้อ ${n}</span> <span class="plan-tag">แผน ${q.plan}</span> <span class="mis-tag">${q.misc}</span></div>
+      <div class="stem">${q.stem}</div>
+      <div class="tier"><b>Tier 1 · คำตอบ:</b>${optsHtml}</div>
+      <div class="tier t2"><b>Tier 2 · ความมั่นใจในคำตอบ:</b>
+        <div class="cert"><label><input type="radio" name="q${n}_t2" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q${n}_t2" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+      <div class="tier t3"><b>Tier 3 · เหตุผล:</b>${reasonsHtml}</div>
+      <div class="tier t4"><b>Tier 4 · ความมั่นใจในเหตุผล:</b>
+        <div class="cert"><label><input type="radio" name="q${n}_t4" value="มั่นใจ" required> มั่นใจ</label><label><input type="radio" name="q${n}_t4" value="ไม่มั่นใจ"> ไม่มั่นใจ</label></div></div>
+    </div>`;
+  }).join('');
+  document.getElementById('questionsContainer').innerHTML = html;
+}
+
+function classify(t1, t2, t3, t4, key){
+  if (t1 !== key.t1) return 'No-K';
+  if (t2 !== 'มั่นใจ') return 'Guessing';
+  if (Number(t3) !== key.t3 || t4 !== 'มั่นใจ') return 'Misconception';
+  return 'Sound';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderQuestions();
+  document.getElementById('test_date').value = new Date().toISOString().split('T')[0];
+});
+
+document.getElementById('ftForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btnSubmit'), status = document.getElementById('status');
+  const name = document.getElementById('s-name').value.trim();
+  const no = document.getElementById('s-num').value.trim();
+  const cls = document.getElementById('s-room').value.trim();
+  if (!name || !no || !cls){ status.className='status error'; status.textContent='❌ กรอกชื่อ เลขที่ ห้องให้ครบ'; return; }
+
+  const getVal = n => { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : ''; };
+  const answers = {};
+  let incomplete = false;
+  QUESTIONS.forEach((q, i) => {
+    const n = i+1;
+    ['t1','t2','t3','t4'].forEach(t => {
+      const v = getVal(`q${n}_${t}`);
+      if (!v) incomplete = true;
+      answers[`q${n}_${t}`] = v;
+    });
+    answers[`q${n}_category`] = classify(answers[`q${n}_t1`], answers[`q${n}_t2`], answers[`q${n}_t3`], answers[`q${n}_t4`], q.answer);
+    answers[`q${n}_misc`] = q.misc;
+    answers[`q${n}_plan`] = q.plan;
+  });
+  if (incomplete){ status.className='status error'; status.textContent='❌ ยังตอบไม่ครบทุกข้อ'; return; }
+
+  const payload = {
+    phase: 'post',
+    student_name: name, student_no: Number(no), class: cls,
+    test_date: document.getElementById('test_date').value,
+    ...answers
+  };
+
+  if (window.parent && window.parent !== window){
+    btn.disabled = true; status.className='status loading'; status.textContent='⏳ กำลังส่ง...';
+    window.parent.postMessage({type:'WS_SUBMIT', wsId:'shm-ft02-post', data:{inputs:payload}}, '*');
+    setTimeout(() => { status.className='status success'; status.innerHTML='✅ ส่งคำตอบสำเร็จ! 🎉'; btn.textContent='✅ ส่งแล้ว'; }, 1000);
+  } else {
+    status.className='status error'; status.innerHTML='⚠️ เปิดผ่าน KP-Classroom เพื่อส่งข้อมูลออนไลน์';
+  }
+});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+</body></html>

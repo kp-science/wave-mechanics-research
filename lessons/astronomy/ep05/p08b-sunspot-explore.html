@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P08b · SUNSPOT · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+
+/* Outer arena = space (dark) */
+.spot-arena { position:relative; width:100%; height:420px; border-radius:14px; overflow:hidden; margin:10px 0;
+              background:radial-gradient(ellipse at 50% 50%,#0a0712 0%,#02030a 100%); cursor:crosshair; }
+
+/* Atmosphere layers (rings around sun body) */
+.atmos-corona { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                width:380px; height:380px; border-radius:50%;
+                background:radial-gradient(circle, transparent 38%, rgba(185,128,255,0.18) 42%, rgba(185,128,255,0.10) 50%, transparent 56%);
+                animation:atmosShimmer 6s ease-in-out infinite; pointer-events:none; }
+.atmos-chromo { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                width:300px; height:300px; border-radius:50%;
+                background:radial-gradient(circle, transparent 50%, rgba(255,92,122,0.25) 54%, rgba(255,92,122,0.10) 60%, transparent 65%);
+                pointer-events:none; }
+@keyframes atmosShimmer { 0%,100%{opacity:0.7;transform:translate(-50%,-50%) scale(1);} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.04);} }
+
+/* Sun body (solid ball - no inner layers) */
+.sun-body { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+            width:240px; height:240px; border-radius:50%;
+            background:radial-gradient(circle at 38% 32%, #fff8c8, #ffd96b 30%, #ffcb6b 50%, #ff8a3d 80%, #cc5522 100%);
+            box-shadow:0 0 50px rgba(255,138,61,0.5), inset -20px -20px 50px rgba(178,16,48,0.3);
+            pointer-events:none; }
+
+/* Sunspot ON the surface (with umbra/penumbra) */
+.sunspot-mark { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                width:80px; height:80px; border-radius:50%;
+                background:radial-gradient(circle, #1a0500 0%, #3a0a00 50%, #6a2210 75%, transparent 90%);
+                box-shadow:inset 0 0 14px #000; pointer-events:none; }
+
+/* Atmosphere labels */
+.atmos-label { position:absolute; font-family:Orbitron,monospace; font-size:9px; color:rgba(255,255,255,0.7);
+               letter-spacing:.14em; pointer-events:none; text-shadow:0 1px 3px #000; }
+
+.path-svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:3; }
+.checkpoint { position:absolute; width:24px; height:24px; border-radius:50%;
+              background:rgba(255,255,255,0.4); border:2px solid #fff; transform:translate(-50%,-50%); transition:all .2s; z-index:4; }
+.checkpoint.passed { background:#7effb2; border-color:#7effb2; box-shadow:0 0 12px #7effb2; }
+.checkpoint .num { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:Orbitron,monospace; font-size:11px; color:#fff; font-weight:700; }
+.ship-spot { position:absolute; width:34px; height:34px; transform:translate(-50%,-50%); font-size:26px;
+             filter:drop-shadow(0 0 10px #fff); transition:all 0.2s ease; cursor:grab; touch-action:none; user-select:none; z-index:10; }
+.ship-spot:active { cursor:grabbing; }
+.compass-mini { position:absolute; left:10px; top:10px; width:50px; height:50px; border-radius:50%;
+                border:2px solid #ff5c7a; background:rgba(0,0,0,0.6); animation:spinCrazy 1s linear infinite;
+                display:flex; align-items:center; justify-content:center; font-size:18px; color:#ff5c7a; z-index:20; }
+@keyframes spinCrazy { from{transform:rotate(0);} to{transform:rotate(360deg);} }
+.spot-info { padding:10px 14px; border-radius:10px; background:rgba(0,0,0,0.4); margin:8px 0; font-size:12px; }
+.spot-info b { color:#ffcb6b; font-family:Orbitron,monospace; }
+.field-data { padding:10px; border-radius:10px; background:rgba(100,216,255,0.05); border:1px solid rgba(100,216,255,0.3); margin:8px 0; font-size:12px; }
+.field-data .row { display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px dashed rgba(255,255,255,0.1); }
+.field-data .row:last-child { border-bottom:none; }
+.field-data .key { color:#9aa3c0; }
+.field-data .val { color:#64d8ff; font-family:JetBrains Mono,monospace; }
+</style>
+</head>
+<body data-page="p08b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">⚫ SCENE 4 · SUNSPOT · B · EXPLORE</span>
+  <h1>ตามเส้นแม่เหล็ก · จาก sunspot ขึ้นสู่ชั้นบรรยากาศ</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K2</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + OBSERVE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เห็นเส้นโค้งสีฟ้าไหม? · นั่นคือ <b>เส้นสนามแม่เหล็ก</b>
+      ที่พุ่งจาก sunspot ขึ้นสู่ <b>ชั้นบรรยากาศ</b> (chromosphere · corona) · ลากยานจาก sunspot
+      ตามเส้นโค้งออกไปในชั้นบรรยากาศ · <b>เซ็นเซอร์จะวัด T + B</b> ทุก checkpoint"
+    </span>
+  </div>
+
+  <div class="spot-info">
+    📌 ลากยาน <b>🚀</b> จาก sunspot (กลาง) → ผ่าน checkpoint 1→2→3→4 ขึ้นสู่ <b>ชั้นบรรยากาศ</b> · checkpoint: <b id="cpCount">0</b>/4<br>
+    🌡️ เซ็นเซอร์อ่าน T + B ทุก checkpoint (ใช้ใน gate)
+  </div>
+
+  <div class="spot-arena" id="arena">
+    <!-- Atmosphere rings -->
+    <div class="atmos-corona"></div>
+    <div class="atmos-chromo"></div>
+    <!-- Sun body (solid) -->
+    <div class="sun-body"></div>
+    <!-- Sunspot on surface -->
+    <div class="sunspot-mark"></div>
+    <!-- Atmosphere labels -->
+    <div class="atmos-label" style="left:50%;top:6%;transform:translateX(-50%);color:#b980ff;">🌌 CORONA</div>
+    <div class="atmos-label" style="left:50%;top:14%;transform:translateX(-50%);color:#ff5c7a;">🔴 CHROMOSPHERE</div>
+    <div class="atmos-label" style="left:50%;bottom:6%;transform:translateX(-50%);color:#ffcb6b;">☀️ PHOTOSPHERE (ผิว) · ⚫ SUNSPOT</div>
+    <!-- Compass -->
+    <div class="compass-mini">🧭</div>
+    <!-- Field line (curving from sunspot center upward through atmosphere) -->
+    <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path d="M 50 50 Q 42 38 40 28 Q 38 20 35 10" stroke="#64d8ff" stroke-width="0.6" fill="none" stroke-dasharray="2 2" opacity="0.8"/>
+      <path d="M 50 50 Q 58 38 60 28 Q 62 20 65 10" stroke="#64d8ff" stroke-width="0.6" fill="none" stroke-dasharray="2 2" opacity="0.4"/>
+    </svg>
+    <div class="ship-spot" id="ship" style="left:50%;top:50%;">🚀</div>
+  </div>
+
+  <div class="field-data" id="fieldData">
+    <div style="font-family:Orbitron,monospace;font-size:11px;color:#64d8ff;letter-spacing:.14em;margin-bottom:6px;">📊 SENSOR LOG</div>
+    <div id="dataRows" style="font-size:12px;">— ยังไม่มีข้อมูล · เริ่มลากยาน —</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P08b</summary>
+    <div>
+      ลากยานตาม path · checkpoint แต่ละจุดวัด T (จะลด) + B (จะคงที่) · ใช้ pattern นี้ใน p08c gate
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ทะลุครบ 4 checkpoint</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const arena = document.getElementById('arena');
+const ship = document.getElementById('ship');
+const dataRows = document.getElementById('dataRows');
+
+// Checkpoints อยู่ในชั้นบรรยากาศ · ตามเส้นแม่เหล็กที่พุ่งจาก sunspot (กลาง) ขึ้นบน
+// CP1 ใกล้ผิว · CP2 chromosphere · CP3 corona ขอบใน · CP4 corona ขอบนอก
+const CHECKPOINTS = [
+  { x:46, y:42, T:5780, B:2000, layer:'photosphere edge' },
+  { x:42, y:30, T:8000,  B:1200, layer:'chromosphere'    },
+  { x:38, y:18, T:50000, B:600,  layer:'corona inner'    },
+  { x:35, y:10, T:1500000, B:200, layer:'corona outer'   },
+];
+let currentCp = 0, finished = false;
+let observations = [];
+
+CHECKPOINTS.forEach((cp,i) => {
+  const d = document.createElement('div'); d.className='checkpoint'; d.dataset.i=i;
+  d.style.left = cp.x+'%'; d.style.top = cp.y+'%';
+  d.innerHTML = `<div class="num">${i+1}</div>`;
+  arena.appendChild(d);
+});
+
+let dragging = false;
+function setShip(x,y){ ship.style.left=x+'%'; ship.style.top=y+'%'; }
+function getXY(e){ const r=arena.getBoundingClientRect(); const t=e.touches?e.touches[0]:e; return {x:((t.clientX-r.left)/r.width)*100, y:((t.clientY-r.top)/r.height)*100}; }
+function checkProgress(x,y){
+  const cp = CHECKPOINTS[currentCp]; if(!cp) return;
+  const dx=x-cp.x, dy=y-cp.y;
+  if(Math.sqrt(dx*dx+dy*dy) < 8){
+    document.querySelector(`.checkpoint[data-i="${currentCp}"]`).classList.add('passed');
+    observations.push({ cp:currentCp+1, T:cp.T, B:cp.B, layer:cp.layer });
+    renderData();
+    currentCp++;
+    document.getElementById('cpCount').textContent = currentCp;
+    SFX&&SFX.play('snap');
+    if(currentCp >= CHECKPOINTS.length) winRound();
+  }
+}
+function renderData(){
+  dataRows.innerHTML = observations.map(o=>`
+    <div class="row">
+      <span class="key">CP ${o.cp} · ${o.layer}</span>
+      <span class="val">T = ${o.T.toLocaleString()} K · B = ${o.B} G</span>
+    </div>`).join('');
+}
+ship.addEventListener('mousedown', e => { dragging=true; e.preventDefault(); });
+ship.addEventListener('touchstart', e => { dragging=true; e.preventDefault(); }, {passive:false});
+arena.addEventListener('mousemove', e => { if(!dragging || finished) return; const p=getXY(e); setShip(p.x,p.y); checkProgress(p.x,p.y); });
+arena.addEventListener('touchmove', e => { if(!dragging || finished) return; e.preventDefault(); const p=getXY(e); setShip(p.x,p.y); checkProgress(p.x,p.y); }, {passive:false});
+window.addEventListener('mouseup', ()=>dragging=false);
+window.addEventListener('touchend', ()=>dragging=false);
+
+function winRound(){
+  finished = true;
+  document.getElementById('phase2Result').innerHTML = `
+    <div class="card green" style="border-color:#7effb2;background:rgba(126,255,178,0.1);">
+      <h3 style="color:#7effb2;margin:0 0 6px;">✓ ทะลุชั้นบรรยากาศ · เก็บข้อมูล 4 checkpoint</h3>
+      <div class="narr" style="color:#d4b8ff;">
+        <b>Pattern พบ:</b> ที่ผิว sunspot · T ต่ำ (5,780 K) · B แรงสุด (2,000 G) ·
+        ขึ้นสู่ chromosphere → corona · <b style="color:#ff5c7a;">T เพิ่มจาก 5,780 → 1,500,000 K</b> ·
+        <b style="color:#5cb8ff;">B ลดจาก 2,000 → 200 G</b> · นี่คือ <i>coronal heating paradox!</i>
+      </div>
+      <div style="margin-top:8px;font-size:13px;color:#ffd88a;">🔓 ปลด <b>SUNSPOT FORENSICS GATE</b></div>
+    </div>`;
+  Chain.set('p08_observations', observations);
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = '📤 ไป MASTERY GATE';
+  SFX&&SFX.play('charge');
+}
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p08b', nextHref:'p08c-sunspot-gate.html',
+    getPayload(){ return { observations, cp:currentCp }; },
+    validate(p){ if(!finished){ alert('ลากยานทะลุครบ 4 checkpoint ก่อน'); return false; } return true; },
+  });
+}, 200);
+</script>
+</body></html>

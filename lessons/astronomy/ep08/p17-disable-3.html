@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p17 · Disable 3 · Fusion</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .disable-canvas { width:100%; height:240px; background:#050108; border:1px solid #ff8a3d;
+    border-radius:14px; display:block; }
+  .keys-pool { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0; }
+  .keys-pool .keychip { background:var(--bg-card); border:1px solid var(--line); border-radius:8px;
+    padding:6px 10px; font-size:13px; cursor:pointer; }
+  .keys-pool .keychip.used { opacity:.4; }
+  .progress { height:10px; background:var(--bg-mid); border-radius:5px; margin:10px 0; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,#ff8a3d,var(--genesis-gold)); transition:width .3s; }
+</style>
+</head>
+<body data-page="p17">
+<div class="page">
+  <div class="act-badge">ACT C · 5/8 · DISABLE 3</div>
+  <h1>⚙️ Disable Engine #3 · FUSION</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <canvas id="canvas" class="disable-canvas"></canvas>
+
+  <div class="howto">
+    <h4>🎮 MINI-BOSS · Protect First Fusion</h4>
+    <ul>
+      <li>VOID จะดับฟิวชันก่อนดาวดวงแรกติดไฟ</li>
+      <li>ใช้ keys หมวด <b>Stellar/Sun</b> 3 ตัวที่ถูก type</li>
+    </ul>
+  </div>
+
+  <div class="row between">
+    <div>HP: <b id="hp" style="color:var(--genesis-gold);font-size:20px;">5/5</b></div>
+    <div>Ignition: <b id="prog">0/3</b></div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="bar"></div></div>
+
+  <div class="keys-pool" id="keyPool"></div>
+
+  <div class="result-host" id="resultHost"></div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p17' });
+  EP08Page.story('p17');
+  EP08Page.markVisit('p17');
+
+  const c = document.getElementById('canvas');
+  function fit(){ c.width = c.clientWidth; c.height = 240; }
+  fit(); window.addEventListener('resize', fit);
+  const ctx = c.getContext('2d');
+  let stable = 0, hp = 5, done = false, t = 0;
+  function draw(){
+    t += 0.02;
+    ctx.fillStyle = '#050108'; ctx.fillRect(0,0,c.width,c.height);
+    const intensity = stable / 3;
+    const cx = c.width/2, cy = c.height/2;
+    const r = 10 + intensity * 60;
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r*2);
+    g.addColorStop(0, '#fff5e3');
+    g.addColorStop(0.4, intensity > 0 ? '#ffd84a' : 'rgba(60,10,80,0.6)');
+    g.addColorStop(1, 'rgba(255,138,61,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, r*2, 0, Math.PI*2); ctx.fill();
+    if (intensity >= 1){
+      // flare
+      ctx.strokeStyle = '#fff5e3';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - r*2.5, cy); ctx.lineTo(cx + r*2.5, cy);
+      ctx.moveTo(cx, cy - r*2.5); ctx.lineTo(cx, cy + r*2.5);
+      ctx.stroke();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  const pool = document.getElementById('keyPool');
+  S1Keyring.all().forEach(k => {
+    const chip = document.createElement('button');
+    chip.className = 'keychip';
+    chip.dataset.id = k.id;
+    chip.dataset.cat = k.cat;
+    chip.dataset.owned = k.owned;
+    chip.innerHTML = k.icon + ' ' + k.name;
+    if (!k.owned) chip.style.opacity = '0.3';
+    pool.appendChild(chip);
+  });
+
+  pool.addEventListener('click', e => {
+    if (done) return;
+    const chip = e.target.closest('.keychip'); if (!chip) return;
+    if (chip.classList.contains('used')) return;
+    if (chip.dataset.owned !== 'true'){ alert('🔒 ยังไม่ได้ปลด'); return; }
+    const valid = ['stellar','sun'];
+    if (valid.includes(chip.dataset.cat)){
+      stable++; chip.classList.add('used'); chip.style.borderColor = '#ffd84a';
+    } else {
+      hp--; chip.classList.add('used'); chip.style.borderColor = '#ff6a6a';
+    }
+    document.getElementById('hp').textContent = hp + '/5';
+    document.getElementById('prog').textContent = stable + '/3';
+    document.getElementById('bar').style.width = (stable/3*100) + '%';
+    if (stable >= 3) finish(true);
+    else if (hp <= 0) finish(false);
+  });
+
+  function finish(ok){
+    done = true;
+    if (window.KPA){
+      KPA.log('K','K1','disable fusion engine ' + (ok?'ok':'fail'));
+      KPA.research('disableEngine3', { ok });
+    }
+    if (ok) EP08Boot.grantEpoch(3);
+    EP08Page.submit({ ok,
+      title: ok ? '✅ FIRST FUSION PROTECTED' : '💀 HP หมด',
+      body: ok ? '<p>ดาวดวงแรกติดไฟ · ไป Galaxy Scatter</p>' : ''
+    });
+  }
+</script>
+</body>
+</html>

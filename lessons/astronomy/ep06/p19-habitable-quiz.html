@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P19 · Habitable Quiz · kill M7</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p19" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🌍 PHASE 3 · QUIZ · kill M7</span>
+  <h1>ปัจจัยใดสำคัญที่สุด?</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "M7 · นักเรียนหลายคนคิดว่า<b>ระยะ</b>คือทุกอย่าง · ตอบให้เห็นว่าจริง ๆ เป็นการรวมกันของหลายปัจจัย"</span>
+  </div>
+
+  <div class="card cyan" id="quizHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P19</summary>
+    <div>ตอบถูก = M7 ทำลาย + +25 coin · เน้น "habitable = combo · ระยะอย่างเดียวไม่พอ"</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ทำไม "ระยะอย่างเดียวไม่พอ"',
+    words: ['ระยะ', 'ดาวฤกษ์', 'HZ', 'บรรยากาศ', 'ขนาด', 'สนามแม่เหล็ก', 'M7', 'น้ำเหลว', 'อุณหภูมิ', 'ดวงจันทร์'],
+    required: ['ระยะ', 'HZ', 'บรรยากาศ', 'ดาวฤกษ์'],
+    indicator: 'K6'
+  });
+})();
+</script>
+
+
+<div id="ljMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ljMount');
+  if(!el || !window.Journal) return;
+  Journal.mount(el, {
+    pageId: document.body.dataset.page,
+    sceneTitle: 'จดสมุด · 3-2-1 ปิด scene',
+    learnedChips: ['HZ = goldilocks zone', '4 ปัจจัยเอื้อชีวิต', 'ดาวฤกษ์ต่างชนิดต่าง HZ', 'โลก = HZ ของดวงอาทิตย์', 'M7 = ระยะอย่างเดียวพอ → ผิด', 'TRAPPIST-1 มี HZ 3 ดาว'],
+    useChips: ['อธิบายว่าทำไมยากจะมี Earth 2', 'สนใจข่าว exoplanet', 'ตั้งคำถามวิทยาศาสตร์', 'เข้าใจคำว่า habitable'],
+    askChips: ['Proxima b อยู่ได้ไหม', 'TRAPPIST-1e เป็นยังไง', 'ที่ Mars สร้างบรรยากาศได้ไหม', 'ดาวอื่นมีคนไหม']
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled style="opacity:0.5;">— quiz auto-submit —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตอบถูกก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+Phase3.mount({
+  container: document.getElementById('quizHost'),
+  question: 'ปัจจัยใดที่ทำให้ดาวเอื้อต่อชีวิตได้ (สำคัญที่สุด)?',
+  choices: [
+    { txt:'ระยะห่างจากดาวฤกษ์อย่างเดียว', correct:false, hint:'M7 · ระยะอย่างเดียวไม่พอ · ดาวศุกร์ใกล้ habitable zone แต่ร้อนเกิน' },
+    { txt:'ขนาดของดาวเคราะห์', correct:false, hint:'ขนาดสำคัญ · แต่ไม่ใช่ทั้งหมด' },
+    { txt:'<b>การรวมกันของน้ำเหลว + บรรยากาศ + อุณหภูมิ + ระยะ + ชนิดดาวฤกษ์</b>', correct:true },
+    { txt:'มีดวงจันทร์', correct:false, hint:'ดวงจันทร์ช่วยรักษา axis tilt แต่ไม่ใช่ปัจจัยหลัก' },
+  ],
+  onCorrect: () => {
+    Submit.record('p19', { correct:true });
+    Gate.markSubmitted();
+    if(window.Coin && Coin.awardPerfect) Coin.awardPerfect('p19');
+  }
+});
+setTimeout(()=>{Gate.wireButton('p19', document.querySelector('.next-btn'), 'p20-exoplanet.html', { requireSubmit:true });},200);
+</script>
+</body></html>

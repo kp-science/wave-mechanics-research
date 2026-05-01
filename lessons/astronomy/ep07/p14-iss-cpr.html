@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p14 · ISS CPR</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .hospital { background:linear-gradient(180deg,#1a0808,#0a0404);
+    border:2px solid var(--bad); border-radius:14px; padding:20px; margin:14px 0;
+    box-shadow:0 0 40px rgba(255,0,0,.2); }
+  .heart-monitor { font:700 28px monospace; color:#9be7c4; text-align:center;
+    background:#000; padding:18px; border-radius:10px; min-height:50px;
+    letter-spacing:.1em; }
+  .heart-monitor.flat { color:var(--bad); }
+  .heart-btn { display:block; margin:14px auto; width:200px; height:200px;
+    border-radius:50%; background:radial-gradient(circle, #ff3030, #800000);
+    border:4px solid #fff; color:#fff; font:800 60px system-ui;
+    cursor:pointer; box-shadow:0 0 30px rgba(255,0,0,.5);
+    transition:transform .1s; }
+  .heart-btn:active { transform:scale(.92); }
+  .meter { display:flex; gap:6px; justify-content:center; margin:10px 0; }
+  .pump { width:10px; height:30px; border-radius:4px; background:#1a2030; }
+  .pump.on { background:var(--bad); }
+  .rate { text-align:center; font-size:18px; font-weight:700; }
+  .rate.good { color:var(--good); }
+  .rate.bad { color:var(--bad); }
+</style>
+</head>
+<body data-page="p14">
+<div class="page">
+  <div class="act-badge">ACT C · 3/10 · ISS · CPR ⭐</div>
+  <h1>ISS · ห้องปฏิบัติการไร้น้ำหนัก · ปั๊มหัวใจอารยา</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · VOID ยิงพัลส์! ISS สั่น · อารยาลอยชนผนัง</div>
+    <div class="crisis-body">heart monitor: flatline · เธอมีเวลา <b>~10 วินาที</b> · ปั๊มหัวใจให้ <b>100 ครั้ง/นาที</b> (จังหวะเพลง "Stayin' Alive")</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">❤️ TOOL · CPR + ปั๊มหัวใจเทียม (ตำรา p99)</div>
+    <div class="tool-body">หัวใจคนเต้น 60-100 ครั้ง/นาที · ปั๊มต้องเร็ว <b>100/min</b> = ทุก 0.6 วินาที · เครื่องปั๊มหัวใจ NASA spinoff ใช้หลักเดียวกัน</div>
+  </div>
+
+  <div class="hospital">
+    <div class="heart-monitor flat" id="monitor">─── ─── ─── flat ───</div>
+    <button class="heart-btn" id="heart">❤️</button>
+    <div class="meter" id="meter"></div>
+    <div class="rate" id="rate">รอเริ่ม...</div>
+  </div>
+
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง · KPA</div>
+    <b>ปั๊มหัวใจเทียม</b>ที่ผู้ป่วยหัวใจล้มเหลวใช้ · พัฒนาจากภารกิจอวกาศ NASA (ตำรา p99) · CPR ที่เธอเพิ่งทำ · ใช้ได้จริงเมื่อมีคนหัวใจหยุด
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p15-orbit-3tier.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p15 3 วงโคจร</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p14' });
+    PBL.init({ id:'p14-cpr' });
+
+    const meter = document.getElementById('meter');
+    for (let i=0;i<10;i++){
+      const p = document.createElement('div'); p.className='pump'; meter.appendChild(p);
+    }
+    const taps = [];
+    let count = 0; let solved = false;
+    document.getElementById('heart').onclick = () => {
+      if (solved) return;
+      const now = Date.now();
+      taps.push(now);
+      while (taps.length > 10) taps.shift();
+      count++;
+      const pumps = meter.querySelectorAll('.pump');
+      pumps[(count-1) % 10].classList.add('on');
+      if (taps.length >= 5) {
+        const intervals = taps.slice(1).map((t,i) => t - taps[i]);
+        const avg = intervals.reduce((a,b)=>a+b,0)/intervals.length;
+        const bpm = 60000 / avg;
+        const rate = document.getElementById('rate');
+        rate.textContent = bpm.toFixed(0) + ' bpm · เป้า 100';
+        if (bpm >= 90 && bpm <= 110) {
+          rate.className = 'rate good';
+          if (taps.length >= 8) {
+            solved = true;
+            document.getElementById('monitor').textContent = '♥ ─♥─♥─♥─ pulse กลับมา ♥';
+            document.getElementById('monitor').classList.remove('flat');
+            const res = document.getElementById('resultHost');
+            res.classList.add('show','correct');
+            res.textContent = '✓ ปั๊มสำเร็จ · pulse กลับมา · อารยารอด';
+            KPA.log('K6','cpr-success',{ bpm: bpm, correct:true });
+            KPA.competency('C6',{ evidence:'cpr-rhythm' });
+            KPA.vpa(2, { kind:'cpr', summary:'rhythm-locked-100bpm' });
+            CoinEnergy.reward('crisisSolveFirst', 2);
+            document.getElementById('transfer').style.display='block';
+            document.getElementById('next').style.display='';
+            PBL.attempt(true, { bpm });
+            PBL._enter('transfer');
+          }
+        } else {
+          rate.className = 'rate bad';
+        }
+      }
+    };
+  });
+</script>
+</body>
+</html>

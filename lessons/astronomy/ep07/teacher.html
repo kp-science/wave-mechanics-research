@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · Teacher Console</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  body { padding: 0; }
+  .tc-wrap { max-width: 1200px; margin: 0 auto; padding: 18px; }
+  .tc-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--line); margin-bottom: 14px; }
+  .tc-tab { padding: 10px 18px; background: var(--bg-card); border: 1px solid var(--line); border-bottom: none;
+    border-radius: 10px 10px 0 0; cursor: pointer; color: var(--text-mute); font-weight: 600; font-size: 14px; }
+  .tc-tab.active { background: var(--rocket-orange); color: #1a0e00; border-color: var(--rocket-orange); }
+  .tc-panel { display: none; padding: 14px; background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; }
+  .tc-panel.active { display: block; }
+  .heat-grid { display: grid; grid-template-columns: 60px repeat(6, 1fr); gap: 4px; }
+  .heat-cell { padding: 8px; text-align: center; border-radius: 4px; font-size: 12px; }
+  .heat-head { background: var(--steel-blue); color: #fff; font-weight: 700; }
+  .heat-row-h { background: var(--bg-mid); color: var(--text); padding: 8px; text-align: center; font-weight: 700; font-size: 12px; border-radius: 4px; }
+  .data-row { padding: 6px 10px; border-bottom: 1px dashed var(--line-soft); font-size: 13px; display: flex; justify-content: space-between; }
+  .data-row:last-child { border: none; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat-box { background: var(--bg-mid); border: 1px solid var(--line); border-radius: 10px; padding: 10px; text-align: center; }
+  .stat-box .num { font: 700 24px system-ui; color: var(--electric); }
+  .stat-box .lbl { font-size: 12px; color: var(--text-mute); }
+  .bar { background: var(--bg-mid); border-radius: 4px; height: 10px; margin: 4px 0; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--rocket-orange); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th { background: var(--steel-blue); color: #fff; padding: 6px 8px; text-align: left; }
+  table td { padding: 6px 8px; border-bottom: 1px dashed var(--line-soft); }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .pill-good { background: rgba(155,231,196,.2); color: var(--good); }
+  .pill-bad { background: rgba(255,106,106,.2); color: var(--bad); }
+  .pill-warn { background: rgba(255,216,74,.2); color: var(--warn); }
+</style>
+</head>
+<body>
+<div class="tc-wrap">
+  <h1>🧑‍🏫 EP07 Teacher Console</h1>
+  <p style="color:var(--text-mute);">ดู KPA · วPA · สมรรถนะ · economy · MB · shop · research instruments · auto-refresh ทุก 5 วินาที</p>
+
+  <div class="tc-tabs">
+    <div class="tc-tab active" data-tab="kpa">📊 KPA Heatmap</div>
+    <div class="tc-tab" data-tab="vpa">🎓 วPA</div>
+    <div class="tc-tab" data-tab="comp">🧩 สมรรถนะ C1-C6</div>
+    <div class="tc-tab" data-tab="econ">💰 Economy</div>
+    <div class="tc-tab" data-tab="mb">🎁 Mystery Box</div>
+    <div class="tc-tab" data-tab="shop">🛒 Shop Choices</div>
+    <div class="tc-tab" data-tab="research">🔬 Research</div>
+  </div>
+
+  <div class="tc-panel active" data-panel="kpa">
+    <h3>KPA Heatmap (K1-K6 · P1-P3 · A1-A3)</h3>
+    <div id="kpaHeat"></div>
+    <h3 style="margin-top:14px;">Misconception Resolution</h3>
+    <div id="mispBar"></div>
+  </div>
+
+  <div class="tc-panel" data-panel="vpa">
+    <h3>วPA Evidence</h3>
+    <div class="stat-grid" id="vpaStats"></div>
+    <div id="vpaList"></div>
+  </div>
+
+  <div class="tc-panel" data-panel="comp">
+    <h3>สมรรถนะ 6 ด้าน · จากระบบหลักสูตรฐานสมรรถนะ</h3>
+    <div id="compBar"></div>
+  </div>
+
+  <div class="tc-panel" data-panel="econ">
+    <h3>Economy Dashboard</h3>
+    <div class="stat-grid" id="econStats"></div>
+    <h4>Recent transactions</h4>
+    <table id="econTable"><thead><tr><th>เวลา</th><th>หน้า</th><th>ประเภท</th><th>+/-</th><th>เหตุผล</th><th>Balance</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="tc-panel" data-panel="mb">
+    <h3>Mystery Box · Research Checkpoints</h3>
+    <p style="color:var(--text-mute);font-size:13px;">7 กล่องผูกกับ research checkpoint · นักเรียนเปิดกล่องไหน = ไปถึงจุดวัดผลนั้น</p>
+    <div id="mbHeat"></div>
+    <h4 style="margin-top:14px;">Reflection Texts</h4>
+    <div id="mbReflections"></div>
+  </div>
+
+  <div class="tc-panel" data-panel="shop">
+    <h3>Shop Booster Choices · Risk Profile</h3>
+    <div class="stat-grid" id="shopStats"></div>
+    <h4>Choice Log</h4>
+    <table id="shopTable"><thead><tr><th>เวลา</th><th>Booster</th><th>ประเภท</th><th>ราคา</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <div class="tc-panel" data-panel="research">
+    <h3>Research Instruments</h3>
+    <div class="stat-grid" id="resStats"></div>
+    <h4>Pre/Post Comparison</h4>
+    <div id="prePost"></div>
+    <h4 style="margin-top:14px;">Confidence Calibration</h4>
+    <div id="calBar"></div>
+    <h4 style="margin-top:14px;">PBL Phase Progress</h4>
+    <div id="pblTl"></div>
+    <button class="btn" id="exportAll" style="margin-top:14px;">📥 Export ALL Research Data (JSON)</button>
+  </div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="config.js"></script>
+<script>
+function load(k){ try { return JSON.parse(localStorage.getItem(k)) || null; } catch(e){ return null; } }
+function refresh(){
+  const kpa = load('cosmosLog_ep07_kpa') || {};
+  const res = load('cosmosLog_ep07_research') || {};
+  const eco = load('cosmosLog_ep07_economy') || {};
+
+  // KPA Heatmap
+  const indicators = { K:[1,2,3,4,5,6], P:[1,2,3], A:[1,2,3] };
+  let html = '<table><thead><tr><th>Domain</th>';
+  for (let i=1;i<=6;i++) html += '<th>' + i + '</th>';
+  html += '</tr></thead><tbody>';
+  ['K','P','A'].forEach(d => {
+    html += '<tr><td><b>' + d + '</b></td>';
+    for (let i=1;i<=6;i++) {
+      if (d !== 'K' && i > 3) { html += '<td>—</td>'; continue; }
+      const key = d + i;
+      const v = (kpa.domains||{})[key];
+      const c = v ? v.count : 0;
+      const intensity = Math.min(c, 10) * 24;
+      const bg = c === 0 ? 'var(--bg-mid)' : `rgba(255,138,61,${0.2 + intensity/100})`;
+      html += '<td style="background:'+bg+';text-align:center;font-weight:700;color:'+(c?'#fff':'var(--text-mute)')+';">' + c + '</td>';
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('kpaHeat').innerHTML = html;
+
+  // Misconceptions
+  const misps = res.misconceptions || {};
+  let mhtml = '';
+  Object.keys(misps).forEach(m => {
+    const x = misps[m];
+    const status = x.resolved ? 'pill-good' : (x.persistent ? 'pill-bad' : 'pill-warn');
+    const lbl = x.resolved ? 'resolved' : (x.persistent ? 'persistent' : 'pre');
+    mhtml += `<div class="data-row"><span>${m}</span><span class="pill ${status}">${lbl}</span></div>`;
+  });
+  document.getElementById('mispBar').innerHTML = mhtml || '<p style="color:var(--text-mute);">ยังไม่มีข้อมูล</p>';
+
+  // วPA
+  const vpa = kpa.vpa || { d1:[], d2:[], d3:[] };
+  document.getElementById('vpaStats').innerHTML = `
+    <div class="stat-box"><div class="num">${vpa.d1.length}</div><div class="lbl">ด้านที่ 1 จัดการเรียนรู้</div></div>
+    <div class="stat-box"><div class="num">${vpa.d2.length}</div><div class="lbl">ด้านที่ 2 ผลสัมฤทธิ์</div></div>
+    <div class="stat-box"><div class="num">${vpa.d3.length}</div><div class="lbl">ด้านที่ 3 พัฒนาตน</div></div>
+  `;
+  let vlist = '';
+  ['d1','d2','d3'].forEach(d => {
+    (vpa[d]||[]).slice(-5).forEach(v => {
+      vlist += `<div class="data-row"><span>${d}</span><span>${v.kind||''} · ${v.summary||''}</span><span style="color:var(--text-mute);font-size:11px;">${(v.ts||'').slice(11,16)}</span></div>`;
+    });
+  });
+  document.getElementById('vpaList').innerHTML = vlist || '<p style="color:var(--text-mute);">ยังไม่มี</p>';
+
+  // Competency
+  const comp = kpa.comp || {};
+  let chtml = '';
+  for (let i=1;i<=6;i++){
+    const k = 'C'+i;
+    const c = (comp[k]||{}).count || 0;
+    chtml += `<div class="data-row"><span>${k}</span><div class="bar" style="width:60%;"><span style="width:${Math.min(c*10,100)}%;"></span></div><b>${c}</b></div>`;
+  }
+  document.getElementById('compBar').innerHTML = chtml;
+
+  // Economy
+  document.getElementById('econStats').innerHTML = `
+    <div class="stat-box"><div class="num">${eco.coins||0}</div><div class="lbl">🪙 เหรียญสะสม</div></div>
+    <div class="stat-box"><div class="num">${eco.energy||0}/${eco.energyMax||10}</div><div class="lbl">⚡ พลังงาน</div></div>
+    <div class="stat-box"><div class="num">${(eco.ledger||[]).length}</div><div class="lbl">Ledger Entries</div></div>
+  `;
+  const tbody = document.querySelector('#econTable tbody');
+  tbody.innerHTML = (eco.ledger||[]).slice(-15).reverse().map(l =>
+    `<tr><td>${(l.ts||'').slice(11,19)}</td><td>${l.page||''}</td><td>${l.kind}</td><td style="color:${l.delta>0?'var(--good)':'var(--bad)'};">${l.delta>0?'+':''}${l.delta}</td><td>${l.reason||''}</td><td>${l.balance}</td></tr>`
+  ).join('');
+
+  // Mystery Box
+  const boxes = (EP_CONFIG.mysteryBoxes||[]);
+  const opened = (eco.boxes||[]).map(b => b.box_id);
+  let mbhtml = '<div class="stat-grid">';
+  boxes.forEach(b => {
+    const isOpen = opened.includes(b.id);
+    mbhtml += `<div class="stat-box" style="opacity:${isOpen?'1':'.4'};">
+      <div class="num">${isOpen?'✓':'?'}</div>
+      <div class="lbl">${b.id} · ${b.checkpoint}<br><span style="font-size:10px;">${b.page}</span></div>
+    </div>`;
+  });
+  mbhtml += '</div>';
+  document.getElementById('mbHeat').innerHTML = mbhtml;
+  const refls = (res.reflections||[]).slice(-8);
+  document.getElementById('mbReflections').innerHTML = refls.length ? refls.map(r =>
+    `<div class="data-row"><span><b>${r.boxId||r.box_id||''}</b></span><span style="flex:1;text-align:left;padding-left:12px;">"${r.text||r.reflection||''}"</span></div>`
+  ).join('') : '<p style="color:var(--text-mute);">ยังไม่มีข้อความ</p>';
+
+  // Shop
+  const shopChoices = eco.shop || [];
+  const safe = shopChoices.filter(s => s.kind === 'safe').length;
+  const risky = shopChoices.filter(s => s.kind === 'risky').length;
+  const balanced = shopChoices.filter(s => s.kind === 'balanced').length;
+  document.getElementById('shopStats').innerHTML = `
+    <div class="stat-box"><div class="num" style="color:var(--good);">${safe}</div><div class="lbl">Safe choices</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--warn);">${balanced}</div><div class="lbl">Balanced</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--bad);">${risky}</div><div class="lbl">Risky</div></div>
+  `;
+  document.querySelector('#shopTable tbody').innerHTML = shopChoices.slice(-10).map(s =>
+    `<tr><td>${(s.ts||'').slice(11,19)}</td><td>${s.id}</td><td><span class="pill ${s.kind==='safe'?'pill-good':(s.kind==='risky'?'pill-bad':'pill-warn')}">${s.kind}</span></td><td>${s.cost} 🪙</td></tr>`
+  ).join('');
+
+  // Research
+  const cal = res.calibration || [];
+  const overconf = cal.filter(c => c.confidence >= 4 && !c.correct).length;
+  const underconf = cal.filter(c => c.confidence <= 2 && c.correct).length;
+  const calibrated = cal.length - overconf - underconf;
+  document.getElementById('resStats').innerHTML = `
+    <div class="stat-box"><div class="num">${(res.embedded||[]).length}</div><div class="lbl">Embedded Checkpoints</div></div>
+    <div class="stat-box"><div class="num">${(res.reflections||[]).length}</div><div class="lbl">Reflections</div></div>
+    <div class="stat-box"><div class="num">${cal.length}</div><div class="lbl">Calibrations</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--good);">${calibrated}</div><div class="lbl">Well-calibrated</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--bad);">${overconf}</div><div class="lbl">Overconfident</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--warn);">${underconf}</div><div class="lbl">Underconfident</div></div>
+  `;
+  const pre = res.pretest, post = res.posttest;
+  document.getElementById('prePost').innerHTML = (pre || post) ? `
+    <div class="data-row"><span>Pretest</span><b>${pre?pre.score+'/'+pre.total:'-'}</b></div>
+    <div class="data-row"><span>Posttest</span><b>${post?post.score+'/'+post.total:'-'}</b></div>
+    <div class="data-row"><span>Gain</span><b style="color:${pre&&post&&post.score>pre.score?'var(--good)':'var(--bad)'};">${pre&&post?(post.score-pre.score>=0?'+':'')+(post.score-pre.score):'-'}</b></div>
+  ` : '<p style="color:var(--text-mute);">ยังไม่มี posttest</p>';
+
+  // Calibration bar
+  let calhtml = '';
+  for (let i=1;i<=5;i++) {
+    const correct = cal.filter(c => c.confidence === i && c.correct).length;
+    const wrong = cal.filter(c => c.confidence === i && !c.correct).length;
+    const total = correct + wrong;
+    if (total === 0) continue;
+    const pct = (correct/total)*100;
+    calhtml += `<div class="data-row"><span>มั่นใจ ${i}</span><div class="bar" style="width:60%;"><span style="width:${pct}%;background:var(--good);"></span></div><b>${correct}/${total}</b></div>`;
+  }
+  document.getElementById('calBar').innerHTML = calhtml || '<p style="color:var(--text-mute);">ยังไม่มี</p>';
+
+  // PBL Timeline
+  const phases = res.pblPhase || [];
+  const phaseCount = {};
+  phases.forEach(p => { phaseCount[p.phase] = (phaseCount[p.phase]||0)+1; });
+  document.getElementById('pblTl').innerHTML = ['encounter','activate','investigate','solve','reflect','transfer'].map(p =>
+    `<div class="data-row"><span>${p}</span><div class="bar" style="width:60%;"><span style="width:${Math.min((phaseCount[p]||0)*10,100)}%;"></span></div><b>${phaseCount[p]||0}</b></div>`
+  ).join('');
+}
+document.querySelectorAll('.tc-tab').forEach(t => t.onclick = () => {
+  document.querySelectorAll('.tc-tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tc-panel').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.querySelector('.tc-panel[data-panel="' + t.dataset.tab + '"]').classList.add('active');
+});
+document.getElementById('exportAll').onclick = () => KPA.download('ep07-teacher-export.json');
+refresh();
+setInterval(refresh, 5000);
+</script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · Teacher Console</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .teacher-page { max-width:1200px; margin:0 auto; padding:24px 14px; }
+  .top { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin:14px 0; }
+  .panel { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+  .panel h3 { margin-top:0; color:var(--genesis-gold); font-size:16px; }
+  .heat { display:grid; grid-template-columns:80px repeat(6, 1fr); gap:4px; }
+  .heat .lbl { font-size:11px; color:var(--text-mute); align-self:center; }
+  .heat .cell { background:var(--bg-mid); padding:6px; border-radius:6px; text-align:center; font-size:11px;
+    border:1px solid var(--line); }
+  .heat .cell[data-c="1"]{ background:#1a3a40; }
+  .heat .cell[data-c="2"]{ background:#2a5a50; }
+  .heat .cell[data-c="3"]{ background:#3a7a60; }
+  .heat .cell[data-c="4"]{ background:#4a9a70; }
+  .keyring-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:4px; }
+  .keyring-cell { background:var(--bg-mid); border:1px solid var(--line); border-radius:6px;
+    padding:6px; text-align:center; font-size:11px; }
+  .keyring-cell.owned { border-color:var(--genesis-gold); background:linear-gradient(180deg,#3a2a08,#1a0e00); }
+  .ending-stat { display:flex; justify-content:space-between; padding:6px 0;
+    border-bottom:1px dashed var(--line-soft); font-size:13px; }
+  .log { max-height:280px; overflow-y:auto; background:#050108; border:1px solid var(--line);
+    border-radius:8px; padding:10px; font-family:ui-monospace,monospace; font-size:11px; }
+  .log .row { padding:3px 0; border-bottom:1px dotted var(--line); }
+  .vpa-tabs { display:flex; gap:4px; margin-bottom:8px; }
+  .vpa-tab { padding:6px 12px; border:1px solid var(--line); border-radius:6px;
+    cursor:pointer; font-size:12px; background:var(--bg-mid); }
+  .vpa-tab.active { background:var(--genesis-gold); color:#1a0a00; }
+  .student-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .student-table th { background:var(--bg-mid); padding:6px; text-align:left;
+    border-bottom:1px solid var(--line); }
+  .student-table td { padding:6px; border-bottom:1px dotted var(--line); }
+  .ctrl-row { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0; }
+</style>
+</head>
+<body data-page="teacher">
+<div class="teacher-page">
+  <div class="top">
+    <div>
+      <h1 style="margin:0;">🧑‍🏫 EP08 · Teacher Console</h1>
+      <p style="color:var(--text-soft);margin:4px 0;">Genesis Again · KPA Heat Map · S1 Keyring · Ending Choices · Auto-refresh 5s</p>
+    </div>
+    <div class="ctrl-row">
+      <button class="btn" id="refreshBtn">↻ Refresh</button>
+      <button class="btn ghost" id="autoBtn">⏱ Auto: ON</button>
+      <button class="btn ghost" id="exportBtn">📥 Export</button>
+      <button class="btn ghost" id="resetBtn">🗑️ Reset student</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h3>📊 KPA Heat Map (K/P/A × indicators)</h3>
+      <div class="heat" id="heatHost"></div>
+    </div>
+
+    <div class="panel">
+      <h3>🗝️ S1 Keyring</h3>
+      <div class="keyring-grid" id="keyringHost"></div>
+      <p style="font-size:13px;color:var(--text-soft);margin-top:8px;">เพิ่มจาก EP01-07</p>
+    </div>
+
+    <div class="panel">
+      <h3>🌟 Ending + Choice</h3>
+      <div id="endingHost"></div>
+    </div>
+
+    <div class="panel">
+      <h3>📋 Pre/Posttest</h3>
+      <div id="testHost"></div>
+    </div>
+
+    <div class="panel" style="grid-column:1 / -1;">
+      <h3>📑 วPA Evidence (3 ด้าน)</h3>
+      <div class="vpa-tabs">
+        <div class="vpa-tab active" data-d="d1">ด้าน 1</div>
+        <div class="vpa-tab" data-d="d2">ด้าน 2</div>
+        <div class="vpa-tab" data-d="d3">ด้าน 3</div>
+      </div>
+      <div class="log" id="vpaLog"></div>
+    </div>
+
+    <div class="panel" style="grid-column:1 / -1;">
+      <h3>📜 Activity Timeline</h3>
+      <div class="log" id="timelineLog"></div>
+    </div>
+
+    <div class="panel" style="grid-column:1 / -1;">
+      <h3>🎁 Mystery Box · Reflections</h3>
+      <table class="student-table" id="boxTable">
+        <thead><tr><th>Box</th><th>Page</th><th>Reflection</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script>
+  function load(k, fb){ try { return JSON.parse(localStorage.getItem(k)) || fb; } catch(e){ return fb; } }
+
+  function refresh(){
+    // KPA heat
+    const kpa = load('cosmosLog_ep08_kpa', { domains:{}, comp:{}, vpa:{d1:[],d2:[],d3:[]}, timeline:[] });
+    const heat = document.getElementById('heatHost');
+    heat.innerHTML = '<div class="lbl"></div>' + [1,2,3,4,5,6].map(i=>`<div class="lbl">i${i}</div>`).join('');
+    ['K','P','A'].forEach(dom => {
+      heat.innerHTML += `<div class="lbl"><b>${dom}</b></div>`;
+      [1,2,3,4,5,6].forEach(i => {
+        const key = dom + i;
+        const count = (kpa.domains && kpa.domains[key]) || 0;
+        const c = count > 5 ? 4 : count > 2 ? 3 : count > 0 ? 2 : 0;
+        heat.innerHTML += `<div class="cell" data-c="${c}">${key}<br><b>${count}</b></div>`;
+      });
+    });
+
+    // S1 keyring
+    const ringHost = document.getElementById('keyringHost');
+    ringHost.innerHTML = '';
+    S1Keyring.all().forEach(k => {
+      const el = document.createElement('div');
+      el.className = 'keyring-cell' + (k.owned ? ' owned' : '');
+      el.innerHTML = `<div style="font-size:18px;">${k.icon}</div><div>${k.name}</div>`;
+      ringHost.appendChild(el);
+    });
+
+    // Ending + Choice
+    const ending = localStorage.getItem('cosmosLog_ep08_ending') || '-';
+    const choice = localStorage.getItem('cosmosLog_ep08_choice') || '-';
+    const result = load('cosmosLog_ep08_bossResult', {});
+    document.getElementById('endingHost').innerHTML = `
+      <div class="ending-stat"><span>Choice (p21)</span><b style="color:var(--quantum-pink);">${choice.toUpperCase()}</b></div>
+      <div class="ending-stat"><span>Boss Ending</span><b style="color:var(--genesis-gold);">${ending}</b></div>
+      <div class="ending-stat"><span>HP</span><b>${result.hp||0}/${result.hpMax||12}</b></div>
+      <div class="ending-stat"><span>Phases cleared</span><b>${result.phasesCleared||0}/4</b></div>
+      <div class="ending-stat"><span>Keys used</span><b>${(result.keysUsed||[]).length}/17</b></div>
+      <div class="ending-stat"><span>เวลาบอส</span><b>${((result.durationMs||0)/1000).toFixed(0)}s</b></div>
+    `;
+
+    // Pre/posttest
+    const research = load('cosmosLog_ep08_research', { embedded:[] });
+    const pre = (research.embedded||[]).find(x => x.id === 'pretest');
+    const post = (research.embedded||[]).find(x => x.id === 'posttest');
+    document.getElementById('testHost').innerHTML = `
+      <div class="ending-stat"><span>Pretest</span><b>${pre ? pre.data.score + '/10' : '-'}</b></div>
+      <div class="ending-stat"><span>Posttest</span><b>${post ? post.data.score + '/10' : '-'}</b></div>
+      <div class="ending-stat"><span>Gain</span><b style="color:${post && pre ? (post.data.score >= pre.data.score ? 'var(--good)' : 'var(--bad)') : 'var(--text-mute)'};">${(pre && post) ? (post.data.score - pre.data.score) : '-'}</b></div>
+    `;
+
+    // vPA tabs
+    function showVPA(d){
+      const arr = (kpa.vpa && kpa.vpa[d]) || [];
+      const log = document.getElementById('vpaLog');
+      log.innerHTML = arr.length === 0 ? '<div class="row" style="color:var(--text-mute);">ยังไม่มีข้อมูล</div>'
+        : arr.map(e => `<div class="row"><b>${e.page||'-'}</b> · ${e.ev||e}</div>`).join('');
+    }
+    showVPA(document.querySelector('.vpa-tab.active').dataset.d);
+    document.querySelectorAll('.vpa-tab').forEach(t => {
+      t.onclick = () => {
+        document.querySelectorAll('.vpa-tab').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        showVPA(t.dataset.d);
+      };
+    });
+
+    // timeline
+    const log = document.getElementById('timelineLog');
+    const tl = (kpa.timeline || []).slice(-50).reverse();
+    log.innerHTML = tl.length === 0 ? '<div class="row" style="color:var(--text-mute);">ยังไม่มี activity</div>'
+      : tl.map(e => `<div class="row">[${(e.t||'').slice(11,19)}] <b>${e.page||'-'}</b> · ${e.ev||''}</div>`).join('');
+
+    // mystery box reflections
+    const eco = load('cosmosLog_ep08_economy', { boxes:[] });
+    const tbody = document.querySelector('#boxTable tbody');
+    tbody.innerHTML = '';
+    (eco.boxes || []).forEach(b => {
+      tbody.innerHTML += `<tr><td>${b.id||'-'}</td><td>${b.page||'-'}</td><td>${(b.reflection||'(no text)').slice(0,200)}</td></tr>`;
+    });
+    if ((eco.boxes||[]).length === 0) {
+      tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-mute);">ยังไม่มี mystery box เปิด</td></tr>';
+    }
+  }
+
+  refresh();
+  let auto = setInterval(refresh, 5000);
+  document.getElementById('refreshBtn').onclick = refresh;
+  document.getElementById('autoBtn').onclick = () => {
+    if (auto) { clearInterval(auto); auto = null; document.getElementById('autoBtn').textContent = '⏱ Auto: OFF'; }
+    else { auto = setInterval(refresh, 5000); document.getElementById('autoBtn').textContent = '⏱ Auto: ON'; }
+  };
+  document.getElementById('exportBtn').onclick = () => {
+    const out = {
+      kpa: load('cosmosLog_ep08_kpa', {}),
+      research: load('cosmosLog_ep08_research', {}),
+      economy: load('cosmosLog_ep08_economy', {}),
+      ending: localStorage.getItem('cosmosLog_ep08_ending'),
+      choice: localStorage.getItem('cosmosLog_ep08_choice'),
+      bossResult: load('cosmosLog_ep08_bossResult', {})
+    };
+    const blob = new Blob([JSON.stringify(out, null, 2)], { type:'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = 'ep08_teacher_export.json'; a.click();
+  };
+  document.getElementById('resetBtn').onclick = () => {
+    if (!confirm('ลบข้อมูลนักเรียน EP08?')) return;
+    ['kpa','research','economy','keys','epochs','ending','choice','lastPage','bossResult'].forEach(k =>
+      localStorage.removeItem('cosmosLog_ep08_' + k));
+    refresh();
+  };
+</script>
+</body>
+</html>

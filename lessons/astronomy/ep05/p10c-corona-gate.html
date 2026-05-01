@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P10c · CORONA · MASTERY GATE · HELION KEY ASSEMBLY</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+.phase-final { background:rgba(255,215,0,.18); color:#ffd700; border:1px solid #ffd700; }
+
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* === HELION KEY ASSEMBLY GATE === */
+.assembly-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(255,215,0,0.10),rgba(58,10,74,0.10));
+                 border:2px solid #ffd700; margin:14px 0; box-shadow:0 0 30px rgba(255,215,0,0.25); }
+.assembly-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#ffd700; letter-spacing:.16em; margin-bottom:10px; }
+.assembly-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+
+.deflector-frame { padding:18px; border-radius:14px; background:radial-gradient(ellipse at center,rgba(255,215,0,0.08),rgba(0,0,0,0.5));
+                   border:2px dashed rgba(255,215,0,0.4); margin:10px 0; }
+.deflector-title { text-align:center; font-family:Orbitron,monospace; font-size:13px; color:#ffd700; letter-spacing:.18em; margin-bottom:14px; }
+
+.assembly-row { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; align-items:center; margin:14px 0; }
+.assembly-slot { width:80px; height:90px; border-radius:14px; border:2px dashed rgba(255,215,0,0.4);
+                 background:rgba(0,0,0,0.5); display:flex; flex-direction:column; align-items:center; justify-content:center;
+                 cursor:pointer; transition:all .2s; padding:6px; position:relative; }
+.assembly-slot:hover { border-color:#ffd700; background:rgba(255,215,0,0.08); }
+.assembly-slot.filled { border-style:solid; border-color:#ffcb6b; background:rgba(255,138,61,0.15); }
+.assembly-slot.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+.assembly-slot.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); animation:wShake .4s; }
+@keyframes wShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+.assembly-slot .slot-num { position:absolute; top:2px; left:4px; font-family:Orbitron,monospace; font-size:9px; color:#ffd700; letter-spacing:.12em; }
+.assembly-slot .icon { font-size:30px; }
+.assembly-slot .lbl { font-size:9px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.08em; margin-top:3px; text-align:center; }
+.assembly-slot.filled .lbl { color:#ffcb6b; }
+.assembly-arrow { font-size:20px; color:#ffd700; opacity:0.6; }
+
+.helion-pool { display:flex; flex-wrap:wrap; gap:10px; padding:14px; border-radius:12px;
+               background:rgba(0,0,0,0.5); border:1px solid rgba(255,215,0,0.3); margin:10px 0; justify-content:center; }
+.helion-chip { width:80px; padding:8px; border-radius:12px; cursor:pointer; user-select:none;
+               background:rgba(20,28,52,0.7); border:1px solid rgba(255,138,61,0.4); transition:all .15s;
+               text-align:center; }
+.helion-chip:hover { transform:translateY(-2px); border-color:#ffd700; box-shadow:0 0 14px rgba(255,215,0,0.3); }
+.helion-chip.used { opacity:0.3; pointer-events:none; }
+.helion-chip .icon { font-size:26px; }
+.helion-chip .name { font-size:9px; color:#ffcb6b; font-family:Orbitron,monospace; letter-spacing:.08em; margin-top:3px; }
+.helion-chip .layer { font-size:9px; color:#9aa3c0; margin-top:1px; }
+
+.gate-controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.gate-controls .check-eq { background:linear-gradient(180deg,#ffd700,#ff8a3d); color:#1a0a00; padding:14px 28px;
+                           font-family:Orbitron,monospace; font-size:14px; letter-spacing:.18em; border-radius:10px; border:none; cursor:pointer;
+                           box-shadow:0 0 20px rgba(255,215,0,0.4); }
+.gate-controls .reset-eq { background:transparent; color:#ffcb6b; border:1px solid #ffcb6b; padding:10px 18px; border-radius:10px; cursor:pointer; }
+.gate-feedback { margin-top:10px; padding:12px 14px; border-radius:10px; font-size:13px; min-height:40px; }
+.gate-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; }
+.gate-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; }
+
+.gate-passed-banner { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(255,215,0,0.25),rgba(126,255,178,0.10));
+                      border:2px solid #ffd700; text-align:center; margin:14px 0;
+                      animation:gatePassed 1.4s ease-out;
+                      box-shadow:0 0 40px rgba(255,215,0,0.4); }
+.gate-passed-banner .big { font-family:Orbitron,monospace; font-size:22px; color:#ffd700; letter-spacing:.2em; text-shadow:0 0 20px #ffd700; }
+.gate-passed-banner .sub { font-size:13px; color:#d4b8ff; margin-top:8px; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.8);} 50%{opacity:1;transform:scale(1.04);} 100%{transform:scale(1);} }
+
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p10c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 6 · CORONA · C · FINAL MASTERY GATE</span>
+  <h1>HELION KEY ASSEMBLY · ปลด deflector ก่อนออกจากดวงอาทิตย์</h1>
+  <div class="tags"><span class="kpa-chip">K2</span><span class="kpa-chip">K5</span><span class="kpa-chip">P3</span><span class="kpa-chip">M2</span></div>
+
+  <!-- COMPARE -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED</h4>
+        <div class="val">corona ร้อนกว่า photosphere ~200 เท่า · ปริศนายังไม่มีคำตอบสมบูรณ์</div>
+        <div class="reason">เลื่อนเห็นกราฟ T พุ่งกลับขึ้น · paradox จริง · M2 kill</div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ภารกิจสุดท้ายของ ACT C · ทีมเก็บ HELION มา 6 ชิ้นจาก 6 ชั้น ·
+      <b style="color:#ffd700;">deflector ของพ่อต้องป้อน HELION เรียงลำดับ Core → Corona</b> ·
+      ใส่ผิดลำดับ = deflector ไม่ทำงาน · เราออกจากดวงอาทิตย์ไม่ได้"
+    </span>
+  </div>
+
+  <!-- HELION KEY ASSEMBLY GATE -->
+  <div class="phase-tag phase-final">🔒 FINAL MASTERY GATE · HELION KEY ASSEMBLY</div>
+  <div class="assembly-gate">
+    <div class="gate-head">🗝️ ประกอบ HELION 6 ชิ้น เรียงตาม "ทิศที่พลังงานเดินทาง" จากภายใน → ออก</div>
+    <div class="gate-sub">
+      ลาก HELION ทั้ง 6 ชิ้นจาก pool → slot 1 ถึง 6 · ต้องเรียงให้ตรงกับ <b>เส้นทางพลังงานในดวงอาทิตย์จริง</b>
+      (ฟิวชันที่แกน → ขึ้นผ่านชั้นต่าง ๆ → ปลดปล่อยที่ corona)
+    </div>
+
+    <div class="deflector-frame">
+      <div class="deflector-title">⚙️ DEFLECTOR · HELION KEY SOCKET</div>
+      <div class="assembly-row" id="slotsRow"></div>
+      <div style="text-align:center; font-family:Orbitron,monospace; font-size:11px; color:#ffd700; letter-spacing:.16em; margin-top:6px;">
+        ⬅ INSIDE (Core) ........... OUTSIDE (Corona) ➡
+      </div>
+    </div>
+
+    <div style="font-family:Orbitron,monospace;font-size:11px;color:#9aa3c0;letter-spacing:.14em;margin:10px 0 6px;">📦 HELION POOL · กดหรือลาก HELION เข้า slot</div>
+    <div class="helion-pool" id="helionPool"></div>
+
+    <div class="gate-controls">
+      <button class="check-eq" id="checkBtn">⚡ ACTIVATE DEFLECTOR</button>
+      <button class="reset-eq" id="resetBtn">↺ ล้าง</button>
+      <span id="cAtt" style="color:#9aa3c0;font-family:Orbitron,monospace;font-size:11px;">attempts: 0</span>
+    </div>
+    <div class="gate-feedback" id="gateFeedback" style="display:none;"></div>
+  </div>
+
+  <!-- APPLICATION QUIZ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 5 (Evaluate)</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- SELF-RUBRIC -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT · ภาพรวม ACT B+C</div>
+    <div class="card">
+      <h3>เธอเข้าใจโครงสร้าง 6 ชั้นดวงอาทิตย์ + เส้นทางพลังงาน ระดับใด?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P10c</summary>
+    <div>
+      <b>HELION KEY ASSEMBLY:</b> เรียงลำดับเส้นทางพลังงาน Core(h1) → Radiative(h2) → Convective(h3) → Photosphere(h4) → Chromosphere(h5) → Corona(h6)<br>
+      ผ่าน gate = grant h6 + activate deflector + ออกจาก ACT C<br>
+      หน้าถัดไป p11 magnetic-bridge = ACT D BATTLE PHASE
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* === Compare === */
+const PRED_LABELS = ['เป็นไปไม่ได้','magnetic reconnection + Alfvén waves','ใกล้ดาวฤกษ์อื่น','density ต่ำ'];
+const REASONS_MAP = {
+  r1:'พลังงานแม่เหล็กแปลงเป็นความร้อน', r2:'nanoflares ปลดพลังงาน', r3:'Alfvén waves พา energy',
+  r4:'การวัด T ผิด', r5:'มีดาวฤกษ์ใกล้', r6:'density ต่ำ · เก็บ heat ใน particle',
+  r7:'ปกติ', r8:'ต้นทาง solar wind'
+};
+const pred = Chain.get('p10_prediction');
+const predReasons = Chain.get('p10_reasons') || [];
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){ banner.className='match-banner ok'; banner.textContent='✓ MATCH · เธอทำนายถูก! · นี่คือสมมติฐานหลัก'; }
+  else { banner.className='match-banner diff'; banner.innerHTML='⚠ ทำนายไม่ตรง · สมมติฐานหลัก = <b>magnetic reconnection + Alfvén waves</b> · paradox มีจริง'; }
+}
+
+/* === HELION KEY ASSEMBLY === */
+// Force grant h6 if user collected token (or didn't yet · grant via button)
+// Actually grant only when gate passed
+const HELIONS = EP_CONFIG.helions;
+const CORRECT_ORDER = ['h1','h2','h3','h4','h5','h6'];
+let gatePassed = false;
+let attempts = 0;
+
+// Build slots
+const slotsRow = document.getElementById('slotsRow');
+for(let i=0; i<6; i++){
+  const slot = document.createElement('div'); slot.className='assembly-slot'; slot.dataset.slot = i;
+  slot.innerHTML = `<div class="slot-num">${i+1}</div><div class="icon" style="opacity:0;">?</div><div class="lbl">empty</div>`;
+  slotsRow.appendChild(slot);
+  if(i < 5){
+    const arr = document.createElement('div'); arr.className='assembly-arrow'; arr.textContent = '→';
+    slotsRow.appendChild(arr);
+  }
+}
+
+// Build pool (include all 6 helions regardless of which are "owned" by Chain · this is a knowledge test, all needed)
+const pool = document.getElementById('helionPool');
+HELIONS.forEach(h => {
+  const c = document.createElement('div'); c.className='helion-chip'; c.dataset.id=h.id;
+  c.innerHTML = `<div class="icon">${h.icon}</div><div class="name">${h.name.split(' ')[0]}</div><div class="layer">${h.layer}</div>`;
+  c.draggable = true;
+  c.ondragstart = e => e.dataTransfer.setData('text/plain', h.id);
+  c.onclick = () => placeIntoFirstEmpty(c);
+  if(window.TouchDrag) TouchDrag.makeDraggable(c, () => h.id);
+  pool.appendChild(c);
+});
+// Shuffle pool order
+[...pool.children].sort(() => Math.random()-0.5).forEach(el => pool.appendChild(el));
+
+document.querySelectorAll('.assembly-slot').forEach(s => {
+  s.ondragover = e => e.preventDefault();
+  s.ondrop = e => { e.preventDefault(); const id = e.dataTransfer.getData('text/plain'); placeChip(id, s); };
+  if(window.TouchDrag) TouchDrag.makeDropTarget(s, id => placeChip(id, s));
+  s.onclick = () => clearSlot(s);
+});
+function placeIntoFirstEmpty(chipEl){
+  const empty = [...document.querySelectorAll('.assembly-slot')].find(s => !s.dataset.filled);
+  if(empty) placeChip(chipEl.dataset.id, empty);
+}
+function placeChip(id, slot){
+  if(!id || !slot) return;
+  if(slot.dataset.filled) clearSlot(slot, false);
+  // Remove this id from any existing slot
+  document.querySelectorAll('.assembly-slot').forEach(s => { if(s.dataset.filled === id) clearSlot(s, false); });
+  const h = HELIONS.find(x => x.id === id);
+  if(!h) return;
+  slot.dataset.filled = id;
+  slot.innerHTML = `<div class="slot-num">${Number(slot.dataset.slot)+1}</div><div class="icon">${h.icon}</div><div class="lbl">${h.layer}</div>`;
+  slot.classList.add('filled');
+  slot.classList.remove('correct','wrong');
+  document.querySelector(`.helion-chip[data-id="${id}"]`).classList.add('used');
+  SFX&&SFX.play('snap');
+}
+function clearSlot(slot, sfx=true){
+  const id = slot.dataset.filled;
+  if(!id) return;
+  document.querySelector(`.helion-chip[data-id="${id}"]`).classList.remove('used');
+  slot.dataset.filled = '';
+  slot.innerHTML = `<div class="slot-num">${Number(slot.dataset.slot)+1}</div><div class="icon" style="opacity:0;">?</div><div class="lbl">empty</div>`;
+  slot.classList.remove('filled','correct','wrong');
+  if(sfx) SFX&&SFX.play('tap');
+}
+document.getElementById('resetBtn').onclick = () => {
+  document.querySelectorAll('.assembly-slot').forEach(s => clearSlot(s, false));
+  document.querySelectorAll('.helion-chip').forEach(c => c.classList.remove('used'));
+  document.getElementById('gateFeedback').style.display='none';
+  SFX&&SFX.play('tap');
+};
+
+document.getElementById('checkBtn').onclick = () => {
+  if(gatePassed) return;
+  attempts++;
+  document.getElementById('cAtt').textContent = 'attempts: ' + attempts;
+  const slots = [...document.querySelectorAll('.assembly-slot')].map(s => s.dataset.filled || null);
+  let allCorrect = true;
+  let issues = [];
+  slots.forEach((id, i) => {
+    const slot = document.querySelector(`.assembly-slot[data-slot="${i}"]`);
+    slot.classList.remove('correct','wrong');
+    if(!id){ allCorrect=false; issues.push(`slot ${i+1} ว่าง`); }
+    else if(id === CORRECT_ORDER[i]){ slot.classList.add('correct'); }
+    else {
+      slot.classList.add('wrong'); allCorrect=false;
+      const expected = HELIONS.find(h => h.id === CORRECT_ORDER[i]);
+      issues.push(`slot ${i+1} ผิด · ควรเป็น ${expected.layer}`);
+    }
+  });
+  const fb = document.getElementById('gateFeedback');
+  fb.style.display='block';
+  if(allCorrect){
+    gatePassed = true;
+    fb.className='gate-feedback ok';
+    fb.innerHTML = `🟢 <b>DEFLECTOR ACTIVATED</b> · HELION KEY ครบ · เส้นทางพลังงานถูกต้อง<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${attempts}</span>`;
+    SFX&&SFX.play('correct');
+    QuestState.grant('h6');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    Chain.set('helionKeyAssembled', true);
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.innerHTML = `<div class="big">✓ FINAL MASTERY GATE PASSED</div>
+                        <div class="sub">🔆 HELION KEY 6/6 · 🛡️ DEFLECTOR ARMED · พร้อมต่อสู้ VOID ที่ ACT D</div>`;
+    document.querySelector('.assembly-gate').appendChild(banner);
+    document.getElementById('checkBtn').disabled=true;
+    document.getElementById('resetBtn').disabled=true;
+    document.querySelectorAll('.helion-chip').forEach(c => c.style.pointerEvents='none');
+    document.getElementById('appQuizCard').style.display='block';
+    mountAppQuiz();
+  } else {
+    fb.className='gate-feedback bad';
+    fb.innerHTML = `✗ <b>DEFLECTOR REJECTED</b> · เรียงผิดลำดับ<br>
+      ${issues.map(i=>'• '+i).join('<br>')}<br>
+      💡 hint: เรียงตามทิศที่ <b>พลังงานเดินทาง</b> จากภายใน (ฟิวชัน) → ออกถึง corona<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${attempts}</span>`;
+    SFX&&SFX.play('wrong');
+  }
+};
+
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 5 · Evaluate) · ถ้านักดาราศาสตร์อ้างว่าเจอดาวฤกษ์ที่ "corona เย็นกว่า photosphere" · เธอจะประเมินคำกล่าวอ้างนี้อย่างไร?',
+    choices: [
+      { txt:'เชื่อทันที · เพราะตรงสามัญสำนึก (ใกล้แกน=ร้อน, ห่าง=เย็น)', correct:false, hint:'M2 trap · สามัญสำนึกผิด สำหรับดาวที่มี magnetic activity' },
+      { txt:'น่าสนใจ แต่ต้องตรวจสอบเพราะดาวที่มี magnetic activity ควรมี corona ร้อนกว่า · ขัดกับ pattern ของดาวอาทิตย์', correct:true },
+      { txt:'ปฏิเสธทันที · เป็นไปไม่ได้', correct:false, hint:'science ไม่ปฏิเสธทันที · ต้องตรวจสอบหลักฐาน' },
+    ],
+    onCorrect: () => { appQuizPassed=true; document.getElementById('rubricWrap').style.display='block'; mountRubric(); },
+  });
+}
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected'); rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap'); updateSubmit();
+    };
+  });
+}
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false; sb.textContent = '📤 ส่งผล · ออกจากดวงอาทิตย์ · เข้า ACT D';
+  }
+}
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p10c', nextHref:'p11-magnetic-bridge.html',
+    getPayload(){ return { prediction:pred, predictionMatched:pred===1, gatePassed, attempts, appQuizPassed, rubric:rubricChosen, helion:'h6' }; },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ผ่าน HELION KEY ASSEMBLY ก่อน'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.attempts<=2; },
+    onSubmit(){ Photon && Photon.add && Photon.add(40); }
+  });
+}, 200);
+</script>
+</body></html>

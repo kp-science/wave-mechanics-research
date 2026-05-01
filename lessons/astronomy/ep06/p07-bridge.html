@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · BRIDGE 2 · DISK → ZONE 1</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p07-bridge" data-type="story">
+<div class="page">
+  <span class="lbl story">🛰️ BRIDGE 2/5 · DISK → ZONE 1 (INNER PLANETS)</span>
+  <h1>ผ่าน NEBULA LAB · เข้าสู่ ZONE 1 · ดาวเคราะห์ชั้นใน</h1>
+
+  <div class="card green">
+    <h4 style="color:#7effb2; font-family:Orbitron,monospace; font-size:11px;">✓ ผ่านมา · NEBULA LAB</h4>
+    <div class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เก็บ 2 SHARDS · เข้าใจกำเนิดระบบ · ตอนนี้ออกบินไปดูของจริง — ยานเข้า<b>ดาวเคราะห์ชั้นใน</b>"
+    </div>
+  </div>
+
+  <div class="card cyan">
+    <h4 style="color:#64d8ff; font-family:Orbitron,monospace; font-size:11px;">⏳ ต่อไป · INNER PLANETS</h4>
+    <div class="narr" style="color:#cfeaff;">
+      <b style="color:#64d8ff;">อารยา:</b> "ดาวเคราะห์ชั้นใน 4 ดวง · พุธ ศุกร์ โลก อังคาร · ทุกดวง<b>เป็นหิน</b> ·
+      ขนาดเล็ก · มีดวงจันทร์น้อย · เราจะ<b style="color:#ff8a3d;">บินผ่านทุกดวง</b>"
+    </div>
+  </div>
+
+  <div class="recall-card">
+    <div class="recall-tag">🔁 RECALL · เนื้อหา DISK</div>
+    <div class="recall-q">ทำไมดาวเคราะห์ชั้นในเป็น "หิน"?</div>
+    <div class="recall-choices">
+      <button class="rc-btn" data-i="0">A. โลกเลือกอยู่ใกล้</button>
+      <button class="rc-btn" data-i="1">B. ใกล้ดวงอาทิตย์ · T สูง · น้ำแข็งระเหย · เหลือของแข็ง</button>
+      <button class="rc-btn" data-i="2">C. ดวงอาทิตย์ผลักของเหลวออก</button>
+    </div>
+    <div class="recall-fb" id="recallFb"></div>
+  </div>
+  <script>
+  (function(){
+    const correct = 1, pageId='p07-bridge';
+    const fb = document.getElementById('recallFb'); let answered=false;
+    document.querySelectorAll('.rc-btn').forEach(b => {
+      b.onclick = () => {
+        if(answered) return;
+        if(+b.dataset.i === correct){
+          answered=true; b.classList.add('correct');
+          fb.className='recall-fb show ok';
+          const key='cosmosLog_ep06_recall_'+pageId;
+          const firstTime = !localStorage.getItem(key);
+          if(firstTime && window.Coin && Coin.add){ Coin.add(5,'recall:'+pageId); localStorage.setItem(key,'1'); }
+          fb.innerHTML = '✓ ใช่! · frost line ตัดสินทุกอย่าง'+(firstTime?' · <b>+5 🪙</b>':'');
+          document.querySelectorAll('.rc-btn').forEach(x => x.disabled=true);
+        } else {
+          b.classList.add('wrong');
+          fb.className='recall-fb show bad';
+          fb.innerHTML='✗ ลองใหม่ · ใช้คำว่า frost line';
+          setTimeout(() => b.classList.remove('wrong'),400);
+        }
+      };
+    });
+  })();
+  </script>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'RECALL · กลุ่มสรุปสั้น ๆ : สิ่งที่เพิ่งเรียน + 1 misconception ที่ทำลายไป',
+    durationSec: 30,
+    chips: [
+      'เนื้อหาเข้าใจชัดเจน',
+      'ทำลาย misconception แล้ว',
+      'ยังมีจุดสับสน · ขอครูช่วย',
+      'พร้อมไปขั้นต่อไป',
+      'อยากทบทวนอีกรอบ'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ บินผ่านดาวเคราะห์ชั้นใน</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+setTimeout(() => {
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p07a-inner-engage.html');
+  if(window.PaceClient) Gate.wireButton('p07-bridge', btn, 'p07a-inner-engage.html');
+}, 200);
+</script>
+</body></html>

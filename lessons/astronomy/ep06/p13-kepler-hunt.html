@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P13 · Kepler Hunt · T²=a³</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.calc-stage { padding:18px; border-radius:14px; background:linear-gradient(180deg, rgba(255,203,107,0.10), rgba(20,28,52,0.6)); border:2px solid #ffcb6b; margin:10px 0; }
+.formula { font-family:Orbitron,monospace; font-size:24px; color:#ffcb6b; text-align:center; letter-spacing:.18em; margin:14px 0; }
+.input-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.input-row label { display:block; }
+.input-row label .k { font-size:11px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.1em; }
+.input-row input { width:100%; padding:10px; border-radius:8px; background:rgba(0,0,0,0.5); border:1px solid #64d8ff; color:#fff; font-size:16px; font-family:Orbitron,monospace; }
+.calc-result { padding:14px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px dashed #7effb2; text-align:center; margin:10px 0; }
+.calc-result .v { font-family:Orbitron,monospace; font-size:24px; color:#7effb2; }
+</style>
+</head>
+<body data-page="p13" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🧮 KEPLER HUNT · T²=a³</span>
+  <h1>หาฐาน VOID · กฎเคปเลอร์</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "เรามีเรดาร์จับ VOID · มีคาบโคจร <b>T = 302 ปี</b> · ใช้กฎเคปเลอร์ <b>T²=a³</b> หา <b>a</b> (ระยะกึ่งแกนเอก) ·
+      เคปเลอร์ใช้กับวงโคจรรอบดวงอาทิตย์ของเรา"</span>
+  </div>
+
+  <div class="calc-stage">
+    <div class="formula">T² = a³</div>
+    <div class="muted center" style="font-size:12px;">T = ปี · a = AU (astronomical unit)</div>
+
+    <div class="input-row">
+      <label><span class="k">T (period · ปี)</span><input type="number" id="inputT" value="302" disabled></label>
+      <label><span class="k">a = ?</span><input type="number" id="inputA" placeholder="พิมพ์ a"></label>
+    </div>
+
+    <div style="text-align:center; margin:10px 0;">
+      <button id="calcBtn">📐 คำนวณ</button>
+      <button id="hintBtn" class="ghost" style="margin-left:6px;">💡 hint</button>
+    </div>
+
+    <div id="hintBox" style="display:none; padding:12px; border-radius:10px; background:rgba(100,216,255,0.10); border:1px solid #64d8ff; font-size:13px; line-height:1.6;">
+      💡 ขั้นตอน:<br>
+      1. T² = 302² = 91,204<br>
+      2. a³ = 91,204<br>
+      3. a = ∛91,204 = ?<br>
+      4. ใช้เครื่องคิดเลข · กดถอด root3
+    </div>
+
+    <div class="calc-result" id="result" style="display:none;">
+      <div class="muted" style="font-size:11px;">VOID อยู่ที่</div>
+      <div class="v" id="resultV">— AU</div>
+    </div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P13</summary>
+    <div>คำตอบที่ถูก: a ≈ 45 AU (ใน Kuiper Belt) · ให้นักเรียนใช้เครื่องคิดเลข · ถูก = +50 coin</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'Kepler T²=a³ บอกอะไรกับเรา · ใช้คำนวณอะไรได้บ้าง?',
+    durationSec: 60,
+    chips: [
+      'ระยะดาวจากคาบโคจร',
+      'คาบดาวจากระยะ',
+      'พิสูจน์ว่าดาวอยู่ในระบบเดียวกัน',
+      'ใช้ค้น exoplanet',
+      'ใช้กับดาวเทียมรอบโลกได้'
+    ],
+    indicator: 'P3'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งคำตอบ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+document.getElementById('hintBtn').onclick = () => {
+  document.getElementById('hintBox').style.display='block';
+};
+document.getElementById('calcBtn').onclick = () => {
+  const T = 302;
+  const a = Math.cbrt(T*T);
+  document.getElementById('result').style.display='block';
+  document.getElementById('resultV').textContent = a.toFixed(2)+' AU';
+};
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p13', nextHref:'p14-vault-entry.html',
+    getPayload(){
+      const v = parseFloat(document.getElementById('inputA').value);
+      const correct = !isNaN(v) && Math.abs(v-45) < 1.5;
+      return { a:v, correct };
+    },
+    validate(p){ if(isNaN(p.a)){ alert('กรอกค่า a'); return false; } return true; },
+    isPerfect(p){ return p.correct; },
+    onSubmit(){
+      const v = parseFloat(document.getElementById('inputA').value);
+      if(Math.abs(v-45) < 1.5){
+        Chain.set('keplerToken', true);
+        alert('✓ ถูก! · VOID อยู่ที่ ~45 AU ใน Kuiper Belt · ได้ Kepler Token · ปลด ending A+');
+      } else {
+        alert('💡 ลองคำนวณใหม่ · 302² = 91,204 · ∛91,204 ≈ 45');
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

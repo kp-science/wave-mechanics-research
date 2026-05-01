@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p07 · Recombination</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .compare .panel { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:14px; text-align:center; }
+  .compare .panel.before { border-color:var(--quantum-pink); }
+  .compare .panel.after { border-color:var(--genesis-gold); }
+  .compare svg { width:100%; max-width:240px; height:160px; }
+  @media(max-width:520px){ .compare{grid-template-columns:1fr;} }
+</style>
+</head>
+<body data-page="p07">
+<div class="page">
+  <div class="act-badge">ACT B · 3/8 · RECOMBINATION</div>
+  <div id="epochHost"></div>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <h3>เปรียบเทียบ ก่อน vs หลัง recombination</h3>
+  <div class="compare">
+    <div class="panel before">
+      <h4 style="color:var(--quantum-pink);margin:0;">ก่อน · plasma</h4>
+      <svg viewBox="0 0 240 160">
+        <rect width="240" height="160" fill="#1a0a30"/>
+        <g><circle cx="40" cy="40" r="3" fill="#fff"/><circle cx="60" cy="80" r="3" fill="#fff"/>
+        <circle cx="120" cy="60" r="3" fill="#fff"/><circle cx="180" cy="100" r="3" fill="#fff"/>
+        <circle cx="200" cy="40" r="3" fill="#fff"/><circle cx="100" cy="120" r="3" fill="#fff"/></g>
+        <g stroke="#ff6ab8" stroke-width="1" opacity=".7">
+          <path d="M40 40 L60 80 L120 60 L180 100 L200 40 L100 120 L40 40" fill="none"/>
+        </g>
+        <text x="120" y="150" fill="#ff6ab8" font-size="10" text-anchor="middle">photon ติด electron</text>
+      </svg>
+      <p style="font-size:13px;">photon เคลื่อนที่ไม่ได้ · ขุ่นมัว</p>
+    </div>
+    <div class="panel after">
+      <h4 style="color:var(--genesis-gold);margin:0;">หลัง · 380,000 ปี</h4>
+      <svg viewBox="0 0 240 160">
+        <rect width="240" height="160" fill="#0a0410"/>
+        <g><circle cx="60" cy="60" r="6" fill="#ffd84a" opacity=".7"/>
+        <circle cx="180" cy="100" r="6" fill="#ffd84a" opacity=".7"/>
+        <circle cx="120" cy="40" r="6" fill="#ffd84a" opacity=".7"/></g>
+        <g stroke="#fff5e3" stroke-width="1.5">
+          <line x1="20" y1="80" x2="220" y2="80" opacity=".7"/>
+          <line x1="20" y1="120" x2="220" y2="120" opacity=".5"/>
+          <line x1="20" y1="40" x2="220" y2="40" opacity=".6"/>
+        </g>
+        <text x="120" y="150" fill="#ffd84a" font-size="10" text-anchor="middle">photon หลุด · CMB</text>
+      </svg>
+      <p style="font-size:13px;">atom เกิด · photon เดินทางได้ · เห็น CMB</p>
+    </div>
+  </div>
+
+  <div class="howto">
+    <h4>🎮 EXPLAIN BACK · ตอบคำถาม</h4>
+    <ul>
+      <li>เลือก keyword chips ที่ตอบ "ทำไม CMB หลุดออกมาตอน 380,000 ปี"</li>
+    </ul>
+  </div>
+
+  <div class="row" id="kw">
+    <button class="chip kw" data-on="1">electron จับ nucleus = atom</button>
+    <button class="chip kw" data-on="1">photon ไม่ติด electron แล้ว</button>
+    <button class="chip kw" data-on="1">จักรวาลเย็นพอ T~3000K</button>
+    <button class="chip kw" data-on="0">เพราะดาวระเบิด</button>
+    <button class="chip kw" data-on="0">เพราะ inflation จบ</button>
+    <button class="chip kw" data-on="0">เพราะ dark matter</button>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่ง</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/timeline-viz.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p07' });
+  TimelineViz.epochCard(document.getElementById('epochHost'), 3);
+  EP08Page.story('p07');
+  EP08Page.markVisit('p07');
+
+  const sel = new Set();
+  document.getElementById('kw').addEventListener('click', e => {
+    const c = e.target.closest('.kw'); if (!c) return;
+    const t = c.textContent;
+    if (sel.has(t)) { sel.delete(t); c.classList.remove('selected'); }
+    else { sel.add(t); c.classList.add('selected'); }
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    let r=0,w=0;
+    document.querySelectorAll('.kw').forEach(c => {
+      const should = c.dataset.on === '1';
+      const did = sel.has(c.textContent);
+      if (should && did) r++;
+      if (!should && did) w++;
+    });
+    const ok = r === 3 && w === 0;
+    if (window.KPA) {
+      KPA.log('K','K1','recombination explain ' + (ok?'ok':''));
+      KPA.research('cmbMastery', { right:r, wrong:w, ok });
+    }
+    EP08Page.submit({
+      ok,
+      title: ok ? '✓ CMB MASTERY' : '⚠️ เลือก keyword 3 ตัวบนแถว',
+      body: `<p>เพราะอุณหภูมิเย็นถึง ~3000 K · electron จับ nucleus เป็น atom · photon เดินทางได้</p>
+             <p>นั่นคือ CMB 2.73 K ที่เราตรวจจับวันนี้</p>`
+    });
+  };
+</script>
+</body>
+</html>

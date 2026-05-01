@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P18 · Habitable Slider</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.slider-stage { padding:18px; border-radius:14px; background:linear-gradient(180deg, rgba(20,28,52,0.7), #02030a); border:2px solid #64d8ff; margin:10px 0; }
+.slider-track { position:relative; height:60px; margin:14px 0; background:linear-gradient(90deg, #ff5c7a 0%, #ff8a3d 30%, #7effb2 50%, #64d8ff 70%, #b980ff 100%); border-radius:30px; overflow:hidden; }
+.slider-zones { position:absolute; inset:0; pointer-events:none; }
+.szone { position:absolute; top:50%; transform:translateY(-50%); padding:2px 8px; background:rgba(0,0,0,0.5); border-radius:4px; font-family:Orbitron,monospace; font-size:10px; }
+.distance-input { width:100%; -webkit-appearance:none; height:14px; border-radius:7px; background:rgba(255,255,255,0.1); outline:none; }
+.distance-input::-webkit-slider-thumb { -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:#fff; border:3px solid #64d8ff; cursor:pointer; box-shadow:0 0 14px #64d8ff; }
+.water-state { padding:14px; border-radius:10px; text-align:center; margin:10px 0; transition:all .3s; }
+.water-state .ic { font-size:36px; }
+.water-state .v { font-family:Orbitron,monospace; font-size:14px; margin-top:6px; letter-spacing:.1em; }
+.ws-frozen { background:rgba(100,216,255,0.10); border:1px solid #64d8ff; color:#64d8ff; }
+.ws-liquid { background:rgba(126,255,178,0.10); border:1px solid #7effb2; color:#7effb2; }
+.ws-boil { background:rgba(255,138,61,0.10); border:1px solid #ff8a3d; color:#ff8a3d; }
+.ws-vapor { background:rgba(255,92,122,0.10); border:1px solid #ff5c7a; color:#ff5c7a; }
+</style>
+</head>
+<body data-page="p18" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌍 HABITABLE · EXPLORE</span>
+  <h1>Slider ระยะ · น้ำเป็นอย่างไร?</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ทดลอง! · ลากระยะจากดวงอาทิตย์ · ดูน้ำว่าจะ<b style="color:#64d8ff;">แข็ง</b>, <b style="color:#7effb2;">เหลว</b> หรือ <b style="color:#ff5c7a;">เดือด</b>"</span>
+  </div>
+
+  <div class="slider-stage">
+    <h3 style="color:#64d8ff;">📏 ระยะจากดวงอาทิตย์: <span id="auVal" style="color:#fff;">1.0</span> AU</h3>
+    <div class="slider-track">
+      <div class="slider-zones">
+        <div class="szone" style="left:0%; color:#ff5c7a;">0.4</div>
+        <div class="szone" style="left:30%; color:#ff8a3d;">0.95</div>
+        <div class="szone" style="left:50%; color:#7effb2;">1.0 (โลก)</div>
+        <div class="szone" style="left:70%; color:#64d8ff;">1.5</div>
+        <div class="szone" style="right:0%; color:#b980ff;">5.0+</div>
+      </div>
+    </div>
+    <input type="range" class="distance-input" id="dist" min="3" max="50" value="10">
+
+    <div class="water-state" id="state"></div>
+
+    <div id="planetMatch" class="muted center" style="font-size:12px;"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P18</summary>
+    <div>ทดลองที่ 0.4, 1.0, 1.5, 5.0 · ดูสถานะน้ำ · รู้ว่า habitable เพราะมีหลายปัจจัย ไม่ใช่ระยะเดียว</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ทำไม HZ (habitable zone) สำคัญ · แค่ระยะพอไหม?',
+    durationSec: 60,
+    chips: [
+      'ใกล้ไป → น้ำระเหย',
+      'ไกลไป → น้ำกลายเป็นน้ำแข็ง',
+      'ต้องมีบรรยากาศช่วยรักษาความร้อน',
+      'ชนิดดาวฤกษ์กำหนดความกว้าง HZ',
+      'ระยะอย่างเดียวไม่พอ'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · 4 ปัจจัยเอื้อชีวิต',
+    words: ['น้ำเหลว', 'อุณหภูมิ', 'บรรยากาศ', 'HZ', 'ดาวฤกษ์', 'ระยะห่าง', 'M7', 'โลก', 'ดาวอังคาร', 'ศุกร์'],
+    required: ['น้ำเหลว', 'HZ', 'บรรยากาศ', 'ดาวฤกษ์'],
+    indicator: 'K6'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ Quiz · kill M7</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const slider = document.getElementById('dist');
+const auVal = document.getElementById('auVal');
+const stEl = document.getElementById('state');
+const matchEl = document.getElementById('planetMatch');
+
+function update(){
+  const au = (slider.value/10).toFixed(2);
+  auVal.textContent = au;
+  let st;
+  if(au < 0.5) st = { c:'ws-vapor', i:'♨️', t:'น้ำกลายเป็นไอ · ร้อนเกิน · greenhouse', match:'ใกล้พุธ' };
+  else if(au < 0.95) st = { c:'ws-boil', i:'🌫️', t:'น้ำเดือด · บรรยากาศหนาแก๊สเรือนกระจก', match:'ดาวศุกร์ (~0.72 AU)' };
+  else if(au <= 1.5) st = { c:'ws-liquid', i:'💧', t:'น้ำเหลว · habitable!', match:au<1.05?'โลก':'ขอบนอก habitable · อังคาร?' };
+  else if(au < 5) st = { c:'ws-frozen', i:'❄️', t:'น้ำแข็ง · เย็นเกิน', match:'ขอบนอก habitable' };
+  else st = { c:'ws-frozen', i:'🧊', t:'น้ำแข็งจัด · ในน้ำแข็งของดาวยักษ์', match:'พฤหัส+' };
+  stEl.className = 'water-state '+st.c;
+  stEl.innerHTML = `<div class="ic">${st.i}</div><div class="v">${st.t}</div>`;
+  matchEl.textContent = '≈ ' + st.match;
+}
+slider.oninput = update;
+update();
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p18', nextHref:'p19-habitable-quiz.html',
+    getPayload(){ return { au: slider.value/10 }; },
+    isPerfect(p){ return true; },
+    onSubmit(){}
+  });
+}, 200);
+</script>
+</body></html>

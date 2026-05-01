@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p19 · Mars Design A</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .design-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:14px 0; }
+  .group { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .group h4 { margin:0 0 8px; color:var(--rocket-orange); }
+  .opt { display:block; padding:8px 12px; background:#0a1226;
+    border:1px solid var(--line-soft); border-radius:8px; margin:6px 0; cursor:pointer;
+    font-size:14px; }
+  .opt.selected { background:var(--rocket-orange); color:#1a0e00; border-color:var(--rocket-orange); }
+  .opt.correct { background:rgba(155,231,196,.15); border-color:var(--good); color:var(--good); }
+  .opt.wrong { background:rgba(255,106,106,.15); border-color:var(--bad); color:var(--bad); }
+</style>
+</head>
+<body data-page="p19">
+<div class="page">
+  <div class="act-badge">ACT C · 8/10 · MARS A</div>
+  <h1>ออกแบบ Mars · ส่วน A · ยาน + เชื้อเพลิง</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ DESIGN CHOICE · เลือกผิด = ทีมตายตอนเข้าบรรยากาศ</div>
+    <div class="crisis-body">Mars มีบรรยากาศบางๆ · ความร้อนเข้า ~1,500°C · g = 0.38 ของโลก · ทีมต้องเลือก <b>วัสดุ</b> และ <b>ความเร็ว v_escape</b></div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🚀 TOOL · ตำรา p96 + EM applications</div>
+    <div class="tool-body">v_escape โลก = 11.2 km/s · ที่ Mars ต้องคำนึงความร้อน + g ครึ่งโลก</div>
+  </div>
+
+  <div class="design-grid">
+    <div class="group" data-q="material">
+      <h4>วัสดุยาน (heat shield)</h4>
+      <div class="opt" data-v="aluminum">อะลูมิเนียมธรรมดา</div>
+      <div class="opt" data-v="carbon" data-correct>คาร์บอนแข็ง + แอโรเจล (NASA spinoff)</div>
+      <div class="opt" data-v="plastic">พลาสติก ABS</div>
+    </div>
+    <div class="group" data-q="velocity">
+      <h4>ความเร็วปล่อย</h4>
+      <div class="opt" data-v="3">3 km/s</div>
+      <div class="opt" data-v="11.5" data-correct>11.5 km/s (เกิน escape โลก)</div>
+      <div class="opt" data-v="20">20 km/s</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="check">✓ ตรวจ</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Curiosity ใช้ heat shield คาร์บอนคอมโพสิต · Mars Direct ของ Robert Zubrin ใช้ v ~11 km/s · ไปต่อ p20 บ้าน + อาหาร + น้ำ
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p20-mars-design-b.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p20 ส่วน B</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p19' });
+    PBL.init({ id:'p19-mars-a' });
+
+    document.querySelectorAll('.group').forEach(g => {
+      g.querySelectorAll('.opt').forEach(o => o.onclick = () => {
+        g.querySelectorAll('.opt').forEach(x => x.classList.remove('selected'));
+        o.classList.add('selected');
+      });
+    });
+
+    document.getElementById('check').onclick = () => {
+      const groups = document.querySelectorAll('.group');
+      let correct = true;
+      groups.forEach(g => {
+        const sel = g.querySelector('.opt.selected');
+        if (!sel) { correct = false; return; }
+        if (sel.dataset.correct !== undefined) sel.classList.add('correct');
+        else { sel.classList.add('wrong'); correct = false; }
+      });
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = correct ? '✓ ออกแบบส่วน A สำเร็จ · ยานทนความร้อน + เร่งถูก' : '× ลองใหม่ · เลือกผิดอย่างน้อย 1 ข้อ';
+      KPA.log('K3','mars-design-a',{ correct });
+      KPA.competency('C5',{ evidence:'engineering-mars-a' });
+      PBL.attempt(correct, {});
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    };
+  });
+</script>
+</body>
+</html>

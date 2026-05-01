@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P08c · BELT NAVIGATOR · GS-4</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.nav-stage { position:relative; height:280px; border-radius:14px; overflow:hidden; margin:8px 0;
+             background:#03061a; border:2px solid #ffcb6b; }
+.ship-icon { position:absolute; left:5%; top:50%; transform:translateY(-50%); font-size:24px; transition:all 1s ease-out; z-index:10; }
+.rock-obj { position:absolute; width:36px; height:36px; border-radius:50%; cursor:pointer;
+            background:radial-gradient(circle, #d4a888, #6a5040); box-shadow:0 0 8px rgba(0,0,0,0.5);
+            display:flex; align-items:center; justify-content:center; font-size:11px; color:#fff;
+            font-family:Orbitron,monospace; }
+.rock-obj.cleared { opacity:0.3; }
+.rock-obj.correct { box-shadow:0 0 14px #7effb2; }
+.rock-obj.wrong { box-shadow:0 0 14px #ff5c7a; animation:shake .35s; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+.q-card { padding:12px; border-radius:10px; margin:10px 0; background:rgba(255,203,107,0.08); border:1px solid #ffcb6b; }
+</style>
+</head>
+<body data-page="p08c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">⭕ BELT NAVIGATOR · GATE 4</span>
+  <h1>ปลด GS-4 · Belt Fragment (kill M4)</h1>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">อารยา:</b> "ผ่าน 5 หิน · แต่ละหิน<b>ตอบคำถาม</b>ก่อนผ่าน · เลือกถูก = ยานเลี่ยงได้ · ผิด = หินมา → -ETA"
+    </span>
+  </div>
+
+  <div class="nav-stage" id="stage">
+    <div class="ship-icon" id="ship">🚀</div>
+  </div>
+
+  <div id="qHost"></div>
+
+  <div id="resultHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P08c</summary>
+    <div>5 ข้อ · ผ่าน 4/5 = SHARD-4 ปลด · ทุกข้อทำลาย M4 (belt ไม่แน่น)</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · asteroid belt ไม่ได้แน่นอย่างที่คิด',
+    words: ['ดาวเคราะห์น้อย', 'ระยะเฉลี่ย', '1 ล้าน กม.', 'พฤหัส', 'โล่ง', 'Ceres', 'โคจร', 'รบกวน', 'รวมตัวไม่ได้', 'frost line'],
+    required: ['ดาวเคราะห์น้อย', 'ระยะเฉลี่ย', 'โล่ง', 'พฤหัส'],
+    indicator: 'K2'
+  });
+})();
+</script>
+
+
+<div id="ljMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ljMount');
+  if(!el || !window.Journal) return;
+  Journal.mount(el, {
+    pageId: document.body.dataset.page,
+    sceneTitle: 'จดสมุด · 3-2-1 ปิด scene',
+    learnedChips: ['Belt อยู่ 2.2-3.2 AU', 'ระยะเฉลี่ย ~1M km', 'พฤหัสรบกวน', 'Ceres = ดาวเคราะห์แคระ', 'โล่งมาก ไม่แน่น', 'ยานบินผ่านง่าย'],
+    useChips: ['ไม่กลัวยานชน asteroid', 'อธิบายภาพยนต์ผิดความจริง', 'รู้แหล่งดาวตก', 'สนใจ NASA OSIRIS-REx'],
+    askChips: ['Ceres มีน้ำไหม', 'ขุดทองในแถบนี้ได้ไหม', 'ทำไม Ceres กลม', 'พฤหัสกระทบโลกไหม']
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled style="opacity:0.5;">— auto-submit เมื่อจบ —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ผ่าน 5 ก้อนก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const QS = [
+  { q:'ระยะเฉลี่ยระหว่าง asteroid?', a:['ติดกัน','~1 ล้าน กม.'], c:1 },
+  { q:'ทำไม belt ไม่รวมเป็นดาว?', a:['แรงโน้มถ่วงพฤหัสรบกวน','เป็นน้ำแข็ง'], c:0 },
+  { q:'ดาวที่ใหญ่สุดใน belt?', a:['Vesta','Ceres'], c:1 },
+  { q:'belt อยู่ระหว่าง?', a:['อังคาร-พฤหัส','โลก-ดาวอังคาร'], c:0 },
+  { q:'asteroid มีกี่ดวง (D > 1 km)?', a:['~ 100','~ 1,000,000'], c:1 },
+];
+const stage = document.getElementById('stage');
+let cur = 0, correctCount = 0;
+
+function spawnRock(idx){
+  const r = document.createElement('div'); r.className='rock-obj'; r.id='rock'+idx;
+  r.style.left = (15 + idx*16) + '%';
+  r.style.top = (35 + (idx%2)*15) + '%';
+  r.textContent = idx+1;
+  stage.appendChild(r);
+}
+QS.forEach((_,i) => spawnRock(i));
+
+function showQ(idx){
+  if(idx >= QS.length){ finish(); return; }
+  const q = QS[idx];
+  const host = document.getElementById('qHost');
+  host.innerHTML = `<div class="q-card"><div class="q-prompt">หิน ${idx+1}/5: ${q.q}</div><div id="optHost" class="opts" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div></div>`;
+  const opts = host.querySelector('#optHost');
+  q.a.forEach((t, i) => {
+    const b = document.createElement('button'); b.className='ghost';
+    b.style.cssText='padding:10px; font-family:inherit; letter-spacing:0; font-weight:400;';
+    b.textContent = t;
+    b.onclick = () => {
+      const rock = document.getElementById('rock'+idx);
+      if(i === q.c){
+        rock.classList.add('cleared','correct');
+        correctCount++;
+        if(window.SFX) SFX.play('correct');
+      } else {
+        rock.classList.add('wrong');
+        QuestState.decreaseEta(0.4);
+        if(window.SFX) SFX.play('wrong');
+      }
+      // move ship forward
+      document.getElementById('ship').style.left = (10 + (idx+1)*16) + '%';
+      cur = idx+1;
+      setTimeout(() => showQ(cur), 600);
+    };
+    opts.appendChild(b);
+  });
+}
+showQ(0);
+
+function finish(){
+  document.getElementById('qHost').innerHTML = '';
+  const r = document.getElementById('resultHost');
+  if(correctCount >= 4){
+    QuestState.grant('gs4');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene||0.6);
+    r.innerHTML = `<div class="card green">✓ <b>BELT NAVIGATED</b> · ${correctCount}/5 ถูก · ปลด <b style="color:#ffcb6b;">GS-4 ⭕ Belt Fragment</b> · M4 ทำลาย!</div>`;
+    Submit.record('p08c', { correct: correctCount, total: 5 });
+    Gate.markSubmitted();
+    const cBtn = document.querySelector('.submit-btn'); cBtn.disabled=true; cBtn.textContent='✓ เสร็จแล้ว';
+    if(window.Coin && Coin.awardPerfect && correctCount===5) Coin.awardPerfect('p08c');
+  } else {
+    r.innerHTML = `<div class="card red">⚠ ${correctCount}/5 · ต้อง 4+ ลองใหม่</div>`;
+    setTimeout(() => location.reload(), 2500);
+  }
+}
+
+setTimeout(() => {
+  Gate.wireButton('p08c', document.querySelector('.next-btn'), 'p09-bridge.html', { requireSubmit:true });
+}, 200);
+</script>
+</body></html>

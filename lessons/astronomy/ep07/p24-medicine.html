@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p24 · Medicine Spinoff</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .clinic { background:linear-gradient(180deg,#0e1a30,#0a0e1c);
+    border:1px solid var(--line); border-radius:14px; padding:14px; margin:14px 0; }
+  .case { background:var(--bg-card); border-left:4px solid var(--bad);
+    padding:10px 14px; margin:10px 0; border-radius:8px; }
+  .case h4 { margin:0 0 4px; color:var(--bad); }
+  .tools { display:flex; gap:8px; flex-wrap:wrap; margin:8px 0; }
+  .med-tool { background:var(--bg-card); border:1px solid var(--steel-blue);
+    border-radius:20px; padding:6px 12px; cursor:pointer; font-size:13px; font-weight:600; }
+  .med-tool.used { background:var(--good); color:#001; border-color:var(--good); }
+  .med-tool.wrong { background:var(--bad); color:#fff; border-color:var(--bad); }
+  .case.solved { border-left-color:var(--good); }
+  .case.solved h4 { color:var(--good); }
+</style>
+</head>
+<body data-page="p24">
+<div class="page">
+  <div class="act-badge">ACT D · 3/6 · MEDICINE</div>
+  <h1>การแพทย์ · ใช้ spinoff รักษาทีม</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ทีมมีอาการ 3 ราย · ต้องเลือกเครื่องมือถูก</div>
+    <div class="crisis-body">เครื่องมือทุกชิ้นมาจากภารกิจอวกาศ NASA · ตำรา p99</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🏥 TOOL · Medical Spinoff (ตำรา p99)</div>
+    <div class="tool-body">
+      <b>ปั๊มหัวใจเทียม</b> · <b>กล้อง 3 มิติ NASA</b> · <b>ปรอททางหู</b> · <b>เครื่องวัด UV</b> · ตำราระบุ NASA spinoff
+    </div>
+  </div>
+
+  <div class="clinic">
+    <div class="case" data-case="fever" data-correct="thermo">
+      <h4>🔥 เคน · ไข้สูง · ต้องวัดเร็ว</h4>
+      <div class="tools" data-for="fever">
+        <span class="med-tool" data-id="thermo">ปรอททางหู (NASA)</span>
+        <span class="med-tool" data-id="cam3d">กล้อง 3 มิติ</span>
+        <span class="med-tool" data-id="uvscan">เครื่องวัด UV</span>
+      </div>
+    </div>
+    <div class="case" data-case="injury" data-correct="cam3d">
+      <h4>🩹 อารยา · เจ็บภายใน หลัง CPR</h4>
+      <div class="tools" data-for="injury">
+        <span class="med-tool" data-id="thermo">ปรอททางหู</span>
+        <span class="med-tool" data-id="cam3d">กล้อง 3 มิติ NASA · ส่องอวัยวะภายใน</span>
+        <span class="med-tool" data-id="heartpump">ปั๊มหัวใจเทียม</span>
+      </div>
+    </div>
+    <div class="case" data-case="heart" data-correct="heartpump">
+      <h4>❤️ พ่ออารยา · หัวใจอ่อนแรงหลังไร้น้ำหนัก</h4>
+      <div class="tools" data-for="heart">
+        <span class="med-tool" data-id="cam3d">กล้อง 3 มิติ</span>
+        <span class="med-tool" data-id="uvscan">UV scanner</span>
+        <span class="med-tool" data-id="heartpump">ปั๊มหัวใจเทียม (NASA spinoff)</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 KPA · kill M7 (เทคโนฯ ไม่คุ้ม)</div>
+    เครื่องมือทั้ง 4 ชิ้นในตำรา <b>p99</b> เป็นเทคโนฯ ที่หมอใช้ทุกวัน · มาจากเงินภาษีลงทุนในอวกาศ · จึงคุ้มในระยะยาว
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p25-spinoff-quiz.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p25 quiz</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p24' });
+    PBL.init({ id:'p24-medicine' });
+
+    const solved = new Set();
+    document.querySelectorAll('.case').forEach(c => {
+      c.querySelectorAll('.med-tool').forEach(t => {
+        t.onclick = () => {
+          if (solved.has(c.dataset.case)) return;
+          const correct = t.dataset.id === c.dataset.correct;
+          if (correct) {
+            t.classList.add('used');
+            c.classList.add('solved');
+            solved.add(c.dataset.case);
+            CoinEnergy.reward('crisisSolveFirst');
+          } else {
+            t.classList.add('wrong');
+            CoinEnergy.penalty('crisisFail');
+          }
+          KPA.log('K6','med-spinoff',{ case:c.dataset.case, picked:t.dataset.id, correct });
+          PBL.attempt(correct, { case:c.dataset.case });
+          if (solved.size === 3) {
+            const res = document.getElementById('resultHost');
+            res.classList.add('show','correct');
+            res.textContent = '✓ รักษาได้ทั้ง 3 เคส · ใช้ spinoff สำเร็จ';
+            document.getElementById('transfer').style.display = 'block';
+            document.getElementById('next').style.display = '';
+            KPA.misconception('M7','resolved',{ ctx:'medicine' });
+            PBL._enter('transfer');
+          }
+        };
+      });
+    });
+  });
+</script>
+</body>
+</html>

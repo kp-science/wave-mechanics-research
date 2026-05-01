@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p00 · Warp Jump</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .cover-hero { text-align:center; padding:30px 14px;
+    background: radial-gradient(circle at 50% 30%, rgba(255,216,74,.18), transparent 60%);
+    border-radius:18px; border:1px solid rgba(255,216,74,.3); margin:14px 0; }
+  .warp-svg { max-width:600px; margin:14px auto; display:block; }
+  .resume-btns { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0; }
+</style>
+</head>
+<body data-page="p00">
+<div class="page">
+  <div class="act-badge">ACT A · 1/5 · COVER</div>
+  <div class="cover-hero">
+    <h1>🌌 EP08 · Genesis Again</h1>
+    <p style="color:var(--quantum-pink);font-size:18px;letter-spacing:.15em;">Season Finale · 13.8 พันล้านปี ย้อนหลัง</p>
+
+    <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" class="warp-svg">
+      <defs>
+        <radialGradient id="w1"><stop offset="0%" stop-color="#fff"/><stop offset="40%" stop-color="#ffd84a"/><stop offset="100%" stop-color="#050108" stop-opacity="0"/></radialGradient>
+        <radialGradient id="w2"><stop offset="0%" stop-color="#ff6ab8"/><stop offset="100%" stop-color="#050108" stop-opacity="0"/></radialGradient>
+      </defs>
+      <rect width="600" height="280" fill="#050108"/>
+      <g opacity=".7">
+        <circle cx="80" cy="40" r="1" fill="#fff"/>
+        <circle cx="180" cy="80" r="1.5" fill="#fff"/>
+        <circle cx="320" cy="30" r="1" fill="#fff"/>
+        <circle cx="480" cy="60" r="1.2" fill="#fff"/>
+        <circle cx="540" cy="200" r="1" fill="#fff"/>
+        <circle cx="120" cy="240" r="1.5" fill="#fff"/>
+      </g>
+      <g>
+        <ellipse cx="300" cy="140" rx="280" ry="6" fill="url(#w2)" opacity=".5"/>
+        <ellipse cx="300" cy="140" rx="180" ry="40" fill="url(#w1)"/>
+        <circle cx="300" cy="140" r="14" fill="#fff"/>
+        <text x="300" y="200" fill="#ffd84a" font-size="13" text-anchor="middle" font-family="sans-serif">t = 0 · BIG BANG ORIGIN</text>
+        <text x="300" y="220" fill="#ff6ab8" font-size="11" text-anchor="middle" font-family="sans-serif">warp jump 13.8 Gyr</text>
+      </g>
+    </svg>
+
+    <p style="color:var(--text-soft);max-width:600px;margin:0 auto;">
+      หลัง EP07 · โบลท์เปิด <strong>warp drive ของพ่อ</strong> · ตั้งพิกัดปลายทาง = วินาทีที่ 0 ของบิกแบง<br>
+      ทีมเด้งออกที่ <em>"จุดที่ยังไม่มีอะไร"</em> · ไม่มีดาว · ไม่มีสสาร · มีแค่ <strong style="color:var(--quantum-pink)">เงาดำของ VOID Prime</strong>
+    </p>
+
+    <div class="resume-btns">
+      <a href="p01-pretest.html" class="btn">▶ เริ่มภารกิจสุดท้าย</a>
+      <button class="btn ghost" id="resumeBtn" style="display:none;">↻ ทำต่อจากที่ค้าง</button>
+      <button class="btn ghost" id="resetBtn">🗑️ เริ่มใหม่ทั้งหมด</button>
+    </div>
+  </div>
+
+  <details class="story-tab">
+    <summary>📖 Story Tab · เนื้อเรื่องตอนนี้</summary>
+    <div id="storySpine"></div>
+  </details>
+
+  <div class="howto">
+    <h4>🎮 HOW TO PLAY · EP08</h4>
+    <ul>
+      <li>📖 <b>Story Tab</b> ทุกหน้า · แตะเพื่ออ่านเนื้อเรื่องตอนนั้น</li>
+      <li>🗝️ <b>S1 Keyring 17 ดวง</b> · เก็บมาจาก EP01-07 · ใช้ในบอส</li>
+      <li>🎁 <b>Mystery Box ×8</b> · เปิดเมื่อทำภารกิจสำคัญ</li>
+      <li>🔥 <b>BOSS GENESIS FORGE</b> · canvas action · 4 phase</li>
+      <li>🌟 <b>5 Endings</b> · ขึ้นอยู่กับการเลือก p21 + ผลบอส</li>
+    </ul>
+  </div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p00' });
+  // story spine
+  const story = (window.EP_CONFIG && EP_CONFIG.story && EP_CONFIG.story.p00) || {};
+  const sp = document.getElementById('storySpine');
+  if (sp) sp.innerHTML = `
+    <div class="story-row"><b>OBJECTIVE</b><span>${story.objective||'-'}</span></div>
+    <div class="story-row"><b>NOW</b><span>${story.now||'-'}</span></div>
+    <div class="story-row"><b>NEXT</b><span>${story.next||'-'}</span></div>
+  `;
+  // resume detection
+  try {
+    const last = localStorage.getItem('cosmosLog_ep08_lastPage');
+    if (last && last !== 'p00') {
+      const btn = document.getElementById('resumeBtn');
+      btn.style.display = '';
+      btn.onclick = () => {
+        const pages = (EP_CONFIG && EP_CONFIG.pages) || [];
+        const p = pages.find(x => x.id === last);
+        if (p) location.href = p.file;
+      };
+    }
+  } catch(e){}
+  document.getElementById('resetBtn').onclick = () => {
+    if (confirm('ลบความคืบหน้า EP08 ทั้งหมด? (S1 keys ไม่ถูกลบ)')) {
+      ['kpa','research','economy','keys','epochs','ending','choice','lastPage'].forEach(k =>
+        localStorage.removeItem('cosmosLog_ep08_' + k));
+      alert('ลบเรียบร้อย · เริ่มใหม่ได้');
+      location.reload();
+    }
+  };
+  localStorage.setItem('cosmosLog_ep08_lastPage', 'p00');
+</script>
+</body>
+</html>

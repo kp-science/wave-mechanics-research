@@ -1,0 +1,239 @@
+/* ===== EP05 Page Style · Solar Theme · base on book.css ===== */
+
+:root {
+  --bg-deep: #02030a;
+  --bg-mid:  #04050d;
+  --sun-gold: #ffcb6b;
+  --sun-orange: #ff8a3d;
+  --sun-red: #ff5c7a;
+  --corona-purple: #b980ff;
+  --aurora-green: #7effb2;
+  --info-cyan: #64d8ff;
+  --text: #e8ecf8;
+  --muted: #9aa3c0;
+  --vmuted: #6a7394;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #0a0712 0%, var(--bg-mid) 40%, var(--bg-deep) 100%);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", "Sukhumvit Set", "Noto Sans Thai", sans-serif;
+  margin: 0; padding: 14px;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ===== Headings · prominent / scannable ===== */
+h1 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.04em;
+  font-size: 28px;
+  line-height: 1.25;
+  color: var(--sun-gold);
+  margin: 16px 0 14px;
+  padding: 12px 16px 12px 18px;
+  position: relative;
+  border-left: 5px solid var(--sun-orange);
+  background: linear-gradient(90deg,
+    rgba(255,138,61,0.18) 0%,
+    rgba(255,203,107,0.06) 40%,
+    transparent 85%);
+  border-radius: 0 12px 12px 0;
+  text-shadow: 0 2px 14px rgba(255,138,61,0.45), 0 0 4px rgba(0,0,0,0.6);
+  font-weight: 700;
+  box-shadow: inset 0 0 22px rgba(255,138,61,0.06);
+}
+h1::before {
+  content: '';
+  position: absolute;
+  left: -5px; top: 0; bottom: 0;
+  width: 5px;
+  background: linear-gradient(180deg, var(--sun-gold), var(--sun-orange), var(--sun-red));
+  box-shadow: 0 0 10px var(--sun-orange);
+  border-radius: 3px;
+}
+h2 {
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.06em;
+  font-size: 18px;
+  color: var(--sun-orange);
+  margin: 20px 0 10px;
+  padding: 4px 0 4px 12px;
+  border-left: 3px solid rgba(255,138,61,0.55);
+  font-weight: 700;
+}
+h3 {
+  font-size: 15px;
+  color: var(--text);
+  margin: 12px 0 6px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+@media(max-width:560px){
+  h1 { font-size: 22px; padding: 10px 12px 10px 14px; margin: 12px 0 10px; }
+  h2 { font-size: 16px; }
+}
+
+/* ===== Labels & chips ===== */
+.lbl { display: inline-block; padding: 5px 14px; border-radius: 999px; font-size: 11px;
+       font-family: 'Orbitron', monospace; letter-spacing: 0.18em; text-transform: uppercase;
+       font-weight: 700; box-shadow: 0 2px 8px rgba(0,0,0,0.35); margin-bottom: 4px; }
+.lbl.story      { background: rgba(185,128,255,0.18); color: var(--corona-purple); border: 1px solid rgba(185,128,255,0.5); }
+.lbl.puzzle     { background: rgba(255,138,61,0.20); color: var(--sun-orange); border: 1px solid rgba(255,138,61,0.55); }
+.lbl.setup      { background: rgba(100,216,255,0.18); color: var(--info-cyan); border: 1px solid rgba(100,216,255,0.5); }
+.lbl.reflection { background: rgba(126,255,178,0.18); color: var(--aurora-green); border: 1px solid rgba(126,255,178,0.5); }
+.lbl.mixed      { background: rgba(255,92,122,0.20); color: var(--sun-red); border: 1px solid rgba(255,92,122,0.55); }
+
+.tags { margin: 6px 0 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.kpa-chip { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px;
+            background: rgba(255,203,107,0.10); border: 1px solid rgba(255,203,107,0.3);
+            color: var(--sun-gold); font-family: 'Orbitron', monospace; letter-spacing: 0.08em; }
+
+/* ===== Cards ===== */
+.card { background: rgba(12,16,32,0.65); border: 1px solid rgba(120,140,220,0.18);
+        border-radius: 14px; padding: 14px; margin: 10px 0; backdrop-filter: blur(8px);
+        position: relative; }
+.card.lavender { border-color: rgba(212,184,255,0.3); }
+.card.gold     { border-color: rgba(255,203,107,0.4); box-shadow: 0 0 24px rgba(255,203,107,0.10); }
+.card.red      { border-color: rgba(255,92,122,0.45); box-shadow: 0 0 24px rgba(255,92,122,0.12); }
+.card.cyan     { border-color: rgba(100,216,255,0.4); }
+.card.green    { border-color: rgba(126,255,178,0.4); }
+
+.card .narr  { color: #d4b8ff; font-style: italic; line-height: 1.7; }
+.q-prompt    { font-weight: 600; color: var(--sun-gold); margin: 6px 0 8px; font-size: 15px; }
+
+/* ===== Choice rows ===== */
+.choice-row { display: flex; flex-direction: column; gap: 8px; margin: 8px 0; }
+.choice-row label, .choice {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px; border-radius: 10px; cursor: pointer;
+  background: rgba(10,14,30,0.6); border: 1px solid rgba(120,140,220,0.2);
+  transition: all 0.18s ease;
+}
+.choice-row label:hover, .choice:hover { border-color: var(--sun-gold); transform: translateY(-1px); }
+.choice-row input { margin-top: 3px; }
+.choice.correct  { border-color: var(--aurora-green); background: rgba(126,255,178,0.1); }
+.choice.wrong    { border-color: var(--sun-red); background: rgba(255,92,122,0.12); }
+
+/* ===== Buttons ===== */
+button, .btn {
+  font-family: 'Orbitron', sans-serif; font-size: 13px; letter-spacing: 0.1em;
+  padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer;
+  background: linear-gradient(180deg, var(--sun-gold), var(--sun-orange)); color: #1a0a00;
+  transition: all 0.18s ease; font-weight: 600;
+}
+button:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,138,61,0.35); }
+button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+button.ghost { background: transparent; color: var(--text); border: 1px solid rgba(255,203,107,0.4); }
+button.danger { background: linear-gradient(180deg, var(--sun-red), #cc3355); color: #fff; }
+.btn-pair { display: flex; gap: 10px; margin: 18px 0 12px; flex-wrap: wrap; }
+.submit-btn { flex: 1 1 180px; min-width: 0; }
+.next-btn   { flex: 1 1 180px; min-width: 0; background: linear-gradient(180deg, var(--aurora-green), #4ad08a); color: #022; }
+.next-btn.gate-open { animation: gatePulse 1.4s ease-in-out infinite; }
+@keyframes gatePulse { 0%,100% { box-shadow: 0 0 0 rgba(126,255,178,0); }
+                      50%      { box-shadow: 0 0 24px rgba(126,255,178,0.6); } }
+
+/* ===== Step cards (PEOE) ===== */
+.step-card { padding: 12px; border-left: 3px solid var(--sun-orange); margin: 10px 0;
+             background: rgba(255,138,61,0.06); border-radius: 0 10px 10px 0; }
+
+/* ===== Tap chips ===== */
+.chip-pool { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.chip {
+  padding: 8px 14px; border-radius: 999px; font-size: 13px; cursor: pointer;
+  background: rgba(255,203,107,0.08); border: 1px solid rgba(255,203,107,0.3);
+  color: var(--text); transition: all 0.16s ease; user-select: none;
+}
+.chip:hover { background: rgba(255,203,107,0.18); border-color: var(--sun-gold); }
+.chip.selected { background: rgba(255,138,61,0.4); border-color: var(--sun-orange);
+                 color: #fff; transform: scale(1.04); }
+
+/* ===== Sun visual ===== */
+.sun-visual { width: 220px; height: 220px; border-radius: 50%; margin: 14px auto; position: relative;
+              background: radial-gradient(circle at 35% 35%, #fff8c8, var(--sun-gold) 35%, var(--sun-orange) 70%, var(--sun-red) 95%);
+              box-shadow: 0 0 60px rgba(255,138,61,0.55), 0 0 120px rgba(255,92,122,0.25);
+              animation: sunPulse 4s ease-in-out infinite; }
+@keyframes sunPulse {
+  0%,100% { box-shadow: 0 0 60px rgba(255,138,61,0.55), 0 0 120px rgba(255,92,122,0.25); }
+  50%     { box-shadow: 0 0 80px rgba(255,138,61,0.75), 0 0 160px rgba(255,92,122,0.4); }
+}
+.sun-visual::before {
+  content: ''; position: absolute; inset: -20px; border-radius: 50%;
+  background: radial-gradient(circle, transparent 60%, rgba(185,128,255,0.4) 70%, transparent 80%);
+  animation: coronaShimmer 6s ease-in-out infinite;
+}
+@keyframes coronaShimmer { 0%,100% { opacity: 0.6; transform: scale(1); }
+                           50%     { opacity: 1; transform: scale(1.08); } }
+
+/* ===== Mission brief ===== */
+.mission-brief { padding: 12px 14px; border-radius: 12px; margin: 8px 0 14px;
+                 background: linear-gradient(180deg, rgba(255,203,107,0.08), rgba(255,138,61,0.04));
+                 border: 1px solid rgba(255,203,107,0.3); }
+.mission-brief.void { background: linear-gradient(180deg, rgba(255,92,122,0.10), rgba(185,128,255,0.06));
+                      border-color: rgba(255,92,122,0.45); }
+.mb-head { display: flex; align-items: center; gap: 8px; font-family: 'Orbitron', monospace;
+           font-size: 11px; letter-spacing: 0.15em; color: var(--sun-gold); margin-bottom: 6px; }
+.mission-brief.void .mb-head { color: var(--sun-red); }
+
+/* ===== Drag-drop ===== */
+.drag-item { padding: 10px 14px; border-radius: 10px; cursor: grab;
+             background: rgba(255,203,107,0.10); border: 1px solid rgba(255,203,107,0.4);
+             user-select: none; touch-action: none; transition: transform 0.16s; }
+.drag-item:active { cursor: grabbing; transform: scale(0.96); }
+.drag-item.placed { opacity: 0.45; pointer-events: none; }
+
+.drop-slot { padding: 10px; border-radius: 10px; min-height: 44px;
+             background: rgba(100,216,255,0.05); border: 1px dashed rgba(100,216,255,0.4);
+             color: var(--vmuted); font-size: 13px; }
+.drop-slot.filled { background: rgba(255,138,61,0.12); border-style: solid; border-color: var(--sun-orange); color: var(--text); }
+.drop-slot.correct { background: rgba(126,255,178,0.14); border-color: var(--aurora-green); }
+.drop-slot.incorrect { animation: shake 0.4s; }
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); }
+                   75% { transform: translateX(6px); } }
+
+/* ===== HUD pills (left = audio, right = coin/photon) ===== */
+#audioToggle { left: 12px !important; right: auto !important; }
+
+/* ===== Teacher cue ===== */
+.tc { margin-top: 18px; background: rgba(20,28,52,0.7); border: 1px dashed rgba(120,140,220,0.3);
+      border-radius: 10px; padding: 8px 12px; font-size: 12px; color: var(--muted); }
+.tc summary { cursor: pointer; color: var(--info-cyan); font-family: 'Orbitron', monospace;
+              letter-spacing: 0.12em; font-size: 11px; }
+
+/* ===== Misc utility ===== */
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.muted { color: var(--muted); font-size: 12px; }
+.center { text-align: center; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+.divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(255,138,61,0.4), transparent);
+           margin: 14px 0; }
+
+/* ===== Damage / countdown FX ===== */
+.cme-flash { animation: cmeFlash 0.5s; }
+@keyframes cmeFlash { 0% { box-shadow: inset 0 0 0 rgba(255,92,122,0); }
+                      30% { box-shadow: inset 0 0 80px rgba(255,92,122,0.6); }
+                      100% { box-shadow: inset 0 0 0 rgba(255,92,122,0); } }
+
+.dmg-pop { position: absolute; pointer-events: none; font-family: 'Orbitron', monospace;
+           font-weight: 700; font-size: 22px; color: var(--sun-red);
+           text-shadow: 0 0 12px rgba(255,92,122,0.8); animation: dmgPop 1s forwards; z-index: 200; }
+@keyframes dmgPop { 0% { opacity: 0; transform: translateY(0) scale(0.8); }
+                    20% { opacity: 1; transform: translateY(-10px) scale(1.2); }
+                    100% { opacity: 0; transform: translateY(-60px) scale(1); } }
+
+/* ===== Aurora ribbon (decorative) ===== */
+.aurora-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.25;
+             background: linear-gradient(180deg, transparent 40%, rgba(126,255,178,0.5) 60%, rgba(100,216,255,0.4) 75%, transparent 90%);
+             animation: auroraDance 12s ease-in-out infinite; }
+@keyframes auroraDance { 0%,100% { transform: translateY(0) scaleY(1); }
+                         50%     { transform: translateY(-20px) scaleY(1.1); } }
+
+/* ===== Solar countdown HUD ===== */
+.cme-countdown { position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
+                 z-index: 50; padding: 6px 14px; border-radius: 999px;
+                 background: rgba(20,8,16,0.85); border: 1px solid var(--sun-red);
+                 font-family: 'Orbitron', monospace; font-size: 12px; color: var(--sun-red);
+                 letter-spacing: 0.14em; backdrop-filter: blur(8px); }
+.cme-countdown.warn { animation: cdPulse 1.2s ease-in-out infinite; }
+@keyframes cdPulse { 0%,100% { box-shadow: 0 0 0 rgba(255,92,122,0); }
+                     50%     { box-shadow: 0 0 18px rgba(255,92,122,0.7); } }

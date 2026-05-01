@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p10 · Father's Arrival</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .scene-canvas { width:100%; height:380px; background:#050108; border:1px solid var(--genesis-gold);
+    border-radius:14px; display:block; box-shadow:0 0 40px rgba(255,216,74,.2); }
+  .dialogue { background:linear-gradient(180deg,#1a0a30,#050108);
+    border:1px solid var(--quantum-pink); border-radius:14px;
+    padding:18px; margin:14px 0; box-shadow:0 0 30px rgba(255,106,184,.2); }
+  .dialogue .speaker { color:var(--quantum-pink); font-weight:700; font-size:14px; letter-spacing:.1em; }
+  .dialogue .line { font-size:18px; margin:8px 0; line-height:1.6; }
+  .feel-chips { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin:12px 0; }
+</style>
+</head>
+<body data-page="p10">
+<div class="page">
+  <div class="act-badge">ACT B · 6/8 · ⭐ EMOTIONAL BEAT</div>
+  <h1>👤 Father's Arrival</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <canvas id="sceneCanvas" class="scene-canvas"></canvas>
+
+  <div class="dialogue">
+    <div class="speaker">พ่อโบลท์ · E. Hara</div>
+    <div class="line">"ลูก..."</div>
+    <div class="line">"พ่อรอเธอที่นี่นานมาก · 13.8 พันล้านปี"</div>
+    <div class="line">(ก้าวออกจาก fluctuation · ใบหน้าของชายที่หายไปตั้งแต่ปี 2008)</div>
+  </div>
+
+  <div class="dialogue" style="border-color:var(--genesis-gold);">
+    <div class="speaker" style="color:var(--genesis-gold);">โบลท์</div>
+    <div class="line" id="bolt-line">"...พ่อ?"</div>
+  </div>
+
+  <div class="howto">
+    <h4>🎮 LEARNING JOURNAL · 3-2-1 Reflection</h4>
+    <ul>
+      <li>ถ้าคุณเป็นโบลท์ · เห็นพ่อโผล่จาก fluctuation · ความรู้สึกแรกคือ?</li>
+    </ul>
+  </div>
+
+  <div class="feel-chips" id="feelChips">
+    <button class="chip feel">งง · ไม่อยากเชื่อ</button>
+    <button class="chip feel">ตื่นเต้น</button>
+    <button class="chip feel">กลัว · นี่คือ VOID หลอกหรือเปล่า</button>
+    <button class="chip feel">โกรธ · ทำไมเพิ่งกลับมา</button>
+    <button class="chip feel">ดีใจสุดๆ</button>
+    <button class="chip feel">เศร้า · พ่อเปลี่ยนไปไหม</button>
+  </div>
+
+  <textarea id="reflect" rows="3" style="width:100%;" placeholder="เขียนความรู้สึก/ความคิดของเธอ 1-2 ประโยค..."></textarea>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">บันทึกความรู้สึก · ฟังพ่อต่อ</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p10' });
+  EP08Page.story('p10');
+  EP08Page.markVisit('p10');
+
+  const c = document.getElementById('sceneCanvas');
+  function fit(){ c.width = c.clientWidth; c.height = 380; }
+  fit(); window.addEventListener('resize', fit);
+  const ctx = c.getContext('2d');
+  let t = 0;
+  function draw(){
+    t += 0.012;
+    ctx.fillStyle = '#050108'; ctx.fillRect(0,0,c.width,c.height);
+    // background fluctuation field
+    for (let i=0;i<150;i++){
+      const x = Math.random()*c.width;
+      const y = Math.random()*c.height;
+      const a = Math.random();
+      ctx.fillStyle = `hsla(${280 + Math.random()*40}, 70%, 70%, ${a*0.4})`;
+      ctx.fillRect(x, y, 1.5, 1.5);
+    }
+    // central glow with figure silhouette
+    const cx = c.width/2, cy = c.height*0.55;
+    const r = 100 + Math.sin(t)*10;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, 'rgba(255,245,227,0.9)');
+    grad.addColorStop(0.4, 'rgba(255,216,74,0.4)');
+    grad.addColorStop(1, 'rgba(255,216,74,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+    // figure silhouette
+    ctx.fillStyle = 'rgba(20,5,20,0.85)';
+    // head
+    ctx.beginPath(); ctx.arc(cx, cy-50, 22, 0, Math.PI*2); ctx.fill();
+    // body
+    ctx.beginPath();
+    ctx.moveTo(cx-30, cy-30);
+    ctx.quadraticCurveTo(cx, cy-10, cx+30, cy-30);
+    ctx.lineTo(cx+22, cy+50);
+    ctx.lineTo(cx-22, cy+50);
+    ctx.closePath();
+    ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  let feel = null;
+  document.getElementById('feelChips').addEventListener('click', e => {
+    const c = e.target.closest('.feel'); if (!c) return;
+    feel = c.textContent;
+    document.querySelectorAll('.feel').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const ref = document.getElementById('reflect').value.trim();
+    if (window.KPA) {
+      KPA.log('A','A3','father arrival reflection');
+      KPA.vpa('d3', 'feel ' + (feel||'-') + ' · reflect: ' + ref);
+      KPA.research('drama-father', { feel, reflect: ref });
+    }
+    EP08Page.submit({
+      title:'💛 บันทึกแล้ว',
+      body:`<p>พ่อกำลังจะเล่าความจริง · ทำไมเขาถึงอยู่ที่ t=0 · 13.8 พันล้านปี</p>`
+    });
+  };
+</script>
+</body>
+</html>

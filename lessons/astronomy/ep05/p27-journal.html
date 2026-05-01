@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P26 · Journal · Badge</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.badge-stage { text-align:center; padding:20px 0; }
+.badge-disk { display:inline-block; width:180px; height:180px; border-radius:50%;
+              background:radial-gradient(circle at 35% 35%, #fff, #ffcb6b 30%, #ff8a3d 60%, #b980ff 95%);
+              box-shadow:0 0 60px #ffcb6b, inset 0 0 40px #ff5c7a; position:relative;
+              animation:badgeSpin 6s linear infinite, badgeBreathe 3s ease-in-out infinite; }
+@keyframes badgeSpin { from{filter:hue-rotate(0);} to{filter:hue-rotate(360deg);} }
+@keyframes badgeBreathe { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
+.badge-disk::before { content:'☀️'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:80px; filter:drop-shadow(0 0 20px #fff); }
+.badge-name { font-family:Orbitron,monospace; font-size:22px; letter-spacing:.2em; color:#ffcb6b; margin-top:16px; }
+.rank-up { padding:12px; border-radius:12px; background:rgba(255,138,61,0.1); border:1px solid #ff8a3d; margin:14px 0; text-align:center; }
+.rank-up b { font-family:Orbitron,monospace; letter-spacing:.18em; color:#ffcb6b; }
+.three-two-one { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin:12px 0; }
+.section { padding:12px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(255,203,107,0.3); }
+.section h4 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:11px; color:#ffcb6b; letter-spacing:.14em; }
+.chip-pool { display:flex; flex-wrap:wrap; gap:6px; }
+.chip { padding:6px 10px; border-radius:999px; font-size:12px; cursor:pointer; user-select:none;
+        background:rgba(255,203,107,.08); border:1px solid rgba(255,203,107,.3); transition:all .16s; }
+.chip:hover { background:rgba(255,203,107,.18); }
+.chip.selected { background:rgba(255,138,61,.4); border-color:#ff8a3d; color:#fff; transform:scale(1.04); }
+.chip-counter { font-size:11px; color:#9aa3c0; margin-top:6px; font-family:Orbitron,monospace; }
+</style>
+</head>
+<body data-page="p27" data-type="reflection">
+<div class="page">
+  <span class="lbl reflection">🏆 JOURNAL · BADGE</span>
+  <h1>Journal · ภารกิจสำเร็จ</h1>
+
+  <div class="card gold">
+    <div class="badge-stage">
+      <div class="badge-disk"></div>
+      <div class="badge-name">HELIOPHYSICIST</div>
+      <div class="muted">บทที่ 5 · COSMOS LOG</div>
+    </div>
+  </div>
+
+  <div class="rank-up">
+    📈 ยศใหม่: <b>NAVIGATOR → CAPTAIN</b>
+  </div>
+
+  <div class="card cyan">
+    <h3>📋 3-2-1 Reflection · กดเลือก chips</h3>
+
+    <div class="three-two-one">
+      <div class="section">
+        <h4>3 · สิ่งที่ได้เรียน</h4>
+        <div class="chip-pool" id="learn3"></div>
+        <div class="chip-counter">เลือก <b id="cnt3">0</b>/3</div>
+      </div>
+      <div class="section">
+        <h4>2 · คำถามที่อยากรู้ต่อ</h4>
+        <div class="chip-pool" id="learn2"></div>
+        <div class="chip-counter">เลือก <b id="cnt2">0</b>/2</div>
+      </div>
+      <div class="section">
+        <h4>1 · สิ่งที่จะนำไปใช้</h4>
+        <div class="chip-pool" id="learn1"></div>
+        <div class="chip-counter">เลือก <b id="cnt1">0</b>/1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ภารกิจสำเร็จ · ทุกคนพิสูจน์แล้วว่ารู้ดวงอาทิตย์ดีพอที่จะกู้โลก · พักได้ · แต่... · <b style="color:#ff5c7a;">VOID ถอย · แต่ดาวหาง 7 ดวงเปลี่ยนวงโคจรพร้อมกัน · มีบางอย่างซ่อนใน Kuiper Belt...</b>" · <b style="color:#b980ff;">EP06 · ขอบฟ้าของบ้าน</b> รออยู่</span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P26</summary>
+    <div>
+      ใช้ tap-chips · ไม่ต้องพิมพ์ · เก็บ data structured<br>
+      Badge + ยศ บันทึกใน global Chain · ใช้แสดงใน EP06 cover
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 บันทึก Journal</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+
+  <!-- 🔄 PLAY AGAIN · ลบ progress ทั้งหมดแล้วเริ่มใหม่ -->
+  <div style="margin-top:24px; padding:18px; border-radius:14px;
+       background:linear-gradient(180deg, rgba(126,255,178,0.08), rgba(20,28,52,0.6));
+       border:2px dashed #7effb2; text-align:center;">
+    <div style="font-family:Orbitron,monospace; font-size:11px; letter-spacing:.16em;
+         color:#7effb2; margin-bottom:8px;">🎮 PLAY AGAIN</div>
+    <div style="font-size:13px; color:#d4f0ff; line-height:1.6; margin-bottom:14px;">
+      อยากเล่นอีกครั้ง? · กดปุ่มด้านล่าง<br>
+      จะ<b style="color:#ff8a3d;">ลบความคืบหน้าทั้งหมด</b> (HELION · พลัง · เหรียญ · ending)
+      แล้วกลับไปเริ่มที่หน้าปก
+    </div>
+    <button id="btnPlayAgain" style="padding:14px 28px;
+         background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022;
+         border:none; border-radius:12px; font-family:Orbitron,monospace; font-size:14px;
+         letter-spacing:.16em; font-weight:700; cursor:pointer;
+         box-shadow:0 4px 18px rgba(126,255,178,0.4);">↻ เล่นใหม่ตั้งแต่ต้น</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const POOL_3 = [
+  '6 ชั้นดวงอาทิตย์', 'corona ร้อนกว่า photosphere', 'ฟิวชัน p-p chain',
+  'sunspot = แม่เหล็กแรง', 'flare ≠ CME', '11-year cycle',
+  'aurora จาก solar wind', 'habitable zone', 'L1 Lagrange', '5 เขตบริวาร', 'nebular hypothesis'
+];
+const POOL_2 = [
+  'corona ร้อนได้ยังไงจริง ๆ', 'ทำไมโลกมีสนามแม่เหล็ก', 'มีสิ่งมีชีวิตในระบบสุริยะอื่นไหม',
+  'ดาวพฤหัสปกป้องโลกได้ยังไง', 'CME รุนแรงสุดที่เคยมี', 'Maunder Min มีผลยังไงต่อสภาพอากาศ'
+];
+const POOL_1 = [
+  'ดู space weather ก่อนบินขั้วโลก', 'อ่านข่าว aurora forecast',
+  'เข้าใจว่าทำไมโครงข่ายไฟฟ้าต้องสำรอง', 'ไม่กลัว flare เพราะมีบรรยากาศป้องกัน',
+  'อธิบายให้น้องฟังว่าดวงอาทิตย์ไม่ได้เผาไหม้'
+];
+function build(host, pool, max, counter){
+  const h = document.getElementById(host); const c = document.getElementById(counter);
+  pool.forEach(t=>{
+    const el = document.createElement('div'); el.className='chip'; el.textContent=t;
+    el.onclick = ()=>{
+      const cur = h.querySelectorAll('.chip.selected').length;
+      if(!el.classList.contains('selected') && cur>=max) return;
+      el.classList.toggle('selected');
+      c.textContent = h.querySelectorAll('.chip.selected').length;
+      SFX&&SFX.play('tap');
+    };
+    h.appendChild(el);
+  });
+}
+build('learn3', POOL_3, 3, 'cnt3');
+build('learn2', POOL_2, 2, 'cnt2');
+build('learn1', POOL_1, 1, 'cnt1');
+
+setTimeout(()=>{
+  Submit.wirePair({
+    page:'p27',
+    nextHref:'./index.html',  // back to series index (EP06 not yet)
+    getPayload(){
+      const get = (id)=>[...document.querySelectorAll('#'+id+' .chip.selected')].map(e=>e.textContent);
+      return { l3:get('learn3'), l2:get('learn2'), l1:get('learn1'), badge:'heliophysicist', rank:'CAPTAIN' };
+    },
+    validate(p){
+      if(p.l3.length<3 || p.l2.length<2 || p.l1.length<1){ alert('เลือกให้ครบ 3-2-1'); return false; }
+      return true;
+    },
+    onSubmit(){
+      // Save badge globally
+      try {
+        const b = JSON.parse(localStorage.getItem('cosmosLog_badges')||'[]');
+        if(!b.includes('heliophysicist')) b.push('heliophysicist');
+        localStorage.setItem('cosmosLog_badges', JSON.stringify(b));
+        localStorage.setItem('cosmosLog_rank', 'CAPTAIN');
+      } catch{}
+      alert('🏆 Badge HELIOPHYSICIST ปลดล็อกแล้ว!\n📈 ยศใหม่: CAPTAIN\n\n☀️ EP05 จบสมบูรณ์ · รอ EP06');
+      // 🎁 Final Mystery Box · journal = สรุปจบตอน · perfect tier
+      if (window.MysteryBox && MysteryBox.roll) {
+        setTimeout(() => MysteryBox.roll({ wrongs:0, page:'p27' }), 1000);
+      }
+    }
+  });
+  // Confetti glow burst
+  setTimeout(()=>{ if(Transition && Transition.play) Transition.play('AURORA'); }, 500);
+
+  // 🔄 PLAY AGAIN · clear all ep05 progress + go to cover
+  document.getElementById('btnPlayAgain').onclick = () => {
+    if(!confirm('⚠️ ลบความคืบหน้าทั้งหมดของ EP05?\n\n• HELION 6 ชิ้น\n• พลัง 6 อย่าง\n• เหรียญสะสมในตอนนี้\n• Ending\n\nbadge HELIOPHYSICIST ของคุณจะยังเก็บไว้\n\nกด OK เพื่อเริ่มใหม่')) return;
+    // remove all ep05 chain + per-page coin grants + boss/forge state · KEEP badges + rank
+    const removeKeys = Object.keys(localStorage).filter(k =>
+      k.startsWith('cosmosLog_ep05') ||
+      k.startsWith('cosmosLog_ep05_coinGranted_')
+    );
+    removeKeys.forEach(k => localStorage.removeItem(k));
+    // optional: also reset shared coin if user wants total fresh start
+    // localStorage.removeItem('cosmosLog_ep03_coin');
+    alert('✓ รีเซ็ตเรียบร้อย · กลับไปหน้าปก · เริ่มใหม่ได้เลย!');
+    location.href = 'p00-cover.html';
+  };
+},200);
+</script>
+</body></html>

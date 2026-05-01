@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P11 · Sunspot Cycle</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.bf-canvas { position:relative; width:100%; height:200px; background:rgba(0,0,0,0.4); border-radius:12px; overflow:hidden; margin:10px 0; border:1px solid rgba(255,138,61,0.3); }
+.bf-axis-y { position:absolute; left:0; top:0; bottom:24px; width:50px; display:flex; flex-direction:column; justify-content:space-between; padding:6px; font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; letter-spacing:.08em; }
+.bf-axis-x { position:absolute; left:50px; right:6px; bottom:0; height:24px; display:flex; justify-content:space-between; padding:4px 6px; font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; }
+.bf-grid { position:absolute; left:50px; right:6px; top:6px; bottom:24px; background:linear-gradient(to right, rgba(120,140,220,0.1) 1px, transparent 1px) 0 0/calc(100%/11) 100%, linear-gradient(to top, rgba(120,140,220,0.1) 1px, transparent 1px) 0 0/100% 50%; }
+.spot { position:absolute; border-radius:50%; background:radial-gradient(circle, #ff5c7a, #ff8a3d 70%, transparent); box-shadow:0 0 6px #ff5c7a; }
+.cycle-line { position:absolute; left:0; right:0; top:50%; height:1px; background:rgba(255,255,255,0.2); }
+.cycle-marker { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+.cm-pill { padding:4px 10px; border-radius:999px; font-size:11px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p12" data-type="story">
+<div class="page">
+  <span class="lbl story">📊 CYCLE · 11 ปี</span>
+  <h1>วัฏจักร Sunspot · Butterfly Diagram</h1>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ff8a3d;">อารยา:</b> "sunspot ไม่ได้สุ่มขึ้น · มัน <b>วน 11 ปี</b> ·
+      เริ่มจากละติจูดสูง (±35°) → ขยับเข้าใกล้เส้นศูนย์สูตรเมื่อจบรอบ · กราฟแบบนี้รูปร่างเหมือน<b style="color:#ffcb6b;">ผีเสื้อ</b> (butterfly)"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🦋 Butterfly Diagram (~22 ปี · 2 รอบ)</h3>
+    <div class="bf-canvas" id="bfCanvas">
+      <div class="bf-axis-y">
+        <div>+35°</div><div>0°</div><div>−35°</div>
+      </div>
+      <div class="bf-axis-x">
+        <span>0</span><span>5.5</span><span>11</span><span>16.5</span><span>22 ปี</span>
+      </div>
+      <div class="bf-grid">
+        <div class="cycle-line"></div>
+      </div>
+    </div>
+    <div class="cycle-marker">
+      <span class="cm-pill" style="background:rgba(100,216,255,.18);color:#64d8ff;">Solar Min · 0, 11, 22</span>
+      <span class="cm-pill" style="background:rgba(255,92,122,.18);color:#ff5c7a;">Solar Max · 5.5, 16.5</span>
+    </div>
+    <div class="muted" style="margin-top:6px; font-size:12px;">
+      เริ่มจากละติจูดสูง · จุดเลื่อนเข้าใกล้เส้นศูนย์สูตรเมื่อจบรอบ · นั่นคือ "ผีเสื้อ"
+    </div>
+  </div>
+
+  <div class="card cyan">
+    <h3>📌 จุดสำคัญ</h3>
+    <ul style="margin:0; padding-left:20px; line-height:1.7;">
+      <li><b>Solar Minimum</b> · sunspot น้อย/ไม่มี · activity ต่ำ</li>
+      <li><b>Solar Maximum</b> · sunspot 100-200 จุด · CME + flare บ่อย</li>
+      <li><b>Maunder Minimum</b> (1645-1715) · ดวงอาทิตย์เงียบ → "ยุคน้ำแข็งน้อย" บนโลก!</li>
+      <li><b>ตอนนี้</b> · เรากำลังขึ้น Solar Cycle 25 → จะ peak ~2025</li>
+    </ul>
+  </div>
+
+  <div class="card red">
+    <span class="narr"><b style="color:#ff5c7a;">อารยา (เสียงแน่น):</b> "ดวงอาทิตย์ของเราตอนนี้... <b>นับ 250 จุด</b> · เกิน peak ปกติแล้ว · VOID ทำอะไรบางอย่าง"</span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P11</summary>
+    <div>หากนักเรียนสนใจประวัติ · พูดถึง Carrington Event 1859 (CME ใหญ่สุดในประวัติศาสตร์ที่บันทึก) เพื่อ tease p16</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ ลอง slider activity</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+/* Generate butterfly spots */
+const canvas = document.getElementById('bfCanvas');
+function butterfly(){
+  // 2 cycles · each butterfly: spots from edge → center over time
+  for(let c=0;c<2;c++){
+    const cycleStartX = 50 + c*(canvas.clientWidth-56)/2; // px from left in canvas coord
+    const cycleW = (canvas.clientWidth-56)/2;
+    for(let i=0;i<60;i++){
+      const t = Math.random();   // 0..1 within cycle
+      const lat = (1-t)*0.9 + 0.05; // start far from center
+      const upOrDown = Math.random() < 0.5 ? -1 : 1;
+      const yPct = 50 + upOrDown * lat * 35;  // ±35°
+      const xPx = cycleStartX + t * cycleW;
+      const sz = 2 + Math.random()*4;
+      const sp = document.createElement('div'); sp.className='spot';
+      sp.style.cssText = `left:${(xPx)}px; top:${yPct}%; width:${sz}px; height:${sz}px; opacity:${0.4+Math.random()*0.5};`;
+      canvas.appendChild(sp);
+    }
+  }
+}
+setTimeout(butterfly, 100);
+
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p13-activity-slider.html');
+  if(window.PaceClient) Gate.wireButton('p12', btn,'p13-activity-slider.html');
+},200);
+</script>
+</body></html>

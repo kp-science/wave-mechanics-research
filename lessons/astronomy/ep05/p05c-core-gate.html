@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P05c · CORE · MASTERY GATE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+
+/* Compare predict vs observation */
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* === MASTERY GATE · REACTOR EQUATION LOCK === */
+.mastery-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg, rgba(255,92,122,0.10), rgba(58,10,74,0.10));
+                border:2px solid #ff5c7a; margin:14px 0; box-shadow:0 0 24px rgba(255,92,122,0.2); }
+.mastery-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#ff5c7a; letter-spacing:.16em; margin-bottom:10px; }
+.mastery-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+.eq-builder { padding:16px; border-radius:12px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,255,255,0.15); margin:10px 0; }
+.eq-line { display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center; font-family:Orbitron,monospace; font-size:18px; color:#fff; margin:8px 0; min-height:50px; }
+.eq-arrow { font-size:24px; color:#ffcb6b; margin:8px 0; text-align:center; }
+.eq-slot { min-width:60px; min-height:42px; padding:6px 10px; border-radius:8px; border:2px dashed rgba(255,255,255,0.4);
+           background:rgba(255,255,255,0.05); display:inline-flex; align-items:center; justify-content:center;
+           font-family:Orbitron,monospace; font-size:13px; color:#fff; cursor:pointer; transition:all .2s; }
+.eq-slot:hover { border-color:#ffcb6b; background:rgba(255,203,107,0.1); }
+.eq-slot.filled { border-style:solid; border-color:#ffcb6b; background:rgba(255,138,61,0.15); }
+.eq-slot.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+.eq-slot.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); animation:slotShake 0.4s; }
+@keyframes slotShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+.eq-slot .multiplier { font-size:10px; color:#ffcb6b; margin-right:2px; }
+.chip-pool-gate { display:flex; flex-wrap:wrap; gap:6px; padding:12px; border-radius:10px;
+                  background:rgba(0,0,0,0.4); border:1px solid rgba(120,140,220,0.2); margin:10px 0; }
+.chip-pool-gate .chip-item { padding:8px 14px; border-radius:8px; cursor:pointer; user-select:none;
+                             font-family:Orbitron,monospace; font-size:13px; transition:all .15s;
+                             background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff; }
+.chip-pool-gate .chip-item:hover { background:rgba(255,203,107,0.15); border-color:#ffcb6b; transform:translateY(-1px); }
+.chip-pool-gate .chip-item.used { opacity:0.3; pointer-events:none; }
+.chip-pool-gate .chip-item.particle-h  { background:rgba(255,138,61,0.2); border-color:#ff8a3d; }
+.chip-pool-gate .chip-item.particle-he { background:rgba(185,128,255,0.2); border-color:#b980ff; }
+.chip-pool-gate .chip-item.particle-n  { background:rgba(100,216,255,0.2); border-color:#5cb8ff; }
+.chip-pool-gate .chip-item.particle-e  { background:rgba(126,255,178,0.2); border-color:#7effb2; }
+.chip-pool-gate .chip-item.energy { background:rgba(255,215,0,0.2); border-color:#ffd700; }
+.chip-pool-gate .chip-item.trap { background:rgba(120,140,220,0.15); border-color:rgba(120,140,220,0.4); }
+.gate-controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.gate-controls .check-eq { background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; padding:12px 24px;
+                           font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; border-radius:10px; border:none; cursor:pointer; }
+.gate-controls .reset-eq { background:transparent; color:#ffcb6b; border:1px solid #ffcb6b; padding:10px 18px; border-radius:10px; cursor:pointer; }
+.gate-feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:13px; min-height:40px; }
+.gate-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; }
+.gate-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; }
+.gate-passed-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(126,255,178,0.06));
+                      border:2px solid #7effb2; text-align:center; font-family:Orbitron,monospace;
+                      font-size:14px; color:#7effb2; letter-spacing:.16em; margin:10px 0;
+                      animation:gatePassed 1.2s ease-out; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.9);} 50%{opacity:1;transform:scale(1.02);} 100%{transform:scale(1);} }
+
+/* Application quiz */
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+
+/* Self-rubric */
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3);
+               cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p05c" data-type="puzzle">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 1 · CORE · C · MASTERY GATE</span>
+  <h1>ก่อนออกจาก CORE · พิสูจน์ว่าเข้าใจจริง</h1>
+  <div class="tags"><span class="kpa-chip">K2</span><span class="kpa-chip">M1</span><span class="kpa-chip">A1</span></div>
+
+  <!-- ============ COMPARE PREDICT vs OBSERVATION ============ -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT (จาก p05a)</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED (จาก p05b)</h4>
+        <div class="val">นิวเคลียร์ฟิวชัน p-p chain</div>
+        <div class="reason">4 H⁺ → He²⁺ + พลังงาน 26.7 MeV<br>(พบจาก <b id="obsCount">—</b> attempts)</div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ดี · เธอเห็นด้วยตาแล้ว · ตอนนี้ <b>พิสูจน์ว่าเธอเข้าใจสมการ</b> ·
+      ใส่สมการให้สมดุล · ปลด REACTOR · ถ้าไม่ผ่าน · ออกจาก CORE ไม่ได้ ยานจะละลาย"
+    </span>
+  </div>
+
+  <!-- ============ MASTERY GATE · REACTOR EQUATION LOCK ============ -->
+  <div class="phase-tag phase-gate">🔒 MASTERY GATE · REACTOR EQUATION LOCK</div>
+  <div class="mastery-gate">
+    <div class="gate-head">🔧 ใส่สมการให้สมดุล · ปลด Reactor</div>
+    <div class="gate-sub">
+      Reactor ตรวจ <b>ชนิดอนุภาค + ประจุ + พลังงาน</b><br>
+      💡 ทบทวนจาก p05b: 4 H⁺ → He²⁺ + 2 positron + 2 neutrino + พลังงาน
+    </div>
+
+    <div class="eq-builder">
+      <div style="text-align:center; font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0; letter-spacing:.14em; margin-bottom:8px;">REACTANTS · ฝั่งซ้าย</div>
+      <div class="eq-line" id="eqLHS">
+        <span class="eq-slot" data-slot="L1" data-side="L">?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="L2" data-side="L">?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="L3" data-side="L">?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="L4" data-side="L">?</span>
+      </div>
+      <div class="eq-arrow">↓</div>
+      <div style="text-align:center; font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0; letter-spacing:.14em; margin-bottom:8px;">PRODUCTS · ฝั่งขวา</div>
+      <div class="eq-line" id="eqRHS">
+        <span class="eq-slot" data-slot="R1" data-side="R">?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="R2" data-side="R" data-mult="2"><span class="multiplier">2×</span>?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="R3" data-side="R" data-mult="2"><span class="multiplier">2×</span>?</span>
+        <span style="color:#ffcb6b;">+</span>
+        <span class="eq-slot" data-slot="R4" data-side="R">?</span>
+        <span style="color:#ffd700;">MeV</span>
+      </div>
+    </div>
+
+    <div style="font-family:Orbitron,monospace;font-size:11px;color:#9aa3c0;letter-spacing:.14em;margin:10px 0 6px;">📦 CHIP POOL · ลากใส่ช่องว่าง · มีของหลอก</div>
+    <div class="chip-pool-gate" id="chipPool"></div>
+
+    <div class="gate-controls">
+      <button class="check-eq" id="checkEqBtn">⚡ CHECK EQUATION</button>
+      <button class="reset-eq" id="resetEqBtn">↺ ล้าง</button>
+      <span id="eqAttempts" style="color:#9aa3c0;font-family:Orbitron,monospace;font-size:11px;">attempts: 0</span>
+    </div>
+    <div class="gate-feedback" id="gateFeedback" style="display:none;"></div>
+  </div>
+
+  <!-- ============ APPLICATION QUIZ (Bloom 4) ============ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 4 (Analyze)</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- ============ SELF-RUBRIC ============ -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT</div>
+    <div class="card">
+      <h3>เธอเข้าใจ p-p chain ระดับใด?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P05c</summary>
+    <div>
+      <b>หน้านี้ = MASTERY GATE</b><br>
+      4 ขั้นตอน: <br>
+      1. EXPLAIN · เทียบ predict (p05a) กับ observed (p05b)<br>
+      2. GATE · REACTOR EQUATION LOCK · ต้องผ่านจึงไปต่อ<br>
+      3. Application Quiz Bloom 4 · ใช้ความรู้ใน context ใหม่<br>
+      4. Self-rubric ⭐⭐⭐<br>
+      <b>ผ่าน Gate + Quiz + เลือก rubric</b> = ปลด HELION + ออกจาก CORE
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* === Show Compare panel === */
+const PRED_LABELS = ['การเผาไหม้ไฮโดรเจน','นิวเคลียร์ฟิวชัน','แรงโน้มถ่วงบีบอัด','ปฏิกิริยาเคมี H+He'];
+const REASONS_MAP = {
+  r1:'15M K สูงพอจุดไฟ', r2:'H+H ชนกันแรง = พลังงาน', r3:'ดวงอาทิตย์เปล่งแสง = ต้องเผาไหม้', r4:'ไม่มี O₂ → ห้ามเผาไหม้',
+  r5:'แรงโน้มถ่วงสูง = บีบอัด = ร้อน', r6:'อายุยืน 4.6 พันล้านปี · ต้องไม่ใช่เคมี', r7:'ฟิวชันต้อง T สูงมาก · แกนมีพอ', r8:'H+He เป็นปฏิกิริยาง่าย ๆ'
+};
+const pred = Chain.get('p05_prediction');
+const predReasons = Chain.get('p05_reasons') || [];
+const obsCount = Chain.get('p05_attempts') || 0;
+document.getElementById('obsCount').textContent = obsCount;
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){
+    banner.className = 'match-banner ok';
+    banner.textContent = '✓ MATCH · เธอทำนายถูก! · เก่งมาก';
+  } else {
+    banner.className = 'match-banner diff';
+    banner.innerHTML = '⚠ ทำนาย <b>ไม่ตรง</b>กับสิ่งที่เห็นจริง · นี่คือธรรมชาติของวิทยาศาสตร์ · ทำนายผิดได้ · สำคัญที่ <b>ปรับความเข้าใจหลังเห็นข้อมูล</b>';
+  }
+} else {
+  document.getElementById('predictVal').textContent = '(ไม่ได้บันทึก)';
+  document.getElementById('reasonVal').textContent = 'กลับไปทำที่ p05a';
+}
+
+/* === MASTERY GATE === */
+let gatePassed = false;
+let eqAttempts = 0;
+const CORRECT_EQ = { L:['h','h','h','h'], R1:'he', R2:'eplus', R3:'nu', R4:'26.7' };
+const CHIPS = [
+  { id:'h',     label:'H⁺',    cls:'particle-h',  count:5 },
+  { id:'he',    label:'He²⁺',  cls:'particle-he', count:1 },
+  { id:'eplus', label:'e⁺',    cls:'particle-e',  count:2 },
+  { id:'nu',    label:'ν',     cls:'particle-n',  count:2 },
+  { id:'eminus',label:'e⁻',    cls:'particle-e',  count:2 },
+  { id:'gamma', label:'γ',     cls:'trap',        count:1 },
+  { id:'O2',    label:'O₂',    cls:'trap',        count:1 },
+  { id:'N',     label:'N',     cls:'trap',        count:1 },
+  { id:'26.7',  label:'26.7',  cls:'energy',      count:1 },
+  { id:'4.2',   label:'4.2',   cls:'energy',      count:1 },
+  { id:'50',    label:'50',    cls:'energy',      count:1 },
+  { id:'200',   label:'200',   cls:'energy',      count:1 },
+];
+
+function mountGate(){
+  const pool = document.getElementById('chipPool');
+  pool.innerHTML = '';
+  CHIPS.forEach(ch => {
+    for(let k=0; k<ch.count; k++){
+      const el = document.createElement('div');
+      el.className = 'chip-item ' + ch.cls;
+      el.dataset.id = ch.id; el.dataset.uid = ch.id + '_' + k;
+      el.textContent = ch.label;
+      el.draggable = true;
+      el.ondragstart = e => e.dataTransfer.setData('text/plain', el.dataset.uid);
+      el.onclick = () => placeIntoFirstEmpty(el);
+      if(window.TouchDrag) TouchDrag.makeDraggable(el, () => el.dataset.uid);
+      pool.appendChild(el);
+    }
+  });
+  document.querySelectorAll('.eq-slot').forEach(slot => {
+    slot.ondragover = e => e.preventDefault();
+    slot.ondrop = e => { e.preventDefault(); const uid = e.dataTransfer.getData('text/plain'); placeChipInSlot(uid, slot); };
+    if(window.TouchDrag) TouchDrag.makeDropTarget(slot, uid => placeChipInSlot(uid, slot));
+    slot.onclick = () => clearSlot(slot);
+  });
+  document.getElementById('checkEqBtn').onclick = checkEquation;
+  document.getElementById('resetEqBtn').onclick = resetGate;
+}
+
+function placeIntoFirstEmpty(chipEl){
+  const empty = [...document.querySelectorAll('.eq-slot')].find(s => !s.dataset.filled);
+  if(empty) placeChipInSlot(chipEl.dataset.uid, empty);
+}
+function placeChipInSlot(uid, slot){
+  if(!uid || !slot) return;
+  if(slot.dataset.filled) clearSlot(slot, false);
+  const chip = document.querySelector(`.chip-item[data-uid="${uid}"]`);
+  if(!chip) return;
+  document.querySelectorAll('.eq-slot').forEach(s => {
+    if(s.dataset.uid === uid){ s.dataset.filled=''; s.dataset.uid=''; renderSlotEmpty(s); }
+  });
+  slot.dataset.filled = chip.dataset.id;
+  slot.dataset.uid = uid;
+  const mult = slot.dataset.mult ? `<span class="multiplier">${slot.dataset.mult}×</span>` : '';
+  slot.innerHTML = mult + chip.textContent;
+  slot.classList.add('filled');
+  slot.classList.remove('correct','wrong');
+  chip.classList.add('used');
+  SFX&&SFX.play('snap');
+}
+function renderSlotEmpty(s){
+  const mult = s.dataset.mult ? `<span class="multiplier">${s.dataset.mult}×</span>` : '';
+  s.innerHTML = mult + '?';
+  s.classList.remove('filled','correct','wrong');
+}
+function clearSlot(slot, playSfx=true){
+  const uid = slot.dataset.uid;
+  if(!uid) return;
+  const chip = document.querySelector(`.chip-item[data-uid="${uid}"]`);
+  if(chip) chip.classList.remove('used');
+  slot.dataset.filled = ''; slot.dataset.uid = '';
+  renderSlotEmpty(slot);
+  if(playSfx) SFX&&SFX.play('tap');
+}
+function resetGate(){
+  document.querySelectorAll('.eq-slot').forEach(s => clearSlot(s, false));
+  document.querySelectorAll('.chip-item').forEach(c => c.classList.remove('used'));
+  document.getElementById('gateFeedback').style.display='none';
+  SFX&&SFX.play('tap');
+}
+function checkEquation(){
+  if(gatePassed) return;
+  eqAttempts++;
+  document.getElementById('eqAttempts').textContent = 'attempts: ' + eqAttempts;
+  const slots = {};
+  document.querySelectorAll('.eq-slot').forEach(s => { slots[s.dataset.slot] = s.dataset.filled || null; });
+  const lhs = [slots.L1, slots.L2, slots.L3, slots.L4].sort();
+  const lhsCorrect = lhs.length===4 && lhs.every(x => x === 'h');
+  const r1Correct = slots.R1 === CORRECT_EQ.R1;
+  const r2Correct = slots.R2 === CORRECT_EQ.R2;
+  const r3Correct = slots.R3 === CORRECT_EQ.R3;
+  const r4Correct = slots.R4 === CORRECT_EQ.R4;
+  document.querySelectorAll('.eq-slot').forEach(s => s.classList.remove('correct','wrong'));
+  ['L1','L2','L3','L4'].forEach(k => {
+    const s = document.querySelector(`.eq-slot[data-slot="${k}"]`);
+    if(slots[k] === 'h') s.classList.add('correct');
+    else if(slots[k]) s.classList.add('wrong');
+  });
+  if(slots.R1) document.querySelector('.eq-slot[data-slot="R1"]').classList.add(r1Correct?'correct':'wrong');
+  if(slots.R2) document.querySelector('.eq-slot[data-slot="R2"]').classList.add(r2Correct?'correct':'wrong');
+  if(slots.R3) document.querySelector('.eq-slot[data-slot="R3"]').classList.add(r3Correct?'correct':'wrong');
+  if(slots.R4) document.querySelector('.eq-slot[data-slot="R4"]').classList.add(r4Correct?'correct':'wrong');
+  const fb = document.getElementById('gateFeedback');
+  fb.style.display = 'block';
+  if(lhsCorrect && r1Correct && r2Correct && r3Correct && r4Correct){
+    gatePassed = true;
+    fb.className = 'gate-feedback ok';
+    fb.innerHTML = `🟢 <b>REACTOR UNLOCKED</b> · ผ่าน gate ใน ${eqAttempts} attempts`;
+    SFX&&SFX.play('correct');
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.textContent = '✓ MASTERY GATE PASSED · 🔆 HELION 1/6 GRANTED';
+    document.querySelector('.mastery-gate').appendChild(banner);
+    QuestState.grant('h1');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    document.querySelectorAll('.chip-item').forEach(c => c.style.pointerEvents='none');
+    document.getElementById('checkEqBtn').disabled = true;
+    document.getElementById('resetEqBtn').disabled = true;
+    // Reveal application quiz
+    document.getElementById('appQuizCard').style.display = 'block';
+    mountAppQuiz();
+  } else {
+    fb.className = 'gate-feedback bad';
+    let issues = [];
+    if(!lhsCorrect){
+      const hCount = lhs.filter(x => x==='h').length;
+      const empty = lhs.filter(x => !x).length;
+      if(empty > 0) issues.push(`ฝั่งซ้ายยังว่าง ${empty} ช่อง`);
+      else if(hCount < 4) issues.push(`ฝั่งซ้ายมี H⁺ แค่ ${hCount}/4`);
+      else issues.push(`ฝั่งซ้ายผิดชนิด · ต้องเป็น H⁺ ทั้งหมด`);
+    }
+    if(!r1Correct) issues.push(slots.R1 ? `ผลผลิตหลัก slot 1 ผิด` : `slot 1 ว่าง`);
+    if(!r2Correct) issues.push(slots.R2 ? `2× ของ slot 2 ผิด` : `slot 2 ว่าง`);
+    if(!r3Correct) issues.push(slots.R3 ? `2× ของ slot 3 ผิด` : `slot 3 ว่าง`);
+    if(!r4Correct) issues.push(slots.R4 ? `พลังงาน MeV ผิดค่า` : `ค่าพลังงานว่าง`);
+    fb.innerHTML = `✗ <b>EQUATION REJECTED</b> · สีแดง = ผิด · สีเขียว = ถูก<br>
+      ${issues.map(i=>'• '+i).join('<br>')}<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${eqAttempts} · ลองใหม่ได้</span>`;
+    SFX&&SFX.play('wrong');
+  }
+  updateSubmit();
+}
+mountGate();
+
+/* === Application Quiz (Bloom 4) === */
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 4) · ถ้านักวิทยาศาสตร์สร้างเตา fusion บนโลก แต่ทำได้แค่ T = 100 ล้าน K (ร้อนกว่าแกนดวงอาทิตย์ 6 เท่า) · จะเกิดฟิวชันได้ไหม? เพราะอะไร?',
+    choices: [
+      { txt:'ไม่ได้ · บนโลกไม่มีดวงอาทิตย์', correct:false, hint:'ไม่จำเป็นต้องใช้ดวงอาทิตย์ · ฟิวชันใช้ T สูงพอ' },
+      { txt:'ได้ · เพราะ T สูงพอ proton ชนกันได้ (และจริงๆ ใช้ T ที่สูงกว่าแกนเพราะความหนาแน่นต่ำกว่า)', correct:true },
+      { txt:'ได้ แต่ต้องใช้ He แทน H⁺', correct:false, hint:'ฟิวชัน p-p chain ใช้ H⁺ · ไม่ใช่ He' },
+    ],
+    onCorrect: () => {
+      appQuizPassed = true;
+      document.getElementById('rubricWrap').style.display = 'block';
+      mountRubric();
+    },
+  });
+}
+
+/* === Self-Rubric === */
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap');
+      updateSubmit();
+    };
+  });
+}
+
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false;
+    sb.textContent = '📤 ส่งผล · ออกจาก CORE';
+  }
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p05c', nextHref:'p06-bridge.html',
+    getPayload(){
+      return {
+        prediction: pred, predictionMatched: pred===1,
+        gatePassed, eqAttempts, appQuizPassed, rubric: rubricChosen,
+        helion:'h1'
+      };
+    },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ผ่าน REACTOR EQUATION LOCK ก่อน'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz ก่อน'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric ⭐ ก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.eqAttempts<=2; },
+    onSubmit(){ Photon && Photon.add && Photon.add(20); }
+  });
+}, 200);
+</script>
+</body></html>

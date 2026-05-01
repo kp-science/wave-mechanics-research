@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p11 · Telescope Match</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .match-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:10px; }
+  .match-grid > div { background:#0a1226; border:1px solid var(--line-soft); border-radius:8px;
+    padding:8px; font-size:13px; min-height:60px; }
+  .match-grid .head { background:var(--steel-blue); color:#fff; font-weight:700; text-align:center; }
+  .scope-pool { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0;
+    padding:10px; background:#0a1226; border:1px dashed var(--line); border-radius:10px; min-height:60px; }
+  .scope-token { background:var(--rocket-orange); color:#1a0e00;
+    padding:6px 10px; border-radius:20px; cursor:grab; font-weight:700; font-size:13px;
+    user-select:none; }
+  .scope-token.placed { opacity:.4; cursor:default; }
+  .drop-cell.over { background:rgba(255,138,61,.18); border-color:var(--rocket-orange); }
+</style>
+</head>
+<body data-page="p11">
+<div class="page">
+  <div class="act-badge">ACT B · 8/8 · MATCH</div>
+  <h1>กิจกรรม 4.1 · จับคู่กล้องโทรทรรศน์</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · armory จัดเก็บกล้อง 6 ตัว · ใส่ผิดช่อง = พังทั้งระบบ</div>
+    <div class="crisis-body">ลากชื่อกล้องไปวางในช่องที่ถูกต้องตาม <b>ช่วงคลื่น</b> และ <b>วัตถุที่ศึกษา</b> · ตำรา p101</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">📋 จับคู่ตามตาราง · ตำราหน้า 101</div>
+    <div class="tool-body">FAST · กล้องสะท้อนแสง · Hubble · Spitzer · JWST · Chandra · มีคลื่นและวัตถุที่ศึกษาเฉพาะ</div>
+  </div>
+
+  <h3>กล้องที่ต้องวาง:</h3>
+  <div class="scope-pool" id="pool"></div>
+
+  <h3>ตารางที่ต้องเติม:</h3>
+  <div class="match-grid" id="grid">
+    <div class="head">กล้อง</div>
+    <div class="head">ช่วงคลื่น</div>
+    <div class="head">วัตถุที่ศึกษา</div>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="check">✓ ตรวจคำตอบ</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง · OS ปลด</div>
+    🔭 <b>Telescope Lens</b> ปลดล็อกแล้ว · ทีมรู้แล้วว่ากล้องแต่ละตัวเก่งคนละช่วงคลื่น · พร้อมไปต่อ ACT C
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p12-why-probe.html" class="btn alt" id="next" style="display:none;">ไปต่อ → ACT C</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p11' });
+    PBL.init({ id:'p11-telescope-match' });
+
+    const rows = [
+      { id:'fast',    band:'วิทยุ 1 cm-20 m',  obj:'หลุมดำ · CMB · ซูเปอร์โนวา' },
+      { id:'mirror',  band:'แสง 400-700 nm',  obj:'ดาวเคราะห์ · ดาวฤกษ์ · เนบิวลา' },
+      { id:'hubble',  band:'IR-แสง-UV',       obj:'สสารระหว่างดาว · กาแล็กซี' },
+      { id:'spitzer', band:'IR 1μm-1mm',      obj:'ดาวเกิดใหม่ใจกลางกาแล็กซี' },
+      { id:'jwst',    band:'IR',              obj:'ดาราจักรแรกเกิด' },
+      { id:'chandra', band:'X-ray 0.1-10 nm', obj:'หลุมดำ · ดาวนิวตรอน' }
+    ];
+    const grid = document.getElementById('grid');
+    rows.forEach((r,i) => {
+      const drop = document.createElement('div');
+      drop.className = 'drop-cell';
+      drop.style.cssText = 'background:#0a1226;border:1px dashed var(--steel-blue);border-radius:8px;padding:8px;min-height:50px;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-mute);';
+      drop.dataset.expected = r.id;
+      drop.textContent = '? วางกล้อง';
+      grid.appendChild(drop);
+      const cell2 = document.createElement('div'); cell2.style.padding='8px'; cell2.style.fontSize='13px';
+      cell2.textContent = r.band;
+      grid.appendChild(cell2);
+      const cell3 = document.createElement('div'); cell3.style.padding='8px'; cell3.style.fontSize='13px';
+      cell3.textContent = r.obj;
+      grid.appendChild(cell3);
+    });
+
+    const pool = document.getElementById('pool');
+    const tels = EP_CONFIG.telescopes;
+    [...tels].sort(()=> Math.random()-.5).forEach(t => {
+      const tk = document.createElement('div');
+      tk.className = 'scope-token'; tk.draggable = true;
+      tk.dataset.id = t.id;
+      tk.textContent = t.name;
+      tk.addEventListener('dragstart', e => e.dataTransfer.setData('text', t.id));
+      pool.appendChild(tk);
+    });
+
+    grid.querySelectorAll('.drop-cell').forEach(d => {
+      d.addEventListener('dragover', e => { e.preventDefault(); d.classList.add('over'); });
+      d.addEventListener('dragleave', () => d.classList.remove('over'));
+      d.addEventListener('drop', e => {
+        e.preventDefault(); d.classList.remove('over');
+        const id = e.dataTransfer.getData('text');
+        const tok = pool.querySelector('[data-id="'+id+'"]');
+        if (!tok) return;
+        d.dataset.placed = id;
+        d.textContent = tels.find(t => t.id === id).name;
+        d.style.background = 'rgba(255,138,61,.15)'; d.style.color = '#fff';
+        tok.classList.add('placed'); tok.draggable = false;
+      });
+    });
+
+    document.getElementById('check').onclick = () => {
+      const cells = [...grid.querySelectorAll('.drop-cell')];
+      const correct = cells.every(c => c.dataset.placed === c.dataset.expected);
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct ? 'correct' : 'wrong');
+      res.textContent = correct ? '✓ จับคู่ครบถูกหมด · OS Telescope Lens ปลด' : '× ยังไม่ครบ · ลองสลับใหม่';
+      KPA.log('K1','telescope-match', { correct });
+      KPA.competency('C2', { evidence:'matching-telescope' });
+      KPA.vpa(2, { kind:'matching', summary: correct ? 'pass' : 'partial' });
+      PBL.attempt(correct, {});
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        Boot07.grantOS('os1');
+        document.getElementById('transfer').style.display = 'block';
+        document.getElementById('next').style.display = '';
+        PBL._enter('transfer');
+      } else {
+        CoinEnergy.penalty('crisisFail');
+      }
+    };
+  });
+</script>
+</body>
+</html>

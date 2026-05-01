@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P12 · Activity Slider</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.sun-stage { position:relative; width:240px; height:240px; margin:14px auto; border-radius:50%;
+             background:radial-gradient(circle at 35% 35%, #fff8c8, #ffcb6b 40%, #ff8a3d 75%, #ff5c7a);
+             box-shadow:0 0 60px rgba(255,138,61,0.5); overflow:hidden; }
+.spot-mark { position:absolute; border-radius:50%; background:radial-gradient(circle, #1a0500, #3a1100); }
+.act-tier-pill { padding:8px 16px; border-radius:999px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; display:inline-block; transition:all .3s ease; }
+.tier-events { padding:10px 14px; border-radius:10px; background:rgba(20,28,52,0.6); margin-top:8px; }
+.tier-events ul { margin:4px 0; padding-left:20px; }
+.act-slider { width:100%; margin:14px 0; accent-color:#ff8a3d; height:10px; }
+.tier-pips { display:flex; justify-content:space-between; margin-top:4px; font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; letter-spacing:.08em; }
+.tier-pip.on { color:#ffcb6b; font-weight:700; }
+</style>
+</head>
+<body data-page="p13" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🎚️ SLIDER · ACTIVITY TIER</span>
+  <h1>เลื่อน sunspot count → activity tier</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K3</span></div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <div class="sun-stage" id="sunStage"></div>
+    <div class="center" style="margin-bottom:6px;">
+      <span class="act-tier-pill" id="tierPill">— เลื่อนเพื่อเริ่ม —</span>
+    </div>
+    <input type="range" class="act-slider" min="0" max="250" value="5" id="aSlider">
+    <div class="tier-pips" id="pips">
+      <span data-t="1">Min</span><span data-t="2">Low</span><span data-t="3">Mod</span><span data-t="4">High</span><span data-t="5">Max</span>
+    </div>
+    <div class="muted center" style="margin-top:6px;">จำนวน sunspot: <b id="spotN" class="mono" style="color:#ffcb6b;">5</b> จุด</div>
+    <div class="tier-events" id="events"></div>
+  </div>
+
+  <div class="card cyan">
+    <div class="q-prompt">📝 ปัจจุบันดวงอาทิตย์เรามี ~250 จุด · เป็น tier ใด?</div>
+    <div class="choice-row" data-q="0">
+      <label><input type="radio" name="q0" value="0"> Solar Minimum</label>
+      <label><input type="radio" name="q0" value="1"> Moderate</label>
+      <label><input type="radio" name="q0" value="2"> Solar Maximum</label>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P12</summary>
+    <div>5 tier: Min(<10) · Low(10-50) · Mod(50-100) · High(100-200) · Max(>200) · ตอนนี้ 250 = Solar Max</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const tiers = EP_CONFIG.activityTiers;
+function getTier(n){
+  if(n<10) return tiers[0];
+  if(n<50) return tiers[1];
+  if(n<100) return tiers[2];
+  if(n<200) return tiers[3];
+  return tiers[4];
+}
+const slider = document.getElementById('aSlider');
+const pill = document.getElementById('tierPill');
+const stage = document.getElementById('sunStage');
+const events = document.getElementById('events');
+const seenTiers = new Set();
+function renderSpots(n){
+  stage.querySelectorAll('.spot-mark').forEach(s=>s.remove());
+  const dispCount = Math.min(n, 60);
+  for(let i=0;i<dispCount;i++){
+    const sp = document.createElement('div'); sp.className='spot-mark';
+    const lat = (Math.random()-0.5)*0.6;  // ±30%
+    const lon = (Math.random()-0.5)*1.6;
+    const x = 50 + lon*30, y = 50 + lat*60;
+    const sz = 4 + Math.random()*8;
+    sp.style.cssText = `left:${x}%; top:${y}%; width:${sz}px; height:${sz}px;`;
+    stage.appendChild(sp);
+  }
+}
+function update(){
+  const n = Number(slider.value);
+  document.getElementById('spotN').textContent = n;
+  const t = getTier(n);
+  seenTiers.add(t.tier);
+  pill.textContent = t.label + ' · Tier ' + t.tier;
+  pill.style.background = t.color + '22';
+  pill.style.color = t.color;
+  pill.style.border = '1px solid ' + t.color;
+  events.innerHTML = `<div style="font-size:11px;color:#9aa3c0;font-family:Orbitron,monospace;letter-spacing:.12em;">EXPECTED EVENTS</div>
+    <ul>${t.events.map(e=>'<li>'+e+'</li>').join('')}</ul>`;
+  renderSpots(n);
+  document.querySelectorAll('.tier-pips span').forEach(s=>{
+    s.classList.toggle('on', Number(s.dataset.t)===t.tier);
+  });
+  if(SFX) SFX.play('tap');
+}
+slider.oninput = update;
+update();
+
+setTimeout(()=>{
+  Submit.wirePair({
+    page:'p13', nextHref:'p14-phenomena-tabs.html',
+    getPayload(){
+      const v=document.querySelector('input[name="q0"]:checked');
+      return { seenTiers:seenTiers.size, q0: v?Number(v.value):-1, correct: v && Number(v.value)===2 };
+    },
+    validate(p){
+      if(p.seenTiers<5){ alert('เลื่อนผ่านครบทั้ง 5 tier ก่อน (เลื่อนถึง 200+)'); return false; }
+      if(p.q0===-1){ alert('ตอบ quiz ก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.correct; },
+  });
+},200);
+</script>
+</body></html>

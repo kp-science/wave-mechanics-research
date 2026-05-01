@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p12 · Hubble's Law</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .calc-row { display:grid; grid-template-columns:1fr 80px 1fr 60px 1fr; gap:8px; align-items:center;
+    margin:14px 0; font-size:18px; }
+  .calc-row input { font-size:18px; padding:8px; text-align:center; }
+  .formula { background:var(--bg-card); border:1px solid var(--genesis-gold); border-radius:12px;
+    padding:14px; text-align:center; font-size:24px; }
+  .formula b { color:var(--genesis-gold); }
+  @media(max-width:520px){ .calc-row{grid-template-columns:1fr;} }
+</style>
+</head>
+<body data-page="p12">
+<div class="page">
+  <div class="act-badge">ACT B · 8/8 · HUBBLE'S LAW</div>
+  <h1>📐 v = H₀ · D · กฎฮับเบิล</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div class="formula">
+    v = <b>H₀</b> · D &nbsp;&nbsp; (H₀ ≈ 70 km/s/Mpc)
+  </div>
+
+  <div class="card">
+    <p><b>โจทย์:</b> กาแล็กซีอยู่ห่าง 100 Mpc · เคลื่อนที่ออกด้วยความเร็วเท่าไร?</p>
+    <div class="calc-row">
+      <span><b>v</b> = ?</span>
+      <span>=</span>
+      <span><b>70</b> × <b>100</b></span>
+      <span>=</span>
+      <input type="number" id="ans1" placeholder="?" />
+    </div>
+    <p style="font-size:13px;color:var(--text-mute);">หน่วย: km/s</p>
+  </div>
+
+  <div class="card">
+    <p><b>โจทย์ 2:</b> วัดได้ v = 14,000 km/s · กาแล็กซีนี้ห่างเท่าไร?</p>
+    <div class="calc-row">
+      <span><b>D</b> = v / H₀</span>
+      <span>=</span>
+      <span><b>14,000</b> / <b>70</b></span>
+      <span>=</span>
+      <input type="number" id="ans2" placeholder="?" />
+    </div>
+    <p style="font-size:13px;color:var(--text-mute);">หน่วย: Mpc</p>
+  </div>
+
+  <div class="card card-pink">
+    <p><b>คำถาม misconception:</b> H₀ เป็นค่าคงที่ตลอดเวลาเอกภพหรือไม่?</p>
+    <div class="row" id="m4">
+      <button class="chip m4" data-v="0">ใช่ · คงที่ตลอด</button>
+      <button class="chip m4" data-v="1">ไม่ · เปลี่ยนตามเวลาเอกภพ</button>
+    </div>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ตรวจคำตอบ</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p12' });
+  EP08Page.story('p12');
+  EP08Page.markVisit('p12');
+
+  let m4 = null;
+  document.getElementById('m4').addEventListener('click', e => {
+    const c = e.target.closest('.m4'); if (!c) return;
+    m4 = +c.dataset.v;
+    document.querySelectorAll('.m4').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const a1 = +document.getElementById('ans1').value;
+    const a2 = +document.getElementById('ans2').value;
+    const ok1 = Math.abs(a1 - 7000) < 50;
+    const ok2 = Math.abs(a2 - 200) < 5;
+    const ok3 = m4 === 1;
+    const all = ok1 && ok2 && ok3;
+    if (window.KPA) {
+      KPA.log('P','P3','hubble calc');
+      KPA.research('hubblesLaw', { a1, a2, m4, ok: all });
+    }
+    EP08Page.submit({ ok:all,
+      title: all ? '✓ Hubble Mastery' : '⚠️ ตรวจคำตอบใหม่',
+      body:`<p>v₁ = 7,000 km/s · D₂ = 200 Mpc · H₀ เปลี่ยนตามเวลาเอกภพ (M-FINAL-4)</p>
+            <p>คะแนน: ${[ok1,ok2,ok3].filter(x=>x).length}/3</p>
+            <p>ใช้กฎนี้คำนวณตำแหน่ง Anti-Genesis Engine 4 จุด · VOID Prime อยู่หลังประตูถัดไป</p>`
+    });
+  };
+</script>
+</body>
+</html>

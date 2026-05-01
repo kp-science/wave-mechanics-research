@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P14 · Vault Entry</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.vault-stage { position:relative; height:280px; border-radius:14px; overflow:hidden; margin:10px 0;
+               background:linear-gradient(180deg, #02030a, #0a0a18); }
+.ice-floor { position:absolute; bottom:0; left:0; right:0; height:50%;
+             background:linear-gradient(180deg, #0a0820, #1a0a30); border-top:1px solid rgba(100,216,255,0.4); }
+.vault-door { position:absolute; left:50%; bottom:30%; transform:translateX(-50%); width:60%; max-width:240px; height:60%; border-radius:14px 14px 0 0;
+              background:linear-gradient(180deg, #1a1a4a, #0a0a2a); border:2px solid #b980ff; box-shadow:0 0 40px rgba(185,128,255,0.4); }
+.vault-door::before { content:'☉'; position:absolute; left:50%; top:30%; transform:translate(-50%,-50%); font-size:60px; color:#ffcb6b; text-shadow:0 0 20px #ffcb6b; }
+.vault-door::after { content:''; position:absolute; left:50%; bottom:14%; transform:translateX(-50%); width:80%; height:6px; background:#64d8ff; box-shadow:0 0 12px #64d8ff; }
+.ship { position:absolute; left:10%; bottom:35%; font-size:28px; filter:drop-shadow(0 0 10px #64d8ff); animation:hover 3s ease-in-out infinite; }
+@keyframes hover { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+</style>
+</head>
+<body data-page="p14" data-type="story">
+<div class="page">
+  <span class="lbl story">🚪 VAULT ENTRY</span>
+  <h1>ลงจอด · พื้นน้ำแข็งดำ · เข้า Genesis Vault</h1>
+
+  <div class="card cyan">
+    <div class="vault-stage">
+      <div class="ice-floor"></div>
+      <div class="vault-door"></div>
+      <div class="ship">🚀</div>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">อารยา:</b> "ที่นี่... <b style="color:#b980ff;">Genesis Vault</b> · 45 AU · พื้นน้ำแข็งดำ · พ่อเคยเล่าว่ามีแค่ตำนาน ·
+      <b style="color:#7effb2;">มันเก็บประวัติของระบบสุริยะ</b>ตั้งแต่กำเนิด"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🔑 ปลดประตู</h3>
+    <div class="muted">SHARDS 6 ชิ้นที่เก็บมาทำหน้าที่เป็น<b>กุญแจ</b>เปิด vault</div>
+    <div id="shardsHost" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:10px;"></div>
+    <div id="resultHost" style="margin-top:10px;"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P14</summary>
+    <div>เน้นถ้านักเรียนยังไม่เก็บครบ 6 → เตือนกลับไปทำให้ครบก่อนเข้า Vault · กรณีครบจะเปิดประตู</div></details>
+
+  
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ Vault Walls · ฉาย timeline</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const inv = QuestState.helions();
+const shost = document.getElementById('shardsHost');
+EP_CONFIG.helions.forEach(h => {
+  const el = document.createElement('div');
+  const have = inv.includes(h.id);
+  el.style.cssText = `padding:10px 14px; border-radius:10px; font-size:18px; ${have?'background:rgba(126,255,178,0.15); border:1.5px solid #7effb2;':'background:rgba(20,28,52,0.5); border:1.5px dashed rgba(120,140,220,0.3); opacity:0.4;'}`;
+  el.textContent = h.icon + ' ' + h.name + (have ? ' ✓' : ' (ยังไม่เก็บ)');
+  shost.appendChild(el);
+});
+const r = document.getElementById('resultHost');
+if(inv.length === 6){
+  r.innerHTML = '<div class="card green">✓ <b>VAULT UNLOCKED</b> · ครบ 6/6 · ประตูเปิด...</div>';
+  if(window.SFX) setTimeout(()=>SFX.play('charge'),300);
+} else {
+  r.innerHTML = `<div class="card red">⚠ ยังไม่ครบ ${inv.length}/6 · กรุณากลับไปเก็บ SHARD ที่เหลือก่อน</div>`;
+}
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p15-vault-walls.html');if(window.PaceClient)Gate.wireButton('p14',btn,'p15-vault-walls.html');},200);
+</script>
+</body></html>

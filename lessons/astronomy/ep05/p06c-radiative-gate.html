@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P06c · RADIATIVE · MASTERY GATE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* === PHOTON CIPHER BOX === */
+.cipher-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(100,216,255,0.1),rgba(58,10,74,0.1));
+               border:2px solid #64d8ff; margin:14px 0; box-shadow:0 0 24px rgba(100,216,255,0.2); }
+.cipher-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#64d8ff; letter-spacing:.16em; margin-bottom:10px; }
+.cipher-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+
+.cipher-puzzles { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.cipher-card { padding:12px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(100,216,255,0.3); }
+.cipher-card h4 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:11px; color:#64d8ff; letter-spacing:.12em; }
+.cipher-card .pq { font-size:13px; color:#fff; line-height:1.6; margin-bottom:8px; }
+.cipher-card .opts { display:flex; flex-direction:column; gap:5px; }
+.cipher-card .opt { padding:8px 12px; border-radius:8px; cursor:pointer; user-select:none;
+                    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); font-size:12px; color:#fff; transition:all .15s; }
+.cipher-card .opt:hover { border-color:#64d8ff; background:rgba(100,216,255,0.1); }
+.cipher-card .opt.selected { background:rgba(100,216,255,0.25); border-color:#64d8ff; color:#fff; font-weight:600; }
+.cipher-card .opt.correct { background:rgba(126,255,178,0.2); border-color:#7effb2; color:#7effb2; }
+.cipher-card .opt.wrong { background:rgba(255,92,122,0.2); border-color:#ff5c7a; color:#ff5c7a; }
+.cipher-card.solved { border-color:#7effb2; box-shadow:0 0 14px rgba(126,255,178,0.3); }
+
+.cipher-letter { display:inline-block; width:50px; height:60px; border-radius:8px; border:2px dashed rgba(255,255,255,0.4);
+                 background:rgba(0,0,0,0.4); display:inline-flex; align-items:center; justify-content:center;
+                 font-family:Orbitron,monospace; font-size:28px; font-weight:700; color:#9aa3c0; margin:0 4px; transition:all .3s; }
+.cipher-letter.filled { color:#64d8ff; border-color:#64d8ff; background:rgba(100,216,255,0.15); box-shadow:0 0 8px #64d8ff; }
+.cipher-code { text-align:center; padding:14px; border-radius:12px; background:rgba(0,0,0,0.6); margin:10px 0; }
+.cipher-code .lbl-cd { font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0; letter-spacing:.16em; margin-bottom:8px; }
+
+.airlock { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(255,138,61,0.4); margin:10px 0; }
+.airlock .keypad-input { width:200px; padding:14px; border-radius:10px; background:#000; border:2px solid #ffcb6b;
+                          font-family:Orbitron,monospace; font-size:24px; color:#ffcb6b; text-align:center; letter-spacing:0.4em; }
+.airlock .keypad-btn { background:linear-gradient(180deg,#ff5c7a,#b21030); color:#fff; padding:12px 24px;
+                       font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; border-radius:10px; border:none; cursor:pointer; margin-left:8px; }
+.airlock .keypad-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.airlock-feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:13px; min-height:40px; display:none; }
+.airlock-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; display:block; }
+.airlock-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; display:block; }
+.gate-passed-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(126,255,178,0.06));
+                      border:2px solid #7effb2; text-align:center; font-family:Orbitron,monospace;
+                      font-size:14px; color:#7effb2; letter-spacing:.16em; margin:10px 0;
+                      animation:gatePassed 1.2s ease-out; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.9);} 50%{opacity:1;transform:scale(1.02);} 100%{transform:scale(1);} }
+
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p06c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 2 · RADIATIVE · C · MASTERY GATE</span>
+  <h1>ปลด AIRLOCK ด้วย Photon Cipher Code</h1>
+  <div class="tags"><span class="kpa-chip">K2</span><span class="kpa-chip">P3</span></div>
+
+  <!-- COMPARE -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED</h4>
+        <div class="val">เดินตาม T ที่ลดลง · สำเร็จ!</div>
+        <div class="reason">บันทึก <b id="obsCount">—</b> step · ผิด <b id="obsWrong">—</b> ครั้ง<br>
+          กฎ: T ต่ำกว่า → ใกล้ทางออก</div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ยานเจอ <b>airlock</b> · ปิดล็อกด้วย <b>4 หลัก</b> · เธอต้องไขปริศนา 4 ข้อ
+      เกี่ยวกับชั้น Radiative · แต่ละข้อจะให้ <b>1 ตัวอักษร</b> · รวม 4 ตัวเป็นรหัสปลด"
+    </span>
+  </div>
+
+  <!-- PHOTON CIPHER GATE -->
+  <div class="phase-tag phase-gate">🔒 MASTERY GATE · PHOTON CIPHER BOX</div>
+  <div class="cipher-gate">
+    <div class="gate-head">🔐 ไขปริศนา 4 ข้อ → ได้รหัส 4 ตัว</div>
+    <div class="gate-sub">แต่ละข้อ ตอบถูก = ปล่อยตัวอักษร 1 ตัว · รวบเป็นรหัส · ใส่ keypad ปลด airlock</div>
+
+    <div class="cipher-puzzles" id="puzzleHost"></div>
+
+    <div class="cipher-code">
+      <div class="lbl-cd">🔑 CODE COLLECTED</div>
+      <span class="cipher-letter" id="L1">_</span>
+      <span class="cipher-letter" id="L2">_</span>
+      <span class="cipher-letter" id="L3">_</span>
+      <span class="cipher-letter" id="L4">_</span>
+    </div>
+
+    <div class="airlock">
+      <div style="font-family:Orbitron,monospace;font-size:11px;color:#ffcb6b;letter-spacing:.14em;margin-bottom:8px;">⚙️ AIRLOCK KEYPAD · ใส่รหัส 4 ตัว</div>
+      <input class="keypad-input" id="codeInput" maxlength="4" placeholder="????" autocomplete="off">
+      <button class="keypad-btn" id="unlockBtn">⚡ UNLOCK</button>
+      <div class="airlock-feedback" id="airlockFb"></div>
+    </div>
+  </div>
+
+  <!-- APPLICATION QUIZ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 4</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- SELF-RUBRIC -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT</div>
+    <div class="card">
+      <h3>เธอเข้าใจ photon random walk + gradient descent ระดับใด?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P06c</summary>
+    <div>
+      <b>Cipher Box gate:</b> 4 ปริศนา → ตัวอักษร W·A·L·K → รหัส "WALK" (จาก photon random walk)<br>
+      ผ่าน gate + app quiz + rubric → ปลด HELION 2/6
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* === Compare === */
+const PRED_LABELS = ['เดินสุ่ม','เดินตาม T ที่ลดลง','เดินตาม T ที่เพิ่ม','รอ 170,000 ปี'];
+const REASONS_MAP = {
+  r1:'T สูง = ใกล้แกน · ตรงข้ามคือทางออก', r2:'random walk เร็วถ้าเดินสุ่ม', r3:'เซ็นเซอร์อ่าน T ทุกทิศ · ใช้ประโยชน์',
+  r4:'170,000 ปี = นานเกิน', r5:'ขอบชั้น = T ต่ำกว่าศูนย์กลาง', r6:'ในชั้นนี้ไม่มีทิศ "บน" · มีแต่ gradient',
+  r7:'พลังงานไหลจาก T สูง → ต่ำ', r8:'เดินไปแกน = ฟิวชัน = ปลอดภัย'
+};
+const pred = Chain.get('p06_prediction');
+const predReasons = Chain.get('p06_reasons') || [];
+document.getElementById('obsCount').textContent = Chain.get('p06_steps') || '—';
+document.getElementById('obsWrong').textContent = Chain.get('p06_wrongs') || 0;
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){
+    banner.className = 'match-banner ok';
+    banner.textContent = '✓ MATCH · เธอทำนายถูก!';
+  } else {
+    banner.className = 'match-banner diff';
+    banner.innerHTML = '⚠ ทำนายไม่ตรง · จริง = เดินตาม T ที่ <b>ลดลง</b>';
+  }
+}
+
+/* === PHOTON CIPHER PUZZLES === */
+// 4 puzzles · each gives 1 letter · together = "WALK"
+const PUZZLES = [
+  {
+    q: '⏱️ โฟตอนใช้เวลานานเท่าไรเดินทางจาก core ออกถึง photosphere?',
+    opts: [
+      { txt:'8 นาที', letter:null, correct:false },
+      { txt:'~170,000 ปี (random walk)', letter:'W', correct:true },
+      { txt:'1 ปี', letter:null, correct:false },
+    ],
+  },
+  {
+    q: '🌡️ ในชั้น Radiative · พลังงานไหลจากที่ T ____ ไปที่ T ____',
+    opts: [
+      { txt:'สูง → ต่ำ (ตามกฎเทอร์โมไดนามิกส์)', letter:'A', correct:true },
+      { txt:'ต่ำ → สูง', letter:null, correct:false },
+      { txt:'ไม่ไหล · นิ่งสนิท', letter:null, correct:false },
+    ],
+  },
+  {
+    q: '🚶 ทำไมโฟตอนใช้เวลานานเหลือเกิน?',
+    opts: [
+      { txt:'แสงเดินช้าในชั้นนี้', letter:null, correct:false },
+      { txt:'ถูกดูดซับ-ปล่อยซ้ำ ๆ ทำให้ทิศเปลี่ยนตลอด', letter:'L', correct:true },
+      { txt:'ติดในแม่เหล็ก', letter:null, correct:false },
+    ],
+  },
+  {
+    q: '🧭 กลยุทธ์เดินออกจากชั้น Radiative ที่ถูกต้องคือ?',
+    opts: [
+      { txt:'เดินสุ่มทุกทิศ', letter:null, correct:false },
+      { txt:'เดินไปแกน', letter:null, correct:false },
+      { txt:'เดินตามทิศที่ T ลดลงต่อเนื่อง (gradient descent)', letter:'K', correct:true },
+    ],
+  },
+];
+const CORRECT_CODE = 'WALK';
+const collected = [null, null, null, null];
+const solved = [false, false, false, false];
+
+function renderPuzzles(){
+  const host = document.getElementById('puzzleHost');
+  host.innerHTML = '';
+  PUZZLES.forEach((p, idx) => {
+    const card = document.createElement('div'); card.className='cipher-card';
+    if(solved[idx]) card.classList.add('solved');
+    card.innerHTML = `
+      <h4>🧩 ปริศนา ${idx+1} → ตัวอักษรที่ ${idx+1}</h4>
+      <div class="pq">${p.q}</div>
+      <div class="opts" id="opts${idx}"></div>
+    `;
+    host.appendChild(card);
+    const optsEl = card.querySelector('#opts'+idx);
+    p.opts.forEach((o, i) => {
+      const b = document.createElement('div'); b.className='opt'; b.textContent = o.txt;
+      b.onclick = () => {
+        if(solved[idx]) return;
+        if(o.correct){
+          b.classList.add('correct');
+          solved[idx] = true;
+          collected[idx] = o.letter;
+          document.getElementById('L'+(idx+1)).textContent = o.letter;
+          document.getElementById('L'+(idx+1)).classList.add('filled');
+          card.classList.add('solved');
+          SFX&&SFX.play('correct');
+        } else {
+          b.classList.add('wrong');
+          setTimeout(()=>b.classList.remove('wrong'), 1000);
+          SFX&&SFX.play('wrong');
+        }
+      };
+      optsEl.appendChild(b);
+    });
+  });
+}
+renderPuzzles();
+
+/* === Airlock keypad === */
+let gatePassed = false;
+let airlockAttempts = 0;
+document.getElementById('codeInput').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+document.getElementById('unlockBtn').onclick = () => {
+  if(gatePassed) return;
+  const code = document.getElementById('codeInput').value.trim().toUpperCase();
+  airlockAttempts++;
+  const fb = document.getElementById('airlockFb');
+  if(!solved.every(s => s)){
+    fb.className = 'airlock-feedback bad';
+    fb.textContent = '✗ ไขปริศนาให้ครบ 4 ข้อก่อน · ตอนนี้ ' + solved.filter(s=>s).length + '/4';
+    return;
+  }
+  if(code === CORRECT_CODE){
+    gatePassed = true;
+    fb.className = 'airlock-feedback ok';
+    fb.innerHTML = `🟢 <b>AIRLOCK UNLOCKED</b> · รหัส "${CORRECT_CODE}" ถูกต้อง · ออกจาก Radiative ได้!<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${airlockAttempts}</span>`;
+    SFX&&SFX.play('correct');
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.textContent = '✓ MASTERY GATE PASSED · 🔆 HELION 2/6 GRANTED';
+    document.querySelector('.cipher-gate').appendChild(banner);
+    QuestState.grant('h2');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    document.getElementById('unlockBtn').disabled = true;
+    document.getElementById('codeInput').disabled = true;
+    document.getElementById('appQuizCard').style.display='block';
+    mountAppQuiz();
+  } else {
+    fb.className = 'airlock-feedback bad';
+    fb.innerHTML = `✗ รหัสผิด · ลองใหม่ · ดูที่ตัวอักษรที่เก็บได้<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${airlockAttempts}</span>`;
+    SFX&&SFX.play('wrong');
+  }
+};
+
+/* === Application Quiz === */
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 4) · ถ้าโฟตอนเดินทางในสุญญากาศจาก core → photosphere · จะใช้เวลาเท่าไร?',
+    choices: [
+      { txt:'~170,000 ปี เหมือนเดิม', correct:false, hint:'ในสุญญากาศไม่มี scatter · เร็วกว่ามาก' },
+      { txt:'~2.3 วินาที (radius 700,000 km / c)', correct:true },
+      { txt:'~8 นาที (เหมือนถึงโลก)', correct:false, hint:'นั่นคือจาก photosphere → โลก · ระยะต่างกัน' },
+    ],
+    onCorrect: () => {
+      appQuizPassed = true;
+      document.getElementById('rubricWrap').style.display='block';
+      mountRubric();
+    },
+  });
+}
+
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap');
+      updateSubmit();
+    };
+  });
+}
+
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false;
+    sb.textContent = '📤 ส่งผล · ออกจาก RADIATIVE';
+  }
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p06c', nextHref:'p07-bridge.html',
+    getPayload(){ return { prediction:pred, predictionMatched:pred===1, gatePassed, airlockAttempts, appQuizPassed, rubric:rubricChosen, helion:'h2' }; },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ปลด AIRLOCK ก่อน · ไขปริศนา 4 ข้อ + ใส่รหัสให้ถูก'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz ก่อน'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric ⭐ ก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.airlockAttempts<=1; },
+    onSubmit(){ window.Photon && Photon.add && Photon.add(20); }
+  });
+}, 200);
+</script>
+</body></html>

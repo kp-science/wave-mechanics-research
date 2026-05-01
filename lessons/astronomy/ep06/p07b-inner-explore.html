@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P07b · INNER · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.bin-row { display:grid; grid-template-columns:1fr; gap:10px; margin:10px 0; }
+.bin-block { padding:14px; border-radius:12px; min-height:80px; }
+.bin-terr { background:rgba(255,138,61,0.10); border:2px dashed #ff8a3d; }
+.bin-other { background:rgba(100,216,255,0.10); border:2px dashed #64d8ff; }
+.bin-block h4 { font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; margin:0 0 6px; }
+.bin-terr h4 { color:#ff8a3d; } .bin-other h4 { color:#64d8ff; }
+.tags { display:flex; flex-wrap:wrap; gap:6px; }
+.ptag { padding:8px 12px; border-radius:10px; cursor:pointer; user-select:none;
+        background:rgba(20,28,52,0.7); border:1.5px solid rgba(120,140,220,0.4);
+        font-size:13px; }
+.ptag.in-terr { background:rgba(255,138,61,0.18); border-color:#ff8a3d; }
+.ptag.in-other { background:rgba(100,216,255,0.18); border-color:#64d8ff; }
+.ptag.correct { box-shadow:0 0 0 2px #7effb2 inset; }
+.ptag.wrong { box-shadow:0 0 0 2px #ff5c7a inset; animation:shake .35s; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+</style>
+</head>
+<body data-page="p07b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🪨 INNER · B · EXPLORE</span>
+  <h1>คัด 4 ดวงเข้า bin · TERRESTRIAL</h1>
+
+  <div class="card">
+    <h3>👇 กดดวงดาว → เลือก bin</h3>
+    <div class="muted">บินผ่าน 4 ดวงนี้แล้ว · ดวงไหนเป็นดาวเคราะห์ชั้นใน?</div>
+    <div class="tags" id="pool"></div>
+
+    <div class="bin-row">
+      <div class="bin-block bin-terr"><h4>🪨 TERRESTRIAL (หิน · ชั้นใน)</h4><div class="tags" data-zone="terr"></div></div>
+      <div class="bin-block bin-other"><h4>❌ ไม่ใช่ชั้นใน</h4><div class="tags" data-zone="other"></div></div>
+    </div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P07b</summary>
+    <div>4/4 ถูก = พร้อมไป gate · กระตุ้นนักเรียนถ้าจัดผิด · พฤหัส=gas giant ไม่ใช่ terrestrial</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ทำไม 4 ดวงในเขตในขนาดใกล้กัน (R = 0.38–1)?',
+    durationSec: 60,
+    chips: [
+      'วัตถุดิบในเขตในมีจำกัด',
+      'พื้นที่ก่อตัวจำกัดเพราะใกล้ดวงอาทิตย์',
+      'พลังงานความร้อนสูงทำให้รวมตัวยาก',
+      'ดาวเคราะห์โตขึ้นโดยชน-รวม · มีขีดจำกัด',
+      'ทุกข้อเป็นเหตุผลรวมกัน'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const ITEMS = [
+  { id:'mercury', n:'☿ ดาวพุธ',    t:true },
+  { id:'venus',   n:'♀ ดาวศุกร์',   t:true },
+  { id:'earth',   n:'⊕ โลก',       t:true },
+  { id:'mars',    n:'♂ ดาวอังคาร',  t:true },
+  { id:'jupiter', n:'♃ ดาวพฤหัส',   t:false },
+  { id:'pluto',   n:'⚲ พลูโต',      t:false },
+];
+const placed = {};
+const pool = document.getElementById('pool');
+ITEMS.slice().sort(() => Math.random()-0.5).forEach(it => {
+  const el = document.createElement('div'); el.className='ptag'; el.dataset.id=it.id;
+  el.textContent = it.n;
+  el.onclick = () => {
+    if(placed[it.id]) return;
+    const dlg = document.createElement('div');
+    dlg.style.cssText='position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:flex; align-items:center; justify-content:center;';
+    dlg.innerHTML = `<div style="background:#06091a; padding:18px; border-radius:14px; border:1px solid #64d8ff;">
+      <div style="font-size:13px; color:#fff; margin-bottom:10px;">${it.n}<br><span style="color:#9aa3c0; font-size:11px;">เป็นชั้นในไหม?</span></div>
+      <button class="ghost" data-z="terr">🪨 ใช่ · TERRESTRIAL</button>
+      <button class="ghost" data-z="other" style="margin-left:6px;">❌ ไม่ใช่</button></div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelectorAll('button').forEach(b => {
+      b.onclick = () => {
+        const z = b.dataset.z; dlg.remove();
+        placed[it.id] = z;
+        const target = document.querySelector(`.tags[data-zone="${z}"]`);
+        target.appendChild(el);
+        el.classList.remove('in-terr','in-other'); el.classList.add(z==='terr'?'in-terr':'in-other');
+        el.onclick = null;
+      };
+    });
+  };
+  pool.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p07b', nextHref:'p07c-inner-gate.html',
+    getPayload(){
+      let correct = 0;
+      ITEMS.forEach(it => {
+        const ok = (it.t && placed[it.id]==='terr') || (!it.t && placed[it.id]==='other');
+        if(ok) correct++;
+      });
+      return { placed, correct, total:ITEMS.length };
+    },
+    validate(p){ if(Object.keys(placed).length<ITEMS.length){ alert('คัดให้ครบ '+ITEMS.length+' ดวง'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){
+      ITEMS.forEach(it => {
+        const el = document.querySelector(`.ptag[data-id="${it.id}"]`);
+        if(!el) return;
+        const ok = (it.t && placed[it.id]==='terr') || (!it.t && placed[it.id]==='other');
+        el.classList.add(ok ? 'correct' : 'wrong');
+      });
+    }
+  });
+}, 200);
+</script>
+</body></html>

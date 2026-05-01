@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P07c · ROCKY LOCK · GS-3</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.lock-stage { padding:18px; border-radius:14px; background:linear-gradient(180deg, rgba(204,85,51,0.18), rgba(20,28,52,0.6)); border:2px solid #cc5533; }
+.props { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.prop { padding:10px; border-radius:10px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; }
+.prop.selected { border-color:#cc5533; background:rgba(204,85,51,0.15); }
+.prop .ic { font-size:18px; margin-right:6px; }
+</style>
+</head>
+<body data-page="p07c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🪨 ROCKY LOCK · GATE 3</span>
+  <h1>ปลด GS-3 · Rocky Core (kill M3)</h1>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "VOID อ้างว่าโลกใหญ่/พิเศษกว่าดาวอื่น (M3) · ทีมต้องเลือก<b>4 คุณสมบัติ</b>ที่แสดงว่า
+      <b style="color:#7effb2;">โลกเป็นแค่หนึ่งใน 4 พี่น้องชั้นใน</b> · ไม่ได้พิเศษเหนือกว่า"
+    </span>
+  </div>
+
+  <div class="lock-stage">
+    <h3 style="color:#cc5533;">เลือกคุณสมบัติที่ "ดาวเคราะห์ชั้นในมีร่วมกัน" 4 ข้อ</h3>
+    <div class="props" id="propsHost"></div>
+    <div id="resultHost" style="margin-top:10px;"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P07c</summary>
+    <div>4/6 ที่ถูกต้อง = เลือกครบ → SHARD-3 ปลด · ทำลาย M3 (โลกพิเศษ) · เน้น "เพื่อนใน ZONE 1"</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบายเพื่อน · ทำไมเขตในมีแต่ดาวเคราะห์หินเล็ก?',
+    words: ['หิน', 'ใกล้ดวงอาทิตย์', 'จุดหลอมเหลวสูง', 'แก่นเหล็ก', 'บรรยากาศบาง', 'frost line', 'รัศมี', 'ความหนาแน่น', 'พุธ', 'โลก'],
+    required: ['หิน', 'ใกล้ดวงอาทิตย์', 'จุดหลอมเหลวสูง', 'แก่นเหล็ก'],
+    indicator: 'K2'
+  });
+})();
+</script>
+
+
+<div id="ljMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ljMount');
+  if(!el || !window.Journal) return;
+  Journal.mount(el, {
+    pageId: document.body.dataset.page,
+    sceneTitle: 'จดสมุด · 3-2-1 ปิด scene',
+    learnedChips: ['เขตใน = ดาวหิน 4 ดวง', 'ขนาดเล็ก R<1 (ยกเว้นโลก)', 'แก่นเหล็ก-นิกเกิล', 'บรรยากาศบาง/ไม่มี', 'บริวารน้อย 0-2 ดวง', 'โคจรใน 2 AU'],
+    useChips: ['เปรียบเทียบโลกกับเพื่อน', 'เข้าใจว่าโลกไม่พิเศษ', 'รู้ว่าทำไมศุกร์ร้อน', 'อ่านข่าว Mars rover'],
+    askChips: ['ทำไมพุธไม่มีอากาศ', 'ศุกร์เคยมีน้ำไหม', 'อังคารจะอยู่ได้ไหม', 'ทำไมโลกพิเศษ']
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const PROPS = [
+  { ic:'🪨', t:'พื้นผิวเป็นหินแข็ง', c:true },
+  { ic:'⚖️', t:'ขนาดเล็ก (R < 1 โลก)', c:true },
+  { ic:'☿', t:'โคจรใกล้ดวงอาทิตย์ < 2 AU', c:true },
+  { ic:'🌙', t:'มีบริวารน้อย (0-2 ดวง)', c:true },
+  { ic:'💍', t:'มีระบบแหวนใหญ่', c:false },
+  { ic:'💨', t:'แก่นเป็นแก๊สไฮโดรเจน', c:false },
+];
+let selected = new Set();
+const host = document.getElementById('propsHost');
+PROPS.forEach((p,i) => {
+  const el = document.createElement('div'); el.className='prop'; el.dataset.i=i;
+  el.innerHTML = `<span class="ic">${p.ic}</span>${p.t}`;
+  el.onclick = () => {
+    if(selected.has(i)){ selected.delete(i); el.classList.remove('selected'); }
+    else { selected.add(i); el.classList.add('selected'); }
+  };
+  host.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p07c', nextHref:'p08-bridge.html',
+    getPayload(){
+      const correctSet = new Set(PROPS.map((p,i)=>p.c?i:-1).filter(i=>i>=0));
+      const allCorrect = selected.size===4 && [...selected].every(i => correctSet.has(i));
+      return { selected:[...selected], correct: allCorrect };
+    },
+    validate(p){ if(selected.size!==4){ alert('เลือก 4 ข้อพอดี'); return false; } return true; },
+    isPerfect(p){ return p.correct; },
+    onSubmit(){
+      const correctSet = new Set(PROPS.map((p,i)=>p.c?i:-1).filter(i=>i>=0));
+      const allCorrect = [...selected].every(i => correctSet.has(i));
+      const r = document.getElementById('resultHost');
+      if(allCorrect){
+        QuestState.grant('gs3');
+        QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene||0.6);
+        r.innerHTML = '<div class="card green">✓ <b>ROCKY LOCK PASSED</b> · ปลด <b style="color:#cc5533;">GS-3 🪨 Rocky Core</b> · M3 ทำลาย!</div>';
+      } else {
+        r.innerHTML = '<div class="card red">⚠ ยังเลือกผิด · ไม่ใช่ "แหวน" หรือ "แก๊ส" สำหรับชั้นใน</div>';
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

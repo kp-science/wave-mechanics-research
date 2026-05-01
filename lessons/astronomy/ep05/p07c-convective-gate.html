@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P07c · CONVECTIVE · MASTERY GATE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* === CYCLE BUILDER === */
+.builder-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(255,138,61,0.10),rgba(58,10,74,0.10));
+                border:2px solid #ff8a3d; margin:14px 0; box-shadow:0 0 24px rgba(255,138,61,0.2); }
+.builder-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#ff8a3d; letter-spacing:.16em; margin-bottom:10px; }
+.builder-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+
+.cycle-stage { position:relative; width:100%; height:340px; border-radius:12px; margin:10px 0;
+               background:linear-gradient(180deg,#ff5c7a 0%,#ff8a3d 50%,#ffd96b 100%); border:1px solid rgba(255,255,255,0.2); }
+.cycle-node { position:absolute; transform:translate(-50%,-50%); width:90px; height:90px; border-radius:14px;
+              background:rgba(0,0,0,0.7); border:2px solid rgba(255,255,255,0.4);
+              display:flex; flex-direction:column; align-items:center; justify-content:center;
+              font-family:Orbitron,monospace; font-size:11px; color:#fff; text-align:center;
+              line-height:1.3; backdrop-filter:blur(4px); padding:6px; }
+.cycle-node .icon { font-size:22px; margin-bottom:2px; }
+.cycle-node.A { left:18%; top:78%; border-color:#ff5c7a; box-shadow:0 0 14px rgba(255,92,122,0.4); }
+.cycle-node.B { left:18%; top:22%; border-color:#5cb8ff; box-shadow:0 0 14px rgba(100,216,255,0.4); }
+.cycle-node.C { left:82%; top:22%; border-color:#5cb8ff; box-shadow:0 0 14px rgba(100,216,255,0.4); }
+.cycle-node.D { left:82%; top:78%; border-color:#ff5c7a; box-shadow:0 0 14px rgba(255,92,122,0.4); }
+
+.arrow-slot { position:absolute; transform:translate(-50%,-50%); width:80px; height:60px; border-radius:10px;
+              background:rgba(0,0,0,0.5); border:2px dashed rgba(255,255,255,0.4);
+              display:flex; align-items:center; justify-content:center; font-size:30px; color:#9aa3c0;
+              cursor:pointer; transition:all .2s; }
+.arrow-slot:hover { border-color:#ffcb6b; background:rgba(255,203,107,0.1); }
+.arrow-slot.filled { border-style:solid; border-color:#ffcb6b; background:rgba(255,138,61,0.2); color:#fff; }
+.arrow-slot.correct { border-color:#7effb2; background:rgba(126,255,178,0.2); color:#7effb2; }
+.arrow-slot.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.2); color:#ff5c7a; animation:slotShake 0.4s; }
+@keyframes slotShake { 0%,100%{transform:translate(-50%,-50%);} 25%{transform:translate(-55%,-50%);} 75%{transform:translate(-45%,-50%);} }
+.arrow-slot.S1 { left:18%; top:50%; }
+.arrow-slot.S2 { left:50%; top:22%; }
+.arrow-slot.S3 { left:82%; top:50%; }
+.arrow-slot.S4 { left:50%; top:78%; }
+.slot-label { position:absolute; transform:translate(-50%,-50%); font-family:Orbitron,monospace; font-size:9px; color:rgba(255,255,255,0.6); letter-spacing:.12em; pointer-events:none; text-shadow:0 1px 2px rgba(0,0,0,0.7); }
+
+.arrow-pool { display:flex; flex-wrap:wrap; gap:8px; padding:12px; border-radius:10px;
+              background:rgba(0,0,0,0.4); border:1px solid rgba(120,140,220,0.2); margin:10px 0; justify-content:center; }
+.arrow-chip { padding:10px 16px; border-radius:10px; cursor:pointer; user-select:none;
+              font-family:Orbitron,monospace; font-size:18px; font-weight:700;
+              background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.3); color:#fff; transition:all .15s; }
+.arrow-chip:hover { background:rgba(255,203,107,0.15); border-color:#ffcb6b; transform:translateY(-1px); }
+.arrow-chip.used { opacity:0.3; pointer-events:none; }
+
+.gate-controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.gate-controls .check-eq { background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; padding:12px 24px;
+                           font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; border-radius:10px; border:none; cursor:pointer; }
+.gate-controls .reset-eq { background:transparent; color:#ffcb6b; border:1px solid #ffcb6b; padding:10px 18px; border-radius:10px; cursor:pointer; }
+.gate-feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:13px; min-height:40px; }
+.gate-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; }
+.gate-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; }
+
+.gate-passed-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(126,255,178,0.06));
+                      border:2px solid #7effb2; text-align:center; font-family:Orbitron,monospace;
+                      font-size:14px; color:#7effb2; letter-spacing:.16em; margin:10px 0;
+                      animation:gatePassed 1.2s ease-out; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.9);} 50%{opacity:1;transform:scale(1.02);} 100%{transform:scale(1);} }
+
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p07c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 3 · CONVECTIVE · C · MASTERY GATE</span>
+  <h1>สร้างวงจร Convection · ปลด Plasma Valve</h1>
+  <div class="tags"><span class="kpa-chip">K2</span><span class="kpa-chip">P3</span></div>
+
+  <!-- COMPARE -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED</h4>
+        <div class="val">ร้อน → density ต่ำ → ลอย · เย็น → density สูง → จม</div>
+        <div class="reason">บันทึก <b id="obsCount">—</b> step · ผิด <b id="obsWrong">—</b> ครั้ง</div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "Plasma Valve ทางออกถูกล็อก · ต้อง <b>build วงจร convection ครบ</b>
+      ทุกทิศที่ลูกศรเลือกต้องสมเหตุผล · ผิด 1 ทิศ = วงจรเสีย"
+    </span>
+  </div>
+
+  <!-- CYCLE BUILDER GATE -->
+  <div class="phase-tag phase-gate">🔒 MASTERY GATE · CONVECTION CYCLE BUILDER</div>
+  <div class="builder-gate">
+    <div class="gate-head">🔄 สร้างวงจร hot↑ → cool → sink↓ → reheat</div>
+    <div class="gate-sub">
+      ใส่ลูกศร 4 ตัว (↑ ↓ ← →) ในช่อง S1-S4 ให้ครบวงจร · ลูกศรต้องสอดคล้องกับ <b>ทิศการเคลื่อนของพลาสมา</b><br>
+      💡 ทบทวน: ที่ฐาน = ร้อน · ที่ขอบ = เย็น
+    </div>
+
+    <div class="cycle-stage" id="stage">
+      <!-- Nodes -->
+      <div class="cycle-node A"><div class="icon">🔥</div>HOT<br><span style="color:#ff5c7a;">ฐาน</span></div>
+      <div class="cycle-node B"><div class="icon">❄️</div>COOL<br><span style="color:#5cb8ff;">ขอบ ↑</span></div>
+      <div class="cycle-node C"><div class="icon">❄️</div>COOL<br><span style="color:#5cb8ff;">ขอบ ↑</span></div>
+      <div class="cycle-node D"><div class="icon">🔥</div>HOT<br><span style="color:#ff5c7a;">ฐาน</span></div>
+      <!-- Slots (for arrows) -->
+      <div class="arrow-slot S1" data-slot="S1" data-correct="↑">?</div>
+      <div class="arrow-slot S2" data-slot="S2" data-correct="→">?</div>
+      <div class="arrow-slot S3" data-slot="S3" data-correct="↓">?</div>
+      <div class="arrow-slot S4" data-slot="S4" data-correct="←">?</div>
+      <!-- Slot labels -->
+      <div class="slot-label" style="left:8%;top:50%;">A → B</div>
+      <div class="slot-label" style="left:50%;top:14%;">B → C</div>
+      <div class="slot-label" style="left:92%;top:50%;">C → D</div>
+      <div class="slot-label" style="left:50%;top:86%;">D → A</div>
+    </div>
+
+    <div style="font-family:Orbitron,monospace;font-size:11px;color:#9aa3c0;letter-spacing:.14em;margin:10px 0 6px;">📦 ARROW POOL · มีของหลอก 2 อัน</div>
+    <div class="arrow-pool" id="arrowPool"></div>
+
+    <div class="gate-controls">
+      <button class="check-eq" id="checkBtn">⚡ CHECK CYCLE</button>
+      <button class="reset-eq" id="resetBtn">↺ ล้าง</button>
+      <span id="cycleAttempts" style="color:#9aa3c0;font-family:Orbitron,monospace;font-size:11px;">attempts: 0</span>
+    </div>
+    <div class="gate-feedback" id="gateFeedback" style="display:none;"></div>
+  </div>
+
+  <!-- APPLICATION QUIZ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 4</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- SELF-RUBRIC -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT</div>
+    <div class="card">
+      <h3>เธอเข้าใจ convection (density-driven flow) ระดับใด?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P07c</summary>
+    <div>
+      <b>Cycle Builder gate:</b> A(ร้อน,ฐานซ้าย)→B(เย็น,ขอบซ้าย) ใช้ ↑ · B→C ใช้ → · C(เย็น,ขอบขวา)→D(ร้อน,ฐานขวา) ใช้ ↓ · D→A ใช้ ←<br>
+      ทิศที่ถูก: ↑ → ↓ ← (วงจรหมุนทวนเข็มในตัวอย่างนี้)<br>
+      ผ่านได้ก็ต่อเมื่อ <b>ทุก slot ถูกหมด</b>
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* === Compare === */
+const PRED_LABELS = ['ร้อนเบากว่า','T สูง = density น้อย → buoyancy','แม่เหล็กดึง','สุ่ม'];
+const REASONS_MAP = {
+  r1:'T สูง → อะตอมห่างกัน → density ต่ำ', r2:'density ต่ำกว่ารอบ ๆ → ลอย', r3:'T ต่ำ → density สูง → จม',
+  r4:'แม่เหล็กไม่เกี่ยว', r5:'มวลน้อยกว่า · ไม่ใช่ density', r6:'หม้อต้มน้ำที่บ้าน',
+  r7:'พลาสมาดูดความร้อน · ขยายตัว', r8:'แรงโน้มถ่วงดึงเย็น'
+};
+const pred = Chain.get('p07_prediction');
+const predReasons = Chain.get('p07_reasons') || [];
+document.getElementById('obsCount').textContent = Chain.get('p07_steps') || '—';
+document.getElementById('obsWrong').textContent = Chain.get('p07_wrongs') || 0;
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){
+    banner.className='match-banner ok';
+    banner.textContent = '✓ MATCH · เธอทำนายถูก! · density (buoyancy)';
+  } else {
+    banner.className='match-banner diff';
+    banner.innerHTML = '⚠ ทำนายไม่ตรง · จริง = <b>density-driven (buoyancy)</b> · "เบา" ≠ density';
+  }
+}
+
+/* === CYCLE BUILDER === */
+let gatePassed = false;
+let cycleAttempts = 0;
+const ARROWS = ['↑','→','↓','←','↑','→']; // 6 chips · 4 needed + 2 trap
+const CORRECT = { S1:'↑', S2:'→', S3:'↓', S4:'←' };
+
+function renderArrows(){
+  const pool = document.getElementById('arrowPool');
+  pool.innerHTML='';
+  ARROWS.forEach((a,k)=>{
+    const el = document.createElement('div'); el.className='arrow-chip'; el.dataset.uid='a'+k; el.dataset.arr=a;
+    el.textContent = a;
+    el.draggable = true;
+    el.ondragstart = e => e.dataTransfer.setData('text/plain', el.dataset.uid);
+    el.onclick = () => placeIntoFirstEmpty(el);
+    if(window.TouchDrag) TouchDrag.makeDraggable(el, ()=>el.dataset.uid);
+    pool.appendChild(el);
+  });
+  document.querySelectorAll('.arrow-slot').forEach(s => {
+    s.ondragover = e => e.preventDefault();
+    s.ondrop = e => { e.preventDefault(); const uid=e.dataTransfer.getData('text/plain'); placeChip(uid, s); };
+    if(window.TouchDrag) TouchDrag.makeDropTarget(s, uid => placeChip(uid, s));
+    s.onclick = () => clearSlot(s);
+  });
+  document.getElementById('checkBtn').onclick = checkCycle;
+  document.getElementById('resetBtn').onclick = resetGate;
+}
+function placeIntoFirstEmpty(el){
+  const empty = [...document.querySelectorAll('.arrow-slot')].find(s => !s.dataset.filled);
+  if(empty) placeChip(el.dataset.uid, empty);
+}
+function placeChip(uid, slot){
+  if(!uid || !slot) return;
+  if(slot.dataset.filled) clearSlot(slot, false);
+  const chip = document.querySelector(`.arrow-chip[data-uid="${uid}"]`);
+  if(!chip) return;
+  document.querySelectorAll('.arrow-slot').forEach(s => {
+    if(s.dataset.uid===uid){ s.dataset.filled=''; s.dataset.uid=''; renderEmpty(s); }
+  });
+  slot.dataset.filled = chip.dataset.arr;
+  slot.dataset.uid = uid;
+  slot.textContent = chip.dataset.arr;
+  slot.classList.add('filled');
+  slot.classList.remove('correct','wrong');
+  chip.classList.add('used');
+  SFX&&SFX.play('snap');
+}
+function renderEmpty(s){ s.textContent='?'; s.classList.remove('filled','correct','wrong'); }
+function clearSlot(slot, sfx=true){
+  const uid = slot.dataset.uid;
+  if(!uid) return;
+  const chip = document.querySelector(`.arrow-chip[data-uid="${uid}"]`);
+  if(chip) chip.classList.remove('used');
+  slot.dataset.filled=''; slot.dataset.uid='';
+  renderEmpty(slot);
+  if(sfx) SFX&&SFX.play('tap');
+}
+function resetGate(){
+  document.querySelectorAll('.arrow-slot').forEach(s => clearSlot(s, false));
+  document.querySelectorAll('.arrow-chip').forEach(c => c.classList.remove('used'));
+  document.getElementById('gateFeedback').style.display='none';
+  SFX&&SFX.play('tap');
+}
+function checkCycle(){
+  if(gatePassed) return;
+  cycleAttempts++;
+  document.getElementById('cycleAttempts').textContent = 'attempts: ' + cycleAttempts;
+  const slots = {};
+  document.querySelectorAll('.arrow-slot').forEach(s => { slots[s.dataset.slot] = s.dataset.filled || null; });
+  let allCorrect = true;
+  let issues = [];
+  document.querySelectorAll('.arrow-slot').forEach(s => {
+    s.classList.remove('correct','wrong');
+    const slotName = s.dataset.slot;
+    if(!slots[slotName]){
+      allCorrect=false; issues.push(`${slotName} ว่าง`);
+    } else if(slots[slotName] === CORRECT[slotName]){
+      s.classList.add('correct');
+    } else {
+      s.classList.add('wrong');
+      allCorrect=false;
+      const expectedDir = { '↑':'ขึ้น','↓':'ลง','←':'ซ้าย','→':'ขวา' }[CORRECT[slotName]];
+      issues.push(`${slotName} ผิดทิศ · ควรเป็น ${CORRECT[slotName]} (${expectedDir})`);
+    }
+  });
+  const fb = document.getElementById('gateFeedback');
+  fb.style.display='block';
+  if(allCorrect){
+    gatePassed = true;
+    fb.className='gate-feedback ok';
+    fb.innerHTML = `🟢 <b>PLASMA VALVE UNLOCKED</b> · วงจร convection สมบูรณ์<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${cycleAttempts}</span>`;
+    SFX&&SFX.play('correct');
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.textContent = '✓ MASTERY GATE PASSED · 🔆 HELION 3/6 GRANTED';
+    document.querySelector('.builder-gate').appendChild(banner);
+    QuestState.grant('h3');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    document.querySelectorAll('.arrow-chip').forEach(c => c.style.pointerEvents='none');
+    document.getElementById('checkBtn').disabled=true;
+    document.getElementById('resetBtn').disabled=true;
+    document.getElementById('appQuizCard').style.display='block';
+    mountAppQuiz();
+  } else {
+    fb.className='gate-feedback bad';
+    fb.innerHTML = `✗ <b>วงจรไม่สมบูรณ์</b><br>${issues.map(i=>'• '+i).join('<br>')}<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${cycleAttempts}</span>`;
+    SFX&&SFX.play('wrong');
+  }
+}
+renderArrows();
+
+/* === App quiz === */
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 4) · ในมหาสมุทรโลก น้ำเย็นจาก polar จมลง · น้ำอุ่นจาก equator ลอยขึ้น · เกิด "thermohaline circulation" · นี่ใช้หลักการเดียวกับ?',
+    choices: [
+      { txt:'ใช่ · convection แบบเดียวกัน · density-driven', correct:true },
+      { txt:'ไม่ใช่ · ในมหาสมุทรเป็นน้ำ · ในดวงอาทิตย์เป็นพลาสมา · กลไกต่างกัน', correct:false, hint:'state ต่าง · กลไก density-driven เหมือนกัน' },
+      { txt:'ใช่ แต่ในมหาสมุทรขับด้วยแม่เหล็ก', correct:false, hint:'แม่เหล็กไม่เกี่ยว · density + อุณหภูมิล้วน' },
+    ],
+    onCorrect: () => { appQuizPassed=true; document.getElementById('rubricWrap').style.display='block'; mountRubric(); },
+  });
+}
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected');
+      rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap'); updateSubmit();
+    };
+  });
+}
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false;
+    sb.textContent = '📤 ส่งผล · ออกจาก CONVECTIVE';
+  }
+}
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p07c', nextHref:'p08-bridge.html',
+    getPayload(){ return { prediction:pred, predictionMatched:pred===1, gatePassed, cycleAttempts, appQuizPassed, rubric:rubricChosen, helion:'h3' }; },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ผ่าน CYCLE BUILDER ก่อน'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.cycleAttempts<=2; },
+    onSubmit(){ Photon && Photon.add && Photon.add(25); }
+  });
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p04 · Mission Brief</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .npc-card { display:flex; gap:14px; padding:14px; background:var(--bg-card);
+    border:1px solid var(--line); border-radius:12px; margin:10px 0; align-items:center; }
+  .npc-card .ava { font-size:48px; flex:0 0 60px; text-align:center; }
+  .npc-card.mentor { border-color:var(--genesis-gold); box-shadow:0 0 20px rgba(255,216,74,.2); }
+  .objective-list { display:grid; gap:8px; margin:14px 0; }
+  .obj-row { display:flex; gap:10px; align-items:center; padding:10px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; }
+  .obj-row .num { background:var(--genesis-gold); color:#1a0a00; width:28px; height:28px;
+    border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; }
+</style>
+</head>
+<body data-page="p04">
+<div class="page">
+  <div class="act-badge">ACT A · 5/5 · MISSION</div>
+  <h1>🎯 ภารกิจสุดท้าย · GENESIS DEFENSE</h1>
+
+  <details class="story-tab" open>
+    <summary>📖 Story Tab</summary>
+    <div id="storySpine"></div>
+  </details>
+
+  <div class="npc-card mentor">
+    <div class="ava">🎩</div>
+    <div>
+      <h3 style="margin:0;color:var(--genesis-gold);">ดร.ฮับเบิล · Mentor (Reveal)</h3>
+      <p style="margin:4px 0;font-size:14px;">"ผมเฝ้าดูพวกเธอตั้งแต่ EP01 · ในที่สุดก็ถึงเวลาให้บทเรียนสุดท้าย · บิกแบง"</p>
+      <p style="margin:0;color:var(--text-mute);font-size:12px;">ตำแหน่ง: อาจารย์ใหญ่ Cosmos Academy · ผู้สังเกตการณ์อิสระ</p>
+    </div>
+  </div>
+
+  <div class="npc-card">
+    <div class="ava">👨‍✈️</div>
+    <div>
+      <h3 style="margin:0;color:var(--quantum-pink);">พ่ออารยา · ผู้บัญชาการ</h3>
+      <p style="margin:4px 0;font-size:14px;">"VOID Prime ตัวจริง · กำลังเตรียม Anti-Genesis Engine 4 จุดในไทม์ไลน์"</p>
+    </div>
+  </div>
+
+  <h3>🎯 Objective · 4 epoch ต้องป้องกัน</h3>
+  <div class="objective-list">
+    <div class="obj-row"><div class="num">1</div><div><b>Inflation</b> · 10⁻³⁶ s · ต้องขยาย 10²⁶ เท่าให้สำเร็จ</div></div>
+    <div class="obj-row"><div class="num">2</div><div><b>Nucleosynthesis</b> · 3 นาที · เกิด H/He/Li</div></div>
+    <div class="obj-row"><div class="num">3</div><div><b>CMB + First Stars</b> · 380 kyr → 200 Myr</div></div>
+    <div class="obj-row"><div class="num">4</div><div><b>Galaxies</b> · 1 Gyr · จัด dark matter</div></div>
+  </div>
+
+  <div class="howto">
+    <h4>🎮 CONFIDENCE GATE</h4>
+    <ul>
+      <li>ก่อนเริ่ม · ประเมินความมั่นใจตัวเอง 1-5 · เขียน 1 ข้อสงสัย</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <p><b>ประเมินความพร้อม</b></p>
+    <div class="row" id="confRow">
+      ${[1,2,3,4,5].map(n=>`<button class="chip conf" data-v="${n}">${n}</button>`).join('')}
+    </div>
+    <p style="margin-top:10px;"><b>1 ข้อสงสัย:</b></p>
+    <textarea id="doubt" rows="2" style="width:100%;" placeholder="เช่น ผมยังสับสนระหว่าง inflation กับ expansion..."></textarea>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">รับภารกิจ · เริ่มไทม์ไลน์ →</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p04' });
+  EP08Page.story('p04');
+  EP08Page.markVisit('p04');
+
+  // build conf chips (server-side template wasn't possible)
+  const confRow = document.getElementById('confRow');
+  confRow.innerHTML = [1,2,3,4,5].map(n=>`<button class="chip conf" data-v="${n}">${n}</button>`).join('');
+  let conf = null;
+  confRow.addEventListener('click', e => {
+    const c = e.target.closest('.conf'); if (!c) return;
+    conf = +c.dataset.v;
+    confRow.querySelectorAll('.conf').forEach(x => x.classList.remove('selected'));
+    c.classList.add('selected');
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const doubt = document.getElementById('doubt').value.trim();
+    if (window.KPA) {
+      KPA.log('A','A1','mission accepted');
+      KPA.vpa('d3', 'confidence ' + (conf||'-') + ' · doubt: ' + doubt);
+      KPA.research('mission-brief', { conf, doubt });
+    }
+    EP08Page.submit({
+      title:'✓ ภารกิจรับแล้ว · ดร.ฮับเบิลรอที่ Inflation',
+      body:`<p>เริ่มเดินไทม์ไลน์ epoch 1 · 10⁻³⁶ s</p>`
+    });
+  };
+</script>
+</body>
+</html>

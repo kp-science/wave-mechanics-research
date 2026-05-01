@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p14 · Anti-Genesis Plan</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .engine-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:14px 0; }
+  .engine { background:var(--bg-card); border:2px solid var(--line); border-radius:14px;
+    padding:16px; cursor:grab; transition:all .2s; }
+  .engine.placed { border-color:var(--genesis-gold); box-shadow:0 0 16px rgba(255,216,74,.25); }
+  .engine .num { font-size:30px; color:var(--quantum-pink); font-weight:800; }
+  .engine .nm { font-size:16px; font-weight:700; color:var(--genesis-gold); }
+  .engine .when { color:var(--text-mute); font-size:13px; }
+  .engine .ef { color:var(--bad); font-size:13px; margin-top:6px; }
+  .order-list { display:flex; gap:8px; margin:14px 0; flex-wrap:wrap; align-items:center; }
+  .order-slot { background:var(--bg-mid); border:2px dashed var(--line); border-radius:10px;
+    padding:10px 16px; min-width:120px; min-height:50px; text-align:center; }
+  .order-slot.ok { border-color:var(--good); background:linear-gradient(180deg,#0a3a2a,#051a14); }
+</style>
+</head>
+<body data-page="p14">
+<div class="page">
+  <div class="act-badge">ACT C · 2/8 · ENGINE PLAN</div>
+  <h1>📋 Anti-Genesis Engine · 4 จุด</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <p style="color:var(--text-soft);">เลือกลำดับเข้า disable · ตามไทม์ไลน์เอกภพ (เก่า→ใหม่)</p>
+
+  <div class="engine-grid" id="engines">
+    <div class="engine" data-id="3" data-when="380000"><div class="num">⚙️ #3</div><div class="nm">CMB Disruptor</div><div class="when">380,000 ปี · recombination</div><div class="ef">ลบ recombination → จักรวาลขุ่น</div></div>
+    <div class="engine" data-id="1" data-when="1e-36"><div class="num">⚙️ #1</div><div class="nm">Inflation Killer</div><div class="when">10⁻³⁶ s · pre-inflation</div><div class="ef">ทำให้ universe ยุบกลับ</div></div>
+    <div class="engine" data-id="4" data-when="1e9"><div class="num">⚙️ #4</div><div class="nm">Galaxy Scatter</div><div class="when">1 Gyr · structure formation</div><div class="ef">กระจาย dark matter</div></div>
+    <div class="engine" data-id="2" data-when="180"><div class="num">⚙️ #2</div><div class="nm">Fusion Damper</div><div class="when">3 นาที · nucleosynthesis</div><div class="ef">ดับฟิวชัน → ไม่มีดาว</div></div>
+  </div>
+
+  <h3>ลำดับ disable (drag/click เรียงเก่า→ใหม่):</h3>
+  <div class="order-list" id="order">
+    <div class="order-slot" data-pos="0">1</div>
+    <div class="order-slot" data-pos="1">2</div>
+    <div class="order-slot" data-pos="2">3</div>
+    <div class="order-slot" data-pos="3">4</div>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่งลำดับ · เริ่มลุย disable</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p14' });
+  EP08Page.story('p14');
+  EP08Page.markVisit('p14');
+
+  let order = [null, null, null, null];
+  function refreshSlots(){
+    document.querySelectorAll('.order-slot').forEach((s, i) => {
+      const id = order[i];
+      if (id) {
+        const eng = document.querySelector('.engine[data-id="' + id + '"]');
+        s.innerHTML = '⚙️ #' + id;
+        s.classList.add('ok');
+      } else {
+        s.innerHTML = (i+1);
+        s.classList.remove('ok');
+      }
+    });
+    document.querySelectorAll('.engine').forEach(e => {
+      e.classList.toggle('placed', order.includes(e.dataset.id));
+    });
+  }
+
+  document.getElementById('engines').addEventListener('click', e => {
+    const eng = e.target.closest('.engine'); if (!eng) return;
+    const id = eng.dataset.id;
+    const idx = order.indexOf(id);
+    if (idx >= 0) { order[idx] = null; }
+    else {
+      const empty = order.indexOf(null);
+      if (empty >= 0) order[empty] = id;
+    }
+    refreshSlots();
+  });
+  document.getElementById('order').addEventListener('click', e => {
+    const slot = e.target.closest('.order-slot'); if (!slot) return;
+    const i = +slot.dataset.pos;
+    if (order[i]) order[i] = null;
+    refreshSlots();
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const correct = ['1','2','3','4']; // chronological
+    const ok = order.every((id, i) => id === correct[i]);
+    if (window.KPA) {
+      KPA.log('K','K2','disable order ' + (ok?'ok':'wrong'));
+      KPA.research('engineOrder', { order, ok });
+    }
+    EP08Page.submit({ ok,
+      title: ok ? '✓ ลำดับถูกต้อง · เริ่ม Inflation Killer ก่อน' : '⚠️ ต้องเรียงเก่า→ใหม่',
+      body: ok ? '<p>เริ่ม Disable 1 · Inflation Killer ที่ 10⁻³⁶ s</p>' : '<p>10⁻³⁶ s → 3 นาที → 380,000 ปี → 1 Gyr</p>'
+    });
+  };
+</script>
+</body>
+</html>

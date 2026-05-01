@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p23 · 🔥 BOSS · GENESIS FORGE</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  body { background:#050108; }
+  .page { max-width:1100px; padding:30px 12px 80px; }
+  .boss-host { width:100%; min-height:560px; }
+  .pause-bar { display:flex; gap:8px; justify-content:center; margin:10px 0; flex-wrap:wrap; }
+</style>
+</head>
+<body data-page="p23">
+<div class="page">
+  <div class="act-badge">ACT D · 3/7 · 🔥 BOSS</div>
+  <h1>🔥 GENESIS FORGE · Final Showdown</h1>
+
+  <details class="story-tab"><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div id="bossHost" class="boss-host"></div>
+
+  <div class="pause-bar">
+    <button class="btn ghost" id="pauseBtn">⏸ Pause / ▶ Resume</button>
+    <button class="btn ghost" id="restartBtn">↻ Restart</button>
+    <button class="btn alt" id="skipEnding">→ Skip to Ending (dev)</button>
+  </div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="../shared/timeline-viz.js"></script>
+<script src="../shared/genesis-forge.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p23' });
+  EP08Page.story('p23');
+  EP08Page.markVisit('p23');
+
+  GenesisForge.init({
+    host: document.getElementById('bossHost'),
+    onEnd: (result) => {
+      // save result + branch to ending
+      try {
+        localStorage.setItem('cosmosLog_ep08_bossResult', JSON.stringify(result));
+        localStorage.setItem('cosmosLog_ep08_ending', result.ending);
+      } catch(e){}
+      const choice = localStorage.getItem('cosmosLog_ep08_choice') || 'preserve';
+      // RESET path → ending-reset · PRESERVE path → ending-preserve
+      const next = choice === 'reset' ? 'p25-ending-reset.html' : 'p24-ending-preserve.html';
+      setTimeout(() => location.href = next, 1200);
+    }
+  });
+  GenesisForge.start();
+
+  document.getElementById('pauseBtn').onclick = () => {
+    const s = GenesisForge.state();
+    if (s) s.paused = !s.paused;
+  };
+  document.getElementById('restartBtn').onclick = () => {
+    if (confirm('เริ่มบอสใหม่?')) location.reload();
+  };
+  document.getElementById('skipEnding').onclick = () => {
+    if (!confirm('skip ending (dev mode)?')) return;
+    localStorage.setItem('cosmosLog_ep08_ending', 'A');
+    const choice = localStorage.getItem('cosmosLog_ep08_choice') || 'preserve';
+    location.href = choice === 'reset' ? 'p25-ending-reset.html' : 'p24-ending-preserve.html';
+  };
+</script>
+</body>
+</html>

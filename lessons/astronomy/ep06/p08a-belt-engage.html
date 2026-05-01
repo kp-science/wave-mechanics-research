@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P08a · BELT · ENGAGE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.belt-stage { position:relative; height:200px; border-radius:14px; overflow:hidden; margin:8px 0;
+              background:radial-gradient(circle at 50% 50%, #02030a, #0a0820); }
+.rock { position:absolute; width:6px; height:6px; background:#9a8470; border-radius:50%; }
+.scale-card { padding:14px; border-radius:12px; margin:10px 0;
+              background:linear-gradient(180deg, rgba(255,203,107,0.1), rgba(20,28,52,0.6));
+              border:2px solid #ffcb6b; }
+.scale-row { display:grid; grid-template-columns:1fr 2fr; gap:10px; padding:8px 0; border-bottom:1px solid rgba(120,140,220,0.2); }
+.scale-row b { color:#ffcb6b; }
+</style>
+</head>
+<body data-page="p08a" data-type="story">
+<div class="page">
+  <span class="lbl story">⭕ BELT · A · ENGAGE</span>
+  <h1>เข้าแถบ · scale truth</h1>
+
+  <div class="card cyan">
+    <h3>📡 ภาพจากเรดาร์</h3>
+    <div class="belt-stage" id="belt"></div>
+    <div class="muted center" style="font-size:12px;">หินเล็ก ๆ กระจายในวงโคจร 2.2-3.2 AU</div>
+  </div>
+
+  <div class="scale-card">
+    <h3 style="color:#ffcb6b;">📏 ความจริงเรื่องระยะ (M4 buster)</h3>
+    <div class="scale-row"><b>จำนวน asteroid</b><span>~ 1 ล้านดวง (D &gt; 1 km)</span></div>
+    <div class="scale-row"><b>ระยะเฉลี่ยระหว่างก้อน</b><span>~ <b style="color:#7effb2;">1 ล้าน กม.</b></span></div>
+    <div class="scale-row"><b>เส้นผ่านศูนย์กลางเฉลี่ย</b><span>~ 1-100 km</span></div>
+    <div class="scale-row"><b>ใหญ่สุด · เซเรส (Ceres)</b><span>~ 940 km · ดาวเคราะห์แคระ</span></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ในหนัง space · belt มักเต็มไปด้วยหินใหญ่ ๆ ที่ต้องหลบ ·
+      ในความจริง · มัน<b style="color:#7effb2;">โล่งมาก</b> · ระยะ 1 ล้าน กม. ระหว่างก้อน · ยานบินผ่านได้สบาย"
+    </span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P08a</summary>
+    <div>เน้น scale jolt · 1 ล้าน กม. = ระยะโลก-ดวงจันทร์ × 2.6 · ทำลาย M4</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: 'ระหว่าง Mars กับ Jupiter · มีดาวเคราะห์น้อยกว่า 1 ล้านชิ้น · จริงหรือไม่?',
+    chips: [
+      'จริง · แน่นเหมือนหนัง Star Wars',
+      'เท็จ · ระยะเฉลี่ยห่างกันมาก ✓',
+      'จริง · เกือบชนกันตลอด',
+      'เท็จ · ยานบินผ่านได้ปลอดภัย ✓',
+      'เคยเป็นดาวเคราะห์ที่แตก',
+      'พฤหัสรบกวนไม่ให้รวมตัว ✓'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ EXPLORE · ทำไมไม่รวมเป็นดาว?</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const belt = document.getElementById('belt');
+for(let i=0; i<60; i++){
+  const r = document.createElement('div'); r.className='rock';
+  r.style.left = Math.random()*100+'%';
+  r.style.top = Math.random()*100+'%';
+  r.style.opacity = (0.4+Math.random()*0.6).toFixed(2);
+  belt.appendChild(r);
+}
+setTimeout(() => {
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p08b-belt-explore.html');
+  if(window.PaceClient) Gate.wireButton('p08a',btn,'p08b-belt-explore.html');
+},200);
+</script>
+</body></html>

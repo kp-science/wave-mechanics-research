@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P10a · CORONA · ENGAGE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-1 { background:rgba(185,128,255,.15); color:#b980ff; border:1px solid rgba(185,128,255,.4); }
+.alert-banner { padding:10px 14px; border-radius:10px; background:rgba(185,128,255,0.18); border:1px solid #b980ff;
+                font-family:Orbitron,monospace; font-size:13px; color:#b980ff; text-align:center; letter-spacing:.14em;
+                animation:alertPulse 1.4s ease-in-out infinite; margin:8px 0; }
+@keyframes alertPulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
+.predict-q { padding:12px 14px; border-radius:10px; background:rgba(185,128,255,0.08); border:1px solid #b980ff; margin:10px 0; }
+.predict-q .q-prompt { color:#b980ff; font-weight:700; margin-bottom:8px; }
+.choice-row { display:flex; flex-direction:column; gap:8px; margin:8px 0; }
+.choice-row label { display:flex; gap:10px; padding:12px; border-radius:10px; cursor:pointer;
+                    background:rgba(10,14,30,0.6); border:1px solid rgba(120,140,220,0.2); transition:all .18s; }
+.choice-row label:hover { border-color:#b980ff; }
+.reason-pool { display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+.reason-chip { padding:8px 12px; border-radius:999px; font-size:12px; cursor:pointer; user-select:none;
+               background:rgba(255,203,107,0.08); border:1px solid rgba(255,203,107,0.3); color:#ffd88a; transition:all .15s; }
+.reason-chip:hover { background:rgba(255,203,107,0.18); }
+.reason-chip.selected { background:rgba(185,128,255,0.3); border-color:#b980ff; color:#fff; transform:scale(1.04); }
+
+.corona-vis { position:relative; height:200px; border-radius:14px; margin:10px 0; overflow:hidden; }
+.corona-vis .sun-disk { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:120px; height:120px;
+                        border-radius:50%; background:radial-gradient(circle,#fff8c8,#ffcb6b 50%,#ff8a3d 90%); box-shadow:0 0 40px #ffcb6b; }
+.corona-vis .corona-glow { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:280px; height:280px;
+                           border-radius:50%; background:radial-gradient(circle,transparent 30%,rgba(185,128,255,0.4) 35%,rgba(185,128,255,0.2) 50%,transparent 65%);
+                           animation:cShimmer 4s ease-in-out infinite; }
+@keyframes cShimmer { 0%,100%{opacity:0.6;} 50%{opacity:1;} }
+
+.helion-status { padding:14px; border-radius:12px; background:rgba(255,203,107,0.08); border:1px solid #ffcb6b; margin:10px 0; }
+.helion-row { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+.helion-cell { width:60px; height:70px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px dashed rgba(255,138,61,0.3);
+               display:flex; flex-direction:column; align-items:center; justify-content:center; padding:4px; }
+.helion-cell .icon { font-size:22px; opacity:0.3; filter:grayscale(100%); }
+.helion-cell .lbl { font-size:9px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.08em; margin-top:3px; }
+.helion-cell.have { border-style:solid; border-color:#ffcb6b; background:rgba(255,138,61,0.15); }
+.helion-cell.have .icon { opacity:1; filter:none; }
+.helion-cell.have .lbl { color:#ffcb6b; }
+/* === MISSION OPENER (HELION HUNT · FINAL) === */
+.quest-opener { position:relative; margin:14px 0 18px; padding:20px 22px 18px; border-radius:18px;
+  background:linear-gradient(135deg, var(--qo-bg1), var(--qo-bg2));
+  border:2px solid var(--qo-accent);
+  box-shadow:0 8px 32px rgba(0,0,0,0.5), inset 0 0 32px rgba(0,0,0,0.3); overflow:hidden; }
+.quest-opener::after { content:''; position:absolute; right:-40px; top:-40px; width:240px; height:240px;
+  background:radial-gradient(circle, var(--qo-accent), transparent 65%); opacity:0.25; pointer-events:none; }
+.qo-mission-tag { display:inline-block; padding:4px 14px; border-radius:8px; margin-bottom:14px;
+  background:linear-gradient(180deg,#ffd700,#ff8a3d); color:#1a0500; font-family:Orbitron,monospace; font-size:11px;
+  letter-spacing:.18em; font-weight:700; box-shadow:0 2px 8px rgba(255,215,0,0.6); position:relative; z-index:2; }
+.qo-grid { display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:center; position:relative; z-index:2; }
+.qo-icon-wrap { width:88px; height:88px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,255,0.20), transparent 70%);
+  border:3px solid var(--qo-accent); display:flex; align-items:center; justify-content:center; font-size:46px;
+  box-shadow:0 0 28px var(--qo-accent), inset 0 0 14px rgba(0,0,0,0.4);
+  animation:qoGlow 2.0s ease-in-out infinite; flex-shrink:0; }
+@keyframes qoGlow { 0%,100%{box-shadow:0 0 28px var(--qo-accent),inset 0 0 14px rgba(0,0,0,0.4);transform:scale(1);} 50%{box-shadow:0 0 50px var(--qo-accent),inset 0 0 18px rgba(0,0,0,0.4);transform:scale(1.06);} }
+.qo-info { color:#fff; }
+.qo-label { font-family:Orbitron,monospace; font-size:11px; letter-spacing:.18em; color:var(--qo-accent); margin-bottom:4px; }
+.qo-name { font-family:Orbitron,monospace; font-size:22px; font-weight:700; letter-spacing:.06em; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.7); margin-bottom:6px; line-height:1.2; }
+.qo-where { font-size:13px; color:#fff; opacity:0.95; }
+.qo-where b { color:var(--qo-accent); }
+.qo-callout { margin-top:14px; padding:10px 14px; border-radius:8px; background:rgba(0,0,0,0.55); border-left:3px solid var(--qo-accent); font-size:13px; color:#fff; font-style:italic; position:relative; z-index:2; }
+.qo-callout b { color:var(--qo-accent); font-style:normal; }
+@media(max-width:560px){ .qo-grid{grid-template-columns:1fr;text-align:center;} .qo-icon-wrap{margin:0 auto;} }
+
+/* === ATMOSPHERIC LAYER CARD === */
+.atmo-card { position:relative; padding:18px 16px 14px; border-radius:14px; margin:0 0 14px;
+  background:linear-gradient(160deg, rgba(100,216,255,0.08), rgba(20,28,52,0.7));
+  border:2px solid var(--atmo-color, #64d8ff); }
+.atmo-card::before { content:'🪐 ATMOSPHERIC LAYER · ' attr(data-layer-num) ' / 3';
+  position:absolute; top:-11px; left:14px; padding:3px 12px; border-radius:6px;
+  background:var(--atmo-color, #64d8ff); color:#022; font-family:Orbitron,monospace;
+  font-size:10px; letter-spacing:.14em; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+.atmo-grid { display:grid; grid-template-columns:130px 1fr; gap:16px; align-items:center; }
+.atmo-diag { width:130px; height:110px; position:relative; flex-shrink:0; }
+.atmo-diag .layer-arc { position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  border-radius:50% 50% 0 0; pointer-events:none; transition:all .25s; }
+.atmo-diag .arc-corona { width:130px; height:90px;
+  background:radial-gradient(ellipse at 50% 100%, transparent 62%, rgba(185,128,255,0.55) 82%, rgba(185,128,255,0.18) 100%);
+  z-index:1; opacity:0.5; }
+.atmo-diag .arc-chromo { width:108px; height:62px;
+  background:radial-gradient(ellipse at 50% 100%, transparent 60%, rgba(255,92,122,0.7) 82%, rgba(255,92,122,0.2) 100%);
+  z-index:2; opacity:0.5; }
+.atmo-diag .arc-photo  { width:90px; height:42px;
+  background:radial-gradient(ellipse at 50% 100%, transparent 55%, rgba(255,203,107,0.85) 82%, rgba(255,138,61,0.3) 100%);
+  z-index:3; opacity:0.5; }
+.atmo-diag .layer-arc.current { opacity:1; filter:drop-shadow(0 0 8px var(--atmo-color));
+  animation:atmoGlow 2s ease-in-out infinite; }
+@keyframes atmoGlow { 0%,100%{filter:drop-shadow(0 0 8px var(--atmo-color));} 50%{filter:drop-shadow(0 0 16px var(--atmo-color));} }
+.atmo-diag .sun-core { position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:78px; height:36px; border-radius:50% 50% 0 0;
+  background:radial-gradient(ellipse at 50% 100%, #fff8c8, #ffcb6b 50%, #ff8a3d);
+  box-shadow:0 0 14px rgba(255,138,61,0.6); z-index:4; }
+.atmo-diag .here-arrow { position:absolute; padding:1px 6px; border-radius:4px;
+  background:var(--atmo-color); color:#022; font-size:8px; font-weight:700;
+  font-family:Orbitron,monospace; letter-spacing:.08em; z-index:5; box-shadow:0 0 8px var(--atmo-color); }
+.atmo-info { font-size:13px; color:#fff; line-height:1.6; }
+.atmo-info .name { font-family:Orbitron,monospace; font-size:clamp(24px, 5vw, 32px); font-weight:800;
+  color:var(--atmo-color); margin-bottom:2px; letter-spacing:.05em; line-height:1.1;
+  text-shadow:0 0 20px var(--atmo-color), 0 2px 8px rgba(0,0,0,0.7); }
+.atmo-info .subtitle { font-size:13px; color:#d4f0ff; font-style:italic; margin-bottom:10px; opacity:0.9; }
+.atmo-info .props { margin:4px 0 0; padding:0; list-style:none; }
+.atmo-info .props li { padding-left:14px; position:relative; font-size:12px; color:#d4f0ff; line-height:1.65; }
+.atmo-info .props li::before { content:'▸'; position:absolute; left:0; color:var(--atmo-color); }
+.atmo-info .props li b { color:#fff; }
+.atmo-stack-mini { display:flex; gap:4px; margin-top:8px; padding:6px 8px; border-radius:6px; background:rgba(0,0,0,0.4); font-family:Orbitron,monospace; font-size:9px; letter-spacing:.1em; align-items:center; flex-wrap:wrap; }
+.atmo-stack-mini .pip { padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:#9aa3c0; }
+.atmo-stack-mini .pip.cur { background:var(--atmo-color); color:#022; border-color:var(--atmo-color); font-weight:700; }
+@media(max-width:560px){ .atmo-grid{grid-template-columns:1fr; text-align:center;} .atmo-diag{margin:0 auto;} .atmo-info{text-align:left;} }
+</style>
+</head>
+<body data-page="p10a" data-type="story">
+<div class="page">
+  <span class="lbl story">🌌 SCENE 6 · CORONA · A · ENGAGE</span>
+  <!-- 🪐 ATMOSPHERIC LAYER · หัวข้อหลัก · บอกชั้นก่อนภารกิจ -->
+  <div class="atmo-card" data-layer-num="3" style="--atmo-color:#b980ff;">
+    <div class="atmo-grid">
+      <div class="atmo-diag">
+        <div class="layer-arc arc-corona current"></div>
+        <div class="layer-arc arc-chromo"></div>
+        <div class="layer-arc arc-photo"></div>
+        <div class="sun-core"></div>
+        <div class="here-arrow" style="bottom:90px; left:-4px;">⭐ HERE</div>
+      </div>
+      <div class="atmo-info">
+        <div class="name">CORONA</div>
+        <div class="subtitle">"มงกุฎสุริยะ"</div>
+        <ul class="props">
+          <li>ชั้น<b>นอกสุด</b> · ขยายไปไกลถึงดาวเคราะห์</li>
+          <li>อุณหภูมิ <b>1–3 ล้าน K</b> · ร้อนกว่าผิว 200 เท่า!</li>
+          <li>เห็นได้เฉพาะตอน<b>สุริยุปราคาเต็มดวง</b> (มงกุฎเงิน)</li>
+          <li><b>SOLAR WIND + CME</b> ออกจากชั้นนี้ · ⚡ Coronal Heating Paradox ← เนื้อหาฉาก</li>
+        </ul>
+        <div class="atmo-stack-mini">
+          <span class="pip">1 · PHOTO</span>
+          <span style="color:#6a7394;">→</span>
+          <span class="pip">2 · CHROMO</span>
+          <span style="color:#6a7394;">→</span>
+          <span class="pip cur">3 · CORONA</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⚡ MISSION OPENER · ภารกิจรอง · หลังบอกชั้นแล้ว -->
+  <div class="quest-opener" style="--qo-bg1:#1a0a4a;--qo-bg2:#05051a;--qo-accent:#ffd700;">
+    <div class="qo-mission-tag">🏆 MISSION 6 / 6 · FINAL HELION!</div>
+    <div class="qo-grid">
+      <div class="qo-icon-wrap">🌌</div>
+      <div class="qo-info">
+        <div class="qo-label">TARGET HELION CORE · ชิ้นสุดท้าย</div>
+        <div class="qo-name">CORONAL RESONANCE</div>
+        <div class="qo-where">📍 <b>ชั้น CORONA</b> · ที่ T พุ่ง 1-3 ล้าน K · paradox ยังไม่มีคำตอบ</div>
+        <div style="margin-top:8px; padding:8px 10px; border-radius:6px; background:linear-gradient(180deg,rgba(255,215,0,0.25),rgba(255,138,61,0.1)); border:2px dashed #ffd700; font-size:12px; color:#ffe48a;">
+          ⚡ <b style="color:#ffd700;font-family:Orbitron,monospace;letter-spacing:.06em;">จะแลกเป็น: 🌟 PRISMATIC KEY</b> · 🏆 <u>ปลด ending A+</u> เมื่อชนะ boss (ใช้ใน p25)
+        </div>
+      </div>
+    </div>
+    <div class="qo-callout"><b>เคน:</b> "ชิ้นสุดท้าย! · ครบเมื่อไหร่ · deflector พร้อมยิง · VOID มาเลย!"</div>
+  </div>
+  <h1>ปริศนาที่ยังไม่มีใครตอบได้สมบูรณ์</h1>
+  <div class="tags"><span class="kpa-chip">A1</span><span class="kpa-chip">M2</span></div>
+
+  <div class="phase-tag phase-1">🎬 PHASE 1 · ENGAGE + PREDICT</div>
+
+  <div class="card red">
+    <div class="alert-banner">🚨 ANOMALY · TEMPERATURE SPIKE 5,780 → 2,000,000 K</div>
+    <div class="corona-vis">
+      <div class="corona-glow"></div>
+      <div class="sun-disk"></div>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ff8a3d;">อารยา (งง):</b> "เป็นไปได้ไง?! ยิ่งห่างแกน · ยิ่งเย็นสิ?!"<br>
+      <b style="color:#ffcb6b;">เคน:</b> "นี่คือ <b style="color:#b980ff;">Coronal Heating Problem</b> ·
+      <b>ปริศนาฟิสิกส์ที่ทั่วโลกยังตอบไม่ได้สมบูรณ์</b> · ก่อนเข้าไป · เธอ <b>ทำนาย</b> ว่าทำไมถึงเป็นแบบนี้"
+    </span>
+  </div>
+
+  <div class="card cyan">
+    <h3>📊 ข้อมูล + Hint จากนักวิทยาศาสตร์</h3>
+    <ul style="margin:0; padding-left:20px; line-height:1.8;">
+      <li>photosphere: T = 5,780 K</li>
+      <li>chromosphere: T = 4,000-25,000 K (เพิ่มเล็กน้อย)</li>
+      <li>corona: T = <b style="color:#ff5c7a;">1-2 ล้าน K</b> (กระโดด!)</li>
+      <li>density ของ corona ต่ำมาก ~10⁻¹² kg/m³ (เกือบสุญญากาศ)</li>
+      <li>มี solar wind พุ่งออกตลอด · ความเร็ว ~400 km/s</li>
+      <li>มี magnetic reconnection events ขนาดเล็กตลอด (nanoflares)</li>
+    </ul>
+  </div>
+
+  <div class="predict-q">
+    <div class="q-prompt">🔮 PREDICT · ทำไม corona ถึงร้อนกว่า photosphere ทั้งที่อยู่ห่างแกน?</div>
+    <div class="choice-row">
+      <label><input type="radio" name="predict" value="0"> <span>เป็นไปไม่ได้ · ต้องวัดผิด</span></label>
+      <label><input type="radio" name="predict" value="1"> <span>magnetic reconnection + Alfvén waves ปลดพลังงานสะสม → corona</span></label>
+      <label><input type="radio" name="predict" value="2"> <span>เพราะอยู่ใกล้ดาวฤกษ์อื่น</span></label>
+      <label><input type="radio" name="predict" value="3"> <span>density ต่ำ → ความร้อนต่อโมเลกุลสูง (จริง · แต่ไม่ใช่กลไกหลัก)</span></label>
+    </div>
+  </div>
+
+  <div class="predict-q" id="reasonBox" style="display:none;">
+    <div class="q-prompt">💭 REASON · ทำไม? (เลือก 2 เหตุผล)</div>
+    <div class="reason-pool" id="reasonPool"></div>
+    <div style="font-size:11px;color:#9aa3c0;font-family:Orbitron,monospace;margin-top:6px;">เลือก: <b id="cntR">0</b>/2</div>
+  </div>
+
+  <div class="helion-status">
+    <h3 style="color:#ffcb6b;margin:0 0 4px;">🔆 HELION INVENTORY</h3>
+    <div class="muted center" style="font-size:12px;">scene สุดท้าย · เก็บชิ้นที่ 6 (Coronal Resonance) เพื่อ <b>ครบ 6/6</b></div>
+    <div class="helion-row" id="helionRow"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P10a</summary>
+    <div>
+      <b>Open inquiry:</b> ปริศนานี้นักวิทยาศาสตร์ยังตอบไม่สมบูรณ์ · ให้นักเรียนคิดเอง<br>
+      M2 kill: corona ร้อนกว่า photosphere · ไม่ใช่เย็นกว่า<br>
+      หน้านี้เป็น scene สุดท้ายของ ACT C
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ทำนาย + 2 เหตุผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const REASONS = [
+  { id:'r1', txt:'พลังงานแม่เหล็กแปลงเป็นความร้อน' },
+  { id:'r2', txt:'nanoflares ปลดพลังงานต่อเนื่อง' },
+  { id:'r3', txt:'Alfvén waves พา energy ขึ้นไป corona' },
+  { id:'r4', txt:'การวัด T วัดผิด · ไม่จริง' },
+  { id:'r5', txt:'มีดาวฤกษ์อยู่ใกล้ ๆ คอย heat' },
+  { id:'r6', txt:'density ต่ำ · กระจาย heat ไปไม่ถึง · เก็บใน particle' },
+  { id:'r7', txt:'ปกติ · ทุกชั้นบรรยากาศเป็นแบบนี้' },
+  { id:'r8', txt:'เพราะเป็นต้นทาง solar wind = ขับ energy' },
+];
+const pool = document.getElementById('reasonPool');
+const selected = new Set();
+REASONS.forEach(r => {
+  const c = document.createElement('div'); c.className='reason-chip'; c.dataset.id=r.id; c.textContent = r.txt;
+  c.onclick = () => {
+    if(selected.has(r.id)){ selected.delete(r.id); c.classList.remove('selected'); }
+    else if(selected.size<2){ selected.add(r.id); c.classList.add('selected'); }
+    document.getElementById('cntR').textContent = selected.size; SFX&&SFX.play('tap'); update();
+  };
+  pool.appendChild(c);
+});
+document.querySelectorAll('input[name="predict"]').forEach(r => r.onchange = ()=>{ document.getElementById('reasonBox').style.display='block'; update(); });
+function update(){
+  const p = document.querySelector('input[name="predict"]:checked');
+  const sb = document.getElementById('submitBtn');
+  if(p && selected.size===2){ sb.disabled=false; sb.textContent='📤 บันทึก prediction'; }
+  else { sb.disabled=true; sb.textContent='🔒 ทำนาย + 2 เหตุผล'; }
+}
+
+/* Render HELION inventory */
+const have = QuestState.helions();
+const row = document.getElementById('helionRow');
+EP_CONFIG.helions.forEach(h => {
+  const cell = document.createElement('div'); cell.className='helion-cell' + (have.includes(h.id)?' have':'');
+  cell.innerHTML = `<div class="icon">${h.icon}</div><div class="lbl">${h.layer}</div>`;
+  row.appendChild(cell);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p10a', nextHref:'p10b-corona-explore.html',
+    getPayload(){ const p=document.querySelector('input[name="predict"]:checked'); return { prediction:p?Number(p.value):-1, reasons:[...selected] }; },
+    validate(p){ if(p.prediction===-1){alert('เลือก prediction');return false;} if(p.reasons.length<2){alert('เลือก 2 เหตุผล');return false;} return true; },
+    onSubmit(){ const p=document.querySelector('input[name="predict"]:checked'); Chain.set('p10_prediction',Number(p.value)); Chain.set('p10_reasons',[...selected]); }
+  });
+}, 200);
+</script>
+</body></html>

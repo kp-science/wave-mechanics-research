@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P05b · NEBULA · EXPLORE Timeline</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.timeline-host { display:flex; flex-direction:column; gap:8px; padding:12px; border-radius:12px;
+                 background:rgba(20,28,52,0.7); border:1px solid rgba(100,216,255,0.4); margin:10px 0; }
+.slot { display:flex; align-items:center; gap:10px; padding:10px; border-radius:10px;
+        background:rgba(0,0,0,0.4); border:1px dashed rgba(120,140,220,0.4);
+        min-height:50px; }
+.slot .num { font-family:Orbitron,monospace; font-size:14px; color:#64d8ff; width:30px; text-align:center; }
+.slot.filled { border-style:solid; border-color:#64d8ff; background:rgba(100,216,255,0.10); }
+.slot.correct { border-color:#7effb2; background:rgba(126,255,178,0.12); }
+.pool { display:flex; flex-wrap:wrap; gap:8px; padding:12px; border-radius:12px;
+        background:rgba(185,128,255,0.06); border:1px dashed rgba(185,128,255,0.4); margin:10px 0; }
+.step-card-mini { padding:8px 12px; border-radius:10px; background:rgba(185,128,255,0.15); border:1px solid #b980ff; cursor:grab; user-select:none; touch-action:none; font-size:13px; }
+.step-card-mini.placed { opacity:0.45; cursor:default; }
+.step-card-mini .ic { font-size:18px; margin-right:6px; }
+</style>
+</head>
+<body data-page="p05b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">☁️ NEBULA · B · EXPLORE</span>
+  <h1>เรียง 6 ขั้น · เนบิวลา → ดาวเคราะห์</h1>
+
+  <div class="card">
+    <h3>📦 ลาก 6 การ์ดไปใส่ช่องตามลำดับ</h3>
+    <div class="muted">คำใบ้: เริ่มจากเมฆใหญ่ → ยุบ → จาน → ดาวเคราะห์</div>
+    <div class="timeline-host" id="slots"></div>
+    <div class="pool" id="pool"></div>
+  </div>
+
+  <div id="successCard" class="card green" style="display:none;">
+    <h3 style="color:#7effb2;">✓ ลำดับถูกต้อง!</h3>
+    <div class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เก่งมาก! ทีมเข้าใจ <b>กระบวนการกำเนิดระบบสุริยะ</b> แล้ว ·
+      เนบิวลายุบลง → proto-Sun ดูด 98% ของมวล → จานหมุนทิศเดียว → planetesimal accretion ·
+      <b style="color:#7effb2;">ทุกดาวเคราะห์เกิดพร้อมกัน</b> · ไม่ได้เกิดทีละดวง"
+    </div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P05b</summary>
+    <div>กิจกรรม drag-drop · จุดสำคัญ: ดาวเคราะห์ทุกดวง<b>เกิดพร้อมกัน</b>จากจานเดียว · ทำลาย M6 (ดาวเกิดทีละดวง)</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ทำไมเนบิวลาที่ยุบตัว ถึงกลายเป็น "จานแบน" ไม่ใช่ "ลูกบอลกลม"?',
+    durationSec: 60,
+    chips: [
+      'แรงเหวี่ยงหนีศูนย์ตั้งฉากกับการหมุน',
+      'การอนุรักษ์โมเมนตัมเชิงมุม',
+      'แรงโน้มถ่วงดึงตามแกนหมุน',
+      'ทุกข้อรวมกันเป็นเหตุผล',
+      'สสารสูญหายตามแกน'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจคำตอบ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const STEPS = EP_CONFIG.nebulaSteps;
+const SHUFFLED = STEPS.slice().sort(() => Math.random()-0.5);
+const slotsEl = document.getElementById('slots');
+const poolEl = document.getElementById('pool');
+
+STEPS.forEach((_, i) => {
+  const s = document.createElement('div'); s.className='slot'; s.dataset.idx=i;
+  s.innerHTML = `<div class="num">${i+1}</div><div class="content" style="flex:1; color:#9aa3c0;">— ลากการ์ดมาวาง —</div>`;
+  slotsEl.appendChild(s);
+});
+
+SHUFFLED.forEach(step => {
+  const c = document.createElement('div'); c.className='step-card-mini';
+  c.draggable = true; c.dataset.step = step.step;
+  c.innerHTML = `<span class="ic">${step.icon}</span>${step.label}`;
+  c.ondragstart = (e) => { e.dataTransfer.setData('text/plain', step.step); };
+  c.addEventListener('touchstart', () => { window._drag = step.step; });
+  poolEl.appendChild(c);
+});
+
+slotsEl.querySelectorAll('.slot').forEach(slot => {
+  slot.ondragover = (e) => e.preventDefault();
+  slot.ondrop = (e) => {
+    e.preventDefault();
+    const stepNum = e.dataTransfer.getData('text/plain') || window._drag;
+    placeStep(slot, +stepNum);
+  };
+  slot.addEventListener('touchend', () => {
+    if(window._drag) { placeStep(slot, +window._drag); window._drag = null; }
+  });
+});
+
+function placeStep(slot, stepNum){
+  const step = STEPS.find(s => s.step === stepNum);
+  if(!step) return;
+  // remove from pool/other slots
+  document.querySelectorAll('.step-card-mini').forEach(c => {
+    if(+c.dataset.step === stepNum && !c.classList.contains('placed')){
+      c.classList.add('placed');
+    }
+  });
+  slot.classList.add('filled');
+  slot.querySelector('.content').innerHTML = `<span style="font-size:18px;">${step.icon}</span> ${step.label}`;
+  slot.dataset.step = stepNum;
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p05b', nextHref:'p05c-nebula-gate.html',
+    getPayload(){
+      const arr = [...slotsEl.querySelectorAll('.slot')].map(s => +s.dataset.step || 0);
+      const correct = arr.every((n,i) => n === i+1);
+      return { order: arr, correct };
+    },
+    validate(p){ if(p.order.includes(0)){ alert('กรุณาวางการ์ดให้ครบ 6 ช่อง'); return false; } return true; },
+    isPerfect(p){ return p.correct; },
+    onSubmit(tag, n){
+      const arr = [...slotsEl.querySelectorAll('.slot')];
+      arr.forEach((s,i) => {
+        if(+s.dataset.step === i+1) s.classList.add('correct');
+        else { s.classList.remove('correct','filled'); s.style.borderColor='#ff5c7a'; }
+      });
+      if(arr.every((s,i) => +s.dataset.step === i+1)){
+        document.getElementById('successCard').style.display='block';
+      } else {
+        alert('💡 ลำดับยังไม่ครบ · ลองสลับการ์ดดู · ตอนถัดไปจะเฉลย');
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

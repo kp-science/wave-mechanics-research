@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p09 · UV</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .hull { width:100%; height:240px; border-radius:14px; position:relative;
+    background:linear-gradient(135deg, #2a3445 0%, #1a2030 100%);
+    border:1px solid var(--line); overflow:hidden; cursor:crosshair; }
+  .crack { position:absolute; background:rgba(255,0,0,.0); pointer-events:none;
+    transition:background .3s, box-shadow .3s; }
+  .uv-on .crack { background:rgba(155,89,182,.85); box-shadow:0 0 12px #9b59b6; }
+  .marker { position:absolute; width:24px; height:24px; border-radius:50%;
+    border:2px solid var(--good); transform:translate(-50%,-50%); pointer-events:none; }
+  .toggle { display:flex; gap:6px; justify-content:center; margin:10px 0; }
+  .toggle button { padding:8px 18px; border-radius:10px; border:1px solid var(--line);
+    background:var(--bg-card); color:var(--text); font-weight:700; cursor:pointer; }
+  .toggle button.on { background:#9b59b6; color:#fff; }
+</style>
+</head>
+<body data-page="p09">
+<div class="page">
+  <div class="act-badge">ACT B · 6/8 · UV</div>
+  <h1>กล้อง UV · ตรวจรอยรั่วบนยาน</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · เซ็นเซอร์ความดันลดเรื่อยๆ · มีรอยรั่ว แต่ตามองไม่เห็น</div>
+    <div class="crisis-body">รอยร้าวที่ผิวยาน <b>เรืองแสง UV</b> เพราะเปื้อนสารชี้บ่ง · เปิดไฟ UV เพื่อหารอย แล้วคลิกแปะ patch</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🟣 TOOL · UV detection (อ้างอิง p101: Hubble UV band)</div>
+    <div class="tool-body">UV ความยาว 10-400 nm · ใช้ตรวจสารเรืองแสง · ดาวอุณหภูมิสูง</div>
+  </div>
+
+  <div class="toggle">
+    <button id="btnOff" class="on">💡 ไฟปกติ</button>
+    <button id="btnUV">🟣 UV</button>
+  </div>
+
+  <div class="hull" id="hull"></div>
+  <p style="text-align:center;color:var(--text-soft);font-size:13px;">เปิด UV → คลิกบนรอยร้าว 3 จุดเพื่อแปะ patch</p>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    หมอใช้ <b>เครื่องวัด UV</b> ตรวจรังสีอันตรายบนผิว · ของในตำรา p99 · เครื่องสแกนแบงค์ปลอมก็ใช้ UV
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p10-xray.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p10 X-ray</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p09' });
+    PBL.init({ id:'p09-uv' });
+
+    const hull = document.getElementById('hull');
+    const cracks = [
+      { x:25, y:30, w:60, h:3, rot:30 },
+      { x:55, y:55, w:80, h:3, rot:-20 },
+      { x:30, y:75, w:50, h:3, rot:60 }
+    ];
+    cracks.forEach((c,i) => {
+      const el = document.createElement('div');
+      el.className = 'crack'; el.dataset.i = i;
+      el.style.left = c.x+'%'; el.style.top = c.y+'%';
+      el.style.width = c.w+'px'; el.style.height = c.h+'px';
+      el.style.transform = 'rotate('+c.rot+'deg)';
+      hull.appendChild(el);
+    });
+
+    let uvOn = false;
+    document.getElementById('btnOff').onclick = () => {
+      uvOn = false; hull.classList.remove('uv-on');
+      document.getElementById('btnOff').classList.add('on');
+      document.getElementById('btnUV').classList.remove('on');
+    };
+    document.getElementById('btnUV').onclick = () => {
+      uvOn = true; hull.classList.add('uv-on');
+      document.getElementById('btnUV').classList.add('on');
+      document.getElementById('btnOff').classList.remove('on');
+      KPA.log('K1','uv-on');
+    };
+
+    const patched = new Set();
+    hull.onclick = (e) => {
+      if (!uvOn) return;
+      const r = hull.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width*100;
+      const y = (e.clientY - r.top)/r.height*100;
+      let hit = -1;
+      cracks.forEach((c,i) => {
+        if (Math.abs(c.x - x) < 12 && Math.abs(c.y - y) < 12) hit = i;
+      });
+      if (hit >= 0 && !patched.has(hit)) {
+        patched.add(hit);
+        const m = document.createElement('div');
+        m.className = 'marker'; m.style.left = cracks[hit].x+'%'; m.style.top = cracks[hit].y+'%';
+        m.textContent = '✓';
+        m.style.color = '#9be7c4'; m.style.background = 'rgba(155,231,196,.2)';
+        m.style.display='flex'; m.style.alignItems='center'; m.style.justifyContent='center';
+        m.style.fontSize='14px';
+        hull.appendChild(m);
+        if (patched.size === cracks.length) {
+          const res = document.getElementById('resultHost');
+          res.classList.add('show','correct');
+          res.textContent = '✓ Patch ครบ 3 จุด · ความดันคงที่';
+          document.getElementById('transfer').style.display = 'block';
+          document.getElementById('next').style.display = '';
+          KPA.log('K6','uv-patch-complete', { correct:true });
+          CoinEnergy.reward('crisisSolveFirst');
+          PBL.attempt(true, {});
+          PBL._enter('transfer');
+        }
+      }
+    };
+  });
+</script>
+</body>
+</html>

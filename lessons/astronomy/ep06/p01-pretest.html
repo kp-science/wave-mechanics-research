@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P01 · Pre-test</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p01" data-type="reflection">
+<div class="page">
+  <span class="lbl reflection">📋 BASELINE · ก่อนเริ่ม</span>
+  <h1>Pre-test · 8 ข้อ</h1>
+  <div class="tags"><span class="kpa-chip">M1-M7</span><span class="kpa-chip">K1-K6</span></div>
+  <div class="card"><div class="narr">ตอบตามที่คิด · ผิดได้ · ใช้วัดความเข้าใจก่อนเรียน · ข้อชุดเดียวกันจะมาอีกใน p27</div></div>
+
+  <div id="quizArea"></div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งคำตอบ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P01</summary>
+    <div>เก็บ baseline · เปรียบเทียบ post-test ที่ p27 · ดู gain ต่อ M1-M7</div></details>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+window.EP06_PRETEST_QS = [
+  { m:'M1', q:'ระบบสุริยะประกอบด้วย?', a:['ดวงอาทิตย์ + 8 ดาวเคราะห์เท่านั้น','+ ดาวเคราะห์น้อย ดาวหาง ดาวเคราะห์แคระ บริวาร','ดวงอาทิตย์อย่างเดียว','กาแล็กซีทั้งหมด'], c:1 },
+  { m:'M2', q:'ดาวเคราะห์ชั้นนอก (พฤหัส-เนปจูน) มีอะไรอยู่ตรงกลาง?', a:['แก๊สล้วนถึงแกน','มีแก่นแข็ง (rock+ice) ห่อด้วยแก๊ส/น้ำแข็ง','ของเหลวร้อน','ว่างเปล่า'], c:1 },
+  { m:'M3', q:'โลกใหญ่ที่สุดในระบบสุริยะ · จริงหรือ?', a:['จริง','เท็จ · พฤหัสใหญ่กว่าโลก ~11 เท่าในเส้นผ่านศูนย์กลาง','โลกใหญ่ที่สุดในชั้นใน','ขนาดเท่าดาวพุธ'], c:1 },
+  { m:'M4', q:'asteroid belt มีลักษณะอย่างไร?', a:['หินแน่นชนกันตลอดเวลา','ระยะเฉลี่ย ~1 ล้าน กม. ระหว่างก้อน','เป็นวงแหวนของแข็ง','ไม่มีจริง'], c:1 },
+  { m:'M5', q:'พลูโตคืออะไร?', a:['ดาวเคราะห์ดวงที่ 9','ดาวเคราะห์แคระ (IAU 2006)','ดาวบริวาร','ดาวหาง'], c:1 },
+  { m:'M6', q:'ระบบสุริยะของเราใหญ่แค่ไหน?', a:['จบที่เนปจูน 30 AU','heliopause ~120 AU · Oort ~70,000 AU','100 km','1 ปีแสง'], c:1 },
+  { m:'M7', q:'ปัจจัยที่ทำให้ดาวเอื้อชีวิต?', a:['ระยะห่างจากดาวฤกษ์เท่านั้น','น้ำเหลว + อากาศ + T เหมาะ + ระยะ + ชนิดดาวฤกษ์','ดวงจันทร์เท่านั้น','ขนาดดาว'], c:1 },
+  { m:'K2', q:'พฤหัส กับ ยูเรนัส แตกต่างกันอย่างไร?', a:['เหมือนกันทุกประการ','พฤหัส = gas giant · ยูเรนัส = ice giant','พฤหัสเล็กกว่า','ยูเรนัสไม่มีบริวาร'], c:1 },
+];
+const QS = window.EP06_PRETEST_QS;
+const area = document.getElementById('quizArea');
+QS.forEach((q,i) => {
+  const card = document.createElement('div'); card.className='card';
+  card.innerHTML = `<div class="q-prompt">ข้อ ${i+1} · <span style="font-size:11px;color:#9aa3c0;">[${q.m}]</span> ${q.q}</div>
+    <div class="choice-row" data-q="${i}">
+      ${q.a.map((t,k)=>`<label><input type="radio" name="q${i}" value="${k}"> <span>${t}</span></label>`).join('')}
+    </div>`;
+  area.appendChild(card);
+});
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p01', nextHref:'p02-anomaly.html',
+    getPayload(){
+      const ans={}; let correct=0;
+      QS.forEach((q,i)=>{
+        const v=document.querySelector(`input[name="q${i}"]:checked`);
+        const val = v?Number(v.value):-1;
+        ans['q'+i]={m:q.m, ans:val, correct:val===q.c};
+        if(val===q.c) correct++;
+      });
+      return {answers:ans, correct, total:QS.length};
+    },
+    validate(p){ if(Object.values(p.answers).some(a=>a.ans===-1)){ alert('กรุณาตอบให้ครบทุกข้อ'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){
+      let correct = 0;
+      QS.forEach((q,i) => { const v = document.querySelector(`input[name="q${i}"]:checked`); if (v && Number(v.value) === q.c) correct++; });
+      const wrongs = QS.length - correct;
+      if (window.MysteryBox && MysteryBox.roll) setTimeout(() => MysteryBox.roll({ wrongs, page:'p01' }), 600);
+    }
+  });
+}, 200);
+</script>
+</body></html>

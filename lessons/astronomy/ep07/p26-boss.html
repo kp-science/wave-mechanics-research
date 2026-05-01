@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p26 · BOSS · CIPHER VAULT</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  /* Boss layout: kill 100vh padding so scroll lands on content */
+  html, body { min-height: 0 !important; }
+  body { padding-bottom: 0 !important; }
+  .page { padding: 60px 12px 30px !important; min-height: 0 !important; }
+  .keyring-card{background:linear-gradient(180deg,#1a2540,#0a0e1c);
+    border:2px solid #ff8a3d;border-radius:14px;padding:16px;margin:14px 0;
+    box-shadow:0 0 30px rgba(255,138,61,.2);}
+  .keyring-h{font:800 18px system-ui;color:#ff8a3d;text-align:center;margin-bottom:10px;}
+  .keyring-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:14px 0;}
+  .key-card{padding:12px;background:#0a1226;border:2px solid var(--kc);border-radius:10px;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    opacity:.4;filter:grayscale(.7);transition:all .3s;}
+  .key-card.have{opacity:1;filter:none;box-shadow:0 0 14px var(--kc);}
+  .key-icon{font-size:30px;}
+  .key-name{font-weight:700;font-size:14px;color:#fff;}
+  .key-from{font-size:11px;color:#7a8aa8;text-align:center;}
+  .key-state{font-size:12px;font-weight:800;color:var(--kc);margin-top:4px;}
+  .keyring-status{text-align:center;font-size:14px;color:#cfe;margin:8px 0;}
+  .keyring-status.warn{color:#ffd84a;}
+  .keyring-status.bad{color:#ff6a6a;}
+  .keyring-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+  .keyring-actions a, .keyring-actions button{
+    padding:10px 18px;border-radius:10px;font-weight:700;text-decoration:none;
+    cursor:pointer;border:none;font-size:14px;
+  }
+  .keyring-actions .proceed{background:#ff8a3d;color:#1a0e00;}
+  .keyring-actions .back{background:transparent;color:#7ad6ff;border:1px solid #7ad6ff;}
+</style>
+</head>
+<body data-page="p26">
+<div class="page">
+  <div class="act-badge">ACT D · 5/6 · BOSS ⭐</div>
+  <h1>🔐 VOID CIPHER VAULT · 5 เฟส</h1>
+
+  <div id="prepZone">
+    <div class="crisis">
+      <div class="crisis-h">⚠️ FINAL · เปิด Vault ที่เก็บกุญแจดาวเทียม 12 ดวง</div>
+      <div class="crisis-body">
+        VOID เข้ารหัส vault ด้วยความรู้ทั้งบทที่ 4 · ทีมต้องช่วยกันแก้ <b>5 เฟสต่อเนื่อง</b>:
+        <br>🌈 อ่านคลื่น → 🛰 วงโคจร → 🚀 ประกอบจรวด → 🧪 spinoff → 🔓 รวมรหัส
+        <br><b>ระวัง:</b> เฟส 5 · VOID จะ <em>corrupt คำตอบทีม 2 ช่อง</em> · ต้องตรวจให้เจอ
+      </div>
+    </div>
+
+    <!-- KEYRING INVENTORY -->
+    <div class="keyring-card">
+      <div class="keyring-h">🗝️ VAULT KEYRING · กุญแจที่สะสมจาก 4 บทเรียน</div>
+      <div class="keyring-grid" id="keyGrid"></div>
+      <div class="keyring-status" id="keyStatus"></div>
+      <div class="keyring-actions" id="keyActions"></div>
+    </div>
+
+    <!-- SHOP -->
+    <div id="shopMount"></div>
+  </div>
+
+  <div id="triageRoot" style="display:none;"></div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/shop.js"></script>
+<script src="../shared/cipher-vault-graphics.js"></script>
+<script src="../shared/cipher-vault.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p26' });
+
+    // Render keyring
+    const keys = Boot07.osList();
+    const grid = document.getElementById('keyGrid');
+    const status = document.getElementById('keyStatus');
+    const actions = document.getElementById('keyActions');
+    const META = window.VaultGfx ? VaultGfx.KEYS_META : [];
+    const FROM = {
+      os1: 'p11 · จับคู่กล้อง 6 ตัว',
+      os2: 'p17 · เร่งจรวดถึง orbit',
+      os3: 'p20 · ออกแบบยาน Mars 5 ปัจจัย',
+      os4: 'p25 · จับคู่ spinoff'
+    };
+    META.forEach(k => {
+      const have = keys.includes(k.id);
+      const card = document.createElement('div');
+      card.className = 'key-card ' + (have?'have':'');
+      card.style.setProperty('--kc', k.color);
+      card.innerHTML = `
+        <div class="key-icon">${k.icon}</div>
+        <div class="key-name">${k.name}</div>
+        <div class="key-from">${FROM[k.id]||''}</div>
+        <div class="key-state">${have?'✓ เสียบแล้ว':'✗ ยังไม่ได้เก็บ'}</div>
+      `;
+      grid.appendChild(card);
+    });
+
+    const n = keys.length;
+    if (n === 4) {
+      status.innerHTML = '✓ เก็บครบ 4/4 keys · <b>Vault จะเปิดเต็มประสิทธิภาพ</b> · ไปได้เลย';
+    } else if (n === 3) {
+      status.className = 'keyring-status warn';
+      status.innerHTML = '⚠ มี 3/4 keys · <b>1 ช่องใน Phase 5 จะ lock ถาวร</b> · ต้องผ่าน 5 เฟสในยากขึ้น';
+    } else if (n === 2) {
+      status.className = 'keyring-status warn';
+      status.innerHTML = '⚠ มี 2/4 keys · <b>2 ช่องใน Phase 5 จะ lock</b> · เฟสที่ขาด key จะ -2 HP เมื่อพลาด';
+    } else if (n >= 1) {
+      status.className = 'keyring-status bad';
+      status.innerHTML = '✗ มีแค่ ' + n + '/4 keys · <b>Phase 5 จะปลดไม่ได้</b> · ต้องมีอย่างน้อย 3 keys';
+    } else {
+      status.className = 'keyring-status bad';
+      status.innerHTML = '✗ ไม่มี key เลย · ต้องกลับไปเรียนก่อน';
+    }
+
+    if (n >= 3) {
+      actions.innerHTML = `
+        <button class="proceed" id="proceedBtn">▶ ไปต่อ · เปิด Shop & Boss</button>
+        ${n < 4 ? '<a href="index.html" class="back">↩ กลับไปเก็บ key ที่ขาด</a>' : ''}
+      `;
+    } else {
+      actions.innerHTML = `
+        <a href="index.html" class="back">↩ กลับไปเก็บ keys</a>
+        <button class="proceed" id="proceedBtn">▶ บุก vault อยู่ดี (ยากมาก)</button>
+      `;
+    }
+
+    document.getElementById('proceedBtn').onclick = () => {
+      // proceed to shop
+      KPA.research('keyringSnapshot', { keys, count:n });
+      Shop.open(document.getElementById('shopMount'), {
+        onDone: ({ items, profile }) => {
+          document.getElementById('prepZone').style.display = 'none';
+          document.getElementById('triageRoot').style.display = '';
+          KPA.research('preBossProfile', { profile, items: items.map(i=>i.id) });
+          CipherVault.start({
+            boosters: items.map(i => i.id),
+            keys,
+            onComplete: ({ ending, hp }) => {
+              KPA.research('bossComplete', { ending, hp });
+            }
+          });
+        }
+      });
+    };
+  });
+</script>
+</body>
+</html>

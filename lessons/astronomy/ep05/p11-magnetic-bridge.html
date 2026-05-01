@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P11 · MISSION BRIEFING · VOID ARRIVED</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.field-canvas { position:relative; width:100%; height:200px; background:radial-gradient(ellipse at center, rgba(255,138,61,0.18), transparent 70%); border-radius:14px; overflow:hidden; margin:10px 0; border:1px solid rgba(255,203,107,0.2); }
+.field-canvas .sun-disk { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:80px; height:80px; border-radius:50%; background:radial-gradient(circle, #fff8c8, #ffcb6b, #ff8a3d); box-shadow:0 0 50px #ffcb6b; }
+.field-line { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border:1.5px solid rgba(185,128,255,0.55); border-radius:50%; pointer-events:none; }
+.field-line.l1 { width:140px; height:90px; animation:fieldRotate 16s linear infinite; }
+.field-line.l2 { width:200px; height:120px; animation:fieldRotate 20s linear infinite reverse; }
+.field-line.l3 { width:260px; height:150px; animation:fieldRotate 24s linear infinite; }
+@keyframes fieldRotate { from{transform:translate(-50%,-50%) rotate(0);} to{transform:translate(-50%,-50%) rotate(360deg);} }
+
+/* === ARYAH THESIS · กล่องเด่นกลาง === */
+.thesis-card { position:relative; padding:24px 22px 22px; border-radius:18px; margin:18px 0;
+  background:linear-gradient(135deg, rgba(255,138,61,0.18), rgba(185,128,255,0.12));
+  border:2px solid #ff8a3d;
+  box-shadow:0 6px 30px rgba(255,138,61,0.3), inset 0 0 30px rgba(255,138,61,0.08); }
+.thesis-card::before {
+  content:'⭐ MISSION THESIS · จากอารยา';
+  position:absolute; top:-12px; left:18px; padding:3px 14px; border-radius:8px;
+  background:#ff8a3d; color:#1a0500; font-family:Orbitron,monospace;
+  font-size:11px; letter-spacing:.16em; font-weight:700;
+  box-shadow:0 2px 8px rgba(0,0,0,0.5); }
+.thesis-card .speaker { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.thesis-card .avatar {
+  width:46px; height:46px; border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #ffd96b, #ff8a3d 60%, #b21030);
+  border:2px solid #ffd700; box-shadow:0 0 14px rgba(255,215,0,0.5);
+  display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.thesis-card .name { font-family:Orbitron,monospace; font-size:13px; color:#ffd700; letter-spacing:.14em; }
+.thesis-card .role { font-size:11px; color:#ffd88a; opacity:0.85; }
+.thesis-card .quote {
+  font-size:18px; line-height:1.7; color:#fff; font-weight:600;
+  padding:12px 18px; border-left:4px solid #ffd700; background:rgba(0,0,0,0.35); border-radius:8px;
+  text-shadow:0 1px 4px rgba(0,0,0,0.6); }
+.thesis-card .quote b { color:#ffd700; }
+.thesis-card .quote u { text-decoration:none; background:rgba(255,215,0,0.22); padding:1px 6px; border-radius:4px; color:#ffe48a; }
+.thesis-card .tag-row { display:flex; gap:6px; margin-top:12px; flex-wrap:wrap; }
+.thesis-card .tag { padding:4px 10px; border-radius:6px; background:rgba(0,0,0,0.4);
+  border:1px solid #ffd700; color:#ffd700; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.1em; }
+
+/* === MISSION ROADMAP === */
+.roadmap-card { position:relative; padding:18px 16px 16px; border-radius:16px; margin:14px 0;
+  background:linear-gradient(180deg, rgba(126,255,178,0.06), rgba(20,28,52,0.7));
+  border:2px solid #7effb2; box-shadow:0 4px 20px rgba(126,255,178,0.15); }
+.roadmap-card::before {
+  content:'🗺️ MISSION ROADMAP · เรียนอะไร → เอาไปใช้ตรงไหน';
+  position:absolute; top:-11px; left:14px; padding:3px 12px; border-radius:6px;
+  background:#7effb2; color:#022; font-family:Orbitron,monospace;
+  font-size:10px; letter-spacing:.14em; font-weight:700; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+.roadmap-card .intro {
+  margin:6px 0 14px; padding:10px 12px; border-radius:8px;
+  background:rgba(126,255,178,0.08); color:#d4f0ff; font-size:13px; line-height:1.6; }
+.roadmap-card .intro b { color:#7effb2; }
+
+.roadmap-list { display:grid; grid-template-columns:1fr; gap:8px; }
+.rmap-item { display:grid; grid-template-columns:60px 1fr; gap:10px; padding:10px 12px;
+  border-radius:10px; background:rgba(20,28,52,0.7); border-left:3px solid #64d8ff; align-items:center; }
+.rmap-item .badge {
+  font-family:Orbitron,monospace; font-size:11px; letter-spacing:.08em; color:#64d8ff;
+  text-align:center; padding:6px 4px; border:1px solid #64d8ff; border-radius:6px;
+  background:rgba(100,216,255,0.1); font-weight:700; }
+.rmap-item .body { font-size:13px; line-height:1.6; color:#fff; }
+.rmap-item .topic { color:#ffcb6b; font-weight:700; display:block; margin-bottom:2px; font-size:14px; }
+.rmap-item .learn { color:#d4f0ff; }
+.rmap-item .apply { color:#7effb2; display:block; margin-top:2px; }
+.rmap-item .apply b { color:#ffd700; }
+
+.rmap-item.apply-item { border-left-color:#ffd700; background:rgba(255,215,0,0.06); }
+.rmap-item.apply-item .badge { color:#ffd700; border-color:#ffd700; background:rgba(255,215,0,0.1); }
+.rmap-item.boss { border-left-color:#ff5c7a; background:rgba(255,92,122,0.08); }
+.rmap-item.boss .badge { color:#ff5c7a; border-color:#ff5c7a; background:rgba(255,92,122,0.1); }
+
+.roadmap-funnel {
+  margin-top:12px; padding:12px; border-radius:10px;
+  background:linear-gradient(90deg, rgba(100,216,255,0.08), rgba(255,215,0,0.15), rgba(255,92,122,0.12));
+  border:1px dashed #ffd700; text-align:center; font-size:13px; color:#fff; line-height:1.7; }
+.roadmap-funnel b { color:#ffd700; font-family:Orbitron,monospace; letter-spacing:.08em; }
+
+@media(max-width:560px){
+  .thesis-card .quote { font-size:15px; }
+  .rmap-item { grid-template-columns:48px 1fr; }
+  .rmap-item .badge { font-size:9px; }
+}
+</style>
+</head>
+<body data-page="p11" data-type="story">
+<div class="page">
+  <span class="lbl story">⚔️ ACT D · MISSION BRIEFING · VOID ARRIVED</span>
+  <h1>VOID มาแล้ว · นี่คือสิ่งที่ทีมต้องรู้ก่อนสู้</h1>
+
+  <!-- ALERT -->
+  <div class="card red" style="border-color:#b980ff;background:rgba(185,128,255,0.08);">
+    <div class="mb-head" style="color:#b980ff;font-family:Orbitron,monospace;letter-spacing:.16em;">⚠ ALERT · LONG-RANGE SENSOR</div>
+    <div style="font-family:Orbitron,monospace; font-size:14px; color:#b980ff; line-height:1.7; margin-top:6px;">
+      VOID HAS ARRIVED IN SOLAR SYSTEM<br>
+      LOCATION: PHOTOSPHERE · SCANNING FOR HELION CORES<br>
+      ETA TO EARTH IF UNCHECKED: <b style="color:#ff5c7a;">12 HOURS</b>
+    </div>
+  </div>
+
+  <!-- เคน · สั้น · ปูบริบท -->
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "HELION 6/6 ครบ · deflector พร้อม · แต่ <u>วางมั่วไม่ได้</u> ·
+      ต้องรู้ว่า CME จะมาทางไหน · มาแรงแค่ไหน · มาเมื่อไหร่"
+    </span>
+  </div>
+
+  <!-- Field viz · แสดงให้เห็นว่าอะไรคือ "สนามรบ" -->
+  <div class="card">
+    <div style="font-size:12px;color:#9aa3c0;margin-bottom:6px;font-family:Orbitron,monospace;letter-spacing:.1em;">📡 SCAN · SOLAR MAGNETIC ENVIRONMENT</div>
+    <div class="field-canvas">
+      <div class="sun-disk"></div>
+      <div class="field-line l1"></div>
+      <div class="field-line l2"></div>
+      <div class="field-line l3"></div>
+    </div>
+    <div style="font-size:13px;color:#d4b8ff;line-height:1.6;">
+      ดวงอาทิตย์ = <b style="color:#b980ff;">พลาสมา (ของเหลวนำไฟฟ้า)</b> · หมุนรอบตัว · สร้าง<b style="color:#b980ff;">สนามแม่เหล็กมหาศาล</b> ·
+      แต่หมุนไม่เท่ากันทุกละติจูด → เส้นสนาม<b>บิด · พันกัน · ปะทุ</b> = ที่มาของทุกปรากฏการณ์ที่จะเรียน
+    </div>
+  </div>
+
+  <!-- ⭐ ARYAH THESIS · กล่องเด่นกลาง -->
+  <div class="thesis-card">
+    <div class="speaker">
+      <div class="avatar">👩‍🚀</div>
+      <div>
+        <div class="name">อารยา</div>
+        <div class="role">CHIEF SCIENCE OFFICER · ทีม HELION</div>
+      </div>
+    </div>
+    <div class="quote">
+      "ทุกอย่างเริ่มที่ <b>แม่เหล็ก</b> · ถ้าเรารู้ว่ามัน<u>บิดยังไง</u> ·
+      เราก็คาดได้ว่า <b>CME จะพุ่งไปทางไหน · แรงแค่ไหน · ถึงเมื่อไหร่</b> ·
+      นั่นคือ <u>สิ่งเดียว</u>ที่ทำให้ deflector ที่ L1 ทำงาน"
+    </div>
+    <div class="tag-row">
+      <span class="tag">🎯 GOAL · DEFLECT CME</span>
+      <span class="tag">📍 WHERE · L1 POINT</span>
+      <span class="tag">⏰ WHEN · 12 HOURS</span>
+    </div>
+  </div>
+
+  <!-- 🗺️ MISSION ROADMAP -->
+  <div class="roadmap-card">
+    <div class="intro">
+      ก่อนถึง <b>p21 DEFLECT</b> และ <b>p25 BOSS</b> · ทีมต้องเก็บความรู้ <b>6 เรื่อง</b> ·
+      แต่ละเรื่องมีจุดที่จะ <b>เอาไปใช้จริง</b> ในภารกิจ
+    </div>
+
+    <div class="roadmap-list">
+      <div class="rmap-item">
+        <div class="badge">P12<br>P13</div>
+        <div class="body">
+          <span class="topic">📊 Sunspot Cycle + Activity Tier</span>
+          <span class="learn">เรียน: รอบ 11 ปี · ตอนนี้ peak ไหม · activity 1-5 tier</span>
+          <span class="apply">→ ใช้: ตั้ง <b>DEFCON level</b> · รู้ว่า VOID เลือกช่วงนี้เพราะ peak</span>
+        </div>
+      </div>
+
+      <div class="rmap-item">
+        <div class="badge">P14</div>
+        <div class="body">
+          <span class="topic">💥 5 ปรากฏการณ์สุริยะ</span>
+          <span class="learn">เรียน: sunspot · prominence · flare · CME · solar wind</span>
+          <span class="apply">→ ใช้: <b>รู้จักรูปแบบโจมตี</b>ของ VOID + ปลด <b>Intel Hint</b> สำหรับ boss</span>
+        </div>
+      </div>
+
+      <div class="rmap-item">
+        <div class="badge">P15</div>
+        <div class="body">
+          <span class="topic">🔄 ลำดับเหตุการณ์</span>
+          <span class="learn">เรียน: sunspot → flare → CME → aurora ลำดับนี้เป๊ะ</span>
+          <span class="apply">→ ใช้: <b>predict ก้าวต่อไป</b> · เห็น flare = รู้ว่า CME ตามมา 1-3 วัน</span>
+        </div>
+      </div>
+
+      <div class="rmap-item">
+        <div class="badge">P16</div>
+        <div class="body">
+          <span class="topic">⚡ Flare vs CME</span>
+          <span class="learn">เรียน: flare = แสง 8 นาที · CME = พลาสมา 1-3 วัน</span>
+          <span class="apply">→ ใช้: <b>flare = warning</b> ตั้งเตือน · <b>CME = damage</b> สั่งทีม shield</span>
+        </div>
+      </div>
+
+      <div class="rmap-item">
+        <div class="badge">P17</div>
+        <div class="body">
+          <span class="topic">🛡️ ผลกระทบต่อโลก</span>
+          <span class="learn">เรียน: 8 ผลกระทบ · 4 ระดับความรุนแรง</span>
+          <span class="apply">→ ใช้: <b>priority list</b> · รู้ว่า GPS/grid/satellite ใครเสียก่อน</span>
+        </div>
+      </div>
+
+      <div class="rmap-item">
+        <div class="badge">P19</div>
+        <div class="body">
+          <span class="topic">🌍 Habitable Zone</span>
+          <span class="learn">เรียน: zone ที่เหมาะ · ดาวเคราะห์ใดอยู่ในเขต</span>
+          <span class="apply">→ ใช้: <b>เห็นว่าโลกพิเศษ</b> · เข้าใจทำไมต้องป้องกัน</span>
+        </div>
+      </div>
+
+      <div class="rmap-item apply-item">
+        <div class="badge">P21</div>
+        <div class="body">
+          <span class="topic">🎯 DEFLECT-PATH SIMULATION</span>
+          <span class="learn">ทดลอง: ยิง deflect ที่ L1 · 4 จุด · 3 ผลลัพธ์</span>
+          <span class="apply">→ <b>นี่คือจุดที่เอาทุกอย่างที่เรียนมาใช้จริง</b> · เลือกมุม + เวลา</span>
+        </div>
+      </div>
+
+      <div class="rmap-item boss">
+        <div class="badge">P25</div>
+        <div class="body">
+          <span class="topic">🔥 SOLAR STORM BOSS</span>
+          <span class="learn">3 zones · 24 ข้อ · 18 ชม. countdown · 4 endings</span>
+          <span class="apply">→ <b>ใช้ความรู้ทั้งหมดป้องกันโลก</b> · ผล: A+ / A / B / C</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-funnel">
+      🧠 P12-P19 · <b>เก็บความรู้</b> &nbsp;→&nbsp; 🎯 P21 · <b>ทดสอบใช้</b> &nbsp;→&nbsp; 🔥 P25 · <b>ป้องกันโลก</b>
+    </div>
+  </div>
+
+  <!-- เคน · ปิด · เน้นย้ำ -->
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เห็น roadmap แล้ว · ทุกหน้าต่อไปนี้<u>ไม่ใช่ทฤษฎีลอยๆ</u> ·
+      แต่เป็น<b>เครื่องมือที่จะใช้สู้</b> · พร้อมไหม?"
+    </span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P11 (v2 · Mission Briefing)</summary>
+    <div>
+      <b>เป้าหมายของหน้านี้:</b> ปูให้ผู้เรียนเห็นว่า p12-p20 ไม่ใช่เนื้อหาแยกๆ · แต่ <b>ทุกหน้าจะเอาไปใช้จริง</b> ที่ p21 + p25<br>
+      <b>เน้น Aryah's thesis:</b> "ถ้ารู้ว่าแม่เหล็กบิดยังไง → คาด CME ได้ → deflect แม่น"<br>
+      <b>เด็กที่เคย "ทำจบแล้วไม่รู้ว่าเรียนไปทำไม"</b> · จะเห็น roadmap นี้แล้วเชื่อมโยงได้ทุกหน้า<br>
+      <b>กิจกรรมสุริยะตอนนี้:</b> ปี 2026 = solar maximum (รอบ Cycle 25) → narrative ที่ VOID เลือกช่วงนี้สมเหตุสมผล
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ เข้าใจภารกิจ · ไป P12 SUNSPOT CYCLE</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p12-sunspot-cycle.html');
+  if(window.PaceClient) Gate.wireButton('p11', btn,'p12-sunspot-cycle.html');
+},200);
+</script>
+</body></html>

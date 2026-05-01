@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P00 · Comet Diversion</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.comet-trail { position:relative; height:100px; background:radial-gradient(ellipse at center, rgba(100,216,255,0.15), transparent); border-radius:10px; overflow:hidden; margin:8px 0; }
+.comet { position:absolute; left:0; top:50%; transform:translateY(-50%); font-size:24px;
+         animation:cometRun 4s linear infinite; }
+@keyframes cometRun { from{left:-30px;} to{left:calc(100% + 30px);} }
+.c2 { animation-delay:.6s; top:30%; } .c3 { animation-delay:1.2s; top:70%; }
+.c4 { animation-delay:1.8s; top:20%; } .c5 { animation-delay:2.4s; top:55%; }
+.c6 { animation-delay:3.0s; top:40%; } .c7 { animation-delay:3.6s; top:75%; }
+</style>
+</head>
+<body data-page="p00" data-type="story">
+<div class="page">
+  <span class="lbl story">🎞️ COLD OPEN · EP06 · v1</span>
+  <h1>ขอบฟ้าของบ้าน</h1>
+  <div class="muted" style="margin-bottom:14px;">Edge of Home · สมาชิกระบบสุริยะ</div>
+
+  <div class="card">
+    <h3>ตอนที่แล้ว... (EP05)</h3>
+    <div class="narr">
+      ทีม T.H.E.O.S.-IX ฝ่า <b>SOLAR STORM</b> · เบี่ยง CME ออกจากโลกที่ <b>L1 Lagrange</b> สำเร็จ ·
+      <b style="color:#ffcb6b;">พ่ออารยากลับ</b> · ระบบสุริยะปลอดภัย · VOID ถอย...
+    </div>
+  </div>
+
+  <div class="card red">
+    <h3>📡 ANOMALY · 7 COMETS</h3>
+    <div class="comet-trail">
+      <div class="comet">☄</div><div class="comet c2">☄</div><div class="comet c3">☄</div>
+      <div class="comet c4">☄</div><div class="comet c5">☄</div><div class="comet c6">☄</div><div class="comet c7">☄</div>
+    </div>
+    <div class="muted center" style="font-size:12px;">เรดาร์จับ <b style="color:#ff5c7a;">ดาวหาง 7 ดวง</b> เปลี่ยนวงโคจรพร้อมกัน · ทุกดวงพุ่งจาก Kuiper Belt</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">พ่ออารยา:</b> "ดาวหางไม่เปลี่ยนวงโคจรพร้อมกันเองได้ ·
+      มีบางอย่าง<b style="color:#b980ff;">ใหญ่</b>กำลังเคลื่อนผ่าน Kuiper Belt ·
+      ถ้าเราไม่ไปดู · เราจะไม่รู้ว่า<b style="color:#ff5c7a;">ระบบสุริยะของเราจริง ๆ ใหญ่แค่ไหน</b>"
+    </span>
+  </div>
+
+  <div class="card cyan">
+    <h3>🎮 ภารกิจ EP06</h3>
+    <div style="font-size:14px; color:#64d8ff; line-height:1.7;">
+      ⏰ <b>VOID ETA · 24 ชั่วโมง</b> (เคลื่อนผ่าน Kuiper)<br>
+      🪐 ค้นหา <b>GENESIS SHARDS 6 ชิ้น</b> (เนบิวลา · จาน · 4 เขต)<br>
+      🗡️ Forge <b>GENESIS LANCE</b> ใน Vault<br>
+      ⚔️ ฝ่า KEPLER GAUNTLET · เผยตัวตน VOID · ปกป้องบ้าน
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P00</summary>
+    <div>
+      <b>เปิด EP06:</b> เน้น "บ้านใหญ่กว่าที่คิด" · นักเรียนจะค่อยขยายภาพระบบสุริยะ<br>
+      ดาวหาง 7 ดวง = mystery hook · ห้ามเฉลยตอนนี้<br>
+      <b>หน้าถัดไป:</b> Pre-test 8 ข้อ M1-M7
+    </div>
+  </details>
+
+  <div id="progressBanner" style="display:none; margin:14px 0; padding:14px;
+       border-radius:12px; background:linear-gradient(180deg, rgba(126,255,178,0.1), rgba(20,28,52,0.6));
+       border:2px solid #7effb2;">
+    <div style="font-family:Orbitron,monospace; font-size:11px; letter-spacing:.16em;
+         color:#7effb2; margin-bottom:6px;">💾 พบความคืบหน้าเก่า</div>
+    <div id="progressSummary" style="font-size:13px; color:#d4f0ff; line-height:1.6;"></div>
+  </div>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="resetBtn" style="background:transparent; border:1px solid #ff8a3d; color:#ff8a3d; display:none;">↻ เริ่มใหม่ตั้งแต่ต้น</button>
+    <button class="next-btn" id="nextBtn">▶ Pre-test ก่อนออกเดินทาง</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const _existing = Chain.all && Chain.all();
+const _hasProgress = _existing && Object.keys(_existing).length > 0;
+if(_hasProgress){
+  const inv = _existing.helionInventory || [];
+  const ending = _existing.bossEnding;
+  const bits = [];
+  if(inv.length) bits.push(`🪐 SHARD ${inv.length}/6`);
+  if(ending) bits.push(`🎬 ending: <b style="color:#ffd700;">${ending}</b>`);
+  if(bits.length){
+    document.getElementById('progressBanner').style.display = 'block';
+    document.getElementById('progressSummary').innerHTML =
+      bits.join(' · ') + '<br><span style="color:#9aa3c0; font-size:11px;">▶ กดปุ่มเพื่อ<u>เล่นต่อ</u> · หรือ <span style="color:#ff8a3d;">↻ เริ่มใหม่</span></span>';
+    const rBtn = document.getElementById('resetBtn');
+    rBtn.style.display = '';
+    rBtn.onclick = () => {
+      if(!confirm('⚠️ ลบความคืบหน้า EP06 ทั้งหมด?')) return;
+      Object.keys(localStorage).filter(k => k.startsWith('cosmosLog_ep06')).forEach(k => localStorage.removeItem(k));
+      location.reload();
+    };
+  }
+}
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p01-pretest.html');
+  if (window.PaceClient) Gate.wireButton('p00', btn, 'p01-pretest.html');
+}, 200);
+</script>
+</body></html>

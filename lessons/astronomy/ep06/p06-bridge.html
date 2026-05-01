@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · BRIDGE · NEBULA → DISK</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p06-bridge" data-type="story">
+<div class="page">
+  <span class="lbl story">🛰️ MISSION BRIDGE · 1/5 · NEBULA → DISK</span>
+  <h1>เนบิวลายุบสำเร็จ · ก่อตัวเป็นจาน</h1>
+
+  <div class="card green">
+    <h4 style="color:#7effb2; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em;">✓ ผ่านมา · NEBULA</h4>
+    <div class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ทีมเข้าใจ <b>nebular collapse</b> · เก็บ <b style="color:#b980ff;">☁️ GS-1 Nebula Seed</b> สำเร็จ ·
+      ตอนนี้เข้าสู่ขั้นที่ 4 — <b>จานสะสมมวล</b>"
+    </div>
+  </div>
+
+  <div class="card cyan">
+    <h4 style="color:#64d8ff; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em;">⏳ ต่อไป · DISK</h4>
+    <div class="narr" style="color:#cfeaff;">
+      <b style="color:#64d8ff;">อารยา:</b> "เนบิวลายุบเหลือเป็น<b>จานหมุน</b> · ทุกอนุภาคหมุน<b style="color:#b980ff;">ทิศเดียวกัน</b> ·
+      ทำไมระบบสุริยะของเราจึงมีดาวเคราะห์ทุกดวงโคจรในระนาบเดียวกัน?"
+    </div>
+  </div>
+
+  <div class="recall-card">
+    <div class="recall-tag">🔁 RECALL CHECK · ทบทวน NEBULA</div>
+    <div class="recall-q">proto-Sun ดูดมวลไปกี่ % ของระบบสุริยะ?</div>
+    <div class="recall-choices">
+      <button class="rc-btn" data-i="0">A. ~50%</button>
+      <button class="rc-btn" data-i="1">B. ~98%</button>
+      <button class="rc-btn" data-i="2">C. ~10%</button>
+    </div>
+    <div class="recall-fb" id="recallFb"></div>
+  </div>
+  <script>
+  (function(){
+    const correct = 1, pageId = 'p06-bridge';
+    const fb = document.getElementById('recallFb'); let answered = false;
+    document.querySelectorAll('.rc-btn').forEach(b => {
+      b.onclick = () => {
+        if(answered) return;
+        if(+b.dataset.i === correct){
+          answered = true; b.classList.add('correct');
+          fb.className = 'recall-fb show ok';
+          const key = 'cosmosLog_ep06_recall_' + pageId;
+          const firstTime = !localStorage.getItem(key);
+          if(firstTime && window.Coin && Coin.add){ Coin.add(5, 'recall:'+pageId); localStorage.setItem(key,'1'); }
+          fb.innerHTML = '✓ ถูก! ดวงอาทิตย์ดูดเกือบทั้งหมด · ที่เหลือ 2% กลายเป็นจาน → ดาวเคราะห์ทุกดวง' + (firstTime ? ' · <b>+5 🪙</b>' : '');
+          document.querySelectorAll('.rc-btn').forEach(x => x.disabled = true);
+          if(window.SFX) SFX.play('correct');
+        } else {
+          b.classList.add('wrong');
+          fb.className = 'recall-fb show bad';
+          fb.innerHTML = '✗ ลองอีก · hint: ทำไมดวงอาทิตย์ใหญ่กว่าดาวอื่นมาก?';
+          if(window.SFX) SFX.play('wrong');
+          setTimeout(() => b.classList.remove('wrong'), 400);
+        }
+      };
+    });
+  })();
+  </script>
+
+  <details class="tc"><summary>🎓 Teacher Cue · Bridge 1</summary>
+    <div>1-2 นาที · เปิดอารมณ์ก่อนเข้า DISK · ขอให้นักเรียนคนหนึ่งอ่าน foreshadow ดัง ๆ</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'RECALL · กลุ่มสรุปสั้น ๆ : สิ่งที่เพิ่งเรียน + 1 misconception ที่ทำลายไป',
+    durationSec: 30,
+    chips: [
+      'เนื้อหาเข้าใจชัดเจน',
+      'ทำลาย misconception แล้ว',
+      'ยังมีจุดสับสน · ขอครูช่วย',
+      'พร้อมไปขั้นต่อไป',
+      'อยากทบทวนอีกรอบ'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ เข้า DISK ENGAGE</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p06a-disk-engage.html');
+  if(window.PaceClient) Gate.wireButton('p06-bridge', btn, 'p06a-disk-engage.html');
+}, 200);
+</script>
+</body></html>

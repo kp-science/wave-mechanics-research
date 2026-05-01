@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P09b · CHROMOSPHERE · SOLAR FLARE RUN</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+
+/* === SOLAR FLARE RUN ARENA === */
+.flare-arena { position:relative; width:100%; height:360px; border-radius:14px; overflow:hidden; margin:10px 0;
+  background:
+    radial-gradient(ellipse at 30% 80%, rgba(255,180,90,0.18), transparent 60%),
+    linear-gradient(180deg, #02030a 0%, #08051a 50%, #2a0510 80%, #6a0a2a 95%, #b21030 100%);
+  touch-action:none;
+  box-shadow:inset 0 -30px 80px rgba(255, 92, 122, 0.5);
+  user-select:none;
+}
+.flare-arena .stars { position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(circle at 12% 18%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 76% 28%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 42% 8%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 12%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 22% 40%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 65% 50%, #fff 1px, transparent 1.5px);
+  opacity:0.55;
+}
+.sun-floor { position:absolute; bottom:0; left:0; right:0; height:14%; pointer-events:none;
+  background:
+    radial-gradient(ellipse at 20% 0%, #ff8866 0%, transparent 35%),
+    radial-gradient(ellipse at 60% 0%, #ffaa55 0%, transparent 30%),
+    radial-gradient(ellipse at 85% 0%, #ff5c7a 0%, transparent 35%),
+    linear-gradient(180deg, #ff8a3d 0%, #b21030 50%, #4a0510 100%);
+  border-top:1px solid rgba(255,200,100,0.6); box-shadow:0 -8px 30px rgba(255,138,61,0.4);
+}
+.start-line, .finish-line { position:absolute; top:0; bottom:14%; width:2px; pointer-events:none; z-index:3; }
+.start-line { left:8px; background:rgba(126,255,178,0.5); }
+.finish-line { right:8px; border-right:2px dashed #ffd700; box-shadow:0 0 8px #ffd700; }
+.start-line::after, .finish-line::after { position:absolute; font-family:Orbitron,monospace; font-size:9px;
+  letter-spacing:.18em; writing-mode:vertical-rl; padding:6px 2px; }
+.start-line::after { content:'START'; left:4px; top:8px; color:#7effb2; }
+.finish-line::after { content:'🏁 FINISH'; right:4px; top:8px; color:#ffd700; }
+
+.ship-sprite { position:absolute; width:32px; height:32px; line-height:32px; text-align:center; font-size:24px;
+  pointer-events:none; transform:translate(0,0); z-index:10; filter:drop-shadow(0 0 6px #fff);
+  transition:filter .15s; will-change:transform; }
+.ship-sprite.hit { filter:drop-shadow(0 0 16px #ff5c7a) brightness(1.4); animation:shipHit .45s; }
+@keyframes shipHit { 0%,100%{} 20%,60%{transform:translate(-3px,3px) rotate(-8deg);} 40%,80%{transform:translate(3px,-2px) rotate(8deg);} }
+
+.flare-warn { position:absolute; bottom:12.5%; transform:translateX(-50%);
+  width:60px; height:20px; border-radius:50%; pointer-events:none; z-index:5;
+  background:radial-gradient(ellipse, rgba(255,92,122,0.95), rgba(255,138,61,0.4) 50%, transparent 75%);
+  animation:warnPulse .55s ease-in-out infinite; }
+@keyframes warnPulse { 0%,100%{transform:translateX(-50%) scale(0.7);opacity:0.65;} 50%{transform:translateX(-50%) scale(1.35);opacity:1;} }
+
+.flare-erupt { position:absolute; bottom:13%; transform-origin:bottom center;
+  width:50px; pointer-events:none; z-index:6;
+  background:linear-gradient(0deg, #fff8c8 0%, #ffe48a 12%, #ffcb6b 28%, #ff8866 50%, #ff5c7a 75%, transparent 100%);
+  filter:blur(1.4px) drop-shadow(0 0 14px #ff8866);
+  border-radius:50% 50% 18px 18px / 60% 60% 18px 18px;
+  animation:eruptRise 1.1s cubic-bezier(.2,.7,.35,1) forwards; }
+@keyframes eruptRise {
+  0%   { height:14%; opacity:0.4; transform:translateX(-50%) scaleX(0.6); }
+  18%  { height:88%; opacity:1;   transform:translateX(-50%) scaleX(1); }
+  72%  { height:90%; opacity:0.95; transform:translateX(-50%) scaleX(1.05); }
+  100% { height:60%; opacity:0;   transform:translateX(-50%) scaleX(0.7); }
+}
+
+/* === Direction Pad === */
+.move-pad { display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr);
+  gap:6px; max-width:280px; margin:12px auto; user-select:none; }
+.move-pad button { padding:18px 10px; font-size:22px; font-weight:700; color:#fff;
+  background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(20,28,52,0.7));
+  border:2px solid rgba(126,255,178,0.45); border-radius:12px; cursor:pointer;
+  font-family:Orbitron,monospace; touch-action:none; transition:all .08s;
+  box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+.move-pad button:active, .move-pad button.held {
+  background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022;
+  border-color:#7effb2; transform:translateY(2px);
+  box-shadow:0 0 12px rgba(126,255,178,0.6); }
+.move-pad .up    { grid-column:2; grid-row:1; }
+.move-pad .left  { grid-column:1; grid-row:2; }
+.move-pad .right { grid-column:3; grid-row:2; }
+.move-pad .down  { grid-column:2; grid-row:3; }
+.move-pad .center { grid-column:2; grid-row:2; display:flex; align-items:center; justify-content:center;
+  font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; letter-spacing:.1em; pointer-events:none;
+  background:transparent; border:1px dashed rgba(126,255,178,0.2); border-radius:50%; padding:0; }
+
+/* === ไปต่อ overlay === */
+.next-round-btn { position:absolute; right:12px; top:50%; transform:translateY(-50%); z-index:14;
+  padding:18px 24px; background:linear-gradient(180deg,#ffd700,#ff8a3d); color:#1a0500;
+  border:none; border-radius:14px; font-family:Orbitron,monospace; font-size:15px; letter-spacing:.16em;
+  cursor:pointer; box-shadow:0 4px 24px rgba(255,215,0,0.6);
+  animation:nextPulse 1s ease-in-out infinite; }
+@keyframes nextPulse { 0%,100%{transform:translateY(-50%) scale(1);} 50%{transform:translateY(-50%) scale(1.06);} }
+
+.run-hud { position:absolute; top:8px; left:50%; transform:translateX(-50%); z-index:11;
+  display:flex; gap:14px; padding:6px 14px; background:rgba(0,0,0,0.7); border-radius:10px;
+  border:1px solid rgba(126,255,178,0.4); font-family:Orbitron,monospace; font-size:11px; letter-spacing:.1em; }
+.run-hud .pass { color:#7effb2; } .run-hud .die { color:#ff5c7a; } .run-hud .dod { color:#ffcb6b; }
+.run-hud b { font-size:14px; }
+.touch-hint { position:absolute; bottom:18%; left:50%; transform:translateX(-50%); z-index:11;
+  padding:5px 10px; background:rgba(0,0,0,0.7); color:#9aa3c0; font-size:10px; letter-spacing:.08em;
+  border-radius:6px; font-family:Orbitron,monospace; pointer-events:none; transition:opacity .3s; }
+.touch-hint.hide { opacity:0; }
+
+.flash-overlay { position:absolute; inset:0; background:rgba(255,92,122,0.55); pointer-events:none; z-index:20;
+  opacity:0; transition:opacity .15s; }
+.flash-overlay.on { opacity:1; }
+
+.round-toast { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); z-index:25;
+  padding:14px 26px; background:rgba(8,40,20,0.95); border:2px solid #7effb2; border-radius:12px;
+  color:#7effb2; font-family:Orbitron,monospace; font-size:16px; letter-spacing:.16em;
+  animation:toastIn 1.4s ease-out forwards; pointer-events:none;
+  box-shadow:0 4px 30px rgba(126,255,178,0.4); }
+@keyframes toastIn { 0%{opacity:0;transform:translate(-50%,-30%) scale(0.7);} 30%{opacity:1;transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0;} }
+
+.run-controls { display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; align-items:center; }
+.btn-start { padding:14px 32px; background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022;
+  border:none; border-radius:10px; font-family:Orbitron,monospace; font-size:14px; letter-spacing:.16em;
+  cursor:pointer; box-shadow:0 4px 16px rgba(126,255,178,0.4); transition:all .2s; }
+.btn-start:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(126,255,178,0.5); }
+.btn-start.restart { background:linear-gradient(180deg,#ffcb6b,#ff8a3d); color:#1a0500; box-shadow:0 4px 16px rgba(255,138,61,0.4); }
+.idle-overlay { position:absolute; inset:0; z-index:18; display:flex; align-items:center; justify-content:center;
+  background:rgba(2,3,10,0.55); backdrop-filter:blur(2px); pointer-events:none;
+  font-family:Orbitron,monospace; color:#7effb2; font-size:14px; letter-spacing:.18em; text-align:center; }
+.idle-overlay.hide { display:none; }
+.idle-overlay .badge { padding:14px 28px; border:2px solid #7effb2; border-radius:12px; background:rgba(8,40,20,0.6); }
+.idle-overlay.dead .badge { border-color:#ff5c7a; color:#ff5c7a; background:rgba(40,8,16,0.6); }
+
+.obs-log { padding:12px; border-radius:12px; background:rgba(126,255,178,0.06); border:1px dashed #7effb2; margin:10px 0; }
+.obs-log h3 { color:#7effb2; margin:0 0 8px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.obs-row { display:grid; grid-template-columns:30px 80px 1fr 80px; gap:8px; padding:6px; border-radius:6px;
+           background:rgba(20,28,52,0.4); margin-bottom:4px; font-size:12px; align-items:center; }
+.obs-row .num { font-family:Orbitron,monospace; color:#7effb2; text-align:center; }
+.obs-row .res.ok { color:#7effb2; font-weight:600; }
+
+.reward-card { padding:12px; border-radius:12px; margin:8px 0; }
+.reward-card.win { background:linear-gradient(180deg,rgba(255,215,0,0.18),rgba(255,138,61,0.08)); border:2px solid #ffd700; }
+.reward-card.ok  { background:rgba(126,255,178,0.1); border:1px solid #7effb2; }
+.reward-card h3 { margin:0 0 6px; }
+.reward-card.win h3 { color:#ffd700; } .reward-card.ok h3 { color:#7effb2; }
+
+@media(max-width:560px){ .flare-arena{ height:300px; } .ship-sprite{ font-size:22px; } }
+</style>
+</head>
+<body data-page="p09b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🔴 SCENE 5 · CHROMOSPHERE · B · EXPLORE · SOLAR FLARE RUN</span>
+  <h1>ลากยานฝ่า solar flare · ผ่าน 3 รอบ → รับรางวัล Echo Token</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">P2</span><span class="kpa-chip">K3</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + DODGE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "<b>ลากยาน</b> (กดเมาส์/นิ้วค้าง) จาก <b style="color:#7effb2;">START</b> ทางซ้าย
+      ไปถึง <b style="color:#ffd700;">FINISH 🏁</b> ทางขวา · ระวัง flare ที่ประทุจากผิวด้านล่าง ·
+      <b>ผ่านครบ 3 รอบ</b> → ปลด <b style="color:#ffd700;">ECHO TOKEN</b> · ถ้าไม่ครบ ยังผ่านด่านได้แต่ไม่มีรางวัล"
+    </span>
+  </div>
+
+  <div class="flare-info" style="padding:10px 14px; border-radius:10px; background:rgba(255,138,61,0.08); border:1px solid rgba(255,138,61,0.3); margin:8px 0; font-size:13px;">
+    📌 <b style="color:#ffcb6b;">วงกลมสีชมพูบนผิว</b> = telegraph · ภายใน 0.55 วิ flare จะพุ่งขึ้นจากตำแหน่งนั้น<br>
+    🚀 ลากยาน <b>หลีกออก</b> ก่อน plume ขึ้น · โดน = สั่นแดง + กลับ START · ทำใหม่ได้เรื่อยๆ
+  </div>
+
+  <div class="flare-arena" id="arena">
+    <div class="stars"></div>
+    <div class="sun-floor"></div>
+    <div class="start-line"></div>
+    <div class="finish-line"></div>
+    <div class="run-hud">
+      <span class="pass">✓ รอบ <b id="hudPass">0</b></span>
+      <span class="die">✗ ตาย <b id="hudDie">0</b></span>
+      <span class="dod" id="hudTimer">⏱️ <b>1:00</b></span>
+    </div>
+    <div class="ship-sprite" id="ship">🚀</div>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <button class="next-round-btn" id="nextRoundBtn" style="display:none;">✓ ไปต่อ →</button>
+    <div class="idle-overlay" id="idleOverlay"><div class="badge" id="idleBadge">▶ กดปุ่ม START ด้านล่าง · มีเวลา 1 นาที</div></div>
+  </div>
+
+  <div class="move-pad" id="movePad">
+    <button class="up"    data-d="up">↑</button>
+    <button class="left"  data-d="left">←</button>
+    <div class="center">HOLD<br>TO MOVE</div>
+    <button class="right" data-d="right">→</button>
+    <button class="down"  data-d="down">↓</button>
+  </div>
+
+  <div class="run-controls">
+    <button class="btn-start" id="startBtn">▶ START · 1 นาที</button>
+    <span style="color:#9aa3c0; font-size:11px; font-family:Orbitron,monospace;">tip: กดค้างที่ปุ่มทิศ = เคลื่อน · ปล่อย = หยุด · ผ่าน 3+ รอบใน 60 วิ → Echo Token</span>
+  </div>
+
+  <div class="obs-log">
+    <h3>📓 FLARE LOG · class + ETA → Earth</h3>
+    <div id="obsRows" style="font-size:12px;color:#9aa3c0;">— ยังไม่มี flare ที่หลบได้ —</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P09b (v3 · Solar Flare Run)</summary>
+    <div>
+      <b>กลไก:</b> ลากยานจากซ้าย → ขวา · หลบ flare ที่สุ่มประทุจากผิว · มี telegraph 0.55 วิ ก่อน plume ขึ้น<br>
+      <b>เกณฑ์รางวัล:</b> ผ่านสะสม 3 รอบ → Echo Token (ใช้ใน boss/p10)<br>
+      <b>ผ่านด่าน:</b> ผ่าน ≥ 1 รอบ → submit ได้ (ไม่มี Token แต่ unlock gate ถัดไป)<br>
+      <b>เนื้อหา:</b> ทุก flare ที่หลบได้บันทึก class (M/X/X10) + ETA = ~8 นาที (เพราะเป็นแสง · เดินทางด้วย c)<br>
+      <b>Pattern insight:</b> flare ใช้เวลาเท่ากันถึงโลกไม่ว่า class ไหน → flare = warning, CME = damage
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่านอย่างน้อย 1 รอบก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const arena       = document.getElementById('arena');
+const ship        = document.getElementById('ship');
+const flashOL     = document.getElementById('flashOverlay');
+const obsRows     = document.getElementById('obsRows');
+const startBtn    = document.getElementById('startBtn');
+const idleOL      = document.getElementById('idleOverlay');
+const idleBadge   = document.getElementById('idleBadge');
+const nextBtnEl   = document.getElementById('nextRoundBtn');
+const hudTimer    = document.getElementById('hudTimer');
+const SHIP_SIZE   = 32;
+const FLOOR_FRAC  = 0.14;          // floor occupies bottom 14%
+const FLARE_W     = 50;             // hitbox width
+const WARN_MS     = 550;
+const ERUPT_MS    = 1100;
+const SPAWN_MIN   = 600;
+const SPAWN_MAX   = 1300;
+const FINISH_PAD  = 18;             // px from right edge to count as finish
+const START_X     = 24;             // px from left
+const SHIP_RADIUS = 13;             // visual half-size for collision
+
+let pos    = { x: START_X, y: 180 };
+let flares = [];                    // {el, x, age, phase}
+let roundsPassed = 0, deaths = 0, dodgedTotal = 0;
+let observations = [];
+let nextSpawnIn = 900;
+let lastT = performance.now();
+let invuln = 0;                     // ms of invulnerability after hit/start
+let gameState = 'idle';             // 'idle' | 'playing' | 'cleared' | 'finished'
+let timerMs = 60000;                // 60-second countdown
+const SHIP_SPEED = 320;             // px / second
+const moveDir = { up:false, down:false, left:false, right:false };
+
+const FLARE_POOL = ['M2','M5','X1','X3','X10','M8','X5'];
+
+function rect(){ return arena.getBoundingClientRect(); }
+
+function placeShip(){
+  ship.style.transform = `translate(${pos.x - SHIP_SIZE/2}px, ${pos.y - SHIP_SIZE/2}px)`;
+}
+function resetShip(){
+  const r = rect();
+  pos.x = START_X; pos.y = r.height * 0.5;
+  placeShip();
+}
+function warpToStart(){
+  const r = rect();
+  pos.x = START_X; pos.y = r.height * 0.5;
+  ship.style.transition = 'filter .2s, opacity .15s';
+  ship.style.opacity = '0.3';
+  ship.style.filter = 'drop-shadow(0 0 14px #7effb2) brightness(1.5)';
+  placeShip();
+  setTimeout(() => { ship.style.opacity = '1'; ship.style.filter = 'drop-shadow(0 0 6px #fff)'; }, 200);
+}
+
+/* === Direction Pad (hold to move) === */
+const padBtns = document.querySelectorAll('#movePad button[data-d]');
+function setDir(d, on, btn){
+  moveDir[d] = on;
+  if(btn) btn.classList.toggle('held', on);
+}
+padBtns.forEach(btn => {
+  const d = btn.dataset.d;
+  const press = (e) => { e.preventDefault(); btn.setPointerCapture && btn.setPointerCapture(e.pointerId); setDir(d, true, btn); };
+  const release = (e) => { setDir(d, false, btn); };
+  btn.addEventListener('pointerdown',   press);
+  btn.addEventListener('pointerup',     release);
+  btn.addEventListener('pointercancel', release);
+  btn.addEventListener('pointerleave',  release);
+});
+// keyboard fallback (arrow keys + WASD)
+const KEY_MAP = { ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right',
+                  w:'up', s:'down', a:'left', d:'right', W:'up', S:'down', A:'left', D:'right' };
+window.addEventListener('keydown', (e) => { const d = KEY_MAP[e.key]; if(d){ e.preventDefault();
+  setDir(d, true, document.querySelector(`#movePad .${d}`)); } });
+window.addEventListener('keyup',   (e) => { const d = KEY_MAP[e.key]; if(d){
+  setDir(d, false, document.querySelector(`#movePad .${d}`)); } });
+// release all on blur (avoid stuck keys)
+window.addEventListener('blur', () => { padBtns.forEach(b => setDir(b.dataset.d, false, b)); });
+
+/* === flares === */
+function spawnFlare(){
+  const r = rect();
+  // avoid spawning at finish line
+  const minX = 60, maxX = r.width - 60;
+  const x = Math.random() * (maxX - minX) + minX;
+  const warn = document.createElement('div'); warn.className = 'flare-warn';
+  warn.style.left = x + 'px';
+  arena.appendChild(warn);
+  flares.push({ el:warn, x, age:0, phase:'warn', cls: FLARE_POOL[Math.floor(Math.random()*FLARE_POOL.length)] });
+}
+function promoteToErupt(f){
+  f.el.remove();
+  const e = document.createElement('div'); e.className = 'flare-erupt';
+  e.style.left = f.x + 'px';
+  arena.appendChild(e);
+  f.el = e; f.phase = 'erupt'; f.age = 0;
+}
+function clearAllFlares(){
+  flares.forEach(f => f.el.remove());
+  flares = [];
+}
+
+/* === collision (ship vs erupt plume) === */
+function isHit(f){
+  const r = rect();
+  const eruptTopFrac = 0.18;          // by 18% of ERUPT_MS plume reaches near top
+  const progress = Math.min(1, f.age / (ERUPT_MS * 0.18));
+  // plume rises from floor (h*0.86) up to 0.05 of arena height
+  const floorY = r.height * (1 - FLOOR_FRAC);
+  const topY   = floorY - (floorY - r.height*0.05) * progress;
+  // shrink hitbox in last 25% of erupt (plume fades)
+  const fading = f.age > ERUPT_MS * 0.75;
+  const hbW = fading ? FLARE_W * 0.6 : FLARE_W;
+  const hbL = f.x - hbW/2, hbR = f.x + hbW/2;
+  const sL = pos.x - SHIP_RADIUS, sR = pos.x + SHIP_RADIUS;
+  const sT = pos.y - SHIP_RADIUS, sB = pos.y + SHIP_RADIUS;
+  return sR > hbL && sL < hbR && sB > topY && sT < floorY;
+}
+
+/* === game events === */
+function onHit(){
+  if(invuln > 0 || gameState !== 'playing') return;
+  deaths++;
+  document.getElementById('hudDie').textContent = deaths;
+  ship.classList.add('hit');
+  flashOL.classList.add('on');
+  SFX&&SFX.play('hit');
+  setTimeout(() => { flashOL.classList.remove('on'); ship.classList.remove('hit'); }, 350);
+  clearAllFlares();
+  warpToStart();
+  invuln = 800;
+  nextSpawnIn = 900;
+}
+function showToast(html, color){
+  const t = document.createElement('div');
+  t.className = 'round-toast';
+  if(color){ t.style.borderColor = color; t.style.color = color; }
+  t.innerHTML = html;
+  arena.appendChild(t);
+  setTimeout(() => t.remove(), 1400);
+}
+function logFlare(cls){
+  observations.push({ cls, eta:'~8 นาที' });
+  obsRows.innerHTML = observations.slice(-12).map((o,i)=>`
+    <div class="obs-row">
+      <div class="num">${observations.length - Math.min(12, observations.length) + i + 1}</div>
+      <div>${o.cls}-class</div>
+      <div>ETA Earth = ${o.eta}</div>
+      <div class="res ok">✓ หลบ</div>
+    </div>`).join('');
+}
+function onRoundComplete(){
+  if(gameState !== 'playing') return;
+  roundsPassed++;
+  document.getElementById('hudPass').textContent = roundsPassed;
+  const cls = FLARE_POOL[Math.floor(Math.random()*FLARE_POOL.length)];
+  logFlare(cls);
+  showToast(`✓ รอบที่ ${roundsPassed} · กด "ไปต่อ"`, '#ffd700');
+  SFX&&SFX.play('correct');
+  clearAllFlares();
+  gameState = 'cleared';
+  nextBtnEl.style.display = 'block';
+  // release all held dirs to avoid drift while in cleared state
+  padBtns.forEach(b => setDir(b.dataset.d, false, b));
+  updateSubmit();
+}
+nextBtnEl.onclick = () => {
+  if(gameState !== 'cleared') return;
+  nextBtnEl.style.display = 'none';
+  warpToStart();
+  gameState = 'playing';
+  invuln = 600;
+  nextSpawnIn = 700;
+  SFX&&SFX.play('snap');
+};
+
+/* === main loop === */
+function fmtTimer(ms){
+  if(ms < 0) ms = 0;
+  const s = Math.ceil(ms/1000);
+  const mm = Math.floor(s/60), ss = s%60;
+  return `${mm}:${ss.toString().padStart(2,'0')}`;
+}
+function loop(t){
+  const dt = Math.min(50, t - lastT); lastT = t;
+  if(invuln > 0) invuln -= dt;
+  const r = rect();
+
+  // hold-to-move (active in playing/cleared so player can park; flares only update in playing)
+  if(gameState === 'playing' || gameState === 'cleared'){
+    const vx = ((moveDir.right?1:0) - (moveDir.left?1:0)) * SHIP_SPEED;
+    const vy = ((moveDir.down?1:0)  - (moveDir.up?1:0))   * SHIP_SPEED;
+    pos.x += vx * dt / 1000;
+    pos.y += vy * dt / 1000;
+    pos.x = Math.max(SHIP_RADIUS+2, Math.min(r.width  - SHIP_RADIUS - 2, pos.x));
+    pos.y = Math.max(SHIP_RADIUS+2, Math.min(r.height*(1-FLOOR_FRAC) - SHIP_RADIUS - 2, pos.y));
+    placeShip();
+  }
+
+  if(gameState === 'playing'){
+    // timer
+    timerMs -= dt;
+    hudTimer.innerHTML = `⏱️ <b>${fmtTimer(timerMs)}</b>`;
+    if(timerMs <= 10000) hudTimer.style.color = '#ff5c7a';
+    if(timerMs <= 0){ finalize(); return requestAnimationFrame(loop); }
+
+    // update flares
+    for(let i = flares.length - 1; i >= 0; i--){
+      const f = flares[i];
+      f.age += dt;
+      if(f.phase === 'warn' && f.age >= WARN_MS) promoteToErupt(f);
+      if(f.phase === 'erupt'){
+        if(invuln <= 0 && isHit(f)){ onHit(); return requestAnimationFrame(loop); }
+        if(f.age >= ERUPT_MS){
+          dodgedTotal++;
+          f.el.remove(); flares.splice(i,1);
+        }
+      }
+    }
+    nextSpawnIn -= dt;
+    if(nextSpawnIn <= 0){
+      spawnFlare();
+      const ramp = Math.max(0.4, 1 - roundsPassed * 0.10);
+      nextSpawnIn = SPAWN_MIN + Math.random()*(SPAWN_MAX - SPAWN_MIN) * ramp;
+    }
+    if(pos.x >= r.width - FINISH_PAD - SHIP_RADIUS && invuln <= 0){
+      onRoundComplete();
+    }
+  }
+  requestAnimationFrame(loop);
+}
+
+/* === state helpers === */
+function showIdle(html, isDead){
+  idleOL.classList.remove('hide','dead');
+  if(isDead) idleOL.classList.add('dead');
+  idleBadge.innerHTML = html;
+}
+function hideIdle(){ idleOL.classList.add('hide'); }
+function setStartButton(label, isRestart){
+  startBtn.style.display = '';
+  startBtn.textContent = label;
+  startBtn.classList.toggle('restart', !!isRestart);
+}
+function hideStartButton(){ startBtn.style.display = 'none'; }
+
+function beginPlay(){
+  // full reset on each START
+  clearAllFlares();
+  nextBtnEl.style.display = 'none';
+  roundsPassed = 0; deaths = 0; dodgedTotal = 0; observations = [];
+  document.getElementById('hudPass').textContent = '0';
+  document.getElementById('hudDie').textContent  = '0';
+  obsRows.innerHTML = '— ยังไม่มี flare ที่หลบได้ —';
+  document.getElementById('phase2Result').innerHTML = '';
+  timerMs = 60000;
+  hudTimer.style.color = '';
+  hudTimer.innerHTML = '⏱️ <b>1:00</b>';
+  resetShip();
+  gameState = 'playing';
+  invuln = 600;
+  nextSpawnIn = 1200;
+  hideIdle();
+  hideStartButton();
+  SFX&&SFX.play('snap');
+}
+startBtn.onclick = () => {
+  if(gameState === 'idle' || gameState === 'finished') beginPlay();
+};
+
+function finalize(){
+  gameState = 'finished';
+  clearAllFlares();
+  nextBtnEl.style.display = 'none';
+  padBtns.forEach(b => setDir(b.dataset.d, false, b));
+  hudTimer.innerHTML = '⏱️ <b>0:00</b>';
+  hudTimer.style.color = '#ff5c7a';
+
+  const win = roundsPassed >= 3;
+  if(win){
+    showIdle(`🏆 หมดเวลา · ${roundsPassed} รอบ · ECHO TOKEN ปลด!`, false);
+    idleBadge.style.borderColor = '#ffd700'; idleBadge.style.color = '#ffd700';
+    document.getElementById('phase2Result').innerHTML = `
+      <div class="reward-card win">
+        <h3>🏆 SOLAR FLARE RUN · ${roundsPassed} รอบใน 60 วินาที!</h3>
+        <div style="color:#ffd88a;font-size:13px;line-height:1.6;">
+          <b>Pattern insight:</b> ทุก flare ใช้เวลา <b style="color:#ffd700;">~8 นาที</b> ถึงโลก (เพราะเป็นแสง · เดินทางด้วย c)
+          ไม่ว่า class ไหนก็ตาม · นี่คือเหตุผลที่ <b>flare = warning · CME = damage</b><br>
+          🎁 รับ <b style="color:#ffd700;">⚡ ECHO TOKEN</b> · carry ไป gate ถัดไป (FLARE CHRONOMETER)
+        </div>
+      </div>`;
+    SFX&&SFX.play('charge');
+  } else {
+    showIdle(`⏰ หมดเวลา · ผ่าน ${roundsPassed} รอบ · ${roundsPassed >= 1 ? 'ผ่าน gate ได้' : 'ยังไม่ได้รางวัล'}`, false);
+    idleBadge.style.borderColor = '#7effb2'; idleBadge.style.color = '#7effb2';
+    document.getElementById('phase2Result').innerHTML = `
+      <div class="reward-card ok">
+        <h3>✓ หมดเวลา · ${roundsPassed} รอบ ${roundsPassed >= 1 ? '· ผ่านด่าน' : '· ลองใหม่'}</h3>
+        <div style="color:#d4b8ff;font-size:13px;line-height:1.6;">
+          <b>Pattern insight:</b> ทุก flare ใช้เวลา <b style="color:#ffcb6b;">~8 นาที</b> ถึงโลก (เพราะเป็นแสง) · ไม่ว่า class ไหนก็ตาม ·
+          flare = warning · CME = damage<br>
+          ⚠️ ไม่ถึง 3 รอบ · <u>ไม่ได้ Echo Token</u> · ${roundsPassed >= 1 ? 'แต่ผ่าน gate ถัดไปได้' : 'กด START ลองใหม่'}
+        </div>
+      </div>`;
+  }
+  setStartButton('▶ เริ่มใหม่', true);
+  updateSubmit();
+}
+function partialFinish(){ /* legacy hook · timer-based finalize ใช้แทน */ }
+
+/* === HUD updates / submit === */
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gameState === 'finished' && roundsPassed >= 1){
+    sb.disabled = false;
+    sb.textContent = roundsPassed >= 3 ? '📤 ส่งผล + Token · ไป MASTERY GATE' : '📤 ส่งผล (ไม่มี Token) · ไป MASTERY GATE';
+  } else if(roundsPassed >= 1 && gameState !== 'finished'){
+    sb.disabled = true;
+    sb.textContent = '🔒 รอหมดเวลา · แล้วค่อยส่งผล';
+  }
+}
+/* === init === */
+window.addEventListener('load', () => {
+  resetShip();
+  showIdle('▶ กดปุ่ม <b>START</b> · มีเวลา <b>1 นาที</b> · ผ่าน 3+ รอบ → Echo Token', false);
+  setStartButton('▶ START · 1 นาที', false);
+  requestAnimationFrame(t => { lastT = t; loop(t); });
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p09b', nextHref:'p09c-flare-gate.html',
+    getPayload(){
+      return {
+        roundsPassed, deaths, dodgedTotal, observations,
+        echoToken: roundsPassed >= 3,
+      };
+    },
+    validate(p){
+      if(gameState !== 'finished'){ alert('รอเวลา 1 นาทีหมดก่อน'); return false; }
+      if(p.roundsPassed < 1){ alert('ต้องผ่านอย่างน้อย 1 รอบ · กด ▶ เริ่มใหม่'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.roundsPassed >= 3 && p.deaths <= 2; },
+  });
+}, 200);
+</script>
+</body></html>

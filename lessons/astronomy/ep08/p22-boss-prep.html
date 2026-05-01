@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p22 · Forge GENESIS LANCE</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .lance-svg { background:#050108; border-radius:14px; padding:14px; margin:14px 0;
+    border:1px solid var(--genesis-gold); box-shadow:0 0 30px rgba(255,216,74,.2); }
+  .lance-status { font-size:18px; text-align:center; padding:10px;
+    background:var(--bg-card); border:1px solid var(--genesis-gold); border-radius:10px; margin:10px 0; }
+  .lance-status b { color:var(--genesis-gold); font-size:30px; }
+  .keys-vis { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:6px; margin:10px 0; }
+  .keys-vis .k { background:var(--bg-card); border:1px solid var(--line); border-radius:8px;
+    padding:8px; text-align:center; font-size:12px; }
+  .keys-vis .k.owned { border-color:var(--genesis-gold); background:linear-gradient(180deg,#3a2a08,#1a0e00); }
+  .briefing { background:var(--bg-card); border:1px solid var(--line); border-radius:12px;
+    padding:14px; margin:14px 0; }
+  .briefing ul { padding-left:22px; }
+  .briefing li { margin:4px 0; }
+</style>
+</head>
+<body data-page="p22">
+<div class="page">
+  <div class="act-badge">ACT D · 2/7 · BOSS PREP</div>
+  <h1>⚡ Forge GENESIS LANCE</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div class="lance-svg">
+    <svg viewBox="0 0 600 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+      <defs>
+        <linearGradient id="lanceGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#fff5e3"/>
+          <stop offset="50%" stop-color="#ffd84a"/>
+          <stop offset="100%" stop-color="#ff8a3d"/>
+        </linearGradient>
+      </defs>
+      <rect width="600" height="160" fill="#050108"/>
+      <g>
+        <line x1="80" y1="80" x2="500" y2="80" stroke="url(#lanceGrad)" stroke-width="6"/>
+        <polygon points="500,60 540,80 500,100" fill="url(#lanceGrad)"/>
+        <circle cx="80" cy="80" r="14" fill="#ffd84a" opacity=".8"/>
+        <circle cx="80" cy="80" r="22" fill="none" stroke="#ffd84a" opacity=".4" stroke-width="2"/>
+      </g>
+      <text x="300" y="40" fill="#ffd84a" font-size="14" text-anchor="middle" font-family="sans-serif">⚡ GENESIS LANCE</text>
+      <text x="300" y="140" fill="#ff6ab8" font-size="11" text-anchor="middle" font-family="sans-serif">forged from S1 keyring</text>
+    </svg>
+  </div>
+
+  <div class="lance-status" id="lanceStatus"></div>
+
+  <h3>🗝️ Keys ที่ได้</h3>
+  <div class="keys-vis" id="keysVis"></div>
+
+  <div class="briefing">
+    <h3 style="margin-top:0;">⚔️ BOSS BRIEFING · GENESIS FORGE</h3>
+    <ul>
+      <li><b>4 phase</b> · INFLATION · NUCLEOSYNTH · CMB · GALAXIES</li>
+      <li><b>HP เริ่ม 12</b> · ใช้ key ผิด type = -1 · enemy หลุด = -1</li>
+      <li><b>ไม่มี timer</b> · clear enemies ครบจำนวนต่อ phase</li>
+      <li><b>finisher GENESIS LANCE</b> ปลดเมื่อ keys ≥ 12/17</li>
+      <li><b>5 endings</b>: A+ ARCHITECT (HP เต็ม + 17 keys + Preserve) / A / B / C / 🌟 RESET</li>
+    </ul>
+  </div>
+
+  <div class="howto">
+    <h4>🎮 CONTROLS</h4>
+    <ul>
+      <li>🖱️ <b>ลาก key</b> จาก inventory ↓ ลงเป้าหมายบน canvas</li>
+      <li>📱 <b>แตะ key</b> เลือก → แตะเป้าหมายเพื่อยิง</li>
+      <li>✨ <b>category ตรง</b> = ทำลายเป้า · <b>category ผิด</b> = -1 HP</li>
+    </ul>
+  </div>
+
+  <button class="btn" id="goBoss" style="font-size:18px;padding:14px 28px;">🔥 เข้าสู่ BOSS · GENESIS FORGE</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p22' });
+  EP08Page.story('p22');
+  EP08Page.markVisit('p22');
+
+  const cnt = S1Keyring.count();
+  const finisher = cnt.owned >= 12;
+  document.getElementById('lanceStatus').innerHTML =
+    `keys: <b>${cnt.owned}</b>/17 · ` +
+    (finisher ? '<span style="color:var(--good);">⚡ FINISHER UNLOCKED</span>'
+              : '<span style="color:var(--bad);">⚠ ต้อง ≥ 12 → ending cap ที่ B</span>');
+
+  const vis = document.getElementById('keysVis');
+  S1Keyring.all().forEach(k => {
+    const el = document.createElement('div');
+    el.className = 'k' + (k.owned ? ' owned' : '');
+    el.innerHTML = `<div style="font-size:22px;">${k.icon}</div><div>${k.name}</div>`;
+    if (!k.owned) el.style.opacity = '0.35';
+    vis.appendChild(el);
+  });
+
+  document.getElementById('goBoss').onclick = () => {
+    location.href = 'p23-boss.html';
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · BRIDGE 5 · GIANTS → KUIPER</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p10-bridge" data-type="story">
+<div class="page">
+  <span class="lbl story">🛰️ BRIDGE 5/5 · GIANTS → KUIPER</span>
+  <h1>เข้าขอบนอกของระบบ · Kuiper Belt</h1>
+
+  <div class="card green"><h4 style="color:#7effb2;font-family:Orbitron,monospace;font-size:11px;">✓ ผ่าน GIANTS</h4>
+    <div class="narr"><b style="color:#ffcb6b;">เคน:</b> "5 SHARDS · M2 ทำลาย · ดาวยักษ์ทุกดวงมีแก่นแข็ง"</div></div>
+  <div class="card cyan"><h4 style="color:#64d8ff;font-family:Orbitron,monospace;font-size:11px;">⏳ ต่อไป · KUIPER</h4>
+    <div class="narr" style="color:#cfeaff;"><b style="color:#64d8ff;">อารยา:</b> "ผ่านเนปจูน 30 AU · เข้า <b style="color:#b980ff;">Kuiper Belt</b> · บ้านของพลูโต ·
+      ที่นี่ <b style="color:#ff5c7a;">ดาวหาง 7 ดวง</b>เริ่มต้นวงโคจรใหม่ · มาดูว่าเกิดอะไรขึ้น"</div></div>
+
+  <div class="recall-card">
+    <div class="recall-tag">🔁 RECALL</div>
+    <div class="recall-q">ดาวยักษ์ในระบบสุริยะคือ?</div>
+    <div class="recall-choices">
+      <button class="rc-btn" data-i="0">A. แก๊สล้วนถึงแกน</button>
+      <button class="rc-btn" data-i="1">B. มีแก่นแข็ง · ห่อด้วย H/He (gas) หรือ น้ำแข็ง (ice)</button>
+      <button class="rc-btn" data-i="2">C. หินล้วน</button>
+    </div>
+    <div class="recall-fb" id="recallFb"></div>
+  </div>
+  <script>
+  (function(){
+    const correct=1, pageId='p10-bridge';
+    const fb=document.getElementById('recallFb'); let answered=false;
+    document.querySelectorAll('.rc-btn').forEach(b => b.onclick = () => {
+      if(answered) return;
+      if(+b.dataset.i===correct){
+        answered=true; b.classList.add('correct');
+        fb.className='recall-fb show ok';
+        const key='cosmosLog_ep06_recall_'+pageId;
+        const ft=!localStorage.getItem(key);
+        if(ft && window.Coin && Coin.add){ Coin.add(5,'recall:'+pageId); localStorage.setItem(key,'1'); }
+        fb.innerHTML='✓ ใช่!'+(ft?' · <b>+5 🪙</b>':'');
+        document.querySelectorAll('.rc-btn').forEach(x=>x.disabled=true);
+      } else { b.classList.add('wrong'); fb.className='recall-fb show bad'; fb.innerHTML='✗ ลองใหม่'; setTimeout(()=>b.classList.remove('wrong'),400); }
+    });
+  })();
+  </script>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'RECALL · กลุ่มสรุปสั้น ๆ : สิ่งที่เพิ่งเรียน + 1 misconception ที่ทำลายไป',
+    durationSec: 30,
+    chips: [
+      'เนื้อหาเข้าใจชัดเจน',
+      'ทำลาย misconception แล้ว',
+      'ยังมีจุดสับสน · ขอครูช่วย',
+      'พร้อมไปขั้นต่อไป',
+      'อยากทบทวนอีกรอบ'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ พลูโต close-up</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p10a-kuiper-engage.html');if(window.PaceClient)Gate.wireButton('p10-bridge',btn,'p10a-kuiper-engage.html');},200);
+</script>
+</body></html>

@@ -2,11 +2,112 @@
 /* PHOTON ⚡️ = currency ใหม่ · สะสมจาก puzzle · ใช้ใน warp/beacon/cloak   */
 
 (function(global){
+  // === Photon storage · ใช้ localStorage เป็นหลัก · sync เป็นเสริม (ถ้ามี room) ===
+  const PHOTON_KEY = 'cosmosLog_photon';
+  const PHOTON_INIT_KEY = 'cosmosLog_photon_initialized';
+  function localGet() {
+    try {
+      // first-time init: ใช้ start value จาก EP_CONFIG.photon.start
+      if (!localStorage.getItem(PHOTON_INIT_KEY)) {
+        const start = (global.EP_CONFIG && global.EP_CONFIG.photon && global.EP_CONFIG.photon.start) || 0;
+        localStorage.setItem(PHOTON_KEY, String(start));
+        localStorage.setItem(PHOTON_INIT_KEY, '1');
+        return start;
+      }
+      return parseInt(localStorage.getItem(PHOTON_KEY)) || 0;
+    } catch { return 0; }
+  }
+  function localSet(v) { try { localStorage.setItem(PHOTON_KEY, String(Math.max(0, v|0))); localStorage.setItem(PHOTON_INIT_KEY, '1'); } catch {} }
+
+  /* ========== Floating +N gain effect (สำหรับ Coin & Photon) ========== */
+  function ensureGainStyle(){
+    if (document.getElementById('gainFxStyle')) return;
+    const s = document.createElement('style'); s.id = 'gainFxStyle';
+    s.textContent = `
+      @keyframes gainFloat {
+        0%   { transform:translate(-50%, 0)    scale(0.6); opacity:0; }
+        18%  { transform:translate(-50%, -10px) scale(1.25); opacity:1; }
+        70%  { transform:translate(-50%, -55px) scale(1.0);  opacity:1; }
+        100% { transform:translate(-50%, -90px) scale(0.85); opacity:0; }
+      }
+      @keyframes pillBump { 0%,100%{transform:scale(1);} 50%{transform:scale(1.18);} }
+      @keyframes pillBumpDown { 0%,100%{transform:scale(1);} 50%{transform:scale(0.86);} }
+      .gain-fx {
+        position:fixed; z-index:80; pointer-events:none;
+        font-family:Orbitron,monospace; font-weight:900; font-size:18px;
+        letter-spacing:.06em; text-shadow:0 0 12px currentColor, 0 0 4px #000;
+        animation:gainFloat 1.4s cubic-bezier(.2,.7,.3,1) forwards;
+        white-space:nowrap;
+      }
+      .gain-fx.coin   { color:#ffcb6b; }
+      .gain-fx.photon { color:#7effb2; }
+      .gain-fx.loss   { color:#ff5c7a; }
+      .pill-bump      { animation:pillBump .45s ease-out; }
+      .pill-bump-down { animation:pillBumpDown .45s ease-out; }
+    `;
+    document.head.appendChild(s);
+  }
+  function popGain(amount, type) {
+    if (!amount) return;
+    ensureGainStyle();
+    const pillId = (type === 'coin') ? 'coinPill' : 'photonPill';
+    const pill = document.getElementById(pillId);
+    let x, y;
+    if (pill) {
+      const r = pill.getBoundingClientRect();
+      x = r.left + r.width/2;
+      y = r.bottom + 6;
+      pill.classList.remove('pill-bump','pill-bump-down');
+      void pill.offsetWidth;
+      pill.classList.add(amount > 0 ? 'pill-bump' : 'pill-bump-down');
+    } else {
+      x = window.innerWidth - 70;
+      y = 30;
+    }
+    const el = document.createElement('div');
+    const sign = amount > 0 ? '+' : '';
+    const icon = type === 'coin' ? '🪙' : '⚡';
+    el.className = 'gain-fx ' + (amount < 0 ? 'loss' : type);
+    el.style.left = x + 'px';
+    el.style.top  = y + 'px';
+    el.textContent = `${sign}${amount} ${icon}`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1500);
+  }
+
   const Photon = {
-    // === core ===
-    get() { const s = global.Sync && global.Sync.getState(); return (s && s.photon) || 0; },
-    add(n, reason) { global.Sync && global.Sync.addPhoton(n, reason); },
-    spend(n, target) { return global.Sync ? global.Sync.spendPhoton(n, target) : false; },
+    // === core · localStorage-first (sync ถ้ามี room) ===
+    get() {
+      // ถ้ามี Sync state (room mode) ใช้ค่าจาก state · ไม่งั้น fallback localStorage
+      const s = global.Sync && global.Sync.getState && global.Sync.getState();
+      if (s && typeof s.photon === 'number') return s.photon;
+      return localGet();
+    },
+    add(n, reason) {
+      const cur = this.get();
+      const next = Math.max(0, cur + (n|0));
+      localSet(next);
+      // sync ถ้ามี room (เผื่อ multiplayer)
+      if (global.Sync && global.Sync.addPhoton && global.Sync.getState && global.Sync.getState()) {
+        try { global.Sync.addPhoton(n, reason); } catch {}
+      }
+      this.renderPill();
+      if (n) popGain(n|0, 'photon');
+      // log
+      global.Sync && global.Sync.recordDecision && global.Sync.recordDecision({ tag:'⚡ photon', note:(n>=0?'+':'')+n+' '+(reason||'')+' → '+next });
+      return next;
+    },
+    spend(n, target) {
+      const cur = this.get();
+      if (cur < n) return false;
+      const next = cur - n;
+      localSet(next);
+      if (global.Sync && global.Sync.spendPhoton && global.Sync.getState && global.Sync.getState()) {
+        try { global.Sync.spendPhoton(n, target); } catch {}
+      }
+      this.renderPill();
+      return true;
+    },
     canAfford(n) { return this.get() >= n; },
 
     // === award from puzzle ===
@@ -121,6 +222,7 @@
       try { localStorage.setItem(KEY_COIN, String(v)); } catch {}
       global.Sync && global.Sync.recordDecision && global.Sync.recordDecision({ tag:'🪙 coin', note:(n>0?'+':'')+n+' '+reason+' → '+v });
       this.renderPill();
+      if (n) popGain(n|0, 'coin');
       return v;
     },
     spend(n, reason) {
@@ -132,8 +234,9 @@
       const cfg = global.EP_CONFIG && global.EP_CONFIG.coin && global.EP_CONFIG.coin.perfectBonus;
       const amt = cfg && cfg[pageId];
       if (!amt) return 0;
-      // prevent double-grant
-      const key = 'cosmosLog_ep03_coinGranted_' + pageId;
+      // prevent double-grant · key เปลี่ยนตาม EP id (ก่อนหน้านี้ hardcode ep03 → bug ข้าม episode)
+      const epId = (global.EP_CONFIG && global.EP_CONFIG.id) || 'ep03';
+      const key = 'cosmosLog_' + epId + '_coinGranted_' + pageId;
       if (localStorage.getItem(key)) return 0;
       localStorage.setItem(key, '1');
       this.add(amt, 'perfect@'+pageId);

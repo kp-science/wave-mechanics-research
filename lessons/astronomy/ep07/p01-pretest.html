@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p01 · Pretest</title>
+<link rel="stylesheet" href="_page-style.css" />
+</head>
+<body data-page="p01">
+<div class="page">
+  <div class="act-badge">ACT A · 2/4 · PRETEST</div>
+  <h1>ตรวจสอบความรู้เริ่มต้น</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ทีมต้องตรวจคุณวุฒินักบินก่อนบิน</div>
+    <div class="crisis-body">ระบบเรือแสดงผล: <b>"นักบินใหม่ตรวจไม่ผ่าน · ห้ามขึ้นเรือ"</b> · ตอบ 8 ข้อนี้เพื่อปลดล็อกระบบ</div>
+  </div>
+
+  <p>📋 8 ข้อ · มี misconception M1-M7 ตามตำรา · ตอบเดาก็ได้ · ระบบจะใช้เป็น <em>baseline</em> เพื่อเปรียบเทียบกับ posttest</p>
+
+  <div style="text-align:center;margin:18px 0;">
+    <button class="btn" id="startPretest">▶ เริ่มทำ Pretest</button>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none;">
+    <div class="card-title">✓ ผลก่อนเรียน</div>
+    <div id="preResult"></div>
+    <div style="text-align:center;margin-top:14px;">
+      <a href="p02-problem.html" class="btn alt">ไปต่อ → p02 ดาวเทียมดับ</a>
+    </div>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p01' });
+    document.getElementById('startPretest').onclick = () => {
+      RI.pretest(EP_CONFIG.pretest, (res) => {
+        document.getElementById('resultCard').style.display = 'block';
+        document.getElementById('preResult').innerHTML =
+          '<p>คะแนนก่อนเรียน: <b>' + res.score + '/' + res.total + '</b></p>' +
+          '<p style="color:var(--text-mute);font-size:13px;">ระบบจะเปรียบเทียบกับ posttest หลังจบบทเพื่อวัด gain score</p>';
+        KPA.log('K1', 'pretest-complete', { score:res.score, total:res.total, correct: res.score === res.total });
+        KPA.vpa(2, { kind:'pretest', score:res.score, total:res.total });
+      });
+    };
+  });
+</script>
+</body>
+</html>

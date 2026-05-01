@@ -1,0 +1,1202 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P24 · VOID ZERO-FIX (Grid Boss)</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  /* ---- HUD ---- */
+  .boss-status { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px;
+    padding:10px; border-radius:12px; background:rgba(20,8,16,0.85);
+    border:1px solid #ff5c7a; margin:8px 0; }
+  .status-cell { padding:8px; border-radius:8px; background:rgba(0,0,0,.4); text-align:center;
+    font-family:Orbitron,monospace; }
+  .status-cell b { display:block; font-size:9px; color:#9aa3c0; letter-spacing:.14em; margin-bottom:4px; }
+  .status-cell span { font-size:14px; font-weight:700; }
+  .status-cell.kepler span { color:#7effb2; font-family:monospace; letter-spacing:0; }
+  .status-cell.energy span { color:#7effb2; }
+  .status-cell.status span { color:#ffcb6b; font-size:11px; letter-spacing:.16em; }
+
+  /* ---- Board wrap ---- */
+  .board-wrap { display:flex; justify-content:center; padding:10px 4px;
+    background:radial-gradient(ellipse at center, rgba(58,10,74,0.4), rgba(2,3,10,0.7));
+    border-radius:14px; border:1px solid rgba(185,128,255,0.3);
+    margin:8px 0; overflow:auto; }
+
+  /* ---- Action panel ---- */
+  .action-panel { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0; }
+  .action-panel .big-btn { padding:14px 8px; font-size:13px; font-family:Orbitron,monospace;
+    border-radius:10px; border:none; cursor:pointer; letter-spacing:.06em; font-weight:700;
+    transition: transform .15s, box-shadow .15s; }
+  .action-panel .big-btn.primary { background:linear-gradient(180deg, #7effb2, #2bb572); color:#02100a; }
+  .action-panel .big-btn.ghost { background:rgba(100,216,255,0.15); color:#64d8ff;
+    border:1px solid #64d8ff; }
+  .action-panel .big-btn.warn { background:rgba(255,92,122,0.18); color:#ff5c7a;
+    border:1px solid #ff5c7a; }
+  .action-panel .big-btn:disabled { opacity:.4; cursor:not-allowed; }
+  .action-panel .big-btn:not(:disabled):hover { transform:translateY(-1px); }
+
+  /* ---- Legend ---- */
+  .legend { display:grid; grid-template-columns:repeat(4, 1fr); gap:6px;
+    padding:10px; border-radius:10px; background:rgba(10,14,30,0.7);
+    border:1px solid rgba(100,216,255,0.18); margin:8px 0; font-size:11px; }
+  .legend > div { padding:4px; }
+  .legend .lg-icon { display:inline-block; width:16px; height:16px; border-radius:3px;
+    vertical-align:middle; margin-right:4px; }
+
+  /* ---- Modal ---- */
+  .modal { position:fixed; inset:0; z-index:520; display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.75); backdrop-filter:blur(6px); animation:modalFade .25s; padding:16px; }
+  .modal.hidden { display:none; }
+  @keyframes modalFade { from{opacity:0;} to{opacity:1;} }
+  .modal-content { background:rgba(10,14,30,0.96); border:2px solid #64d8ff;
+    border-radius:14px; padding:22px; max-width:560px; width:100%; max-height:85vh; overflow:auto;
+    box-shadow:0 0 50px rgba(100,216,255,0.4); }
+  .modal-content.trap { border-color:#ff5c7a; box-shadow:0 0 50px rgba(255,92,122,0.4); }
+  .modal-content.bonus { border-color:#ffd700; box-shadow:0 0 50px rgba(255,215,0,0.4); }
+  .modal-content.know { border-color:#64d8ff; }
+  .modal-content.lock { border-color:#b980ff; }
+
+  .q-header { font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0;
+    letter-spacing:.18em; margin-bottom:8px; }
+  .q-content h2 { margin:8px 0 14px; font-size:18px; color:#fff; line-height:1.5; }
+  .q-choices { display:flex; flex-direction:column; gap:8px; }
+  .q-choices button { text-align:left; padding:12px 16px; font-size:14px;
+    background:rgba(100,216,255,0.08); color:#d4f0ff; border:1px solid rgba(100,216,255,0.3);
+    border-radius:8px; cursor:pointer; transition:all .15s; }
+  .q-choices button:hover { background:rgba(100,216,255,0.18); border-color:#64d8ff; }
+  .q-choices button.correct { background:rgba(126,255,178,0.25); border-color:#7effb2; color:#7effb2; }
+  .q-choices button.wrong   { background:rgba(255,92,122,0.18); border-color:#ff5c7a; color:#ff5c7a; }
+  #qFeedback { margin-top:12px; padding:10px; border-radius:8px; font-size:13px; line-height:1.6; }
+
+  .claim { padding:14px 16px; margin:12px 0; border-radius:10px;
+    background:rgba(255,92,122,0.15); border-left:3px solid #ff5c7a;
+    font-size:14px; line-height:1.6; color:#ffd1d8; font-style:italic; }
+  .refute-options button { width:100%; text-align:left; padding:11px 14px; margin:5px 0;
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.18);
+    border-radius:8px; color:#d4f0ff; cursor:pointer; font-size:13px; }
+  .refute-options button:hover { background:rgba(126,255,178,0.1); border-color:#7effb2; }
+
+  /* === BOMB EXPLOSION === */
+  .bomb-overlay {
+    position: fixed; inset: 0; pointer-events: none; z-index: 5500;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bomb-flash {
+    position: absolute; inset: 0; background: radial-gradient(circle at center,
+      #fff 0%, #ffcb6b 8%, #ff8a3d 18%, #ff5c7a 32%, transparent 60%);
+    animation: bombFlash 0.8s ease-out forwards;
+  }
+  .bomb-shock {
+    position: absolute; width: 80px; height: 80px; border-radius: 50%;
+    border: 6px solid #ffcb6b; box-shadow: 0 0 40px #ff8a3d;
+    animation: bombShock 0.9s ease-out forwards;
+  }
+  .bomb-emoji {
+    position: absolute; font-size: 96px;
+    animation: bombShake 0.7s ease-out forwards;
+    filter: drop-shadow(0 0 24px #ff5c7a);
+  }
+  .bomb-text {
+    position: absolute; bottom: 30%;
+    font-family: Orbitron, monospace; font-size: 32px; font-weight: 800;
+    color: #ff5c7a; letter-spacing: .2em;
+    text-shadow: 0 0 16px #ff5c7a, 0 4px 12px #000;
+    animation: bombText 1.4s ease-out forwards;
+  }
+  @keyframes bombFlash {
+    0%   { opacity: 0; }
+    20%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+  @keyframes bombShock {
+    0%   { transform: scale(0.2); opacity: 1; }
+    100% { transform: scale(8); opacity: 0; }
+  }
+  @keyframes bombShake {
+    0%   { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+    20%  { transform: scale(1.5) rotate(0); opacity: 1; }
+    40%  { transform: scale(1.2) rotate(8deg); }
+    60%  { transform: scale(1.3) rotate(-5deg); }
+    100% { transform: scale(1.0) rotate(0); opacity: 1; }
+  }
+  @keyframes bombText {
+    0%   { transform: translateY(20px) scale(0.5); opacity: 0; }
+    25%  { transform: translateY(0) scale(1.2); opacity: 1; }
+    50%  { transform: translateY(-4px) scale(1); opacity: 1; }
+    100% { transform: translateY(-30px) scale(0.9); opacity: 0; }
+  }
+  /* shake the whole board on trap */
+  @keyframes boardShake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+  }
+  .board-wrap.shake { animation: boardShake 0.5s ease-in-out; }
+
+  /* === Question timer === */
+  .q-timer-wrap { margin: 6px 0 14px; }
+  .q-timer-row { display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 10px; background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(100,216,255,0.3); }
+  .q-timer-icon { font-size: 16px; }
+  .q-timer-bar { flex: 1; height: 8px; border-radius: 4px;
+    background: rgba(255,255,255,0.08); overflow: hidden; }
+  .q-timer-fill { height: 100%;
+    background: linear-gradient(90deg, #7effb2, #ffcb6b 60%, #ff5c7a 90%);
+    width: 100%; transition: width 0.5s linear; }
+  .q-timer-num { font-family: Orbitron, monospace; font-size: 16px; font-weight: 700;
+    color: #7effb2; min-width: 36px; text-align: right; }
+  .q-timer-num.warn { color: #ffcb6b; }
+  .q-timer-num.urgent { color: #ff5c7a; animation: qBlink 0.4s infinite; }
+  @keyframes qBlink { 50% { opacity: 0.4; } }
+
+  /* === Knowledge close button gating === */
+  #knowClose { transition: all .3s; }
+  #knowClose.locked { background: #2a2030 !important; color: #6a6080 !important;
+    border-color: #3a3045 !important; cursor: not-allowed !important;
+    box-shadow: none !important; }
+  #knowClose .read-bar { display: inline-block; margin-left: 8px;
+    padding: 1px 8px; border-radius: 6px; background: rgba(100,216,255,0.18);
+    color: #64d8ff; font-size: 12px; font-family: Orbitron, monospace; }
+
+  .know-body { font-size:14px; line-height:1.7; color:#d4f0ff;
+    padding:14px; background:rgba(100,216,255,0.06); border-radius:8px;
+    border-left:3px solid #64d8ff; margin:10px 0; }
+
+  .modal-footer { margin-top:16px; text-align:center; }
+  .modal-footer button { padding:10px 24px; font-family:Orbitron,monospace; font-size:12px;
+    border:none; border-radius:8px; cursor:pointer; background:#7effb2; color:#02100a;
+    font-weight:700; letter-spacing:.08em; }
+
+  /* ---- Hint banner ---- */
+  .hint-banner { padding:12px 16px; margin:8px 0; border-radius:10px;
+    background:rgba(185,128,255,0.12); border:1px solid #b980ff;
+    font-size:13px; color:#e8d4ff; line-height:1.6; }
+  .hint-banner.phase2 { background:rgba(126,255,178,0.12); border-color:#7effb2; color:#d0ffe0; }
+
+  /* ---- Ending modal ---- */
+  .ending-art { font-size:80px; text-align:center; margin:8px 0; }
+  .ending-title { font-family:Orbitron,monospace; font-size:22px; letter-spacing:.16em;
+    text-align:center; margin:8px 0; color:#fff; }
+  .achievement-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin:14px 0; }
+  .achievement-chip { padding:8px 12px; border-radius:8px;
+    background:rgba(255,215,0,0.15); border:1px solid #ffd700;
+    color:#ffd700; font-size:11px; font-family:Orbitron,monospace; letter-spacing:.08em; }
+  .stat-row { display:flex; justify-content:space-between; padding:6px 0;
+    border-bottom:1px dashed rgba(255,255,255,0.12); font-size:13px; }
+  .stat-row b { color:#7effb2; }
+
+  /* ---- intro pause card mount ---- */
+  #introPause { margin:10px 0; }
+  #introPause:empty { display:none; }
+</style>
+</head>
+<body data-page="p24" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔥 BOSS · VOID ZERO-FIX</span>
+  <h1 style="color:#b980ff;">VOID ZERO-FIX · ปกป้อง Genesis Vault</h1>
+  <div class="muted">solo · 15×15 grid · 2 phase · ตอบคำถาม → ทอยลูกเต๋า → เดิน</div>
+
+  <!-- HUD -->
+  <div class="boss-status">
+    <div class="status-cell kepler"><b>📡 KEPLER ANALYZER</b><span id="dataBar">▓░░░░░░░░░ 0/10</span></div>
+    <div class="status-cell energy"><b>⚡ ENERGY</b><span id="energyVal">15</span>/<span id="energyMax">15</span></div>
+    <div class="status-cell status"><b>🎯 STATUS</b><span id="statusVal">SEARCHING</span></div>
+  </div>
+
+  <!-- F4 · GS-as-potion inventory -->
+  <div id="gsInvPanel" class="gs-inv-panel" style="display:none;">
+    <span class="gs-inv-label">💊 POTIONS</span>
+    <span id="gsInvList"></span>
+  </div>
+
+  <!-- F2 · Mini-map -->
+  <div class="mini-map-wrap" id="miniMap" title="คลิก = เลื่อนกระดานไปจุดที่คลิก">
+    <span class="mini-label">MAP</span>
+    <div class="mini-map-grid" id="miniMapGrid"></div>
+  </div>
+
+  <!-- INTRO PAUSE CARD -->
+  <div id="introPause"></div>
+
+  <!-- HINT BANNER -->
+  <div id="hintBanner" class="hint-banner" style="display:none;"></div>
+
+  <!-- BOARD -->
+  <div class="board-wrap" id="boardWrap"></div>
+
+  <!-- ACTION -->
+  <div class="action-panel">
+    <button id="btnAnswer" class="big-btn primary">🎲 ตอบคำถาม · ทอยเต๋า</button>
+    <button id="btnHint" class="big-btn ghost">🔮 ขอ HINT</button>
+    <button id="btnExit" class="big-btn warn" disabled>🚪 ถอน (-5⚡)</button>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div><span class="lg-icon" style="background:rgba(100,216,255,0.5);"></span>Knowledge 📘</div>
+    <div><span class="lg-icon" style="background:rgba(255,92,122,0.5);"></span>VOID Trap 🐍</div>
+    <div><span class="lg-icon" style="background:rgba(255,215,0,0.6);"></span>Bonus 🎁</div>
+    <div><span class="lg-icon" style="background:rgba(185,128,255,0.5);"></span>Lock 🔐</div>
+    <div><span class="lg-icon" style="background:rgba(126,255,178,0.6);"></span>🚀 ยาน / 🎯 เป้า</div>
+    <div style="grid-column:span 3;font-size:10px;color:#9aa3c0;">
+      4 zones: <b style="color:#64d8ff;">edge</b> · <b style="color:#b980ff;">outer</b> · <b style="color:#b87333;">belt</b> · <b style="color:#f4a460;">inner</b>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="qModal" class="modal hidden">
+    <div class="modal-content know q-content">
+      <div class="q-header">📡 ZONE: <span id="qZone"></span> · <span id="qTier"></span></div>
+      <!-- timer bar -->
+      <div class="q-timer-wrap" id="qTimerWrap">
+        <div class="q-timer-row">
+          <span class="q-timer-icon">⏱️</span>
+          <div class="q-timer-bar"><div class="q-timer-fill" id="qTimerFill"></div></div>
+          <span class="q-timer-num" id="qTimerNum">5</span>
+        </div>
+      </div>
+      <h2 id="qText"></h2>
+      <div class="q-choices" id="qChoices"></div>
+      <div id="qFeedback"></div>
+    </div>
+  </div>
+
+  <div id="trapModal" class="modal hidden">
+    <div class="modal-content trap">
+      <div class="q-header">🐍 VOID CLAIM · <span id="trapM"></span></div>
+      <h2>VOID อ้าง:</h2>
+      <div class="claim" id="claimText"></div>
+      <div style="font-size:12px;color:#9aa3c0;margin-bottom:8px;">เลือก "evidence" ที่หักล้างได้ถูกต้อง:</div>
+      <div class="refute-options" id="refuteOpts"></div>
+    </div>
+  </div>
+
+  <div id="knowModal" class="modal hidden">
+    <div class="modal-content know">
+      <div class="q-header">📘 KNOWLEDGE TILE · <span id="knowZone"></span></div>
+      <h2 id="knowTitle"></h2>
+      <div class="know-body" id="knowBody"></div>
+      <div class="modal-footer">
+        <button id="knowClose">เข้าใจแล้ว · เดินต่อ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="bonusModal" class="modal hidden">
+    <div class="modal-content bonus">
+      <div class="q-header">🎁 BONUS</div>
+      <div style="font-size:48px;text-align:center;margin:14px 0;" id="bonusIcon">🎁</div>
+      <h2 style="text-align:center;" id="bonusMsg"></h2>
+      <div class="modal-footer">
+        <button id="bonusClose">รับ · ไปต่อ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="lockModal" class="modal hidden">
+    <div class="modal-content lock q-content">
+      <div class="q-header">🔐 LOCK GATE · ตอบให้ถูกเพื่อปลด</div>
+      <h2 id="lockText"></h2>
+      <div class="q-choices" id="lockChoices"></div>
+    </div>
+  </div>
+
+  <div id="endingModal" class="modal hidden">
+    <div class="modal-content" id="endingContent" style="border-color:#ffd700;">
+      <div class="q-header" style="text-align:center;">✨ BOSS COMPLETE</div>
+      <div class="ending-art" id="endArt">🌟</div>
+      <div class="ending-title" id="endTitle">A · STAR PILOT</div>
+      <div id="endDesc" style="font-size:13px;line-height:1.7;color:#d4f0ff;text-align:center;margin:8px 0;"></div>
+      <div id="endStats"></div>
+      <div class="achievement-grid" id="endAch"></div>
+      <div class="modal-footer" style="display:flex; gap:8px; flex-wrap:wrap; justify-content:center;">
+        <button id="endingClose" style="flex:1 1 200px;">📝 ทำใจ · ไปสะท้อน</button>
+        <button id="endingReplay" style="flex:1 1 160px; display:none; background:#ff8a3d; color:#fff;">↻ เล่นบอสใหม่</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reflection mounts (revealed after ending) -->
+  <div id="cgMount" data-stage-after-submit></div>
+  <div id="ljMount" data-stage-after-submit></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P24</summary>
+    <div>15×15 grid · Phase 1 (Q1-10) ไม่มีเป้า · Phase 2 (Q11+) เห็นเป้า · Trap M1-M7 หักล้างเอง · ใช้ data points สะสมเพื่อ flip · Endings A+/A/B/C ตาม energy + knowledge + refute</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— auto-submit เมื่อจบ —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ต้องจบ boss ก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/void-grid.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+
+<script>
+/* ============================================================ */
+/* EP06 P24 · VOID ZERO-FIX · grid boss controller              */
+/* ============================================================ */
+const GBCFG = EP_CONFIG.gridBoss;
+const ZONE_LABEL = { inner:'INNER (terrestrial)', belt:'ASTEROID BELT + frost', outer:'OUTER GIANTS', edge:'KUIPER + OORT + edge' };
+const ZONE_COLOR = { inner:'#f4a460', belt:'#b87333', outer:'#b980ff', edge:'#64d8ff' };
+let ended = false;
+
+/* ---- F10 · Apply difficulty override (must run BEFORE bootBoard) ---- */
+const DIFF_KEY = 'cosmosLog_ep06_boss_difficulty';
+let CURRENT_DIFFICULTY = localStorage.getItem(DIFF_KEY) || 'normal';
+let QUESTION_TIMER_SEC = 5;
+(function applyDifficulty(){
+  const presets = (GBCFG.difficulty) || {};
+  const d = presets[CURRENT_DIFFICULTY] || presets.normal;
+  if (!d) return;
+  GBCFG.energy = Object.assign({}, GBCFG.energy, { start: d.energy });
+  GBCFG.zerofix = Object.assign({}, GBCFG.zerofix, { dataPointsRequired: d.dataPointsRequired });
+  QUESTION_TIMER_SEC = d.timer || 5;
+})();
+
+/* ---- mount intro PauseCard ---- */
+function mountIntro() {
+  const host = document.getElementById('introPause');
+  if (!window.PauseCard) return;
+  PauseCard.mount(host, {
+    pageId: 'p24',
+    indicator: 'A1',
+    minSeconds: 30,
+    question: 'ก่อนเริ่ม BOSS · อ่านโจทย์: VOID ZERO-FIX มี 2 phase · Phase 1 = "เก็บข้อมูล 10 จุด" (ยังไม่มีเป้า · VOID จะปล่อย hint หลอก) · Phase 2 = "เห็นเป้า + race" · เลือกอย่างน้อย 1 strategy ที่จะใช้:',
+    chips: [
+      'ไม่เชื่อ HINT ใน Phase 1',
+      'เปิด knowledge ให้มากที่สุด',
+      'หักล้าง trap ทุกครั้ง',
+      'รักษา ⚡ พลังให้สูง',
+      'หลีกเลี่ยง trap',
+      'เก็บ bonus ทุกชิ้น'
+    ],
+    groupCue: '🗣️ คุยกับเพื่อนในกลุ่ม 30 วินาที · จะเล่นแบบใด?',
+    onConfirm: (picked) => {
+      if (window.KPA) KPA.log('A2', 'boss-strategy', { value: picked });
+    }
+  });
+}
+
+/* ---- HUD update ---- */
+function updateHud() {
+  const st = VoidGrid.getState();
+  const dpReq = (GBCFG.zerofix && GBCFG.zerofix.dataPointsRequired) || 10;
+  const filled = Math.min(dpReq, st.questionsAnswered);
+  const barLen = dpReq;
+  const bar = '▓'.repeat(filled) + '░'.repeat(Math.max(0, barLen - filled));
+  document.getElementById('dataBar').textContent = bar + ' ' + filled + '/' + dpReq;
+  document.getElementById('energyVal').textContent = st.energy;
+  const eMax = document.getElementById('energyMax');
+  if (eMax) eMax.textContent = (GBCFG.energy && GBCFG.energy.start) || 15;
+  let status = 'SEARCHING';
+  if (st.flipped) status = 'GOAL LOCKED';
+  if (st.energy <= 0) status = 'ENERGY OUT';
+  if (ended) status = 'COMPLETE';
+  document.getElementById('statusVal').textContent = status;
+  // F2 minimap update + F4 inventory
+  renderMiniMap();
+  renderGsInv();
+  // F3 hint button cooldown UI
+  refreshHintBtn();
+}
+
+/* ---- F2 · Mini-map render ---- */
+function renderMiniMap(){
+  const data = (window.VoidGrid && VoidGrid.getMiniMapData) ? VoidGrid.getMiniMapData() : null;
+  if (!data) return;
+  const grid = document.getElementById('miniMapGrid');
+  if (!grid) return;
+  if (grid.dataset.n !== String(data.N)) {
+    grid.dataset.n = data.N;
+    grid.style.gridTemplateColumns = 'repeat(' + data.N + ', 1fr)';
+    grid.innerHTML = '';
+    for (let i = 0; i < data.N * data.N; i++) {
+      const d = document.createElement('div');
+      d.className = 'mm-dot';
+      d.dataset.i = i;
+      grid.appendChild(d);
+    }
+  }
+  const dots = grid.children;
+  data.tiles.forEach((t, i) => {
+    const dot = dots[i];
+    if (!dot) return;
+    let cls = 'mm-dot';
+    if (t.opened) {
+      cls += ' opened';
+      if (t.type === 'knowledge') cls += ' know';
+      else if (t.type === 'trap')  cls += ' trap';
+      else if (t.type === 'bonus') cls += ' bonus';
+      else if (t.type === 'lock')  cls += ' lock';
+    }
+    dot.className = cls;
+  });
+  // player + goal overlay (always visible)
+  const pIdx = data.playerPos[0] * data.N + data.playerPos[1];
+  if (dots[pIdx]) dots[pIdx].className = 'mm-dot player';
+  if (data.flipped && data.goalTile) {
+    const gIdx = data.goalTile[0] * data.N + data.goalTile[1];
+    if (dots[gIdx] && gIdx !== pIdx) dots[gIdx].className = 'mm-dot goal';
+  }
+}
+
+/* mini-map click → scroll board */
+document.getElementById('miniMap').addEventListener('click', (e) => {
+  const dot = e.target.closest('.mm-dot');
+  if (!dot) return;
+  const i = +dot.dataset.i;
+  const N = +document.getElementById('miniMapGrid').dataset.n || 15;
+  const r = Math.floor(i / N), c = i % N;
+  const board = document.querySelector('.vg-board');
+  if (!board) return;
+  const tileEl = board.querySelector(`.vg-tile[data-i="${i}"]`);
+  if (tileEl && tileEl.scrollIntoView) {
+    tileEl.scrollIntoView({ behavior:'smooth', block:'center', inline:'center' });
+  }
+});
+
+/* ---- F4 · GS-as-potion inventory ---- */
+function renderGsInv(){
+  const panel = document.getElementById('gsInvPanel');
+  const list = document.getElementById('gsInvList');
+  if (!panel || !list) return;
+  let inv = [];
+  try { inv = (window.QuestState && QuestState.helions && QuestState.helions()) || []; } catch(e){}
+  const used = JSON.parse(localStorage.getItem('cosmosLog_ep06_boss_gs_used') || '[]');
+  const usable = inv.filter(id => !used.includes(id));
+  if (!inv.length) { panel.style.display = 'none'; return; }
+  panel.style.display = 'flex';
+  list.innerHTML = '';
+  inv.forEach(id => {
+    const meta = (EP_CONFIG.helions || []).find(h => h.id === id) || { icon:'✨', name:id };
+    const isUsed = used.includes(id);
+    const chip = document.createElement('span');
+    chip.className = 'gs-chip' + (isUsed ? ' used' : '');
+    chip.innerHTML = `${meta.icon} ${id.toUpperCase()} <span class="gs-cost">−1 GS · +3⚡</span>`;
+    chip.title = isUsed ? 'ใช้แล้ว' : 'คลิกเพื่อใช้เป็น potion';
+    if (!isUsed) {
+      chip.onclick = () => useGsPotion(id);
+    }
+    list.appendChild(chip);
+  });
+}
+function useGsPotion(id){
+  if (ended) return;
+  const meta = (EP_CONFIG.helions || []).find(h => h.id === id) || { name:id };
+  if (!confirm(`💊 ใช้ ${meta.icon || ''} ${id.toUpperCase()} (${meta.name}) เป็น potion?\n\n−1 GS · +3 ⚡\n⚠ ระงับพลัง ${id.toUpperCase()} ของบอสด้วย`)) return;
+  // mark used
+  const used = JSON.parse(localStorage.getItem('cosmosLog_ep06_boss_gs_used') || '[]');
+  if (!used.includes(id)) used.push(id);
+  localStorage.setItem('cosmosLog_ep06_boss_gs_used', JSON.stringify(used));
+  // suppress boss power
+  try {
+    const bp = (window.Chain && Chain.get && Chain.get('bossPowers')) || {};
+    const map = { gs1:'blast', gs2:'autoTarget', gs3:'shield', gs4:'deflect', gs5:'burst', gs6:'slowTime' };
+    if (map[id] && bp[map[id]] !== undefined) {
+      bp[map[id]] = false;
+      Chain.set && Chain.set('bossPowers', bp);
+    }
+  } catch(e){}
+  // remove from QuestState helions list
+  try {
+    if (window.QuestState) {
+      const cur = QuestState.helions();
+      const next = cur.filter(x => x !== id);
+      // QuestState.setHelions or QuestState.removeHelion may exist
+      if (typeof QuestState.setHelions === 'function') QuestState.setHelions(next);
+      else if (typeof QuestState.removeHelion === 'function') QuestState.removeHelion(id);
+      else {
+        // fallback: persist to known key (best-effort)
+        try { localStorage.setItem('cosmosLog_ep06_helions', JSON.stringify(next)); } catch(e){}
+      }
+    }
+  } catch(e){}
+  VoidGrid.addEnergy(3);
+  if (window.KPA) KPA.log('A2', 'gs-potion-use', { id, page:'p24' });
+  if (window.SFX) SFX.play && SFX.play('correct');
+  updateHud();
+}
+
+/* ---- F3 · Hint button cooldown UI ---- */
+function refreshHintBtn(){
+  const btn = document.getElementById('btnHint');
+  if (!btn) return;
+  if (!window.VoidGrid || !VoidGrid.isHintBlocked || !VoidGrid.isHintBlocked()) {
+    btn.disabled = false;
+    btn.textContent = '🔮 ขอ HINT';
+    btn.title = 'ขอ hint (1 ครั้งต่อเทิร์น)';
+  } else {
+    btn.disabled = true;
+    btn.textContent = '🔒 ใช้แล้วในเทิร์นนี้';
+    btn.title = 'ปลดล็อกเมื่อเดินถึงช่องใหม่ หรือเริ่มเทิร์นใหม่';
+  }
+}
+
+/* ---- F5 · Achievement popup ---- */
+const _achQueue = [];
+let _achShowing = false;
+function queueAchievementPopup(payload){
+  _achQueue.push(payload);
+  if (!_achShowing) showNextAchievementPopup();
+}
+function showNextAchievementPopup(){
+  if (!_achQueue.length) { _achShowing = false; return; }
+  _achShowing = true;
+  const p = _achQueue.shift();
+  const ov = document.createElement('div');
+  ov.className = 'ach-popup-overlay';
+  ov.innerHTML = `
+    <div class="ach-popup-card" onclick="event.stopPropagation();">
+      <div class="ach-popup-trophy">${p.icon || '🏆'}</div>
+      <div class="ach-popup-title">🎖️ ACHIEVEMENT UNLOCKED</div>
+      <div class="ach-popup-name">${p.name || ''}</div>
+      <div class="ach-popup-desc">${p.desc || ''}</div>
+    </div>`;
+  document.body.appendChild(ov);
+  let dismissed = false;
+  const dismiss = () => {
+    if (dismissed) return;
+    dismissed = true;
+    ov.style.transition = 'opacity 0.3s';
+    ov.style.opacity = '0';
+    setTimeout(() => {
+      ov.remove();
+      setTimeout(showNextAchievementPopup, 200);
+    }, 300);
+  };
+  ov.addEventListener('click', dismiss);
+  setTimeout(dismiss, 2500);
+  if (window.SFX) SFX.play && SFX.play('correct');
+}
+
+/* ---- Question pool ---- */
+const usedQ = { inner:new Set(), belt:new Set(), outer:new Set(), edge:new Set() };
+function pullQuestion(zone) {
+  const pool = GBCFG.questionPool[zone] || [];
+  const remaining = pool.filter((_, i) => !usedQ[zone].has(i));
+  const fromPool = remaining.length ? remaining : pool;
+  const baseIdx = pool.indexOf(fromPool[Math.floor(Math.random() * fromPool.length)]);
+  if (baseIdx >= 0) usedQ[zone].add(baseIdx);
+  return pool[baseIdx >= 0 ? baseIdx : 0];
+}
+
+/* ---- Mount board + listeners ---- */
+function bootBoard() {
+  // F6 · solo=1 url query → force reset
+  const params = new URLSearchParams(location.search);
+  const forceReset = params.get('solo') === '1' || params.get('reset') === '1';
+  if (forceReset) {
+    try {
+      localStorage.removeItem('cosmosLog_ep06_boss_progress');
+      localStorage.removeItem('cosmosLog_ep06_boss_p24');
+      localStorage.removeItem('cosmosLog_ep06_boss_gs_used');
+    } catch(e){}
+  }
+
+  VoidGrid.init({
+    container: document.getElementById('boardWrap'),
+    boardSize: GBCFG.size,
+    startPos: GBCFG.startPos,
+    energy: GBCFG.energy,
+    knowledgeContent: GBCFG.knowledgeContent,
+    trapClaims: GBCFG.trapClaims,
+    bonusContent: GBCFG.bonusContent,
+    hint: GBCFG.hint,
+    zerofix: GBCFG.zerofix,
+    achievements: GBCFG.achievements, // pass for popup metadata
+    saveKey: 'cosmosLog_ep06_boss_progress',
+  });
+  VoidGrid.on('land', onLand);
+  VoidGrid.on('energy', () => updateHud());
+  VoidGrid.on('lose', () => endBoss('C'));
+  VoidGrid.on('win', () => endBoss(null /* compute */));
+  VoidGrid.on('flip', () => {
+    if (window.KPA) KPA.vpa(2, { kind:'kepler-applied', summary:'10 data points → T²=a³ → goal placed' });
+    updateHud();
+  });
+  // F5 · achievement popup wire
+  VoidGrid.on('achievement', (a) => {
+    queueAchievementPopup(a);
+    if (window.KPA) KPA.log('A2', 'achievement-unlock', { id:a.id, name:a.name, page:'p24' });
+  });
+  VoidGrid.on('tile-open', () => updateHud());
+
+  // F7 · resume prompt
+  if (!forceReset && VoidGrid.hasSavedProgress && VoidGrid.hasSavedProgress()) {
+    setTimeout(() => {
+      const ok = confirm('📂 พบความคืบหน้าก่อนหน้า\n\nกด OK = ดำเนินต่อจากที่ค้างไว้\nกด Cancel = เริ่มใหม่ทั้งหมด');
+      if (ok) {
+        VoidGrid.loadProgress();
+        if (window.KPA) KPA.log('A2', 'boss-resume', { page:'p24' });
+      } else {
+        VoidGrid.clearSavedProgress();
+        if (window.KPA) KPA.log('A2', 'boss-restart', { page:'p24' });
+      }
+      updateHud();
+    }, 100);
+  }
+  updateHud();
+}
+
+/* ---- onLand · main mechanics ---- */
+function onLand(e) {
+  if (ended) return;
+  const t = e.tile;
+  if (e.type === 'goal') {
+    return endBoss(null);
+  }
+  if (e.type === 'knowledge') {
+    showKnowledge(t);
+  } else if (e.type === 'trap') {
+    showTrap(t);
+  } else if (e.type === 'bonus') {
+    showBonus(t);
+  } else if (e.type === 'lock') {
+    showLock(t);
+  } else {
+    // empty — nothing
+    updateHud();
+  }
+}
+
+/* ---- Knowledge open · บังคับให้อ่าน 5 วิก่อนปิดได้ ---- */
+let knowReadHandle = null;
+function showKnowledge(tile) {
+  const k = tile.content || { title:'?', body:'?', zone:tile.zone };
+  document.getElementById('knowZone').textContent = ZONE_LABEL[tile.zone] || tile.zone;
+  document.getElementById('knowTitle').textContent = k.title;
+  document.getElementById('knowBody').textContent = k.body;
+  document.getElementById('knowModal').classList.remove('hidden');
+  if (window.KPA) KPA.log('K2', 'knowledge-open', { zone:tile.zone, title:k.title, page:'p24' });
+
+  // lock close button 5s
+  const btn = document.getElementById('knowClose');
+  btn.classList.add('locked');
+  btn.disabled = true;
+  let remain = 5;
+  btn.innerHTML = '🔒 อ่านก่อน · <span class="read-bar">' + remain + ' วิ</span>';
+  if (knowReadHandle) clearInterval(knowReadHandle);
+  knowReadHandle = setInterval(() => {
+    remain--;
+    if (remain > 0) {
+      btn.innerHTML = '🔒 อ่านก่อน · <span class="read-bar">' + remain + ' วิ</span>';
+    } else {
+      clearInterval(knowReadHandle);
+      knowReadHandle = null;
+      btn.classList.remove('locked');
+      btn.disabled = false;
+      btn.innerHTML = '✓ เข้าใจแล้ว · เดินต่อ →';
+    }
+  }, 1000);
+}
+document.getElementById('knowClose').onclick = () => {
+  if (document.getElementById('knowClose').disabled) return;
+  if (knowReadHandle) { clearInterval(knowReadHandle); knowReadHandle = null; }
+  document.getElementById('knowModal').classList.add('hidden');
+  updateHud();
+};
+
+/* ---- BOMB EXPLOSION (เมื่อเหยียบ trap) ---- */
+function playBombExplosion(){
+  // shake board
+  const board = document.querySelector('.board-wrap');
+  if (board) {
+    board.classList.remove('shake'); void board.offsetWidth;
+    board.classList.add('shake');
+  }
+  // overlay
+  const ov = document.createElement('div');
+  ov.className = 'bomb-overlay';
+  ov.innerHTML = `
+    <div class="bomb-flash"></div>
+    <div class="bomb-shock"></div>
+    <div class="bomb-emoji">💥</div>
+    <div class="bomb-text">⚠ TRAP! · -1 ⚡</div>
+  `;
+  document.body.appendChild(ov);
+  if (window.SFX) { SFX.play && SFX.play('wrong'); setTimeout(()=>SFX.play && SFX.play('wrong'), 120); }
+  // haptic feedback (mobile)
+  if (navigator.vibrate) navigator.vibrate([60, 40, 80]);
+  setTimeout(() => ov.remove(), 1500);
+}
+
+/* ---- Trap modal ---- */
+let trapTileRef = null;
+function showTrap(tile) {
+  trapTileRef = tile;
+  // play bomb explosion FIRST · then open modal after animation peaks
+  playBombExplosion();
+  const c = tile.content || GBCFG.trapClaims[0];
+  document.getElementById('trapM').textContent = c.m || '?';
+  document.getElementById('claimText').textContent = c.text;
+  const opts = document.getElementById('refuteOpts');
+  opts.innerHTML = '';
+  const choices = (c.refute || []).slice();
+  // shuffle
+  choices.sort(() => Math.random() - 0.5);
+  choices.forEach((choice) => {
+    const b = document.createElement('button');
+    b.textContent = choice.text;
+    b.onclick = () => {
+      if (choice.correct) {
+        b.style.background = 'rgba(126,255,178,0.25)';
+        b.style.borderColor = '#7effb2';
+        b.style.color = '#7effb2';
+        VoidGrid.markTrapRefuted(c.m);
+        if (window.KPA) KPA.log('A1', 'trap-refute', { misconception:c.m, value:true, page:'p24' });
+        if (window.SFX) SFX.play && SFX.play('correct');
+        if (window.Coin) Coin.add && Coin.add(10, 'p24:trap-refute:'+c.m);
+        setTimeout(() => {
+          document.getElementById('trapModal').classList.add('hidden');
+          updateHud();
+        }, 700);
+      } else {
+        b.style.background = 'rgba(255,92,122,0.18)';
+        b.style.borderColor = '#ff5c7a';
+        b.style.opacity = '0.6';
+        b.disabled = true;
+        VoidGrid.addEnergy(GBCFG.energy.trapHit);
+        VoidGrid.markTrapFailed(c.m);
+        if (window.KPA) KPA.log('A1', 'trap-fail', { misconception:c.m, page:'p24' });
+        if (window.SFX) SFX.play && SFX.play('wrong');
+        updateHud();
+      }
+    };
+    opts.appendChild(b);
+  });
+  // เปิด modal หลัง bomb animation peak (~700ms)
+  setTimeout(() => {
+    document.getElementById('trapModal').classList.remove('hidden');
+  }, 700);
+}
+
+/* ---- Bonus ---- */
+function showBonus(tile) {
+  const b = tile.content || { type:'coin', amount:10, msg:'+10 🪙' };
+  document.getElementById('bonusMsg').textContent = b.msg;
+  let icon = '🎁';
+  if (b.type === 'coin') {
+    icon = '🪙';
+    if (window.Coin && Coin.add) Coin.add(b.amount || 0, 'p24:bonus');
+  } else if (b.type === 'photon') {
+    icon = '⚡';
+    if (window.Photon && Photon.add) Photon.add(b.amount || 0);
+  } else if (b.type === 'energy') {
+    icon = '🔋';
+    VoidGrid.addEnergy(b.amount || 0);
+  } else if (b.type === 'gs') {
+    icon = '✨';
+  }
+  document.getElementById('bonusIcon').textContent = icon;
+  document.getElementById('bonusModal').classList.remove('hidden');
+  VoidGrid.markBonus(b);
+  if (window.KPA) KPA.log('A2', 'bonus', { type:b.type, page:'p24' });
+}
+document.getElementById('bonusClose').onclick = () => {
+  document.getElementById('bonusModal').classList.add('hidden');
+  updateHud();
+};
+
+/* ---- Lock ---- */
+function showLock(tile) {
+  const q = (tile.content && tile.content.question) || { q:'?', a:['?','?'], c:0 };
+  document.getElementById('lockText').textContent = q.q;
+  const ch = document.getElementById('lockChoices');
+  ch.innerHTML = '';
+  q.a.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.textContent = txt;
+    b.onclick = () => {
+      if (i === q.c) {
+        b.classList.add('correct');
+        if (window.KPA) KPA.log('K3', 'lock-pass', { page:'p24' });
+        setTimeout(() => {
+          document.getElementById('lockModal').classList.add('hidden');
+          updateHud();
+        }, 600);
+      } else {
+        b.classList.add('wrong');
+        b.disabled = true;
+        VoidGrid.addEnergy(GBCFG.energy.fail);
+        if (window.KPA) KPA.log('K3', 'lock-fail', { page:'p24' });
+        if (window.SFX) SFX.play && SFX.play('wrong');
+        updateHud();
+      }
+    };
+    ch.appendChild(b);
+  });
+  document.getElementById('lockModal').classList.remove('hidden');
+}
+
+/* ---- ANSWER button — pull q + dice + move ---- */
+let answering = false;
+let firstTryThis = true;
+document.getElementById('btnAnswer').onclick = async () => {
+  if (answering || ended) return;
+  if (VoidGrid._moveMode) return;
+  answering = true;
+  firstTryThis = true;
+
+  const st = VoidGrid.getState();
+  const r = st.pos[0];
+  const zone = (function(){
+    if (r <= 3) return 'edge';
+    if (r <= 7) return 'outer';
+    if (r <= 11) return 'belt';
+    return 'inner';
+  })();
+  const q = pullQuestion(zone);
+
+  document.getElementById('qZone').textContent = ZONE_LABEL[zone] || zone;
+  document.getElementById('qTier').textContent = (q.tier || 'easy').toUpperCase();
+  document.getElementById('qText').textContent = q.q;
+  const ch = document.getElementById('qChoices');
+  ch.innerHTML = '';
+  document.getElementById('qFeedback').innerHTML = '';
+  q.a.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.textContent = txt;
+    b.onclick = () => onAnswerPick(i, q, b, zone);
+    ch.appendChild(b);
+  });
+  document.getElementById('qModal').classList.remove('hidden');
+  // F10 · countdown ใช้จาก difficulty preset · หมดเวลา = ระเบิด + ปิด modal
+  startQuestionTimer(QUESTION_TIMER_SEC || 5);
+};
+
+/* ---- QUESTION TIMER · countdown · timeout = bomb ---- */
+let qTimerHandle = null;
+function startQuestionTimer(seconds){
+  stopQuestionTimer();
+  const fill = document.getElementById('qTimerFill');
+  const num  = document.getElementById('qTimerNum');
+  const total = seconds;
+  let remain = seconds;
+  fill.style.width = '100%';
+  num.textContent = total;
+  num.classList.remove('warn','urgent');
+  const startTs = performance.now();
+  function tick(){
+    const elapsed = (performance.now() - startTs)/1000;
+    remain = Math.max(0, total - elapsed);
+    fill.style.width = (remain/total*100) + '%';
+    num.textContent = Math.ceil(remain);
+    num.classList.toggle('warn', remain <= total*0.6 && remain > 2);
+    num.classList.toggle('urgent', remain <= 2);
+    if (remain <= 0) {
+      stopQuestionTimer();
+      onQuestionTimeout();
+      return;
+    }
+    qTimerHandle = requestAnimationFrame(tick);
+  }
+  qTimerHandle = requestAnimationFrame(tick);
+}
+function stopQuestionTimer(){
+  if (qTimerHandle){ cancelAnimationFrame(qTimerHandle); qTimerHandle = null; }
+}
+function onQuestionTimeout(){
+  // ระเบิด · หัก ⚡ · ปิด modal · ต้องกดทอยใหม่
+  const fb = document.getElementById('qFeedback');
+  fb.innerHTML = '<span style="color:#ff5c7a;font-size:16px;font-weight:700;">💥 หมดเวลา! · -1 ⚡ · กดทอยใหม่ได้</span>';
+  document.querySelectorAll('#qChoices button').forEach(b => b.disabled = true);
+  if (window.KPA) KPA.log('A1', 'q-timeout', { page:'p24' });
+  // bomb effect
+  if (typeof playBombExplosion === 'function') playBombExplosion();
+  VoidGrid.addEnergy(GBCFG.energy.fail || -1);
+  updateHud();
+  setTimeout(() => {
+    const st2 = VoidGrid.getState();
+    document.getElementById('qModal').classList.add('hidden');
+    if (st2.energy <= 0) {
+      endBoss('C');
+    } else {
+      answering = false;
+    }
+  }, 1500);
+}
+
+async function onAnswerPick(i, q, btnEl, zone) {
+  // หยุด timer ทันทีเมื่อกดเลือก
+  stopQuestionTimer();
+  const fb = document.getElementById('qFeedback');
+  if (i === q.c) {
+    btnEl.classList.add('correct');
+    fb.innerHTML = '<span style="color:#7effb2;">✓ ถูกต้อง · ทอยเต๋า!</span>';
+    if (window.SFX) SFX.play && SFX.play('correct');
+    // log K
+    const KMAP = { inner:'K2', belt:'K2', outer:'K2', edge:'K3' };
+    if (window.KPA) KPA.log(KMAP[zone] || 'K2', 'dice-q', { zone, tier:q.tier, correct:true, firstTry:firstTryThis, page:'p24' });
+    VoidGrid.bumpAnswered(true, firstTryThis);
+    if (window.Coin && firstTryThis) Coin.add && Coin.add(5, 'p24:q-first-try');
+    // disable rest
+    document.querySelectorAll('#qChoices button').forEach(b => b.disabled = true);
+    setTimeout(async () => {
+      document.getElementById('qModal').classList.add('hidden');
+      // Check phase flip — happens AFTER 10th correct answer
+      const st = VoidGrid.getState();
+      if (!st.flipped && st.questionsAnswered >= GBCFG.zerofix.dataPointsRequired) {
+        VoidGrid.triggerFlip();
+        // wait for cutscene then dice
+        setTimeout(async () => {
+          const n = await VoidGrid.rollDice();
+          VoidGrid.startMove(n);
+          updateHud();
+          answering = false;
+        }, (GBCFG.zerofix.cutsceneDuration || 6000) + 300);
+      } else {
+        const n = await VoidGrid.rollDice();
+        VoidGrid.startMove(n);
+        updateHud();
+        answering = false;
+      }
+    }, 700);
+  } else {
+    btnEl.classList.add('wrong');
+    btnEl.disabled = true;
+    firstTryThis = false;
+    fb.innerHTML = '<span style="color:#ff5c7a;font-size:16px;font-weight:700;">✗ ผิด · -1 ⚡ · ลองข้อใหม่ได้ (กดทอยอีกครั้ง)</span>';
+    if (window.SFX) SFX.play && SFX.play('wrong');
+    if (window.KPA) KPA.log('K2', 'dice-q', { zone, tier:q.tier, correct:false, page:'p24' });
+    // หัก energy + ปิด modal + กลับมากดทอยใหม่ได้
+    VoidGrid.addEnergy(GBCFG.energy.fail || -1);
+    updateHud();
+    // ระเบิดเล็ก ๆ ใน modal เป็น feedback
+    document.querySelectorAll('#qChoices button').forEach(b => b.disabled = true);
+    setTimeout(() => {
+      const st2 = VoidGrid.getState();
+      document.getElementById('qModal').classList.add('hidden');
+      if (st2.energy <= 0) {
+        endBoss('C');
+      } else {
+        answering = false;  // ปลดล็อกให้กดทอยใหม่
+      }
+    }, 1400);
+  }
+}
+
+/* ---- HINT button ---- */
+document.getElementById('btnHint').onclick = () => {
+  if (ended) return;
+  const r = VoidGrid.useHint();
+  const banner = document.getElementById('hintBanner');
+  banner.style.display = 'block';
+  if (r.blocked) {
+    banner.className = 'hint-banner';
+    banner.innerHTML = `<b>🔒 HINT COOLDOWN</b><br>${r.text}`;
+  } else {
+    banner.className = 'hint-banner' + (r.phase === 2 ? ' phase2' : '');
+    banner.innerHTML = `<b>${r.phase === 1 ? 'PHASE 1 · VOID hint (อาจหลอก)' : 'PHASE 2 · KEPLER hint (จริง)'}</b><br>${r.text}` +
+      (r.cost > 0 ? `<br><span style="font-size:11px;color:#ffcb6b;">⚡ -${r.cost}</span>` : '');
+  }
+  setTimeout(() => { banner.style.display = 'none'; }, 6500);
+  updateHud();
+};
+
+/* ---- EXIT button (cost 5⚡) ---- */
+document.getElementById('btnExit').onclick = () => {
+  if (ended) return;
+  if (!confirm('ถอนออกจากบอส · เสีย 5⚡ · จบเป็น ending B/C ทันที · ดำเนินการ?')) return;
+  VoidGrid.addEnergy(-5);
+  endBoss(null);
+};
+
+/* ---- Compute + show ending ---- */
+function endBoss(forcedEnding) {
+  if (ended) return;
+  ended = true;
+  const st = VoidGrid.getState();
+  const reachedGoal = !!(st.goalTile && st.pos[0] === st.goalTile[0] && st.pos[1] === st.goalTile[1]);
+
+  // Achievements check
+  const A = GBCFG.achievements;
+  if (st.hintsUsedPhase1 === 0)            VoidGrid.achievements.unlock('skeptic');
+  if (reachedGoal && st.turnSinceFlip <= 10) VoidGrid.achievements.unlock('navigator');
+  if (st.knowledgeOpened >= 30)            VoidGrid.achievements.unlock('precisionist');
+  if (st.bonusCollected.length >= 8)       VoidGrid.achievements.unlock('completionist');
+  if (st.trapsFailed.length === 0 && st.trapsRefuted.length > 0) VoidGrid.achievements.unlock('trap_immune');
+  if (st.firstTryAll && st.questionsAnswered >= 10) VoidGrid.achievements.unlock('data_scientist');
+  const allZones5 = ['edge','outer','belt','inner'].every(z => (st.zonesVisited[z]||0) >= 5);
+  if (allZones5)                          VoidGrid.achievements.unlock('cartographer');
+
+  const allRefute = st.trapsFailed.length === 0;
+
+  let ending = forcedEnding;
+  if (!ending) {
+    if (reachedGoal && st.energy >= 10 && st.knowledgeOpened >= 35 && allRefute && st.hintsUsedPhase1 === 0) ending = 'A+';
+    else if (reachedGoal && st.energy >= 6 && st.knowledgeOpened >= 25) ending = 'A';
+    else if (reachedGoal && st.energy >= 1) ending = 'B';
+    else ending = 'C';
+  }
+
+  const meta = GBCFG.endings[ending] || GBCFG.endings['B'];
+  const colorMap = { 'A+':'#ffd700', 'A':'#7effb2', 'B':'#64d8ff', 'C':'#ff5c7a' };
+  const artMap   = { 'A+':'🌟', 'A':'✨', 'B':'⚡', 'C':'💀' };
+
+  const stats = {
+    energy: st.energy,
+    knowledge: st.knowledgeOpened,
+    knowledgeTotal: st.knowledgeTotal,
+    trapsRefuted: st.trapsRefuted.length,
+    trapsFailed: st.trapsFailed.length,
+    trapsTotal: st.trapsTotal,
+    bonus: st.bonusCollected.length,
+    bonusTotal: st.bonusTotal,
+    hintsP1: st.hintsUsedPhase1,
+    hintsP2: st.hintsUsedPhase2,
+    questionsAnswered: st.questionsAnswered,
+    zonesVisited: st.zonesVisited,
+    reachedGoal
+  };
+  const ach = VoidGrid.achievements.getAll();
+  const achNames = ach.map(id => (A[id] && (A[id].icon + ' ' + A[id].name)) || id);
+
+  // Persist
+  try {
+    localStorage.setItem('cosmosLog_ep06_boss_p24', JSON.stringify({ ending, stats, achievements:achNames }));
+  } catch(e){}
+  Chain.set('bossEnding', ending);
+  Chain.set('bossEnergyLeft', st.energy);
+  Submit.record('p24', { ending, energy:st.energy, answered:st.questionsAnswered, achievements:achNames, stats });
+  Gate.markSubmitted();
+  if (window.KPA) {
+    KPA.log('A2', 'boss-complete', { ending, achievements:ach, stats, page:'p24' });
+    KPA.vpa(3, { kind:'boss-complete', summary:`ending=${ending} · K${st.knowledgeOpened}/${st.knowledgeTotal} · refute=${st.trapsRefuted.length}/${st.trapsTotal} · ⚡${st.energy}` });
+  }
+  if (window.Coin) {
+    if (ending === 'A+') Coin.awardPerfect && Coin.awardPerfect('p24');
+    else if (ending === 'A') {
+      const k = 'cosmosLog_ep06_boss_a'; if (!localStorage.getItem(k)) { Coin.add && Coin.add(40, 'p24:A'); localStorage.setItem(k,'1'); }
+    } else if (ending === 'B') {
+      const k = 'cosmosLog_ep06_boss_b'; if (!localStorage.getItem(k)) { Coin.add && Coin.add(15, 'p24:B'); localStorage.setItem(k,'1'); }
+    }
+  }
+  if (window.MysteryBox && MysteryBox.roll) {
+    const wrongs = ending === 'A+' ? 0 : (ending === 'A' ? 2 : (ending === 'B' ? 4 : 6));
+    setTimeout(() => MysteryBox.roll({ wrongs, page:'p24' }), 700);
+  }
+
+  // Render modal
+  document.getElementById('endingContent').style.borderColor = colorMap[ending];
+  document.getElementById('endArt').textContent = artMap[ending];
+  document.getElementById('endTitle').textContent = meta.label || ending;
+  document.getElementById('endTitle').style.color = colorMap[ending];
+  document.getElementById('endDesc').textContent = meta.desc || '';
+  document.getElementById('endStats').innerHTML = `
+    <div class="stat-row"><span>⚡ พลัง</span><b>${stats.energy}/15</b></div>
+    <div class="stat-row"><span>📘 Knowledge</span><b>${stats.knowledge}/${stats.knowledgeTotal}</b></div>
+    <div class="stat-row"><span>🛡️ Trap หักล้าง</span><b>${stats.trapsRefuted}/${stats.trapsTotal}</b></div>
+    <div class="stat-row"><span>🎁 Bonus</span><b>${stats.bonus}/${stats.bonusTotal}</b></div>
+    <div class="stat-row"><span>🔮 Phase1 hints</span><b>${stats.hintsP1}</b></div>
+    <div class="stat-row"><span>📡 Data points</span><b>${stats.questionsAnswered}</b></div>
+  `;
+  const achDom = document.getElementById('endAch');
+  achDom.innerHTML = '';
+  achNames.forEach(n => {
+    const c = document.createElement('div'); c.className = 'achievement-chip'; c.textContent = n;
+    achDom.appendChild(c);
+  });
+  document.getElementById('endingModal').classList.remove('hidden');
+  // F6 · show replay btn for B/C (and optional A)
+  const replayBtn = document.getElementById('endingReplay');
+  if (replayBtn) {
+    if (ending === 'C' || ending === 'B' || ending === 'A') {
+      replayBtn.style.display = 'inline-block';
+    }
+  }
+  // F7 · mark ended in engine → clear save
+  if (VoidGrid.markEnded) VoidGrid.markEnded();
+  updateHud();
+}
+
+document.getElementById('endingClose').onclick = () => {
+  document.getElementById('endingModal').classList.add('hidden');
+  mountReflection();
+};
+/* F6 · replay button */
+document.getElementById('endingReplay').onclick = () => {
+  if (!confirm('↻ เริ่ม BOSS ใหม่ทั้งหมด?\n\nความคืบหน้าปัจจุบันจะถูกล้าง · achievements ที่ปลดได้แล้วยังคงอยู่ใน journal')) return;
+  try {
+    localStorage.removeItem('cosmosLog_ep06_boss_progress');
+    localStorage.removeItem('cosmosLog_ep06_boss_p24');
+    localStorage.removeItem('cosmosLog_ep06_boss_gs_used');
+  } catch(e){}
+  if (VoidGrid && VoidGrid.reset) VoidGrid.reset();
+  if (window.KPA) KPA.log('A2', 'boss-replay', { page:'p24' });
+  location.href = 'p24-boss-grid.html?solo=1';
+};
+
+/* ---- Reflection ---- */
+function mountReflection() {
+  if (window.ConfidenceGate) {
+    ConfidenceGate.mount(document.getElementById('cgMount'), {
+      pageId:'p24',
+      question: 'หลังบอส · คุณสงสัยอะไรมากที่สุด?',
+      doubts: [
+        'VOID หลอกฉันกี่ครั้ง · ทำไมฉันถึงตามไป?',
+        'ฉันมั่นใจคำตอบที่ตอบจริงไหม?',
+        'data point 10 จุด ใช้ T²=a³ ได้จริงหรือ?',
+        'ถ้าทำใหม่ · ฉันจะใช้ hint เมื่อไร?'
+      ],
+      onConfirm: () => {}
+    });
+  }
+  if (window.Journal && Journal.mount) {
+    Journal.mount(document.getElementById('ljMount'), {
+      pageId:'p24',
+      mode:'mini',
+      learnedChips: [
+        'ระบบสุริยะมีมากกว่าดาวเคราะห์ 8 ดวง',
+        'พลูโต = ดาวเคราะห์แคระ (M5)',
+        'heliopause ~120 AU · Oort ~70k AU (M6)',
+        'belt ไม่แน่น (M4) · ice giant ≠ gas giant (M2)',
+        'การไม่เชื่อข้อมูลทันที = วิทยาศาสตร์'
+      ]
+    });
+  } else if (window.LearningJournal && LearningJournal.mount) {
+    LearningJournal.mount(document.getElementById('ljMount'), {
+      pageId:'p24',
+      mode:'mini'
+    });
+  }
+  // wire next button
+  const btn = document.getElementById('nextBtn');
+  btn.disabled = false;
+  btn.textContent = '▶ ไป p25 ดูผล';
+  Gate.soloMode(btn, 'p25-rescue-ending.html');
+  if (window.PaceClient) Gate.wireButton('p24', btn, 'p25-rescue-ending.html');
+}
+
+/* ---- BOOT ---- */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    mountIntro();
+    bootBoard();
+  }, 200);
+  setTimeout(() => {
+    Gate.wireButton('p24', document.getElementById('nextBtn'), 'p25-rescue-ending.html', { requireSubmit:true });
+  }, 300);
+});
+</script>
+</body></html>

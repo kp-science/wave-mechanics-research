@@ -1,0 +1,230 @@
+/* ===== COSMOS LOG · EP07 BOSS · ORBITAL TRIAGE =====
+ * Multi-crisis console: 12 crisis from EP_CONFIG.boss.crisis
+ * Each crisis triggers a tool mini-action. Solve all = win.
+ * Tracks per-crisis: time-to-solve · attempts · hints · KPA · competency
+ */
+(function(global){
+  const Triage = {
+    state: null,
+
+    start(opts){
+      const cfg = global.EP_CONFIG && global.EP_CONFIG.boss;
+      if (!cfg) return console.error('No boss config');
+      this.state = {
+        opts: opts||{},
+        crisisQueue: [...cfg.crisis],
+        active: [],          // currently visible
+        solved: [],
+        failed: 0,
+        hp: cfg.hpStart || 10,
+        hpMax: cfg.hpStart || 10,
+        startedAt: Date.now(),
+        timer: null,
+        boosters: (opts && opts.boosters) || []
+      };
+      // apply boosters
+      if (this.state.boosters.includes('hull')) {
+        this.state.hp += 2; this.state.hpMax += 2;
+      }
+      this._render();
+      this._tick();
+      if (global.HUD) HUD.setHP(this.state.hp, this.state.hpMax);
+      if (global.KPA) KPA.research('bossStart', { boosters: this.state.boosters });
+    },
+
+    _tick(){
+      if (!this.state) return;
+      const s = this.state;
+      // spawn crisis (max 3 active normal · 2 with auto)
+      const maxActive = s.boosters.includes('auto') ? 1 : 3;
+      while (s.active.length < maxActive && s.crisisQueue.length > 0) {
+        const c = s.crisisQueue.shift();
+        const timer = c.timer + (s.boosters.includes('time') ? 5 : 0);
+        s.active.push({ ...c, deadline: Date.now() + timer*1000, attempts:0, startedAt: Date.now() });
+      }
+      this._render();
+      // check timeouts
+      const now = Date.now();
+      [...s.active].forEach(c => {
+        if (c.deadline <= now) this._timeout(c);
+      });
+      if (s.crisisQueue.length === 0 && s.active.length === 0) return this._win();
+      if (s.hp <= 0) return this._lose();
+      s.timer = setTimeout(() => this._tick(), 250);
+    },
+
+    _solve(c){
+      const s = this.state;
+      const attempt = c.attempts + 1;
+      const dur = Date.now() - c.startedAt;
+      s.active = s.active.filter(x => x.id !== c.id);
+      s.solved.push({ ...c, dur, attempts: attempt });
+      if (global.KPA) {
+        KPA.problem(c.id, attempt, 'success', { dur, tool: c.tool });
+        KPA.log(c.kpa || 'K1', 'boss-crisis-solve', { id:c.id, dur, correct:true });
+        if (c.comp) c.comp.split(',').forEach(cc => KPA.competency(cc.trim(), { evidence:'boss-'+c.id }));
+        KPA.addCoin(10, 'boss-solve-' + c.id);
+      }
+      this._tick();
+    },
+
+    _timeout(c){
+      const s = this.state;
+      s.active = s.active.filter(x => x.id !== c.id);
+      const damage = s.boosters.includes('second') && s.failed === 0 ? 0 : 1;
+      s.hp -= damage;
+      s.failed++;
+      if (global.HUD) HUD.setHP(s.hp, s.hpMax);
+      if (global.KPA) {
+        KPA.problem(c.id, 1, 'timeout', { tool: c.tool });
+        KPA.log(c.kpa || 'K1', 'boss-crisis-timeout', { id:c.id, correct:false });
+        KPA.spendEnergy(1, 'boss-timeout');
+      }
+      this._tick();
+    },
+
+    _attemptFail(c){
+      const s = this.state;
+      c.attempts++;
+      const damage = s.boosters.includes('second') && s.failed === 0 ? 0 : 1;
+      s.hp -= damage;
+      s.failed++;
+      if (global.HUD) HUD.setHP(s.hp, s.hpMax);
+      if (global.KPA) {
+        KPA.problem(c.id, c.attempts, 'fail-attempt', { tool:c.tool });
+      }
+    },
+
+    _win(){
+      clearTimeout(this.state.timer);
+      const s = this.state;
+      const dur = Date.now() - s.startedAt;
+      const ending = s.hp >= s.hpMax && s.failed === 0 ? 'A+' : (s.hp >= 7 ? 'A' : (s.hp >= 3 ? 'B' : 'C'));
+      if (global.KPA) {
+        KPA.research('bossWin', { ending, hp:s.hp, failed:s.failed, durMs:dur });
+        KPA.vpa(2, { kind:'boss-complete', summary: ending });
+        if (ending === 'A+') KPA.addCoin(30, 'boss-A+');
+        else if (ending === 'A') KPA.addCoin(20, 'boss-A');
+        else if (ending === 'B') KPA.addCoin(10, 'boss-B');
+      }
+      this._showEnding(ending, dur);
+    },
+    _lose(){
+      clearTimeout(this.state.timer);
+      if (global.KPA) KPA.research('bossLose', { hp:0 });
+      this._showEnding('C', 0);
+    },
+
+    _showEnding(ending, dur){
+      const root = document.getElementById('triageRoot');
+      const endings = {
+        'A+': { color:'#ffd84a', label:'A+ MASTER NAVIGATOR', desc:'แก้ทุก crisis · HP เต็ม · ไม่มี fail' },
+        'A':  { color:'#9be7c4', label:'A · ROCKET ENGINEER',   desc:'แก้สำเร็จส่วนใหญ่' },
+        'B':  { color:'#7ad6ff', label:'B · APPRENTICE',         desc:'ผ่านได้ · มี crisis fail บ้าง' },
+        'C':  { color:'#ff6a6a', label:'C · MISSION FAILED',     desc:'ทีมรอด · แต่ระบบเสียหายหนัก' }
+      };
+      const e = endings[ending];
+      root.innerHTML = `
+        <div class="triage-end" style="text-align:center;padding:30px;">
+          <h1 style="color:${e.color};font-size:42px;">${e.label}</h1>
+          <p style="font-size:18px;">${e.desc}</p>
+          <div style="margin:20px 0;font-size:14px;color:var(--text-mute);">
+            ระยะเวลา: ${(dur/1000/60).toFixed(1)} นาที · solved: ${this.state.solved.length}/12 · HP: ${this.state.hp}
+          </div>
+          <a href="p27-journal.html" class="btn">→ ไปต่อ Journal</a>
+        </div>
+      `;
+    },
+
+    _render(){
+      const root = document.getElementById('triageRoot');
+      if (!root || !this.state) return;
+      const s = this.state;
+      root.innerHTML = `
+        <div class="triage-hud">
+          <div>👹 VOID LAST STAND</div>
+          <div>📋 solved: <b>${s.solved.length}</b> / 12 · ❤️ ${s.hp}/${s.hpMax}</div>
+        </div>
+        <div class="triage-grid">
+          ${s.active.map(c => this._renderCrisis(c)).join('')}
+          ${s.active.length === 0 ? '<div class="triage-empty">รอ crisis ถัดไป...</div>' : ''}
+        </div>
+      `;
+      // wire buttons
+      s.active.forEach(c => {
+        const el = document.querySelector('[data-crisis="'+c.id+'"]');
+        if (!el) return;
+        el.querySelectorAll('.tool-btn').forEach(b => {
+          b.onclick = () => {
+            const correct = b.dataset.id === c.tool;
+            if (correct) this._solve(c);
+            else { this._attemptFail(c); b.disabled = true; b.classList.add('wrong'); }
+          };
+        });
+      });
+    },
+
+    _renderCrisis(c){
+      const remain = Math.max(0, Math.ceil((c.deadline - Date.now())/1000));
+      const tools = this._toolOptionsFor(c);
+      return `
+        <div class="triage-crisis ${remain<=5?'urgent':''}" data-crisis="${c.id}">
+          <div class="crisis-time">⏱️ ${remain}s</div>
+          <div class="crisis-label">${c.label}</div>
+          <div class="crisis-tools">
+            ${tools.map(t => `<button class="tool-btn" data-id="${t.id}">${t.icon} ${t.label}</button>`).join('')}
+          </div>
+        </div>
+      `;
+    },
+
+    _toolOptionsFor(c){
+      const ALL = [
+        { id:'IR-JWST',    icon:'🔥', label:'JWST IR' },
+        { id:'X-ray',      icon:'⚡', label:'Chandra X-ray' },
+        { id:'Radio-FAST', icon:'📡', label:'FAST Radio' },
+        { id:'CPR',        icon:'❤️', label:'ปั๊มหัวใจ' },
+        { id:'EarThermo',  icon:'🌡️', label:'ปรอททางหู' },
+        { id:'Aerogel',    icon:'🧥', label:'แอโรเจล' },
+        { id:'FreezeDry',  icon:'🍱', label:'อาหาร freeze-dry' },
+        { id:'Booster2',   icon:'🚀', label:'จรวดแข็ง 2 ข้าง' },
+        { id:'V79',        icon:'🎯', label:'v=7.9 km/s' },
+        { id:'MEO',        icon:'🛰️', label:'วาง GPS@MEO' },
+        { id:'HeatShield', icon:'🛡️', label:'Heat shield' },
+        { id:'Combo6',     icon:'🌈', label:'รวม 6 คลื่น' }
+      ];
+      const correct = ALL.find(t => t.id === c.tool);
+      const distractors = ALL.filter(t => t.id !== c.tool).sort(()=> Math.random()-.5).slice(0, 3);
+      return [correct, ...distractors].sort(()=> Math.random()-.5);
+    }
+  };
+
+  function _css(){
+    if (document.getElementById('triage-css')) return;
+    const s = document.createElement('style');
+    s.id = 'triage-css';
+    s.textContent = `
+      .triage-hud{display:flex;justify-content:space-between;background:#1a0808;
+        border:2px solid var(--bad);border-radius:10px;padding:8px 14px;
+        font-weight:700;color:#fff;margin-bottom:10px;}
+      .triage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+      .triage-empty{padding:30px;text-align:center;color:var(--text-mute);
+        border:1px dashed var(--line);border-radius:10px;}
+      .triage-crisis{background:linear-gradient(180deg,#2a1010,#1a0808);
+        border:2px solid var(--bad);border-radius:10px;padding:10px;
+        animation:crisisPulse 2.4s ease-in-out infinite;}
+      .triage-crisis.urgent{border-color:#ff0000;box-shadow:0 0 20px rgba(255,0,0,.6);}
+      .crisis-time{font-weight:700;color:var(--warn);margin-bottom:4px;font-size:13px;}
+      .crisis-label{font-size:14px;color:#fff;margin-bottom:8px;font-weight:700;}
+      .crisis-tools{display:flex;flex-wrap:wrap;gap:4px;}
+      .tool-btn{background:var(--bg-card);color:var(--text);border:1px solid var(--line);
+        border-radius:6px;padding:6px 8px;font-size:11px;cursor:pointer;flex:1 1 auto;}
+      .tool-btn:hover{background:var(--rocket-orange);color:#1a0e00;border-color:var(--rocket-orange);}
+      .tool-btn.wrong{background:var(--bad);color:#fff;cursor:not-allowed;opacity:.5;}
+    `;
+    document.head.appendChild(s);
+  }
+  document.addEventListener('DOMContentLoaded', _css);
+
+  global.OrbitalTriage = Triage;
+})(window);

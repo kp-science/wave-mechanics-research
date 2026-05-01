@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P25 · 4 Endings</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.ending-stage { padding:24px; border-radius:14px; text-align:center; margin:14px 0; min-height:200px; }
+.e-aplus { background:radial-gradient(ellipse, rgba(255,215,0,0.2), transparent); border:2px solid #ffd700; }
+.e-a { background:radial-gradient(ellipse, rgba(126,255,178,0.2), transparent); border:2px solid #7effb2; }
+.e-b { background:radial-gradient(ellipse, rgba(100,216,255,0.18), transparent); border:2px solid #64d8ff; }
+.e-c { background:radial-gradient(ellipse, rgba(255,92,122,0.15), transparent); border:2px solid #ff5c7a; }
+.ending-title { font-family:Orbitron,monospace; font-size:24px; letter-spacing:.18em; margin:14px 0; }
+.ending-art { font-size:80px; margin:14px 0; }
+</style>
+</head>
+<body data-page="p25" data-type="story">
+<div class="page">
+  <span class="lbl story">🌌 RESCUE · 4 ENDINGS</span>
+  <h1>ตอนจบของศึก</h1>
+
+  <div id="endingHost"></div>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "VOID หาย · แต่... <b style="color:#ff5c7a;">ดาวเทียมโลกดับพร้อมกัน</b> · เกิดอะไรขึ้น?"</span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P25</summary>
+    <div>4 ตอนจบขึ้นกับ energy ที่เหลือ + Lance · เปิด p26 cliffhanger ให้ทุก ending</div></details>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ ดาวเทียมโลกดับ...</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+// Read grid-boss state (preferred) · fallback to old key
+let bossState = null;
+try { bossState = JSON.parse(localStorage.getItem('cosmosLog_ep06_boss_p24') || 'null'); } catch(e){}
+const ending = (bossState && bossState.ending) || Chain.get('bossEnding') || 'B';
+const stats = (bossState && bossState.stats) || {};
+const achievements = (bossState && bossState.achievements) || [];
+const ENDINGS = {
+  'A+': { cls:'e-aplus', art:'🌟', t:'A+ · MASTER NAVIGATOR', d:'นำทีมถึง Genesis Vault อย่างสมบูรณ์ · ปฏิเสธคำหลอกของ VOID ทุกครั้ง · เห็นภาพระบบสุริยะตั้งแต่ดาวพุธไปถึง Oort Cloud 70,000 AU · บันทึกครบทุกแฟ้ม' },
+  'A':  { cls:'e-a',     art:'✨', t:'A · STAR PILOT',        d:'ถึง Vault ปลอดภัย · เก็บข้อมูลส่วนใหญ่ · ระบบสุริยะปลอดภัย · ทีมพร้อมภารกิจถัดไป' },
+  'B':  { cls:'e-b',     art:'⚡', t:'B · ROOKIE',            d:'รอดแบบฉิวเฉียด · ถึง Vault ได้แต่ข้อมูลบางส่วนสูญหาย · ยังต้องเรียนรู้และกลับมาเก็บ' },
+  'C':  { cls:'e-c',     art:'💀', t:'C · LOST IN THE VOID',  d:'พลังหมดก่อนถึงเป้า · VOID ครอบครอง Vault · ต้องลองใหม่ · บทเรียนใหญ่ของทีม' },
+};
+const e = ENDINGS[ending] || ENDINGS['B'];
+let statHtml = '';
+if (stats && Object.keys(stats).length) {
+  statHtml = `
+    <div style="margin-top:14px;padding:10px;border-top:1px dashed rgba(255,255,255,0.25);font-size:12px;color:#d4f0ff;text-align:left;">
+      <div>⚡ พลังคงเหลือ: <b>${stats.energy ?? '?'}/15</b></div>
+      <div>📘 Knowledge เปิด: <b>${stats.knowledge ?? '?'}/${stats.knowledgeTotal ?? 45}</b></div>
+      <div>🛡️ Trap หักล้าง: <b>${stats.trapsRefuted ?? 0}/${stats.trapsTotal ?? 15}</b></div>
+      <div>🎁 Bonus เก็บ: <b>${stats.bonus ?? 0}/${stats.bonusTotal ?? 8}</b></div>
+      <div>🔮 Phase 1 hints ใช้: <b>${stats.hintsP1 ?? 0}</b></div>
+      <div>📡 Data points: <b>${stats.questionsAnswered ?? 0}</b></div>
+    </div>`;
+}
+let achHtml = '';
+if (achievements.length) {
+  achHtml = `<div style="margin-top:12px;text-align:left;font-size:12px;color:#ffd700;">
+    🏆 Achievement: ${achievements.join(' · ')}</div>`;
+}
+document.getElementById('endingHost').innerHTML = `
+  <div class="ending-stage ${e.cls}">
+    <div class="ending-art">${e.art}</div>
+    <div class="ending-title">${e.t}</div>
+    <div style="font-size:13px; line-height:1.7; color:#fff;">${e.d}</div>
+    ${statHtml}
+    ${achHtml}
+  </div>`;
+
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p26-satellite-fail.html');if(window.PaceClient)Gate.wireButton('p25',btn,'p26-satellite-fail.html');},200);
+</script>
+</body></html>

@@ -1,0 +1,156 @@
+/* ===== COSMOS LOG · EP08 · Page Style · "Cosmic Genesis" =====
+ * Theme: genesis-gold + quantum-pink + cosmic-purple + starlight + bg-genesis
+ * อารมณ์: ศักดิ์สิทธิ์ · spiritual sci-fi · light emerging from void
+ */
+:root {
+  --genesis-gold:  #ffd84a;
+  --genesis-deep:  #b8950c;
+  --quantum-pink:  #ff6ab8;
+  --quantum-deep:  #b53782;
+  --cosmic-purple: #6a3aff;
+  --cosmic-deep:   #3a1aaa;
+  --starlight:     #fff5e3;
+  --bg-genesis:    #050108;
+  --bg-mid:        #0e0418;
+  --bg-card:       #150828;
+  --line:          #2a1a45;
+  --line-soft:     #1a0e2a;
+  --text:          #fff5e3;
+  --text-soft:     #ddc;
+  --text-mute:     #998fa8;
+  --good:          #9be7c4;
+  --warn:          #ffd84a;
+  --bad:           #ff6a6a;
+
+  --c-inflation:   var(--quantum-pink);
+  --c-nucleo:      #ff8a3d;
+  --c-cmb:         var(--genesis-gold);
+  --c-galaxies:    var(--cosmic-purple);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, #2a0a40 0%, var(--bg-genesis) 60%),
+    radial-gradient(ellipse at 80% 80%, #1a0a30 0%, var(--bg-genesis) 70%);
+  background-color: var(--bg-genesis);
+  color: var(--text);
+  font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+h1 { font-size: 36px; font-weight: 800; color: var(--genesis-gold); margin: 0 0 12px; line-height: 1.2;
+  text-shadow: 0 0 24px rgba(255,216,74,.35); }
+h2 { font-size: 26px; font-weight: 700; color: var(--quantum-pink); margin: 16px 0 8px; }
+h3 { font-size: 20px; font-weight: 700; color: var(--cosmic-purple); margin: 12px 0 6px; }
+p  { font-size: 18px; margin: 0 0 12px; }
+.lbl { font-weight: 700; color: var(--genesis-gold); display: inline-block; margin-bottom: 4px; }
+a { color: var(--genesis-gold); }
+
+/* Page layout */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 60px 18px 80px;
+  position: relative;
+  z-index: 5;
+}
+
+/* Cards */
+.card, .bg-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+.card-gold { border-color: var(--genesis-gold); box-shadow: 0 0 24px rgba(255,216,74,.2); }
+.card-pink { border-color: var(--quantum-pink); box-shadow: 0 0 24px rgba(255,106,184,.2); }
+.card-purple { border-color: var(--cosmic-purple); box-shadow: 0 0 24px rgba(106,58,255,.2); }
+
+/* Chips */
+.chip { display: inline-flex; align-items: center; gap: 6px;
+  background: var(--bg-mid); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 12px; font-size: 13px; cursor: pointer; user-select: none; transition: all .15s; }
+.chip:hover { border-color: var(--genesis-gold); transform: translateY(-1px); }
+.chip.selected { background: linear-gradient(180deg, #3a2a08, #1a0e00); border-color: var(--genesis-gold); color: var(--genesis-gold); }
+.chip.correct { background: linear-gradient(180deg, #0a3a2a, #051a14); border-color: var(--good); color: var(--good); }
+.chip.wrong { background: linear-gradient(180deg, #3a0a0a, #1a0505); border-color: var(--bad); color: var(--bad); }
+
+/* Buttons */
+.btn {
+  background: linear-gradient(180deg, var(--genesis-gold), #ff8a3d);
+  color: #1a0a00; border: none; border-radius: 10px;
+  padding: 10px 22px; font-size: 16px; font-weight: 800;
+  cursor: pointer; letter-spacing: .04em;
+  transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(255,216,74,.35); }
+.btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+.btn.alt { background: linear-gradient(180deg, var(--quantum-pink), var(--quantum-deep)); color: #fff5e3; }
+.btn.purple { background: linear-gradient(180deg, var(--cosmic-purple), var(--cosmic-deep)); color: #fff5e3; }
+.btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text); }
+.btn.ghost:hover { border-color: var(--genesis-gold); color: var(--genesis-gold); }
+
+/* Act badge */
+.act-badge {
+  display: inline-block;
+  background: linear-gradient(90deg, rgba(255,216,74,.15), rgba(106,58,255,.15));
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 12px;
+  letter-spacing: .15em;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+/* Story tab (collapsible) */
+.story-tab { background: var(--bg-card); border: 1px solid var(--line); border-radius: 12px;
+  margin: 14px 0; padding: 12px 14px; }
+.story-tab summary { cursor: pointer; font-weight: 700; color: var(--genesis-gold); list-style: none; }
+.story-tab summary::before { content: '▸ '; color: var(--quantum-pink); }
+.story-tab[open] summary::before { content: '▾ '; }
+.story-tab .story-row { display: grid; grid-template-columns: 80px 1fr; gap: 8px; margin: 6px 0;
+  padding-top: 6px; border-top: 1px dashed var(--line-soft); font-size: 14px; }
+.story-tab .story-row b { color: var(--quantum-pink); font-size: 12px; letter-spacing: .1em; }
+
+/* How-to-play card */
+.howto { background: linear-gradient(180deg, rgba(255,216,74,.05), transparent);
+  border: 1px solid var(--genesis-gold); border-radius: 12px; padding: 12px 14px; margin: 12px 0; }
+.howto h4 { color: var(--genesis-gold); margin: 0 0 6px; font-size: 14px; letter-spacing: .1em; }
+.howto ul { margin: 4px 0; padding-left: 22px; }
+.howto li { font-size: 14px; margin: 3px 0; color: var(--text-soft); }
+
+/* Result host (reveal-after-submit target) */
+.result-host { margin: 14px 0; }
+
+/* Cinematic SVG host */
+.svg-host { background: var(--bg-genesis); border: 1px solid var(--line); border-radius: 12px;
+  overflow: hidden; margin: 14px 0; }
+.svg-host svg { width: 100%; height: auto; display: block; }
+
+/* Form rows */
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
+.row > * { flex: 0 0 auto; }
+.row.between { justify-content: space-between; }
+
+input[type="text"], input[type="number"], textarea, select {
+  background: #0a0418; color: var(--text);
+  border: 1px solid var(--line); border-radius: 8px;
+  padding: 8px 10px; font: inherit;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--genesis-gold); }
+
+/* Cliffhanger box */
+.cliff { background: linear-gradient(180deg, #1a0a30, #050108);
+  border: 1px solid var(--genesis-gold); border-radius: 14px;
+  padding: 18px; text-align: center; margin: 20px 0;
+  box-shadow: 0 0 40px rgba(255,216,74,.18); }
+.cliff h2 { color: var(--genesis-gold); font-size: 22px; }
+
+/* Mobile */
+@media (max-width: 600px) {
+  h1 { font-size: 28px; }
+  h2 { font-size: 22px; }
+  body { font-size: 17px; }
+  .page { padding: 40px 12px 60px; }
+}

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P07b · CONVECTIVE · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+
+.climb-arena { position:relative; width:100%; height:380px; border-radius:14px; overflow:hidden; margin:10px 0;
+               background:linear-gradient(180deg,#ffcb6b 0%,#ff8a3d 50%,#ff5c7a 100%); }
+.depth-marker-row { position:absolute; left:0; right:0; height:1px; background:rgba(255,255,255,0.2); pointer-events:none; }
+.depth-label { position:absolute; left:8px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.14em; color:rgba(255,255,255,0.7); pointer-events:none;
+               text-shadow:0 1px 3px rgba(0,0,0,0.5); }
+.depth-progress { position:absolute; right:8px; top:8px; bottom:8px; width:8px; border-radius:4px; background:rgba(0,0,0,0.4); overflow:hidden; }
+.depth-progress .fill { position:absolute; left:0; right:0; bottom:0; background:linear-gradient(180deg,#7effb2,#ffcb6b); transition:height 0.6s ease; }
+
+.bubble { position:absolute; width:54px; height:54px; border-radius:50%; cursor:pointer; user-select:none;
+          display:flex; flex-direction:column; align-items:center; justify-content:center;
+          font-family:Orbitron,monospace; font-size:9px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.6);
+          transition:transform .15s; }
+.bubble.hot { background:radial-gradient(circle at 35% 35%,#fff,#ff5c7a 70%); box-shadow:0 0 14px #ff5c7a; }
+.bubble.cool { background:radial-gradient(circle at 35% 35%,#cfeaff,#4080d8 70%); box-shadow:0 0 14px #5cb8ff; }
+.bubble:hover { transform:scale(1.1); }
+.bubble .arrow { font-size:18px; line-height:1; }
+.bubble .temp { font-size:9px; opacity:0.95; }
+.ship { position:absolute; left:50%; transform:translateX(-50%); font-size:32px; transition:top 1s ease; z-index:5; filter:drop-shadow(0 0 10px #fff); pointer-events:none; }
+
+.climb-info { padding:10px 14px; border-radius:10px; background:rgba(255,138,61,0.08); border:1px solid rgba(255,138,61,0.3); margin:8px 0; font-size:13px; }
+.climb-info b { color:#ffcb6b; font-family:Orbitron,monospace; }
+.feedback-pill { display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-family:Orbitron,monospace; letter-spacing:.12em; margin-left:6px; }
+.feedback-pill.up { background:rgba(126,255,178,0.18); color:#7effb2; border:1px solid #7effb2; }
+.feedback-pill.down { background:rgba(255,92,122,0.18); color:#ff5c7a; border:1px solid #ff5c7a; }
+
+.obs-log { padding:12px; border-radius:12px; background:rgba(126,255,178,0.06); border:1px dashed #7effb2; margin:10px 0; }
+.obs-log h3 { color:#7effb2; margin:0 0 8px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.obs-row { display:grid; grid-template-columns:30px 1fr 80px; gap:8px; padding:6px; border-radius:6px;
+           background:rgba(20,28,52,0.4); margin-bottom:4px; font-size:12px; align-items:center; }
+.obs-row .num { font-family:Orbitron,monospace; color:#7effb2; text-align:center; }
+.obs-row .res.ok { color:#7effb2; font-weight:600; }
+.obs-row .res.bad { color:#ff5c7a; font-weight:600; }
+</style>
+</head>
+<body data-page="p07b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌊 SCENE 3 · CONVECTIVE · B · EXPLORE</span>
+  <h1>ปีนถึง photosphere · ใช้ก้อนพลาสมาร้อน</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K2</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + OBSERVE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เลือกก้อน <b>ร้อน</b> (สีแดง · ↑) → ลอยขึ้น 1 ระดับ ·
+      เลือกก้อน <b>เย็น</b> (สีน้ำเงิน · ↓) → จมลง 1 ระดับ · ทดลองทั้ง 2 แบบ บันทึก observation"
+    </span>
+  </div>
+
+  <div class="climb-info">
+    📌 ยานอยู่ที่ <b>ฐาน</b> · ต้องไปถึง <b>photosphere</b> (3 ระดับ) · บันทึก ≥ 4 step (ลองทั้งร้อน+เย็น)<br>
+    ระดับ: <b id="levelN">0</b>/3 · ผิด: <b id="wrongCnt" style="color:#ff5c7a;">0</b>
+    <span id="lastFeedback"></span>
+  </div>
+
+  <div class="climb-arena" id="arena">
+    <div class="depth-marker-row" style="top:12%;"></div>
+    <div class="depth-marker-row" style="top:38%;"></div>
+    <div class="depth-marker-row" style="top:64%;"></div>
+    <div class="depth-marker-row" style="top:90%;"></div>
+    <div class="depth-label" style="top:6%;">PHOTOSPHERE · เป้าหมาย</div>
+    <div class="depth-label" style="top:32%;">UPPER CONVECTIVE</div>
+    <div class="depth-label" style="top:58%;">MID CONVECTIVE</div>
+    <div class="depth-label" style="top:84%;">DEEP · ฐาน</div>
+    <div class="depth-progress"><div class="fill" id="progFill" style="height:0%;"></div></div>
+    <div class="ship" id="ship" style="top:75%;">🚀</div>
+  </div>
+
+  <div class="obs-log">
+    <h3>📓 OBSERVATION LOG · ทุก step</h3>
+    <div id="obsRows" style="font-size:12px; color:#9aa3c0;">— ยังไม่มี step —</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P07b</summary>
+    <div>ทดลองทั้งก้อนร้อน+เย็น (อย่างน้อย 4 step) · เห็นว่าร้อน=ลอย เย็น=จม · ใช้ข้อมูลใน p07c gate</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ปีนถึง photosphere · บันทึก ≥ 4</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const arena = document.getElementById('arena');
+const ship = document.getElementById('ship');
+const progFill = document.getElementById('progFill');
+const obsRows = document.getElementById('obsRows');
+const LEVEL_TOP = ['75%','52%','26%','6%'];
+let level = 0, wrongs = 0, totalSteps = 0, finished = false;
+let observations = [];
+
+function setLevel(n){
+  level = Math.max(0, Math.min(3, n));
+  ship.style.top = LEVEL_TOP[level];
+  progFill.style.height = ((level/3)*100) + '%';
+  document.getElementById('levelN').textContent = level;
+  if(level >= 3) winRound();
+  else spawnBubbles();
+}
+
+function spawnBubbles(){
+  arena.querySelectorAll('.bubble').forEach(b => b.remove());
+  const items = [
+    { type:'hot', temp: 4500 + Math.floor(Math.random()*800) },
+    { type:'hot', temp: 5000 + Math.floor(Math.random()*500) },
+    { type:'cool', temp: 3200 + Math.floor(Math.random()*400) },
+    { type:'cool', temp: 3500 + Math.floor(Math.random()*400) },
+  ].sort(() => Math.random() - 0.5);
+  const shipTopPct = parseFloat(LEVEL_TOP[level]);
+  const positions = [
+    { left:'12%', top:(shipTopPct - 8) + '%' },
+    { left:'78%', top:(shipTopPct - 8) + '%' },
+    { left:'25%', top:(shipTopPct + 8) + '%' },
+    { left:'68%', top:(shipTopPct + 8) + '%' },
+  ];
+  items.forEach((it, i) => {
+    const b = document.createElement('div'); b.className = 'bubble ' + it.type;
+    b.style.left = positions[i].left;
+    b.style.top  = positions[i].top;
+    b.innerHTML = `<div class="arrow">${it.type==='hot'?'↑':'↓'}</div><div class="temp">${it.temp} K</div>`;
+    b.onclick = () => onBubbleClick(it, b);
+    arena.appendChild(b);
+  });
+}
+function logObs(temp, type, result){
+  observations.push({ temp, type, result });
+  obsRows.innerHTML = observations.map((o,i)=>`
+    <div class="obs-row">
+      <div class="num">${i+1}</div>
+      <div>คลิก: ${o.type==='hot'?'🔴 ร้อน':'🔵 เย็น'} (${o.temp} K)</div>
+      <div class="res ${o.result==='up'?'ok':'bad'}">${o.result==='up'?'↑ ลอยขึ้น':'↓ จมลง'}</div>
+    </div>`).join('');
+}
+function onBubbleClick(item, el){
+  if(finished) return;
+  const fb = document.getElementById('lastFeedback');
+  totalSteps++;
+  if(item.type === 'hot'){
+    fb.innerHTML = '<span class="feedback-pill up">↑ ลอยขึ้น 1 ระดับ</span>';
+    SFX&&SFX.play('correct');
+    logObs(item.temp, 'hot', 'up');
+    arena.querySelectorAll('.bubble').forEach(b => b.remove());
+    setTimeout(() => setLevel(level + 1), 200);
+  } else {
+    wrongs++;
+    document.getElementById('wrongCnt').textContent = wrongs;
+    fb.innerHTML = '<span class="feedback-pill down">↓ จมลง · ก้อนเย็นหนาแน่นกว่า</span>';
+    SFX&&SFX.play('wrong');
+    logObs(item.temp, 'cool', 'down');
+    arena.querySelectorAll('.bubble').forEach(b => b.remove());
+    setTimeout(() => setLevel(Math.max(0, level - 1)), 200);
+  }
+}
+function winRound(){
+  if(totalSteps < 4){
+    // ต้องบันทึกอย่างน้อย 4 step
+    document.getElementById('phase2Result').innerHTML = `<div class="card" style="border-color:#ffcb6b;">⏳ ปีนถึง photosphere แล้ว · แต่บันทึกแค่ ${totalSteps} step · ทดลองอีก ${4-totalSteps} step (กลับลงด้วยก้อนเย็น แล้วขึ้นใหม่)</div>`;
+    arena.querySelectorAll('.bubble').forEach(b => b.remove());
+    spawnBubbles();
+    return;
+  }
+  finished = true;
+  arena.querySelectorAll('.bubble').forEach(b => b.remove());
+  document.getElementById('phase2Result').innerHTML = `
+    <div class="card green" style="border-color:#7effb2; background:rgba(126,255,178,0.1);">
+      <h3 style="color:#7effb2; margin:0 0 6px;">✓ ปีนถึง Photosphere · บันทึก ${totalSteps} step</h3>
+      <div class="narr" style="color:#d4b8ff;">
+        ร้อน = ลอย · เย็น = จม · นี่คือ <b>convection</b> · ในผิวดวงอาทิตย์เห็นเป็น <b style="color:#ffcb6b;">"granulation"</b> เซลล์ขนาดเท่าทวีปอเมริกา
+      </div>
+      <div style="margin-top:8px;font-size:13px;color:#ffd88a;">🔓 ปลด <b>MASTERY GATE · CYCLE BUILDER</b> หน้าถัดไป</div>
+    </div>`;
+  Chain.set('p07_observations', observations);
+  Chain.set('p07_steps', totalSteps);
+  Chain.set('p07_wrongs', wrongs);
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = '📤 ไป MASTERY GATE';
+  SFX&&SFX.play('charge');
+}
+setLevel(0);
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p07b', nextHref:'p07c-convective-gate.html',
+    getPayload(){ return { totalSteps, wrongs, observations }; },
+    validate(p){ if(!finished){ alert('ต้องปีนถึง photosphere + บันทึก ≥ 4 step'); return false; } return true; },
+  });
+}, 200);
+</script>
+</body></html>

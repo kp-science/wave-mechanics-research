@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P02 · เรดาร์ · ดาวหางเบี่ยง</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.radar { position:relative; width:100%; max-width:380px; margin:14px auto; aspect-ratio:1/1;
+         background:radial-gradient(circle at center, rgba(100,216,255,0.12), transparent 70%);
+         border:2px solid rgba(100,216,255,0.5); border-radius:50%; overflow:hidden; }
+.radar::before { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:6px; height:6px; background:#fff; border-radius:50%; box-shadow:0 0 12px #fff; }
+.radar-sweep { position:absolute; left:50%; top:50%; width:50%; height:2px; background:linear-gradient(90deg, transparent, #64d8ff); transform-origin:0 50%; animation:sweep 4s linear infinite; }
+@keyframes sweep { from{transform:rotate(0);} to{transform:rotate(360deg);} }
+.dot { position:absolute; width:14px; height:14px; border-radius:50%; transform:translate(-50%,-50%);
+       background:#ff5c7a; box-shadow:0 0 10px #ff5c7a; }
+.dot::after { content:'☄'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:14px; }
+</style>
+</head>
+<body data-page="p02" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🪐 ACT A · ARRIVAL</span>
+  <h1>เรดาร์ Kuiper · ดาวหาง 7 ดวงพุ่งทิศเดียวกัน</h1>
+
+  <div class="card cyan">
+    <h3>📡 ข้อมูลเรดาร์</h3>
+    <div class="radar" id="radar"></div>
+    <div class="muted center" style="font-size:12px;">7 ดาวหางย้ายจากวงโคจรเดิม · ทุกดวงเบี่ยง <b>ทิศเดียวกัน</b> ในเวลา 6 ชม.</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ถ้าใช้ <b>กฎเคปเลอร์ T²=a³</b> · ดาวหางทุกดวงควรมีคาบโคจรต่างกัน ·
+      แต่ทำไมพวกมันเบี่ยง<b>พร้อมกัน</b>? · ต้องมี<b style="color:#ff5c7a;">มวลขนาดใหญ่</b>เคลื่อนผ่านใน Kuiper Belt"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🧭 PUZZLE · เลือกคำอธิบายที่ดีที่สุด</h3>
+    <div id="puzzleArea"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P02</summary>
+    <div>เน้น "การเปลี่ยนแปลงพร้อมกัน = มีแรงร่วม" · ใช้กฎเคปเลอร์เป็น hook ให้ p13 มาคำนวณภายหลัง</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: 'ทำไมดาวหาง 7 ดวงจากทิศต่างกัน · เบี่ยงไปจุดเดียวกันได้?',
+    chips: [
+      'มีแรงโน้มถ่วงลึกลับใหญ่มาก ✓',
+      'พายุสุริยะดันทุกดวง',
+      'VOID ใช้สนามแม่เหล็ก ✓',
+      'คนเอามือดัน',
+      'โอกาสบังเอิญล้วน ๆ',
+      'มีดาวเคราะห์ที่ยังไม่ค้นพบ ✓'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งคำตอบ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const radar = document.getElementById('radar');
+const angles = [25, 60, 95, 135, 175, 215, 255];
+angles.forEach(a => {
+  const r = 35 + Math.random()*8;
+  const x = 50 + Math.cos(a*Math.PI/180)*r;
+  const y = 50 + Math.sin(a*Math.PI/180)*r;
+  const dot = document.createElement('div'); dot.className='dot';
+  dot.style.left = x+'%'; dot.style.top = y+'%';
+  radar.appendChild(dot);
+});
+const sw = document.createElement('div'); sw.className='radar-sweep'; radar.appendChild(sw);
+
+const CHOICES = [
+  { txt:'ดาวหางเบี่ยงเองโดยบังเอิญ', correct:false, hint:'7 ดวงพร้อมกัน · บังเอิญเป็นไปไม่ได้ทางสถิติ' },
+  { txt:'มีแรงโน้มถ่วงจากมวลขนาดใหญ่เคลื่อนผ่าน Kuiper', correct:true },
+  { txt:'ดาวหางถูกแสงอาทิตย์ผลักทุกดวง', correct:false, hint:'แรงดันรังสีเบามาก · ไม่ทำให้เปลี่ยนทิศพร้อมกันได้' },
+  { txt:'เนปจูนระเบิด', correct:false, hint:'ไม่มีหลักฐาน · แค่ดาวเคราะห์โคจรปกติ' },
+];
+let picked = -1;
+const area = document.getElementById('puzzleArea');
+CHOICES.forEach((c, i) => {
+  const b = document.createElement('button'); b.className='ghost';
+  b.style.cssText='display:block; width:100%; text-align:left; margin:6px 0; padding:12px; font-family:inherit; letter-spacing:0; font-weight:400;';
+  b.textContent = (i+1)+'. '+c.txt;
+  b.onclick = () => {
+    picked = i;
+    [...area.querySelectorAll('button')].forEach(x => x.style.borderColor = 'rgba(100,216,255,0.4)');
+    b.style.borderColor = '#64d8ff'; b.style.background = 'rgba(100,216,255,0.15)';
+  };
+  area.appendChild(b);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p02', nextHref:'p03-void-taunt.html',
+    getPayload(){ return { choice:picked, correct: CHOICES[picked]?.correct === true }; },
+    validate(p){ if(picked<0){ alert('กรุณาเลือก 1 ข้อ'); return false; } return true; },
+    isPerfect(p){ return p.correct; },
+    onSubmit(tag){
+      const c = CHOICES[picked];
+      if(!c.correct) alert('💡 ' + (c.hint || 'ลองคิดใหม่') + '\n\nคำตอบที่ถูก: 2 · มีแรงโน้มถ่วงจากมวลขนาดใหญ่');
+    }
+  });
+}, 200);
+</script>
+</body></html>

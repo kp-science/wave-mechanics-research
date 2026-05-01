@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p05 · บรรยากาศดูดกลืน</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .atm-lab { background:#0a0e1c; border:1px solid var(--line); border-radius:14px;
+    padding:14px; margin:14px 0; }
+  .atm-canvas { position:relative; height:260px; background:linear-gradient(180deg,#0a0e1c 0%,#1a3050 60%,#3a6090 100%);
+    border-radius:10px; overflow:hidden; }
+  .atm-space { position:absolute; top:0; left:0; right:0; height:30%; }
+  .atm-air { position:absolute; bottom:0; left:0; right:0; height:70%;
+    background:linear-gradient(180deg,rgba(60,120,200,.2),rgba(60,120,200,.6)); }
+  .atm-ground { position:absolute; bottom:0; left:0; right:0; height:8%; background:#5a3a2a; }
+  .ray { position:absolute; top:5%; width:6px; height:90%;
+    border-radius:3px; transition:all .6s; }
+  .ray.blocked { height:34%; }
+  .ray-label { position:absolute; top:-22px; left:-14px; font-size:11px; color:#fff;
+    font-weight:700; white-space:nowrap; }
+  .check-row { display:flex; flex-wrap:wrap; gap:6px; margin:12px 0; }
+  .band-btn { padding:6px 12px; border-radius:18px; cursor:pointer;
+    border:2px solid var(--line); background:var(--bg-card); color:var(--text);
+    font-size:14px; font-weight:600; }
+  .band-btn.active { transform:scale(1.05); box-shadow:0 0 12px rgba(255,138,61,.4); }
+</style>
+</head>
+<body data-page="p05">
+<div class="page">
+  <div class="act-badge">ACT B · 2/8</div>
+  <h1>ทำไมต้องส่งกล้องขึ้นอวกาศ?</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · กล้องบนดาดฟ้าจับ VOID ไม่เจอ</div>
+    <div class="crisis-body">เคนตั้งกล้องไว้บนพื้น · แต่ทุกครั้งที่ยิงคลื่น <b>X-ray, UV, IR</b> เพื่อสแกน · สัญญาณ <em>หาย</em> · ทำไม?</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🔬 LAB · ทดสอบยิงคลื่นทะลุชั้นบรรยากาศ</div>
+    <div class="tool-body">เลือกแต่ละช่วงคลื่น · ดูผล: ทะลุได้/ถูกดูดกลืน · เพื่อทำให้รู้ว่าทำไมต้องส่งกล้องไปอวกาศ</div>
+  </div>
+
+  <div class="atm-lab">
+    <div class="check-row" id="bandRow"></div>
+    <div class="atm-canvas" id="canvas">
+      <div class="atm-space"></div>
+      <div class="atm-air"></div>
+      <div class="atm-ground"></div>
+    </div>
+    <div id="explain" style="margin-top:10px;color:var(--text-soft);font-size:14px;min-height:32px;"></div>
+  </div>
+
+  <h3>📋 บันทึกผลการทดลอง</h3>
+  <p>ติ๊กช่อง <b>"ทะลุได้บนพื้นโลก"</b> สำหรับช่วงคลื่นที่ผ่านชั้นบรรยากาศมาถึงพื้น (ตำรา p93)</p>
+  <div id="record" style="background:var(--bg-card);padding:10px;border-radius:10px;border:1px solid var(--line);"></div>
+  <div style="text-align:center;margin:12px 0;">
+    <button class="btn" id="submit">✓ ตรวจคำตอบ</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง · จุดประสงค์ตำรา</div>
+    NASA สร้าง Hubble · Chandra · JWST · Spitzer ขึ้น <b>นอกบรรยากาศ</b> เพราะ X-ray, UV, IR
+    ถูกบรรยากาศดูดกลืน · กล้องบนพื้นโลกใช้ได้แค่ <b>วิทยุ + ไมโครเวฟ + visible</b>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p06-radio.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p06 FAST</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p05' });
+    PBL.init({ id:'p05-atmosphere' });
+
+    const bands = EP_CONFIG.spectrum;
+    const row = document.getElementById('bandRow');
+    const canvas = document.getElementById('canvas');
+    const explain = document.getElementById('explain');
+    const record = document.getElementById('record');
+    let activeRay = null;
+    const userMarks = {};
+
+    bands.forEach((b, idx) => {
+      const btn = document.createElement('button');
+      btn.className = 'band-btn';
+      btn.style.borderColor = b.color;
+      btn.textContent = b.name;
+      btn.onclick = () => {
+        document.querySelectorAll('.band-btn').forEach(x => x.classList.remove('active'));
+        btn.classList.add('active');
+        if (activeRay) activeRay.remove();
+        const ray = document.createElement('div');
+        ray.className = 'ray' + (b.earthOK ? '' : ' blocked');
+        ray.style.background = b.color;
+        ray.style.left = (10 + idx * 14) + '%';
+        ray.innerHTML = '<span class="ray-label">' + b.name + '</span>';
+        canvas.appendChild(ray);
+        activeRay = ray;
+        explain.innerHTML = b.earthOK
+          ? '<b style="color:var(--good);">✓ ' + b.name + ' ทะลุชั้นบรรยากาศมาถึงพื้นได้</b> · กล้องบนพื้นโลกรับสัญญาณนี้ได้'
+          : '<b style="color:var(--bad);">× ' + b.name + ' ถูกชั้นบรรยากาศดูดกลืน</b> · ต้องใช้กล้องที่อยู่ในอวกาศ';
+      };
+      row.appendChild(btn);
+    });
+
+    bands.forEach(b => {
+      const item = document.createElement('label');
+      item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line-soft);';
+      item.innerHTML = `<input type="checkbox" data-band="${b.id}"/><span class="band-tag ${b.id}">${b.name}</span><span style="color:var(--text-mute);font-size:13px;">${b.range}</span>`;
+      record.appendChild(item);
+    });
+    record.querySelectorAll('input').forEach(cb => cb.onchange = () => {
+      userMarks[cb.dataset.band] = cb.checked;
+    });
+
+    document.getElementById('submit').onclick = () => {
+      const correct = bands.every(b => !!userMarks[b.id] === !!b.earthOK);
+      const result = document.getElementById('resultHost');
+      result.classList.add('show', correct ? 'correct' : 'wrong');
+      const earthBands = bands.filter(b => b.earthOK).map(b => b.name).join(', ');
+      result.innerHTML = correct
+        ? '✓ ใช่ · พื้นโลกใช้ได้: <b>' + earthBands + '</b> · ส่วน X-ray, UV, IR ต้องไปอวกาศ'
+        : '× ลองดูใหม่ · X-ray, UV, IR ถูกดูดกลืน';
+      KPA.log('K1', 'atmosphere-absorber', { correct, marks:userMarks });
+      KPA.misconception('M6', correct ? 'resolved' : 'persistent', { marks:userMarks });
+      PBL.attempt(correct, { task:'atm-mark' });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        Boot07.grantOS && null;
+        document.getElementById('transfer').style.display = 'block';
+        document.getElementById('next').style.display = '';
+        PBL._enter('transfer');
+      } else {
+        CoinEnergy.penalty('crisisFail');
+      }
+    };
+  });
+</script>
+</body>
+</html>

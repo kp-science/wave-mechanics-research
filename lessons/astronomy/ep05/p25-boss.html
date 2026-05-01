@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P24 · SOLAR STORM (Boss)</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.boss-stage { position:relative; height:300px; background:radial-gradient(circle at 30% 50%, rgba(255,138,61,0.5), rgba(58,10,74,0.4) 60%, #02030a 90%); border-radius:14px; overflow:hidden; margin:8px 0; }
+.boss-sun { position:absolute; left:25%; top:50%; transform:translate(-50%,-50%); width:140px; height:140px; border-radius:50%;
+            background:radial-gradient(circle at 40% 40%, #fff8c8, #ffcb6b 25%, #ff5c7a 60%, #b980ff 95%);
+            box-shadow:0 0 80px #ff8a3d, inset 0 0 40px #ff5c7a; animation:bossSpin 8s linear infinite, bossBreath 2s ease-in-out infinite; }
+@keyframes bossSpin { from{filter:hue-rotate(0);} to{filter:hue-rotate(360deg);} }
+@keyframes bossBreath { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.05);} }
+.cme-pulse { position:absolute; left:25%; top:50%; transform:translate(-50%,-50%); width:140px; height:140px; border-radius:50%;
+             border:3px solid #ff5c7a; opacity:0; pointer-events:none; }
+.cme-pulse.fire { animation:cmePulseAnim 1s ease-out forwards; }
+@keyframes cmePulseAnim { 0%{opacity:1;width:140px;height:140px;} 100%{opacity:0;width:520px;height:520px;} }
+.player-ship { position:absolute; right:10%; top:50%; transform:translate(50%,-50%); font-size:32px; filter:drop-shadow(0 0 10px #64d8ff); transition:transform .2s; }
+.player-ship.hit { animation:shipHit .4s; }
+@keyframes shipHit { 0%,100%{transform:translate(50%,-50%);} 25%{transform:translate(60%,-60%);} 75%{transform:translate(40%,-40%);} }
+.boss-hud { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; padding:10px; border-radius:12px; background:rgba(20,8,16,0.85); border:1px solid #ff5c7a; margin:8px 0; }
+.hud-cell { padding:8px; border-radius:8px; background:rgba(0,0,0,.4); text-align:center; }
+.hud-cell .lbl { font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; letter-spacing:.14em; }
+.hud-cell .val { font-family:Orbitron,monospace; font-size:18px; font-weight:700; }
+.hud-cell.energy .val { color:#7effb2; transition:color .3s; }
+.hud-cell.energy.warn .val { color:#ffcb6b; animation:eWarn 1s ease-in-out infinite; }
+.hud-cell.energy.crit .val { color:#ff5c7a; animation:eCrit 0.6s ease-in-out infinite; }
+.hud-cell.energy.crit { border:1px solid #ff5c7a; box-shadow:0 0 16px rgba(255,92,122,0.5); }
+@keyframes eWarn { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+@keyframes eCrit { 0%,100%{transform:scale(1); text-shadow:0 0 0 #ff5c7a;} 50%{transform:scale(1.15); text-shadow:0 0 12px #ff5c7a;} }
+.hud-cell.thrust .val { color:#ffcb6b; }
+.hud-cell.cd .val { color:#ff5c7a; }
+.q-area { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(255,138,61,0.4); margin:8px 0; min-height:140px; }
+.q-area .qtxt { font-size:14px; color:#ffcb6b; margin-bottom:10px; line-height:1.6; }
+.q-choice { display:flex; gap:8px; }
+.q-choice button { flex:1; padding:14px; font-size:13px; }
+.zone-tag { display:inline-block; padding:4px 10px; border-radius:999px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.12em; margin-bottom:6px; }
+.zone-tag.z1 { background:rgba(255,203,107,.2); color:#ffcb6b; border:1px solid #ffcb6b; }
+.zone-tag.z2 { background:rgba(255,138,61,.2); color:#ff8a3d; border:1px solid #ff8a3d; }
+.zone-tag.z3 { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid #ff5c7a; }
+.thrust-bar { height:10px; border-radius:5px; background:rgba(255,255,255,.1); overflow:hidden; margin-top:4px; }
+.thrust-bar .fill { height:100%; background:linear-gradient(90deg, #ffcb6b, #ff8a3d); transition:width .4s; }
+.boss-shake { animation:bossShake .4s; }
+@keyframes bossShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-8px);} 75%{transform:translateX(8px);} }
+</style>
+</head>
+<body data-page="p25" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔥 BOSS · SOLAR STORM</span>
+  <h1 style="color:#ff5c7a;">SOLAR STORM</h1>
+  <div class="muted">เบี่ยง CME ก่อนถึงโลก · 18 ชม. countdown · 3 zones · pool 24 ข้อ</div>
+
+  <div class="boss-stage" id="stage">
+    <div class="boss-sun" id="sun"></div>
+    <div class="cme-pulse" id="cmePulse"></div>
+    <div class="player-ship" id="ship">🚀</div>
+  </div>
+
+  <div class="boss-hud">
+    <div class="hud-cell energy"><div class="lbl">⚡ ENERGY</div><div class="val" id="hudEnergy">100</div></div>
+    <div class="hud-cell thrust"><div class="lbl">🚀 THRUST</div><div class="val" id="hudThrust">0/30</div></div>
+    <div class="hud-cell cd"><div class="lbl">⏰ CME-ETA</div><div class="val" id="hudCD">18h</div></div>
+  </div>
+
+  <div id="powerBar" style="display:flex; gap:6px; margin:6px 0; flex-wrap:wrap; justify-content:center;"></div>
+  <div class="thrust-bar"><div class="fill" id="thrustFill" style="width:0%;"></div></div>
+  <div style="margin-top:6px;"><span class="zone-tag z1" id="zoneTag">Zone 1 · Anatomy & Origin</span></div>
+
+  <div class="q-area" id="qArea">
+    <div class="qtxt" id="qTxt">— กดเริ่มเพื่อเริ่ม —</div>
+    <div class="q-choice" id="qChoice"></div>
+  </div>
+  <button id="startBtn">▶ START SOLAR STORM</button>
+
+  <div class="card" id="endCard" style="display:none;">
+    <h3 id="endTitle"></h3>
+    <div id="endBody"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P24</summary>
+    <div>3 zones · 8 ข้อ/zone · CME pulse ทุก 10 วิ -8 energy · ตอบถูก +5/+8 thrust · Energy ≥70 = A+, ≥40 = A, ≥1 = B, =0 = C</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— auto-submit เมื่อจบ —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ต้องจบ boss ก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const cfg = EP_CONFIG.boss;
+const extraEnergy = Number(Chain.get('bossExtraEnergy') || 0);
+let energy = cfg.startEnergy + extraEnergy;
+let countdownHr = cfg.startCountdownHr;
+let zone = 1;
+let thrust = 0;
+let pool = [];
+let chargeInterval = null;
+let ended = false;
+let answered = 0;
+// Powers from p24 POWER FORGE (HELION code box)
+const POWERS = Chain.get('bossPowers') || {};
+let shieldAvailable     = !!POWERS.shield;     // h4 · block 1 CME pulse
+const warningEnabled    = !!POWERS.warning;    // h5 · 2-sec pre-pulse warning
+let intelHintAvailable  = !!POWERS.intelHint;  // p14 · reveal answer 1x in zone 2 (legacy)
+let burstAvailable      = !!POWERS.burst;      // h1 · save 1 wrong answer · gives half thrust
+let insightAvailable    = !!POWERS.insight;    // h2 · click to reveal answer (any zone)
+let timeBubbleAvailable = !!POWERS.timeBubble; // h3 · click to +6h CME-ETA
+const prismaticUnlocked = !!POWERS.prismatic;  // h6 · unlock A+ ending (replaces token req)
+let warningTimeout = null;
+
+function renderPowerBar(){
+  const bar = document.getElementById('powerBar');
+  bar.innerHTML = '';
+  const items = [
+    { id:'shield',     icon:'🛡️', label:'Field Shield',  avail:shieldAvailable,                   action:null },
+    { id:'warning',    icon:'📡', label:'Early Warning', avail:warningEnabled,                    action:null },
+    { id:'burst',      icon:'⚛️', label:'Nuclear Burst', avail:burstAvailable,                    action:null },
+    { id:'insight',    icon:'💡', label:'Insight Beam',  avail:insightAvailable,                  action:useInsight },
+    { id:'timeBubble', icon:'⏱️', label:'Time Bubble',   avail:timeBubbleAvailable,               action:useTimeBubble },
+    { id:'intelHint',  icon:'🔍', label:'Intel Hint',    avail:intelHintAvailable && zone===2,    action:useIntelHint },
+    { id:'prismatic',  icon:'🌟', label:'Prismatic Key', avail:prismaticUnlocked,                 action:null, persistent:true },
+  ];
+  items.forEach(it => {
+    if(!POWERS[it.id]) return;
+    const used = !it.avail;
+    const clickable = !!it.action && it.avail;
+    const el = document.createElement('div');
+    el.style.cssText = `padding:6px 10px; border-radius:8px; border:1px solid ${used?'rgba(120,140,220,0.3)':'#7effb2'}; background:${used?'rgba(20,28,52,0.5)':'rgba(126,255,178,0.12)'}; font-family:Orbitron,monospace; font-size:11px; color:${used?'#6a7394':'#7effb2'}; letter-spacing:.1em; ${clickable?'cursor:pointer;':''}`;
+    const status = it.persistent ? 'ACTIVE' : (used ? 'USED' : (clickable ? 'TAP' : 'READY'));
+    el.innerHTML = `${it.icon} <b>${it.label}</b> · ${status}`;
+    if(clickable) el.onclick = it.action;
+    bar.appendChild(el);
+  });
+}
+
+function highlightCorrect(label){
+  const ch = document.getElementById('qChoice');
+  if(window._currentQ){
+    const correctIdx = window._currentQ.c;
+    [...ch.children].forEach((b,i) => {
+      if(i===correctIdx){
+        b.style.background = 'rgba(126,255,178,0.25)';
+        b.style.borderColor = '#7effb2';
+        b.style.boxShadow = '0 0 16px #7effb2';
+      } else { b.style.opacity = '0.5'; }
+    });
+    flash(label, '#7effb2');
+  }
+}
+function useInsight(){
+  if(!insightAvailable) return;
+  insightAvailable = false;
+  highlightCorrect('💡 INSIGHT BEAM');
+  renderPowerBar();
+}
+function useIntelHint(){
+  if(!intelHintAvailable) return;
+  intelHintAvailable = false;
+  highlightCorrect('🔍 INTEL HINT');
+  renderPowerBar();
+}
+function useTimeBubble(){
+  if(!timeBubbleAvailable) return;
+  timeBubbleAvailable = false;
+  countdownHr += 6;
+  flash('⏱️ TIME BUBBLE · +6h ETA', '#ff8a3d');
+  updateHud();
+  renderPowerBar();
+  SFX&&SFX.play('charge');
+}
+
+function shuffle(a){ return a.slice().sort(()=>Math.random()-0.5); }
+function loadZonePool(z){
+  pool = shuffle(cfg.pools['zone'+z]);
+  document.getElementById('zoneTag').className = 'zone-tag z'+z;
+  document.getElementById('zoneTag').textContent = ['Zone 1 · Anatomy & Origin','Zone 2 · Activity & Impact','Zone 3 · Habitat & Deflect'][z-1];
+}
+let _criticalWarned = false;
+function updateHud(){
+  const eShown = Math.max(0, Math.round(energy));
+  document.getElementById('hudEnergy').textContent = eShown;
+  document.getElementById('hudThrust').textContent = thrust + '/' + cfg.thrustPerZone;
+  document.getElementById('hudCD').textContent = Math.max(0,countdownHr) + 'h';
+  document.getElementById('thrustFill').style.width = Math.min(100, thrust/cfg.thrustPerZone*100)+'%';
+  // Energy state styling: warn ≤30 · crit ≤15
+  const eCell = document.querySelector('.hud-cell.energy');
+  if(eCell){
+    eCell.classList.remove('warn','crit');
+    if(eShown > 0 && eShown <= 15) eCell.classList.add('crit');
+    else if(eShown > 0 && eShown <= 30) eCell.classList.add('warn');
+  }
+  // First-time critical warning flash
+  if(!_criticalWarned && eShown > 0 && eShown <= 20 && !ended){
+    _criticalWarned = true;
+    flashCritical();
+  }
+}
+function flashCritical(){
+  const w = document.createElement('div');
+  w.style.cssText = 'position:fixed; top:80px; left:50%; transform:translateX(-50%); z-index:250; padding:10px 22px; border-radius:999px; background:rgba(255,92,122,0.95); border:2px solid #fff; font-family:Orbitron,monospace; font-size:14px; color:#fff; letter-spacing:.18em; font-weight:700; box-shadow:0 0 30px #ff5c7a; animation:critFlash 0.4s ease-in-out 6;';
+  w.innerHTML = '⚠ ENERGY CRITICAL · ใกล้ BLACKOUT!';
+  document.body.appendChild(w);
+  if(!document.getElementById('critFlashStyle')){
+    const s = document.createElement('style'); s.id='critFlashStyle';
+    s.textContent='@keyframes critFlash { 0%,100%{transform:translateX(-50%) scale(1); opacity:1;} 50%{transform:translateX(-50%) scale(1.1); opacity:0.7;} }';
+    document.head.appendChild(s);
+  }
+  setTimeout(() => w.remove(), 2800);
+  SFX&&SFX.play('wrong');
+}
+function showQ(){
+  if(ended) return;
+  if(!pool.length) loadZonePool(zone);
+  const q = pool.shift();
+  if(!q){ loadZonePool(zone); return showQ(); }
+  window._currentQ = q;
+  document.getElementById('qTxt').innerHTML = q.q + ' <span style="font-size:11px;color:#9aa3c0;">['+q.tier+']</span>';
+  const ch = document.getElementById('qChoice');
+  ch.innerHTML='';
+  q.a.forEach((t,i)=>{
+    const b = document.createElement('button'); b.textContent = t;
+    b.onclick = ()=>answer(i, q);
+    ch.appendChild(b);
+  });
+  renderPowerBar();
+}
+function answer(i, q){
+  answered++;
+  countdownHr -= cfg.countdownPerAnswer;
+  if(i===q.c){
+    const t = q.tier==='hard' ? cfg.thrustHard : cfg.thrustEasy;
+    thrust += t;
+    SFX&&SFX.play('correct');
+    flash('+'+t+' THRUST', '#7effb2');
+    if(thrust >= cfg.thrustPerZone){
+      thrust = 0;
+      if(zone < 3){ zone++; loadZonePool(zone); flashBig('ZONE '+zone+' →'); }
+      else { return endBoss(); }
+    }
+  } else {
+    // Nuclear Burst · save 1 wrong → give half thrust instead of energy loss
+    if(burstAvailable){
+      burstAvailable = false;
+      const t = Math.max(1, Math.floor(cfg.thrustEasy / 2));
+      thrust += t;
+      flash('⚛️ NUCLEAR BURST · +'+t+' (pity)', '#ffcb6b');
+      SFX&&SFX.play('snap');
+      renderPowerBar();
+      if(thrust >= cfg.thrustPerZone){
+        thrust = 0;
+        if(zone < 3){ zone++; loadZonePool(zone); flashBig('ZONE '+zone+' →'); }
+        else { return endBoss(); }
+      }
+    } else {
+      energy += cfg.thrustWrong; // -3 for wrong
+      if(energy<0) energy=0;
+      SFX&&SFX.play('wrong');
+      flash(cfg.thrustWrong+' ENERGY', '#ff5c7a');
+      document.getElementById('ship').classList.add('hit');
+      setTimeout(()=>document.getElementById('ship').classList.remove('hit'), 400);
+    }
+  }
+  updateHud();
+  if(countdownHr<=0 || energy<=0) return endBoss();
+  showQ();
+}
+function flash(txt, color){
+  const stage = document.getElementById('stage');
+  const p = document.createElement('div'); p.className='dmg-pop'; p.textContent = txt; p.style.color=color;
+  p.style.left = (50+Math.random()*30)+'%'; p.style.top='30%';
+  stage.appendChild(p); setTimeout(()=>p.remove(), 1000);
+}
+function flashBig(txt){
+  const overlay = document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:300;font-family:Orbitron,monospace;font-size:48px;color:#ffcb6b;letter-spacing:.2em;text-shadow:0 0 30px #ff8a3d;animation:zoneIn 1.4s forwards;pointer-events:none;';
+  overlay.textContent = txt;
+  document.body.appendChild(overlay);
+  if(!document.getElementById('zoneInStyle')){
+    const s=document.createElement('style'); s.id='zoneInStyle';
+    s.textContent = '@keyframes zoneIn { 0%{opacity:0;transform:scale(0.5);} 30%{opacity:1;transform:scale(1);} 70%{opacity:1;} 100%{opacity:0;transform:scale(1.4);} }';
+    document.head.appendChild(s);
+  }
+  setTimeout(()=>overlay.remove(), 1400);
+  SFX&&SFX.play('charge');
+}
+function showWarning(){
+  // 2-sec pre-pulse warning (Flare Warning power)
+  const w = document.createElement('div');
+  w.id = 'pulseWarning';
+  w.style.cssText = 'position:fixed; top:90px; left:50%; transform:translateX(-50%); z-index:200; padding:8px 18px; border-radius:999px; background:rgba(255,92,122,0.85); border:2px solid #fff; font-family:Orbitron,monospace; font-size:14px; color:#fff; letter-spacing:.18em; animation:warnPulse 0.5s ease-in-out infinite; box-shadow:0 0 24px #ff5c7a;';
+  w.innerHTML = '⚠ CME PULSE · 2s';
+  document.body.appendChild(w);
+  if(!document.getElementById('warnPulseStyle')){
+    const s=document.createElement('style'); s.id='warnPulseStyle';
+    s.textContent='@keyframes warnPulse { 0%,100%{transform:translateX(-50%) scale(1);} 50%{transform:translateX(-50%) scale(1.08);} }';
+    document.head.appendChild(s);
+  }
+  setTimeout(()=>w.remove(), 2000);
+}
+
+function fireCharge(){
+  if(ended) return;
+  // Shield: blocks first pulse
+  if(shieldAvailable){
+    shieldAvailable = false;
+    flash('🛡️ SHIELD BLOCKED · 0 damage', '#7effb2');
+    document.getElementById('cmePulse').classList.remove('fire');
+    void document.getElementById('cmePulse').offsetWidth;
+    document.getElementById('cmePulse').classList.add('fire');
+    SFX&&SFX.play('snap');
+    renderPowerBar();
+    return;
+  }
+  energy -= cfg.chargeDamage;
+  if(energy<0) energy=0;
+  document.getElementById('cmePulse').classList.remove('fire');
+  void document.getElementById('cmePulse').offsetWidth;
+  document.getElementById('cmePulse').classList.add('fire');
+  document.body.classList.add('boss-shake');
+  setTimeout(()=>document.body.classList.remove('boss-shake'), 400);
+  SFX&&SFX.play('hit');
+  flash('-'+cfg.chargeDamage+' ENERGY', '#ff5c7a');
+  updateHud();
+  if(energy<=0) endBoss();
+}
+
+function startCharge(){
+  chargeInterval = setInterval(()=>{
+    if(ended) return;
+    if(warningEnabled){
+      // Show warning 2s before charge fires
+      showWarning();
+      warningTimeout = setTimeout(fireCharge, 2000);
+    } else {
+      fireCharge();
+    }
+  }, cfg.chargeIntervalSec*1000);
+}
+function showBlackout(){
+  // Energy depleted · ไม่สามารถสู้ต่อได้ · กลับไปเติม energy ที่ shop
+  ended = true;
+  clearInterval(chargeInterval);
+  document.getElementById('qArea').style.display='none';
+  document.getElementById('startBtn').style.display='none';
+  if(document.getElementById('blackoutOverlay')) return;
+  const ovl = document.createElement('div');
+  ovl.id = 'blackoutOverlay';
+  ovl.style.cssText = 'position:fixed; inset:0; z-index:600; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.92); backdrop-filter:blur(10px); padding:20px; animation:fadeIn .3s;';
+  ovl.innerHTML = `
+    <div style="max-width:480px; padding:28px; border-radius:18px; background:linear-gradient(160deg,#1a0008,#03040c); border:3px solid #ff5c7a; box-shadow:0 0 60px rgba(255,92,122,0.4); text-align:center;">
+      <div style="font-size:60px; margin-bottom:12px;">⚡💀</div>
+      <h2 style="color:#ff5c7a; font-family:Orbitron,monospace; font-size:24px; letter-spacing:.18em; margin:0 0 8px;">ENERGY DEPLETED</h2>
+      <div style="color:#ffd0d8; font-size:14px; line-height:1.7; margin-bottom:18px;">
+        ⚡ <b>พลังงานหมด · ระบบยานดับ</b><br>
+        ไม่สามารถสู้ VOID ต่อได้ · CME pulse กระแทกตัวยานจนแกนพลังงานเสียหาย<br>
+        <span style="color:#ffcb6b;font-size:12px;">💡 กลับไปร้านค้าเพื่อเติม ⚡ ENERGY CELLS · หรือลองใหม่</span>
+      </div>
+      <div style="display:flex; gap:10px; flex-direction:column;">
+        <button id="boRetry" style="padding:14px; background:linear-gradient(180deg,#ffcb6b,#ff8a3d); color:#1a0500; border:0; border-radius:10px; font-family:Orbitron,monospace; font-size:13px; font-weight:700; letter-spacing:.16em; cursor:pointer;">↻ ลองใหม่ · เริ่ม BOSS อีกครั้ง</button>
+        <button id="boShop" style="padding:14px; background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; border:0; border-radius:10px; font-family:Orbitron,monospace; font-size:13px; font-weight:700; letter-spacing:.16em; cursor:pointer;">🛒 กลับ VOYAGER CACHE · เติม ⚡</button>
+        <button id="boGiveUp" style="padding:10px; background:transparent; color:#9aa3c0; border:1px solid #9aa3c0; border-radius:10px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; cursor:pointer;">ยอมแพ้ · รับ ENDING C (BLACKOUT)</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ovl);
+  document.getElementById('boRetry').onclick = () => location.reload();
+  document.getElementById('boShop').onclick = () => location.href = 'p24-shopb.html';
+  document.getElementById('boGiveUp').onclick = () => { ovl.remove(); ended = false; finalizeEnding(); };
+  SFX&&SFX.play('wrong');
+}
+
+function finalizeEnding(){
+  ended = true;
+  clearInterval(chargeInterval);
+  document.getElementById('qArea').style.display='none';
+  document.getElementById('startBtn').style.display='none';
+  let ending;
+  const hasShield = (Chain.get('shopBought')||{}).auroraToken;
+  const hasToken = Chain.get('coronaToken');
+  // A+ requires Prismatic Key (h6) OR legacy combo (auroraToken + coronaToken)
+  const aPlusUnlock = prismaticUnlocked || (hasShield && hasToken);
+  if(energy >= cfg.endingThresholds['A+'] && aPlusUnlock) ending = 'A+';
+  else if(energy >= cfg.endingThresholds['A']) ending = 'A';
+  else if(energy >= cfg.endingThresholds['B']) ending = 'B';
+  else ending = 'C';
+  Chain.set('bossEnding', ending);
+  Chain.set('bossEnergyLeft', Math.round(energy));
+  const labels = { 'A+':'A+ AURORA TRIUMPH', 'A':'A · DEFLECTED', 'B':'B · GRID FLICKER', 'C':'C · BLACKOUT' };
+  const colors = { 'A+':'#7effb2','A':'#64d8ff','B':'#ffcb6b','C':'#ff5c7a' };
+  const card = document.getElementById('endCard');
+  card.style.display='block';
+  card.style.borderColor = colors[ending];
+  document.getElementById('endTitle').textContent = '✨ ENDING: '+labels[ending];
+  document.getElementById('endTitle').style.color = colors[ending];
+  document.getElementById('endBody').innerHTML = `Energy เหลือ: <b>${Math.round(energy)}</b> · ตอบไป ${answered} ข้อ <br>
+    <div class="muted" style="margin-top:8px;">กดต่อเพื่อดู rescue + endings เต็ม</div>`;
+  // mystery box drop tier by ending
+  const wrongs = ending==='A+'?0:(ending==='A'?2:(ending==='B'?4:6));
+  if(window.MysteryBox && MysteryBox.roll) setTimeout(()=>MysteryBox.roll({wrongs, page:'p25'}), 800);
+  // 🪙 Coin reward by ending tier
+  if(window.Coin){
+    if(ending === 'A+'){
+      // perfect → full 80 (uses awardPerfect for once-only tracking via config)
+      Coin.awardPerfect && Coin.awardPerfect('p25');
+    } else if(ending === 'A'){
+      // great → 40 (half) · custom key for once-only
+      const k = 'cosmosLog_ep05_bossA_granted';
+      if(!localStorage.getItem(k)){ Coin.add && Coin.add(40, 'p25:ending-A'); localStorage.setItem(k,'1'); }
+    } else if(ending === 'B'){
+      // pass → 15
+      const k = 'cosmosLog_ep05_bossB_granted';
+      if(!localStorage.getItem(k)){ Coin.add && Coin.add(15, 'p25:ending-B'); localStorage.setItem(k,'1'); }
+    }
+    // C → no reward
+  }
+  // unlock next
+  Submit.record('p25', { ending, energy:Math.round(energy), answered });
+  Gate.markSubmitted();
+  const btn = document.getElementById('nextBtn');
+  btn.disabled = false; btn.textContent = '▶ ดู Ending';
+}
+
+// Router · พลังงาน ≤ 0 = blackout overlay (จบทันที · ให้ retry/shop/giveup)
+// thrust ครบ 3 zones หรือ countdown หมด → finalizeEnding ปกติ
+function endBoss(){
+  if(ended) return;
+  if(energy <= 0) return showBlackout();
+  return finalizeEnding();
+}
+
+document.getElementById('startBtn').onclick = ()=>{
+  document.getElementById('startBtn').style.display='none';
+  loadZonePool(1);
+  renderPowerBar();
+  showQ();
+  startCharge();
+};
+// Show powers immediately on page load so user sees what's available
+setTimeout(renderPowerBar, 300);
+updateHud();
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.wireButton('p25', btn,'p26-rescue.html', { requireSubmit:true });
+},200);
+</script>
+</body></html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p06 · Nucleosynthesis</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .recipe { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin:14px 0; }
+  .recipe .item { background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
+    padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
+  .recipe .item.selected { border-color:var(--c-nucleo); background:linear-gradient(180deg,#3a1808,#1a0a04); }
+  .recipe .item .ic { font-size:32px; }
+  .recipe .item .nm { font-weight:700; font-size:15px; }
+  .recipe .item .desc { font-size:12px; color:var(--text-mute); }
+</style>
+</head>
+<body data-page="p06">
+<div class="page">
+  <div class="act-badge">ACT B · 2/8 · NUCLEOSYNTHESIS</div>
+  <div id="epochHost"></div>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div class="howto">
+    <h4>🎮 GROUP TALK · นิวเคลียสยุคต้น</h4>
+    <ul>
+      <li>เลือก <b>เฉพาะ</b> ธาตุที่เกิดในช่วง 3 นาทีแรก</li>
+      <li>misconception M-FINAL-5: ธาตุหนัก (C, Fe, Au) <em>ไม่</em>ได้เกิดที่นี่</li>
+      <li>ระดมความคิด 60 วิ · เลือก 3 ธาตุที่ใช่</li>
+    </ul>
+  </div>
+
+  <div class="recipe" id="recipe">
+    <div class="item" data-id="H"  data-on="1"><div class="ic">⚪</div><div class="nm">H · ไฮโดรเจน</div><div class="desc">~75%</div></div>
+    <div class="item" data-id="He" data-on="1"><div class="ic">🟡</div><div class="nm">He · ฮีเลียม</div><div class="desc">~24%</div></div>
+    <div class="item" data-id="Li" data-on="1"><div class="ic">🟣</div><div class="nm">Li · ลิเทียม</div><div class="desc">trace</div></div>
+    <div class="item" data-id="C"  data-on="0"><div class="ic">⚫</div><div class="nm">C · คาร์บอน</div><div class="desc">ในดาวเท่านั้น</div></div>
+    <div class="item" data-id="O"  data-on="0"><div class="ic">🔵</div><div class="nm">O · ออกซิเจน</div><div class="desc">ในดาว</div></div>
+    <div class="item" data-id="Fe" data-on="0"><div class="ic">⚙️</div><div class="nm">Fe · เหล็ก</div><div class="desc">ซูเปอร์โนวา</div></div>
+    <div class="item" data-id="Au" data-on="0"><div class="ic">✨</div><div class="nm">Au · ทอง</div><div class="desc">neutron star merger</div></div>
+    <div class="item" data-id="U"  data-on="0"><div class="ic">☢️</div><div class="nm">U · ยูเรเนียม</div><div class="desc">supernova</div></div>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่ง · ตรวจ recipe</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/timeline-viz.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p06' });
+  TimelineViz.epochCard(document.getElementById('epochHost'), 2);
+  EP08Page.story('p06');
+  EP08Page.markVisit('p06');
+
+  const picks = new Set();
+  document.getElementById('recipe').addEventListener('click', e => {
+    const it = e.target.closest('.item'); if (!it) return;
+    const id = it.dataset.id;
+    if (picks.has(id)) { picks.delete(id); it.classList.remove('selected'); }
+    else { picks.add(id); it.classList.add('selected'); }
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const all = document.querySelectorAll('#recipe .item');
+    let right=0, wrong=0;
+    all.forEach(it => {
+      const should = it.dataset.on === '1';
+      const did = picks.has(it.dataset.id);
+      if (should && did) right++;
+      if (!should && did) wrong++;
+    });
+    const ok = right === 3 && wrong === 0;
+    if (window.KPA) {
+      KPA.log('K','K1','nucleosynth recipe ' + (ok?'ok':'partial'));
+      KPA.research('nucleoRecipe', { right, wrong, ok });
+    }
+    EP08Page.submit({
+      ok,
+      title: ok ? '✓ FIRST NUCLEI · H · He · Li' : '⚠️ ลองเฉพาะธาตุเบา',
+      body: `<p>ใน 3 นาทีแรกอุณหภูมิเย็นพอจะเกิดเฉพาะ <b>H · He · Li</b></p>
+             <p style="color:var(--genesis-gold);">M-FINAL-5: ธาตุหนัก (Fe, Au, U) เกิดใน<em>ซูเปอร์โนวา</em> หลังบิกแบงนานมาก</p>`
+    });
+  };
+</script>
+</body>
+</html>

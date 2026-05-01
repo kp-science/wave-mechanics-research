@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p07 · Visible</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .scope { width:280px; height:280px; border-radius:50%; margin:14px auto;
+    background:radial-gradient(circle, #000 60%, #1a1a2a 100%);
+    border:6px solid #555; position:relative; overflow:hidden;
+    box-shadow:inset 0 0 30px rgba(255,255,0,.1); }
+  .target { position:absolute; transition:all .25s; font-size:30px; }
+  .crosshair { position:absolute; top:50%; left:50%; width:80px; height:80px;
+    transform:translate(-50%,-50%); pointer-events:none; }
+  .crosshair::before, .crosshair::after { content:''; position:absolute;
+    background:rgba(241,196,15,.6); }
+  .crosshair::before { left:50%; top:0; width:1px; height:100%; transform:translateX(-50%); }
+  .crosshair::after { top:50%; left:0; height:1px; width:100%; transform:translateY(-50%); }
+  .focus-row { display:flex; gap:10px; align-items:center; margin:10px 0; }
+</style>
+</head>
+<body data-page="p07">
+<div class="page">
+  <div class="act-badge">ACT B · 4/8 · VISIBLE</div>
+  <h1>กล้องสะท้อนแสง · เห็นด้วยตา</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · drone VOID ตัวเล็ก 3 ตัว บินใกล้ยาน</div>
+    <div class="crisis-body">ระยะใกล้ · ใช้คลื่นยาวไม่ได้ (resolution ต่ำ) · ใช้คลื่น <b>visible 400-700 nm</b> ผ่านกล้องสะท้อนแสงปรับโฟกัส · แล้ว lock target</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🔭 TOOL · กล้องสะท้อนแสง (ตำรา p101)</div>
+    <div class="tool-body">ใช้กระจกโค้งรวมแสง · resolution สูงในช่วง 400-700 nm · ใช้ดูดาวเคราะห์ ดาวฤกษ์ เนบิวลา</div>
+  </div>
+
+  <div class="scope" id="scope">
+    <div class="crosshair"></div>
+  </div>
+
+  <div class="focus-row">
+    <span>โฟกัส:</span>
+    <input type="range" id="focus" min="0" max="100" value="0"/>
+    <span class="metric">→ <b id="fVal">0</b>%</span>
+  </div>
+
+  <p style="text-align:center;">ปรับโฟกัส <b>≥ 70%</b> เพื่อ lock drone</p>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Hubble ก็ใช้กระจกสะท้อนแสง · ตาเปล่าเห็น 400-700 nm · นี่คือเหตุผลที่ภาพดาราจักรสีจัด มาจากกล้อง visible
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p08-ir.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p08 IR</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p07' });
+    PBL.init({ id:'p07-visible' });
+
+    const scope = document.getElementById('scope');
+    const drones = [];
+    for (let i=0;i<3;i++){
+      const d = document.createElement('div');
+      d.className = 'target';
+      d.textContent = '👾';
+      d.style.left = (20 + i*30) + '%';
+      d.style.top  = (20 + i*20) + '%';
+      d.style.filter = 'blur(8px)';
+      d.style.opacity = '.5';
+      scope.appendChild(d);
+      drones.push(d);
+    }
+    const focus = document.getElementById('focus');
+    let solved = false;
+    focus.oninput = () => {
+      const v = +focus.value;
+      document.getElementById('fVal').textContent = v;
+      const blur = Math.max(0, 8 - v/12.5);
+      const op = 0.5 + (v/100) * 0.5;
+      drones.forEach(d => { d.style.filter = 'blur('+blur+'px)'; d.style.opacity = op; });
+      if (v >= 70 && !solved) {
+        solved = true;
+        const res = document.getElementById('resultHost');
+        res.classList.add('show','correct');
+        res.textContent = '✓ Lock drone 3 ตัว · ทำลายแล้ว';
+        document.getElementById('transfer').style.display = 'block';
+        document.getElementById('next').style.display = '';
+        KPA.log('K1', 'visible-focus', { focus:v, correct:true });
+        KPA.competency('C3', {});
+        PBL.attempt(true, { focus:v });
+        CoinEnergy.reward('crisisSolveFirst');
+        PBL._enter('transfer');
+      }
+    };
+  });
+</script>
+</body>
+</html>

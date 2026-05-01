@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P12 · Scale Shock · zoom-out</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.zoom-stage { position:relative; height:240px; border-radius:14px; overflow:hidden; margin:10px 0;
+              background:radial-gradient(circle at 50% 50%, #03061a 30%, #02030a 70%); border:1px solid rgba(100,216,255,0.3); }
+.scale-circle { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border-radius:50%; border:2px dashed; transition:all 1s ease-out; }
+.sc-30 { width:60px; height:60px; border-color:#ff8a3d; }
+.sc-120 { width:200px; height:200px; border-color:#64d8ff; }
+.sc-70k { width:480px; height:480px; border-color:#7effb2; }
+.scale-label { position:absolute; padding:3px 8px; border-radius:4px; background:rgba(0,0,0,0.7); font-family:Orbitron,monospace; font-size:10px; letter-spacing:.1em; }
+.btn-row { display:flex; gap:8px; margin:10px 0; flex-wrap:wrap; }
+.zoom-btn { flex:1; min-width:100px; padding:10px; border-radius:8px; background:rgba(20,28,52,0.7); border:1px solid rgba(100,216,255,0.4); cursor:pointer; color:#fff; font-family:Orbitron,monospace; font-size:11px; }
+.zoom-btn.active { background:rgba(100,216,255,0.20); border-color:#64d8ff; }
+.fact-row { padding:10px; border-radius:8px; background:rgba(0,0,0,0.4); margin:6px 0; font-size:13px; }
+.fact-row b { color:#64d8ff; }
+</style>
+</head>
+<body data-page="p12" data-type="story">
+<div class="page">
+  <span class="lbl story">📏 SCALE SHOCK</span>
+  <h1>30 AU · 120 AU · 70,000 AU</h1>
+
+  <div class="card cyan">
+    <div class="zoom-stage" id="stage">
+      <div class="scale-circle sc-30" id="c30"></div>
+      <div class="scale-circle sc-120" id="c120" style="display:none;"></div>
+      <div class="scale-circle sc-70k" id="c70k" style="display:none;"></div>
+      <div class="scale-label" id="cap" style="left:14px; bottom:14px; color:#ff8a3d;">เนปจูน 30 AU</div>
+    </div>
+    <div class="btn-row">
+      <button class="zoom-btn active" data-z="30">🔭 30 AU<br>เนปจูน</button>
+      <button class="zoom-btn" data-z="120">🔭 120 AU<br>heliopause</button>
+      <button class="zoom-btn" data-z="70k">🔭 70,000 AU<br>Oort Cloud</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧮 อัตราส่วนจริง</h3>
+    <div class="fact-row">เนปจูน → heliopause = <b>4× ไกลกว่า</b></div>
+    <div class="fact-row">heliopause → Oort = <b>583× ไกลกว่า</b></div>
+    <div class="fact-row">เนปจูน → Oort = <b>2,333× ไกลกว่า</b> (= 1.1 ปีแสง)</div>
+    <div class="fact-row">Oort → ดาวฤกษ์ใกล้สุด (Proxima) = <b>~3.8× ไกลกว่า Oort</b></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ถ้าเนปจูน = ขอบบ้าน · heliopause = รั้วหน้าบ้าน · Oort = <b style="color:#7effb2;">หมู่บ้านทั้งหมด</b> ·
+      ถ้าเราคิดว่าระบบจบที่เนปจูน · เราจะ<b style="color:#ff5c7a;">ไม่เห็นบ้านจริง</b>"
+    </span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P12</summary>
+    <div>กดปุ่ม zoom 3 ระดับ · ทำลาย M6 อย่างสมบูรณ์ · นักเรียนรู้ scale ของบ้านจริง</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: 'ถ้าระบบสุริยะ = สนามฟุตบอล · โลกอยู่ที่ไหน?',
+    chips: [
+      'อยู่กลางสนาม',
+      'อยู่ใกล้จุดเริ่ม < 1 เมตร ✓',
+      'อยู่นอกสนาม',
+      'อยู่ที่ตาข่าย',
+      '30 AU = ปลายสนาม · โลก = แกน 11 ม. ✓'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ Kepler Hunt · ค้นหา VOID</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const ZOOMS = {
+  '30': { show:['c30'], cap:'เนปจูน 30 AU', color:'#ff8a3d' },
+  '120': { show:['c30','c120'], cap:'heliopause 120 AU · ระบบสุริยะจบที่นี่', color:'#64d8ff' },
+  '70k': { show:['c30','c120','c70k'], cap:'Oort Cloud · 70,000 AU · 1/4 ทาง Proxima', color:'#7effb2' },
+};
+document.querySelectorAll('.zoom-btn').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.zoom-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    const z = ZOOMS[b.dataset.z];
+    ['c30','c120','c70k'].forEach(id => document.getElementById(id).style.display = z.show.includes(id) ? '' : 'none');
+    const cap = document.getElementById('cap');
+    cap.textContent = z.cap; cap.style.color = z.color;
+  };
+});
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p13-kepler-hunt.html');if(window.PaceClient)Gate.wireButton('p12',btn,'p13-kepler-hunt.html');},200);
+</script>
+</body></html>

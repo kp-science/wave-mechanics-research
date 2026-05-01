@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P03 · WARP · กำเนิดระบบสุริยะ</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+@keyframes warpStreaks { from{transform:translateX(0);} to{transform:translateX(-33px);} }
+.warp-pill { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(185,128,255,0.15);
+  border:1px solid #b980ff; color:#b980ff; font-family:Orbitron,monospace; font-size:11px;
+  letter-spacing:.16em; animation:pillPulse 2s ease-in-out infinite; }
+@keyframes pillPulse { 0%,100%{box-shadow:0 0 8px rgba(185,128,255,0.3);} 50%{box-shadow:0 0 18px rgba(185,128,255,0.7);} }
+
+/* === Timeline gradient bar with draggable ship === */
+.tl-gradient { position:relative; height:62px; border-radius:31px; margin:14px 0 28px;
+  background:linear-gradient(90deg, #1a0530 0%, #b980ff 28%, #ff8a3d 60%, #ffd96b 100%);
+  cursor:pointer; touch-action:none; user-select:none;
+  box-shadow:inset 0 0 22px rgba(0,0,0,0.55), 0 0 24px rgba(255,138,61,0.25);
+  border:2px solid rgba(255,203,107,0.5); }
+.tl-gradient::before { content:''; position:absolute; inset:0; border-radius:31px;
+  background:repeating-linear-gradient(90deg, transparent 0 30px, rgba(255,255,255,0.20) 30px 33px);
+  animation:warpStreaks 0.5s linear infinite; pointer-events:none; }
+.tl-tick { position:absolute; top:-4px; bottom:-4px; width:2px;
+  background:rgba(255,255,255,0.55); transform:translateX(-50%); pointer-events:none; }
+.tl-tick::after { content:attr(data-label); position:absolute; bottom:-22px; left:50%;
+  transform:translateX(-50%); font-family:Orbitron,monospace; font-size:9px;
+  color:#d4b8ff; letter-spacing:.1em; white-space:nowrap; }
+.tl-tick.passed { background:rgba(126,255,178,0.85); }
+.tl-tick.passed::after { color:#7effb2; }
+.tl-ship { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%);
+  width:46px; height:46px; display:flex; align-items:center; justify-content:center;
+  font-size:30px; cursor:grab; filter:drop-shadow(0 0 12px #fff);
+  transition:filter .2s; z-index:5; touch-action:none; }
+.tl-ship:hover { filter:drop-shadow(0 0 18px #ffd700); }
+.tl-ship.drag { cursor:grabbing; filter:drop-shadow(0 0 24px #ffd700) drop-shadow(0 0 8px #fff); transform:translate(-50%,-50%) scale(1.1); }
+.tl-hint-arrow { position:absolute; top:-26px; left:0%; transform:translateX(-50%);
+  font-family:Orbitron,monospace; font-size:10px; color:#7effb2; letter-spacing:.14em;
+  animation:hintBounce 1.4s ease-in-out infinite; pointer-events:none; }
+@keyframes hintBounce { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-4px);} }
+.tl-hint-arrow.gone { display:none; }
+
+.timeline { position:relative; height:280px; background:radial-gradient(ellipse at center, rgba(255,138,61,0.06), transparent 70%); border-radius:14px; overflow:hidden; margin:12px 0; border:1px solid rgba(255,203,107,0.2); }
+.tl-stage { position:absolute; inset:0; opacity:0; transition:opacity .6s ease; display:flex; align-items:center; justify-content:center; }
+.tl-stage.active { opacity:1; }
+.tl-stage h4 { font-family:Orbitron,monospace; color:#ffcb6b; letter-spacing:.14em; font-size:13px; margin:8px 0 4px; }
+.tl-cloud { width:240px; height:240px; border-radius:50%; background:radial-gradient(circle, rgba(185,128,255,0.5), rgba(100,216,255,0.2) 50%, transparent 80%); animation:tlPulse 3s ease-in-out infinite; }
+/* === STAGE 2 · Protoplanetary Disk · จานแบนระนาบ + ของหมุนรอบแกน === */
+.tl-disk-wrap { position:relative; width:300px; height:120px; }
+.tl-disk-base { position:absolute; left:50%; top:50%; width:280px; height:42px;
+  border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse at center,
+    rgba(255,248,200,0.85) 4%,
+    rgba(255,203,107,0.7)  16%,
+    rgba(255,138,61,0.5)   40%,
+    rgba(185,128,255,0.25) 70%,
+    transparent 90%);
+  filter:blur(0.6px); box-shadow:0 0 36px rgba(255,138,61,0.35); }
+.tl-disk-bulge { position:absolute; left:50%; top:50%; width:46px; height:30px;
+  border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(ellipse, #fff8c8 0 30%, #ffcb6b 60%, transparent 90%);
+  box-shadow:0 0 22px #ffcb6b; animation:bulgePulse 2.4s ease-in-out infinite; z-index:3; }
+@keyframes bulgePulse { 0%,100%{transform:translate(-50%,-50%) scale(1);} 50%{transform:translate(-50%,-50%) scale(1.08);} }
+
+.disk-particle { position:absolute; left:50%; top:50%; width:6px; height:6px; margin:-3px 0 0 -3px;
+  border-radius:50%; background:var(--pcol,#ffe48a); box-shadow:0 0 5px var(--pcol,#ffcb6b);
+  animation:diskOrbit linear infinite; }
+@keyframes diskOrbit {
+  0%   { transform: translate(var(--rx), 0) scale(1);                  z-index:4; opacity:1; }
+  25%  { transform: translate(0, calc(-1 * var(--ry))) scale(0.55);    z-index:1; opacity:0.55; }
+  50%  { transform: translate(calc(-1 * var(--rx)), 0) scale(1);       z-index:4; opacity:1; }
+  75%  { transform: translate(0, var(--ry)) scale(1.45);               z-index:6; opacity:1; }
+  100% { transform: translate(var(--rx), 0) scale(1);                  z-index:4; opacity:1; }
+}
+
+/* === STAGE 3 · Protosun · sun อยู่กึ่งกลาง · disk wrap ผ่าน equator (3D look) === */
+.tl-protosun-wrap { position:relative; width:280px; height:130px; }
+.tl-protosun { position:absolute; left:50%; top:50%; width:70px; height:70px;
+  border-radius:50%; transform:translate(-50%,-50%);
+  background:radial-gradient(circle, #fff8c8, #ffcb6b 45%, #ff5c7a 85%);
+  box-shadow:0 0 40px #ffcb6b, 0 0 70px rgba(255,138,61,0.35);
+  animation:tlPulse 2s ease-in-out infinite; z-index:3; }
+/* disk แยก 2 ครึ่ง · ครึ่งหลัง (top half) อยู่หลัง sun · ครึ่งหน้า (bottom half) อยู่หน้า sun */
+.tl-protosun-disk-back, .tl-protosun-disk-front {
+  position:absolute; left:50%; top:50%; width:240px; height:38px;
+  border-radius:50%; transform:translate(-50%,-50%); pointer-events:none;
+  background:radial-gradient(ellipse at center,
+    transparent 18%,
+    rgba(255,203,107,0.55) 28%,
+    rgba(255,138,61,0.4)   55%,
+    rgba(185,128,255,0.22) 82%,
+    transparent 96%);
+  filter:blur(0.6px);
+}
+.tl-protosun-disk-back  { z-index:1; clip-path:inset(0 0 50% 0); }   /* แสดงครึ่งบน · อยู่หลัง */
+.tl-protosun-disk-front { z-index:5; clip-path:inset(50% 0 0 0); }   /* แสดงครึ่งล่าง · อยู่หน้า */
+.tl-system { position:relative; width:300px; height:200px; }
+.tl-system .sun { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:50px; height:50px; border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff8a3d); box-shadow:0 0 40px #ffcb6b; }
+.tl-system .orbit { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border:1px dashed rgba(255,203,107,0.25); border-radius:50%; }
+.tl-system .planet { position:absolute; left:50%; top:50%; border-radius:50%; animation:orbit linear infinite; transform-origin:0 0; }
+@keyframes tlPulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.06);} }
+@keyframes orbit {
+  from { transform: rotate(0deg)    translateX(var(--r)) translate(-50%,-50%); }
+  to   { transform: rotate(-360deg) translateX(var(--r)) translate(-50%,-50%); }
+}
+.tl-slider { width:100%; margin:10px 0; accent-color:#ff8a3d; }
+.zone-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.zone-bin { padding:12px; border-radius:12px; background:rgba(100,216,255,0.06); border:1px dashed rgba(100,216,255,0.4); min-height:90px; transition:all .2s; }
+.zone-bin.hover { background:rgba(255,138,61,0.10); border-color:#ff8a3d; }
+.zone-bin h5 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:12px; color:#64d8ff; letter-spacing:.12em; display:flex; align-items:center; gap:6px; }
+.zone-bin h5 small { color:#6a7394; font-size:10px; font-weight:400; letter-spacing:.08em; }
+.zone-bin .bin-body { display:flex; flex-wrap:wrap; gap:6px; }
+.pool-strip { display:flex; flex-wrap:wrap; gap:8px; padding:12px; border-radius:12px; background:rgba(20,28,52,0.6); margin:10px 0; border:1px solid rgba(120,140,220,0.2); }
+.item-chip { display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border-radius:10px; cursor:grab; touch-action:none;
+             background:linear-gradient(135deg, rgba(255,203,107,0.18), rgba(255,138,61,0.08));
+             border:1px solid rgba(255,203,107,0.45); font-size:13px; font-weight:600;
+             color:#ffd88a; user-select:none; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
+.item-chip:hover { transform:translateY(-1px); border-color:#ff8a3d; }
+.item-chip:active { cursor:grabbing; transform:scale(0.96); }
+.item-chip .dot { width:10px; height:10px; border-radius:50%; }
+.item-chip.in-bin { background:rgba(126,255,178,0.10); border-color:rgba(126,255,178,0.5); color:#7effb2; cursor:default; }
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin-bottom:8px; }
+.phase-1 { background:rgba(185,128,255,.15); color:#b980ff; border:1px solid rgba(185,128,255,.4); }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+</style>
+</head>
+<body data-page="p03" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌀 WARP · ORIGIN + ZONES</span>
+  <h1>เข้าวาร์ป · เห็นกำเนิดระบบสุริยะ</h1>
+  <div class="tags"><span class="kpa-chip">K1</span><span class="kpa-chip">M6</span></div>
+
+  <!-- ============ PHASE 1 · เกริ่นนำ ============ -->
+  <div class="phase-tag phase-1">🎬 PHASE 1 · เกริ่นนำ</div>
+
+  <div class="card lavender">
+    <div style="text-align:center; margin-bottom:10px;">
+      <span class="warp-pill">⚡ WARP ENGAGED · เวลายืดออก...</span>
+    </div>
+    <span class="narr">
+      <b style="color:#ffcb6b;">พ่อ:</b> "ขณะ warp · เวลายืดออก · จะเห็นเหมือน <b>ย้อนเวลา</b> ·
+      ลูกจะเห็นการกำเนิดของระบบสุริยะนี้ทั้งหมด · ดูดี ๆ · VOID ชอบหลอกว่าดาวเคราะห์เกิดทีละดวง · ไม่ใช่"
+    </span>
+  </div>
+
+  <!-- ============ PHASE 2 · กิจกรรม ============ -->
+  <div class="phase-tag phase-2">🔬 PHASE 2 · กิจกรรม</div>
+
+  <div class="card cyan">
+    <h3>🌀 ภารกิจ A · ลากยาน 🚀 ผ่าน Timeline 4.6 พันล้านปี</h3>
+    <div class="muted" style="margin-bottom:8px;font-size:12px;">ลากยานจากซ้าย → ขวา · หยุดที่แต่ละช่วงเพื่อดูสิ่งที่เกิดขึ้น · ครบ 4 ช่วงปลด PHASE 3</div>
+
+    <div class="timeline" id="tlBox">
+      <div class="tl-stage" data-s="1"><div style="text-align:center;"><div class="tl-cloud"></div><h4>1 · เนบิวลา</h4><div class="muted">เมฆแก๊ส H/He + ฝุ่น</div></div></div>
+      <div class="tl-stage" data-s="2"><div style="text-align:center;">
+        <div class="tl-disk-wrap">
+          <div class="tl-disk-base"></div>
+          <div class="tl-disk-bulge"></div>
+          <!-- particles หมุนรอบแกนกลางบนระนาบจาน -->
+          <div class="disk-particle" style="--rx:130px;--ry:22px;--pcol:#fff8c8;animation-duration:6s;"></div>
+          <div class="disk-particle" style="--rx:130px;--ry:22px;--pcol:#ffcb6b;animation-duration:6s;animation-delay:-2s;"></div>
+          <div class="disk-particle" style="--rx:130px;--ry:22px;--pcol:#ff8a3d;animation-duration:6s;animation-delay:-4s;"></div>
+          <div class="disk-particle" style="--rx:100px;--ry:18px;--pcol:#ffe48a;animation-duration:5s;"></div>
+          <div class="disk-particle" style="--rx:100px;--ry:18px;--pcol:#fff;animation-duration:5s;animation-delay:-2.5s;"></div>
+          <div class="disk-particle" style="--rx:75px;--ry:14px;--pcol:#ffcb6b;animation-duration:4s;animation-delay:-1s;"></div>
+          <div class="disk-particle" style="--rx:75px;--ry:14px;--pcol:#b980ff;animation-duration:4s;animation-delay:-3s;"></div>
+          <div class="disk-particle" style="--rx:55px;--ry:10px;--pcol:#fff8c8;animation-duration:3s;animation-delay:-0.8s;"></div>
+          <div class="disk-particle" style="--rx:55px;--ry:10px;--pcol:#ff8a3d;animation-duration:3s;animation-delay:-2.2s;"></div>
+        </div>
+        <h4>2 · Protoplanetary Disk</h4>
+        <div class="muted">จาน<b>วางแนวระนาบ</b> · เนบิวลา-ฝุ่นหมุนรอบ<b>แกน</b> · ดาวเคราะห์ก่อตัว <b>พร้อมกัน</b></div>
+      </div></div>
+      <div class="tl-stage" data-s="3"><div style="text-align:center;">
+        <div class="tl-protosun-wrap">
+          <!-- Layer order: back-disk → sun → front-disk · particles z change ตาม phase ใน orbit -->
+          <div class="tl-protosun-disk-back"></div>
+          <div class="tl-protosun"></div>
+          <div class="tl-protosun-disk-front"></div>
+          <!-- เศษเล็ก ๆ + เนบิวลายังหมุนรอบ protosun (z 1↔6 ใน keyframe = หลัง/หน้า sun อัตโนมัติ) -->
+          <div class="disk-particle" style="--rx:108px;--ry:16px;--pcol:#fff8c8;animation-duration:5s;"></div>
+          <div class="disk-particle" style="--rx:108px;--ry:16px;--pcol:#b980ff;animation-duration:5s;animation-delay:-2.5s;"></div>
+          <div class="disk-particle" style="--rx:88px;--ry:13px;--pcol:#ffcb6b;animation-duration:4s;animation-delay:-1s;"></div>
+          <div class="disk-particle" style="--rx:88px;--ry:13px;--pcol:#ff8a3d;animation-duration:4s;animation-delay:-3s;"></div>
+          <div class="disk-particle" style="--rx:68px;--ry:10px;--pcol:#fff;animation-duration:3s;animation-delay:-0.5s;"></div>
+          <div class="disk-particle" style="--rx:68px;--ry:10px;--pcol:#ffe48a;animation-duration:3s;animation-delay:-2s;"></div>
+        </div>
+        <h4>3 · จุดติดดวงอาทิตย์</h4>
+        <div class="muted">protosun ก่อตัว<b>กึ่งกลางจาน</b> · disk ยังล้อมรอบที่ <b>equator</b> · ฟิวชันเริ่ม · เศษหมุนรอบทั้งหน้า-หลัง</div>
+      </div></div>
+      <div class="tl-stage" data-s="4"><div class="tl-system" id="tlSys"><div class="sun"></div></div></div>
+    </div>
+
+    <!-- Gradient timeline bar with draggable ship · แทน slider -->
+    <div class="tl-gradient" id="tlGradient">
+      <div class="tl-tick" data-tick="2" data-label="Disk" style="left:25%;"></div>
+      <div class="tl-tick" data-tick="3" data-label="Protosun" style="left:50%;"></div>
+      <div class="tl-tick" data-tick="4" data-label="ระบบสุริยะ" style="left:75%;"></div>
+      <div class="tl-hint-arrow" id="tlHint">▾ ลากยาน</div>
+      <div class="tl-ship" id="tlShip">🚀</div>
+    </div>
+    <div style="display:flex; justify-content:space-between; font-size:10px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.1em;">
+      <span style="color:#b980ff;">▶ เริ่ม · เนบิวลา</span><span>4.6 พันล้านปี →</span><span style="color:#ffcb6b;">ปัจจุบัน · ระบบสุริยะ ◀</span>
+    </div>
+    <div id="tlSeen" class="muted" style="margin-top:8px;">ดูแล้ว: 0/4 ขั้น · <span style="color:#9aa3c0;font-size:11px;">ต้องลากผ่านครบทุกช่วง</span></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน (เมื่อทีมเลื่อนถึงขั้น 4):</b> "ทะลุ warp แล้ว · เรามาถึงก่อน VOID ·
+      ก่อนเข้าใกล้ดวงอาทิตย์ · ต้องรู้ <b>ตำแหน่งของทุกอย่าง</b> · L1 อยู่ไหน · CME ผ่านที่ไหนก่อน"
+    </span>
+  </div>
+
+  <div class="card gold">
+    <h3>🗺️ ภารกิจ B · จัด 14 วัตถุเข้า 4 กลุ่ม</h3>
+    <div class="muted" style="margin-bottom:6px;">ลากชื่อจาก pool ด้านล่าง → กลุ่มที่ถูกต้อง</div>
+    <div class="pool-strip" id="pool"></div>
+    <div class="zone-grid" id="zoneGrid"></div>
+    <div style="display:flex; gap:8px; margin-top:8px;">
+      <button class="ghost" id="checkBtn">เปรียบเทียบ</button>
+      <button class="ghost" id="resetBtn">↺ ล้าง</button>
+      <span id="result" class="muted" style="align-self:center;"></span>
+    </div>
+  </div>
+
+  <!-- ============ PHASE 3 · quiz ย่อย ============ -->
+  <div class="phase-tag phase-3">✅ PHASE 3 · ทดสอบย่อย</div>
+  <div class="card cyan" id="quizCard"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P03</summary>
+    <div>
+      <b>3-phase:</b> phase 1 narrative warp · phase 2 timeline + drag · phase 3 quiz 1 ข้อ M6<br>
+      <b>เน้น M6:</b> ดาวเคราะห์เกิด <i>พร้อมกัน</i> ใน disk ไม่ใช่ทีละดวง<br>
+      <b>4 กลุ่ม:</b> ดาวเคราะห์ชั้นใน · ชั้นนอก · แคระ · ดวงจันทร์บริวาร
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผล + ตอบ quiz ก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* ===== Phase 2A · Drag-Ship Timeline ===== */
+const tlSeen = new Set();
+const tlSys = document.getElementById('tlSys');
+const planets = EP_CONFIG.planets;
+const baseR = 30;
+planets.forEach((p,i) => {
+  const r = baseR + (Math.log(p.distAU+1) * 22);
+  const orbit = document.createElement('div'); orbit.className='orbit';
+  orbit.style.cssText = `width:${r*2}px;height:${r*2}px;`;
+  tlSys.appendChild(orbit);
+  const dot = document.createElement('div'); dot.className='planet';
+  const sz = 8;
+  dot.style.cssText = `width:${sz}px;height:${sz}px;background:${p.color};box-shadow:0 0 8px ${p.color};--r:${r}px;animation-duration:${4+i*1.5}s;`;
+  tlSys.appendChild(dot);
+});
+let currentStage = 0;
+function showStage(n){
+  if(n === currentStage) return;
+  currentStage = n;
+  document.querySelectorAll('.tl-stage').forEach(s => s.classList.toggle('active', Number(s.dataset.s) === n));
+  if(!tlSeen.has(n)){
+    tlSeen.add(n);
+    if(window.SFX) SFX.play('tap');
+  }
+  document.getElementById('tlSeen').textContent = `ดูแล้ว: ${tlSeen.size}/4 ขั้น` + (tlSeen.size === 4 ? ' ✓' : ' · ลากต่อเรื่อย ๆ');
+  // Mark ticks ที่ ship ผ่านแล้ว
+  document.querySelectorAll('.tl-tick').forEach(t => {
+    const tickN = Number(t.dataset.tick);
+    t.classList.toggle('passed', tickN <= n);
+  });
+}
+
+/* === Drag-Ship handler === */
+const tlGradient = document.getElementById('tlGradient');
+const tlShip = document.getElementById('tlShip');
+const tlHint = document.getElementById('tlHint');
+let dragging = false;
+let shipPct = 0;
+let hintHidden = false;
+
+function setShipPct(pct){
+  shipPct = Math.max(0, Math.min(1, pct));
+  tlShip.style.left = (shipPct * 100) + '%';
+  // Stage logic: 4 quarters
+  let stage;
+  if(shipPct < 0.25)      stage = 1;
+  else if(shipPct < 0.50) stage = 2;
+  else if(shipPct < 0.75) stage = 3;
+  else                    stage = 4;
+  showStage(stage);
+  if(!hintHidden && shipPct > 0.05){
+    tlHint.classList.add('gone');
+    hintHidden = true;
+  }
+}
+function pctFromClient(clientX){
+  const r = tlGradient.getBoundingClientRect();
+  return (clientX - r.left) / r.width;
+}
+tlShip.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  dragging = true;
+  tlShip.classList.add('drag');
+  tlShip.setPointerCapture && tlShip.setPointerCapture(e.pointerId);
+});
+tlShip.addEventListener('pointermove', e => {
+  if(!dragging) return;
+  setShipPct(pctFromClient(e.clientX));
+});
+tlShip.addEventListener('pointerup', () => {
+  dragging = false;
+  tlShip.classList.remove('drag');
+});
+tlShip.addEventListener('pointercancel', () => {
+  dragging = false;
+  tlShip.classList.remove('drag');
+});
+// Click on gradient bar = jump ship to that position
+tlGradient.addEventListener('pointerdown', e => {
+  if(e.target === tlShip) return;
+  setShipPct(pctFromClient(e.clientX));
+  // continue dragging from this position
+  dragging = true;
+  tlShip.classList.add('drag');
+  tlShip.setPointerCapture && tlShip.setPointerCapture(e.pointerId);
+});
+
+setShipPct(0);  // start at nebula
+
+/* ===== Phase 2B · Drag-drop 4 zones ===== */
+const ZONES = [
+  { id:'inner',  thai:'ดาวเคราะห์ชั้นใน',  range:'หิน · 0–2 AU',  icon:'🪨' },
+  { id:'outer',  thai:'ดาวเคราะห์ชั้นนอก', range:'ก๊าซยักษ์ · 5–30 AU', icon:'🪐' },
+  { id:'dwarf',  thai:'ดาวเคราะห์แคระ',    range:'Belt + Kuiper', icon:'⚫' },
+  { id:'moon',   thai:'ดวงจันทร์บริวาร',    range:'โคจรรอบดาวเคราะห์', icon:'🌙' },
+];
+const ITEMS = [
+  { n:'ดาวพุธ',   z:'inner', color:'#a8a29c' }, { n:'ดาวศุกร์', z:'inner', color:'#e8c878' },
+  { n:'โลก',     z:'inner', color:'#5cb8ff' }, { n:'ดาวอังคาร',z:'inner', color:'#cc5533' },
+  { n:'ดาวพฤหัส', z:'outer', color:'#d8a878' }, { n:'ดาวเสาร์', z:'outer', color:'#e8d8a8' },
+  { n:'ดาวยูเรนัส',z:'outer', color:'#a8d8e8' }, { n:'ดาวเนปจูน',z:'outer', color:'#5878d8' },
+  { n:'พลูโต',   z:'dwarf', color:'#c8a8a0' }, { n:'อิริส',   z:'dwarf', color:'#e0e0e0' },
+  { n:'เซเรส',   z:'dwarf', color:'#a89888' },
+  { n:'ดวงจันทร์', z:'moon',  color:'#d8d8d8' }, { n:'ไอโอ',     z:'moon',  color:'#e8d878' },
+  { n:'ไททัน',    z:'moon',  color:'#d8a868' },
+];
+const SHUFFLED = ITEMS.slice().sort(()=>Math.random()-0.5);
+const placed = {};
+const pool = document.getElementById('pool');
+const grid = document.getElementById('zoneGrid');
+function makeChip(it, inBin){
+  const el = document.createElement('div'); el.className='item-chip' + (inBin?' in-bin':'');
+  el.dataset.n = it.n;
+  el.innerHTML = `<span class="dot" style="background:${it.color};box-shadow:0 0 6px ${it.color};"></span><span>${it.n}</span>`;
+  if(!inBin){
+    el.draggable=true;
+    el.ondragstart = e => e.dataTransfer.setData('text/plain', it.n);
+    if(window.TouchDrag) TouchDrag.makeDraggable(el, ()=>it.n);
+  }
+  return el;
+}
+function render(){
+  pool.innerHTML='';
+  SHUFFLED.forEach(it => { if(!placed[it.n]) pool.appendChild(makeChip(it, false)); });
+  grid.innerHTML='';
+  ZONES.forEach(z => {
+    const bin = document.createElement('div'); bin.className='zone-bin'; bin.dataset.z=z.id;
+    bin.innerHTML = `<h5>${z.icon} ${z.thai} <small>${z.range}</small></h5><div class="bin-body"></div>`;
+    const body = bin.querySelector('.bin-body');
+    ITEMS.forEach(it => { if(placed[it.n]===z.id) body.appendChild(makeChip(it, true)); });
+    bin.ondragover = e => { e.preventDefault(); bin.classList.add('hover'); };
+    bin.ondragleave = () => bin.classList.remove('hover');
+    bin.ondrop = e => { e.preventDefault(); bin.classList.remove('hover');
+      const n = e.dataTransfer.getData('text/plain'); if(n){ placed[n]=z.id; render(); SFX&&SFX.play('snap'); }};
+    if(window.TouchDrag) TouchDrag.makeDropTarget(bin, n => { placed[n]=z.id; render(); SFX&&SFX.play('snap'); });
+    grid.appendChild(bin);
+  });
+}
+render();
+document.getElementById('resetBtn').onclick = () => { for(const k in placed) delete placed[k]; render(); document.getElementById('result').textContent=''; };
+document.getElementById('checkBtn').onclick = () => {
+  let c=0; ITEMS.forEach(it => { if(placed[it.n]===it.z) c++; });
+  document.getElementById('result').textContent = `ถูก ${c}/${ITEMS.length}`;
+  document.getElementById('result').style.color = c===ITEMS.length ? '#7effb2' : '#ffcb6b';
+  if(c===ITEMS.length) SFX&&SFX.play('correct'); else SFX&&SFX.play('wrong');
+};
+
+/* ===== Phase 3 · Mini quiz ===== */
+let quizPassed = false;
+Phase3.mount({
+  container: document.getElementById('quizCard'),
+  question: 'ดาวเคราะห์รอบดวงอาทิตย์เกิดขึ้นอย่างไร?',
+  choices: [
+    { txt:'เกิดทีละดวง · ดวงอาทิตย์ปล่อยออกมา', correct:false, hint:'ดู timeline ขั้น 2 อีกครั้ง · disk แบนหมุน · ดาวเคราะห์ก่อตัวพร้อมกัน' },
+    { txt:'เกิดพร้อมกันใน protoplanetary disk · ผ่าน accretion', correct:true },
+    { txt:'มาจากนอกระบบสุริยะ · ดวงอาทิตย์จับมา', correct:false, hint:'ไม่ใช่ · เกิดที่นี่จากเนบิวลาเดียวกัน' },
+  ],
+  onCorrect: () => { quizPassed = true; },
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p03', nextHref:'p04-dive-plan.html',
+    getPayload(){ let c=0; ITEMS.forEach(it => { if(placed[it.n]===it.z) c++; });
+      return { tlSeen: tlSeen.size, correct:c, total:ITEMS.length, quizPassed }; },
+    validate(p){
+      if(p.tlSeen<4){ alert('เลื่อน timeline ดูครบ 4 ขั้นก่อน'); return false; }
+      if(p.correct < ITEMS.length-2){ alert('จัดให้ถูกอย่างน้อย '+(ITEMS.length-2)+'/'+ITEMS.length); return false; }
+      if(!p.quizPassed){ alert('ตอบ quiz ย่อยให้ถูกก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.correct===p.total && p.quizPassed; },
+    onSubmit(){
+      Photon && Photon.add && Photon.add(10);
+      // 🎁 Mystery Box · WARP origin lab = checkpoint research
+      let c = 0; ITEMS.forEach(it => { if(placed[it.n]===it.z) c++; });
+      const wrongs = ITEMS.length - c;
+      if (window.MysteryBox && MysteryBox.roll) {
+        setTimeout(() => MysteryBox.roll({ wrongs, page:'p03' }), 700);
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

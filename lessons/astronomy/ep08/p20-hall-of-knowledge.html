@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p20 · Hall of Knowledge</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .key-summary { background:var(--bg-card); border:1px solid var(--genesis-gold); border-radius:12px;
+    padding:14px; margin:14px 0; }
+  .key-summary h3 { color:var(--genesis-gold); margin-top:0; }
+  .ep-tabs { display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
+  .ep-tab { background:var(--bg-mid); border:1px solid var(--line); border-radius:8px;
+    padding:8px 14px; cursor:pointer; font-size:13px; }
+  .ep-tab.active { background:linear-gradient(180deg,var(--genesis-gold),#d4a800); color:#1a0a00; font-weight:700; }
+  .reflect-area { background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
+    padding:14px; margin:14px 0; }
+</style>
+</head>
+<body data-page="p20">
+<div class="page">
+  <div class="act-badge">ACT C · 8/8 · HALL · KNOWLEDGE</div>
+  <h1>📚 Hall of Knowledge · ทั้งซีซัน</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div class="key-summary">
+    <h3>🗝️ S1 KEYRING SUMMARY</h3>
+    <p id="ringStat" style="font-size:18px;">Loading...</p>
+    <div id="dockHost"></div>
+  </div>
+
+  <div class="ep-tabs">
+    <div class="ep-tab active" data-tab="byEP">ดูตาม EP</div>
+    <div class="ep-tab" data-tab="byCat">ดูตามหมวด</div>
+  </div>
+  <div id="tabContent"></div>
+
+  <div class="howto">
+    <h4>🎮 LEARNING JOURNAL · Hall reflection</h4>
+    <ul><li>EP ไหนที่คุณจำได้ดีที่สุด · ทำไม?</li></ul>
+  </div>
+
+  <div class="reflect-area">
+    <textarea id="reflect" rows="3" style="width:100%;" placeholder="EP ที่จำได้ดี..."></textarea>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">บันทึก · ไปพ่อ</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p20' });
+  EP08Page.story('p20');
+  EP08Page.markVisit('p20');
+
+  S1Keyring.injectStyle();
+  const cnt = S1Keyring.count();
+  document.getElementById('ringStat').innerHTML = `
+    <b style="color:var(--genesis-gold);font-size:32px;">${cnt.owned}</b> / 17 keys
+    ${cnt.owned >= 12 ? '· <span style="color:var(--good);">✓ GENESIS LANCE finisher unlocked</span>' :
+                       '· <span style="color:var(--bad);">⚠ ต้องอย่างน้อย 12 keys ถึงปลด finisher · เล่น EP เก่า</span>'}
+  `;
+  document.getElementById('dockHost').appendChild(S1Keyring.renderDock());
+
+  function renderTab(tab){
+    const c = document.getElementById('tabContent');
+    c.innerHTML = '';
+    const groups = tab === 'byEP' ? S1Keyring.byEP() : S1Keyring.byCategory();
+    Object.keys(groups).forEach(key => {
+      const arr = groups[key];
+      const sec = document.createElement('div');
+      sec.className = 'card';
+      sec.style.margin = '10px 0';
+      sec.innerHTML = `<h4 style="color:var(--quantum-pink);margin:0;">${key}</h4>` +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">' +
+        arr.map(k => `<span class="chip" style="${k.owned?'border-color:var(--genesis-gold);':''}opacity:${k.owned?1:0.4};">${k.icon} ${k.name}</span>`).join('') +
+        '</div>';
+      c.appendChild(sec);
+    });
+  }
+  renderTab('byEP');
+  document.querySelectorAll('.ep-tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.ep-tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      renderTab(t.dataset.tab);
+    });
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const r = document.getElementById('reflect').value.trim();
+    if (window.KPA) {
+      KPA.log('A','A3','s1 reflection');
+      KPA.vpa('d3', 's1 hall reflect: ' + r);
+      KPA.research('s1Recall', { reflect: r, ownedKeys: cnt.owned });
+    }
+    EP08Page.submit({
+      title:'✓ บันทึกแล้ว',
+      body:`<p>พ่อรอเธอที่ห้องสุดท้าย · จะถามคำถามที่สำคัญที่สุด</p>`
+    });
+  };
+</script>
+</body>
+</html>

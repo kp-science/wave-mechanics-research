@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P10b · CORONA · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+
+/* === SUN CROSS-SECTION (ลากยานผ่านชั้น) === */
+.sun-section { position:relative; width:100%; height:130px; border-radius:14px; margin:10px 0;
+  background:#02030a; overflow:hidden; cursor:pointer; touch-action:none; user-select:none;
+  border:2px solid rgba(255,138,61,0.45); box-shadow:0 0 30px rgba(255,138,61,0.2); }
+.sun-layer { position:absolute; top:0; bottom:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+  font-family:Orbitron,monospace; color:rgba(255,255,255,0.85); pointer-events:none;
+  transition:filter .25s; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.2); }
+.sun-layer .ic { font-size:22px; filter:drop-shadow(0 1px 3px #000); }
+.sun-layer .nm { font-size:10px; letter-spacing:.1em; text-shadow:0 1px 3px #000; }
+.sun-layer.cur { filter:brightness(1.25) saturate(1.3); }
+.sun-layer.cur::after { content:''; position:absolute; left:0; right:0; bottom:0; height:4px;
+  background:#ffd700; box-shadow:0 0 16px #ffd700; animation:layerPulseB 1.4s ease-in-out infinite; }
+@keyframes layerPulseB { 0%,100%{opacity:0.85;} 50%{opacity:1;} }
+
+.sun-ship { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%);
+  width:54px; height:54px; display:flex; align-items:center; justify-content:center;
+  font-size:34px; cursor:grab; filter:drop-shadow(0 0 14px #fff);
+  z-index:5; touch-action:none; transition:filter .15s; }
+.sun-ship:hover { filter:drop-shadow(0 0 20px #ffd700); }
+.sun-ship.drag { cursor:grabbing; filter:drop-shadow(0 0 26px #ffd700) drop-shadow(0 0 10px #fff);
+  transform:translate(-50%,-50%) scale(1.12); }
+.ship-hint { position:absolute; top:6px; left:0%; transform:translateX(-50%);
+  font-family:Orbitron,monospace; font-size:9px; color:#7effb2; letter-spacing:.14em;
+  animation:hintBob 1.4s ease-in-out infinite; pointer-events:none; z-index:6; }
+@keyframes hintBob { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(3px);} }
+.ship-hint.gone { display:none; }
+
+/* === T CHART (highlight ตาม ship position) === */
+.paradox-chart { position:relative; height:240px; background:rgba(0,0,0,0.55); border-radius:14px;
+  padding:14px 8px 28px 56px; margin:14px 0 8px; border:1px solid rgba(185,128,255,0.3);
+  overflow:hidden; }
+.chart-axis-y { position:absolute; left:8px; top:8px; bottom:24px; width:46px; display:flex;
+  flex-direction:column; justify-content:space-between; font-family:Orbitron,monospace;
+  font-size:9px; color:#9aa3c0; text-align:right; padding-right:4px; }
+.chart-axis-x { position:absolute; left:56px; right:8px; bottom:4px; height:18px;
+  display:flex; font-family:Orbitron,monospace; font-size:9px; color:#9aa3c0;
+  align-items:center; }
+.chart-axis-x > div { flex:1; text-align:center; transition:all .25s; padding:2px 0; border-radius:4px; }
+.chart-axis-x > div.cur { color:#fff; background:rgba(255,215,0,0.3); font-weight:700;
+  text-shadow:0 0 8px rgba(255,215,0,0.8); }
+.chart-bars-host { position:absolute; left:56px; right:8px; top:14px; bottom:24px;
+  display:flex; align-items:flex-end; gap:0; }
+.chart-bar-wrap { flex:1; position:relative; height:100%; display:flex; align-items:flex-end;
+  justify-content:center; }
+.chart-bar { width:60%; border-radius:6px 6px 0 0; transition:all .35s ease;
+  background:var(--bar-color); box-shadow:0 0 12px var(--bar-color);
+  opacity:0.25; transform:scaleY(0.96); transform-origin:bottom; }
+.chart-bar.seen { opacity:0.78; transform:scaleY(1); }
+.chart-bar.cur  { opacity:1; transform:scaleY(1); box-shadow:0 0 22px var(--bar-color), 0 0 40px var(--bar-color);
+  animation:barPulse 1.4s ease-in-out infinite; }
+@keyframes barPulse { 0%,100%{filter:brightness(1);} 50%{filter:brightness(1.25);} }
+.chart-bar-val { position:absolute; bottom:calc(100% - 18px); left:50%; transform:translateX(-50%);
+  font-family:Orbitron,monospace; font-size:9px; color:#fff; opacity:0; transition:opacity .25s;
+  white-space:nowrap; padding:2px 6px; border-radius:4px; background:rgba(0,0,0,0.75);
+  border:1px solid var(--bar-color); pointer-events:none; }
+.chart-bar-wrap.cur .chart-bar-val { opacity:1; }
+.chart-line-svg { position:absolute; left:56px; right:8px; top:14px; bottom:24px;
+  pointer-events:none; }
+
+/* === LAYER INFO === */
+.layer-info { padding:14px 16px; border-radius:12px; margin:10px 0;
+  background:linear-gradient(135deg, rgba(185,128,255,0.12), rgba(20,28,52,0.7));
+  border:2px solid var(--info-color, #b980ff);
+  box-shadow:0 0 18px var(--info-color, #b980ff)33; }
+.layer-info .li-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.layer-info .li-icon { font-size:30px; filter:drop-shadow(0 0 8px var(--info-color)); }
+.layer-info .li-name { font-family:Orbitron,monospace; font-size:18px; font-weight:800;
+  color:var(--info-color); letter-spacing:.04em; text-shadow:0 0 12px var(--info-color); }
+.layer-info .li-temp { margin-top:4px; font-family:JetBrains Mono,monospace; font-size:14px; color:#fff; }
+.layer-info .li-temp b { color:var(--info-color); font-size:18px; }
+.layer-info .li-desc { margin-top:6px; font-size:12px; color:#d4f0ff; line-height:1.5; }
+.layer-info .li-paradox { margin-top:8px; padding:6px 10px; border-radius:8px;
+  background:rgba(255,92,122,0.12); border:1px dashed #ff5c7a; color:#ffd0d8; font-size:12px; }
+
+/* === Token === */
+.token-orb { position:fixed; bottom:120px; right:24px; z-index:60; width:74px; height:74px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff,#b980ff,#3a0a4a); box-shadow:0 0 50px #b980ff;
+  cursor:pointer; animation:tokenFloat 2.5s ease-in-out infinite; display:none;
+  border:2px solid #fff; }
+@keyframes tokenFloat { 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-14px) scale(1.1);} }
+.token-orb::after { content:'⚡'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:38px; }
+.token-orb .label { position:absolute; top:-26px; left:50%; transform:translateX(-50%);
+  font-family:Orbitron,monospace; font-size:10px; color:#b980ff; white-space:nowrap;
+  background:rgba(0,0,0,0.85); padding:2px 8px; border-radius:6px; border:1px solid #b980ff; }
+
+.obs-log { padding:12px; border-radius:12px; background:rgba(126,255,178,0.06); border:1px dashed #7effb2; margin:10px 0; }
+.obs-log h3 { color:#7effb2; margin:0 0 8px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.obs-row { display:grid; grid-template-columns:30px 1fr 100px; gap:8px; padding:6px; border-radius:6px;
+  background:rgba(20,28,52,0.4); margin-bottom:4px; font-size:12px; align-items:center; }
+.obs-row .num { font-family:Orbitron,monospace; color:#7effb2; text-align:center; }
+.obs-row .val { color:#ffcb6b; font-family:JetBrains Mono,monospace; }
+</style>
+</head>
+<body data-page="p10b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌌 SCENE 6 · CORONA · B · EXPLORE</span>
+  <h1>ลากยาน 🚀 ผ่านชั้นต่างๆของดวงอาทิตย์ · เห็นกราฟ T พุ่งกลับขึ้นที่ corona</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K2</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + OBSERVE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ลากยาน 🚀 จาก <b>Core</b> (กลาง) ออกไปถึง <b>Corona</b> (นอกสุด) · กราฟด้านล่างจะ highlight ชั้นที่ยานอยู่ ·
+      เห็น <b style="color:#b980ff;">การกระโดด T ที่ corona</b> · ⚡ <b>Coronal Anomaly Token</b> จะปรากฏ"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🌞 ดวงอาทิตย์ตัดขวาง · ลาก 🚀 ผ่านชั้น</h3>
+
+    <!-- SUN CROSS-SECTION with draggable ship -->
+    <div class="sun-section" id="sunSection">
+      <!-- 6 layers (gradient backgrounds set inline · width = 1/6 each) -->
+      <!-- ship + hint inserted by JS -->
+    </div>
+
+    <!-- T CHART (highlights based on ship position) -->
+    <h3 style="margin-top:18px;">📊 กราฟ T (log scale) · highlight ตามตำแหน่งยาน</h3>
+    <div class="paradox-chart" id="chart">
+      <div class="chart-axis-y"><span>10M K</span><span>1M K</span><span>10K K</span><span>1K K</span></div>
+      <div class="chart-bars-host" id="chartBars"></div>
+      <svg class="chart-line-svg" id="chartLine" preserveAspectRatio="none"></svg>
+      <div class="chart-axis-x" id="chartXAxis"></div>
+    </div>
+
+    <!-- LAYER INFO (ใหญ่ · เห็นชัด) -->
+    <div class="layer-info" id="layerInfo" style="--info-color:#fff8c8;">
+      <div class="li-head">
+        <div class="li-icon">🔥</div>
+        <div>
+          <div class="li-name">CORE</div>
+          <div class="li-temp">T = <b>15,000,000</b> K</div>
+        </div>
+      </div>
+      <div class="li-desc">ใจกลาง · ฟิวชัน p-p chain · ความหนาแน่นสูงสุด</div>
+    </div>
+  </div>
+
+  <div class="obs-log">
+    <h3>📓 OBSERVATION LOG · T แต่ละชั้น</h3>
+    <div id="obsRows" style="font-size:12px;color:#9aa3c0;">— ยังไม่มี observation —</div>
+  </div>
+
+  <div class="token-orb" id="tokenOrb" title="เก็บ Coronal Anomaly Token">
+    <div class="label">⚡ TOKEN</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P10b (v2 · drag-ship)</summary>
+    <div>
+      <b>กลไกใหม่:</b> ลาก 🚀 ผ่าน 6 ชั้น (Core → Corona) · ตำแหน่งยานกำหนด layer ปัจจุบัน · กราฟ + info update real-time<br>
+      <b>เห็น paradox:</b> T ลด core→photo · กระโดดขึ้นที่ corona · เก็บ Token ปลด ending A+
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ลากผ่าน 6 ชั้นก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const LAYERS = [
+  { id:'core',   name:'CORE',         T:15000000, color:'#fff8c8', icon:'🔥',
+    desc:'ใจกลาง · ฟิวชัน p-p chain · ความหนาแน่นสูงสุด', tag:'Core' },
+  { id:'rad',    name:'RADIATIVE',    T:5000000,  color:'#ffd96b', icon:'🌫️',
+    desc:'photon ส่งพลังงานออกมาด้วย radiation · ใช้เวลา 100,000 ปี', tag:'Rad' },
+  { id:'conv',   name:'CONVECTIVE',   T:1000000,  color:'#ffaa55', icon:'🌊',
+    desc:'พลาสมาเดือดเป็นฟอง · ลอย-จม · พาความร้อนขึ้น', tag:'Conv' },
+  { id:'photo',  name:'PHOTOSPHERE',  T:5780,     color:'#ffcb6b', icon:'⚫',
+    desc:'ผิวที่เห็น · ปล่อยแสง · sunspot อยู่ที่นี่', tag:'Photo' },
+  { id:'chromo', name:'CHROMOSPHERE', T:15000,    color:'#ff5c7a', icon:'⚡',
+    desc:'ชั้นแดง Hα · flare ปะทุที่นี่', tag:'Chromo' },
+  { id:'corona', name:'CORONA',       T:2000000,  color:'#b980ff', icon:'🌌',
+    desc:'ชั้นนอกสุด · ปริศนา Coronal Heating · 1-3 ล้าน K', tag:'Corona', paradox:true },
+];
+const N = LAYERS.length;
+const SEG = 100 / N;       // 16.67% per layer
+
+/* === Build Sun Cross-Section === */
+const sec = document.getElementById('sunSection');
+LAYERS.forEach((L, i) => {
+  const next = LAYERS[i+1] ? LAYERS[i+1].color : '#02030a';
+  const div = document.createElement('div');
+  div.className = 'sun-layer';
+  div.dataset.i = i;
+  div.style.left  = (i * SEG) + '%';
+  div.style.width = SEG + '%';
+  div.style.background = `linear-gradient(90deg, ${L.color}, ${next})`;
+  div.innerHTML = `<div class="ic">${L.icon}</div><div class="nm">${L.tag}</div>`;
+  sec.appendChild(div);
+});
+const ship = document.createElement('div');
+ship.className = 'sun-ship'; ship.id = 'sunShip'; ship.textContent = '🚀';
+sec.appendChild(ship);
+const hint = document.createElement('div');
+hint.className = 'ship-hint'; hint.id = 'shipHint'; hint.textContent = '▾ ลากยาน';
+sec.appendChild(hint);
+
+/* === Build Chart === */
+const chartHost = document.getElementById('chartBars');
+const chartXAxis = document.getElementById('chartXAxis');
+const chartLine = document.getElementById('chartLine');
+const logMin = Math.log10(1000);
+const logMax = Math.log10(15000000);
+function tToFrac(T){ return (Math.log10(T) - logMin) / (logMax - logMin); }
+LAYERS.forEach((L, i) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'chart-bar-wrap'; wrap.dataset.i = i;
+  const frac = tToFrac(L.T);
+  wrap.innerHTML = `
+    <div class="chart-bar-val">${L.T.toLocaleString()} K</div>
+    <div class="chart-bar" style="--bar-color:${L.color}; height:${(frac*100).toFixed(1)}%;"></div>`;
+  chartHost.appendChild(wrap);
+  const x = document.createElement('div');
+  x.dataset.i = i; x.textContent = L.tag;
+  chartXAxis.appendChild(x);
+});
+// Draw connecting line (T vs layer)
+function drawLine(){
+  const w = chartLine.clientWidth, h = chartLine.clientHeight;
+  if(!w || !h) return;
+  const pts = LAYERS.map((L, i) => {
+    const cx = ((i + 0.5) / N) * w;
+    const cy = h - tToFrac(L.T) * h;
+    return [cx, cy];
+  });
+  const d = pts.map((p,i) => (i===0 ? `M ${p[0]} ${p[1]}` : `L ${p[0]} ${p[1]}`)).join(' ');
+  chartLine.innerHTML = `
+    <path d="${d}" fill="none" stroke="rgba(255,215,0,0.65)" stroke-width="2" stroke-dasharray="4,3"/>
+    ${pts.map((p,i) => `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${LAYERS[i].color}" stroke="#fff" stroke-width="1"/>`).join('')}
+  `;
+}
+
+/* === Drag-ship state === */
+const seen = new Set();
+let observations = [];
+let shipPct = 0;
+let dragging = false;
+let hintHidden = false;
+let curIdx = -1;
+let tokenSeen = false, tokenCollected = false;
+
+function setShip(pct){
+  shipPct = Math.max(0, Math.min(100, pct));
+  ship.style.left = shipPct + '%';
+  if(!hintHidden && shipPct > 5){
+    hint.classList.add('gone'); hintHidden = true;
+  }
+  // determine current layer · clamp to 0..N-1
+  const idx = Math.min(N-1, Math.floor(shipPct / SEG));
+  if(idx !== curIdx){
+    curIdx = idx;
+    onLayer(idx);
+  }
+}
+function onLayer(i){
+  const L = LAYERS[i];
+  // mark seen + log observation
+  if(!seen.has(i)){
+    seen.add(i);
+    observations.push({ layer:L.name, T:L.T });
+    document.getElementById('obsRows').innerHTML = observations.map((o,k) => `
+      <div class="obs-row">
+        <div class="num">${k+1}</div>
+        <div>${o.layer}</div>
+        <div class="val">${o.T.toLocaleString()} K</div>
+      </div>`).join('');
+    SFX&&SFX.play('tap');
+  }
+  // highlight cross-section layer
+  document.querySelectorAll('.sun-layer').forEach(el => el.classList.toggle('cur', Number(el.dataset.i) === i));
+  // highlight chart bar + x-axis label
+  document.querySelectorAll('.chart-bar-wrap').forEach(el => {
+    const elIdx = Number(el.dataset.i);
+    el.classList.toggle('cur', elIdx === i);
+    const bar = el.querySelector('.chart-bar');
+    if(seen.has(elIdx)) bar.classList.add('seen');
+    bar.classList.toggle('cur', elIdx === i);
+  });
+  document.querySelectorAll('#chartXAxis > div').forEach(el => el.classList.toggle('cur', Number(el.dataset.i) === i));
+  // update info card
+  const infoEl = document.getElementById('layerInfo');
+  infoEl.style.setProperty('--info-color', L.color);
+  let paradoxNote = '';
+  if(L.paradox){
+    paradoxNote = `<div class="li-paradox">⚠ <b>Coronal Heating Paradox</b> · T พุ่ง<b>กลับขึ้น</b>จาก photo (5,780 K) → corona (2M K) · ร้อนกว่าผิว ~200 เท่า · ยังไม่มีคำตอบสมบูรณ์</div>`;
+  }
+  infoEl.innerHTML = `
+    <div class="li-head">
+      <div class="li-icon">${L.icon}</div>
+      <div>
+        <div class="li-name">${L.name}</div>
+        <div class="li-temp">T = <b>${L.T.toLocaleString()}</b> K</div>
+      </div>
+    </div>
+    <div class="li-desc">${L.desc}</div>
+    ${paradoxNote}
+  `;
+  // check completion
+  if(seen.size === N){
+    if(!tokenSeen){
+      tokenSeen = true;
+      document.getElementById('tokenOrb').style.display = 'block';
+      SFX&&SFX.play('charge');
+    }
+    document.getElementById('phase2Result').innerHTML = `
+      <div class="card green" style="border-color:#7effb2;background:rgba(126,255,178,0.1);">
+        <h3 style="color:#7effb2;margin:0 0 6px;">✓ ลากผ่านครบ 6 ชั้น</h3>
+        <div class="narr" style="color:#d4b8ff;">
+          <b>Pattern พบ:</b> T ลดจาก core (15M K) → photosphere (5,780 K) · แต่<b style="color:#ff5c7a;">กระโดดขึ้น</b>ที่ corona (2M K) ·
+          ปริศนา <b style="color:#b980ff;">Coronal Heating Problem</b> · ${tokenCollected?'✓ เก็บ Token แล้ว':'⚡ Token ปรากฏ · กดเก็บ'}
+        </div>
+      </div>`;
+    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('submitBtn').textContent = '📤 ไป HELION KEY ASSEMBLY';
+  }
+}
+
+/* === Drag handler === */
+function pctFromClient(clientX){
+  const r = sec.getBoundingClientRect();
+  return ((clientX - r.left) / r.width) * 100;
+}
+ship.addEventListener('pointerdown', e => {
+  e.preventDefault();
+  dragging = true; ship.classList.add('drag');
+  ship.setPointerCapture && ship.setPointerCapture(e.pointerId);
+});
+ship.addEventListener('pointermove', e => {
+  if(!dragging) return;
+  setShip(pctFromClient(e.clientX));
+});
+ship.addEventListener('pointerup',     () => { dragging = false; ship.classList.remove('drag'); });
+ship.addEventListener('pointercancel', () => { dragging = false; ship.classList.remove('drag'); });
+// Click on cross-section bar = jump ship
+sec.addEventListener('pointerdown', e => {
+  if(e.target === ship || ship.contains(e.target)) return;
+  setShip(pctFromClient(e.clientX));
+  dragging = true; ship.classList.add('drag');
+  ship.setPointerCapture && ship.setPointerCapture(e.pointerId);
+});
+
+/* === Token collection === */
+document.getElementById('tokenOrb').onclick = () => {
+  if(tokenCollected) return;
+  tokenCollected = true;
+  Chain.set('coronaToken', true);
+  document.getElementById('tokenOrb').style.display = 'none';
+  SFX&&SFX.play('correct');
+  alert('⚡ เก็บ Coronal Anomaly Token สำเร็จ!\n\n+ ปลด ending A+ AURORA TRIUMPH (ต้องคู่กับ Aurora Resonance จาก shop)');
+  onLayer(curIdx);  // refresh result card
+};
+
+/* === Init === */
+window.addEventListener('load', () => {
+  drawLine();
+  setShip(0);  // start at Core
+});
+window.addEventListener('resize', drawLine);
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p10b', nextHref:'p10c-corona-gate.html',
+    getPayload(){ return { observations, seen:seen.size, tokenCollected }; },
+    validate(p){ if(p.seen<N){ alert('ลากยานผ่านครบ 6 ชั้นก่อน'); return false; } return true; },
+  });
+}, 200);
+</script>
+</body></html>

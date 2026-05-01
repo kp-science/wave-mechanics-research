@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P05b · CORE · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+.shield-warning { padding:10px 14px; border-radius:10px; background:rgba(255,92,122,0.15); border:1px solid #ff5c7a;
+                  font-family:Orbitron,monospace; font-size:13px; color:#ff5c7a; text-align:center; letter-spacing:.14em;
+                  animation:shieldFlash 1s ease-in-out infinite; margin:8px 0; }
+@keyframes shieldFlash { 0%,100%{opacity:1;} 50%{opacity:.5;} }
+
+.core-arena { position:relative; height:380px; border-radius:14px; overflow:hidden; margin:10px 0;
+              background:radial-gradient(circle at center, #fff8c8, #ffcb6b 25%, #ff8a3d 55%, #ff5c7a 80%, #02030a);
+              box-shadow:inset 0 0 60px rgba(255,138,61,0.4); cursor:default; user-select:none; touch-action:none; }
+.fusion-zone { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+               width:110px; height:110px; border-radius:50%;
+               border:3px dashed rgba(255,255,255,0.6); background:rgba(255,255,255,0.08);
+               box-shadow:0 0 20px rgba(255,255,255,0.3) inset;
+               display:flex; align-items:center; justify-content:center;
+               font-family:Orbitron,monospace; font-size:10px; color:#fff; letter-spacing:.14em; pointer-events:none; }
+.fusion-zone::after { content:'CHAMBER'; opacity:0.8; }
+.fusion-zone.armed { border-color:#fff; background:rgba(255,255,255,0.18); animation:zonePulse .5s ease-in-out infinite; }
+.fusion-zone.processing { border-color:#ffcb6b; background:rgba(255,203,107,0.25); animation:zonePulse .25s ease-in-out infinite; }
+@keyframes zonePulse { 0%,100%{box-shadow:0 0 20px rgba(255,255,255,0.4) inset;} 50%{box-shadow:0 0 40px #fff inset;} }
+.particle { position:absolute; width:46px; height:46px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-family:Orbitron,monospace; font-size:11px; font-weight:700;
+            cursor:grab; touch-action:none; transform:translate(-50%,-50%);
+            transition:box-shadow .2s; user-select:none; }
+.particle:active { cursor:grabbing; }
+.particle.h { background:radial-gradient(circle at 35% 35%, #fff, #ff8a3d 70%);   box-shadow:0 0 14px #ffcb6b; color:#1a0500; }
+.particle.he { background:radial-gradient(circle at 35% 35%, #fff, #b980ff 70%);  box-shadow:0 0 14px #b980ff; color:#fff; }
+.particle.n { background:radial-gradient(circle at 35% 35%, #cfeaff, #4080d8 70%); box-shadow:0 0 14px #5cb8ff; color:#fff; }
+.particle.e { background:radial-gradient(circle at 35% 35%, #fff, #7effb2 70%);   box-shadow:0 0 14px #7effb2; color:#022; }
+.particle.in-zone { box-shadow:0 0 24px #fff, 0 0 40px #ffcb6b; }
+.particle.fused { animation:particleFuse .5s ease-in forwards; pointer-events:none; }
+.particle.decayed { animation:particleDecay .8s ease-in forwards; pointer-events:none; }
+@keyframes particleFuse { 0%{opacity:1;} 100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);} }
+@keyframes particleDecay { 0%{opacity:1;} 50%{opacity:0.6; filter:hue-rotate(180deg);} 100%{opacity:0;transform:translate(-50%,-50%) scale(1.6);} }
+
+.helium-burst { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+                width:60px; height:60px; border-radius:50%;
+                background:radial-gradient(circle, #fff, #ffcb6b 50%, #ff5c7a 90%);
+                box-shadow:0 0 60px #fff, 0 0 120px #ffcb6b;
+                font-family:Orbitron,monospace; font-size:16px; font-weight:700; color:#1a0500;
+                display:flex; align-items:center; justify-content:center;
+                animation:heBurst 1.4s ease-out forwards; pointer-events:none; }
+.helium-burst::after { content:'He'; }
+@keyframes heBurst { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.3);}
+                     30%{opacity:1;transform:translate(-50%,-50%) scale(1.4);}
+                     100%{opacity:0;transform:translate(-50%,-50%) scale(2.4);} }
+.decay-burst { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+               width:120px; height:120px; border-radius:50%;
+               background:radial-gradient(circle, #5cb8ff, transparent 60%);
+               box-shadow:0 0 50px #5cb8ff; animation:decayBurst 1s ease-out forwards; pointer-events:none; }
+@keyframes decayBurst { 0%{opacity:0;} 30%{opacity:0.7;} 100%{opacity:0;transform:translate(-50%,-50%) scale(2.5);} }
+.energy-pop { position:absolute; pointer-events:none; font-family:Orbitron,monospace;
+              font-weight:700; font-size:22px; color:#fff;
+              text-shadow:0 0 14px #ffcb6b, 0 0 30px #ff5c7a;
+              animation:energyPopAnim 1.6s ease-out forwards; z-index:20; }
+@keyframes energyPopAnim { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+                           20%{opacity:1;transform:translate(-50%,-100%) scale(1.2);}
+                           100%{opacity:0;transform:translate(-50%,-200%) scale(1);} }
+.fail-pop { position:absolute; pointer-events:none; font-family:Orbitron,monospace;
+            font-weight:700; font-size:18px; color:#ff5c7a;
+            text-shadow:0 0 14px #ff5c7a; animation:energyPopAnim 1.6s ease-out forwards; z-index:20; }
+.timer-ring { display:inline-block; padding:8px 18px; border-radius:999px; background:#02030a; border:2px solid #ff5c7a;
+              font-family:Orbitron,monospace; font-size:18px; color:#ff5c7a; letter-spacing:.16em; margin:8px auto; display:block; width:fit-content; }
+.fusion-info { padding:10px 14px; border-radius:10px; background:rgba(0,0,0,0.4); margin:8px 0; font-size:13px; text-align:center; }
+.fusion-info b { color:#ffcb6b; font-family:Orbitron,monospace; }
+.create-btn { background:linear-gradient(180deg,#ff5c7a,#b21030); color:#fff; padding:14px 28px;
+              font-family:Orbitron,monospace; font-size:14px; letter-spacing:.16em; border-radius:12px;
+              border:none; cursor:pointer; box-shadow:0 0 20px rgba(255,92,122,0.5);
+              animation:createPulse 1.6s ease-in-out infinite; margin:10px 0; display:block; width:100%; }
+@keyframes createPulse { 0%,100%{box-shadow:0 0 20px rgba(255,92,122,0.4);} 50%{box-shadow:0 0 40px rgba(255,92,122,0.8);} }
+.create-btn:disabled { opacity:0.5; cursor:not-allowed; animation:none; }
+.particle-key { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; padding:10px; border-radius:10px; background:rgba(0,0,0,0.4); margin:8px 0; font-size:12px; }
+.particle-key .pk-item { display:flex; align-items:center; gap:6px; color:#9aa3c0; }
+.particle-key .pk-dot { width:14px; height:14px; border-radius:50%; }
+.particle-key .pk-dot.h  { background:radial-gradient(circle,#fff,#ff8a3d); box-shadow:0 0 4px #ffcb6b; }
+.particle-key .pk-dot.he { background:radial-gradient(circle,#fff,#b980ff); box-shadow:0 0 4px #b980ff; }
+.particle-key .pk-dot.n  { background:radial-gradient(circle,#cfeaff,#4080d8); box-shadow:0 0 4px #5cb8ff; }
+.particle-key .pk-dot.e  { background:radial-gradient(circle,#fff,#7effb2); box-shadow:0 0 4px #7effb2; }
+
+/* Observation Log */
+.obs-log { padding:12px; border-radius:12px; background:rgba(126,255,178,0.06); border:1px dashed #7effb2; margin:10px 0; }
+.obs-log h3 { color:#7effb2; margin:0 0 8px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.obs-row { display:grid; grid-template-columns:30px 1fr 1fr; gap:8px; padding:6px; border-radius:6px;
+           background:rgba(20,28,52,0.4); margin-bottom:4px; font-size:12px; align-items:center; }
+.obs-row .num { font-family:Orbitron,monospace; color:#7effb2; text-align:center; }
+.obs-row .pred { color:#ffd88a; }
+.obs-row .res.fusion { color:#7effb2; font-weight:600; }
+.obs-row .res.decay { color:#ff5c7a; font-weight:600; }
+</style>
+</head>
+<body data-page="p05b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🔥 SCENE 1 · CORE · B · EXPLORE</span>
+  <h1>ดิ่งเข้า CHAMBER · ทดลอง 4 ครั้งขึ้นไป</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K2</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + OBSERVE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ใน chamber มีอนุภาคหลายชนิด · ลองใส่ <b>ผสมกันต่าง ๆ</b> · ทดลองอย่างน้อย <b>4 ครั้ง</b>
+      เพื่อหา <b>'สูตร'</b> ที่เกิดฟิวชันได้จริง · บันทึกทุกครั้งใน Observation Log"
+    </span>
+  </div>
+
+  <div class="card red">
+    <div class="shield-warning">⚠ WARNING · SHIELD INTEGRITY · 120 SECONDS</div>
+    <div class="muted center" style="font-size:12px;">📌 ใส่อนุภาค → กด CREATE ENERGY · ฟิวชันสำเร็จ <b>≥ 3 ครั้ง</b> + บันทึกรวม <b>≥ 4 attempts</b> = ปลด GATE</div>
+  </div>
+
+  <div class="timer-ring" id="timer">⏱ 120 วิ</div>
+  <div class="fusion-info">
+    ⚡ Fusion สำเร็จ: <b id="catchCount">0</b>/3 · พลังงาน: <b id="energyCount" style="color:#ffcb6b;">0</b> MeV · พยายาม: <b id="attempts" style="color:#ff5c7a;">0</b>
+  </div>
+
+  <div class="particle-key">
+    <div class="pk-item"><span class="pk-dot h"></span>H⁺ (Hydrogen ion)</div>
+    <div class="pk-item"><span class="pk-dot he"></span>He²⁺ (Helium)</div>
+    <div class="pk-item"><span class="pk-dot n"></span>N (Nitrogen)</div>
+    <div class="pk-item"><span class="pk-dot e"></span>e⁻ (Electron)</div>
+  </div>
+
+  <div class="core-arena" id="arena">
+    <div class="fusion-zone" id="zone"></div>
+  </div>
+
+  <button id="createBtn" class="create-btn" disabled>⚡ CREATE ENERGY</button>
+
+  <button id="startBtn">▶ เริ่ม dive 120 วิ</button>
+
+  <div class="obs-log" id="obsLog">
+    <h3>📓 OBSERVATION LOG · บันทึกทุก attempt</h3>
+    <div id="obsRows" style="font-size:12px; color:#9aa3c0;">— ยังไม่มี attempt —</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P05b</summary>
+    <div>
+      <b>หน้านี้ = EXPLORE</b> · เด็กลองใส่หลายแบบ · บันทึก observation<br>
+      <b>ไม่บอกใบ้สูตร</b> · ให้ inquire เอง<br>
+      ผ่าน gate p05c ได้ก็ต่อเมื่อ <b>ฟิวชันสำเร็จ ≥ 3 ครั้ง + บันทึก ≥ 4 attempts</b>
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ฟิวชัน 3+ · บันทึก 4+</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const arena = document.getElementById('arena');
+const zone = document.getElementById('zone');
+const TIMER_EL = document.getElementById('timer');
+const CATCH_EL = document.getElementById('catchCount');
+const ENERGY_EL = document.getElementById('energyCount');
+const ATTEMPTS_EL = document.getElementById('attempts');
+const createBtn = document.getElementById('createBtn');
+const obsRows = document.getElementById('obsRows');
+
+const FUSION_RADIUS_PCT = 16;
+const FUSION_NEEDED = 3;
+const ATTEMPTS_NEEDED = 4;
+const TIME_LIMIT = 120;
+
+function buildPool(){
+  const pool = [];
+  for(let i=0;i<6;i++) pool.push('h');
+  for(let i=0;i<2;i++) pool.push('he');
+  for(let i=0;i<2;i++) pool.push('n');
+  for(let i=0;i<2;i++) pool.push('e');
+  return pool.sort(()=>Math.random()-0.5);
+}
+const LABELS = { h:'H⁺', he:'He²⁺', n:'N', e:'e⁻' };
+
+let timeLeft = TIME_LIMIT, fusions = 0, energy = 0, attempts = 0;
+let running = false, gameOver = false;
+let ticker = null;
+let activeParticles = [];
+let observations = [];
+
+function spawnRound(){
+  arena.querySelectorAll('.particle, .helium-burst, .decay-burst').forEach(p => p.remove());
+  activeParticles = [];
+  const types = buildPool();
+  const N = types.length;
+  const positions = [];
+  for(let i=0;i<N;i++){
+    const angle = (i / N) * Math.PI * 2;
+    const radius = 38;
+    const x = 50 + radius * Math.cos(angle) * 1.6;
+    const y = 50 + radius * Math.sin(angle) * 0.9;
+    positions.push({ x:Math.max(8, Math.min(92,x)), y:Math.max(12, Math.min(88,y)) });
+  }
+  types.forEach((type, i) => {
+    const el = document.createElement('div'); el.className = 'particle ' + type;
+    el.dataset.i = i; el.dataset.type = type;
+    el.style.left = positions[i].x + '%';
+    el.style.top  = positions[i].y + '%';
+    el.innerHTML = LABELS[type];
+    arena.appendChild(el);
+    const obj = { el, type, x:positions[i].x, y:positions[i].y, inZone:false };
+    activeParticles.push(obj);
+    attachDrag(el, obj);
+  });
+  updateChamberState();
+}
+
+let dragTarget = null;
+function attachDrag(el, obj){
+  function onDown(e){
+    if(gameOver) return;
+    dragTarget = obj;
+    el.style.zIndex = 10;
+    SFX&&SFX.play('tap');
+    e.preventDefault();
+  }
+  el.addEventListener('mousedown', onDown);
+  el.addEventListener('touchstart', onDown, {passive:false});
+}
+function getXYpct(e){
+  const r = arena.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x:((t.clientX - r.left)/r.width)*100, y:((t.clientY - r.top)/r.height)*100 };
+}
+function isInZone(xPct, yPct){
+  const dx = xPct - 50, dy = yPct - 50;
+  const r = arena.getBoundingClientRect();
+  const dyW = dy * (r.height / r.width);
+  return Math.sqrt(dx*dx + dyW*dyW) < FUSION_RADIUS_PCT;
+}
+function onMove(e){
+  if(!dragTarget || gameOver) return;
+  if(e.touches) e.preventDefault();
+  const p = getXYpct(e);
+  dragTarget.x = Math.max(4, Math.min(96, p.x));
+  dragTarget.y = Math.max(8, Math.min(92, p.y));
+  dragTarget.el.style.left = dragTarget.x + '%';
+  dragTarget.el.style.top  = dragTarget.y + '%';
+  dragTarget.inZone = isInZone(dragTarget.x, dragTarget.y);
+  dragTarget.el.classList.toggle('in-zone', dragTarget.inZone);
+  updateChamberState();
+}
+function onUp(){ if(dragTarget){ dragTarget.el.style.zIndex = ''; } dragTarget = null; }
+arena.addEventListener('mousemove', onMove);
+arena.addEventListener('touchmove', onMove, {passive:false});
+window.addEventListener('mouseup', onUp);
+window.addEventListener('touchend', onUp);
+
+function updateChamberState(){
+  const inChamber = activeParticles.filter(p => p.inZone);
+  zone.classList.toggle('armed', inChamber.length >= 1);
+  createBtn.disabled = inChamber.length === 0 || gameOver;
+}
+
+function logObservation(input, result){
+  observations.push({ input, result });
+  obsRows.innerHTML = observations.map((o,i) => `
+    <div class="obs-row">
+      <div class="num">${i+1}</div>
+      <div class="pred">ใส่: ${o.input}</div>
+      <div class="res ${o.result==='fusion'?'fusion':'decay'}">${o.result==='fusion'?'✓ ฟิวชัน':'✗ สลาย'}</div>
+    </div>`).join('');
+}
+
+createBtn.onclick = () => {
+  if(gameOver) return;
+  const inChamber = activeParticles.filter(p => p.inZone);
+  if(inChamber.length === 0) return;
+  attempts++; ATTEMPTS_EL.textContent = attempts;
+  zone.classList.add('processing');
+  setTimeout(() => zone.classList.remove('processing'), 600);
+  const allH = inChamber.every(p => p.type === 'h');
+  const correctCount = inChamber.length === 4;
+  const inputDesc = inChamber.map(p => LABELS[p.type]).join(' + ');
+
+  if(allH && correctCount){
+    inChamber.forEach(p => p.el.classList.add('fused'));
+    const burst = document.createElement('div'); burst.className='helium-burst';
+    arena.appendChild(burst);
+    const pop = document.createElement('div'); pop.className='energy-pop';
+    pop.style.left='50%'; pop.style.top='40%';
+    pop.textContent='+26.7 MeV';
+    arena.appendChild(pop);
+    fusions++; energy += 26.7;
+    CATCH_EL.textContent = fusions; ENERGY_EL.textContent = energy.toFixed(1);
+    SFX&&SFX.play('correct');
+    logObservation(inputDesc, 'fusion');
+    setTimeout(() => burst.remove(), 1400);
+    setTimeout(() => pop.remove(), 1700);
+    setTimeout(() => { if(!gameOver){ checkComplete(); spawnRound(); } }, 1500);
+  } else {
+    inChamber.forEach(p => p.el.classList.add('decayed'));
+    const decay = document.createElement('div'); decay.className='decay-burst';
+    arena.appendChild(decay);
+    const pop = document.createElement('div'); pop.className='fail-pop';
+    pop.style.left='50%'; pop.style.top='40%';
+    let reason = '';
+    if(!allH && !correctCount) reason = '✗ ผิดชนิด+จำนวน';
+    else if(!allH) reason = '✗ มีอนุภาคปลอม';
+    else if(inChamber.length < 4) reason = '✗ น้อยไป (' + inChamber.length + ')';
+    else reason = '✗ มากไป (' + inChamber.length + ')';
+    pop.textContent = reason;
+    arena.appendChild(pop);
+    SFX&&SFX.play('wrong');
+    logObservation(inputDesc, 'decay');
+    setTimeout(() => decay.remove(), 1100);
+    setTimeout(() => pop.remove(), 1700);
+    setTimeout(() => {
+      inChamber.forEach(p => { if(p.el.parentNode) p.el.remove(); });
+      setTimeout(() => { if(!gameOver) spawnRound(); }, 200);
+    }, 900);
+  }
+  updateChamberState();
+};
+
+function checkComplete(){
+  if(fusions >= FUSION_NEEDED && attempts >= ATTEMPTS_NEEDED){
+    completeRound();
+  }
+}
+function completeRound(){
+  if(gameOver) return;
+  gameOver = true;
+  clearInterval(ticker);
+  document.getElementById('phase2Result').innerHTML = `
+    <div class="card green" style="border-color:#7effb2; background:rgba(126,255,178,0.1);">
+      <h3 style="color:#7effb2; margin:0 0 6px;">✓ EXPLORE สำเร็จ · บันทึกครบ</h3>
+      <div class="narr" style="color:#d4b8ff;">
+        ฟิวชันสำเร็จ <b>${fusions}/${FUSION_NEEDED}</b> · พยายามทั้งหมด <b>${attempts}</b> · พลังงานสะสม <b>${energy.toFixed(1)} MeV</b>
+      </div>
+      <div style="margin-top:8px; font-size:13px; color:#ffd88a;">
+        🔓 ปลด <b>MASTERY GATE</b> หน้าถัดไป
+      </div>
+    </div>`;
+  Chain.set('p05_observations', observations);
+  Chain.set('p05_fusions', fusions);
+  Chain.set('p05_attempts', attempts);
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = '📤 ไป MASTERY GATE';
+  SFX&&SFX.play('charge');
+}
+
+document.getElementById('startBtn').onclick = () => {
+  if(running) return; running = true; gameOver = false;
+  document.getElementById('startBtn').style.display='none';
+  spawnRound();
+  ticker = setInterval(() => {
+    timeLeft--;
+    TIMER_EL.textContent = '⏱ ' + timeLeft + ' วิ';
+    if(timeLeft<=20) TIMER_EL.style.color = '#ff5c7a';
+    if(timeLeft<=0){
+      if(fusions < FUSION_NEEDED || attempts < ATTEMPTS_NEEDED){
+        document.getElementById('phase2Result').innerHTML = `<div class="card red">⚠ Shield หมด! Fusion ${fusions}/${FUSION_NEEDED} · attempts ${attempts}/${ATTEMPTS_NEEDED} · <button class="ghost" onclick="location.reload()">↺ ลองใหม่</button></div>`;
+        gameOver = true; clearInterval(ticker);
+      }
+    }
+  }, 1000);
+};
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p05b', nextHref:'p05c-core-gate.html',
+    getPayload(){ return { fusions, attempts, observations, energy:Number(energy.toFixed(1)) }; },
+    validate(p){
+      if(p.fusions < FUSION_NEEDED){ alert('ต้องฟิวชันสำเร็จ ≥ '+FUSION_NEEDED+' ครั้ง'); return false; }
+      if(p.attempts < ATTEMPTS_NEEDED){ alert('ต้อง attempt ≥ '+ATTEMPTS_NEEDED+' ครั้ง (ลองหลายแบบ)'); return false; }
+      return true;
+    },
+  });
+}, 200);
+</script>
+</body></html>

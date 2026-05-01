@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P23 · Forge GENESIS LANCE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.forge-stage { padding:18px; border-radius:14px; background:radial-gradient(ellipse at center, rgba(255,138,61,0.18), rgba(0,0,0,0.6)); border:2px solid #ff8a3d; margin:10px 0; text-align:center; }
+.lance-art { font-size:80px; filter:drop-shadow(0 0 30px #ffcb6b); animation:lancePulse 2s ease-in-out infinite; }
+@keyframes lancePulse { 0%,100%{filter:drop-shadow(0 0 30px #ffcb6b);} 50%{filter:drop-shadow(0 0 50px #7effb2);} }
+.shard-list { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:14px 0; }
+.s-cell { padding:10px; border-radius:10px; background:rgba(0,0,0,0.4); border:1px dashed rgba(120,140,220,0.3); text-align:center; }
+.s-cell.have { background:rgba(126,255,178,0.1); border:1.5px solid #7effb2; }
+.s-cell .ic { font-size:30px; }
+.s-cell .nm { font-family:Orbitron,monospace; font-size:9px; color:#9aa3c0; letter-spacing:.08em; margin-top:4px; }
+.tk-row { display:flex; justify-content:space-between; padding:10px; border-radius:10px; background:rgba(20,28,52,0.7); margin:6px 0; font-size:13px; }
+.tk-row.have { background:rgba(126,255,178,0.10); border:1px solid #7effb2; color:#7effb2; }
+</style>
+</head>
+<body data-page="p23" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🗡️ FORGE GENESIS LANCE</span>
+  <h1>หลอม 6 SHARDS + Kepler Token</h1>
+
+  <div class="forge-stage">
+    <div class="lance-art">🗡️</div>
+    <div class="muted" style="font-family:Orbitron,monospace; font-size:11px; letter-spacing:.18em; color:#ff8a3d; margin-top:6px;">GENESIS LANCE</div>
+  </div>
+
+  <div class="card">
+    <h3>📋 ส่วนประกอบที่ต้องการ</h3>
+    <div class="shard-list" id="shardList"></div>
+    <div class="tk-row" id="ktRow"><span>🧮 Kepler Token (จาก p13)</span><span id="ktStatus">—</span></div>
+  </div>
+
+  <!-- F10 · Difficulty selector -->
+  <div class="card cyan">
+    <h3>🎮 เลือกระดับความท้าทาย BOSS</h3>
+    <div class="muted" style="font-size:12px; margin-bottom:6px;">เลือกก่อนเข้าศึก · บันทึกอัตโนมัติ</div>
+    <div class="diff-selector" id="diffSelector"></div>
+  </div>
+
+  <div id="resultHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P23</summary>
+    <div>เช็ค SHARD 6/6 + Kepler Token · ครบ = forge สำเร็จ → A+ available · ขาด = ยังไป boss ได้ · แต่ A+ ปลดไม่ได้</div></details>
+
+  
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 FORGE</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 forge ก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+/* F10 · difficulty selector */
+(function(){
+  const diffs = (EP_CONFIG.gridBoss && EP_CONFIG.gridBoss.difficulty) || {};
+  const host = document.getElementById('diffSelector');
+  if (!host) return;
+  const KEY = 'cosmosLog_ep06_boss_difficulty';
+  let current = localStorage.getItem(KEY) || 'normal';
+  if (!diffs[current]) current = 'normal';
+  const order = ['easy','normal','hard'];
+  function render(){
+    host.innerHTML = '';
+    order.forEach(id => {
+      const d = diffs[id];
+      if (!d) return;
+      const b = document.createElement('button');
+      b.className = 'diff-btn' + (id === current ? ' selected' : '');
+      b.innerHTML = `<div class="diff-name">${d.label}</div><div class="diff-desc">${d.desc || ''}</div>`;
+      b.onclick = () => {
+        current = id;
+        localStorage.setItem(KEY, id);
+        if (window.KPA) KPA.log('A2', 'boss-difficulty', { value: id, page:'p23' });
+        render();
+      };
+      host.appendChild(b);
+    });
+  }
+  render();
+})();
+
+const inv = QuestState.helions();
+const sl = document.getElementById('shardList');
+EP_CONFIG.helions.forEach(h => {
+  const cell = document.createElement('div'); cell.className = 's-cell' + (inv.includes(h.id) ? ' have' : '');
+  cell.innerHTML = `<div class="ic">${h.icon}</div><div class="nm">${h.id.toUpperCase()}<br>${inv.includes(h.id)?'✓':'—'}</div>`;
+  sl.appendChild(cell);
+});
+
+const hasKT = !!Chain.get('keplerToken');
+const ktRow = document.getElementById('ktRow');
+if(hasKT){ ktRow.classList.add('have'); document.getElementById('ktStatus').textContent='✓'; }
+else { document.getElementById('ktStatus').textContent='✗ ยังไม่มี (กลับ p13)'; }
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p23', nextHref:'p24-boss-grid.html',
+    getPayload(){
+      return { shards:inv.length, hasKeplerToken:hasKT };
+    },
+    isPerfect(p){ return p.shards===6 && p.hasKeplerToken; },
+    onSubmit(){
+      const r = document.getElementById('resultHost');
+      if(inv.length===6 && hasKT){
+        Chain.set('genesisLance', true);
+        Chain.set('bossPowers', { blast:true, autoTarget:true, shield:true, deflect:true, burst:true, slowTime:true, lanceUnlock:true });
+        r.innerHTML = '<div class="card green">✓ <b>FORGED · GENESIS LANCE</b> · 6 พลังทำงานพร้อมในศึก · A+ ending ปลดไว้</div>';
+      } else if(inv.length===6){
+        Chain.set('bossPowers', { blast:true, autoTarget:true, shield:true, deflect:true, burst:true, slowTime:true });
+        r.innerHTML = '<div class="card cyan">⚠ ปลด 6 พลัง · แต่ไม่มี Kepler Token → A+ ปลดไม่ได้ (max ที่ A)</div>';
+      } else {
+        const have = {};
+        EP_CONFIG.helions.forEach(h => {
+          const m = { gs1:'blast', gs2:'autoTarget', gs3:'shield', gs4:'deflect', gs5:'burst', gs6:'slowTime' };
+          if(inv.includes(h.id)) have[m[h.id]] = true;
+        });
+        Chain.set('bossPowers', have);
+        r.innerHTML = `<div class="card red">⚠ มีแค่ ${inv.length}/6 SHARDS · พลังที่ใช้ในศึกจะมีจำกัด · ไป boss ได้ แต่ ending สูงสุด = B</div>`;
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

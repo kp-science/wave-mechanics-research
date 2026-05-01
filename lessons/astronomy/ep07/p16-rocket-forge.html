@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p16 · Rocket Forge</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .pad { display:flex; gap:10px; justify-content:center; align-items:flex-end;
+    height:340px; background:linear-gradient(180deg,#0a0e1c 70%,#3a2810);
+    border-radius:14px; border:1px solid var(--line); margin:14px 0; padding:20px; position:relative; }
+  .stage { width:80px; min-height:60px; background:#1a2030; border:2px dashed var(--steel-blue);
+    border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:var(--text-mute); text-align:center; padding:6px;
+    transition:all .2s; }
+  .stage.placed { background:var(--rocket-orange); color:#1a0e00; font-weight:700; border-style:solid; }
+  .stage.over { background:rgba(255,138,61,.2); border-color:var(--rocket-orange); }
+  .stage.head { width:60px; min-height:80px; clip-path:polygon(50% 0%, 100% 100%, 0% 100%); }
+  .stage.boost { height:160px; }
+  .stage.tank { height:180px; }
+  .parts { display:flex; flex-wrap:wrap; gap:8px; padding:10px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; margin:10px 0; }
+  .part { background:var(--rocket-orange); color:#1a0e00;
+    padding:8px 14px; border-radius:8px; cursor:grab; font-weight:700; font-size:13px;
+    user-select:none; }
+  .part.placed { opacity:.4; cursor:default; }
+</style>
+</head>
+<body data-page="p16">
+<div class="page">
+  <div class="act-badge">ACT C · 5/10 · ROCKET FORGE ⭐</div>
+  <h1>ประกอบจรวด · ส่ง Activator</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ดาวเทียม "Sputnik-Echo" ที่ LEO 400 km หลับอยู่ · ต้องส่ง Activator ไปกระตุ้น</div>
+    <div class="crisis-body">มีจรวดประกอบไม่ครบ · 4 ส่วน · ขาด 1 = เอียง = ตก · เธอต้องเลือกชิ้นที่ถูกตำแหน่ง · ตำรา p95</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🚀 TOOL · ส่วนประกอบจรวด (ตำรา p95)</div>
+    <div class="tool-body">
+      <b>หัวรบ (probe)</b> ด้านบน ·
+      <b>ถังเชื้อเพลิงเหลวภายนอก</b> ตรงกลาง ·
+      <b>จรวดเชื้อเพลิงแข็ง 2 ข้าง</b> ซ้าย-ขวา · ขาดข้างใด = สมดุลเสีย
+    </div>
+  </div>
+
+  <h3>🚀 แท่นปล่อย:</h3>
+  <div class="pad" id="pad">
+    <div class="stage boost" data-slot="left" data-expect="boost-l">? ⬆ จรวดแข็ง<br>(ซ้าย)</div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div class="stage head" data-slot="head" data-expect="head">? หัวรบ</div>
+      <div class="stage tank" data-slot="tank" data-expect="tank">? ถังเหลว<br>กลาง</div>
+    </div>
+    <div class="stage boost" data-slot="right" data-expect="boost-r">? ⬆ จรวดแข็ง<br>(ขวา)</div>
+  </div>
+
+  <h3>📦 ชิ้นส่วน:</h3>
+  <div class="parts" id="parts"></div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="launch" disabled>🚀 ปล่อย</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Space Shuttle · Falcon Heavy · SLS ทุกลำมีจรวดเชื้อเพลิงแข็ง 2 ข้าง + ถังเหลวกลาง · เพื่อสมดุลและแรงดันมหาศาลตอนปล่อย
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p17-vescape.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p17 v_escape</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p16' });
+    PBL.init({ id:'p16-rocket-forge' });
+
+    const parts = [
+      { id:'head',    label:'🛰️ หัวรบ Activator', accept:['head'] },
+      { id:'tank',    label:'🧊 ถังเชื้อเพลิงเหลว', accept:['tank'] },
+      { id:'boost-l', label:'🔥 จรวดแข็ง L',       accept:['boost-l','boost-r'] },
+      { id:'boost-r', label:'🔥 จรวดแข็ง R',       accept:['boost-l','boost-r'] }
+    ];
+    const pool = document.getElementById('parts');
+    parts.forEach(p => {
+      const el = document.createElement('div');
+      el.className='part'; el.draggable=true; el.dataset.id=p.id;
+      el.textContent = p.label;
+      el.addEventListener('dragstart', e => e.dataTransfer.setData('text', p.id));
+      pool.appendChild(el);
+    });
+
+    const slots = document.querySelectorAll('.stage[data-slot]');
+    const placed = {};
+    slots.forEach(s => {
+      s.addEventListener('dragover', e => { e.preventDefault(); s.classList.add('over'); });
+      s.addEventListener('dragleave', () => s.classList.remove('over'));
+      s.addEventListener('drop', e => {
+        e.preventDefault(); s.classList.remove('over');
+        const id = e.dataTransfer.getData('text');
+        const part = parts.find(p => p.id === id);
+        if (!part || s.dataset.placed) return;
+        if (!part.accept.includes(s.dataset.expect)) return;
+        s.classList.add('placed');
+        s.textContent = part.label;
+        s.dataset.placed = id;
+        placed[s.dataset.slot] = id;
+        const tok = pool.querySelector('[data-id="'+id+'"]');
+        tok.classList.add('placed'); tok.draggable=false;
+        if (Object.keys(placed).length === 4) {
+          document.getElementById('launch').disabled = false;
+        }
+      });
+    });
+
+    document.getElementById('launch').onclick = () => {
+      // success: head, tank, both boosters
+      const correct = !!(placed.head==='head' && placed.tank==='tank'
+        && (placed.left||'').startsWith('boost') && (placed.right||'').startsWith('boost'));
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = correct ? '✓ จรวดประกอบครบ · ปล่อยขึ้นแล้ว · Activator เริ่มเร่งความเร็ว' : '× ขาดส่วน · จรวดเอียง';
+      KPA.log('K3','rocket-forge',{ correct, placed });
+      KPA.competency('C5',{ evidence:'engineering-rocket' });
+      KPA.misconception('M2',correct?'resolved':'persistent', { ctx:'rocket-forge' });
+      PBL.attempt(correct, { placed });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    };
+  });
+</script>
+</body>
+</html>

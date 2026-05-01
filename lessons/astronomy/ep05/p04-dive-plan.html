@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P04 · ถึงดวงอาทิตย์ · เลือก role</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.cd-big { font-family:Orbitron,monospace; font-size:32px; color:#ff5c7a; text-align:center;
+          letter-spacing:.18em; text-shadow:0 0 18px rgba(255,92,122,0.6); animation:cdPulse 1.4s ease-in-out infinite; }
+@keyframes cdPulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
+.helion-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0; }
+.helion-slot { padding:10px; border-radius:10px; background:rgba(20,28,52,0.7); border:1px dashed rgba(255,138,61,0.3); text-align:center; }
+.helion-slot .icon { font-size:24px; opacity:.3; filter:grayscale(100%); }
+.helion-slot .lbl { font-size:10px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.1em; margin-top:2px; }
+.role-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.role-card { padding:12px; border-radius:12px; background:rgba(20,28,52,0.6); border:1px solid rgba(120,140,220,0.2); cursor:pointer; transition:all .2s; }
+.role-card:hover { border-color:#ffcb6b; transform:translateY(-2px); }
+.role-card.selected { border-color:#ff8a3d; background:rgba(255,138,61,0.12); box-shadow:0 0 18px rgba(255,138,61,0.3); }
+.role-card .icon { font-size:28px; }
+.role-card h4 { margin:6px 0 4px; color:#ffcb6b; font-family:Orbitron,monospace; letter-spacing:.1em; }
+.role-card p { margin:0; font-size:12px; color:#9aa3c0; }
+.dive-vis { position:relative; height:120px; background:radial-gradient(circle at right, rgba(255,138,61,0.6), transparent 60%); border-radius:12px; overflow:hidden; margin:10px 0; }
+.dive-vis .sun-edge { position:absolute; right:-100px; top:50%; transform:translateY(-50%); width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff8a3d 40%, #ff5c7a 90%); box-shadow:0 0 40px #ff8a3d; }
+.dive-vis .ship { position:absolute; left:5%; top:50%; transform:translateY(-50%); font-size:28px; animation:shipFloat 2s ease-in-out infinite; }
+@keyframes shipFloat { 0%,100%{transform:translateY(-50%);} 50%{transform:translateY(-65%);} }
+</style>
+</head>
+<body data-page="p04" data-type="setup">
+<div class="page">
+  <span class="lbl setup">🚀 SETUP · เลือกบทบาท</span>
+  <h1>ถึงดวงอาทิตย์ · เตรียม dive</h1>
+
+  <div class="card red">
+    <div class="mb-head" style="color:#ff5c7a;">⏰ VOID ETA</div>
+    <div class="cd-big">17:48:32</div>
+    <div class="muted center">ถึงก่อนได้แค่นิดเดียว · ทุกการกระทำมีต้นทุน</div>
+  </div>
+
+  <div class="card">
+    <div class="dive-vis">
+      <div class="sun-edge"></div>
+      <div class="ship">🚀</div>
+    </div>
+    <div class="muted center" style="font-size:13px;">ยานลอยอยู่ห่างผิวดวงอาทิตย์ · พร้อมดิ่ง</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ทีมฟัง · เรา warp มาถึงก่อน VOID · มีเวลานำ ~15 นาทีเท่านั้น
+      · ยานเรามี <b>สนามแม่เหล็กล้อมรอบ</b> — เข้าไปในดวงอาทิตย์ได้ · แต่ทนได้แค่ครั้งเดียวต่อชั้น
+      · ออกแล้วเข้าใหม่ไม่ได้"
+    </span>
+  </div>
+
+  <div class="card cyan">
+    <h3>📋 เส้นทาง dive · 6 ชั้น</h3>
+    <ol style="margin:0; padding-left:20px; line-height:1.7; font-size:13px;">
+      <li><b style="color:#fff8c8;">CORE</b> · 15 ล้าน K · ฟิวชัน · 30 วิ</li>
+      <li><b style="color:#ffd96b;">RADIATIVE</b> · เข็มทิศหาย · ต้องอ่าน gradient</li>
+      <li><b style="color:#ffaa55;">CONVECTIVE</b> · กระแสพลาสมา · เลือก cell</li>
+      <li><b style="color:#ffcb6b;">PHOTOSPHERE/SUNSPOT</b> · เข็มทิศแปรปวน · ตามเส้นแม่เหล็ก</li>
+      <li><b style="color:#ff5c7a;">CHROMOSPHERE</b> · หลบ flare</li>
+      <li><b style="color:#b980ff;">CORONA</b> · paradox + token</li>
+    </ol>
+  </div>
+
+  <div class="card gold">
+    <h3>🔆 HELION INVENTORY · 0/6</h3>
+    <div class="helion-grid" id="helionGrid"></div>
+    <div class="muted center" style="font-size:11px; margin-top:6px;">เก็บครบ 6 ชิ้น = activate deflector</div>
+  </div>
+
+  <div class="card">
+    <h3>👥 เลือกบทบาท · 1 คน 1 role</h3>
+    <div class="role-grid" id="roleGrid"></div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P04</summary>
+    <div>
+      จุดเริ่ม dive · ทุกหน้าจาก p05 จะมี HUD HELION + VOID ETA ตลอด<br>
+      role: 4 คน 1 role · 2-3 คนถือ 2 role (auto roleFlex)<br>
+      หน้าถัดไป p05 = CORE dive · ฟิวชัน 30 วิ
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ยืนยัน · เริ่ม dive</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+// helion slots
+const grid = document.getElementById('helionGrid');
+EP_CONFIG.helions.forEach(h => {
+  const s = document.createElement('div'); s.className='helion-slot';
+  s.innerHTML = `<div class="icon">${h.icon}</div><div class="lbl">${h.layer}</div>`;
+  grid.appendChild(s);
+});
+// roles
+const rg = document.getElementById('roleGrid');
+let chosen = null;
+EP_CONFIG.roles.forEach(r => {
+  const c = document.createElement('div'); c.className='role-card'; c.dataset.id=r.id;
+  c.innerHTML = `<div class="icon">${r.icon}</div><h4>${r.name}</h4><p>${r.desc}</p>`;
+  c.onclick = () => {
+    document.querySelectorAll('.role-card').forEach(x=>x.classList.remove('selected'));
+    c.classList.add('selected'); chosen=r.id;
+    if(window.Role && Role.set) Role.set(r.id);
+    SFX&&SFX.play('snap');
+  };
+  rg.appendChild(c);
+});
+// init voidEta
+Chain.set('voidEta', EP_CONFIG.voidEtaStartHr || 18);
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p04', nextHref:'p05a-core-engage.html',
+    getPayload(){ return { role: chosen }; },
+    validate(p){ if(!p.role){ alert('เลือกบทบาท 1 อย่าง'); return false; } return true; },
+  });
+}, 200);
+</script>
+</body></html>

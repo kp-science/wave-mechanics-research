@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p24 · Ending PRESERVE</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .ending-hero { text-align:center; padding:30px 14px;
+    background: radial-gradient(circle at 50% 30%, rgba(255,216,74,.25), transparent 60%);
+    border-radius:18px; border:1px solid var(--genesis-gold); margin:14px 0;
+    box-shadow: 0 0 50px rgba(255,216,74,.2); }
+  .ending-hero .ic { font-size:64px; }
+  .ending-hero h1 { margin:6px 0; }
+  .ending-hero .grade { color:var(--genesis-gold); font-size:32px; font-weight:800; letter-spacing:.1em; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin:14px 0; }
+  .stats .stat { background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
+    padding:12px; text-align:center; }
+  .stats .stat b { color:var(--genesis-gold); font-size:22px; }
+  .farewell-quote { background:linear-gradient(180deg,#1a0a30,#050108);
+    border:1px solid var(--quantum-pink); border-radius:14px;
+    padding:18px; margin:14px 0; }
+  .canvas-host { width:100%; height:280px; background:#050108; border:1px solid var(--genesis-gold);
+    border-radius:14px; display:block; }
+</style>
+</head>
+<body data-page="p24">
+<div class="page">
+  <div class="act-badge">ACT D · 4/7 · ENDING · PRESERVE</div>
+
+  <div class="ending-hero">
+    <div class="ic" id="endIcon">🛡️</div>
+    <h1>PRESERVE ROUTE</h1>
+    <div class="grade" id="endGrade">A</div>
+    <p style="color:var(--text-soft);" id="endText">เอกภพปลอดภัย · พ่อยังเป็นผู้พิทักษ์</p>
+  </div>
+
+  <canvas id="endCanvas" class="canvas-host"></canvas>
+
+  <div class="stats" id="statsHost"></div>
+
+  <div class="farewell-quote">
+    <p style="color:var(--quantum-pink);font-weight:700;letter-spacing:.1em;">พ่อโบลท์ · ก่อนหายใน CMB shimmer</p>
+    <p style="font-size:18px;line-height:1.7;">
+      "ขอบคุณลูก · เธอป้องกันบิกแบงสำเร็จ"<br>
+      "ก่อนจาก · พ่อมีบางอย่างจะบอก"<br>
+      "ไม่ใช่แค่จักรวาลนี้ที่มี VOID...<br>
+      ทุก ๆ จักรวาลคู่ขนานก็มีของตัวเอง<br>
+      <em style='color:var(--genesis-gold);'>อันที่อยู่ใกล้สุด · เธอเห็นด้วยตาเปล่า · ทุกฤดูร้อน...</em>"
+    </p>
+  </div>
+
+  <button class="btn alt" id="goNext" style="font-size:18px;padding:14px;">→ Farewell · 4 NPC</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/timeline-viz.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p24' });
+  try { localStorage.setItem('cosmosLog_ep08_lastPage', 'p24'); } catch(e){}
+
+  let result = {};
+  try { result = JSON.parse(localStorage.getItem('cosmosLog_ep08_bossResult') || '{}'); } catch(e){}
+  const ending = result.ending || localStorage.getItem('cosmosLog_ep08_ending') || 'A';
+
+  const labels = {
+    'A+': { icon:'🏆', name:'A+ ARCHITECT', text:'เธอใช้ S1 ทั้งหมด · เอกภพรอด 100% · พ่อยังเป็นผู้พิทักษ์', color:'var(--genesis-gold)' },
+    'A':  { icon:'🌟', name:'A · DEFENDER', text:'4 epoch สำเร็จ · พ่อให้คำใบ้ Season 2', color:'var(--genesis-gold)' },
+    'B':  { icon:'⭐', name:'B · APPRENTICE', text:'4 epoch · บางส่วนเสียหาย · จักรวาลรอดเฉียดฉิว', color:'var(--cosmic-purple)' },
+    'C':  { icon:'⚠️', name:'C · ALTERED TIMELINE', text:'epoch ไม่ครบ · จักรวาลผิดเพี้ยน', color:'var(--bad)' }
+  };
+  const lbl = labels[ending] || labels['B'];
+  document.getElementById('endIcon').textContent = lbl.icon;
+  document.getElementById('endGrade').textContent = ending + ' · ' + lbl.name;
+  document.getElementById('endGrade').style.color = lbl.color;
+  document.getElementById('endText').textContent = lbl.text;
+
+  const stats = document.getElementById('statsHost');
+  stats.innerHTML = `
+    <div class="stat">HP<br><b>${result.hp || '-'}/${result.hpMax || '-'}</b></div>
+    <div class="stat">Phases<br><b>${result.phasesCleared || 0}/4</b></div>
+    <div class="stat">Keys<br><b>${result.keysOwned || 0}/17</b></div>
+    <div class="stat">ยิงตรง<br><b>${result.hits || 0}</b></div>
+    <div class="stat">เวลา<br><b>${((result.durationMs || 0)/1000).toFixed(0)}s</b></div>
+  `;
+
+  // big bang finale animation
+  const c = document.getElementById('endCanvas');
+  function fit(){ c.width = c.clientWidth; c.height = 280; }
+  fit(); window.addEventListener('resize', fit);
+  const ctx = c.getContext('2d');
+  let t = 0;
+  function draw(){
+    t += 0.012;
+    ctx.fillStyle = '#050108'; ctx.fillRect(0,0,c.width,c.height);
+    // expanding universe with galaxies
+    for (let i=0;i<140;i++){
+      const r = (i*7 + t*60) % (Math.max(c.width,c.height));
+      const ang = i * 0.4;
+      const x = c.width/2 + Math.cos(ang)*r;
+      const y = c.height/2 + Math.sin(ang)*r*0.6;
+      const a = 1 - r/Math.max(c.width,c.height);
+      ctx.fillStyle = `hsla(${40 + i%80}, 80%, 70%, ${a*0.7})`;
+      ctx.beginPath(); ctx.arc(x, y, 1 + Math.random(), 0, Math.PI*2); ctx.fill();
+    }
+    // central glow
+    const cx = c.width/2, cy = c.height/2;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 60);
+    grad.addColorStop(0, '#fff5e3');
+    grad.addColorStop(0.4, '#ffd84a');
+    grad.addColorStop(1, 'rgba(255,138,61,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, 60, 0, Math.PI*2); ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  document.getElementById('goNext').onclick = () => {
+    location.href = 'p26-farewell.html';
+  };
+</script>
+</body>
+</html>

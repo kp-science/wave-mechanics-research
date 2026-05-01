@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p15 · 3 Orbit Tiers</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .orbit-map { position:relative; width:100%; height:340px;
+    background:radial-gradient(circle at 50% 50%, #1a3050 0%, #060a14 70%);
+    border-radius:14px; border:1px solid var(--line); margin:14px 0; overflow:hidden; }
+  .earth { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:60px; height:60px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #4a90e2, #1a4060); z-index:5;
+    box-shadow:0 0 20px rgba(74,144,226,.5); }
+  .orbit-ring { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    border:1px dashed rgba(255,255,255,.18); border-radius:50%; }
+  .orbit-leo { width:140px; height:140px; }
+  .orbit-meo { width:230px; height:230px; }
+  .orbit-geo { width:320px; height:320px; }
+  .orbit-label { position:absolute; left:50%; top:50%; color:var(--text-mute); font-size:11px;
+    transform:translate(-50%,-50%); }
+  .satellite { position:absolute; width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    cursor:grab; user-select:none; transition:all .3s; z-index:6;
+    background:#11182a; border:2px solid var(--rocket-orange); }
+  .satellite.placed { cursor:default; }
+  .pool { display:flex; gap:10px; justify-content:center; padding:10px; flex-wrap:wrap;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; margin:10px 0; }
+</style>
+</head>
+<body data-page="p15">
+<div class="page">
+  <div class="act-badge">ACT C · 4/10</div>
+  <h1>3 ระดับวงโคจรดาวเทียม</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ต้องตั้งเครือข่ายสื่อสารใหม่ · วางผิดวง = ใช้ไม่ได้</div>
+    <div class="crisis-body">วาง: <b>📡 imaging sat ที่ LEO</b> · <b>🛰️ GPS ที่ MEO</b> · <b>📞 communication ที่ GEO</b> · ตำรา p94</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🛰️ TOOL · 3-tier orbits</div>
+    <div class="tool-body">
+      <b>LEO</b> 160-2000 km · สำรวจทรัพยากร · ISS ·
+      <b>MEO</b> 2000-35,786 km · GPS ·
+      <b>GEO</b> 35,786 km · สื่อสาร (geostationary)
+    </div>
+  </div>
+
+  <div class="orbit-map" id="map">
+    <div class="orbit-ring orbit-leo" data-tier="LEO"></div>
+    <div class="orbit-ring orbit-meo" data-tier="MEO"></div>
+    <div class="orbit-ring orbit-geo" data-tier="GEO"></div>
+    <div class="earth"></div>
+    <div class="orbit-label" style="top:35%;">LEO</div>
+    <div class="orbit-label" style="top:25%;">MEO</div>
+    <div class="orbit-label" style="top:14%;">GEO</div>
+  </div>
+
+  <div class="pool" id="pool"></div>
+  <div style="text-align:center;margin:10px 0;font-size:13px;color:var(--text-mute);">
+    คลิกดาวเทียมเพื่อเลือก · แล้วคลิกวงโคจรที่ต้องการวาง
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    GPS ในมือถือ = MEO 4 ดวง trilateration · TV ดาวเทียม = GEO นิ่งเทียบกับโลก · ภาพถ่ายดาวเทียม = LEO บินวันละหลายรอบ
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p16-rocket-forge.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p16 ประกอบจรวด</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p15' });
+    PBL.init({ id:'p15-orbit-3tier' });
+
+    const sats = [
+      { id:'imaging', icon:'📡', tier:'LEO', label:'imaging' },
+      { id:'gps',     icon:'🛰️', tier:'MEO', label:'GPS' },
+      { id:'comms',   icon:'📞', tier:'GEO', label:'comms' }
+    ];
+    const pool = document.getElementById('pool');
+    const map = document.getElementById('map');
+    let selected = null;
+
+    sats.forEach(s => {
+      const el = document.createElement('div');
+      el.style.cssText = 'background:#11182a;border:2px solid var(--rocket-orange);border-radius:50%;padding:10px 14px;cursor:pointer;font-weight:700;';
+      el.innerHTML = s.icon + ' ' + s.label;
+      el.onclick = () => {
+        if (el.classList.contains('placed')) return;
+        document.querySelectorAll('.pool > div').forEach(x => x.style.boxShadow = '');
+        selected = s;
+        el.style.boxShadow = '0 0 16px var(--rocket-orange)';
+      };
+      el.dataset.id = s.id;
+      pool.appendChild(el);
+    });
+
+    let placed = {};
+    map.querySelectorAll('.orbit-ring').forEach(ring => {
+      ring.style.cursor = 'pointer';
+      ring.onclick = () => {
+        if (!selected) return;
+        const tier = ring.dataset.tier;
+        const ang = Math.random() * Math.PI * 2;
+        const rad = parseInt(getComputedStyle(ring).width)/2;
+        const x = 50 + (rad / map.clientWidth * 100) * Math.cos(ang);
+        const y = 50 + (rad / map.clientHeight * 100) * Math.sin(ang);
+        const dot = document.createElement('div');
+        dot.className = 'satellite placed';
+        dot.textContent = selected.icon;
+        dot.style.left = x+'%'; dot.style.top = y+'%';
+        dot.style.transform = 'translate(-50%,-50%)';
+        map.appendChild(dot);
+        placed[selected.id] = tier;
+        const poolEl = pool.querySelector('[data-id="'+selected.id+'"]');
+        poolEl.classList.add('placed'); poolEl.style.opacity='.4'; poolEl.style.cursor='default';
+        poolEl.style.boxShadow = '';
+        selected = null;
+        if (Object.keys(placed).length === sats.length) verify();
+      };
+    });
+
+    function verify(){
+      const correct = sats.every(s => placed[s.id] === s.tier);
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = correct ? '✓ วางครบถูก: imaging→LEO · GPS→MEO · comms→GEO' : '× ลำดับผิด · imaging ควรอยู่ LEO · GPS ที่ MEO · comms ที่ GEO';
+      KPA.log('K2','orbit-tiers',{ correct, placed });
+      KPA.misconception('M1', correct?'resolved':'persistent', { ctx:'orbit' });
+      PBL.attempt(correct, { placed });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    }
+  });
+</script>
+</body>
+</html>

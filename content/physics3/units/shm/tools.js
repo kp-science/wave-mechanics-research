@@ -17,12 +17,12 @@
 // ═══════════════════════════════════════════════════════════════════
 
 window.KP_PLAN_TOOLS = {
-  1: ['tl-pre','f1-pre','simlab1','poe1','calc1','spot1','cer1','exercise1','tl-post','f1-post','mj1','upload'],
+  1: ['ft01_shm','tl-pre','f1-pre','simlab1','poe1','calc1','spot1','cer1','exercise1','tl-post','f1-post','mj1','upload'],
   2: ['tl-pre','f2-pre','simlab2','poe2','calc2','spot2','cer2','exercise2','tl-post','f2-post','mj2','upload'],
   3: ['tl-pre','f3-pre','engage3','simlab3','poe3','concept3','exercise3','case3','exit3','exercise3-ext','tl-post','mj3','upload'],
   4: ['tl-pre','f4-pre','engage4','simlab4','poe4','jigsaw4','concept4','exercise4','case4','exit4','exercise4-ext','tl-post','mj4','upload'],
   5: ['tl-pre','f5-pre','engage5','simlab5','poe5','tps5','concept5','exercise5','exit5','f5-post','exercise5-ext','tl-post','mj5','upload'],
-  6: ['tl-pre','f6-pre','engage6','simlab6','poe6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','upload']
+  6: ['tl-pre','f6-pre','engage6','simlab6','poe6','sim6','concept6','exercise6','exit6','f6-post','exercise6-ext','tl-post','mj6','ft02_shm','upload']
 };
 
 // ─────────────────────────────────────────────────────────────────
@@ -34,6 +34,10 @@ window.KP_TOOL_DEFS = {
   'tl-pre':  { ico:'🚦', name:'Traffic Light · ก่อนเรียน', desc:'ยกบัตร 🟢🟡🔴 ประเมินตนเองก่อนคาบ', sheet:'SHM_TL', color:'tc-tl' },
   'tl-post': { ico:'🚦', name:'Traffic Light · หลังเรียน', desc:'ยกบัตร 🟢🟡🔴 ประเมินตนเองหลังคาบ', sheet:'SHM_TL', color:'tc-tl' },
   'upload':  { ico:'📎', name:'อัปโหลดใบงาน', desc:'ส่งไฟล์ PDF/รูปใบงานที่เขียนมือ', sheet:'SHM_Upload', color:'tc-up' },
+
+  // ─── Four-tier Unit-wide (FT-01 Pre · FT-02 Post · ครอบ 6 แผน) ───
+  'ft01_shm': { ico:'📋', name:'FT-01 · Pre หน่วย SHM',  desc:'ทดสอบก่อนเรียน · 12 ข้อครอบ 6 แผน · M1.x – M6.x', sheet:'SHM_FT01', color:'tc-ft', file:'สื่อ12_FT01_Fourtier_PreUnit.html', lockAfterSubmit:true },
+  'ft02_shm': { ico:'🏆', name:'FT-02 · Post หน่วย SHM', desc:'ทดสอบหลังเรียน · parallel form ของ FT-01 · ใช้วัด normalized gain', sheet:'SHM_FT02', color:'tc-ft', file:'สื่อ08_FT02_Fourtier_PostUnit.html', lockAfterSubmit:true },
 
   // ─── Four-tier Pre/Post (รายแผน · เปิดไฟล์ HTML ใน iframe) ───
   'f1-pre':  { ico:'📝', name:'F1 Four-tier · Pre',  desc:'มโนทัศน์นิยาม SHM · ก่อนเรียน', sheet:'SHM_F_Fourtier_P1', color:'tc-ft', file:'สื่อ05_F1_Fourtier_PrePost.html' },

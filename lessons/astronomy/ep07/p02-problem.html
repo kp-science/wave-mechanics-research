@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p02 · ปัญหา ดาวเทียมดับ</title>
+<link rel="stylesheet" href="_page-style.css" />
+</head>
+<body data-page="p02">
+<div class="page">
+  <div class="act-badge">ACT A · 3/4</div>
+  <h1>เห็นแค่ "แสง"</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · จอ HUD ดับทุกช่อง</div>
+    <div class="crisis-body">เรดาร์ปิด · IR ปิด · X-ray ปิด · เห็นแต่ <b>กล้องตา (visible)</b> เท่านั้น · ดาวเทียม 4,800 ดวงไม่ตอบสนอง</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🔍 SCAN · ทำความเข้าใจสิ่งที่เกิด</div>
+    <div class="tool-body">VOID จาม "Spectrum Jammer" → ปิดคลื่นทุกช่วงยกเว้นแสงตาเปล่า · ทีมเหมือน <b>ใส่แว่นกรองสีเดียว</b></div>
+  </div>
+
+  <h3>🤔 Quick poll · ทบทวนความรู้เดิม</h3>
+  <p>ก่อนหน้านี้ · เธอคิดว่ามนุษย์ <em>สังเกตจักรวาล</em> ด้วยอะไร?</p>
+  <div class="chips" id="poll1">
+    <div class="chip" data-i="0">แสงตาเปล่าอย่างเดียว</div>
+    <div class="chip" data-i="1">แสง + กล้องโทรทรรศน์ที่ใช้คลื่นต่างๆ ✓</div>
+    <div class="chip" data-i="2">เครื่องวัดเสียง</div>
+    <div class="chip" data-i="3">แค่ดาวเทียม</div>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transferCard" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    มนุษย์เห็น <b>visible</b> เท่านั้น (400-700 nm) · แต่จักรวาลเปล่งคลื่นทุกช่วง · นักดาราศาสตร์ต้องสร้างกล้องพิเศษเพื่อ <em>เห็นในที่มืด</em> · ตำราหน้า 90-93
+  </div>
+
+  <div style="text-align:center;margin:20px 0;">
+    <a href="p03-mission.html" class="btn alt" id="nextBtn" style="display:none;">ไปต่อ → p03 ภารกิจ</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p02' });
+    PBL.init({ id:'p02-spectrum-awareness' });
+    PBL._enter('activate');
+
+    const poll = document.getElementById('poll1');
+    const result = document.getElementById('resultHost');
+    let answered = false;
+    poll.querySelectorAll('.chip').forEach(c => c.onclick = () => {
+      if (answered) return;
+      const i = +c.dataset.i;
+      const correct = i === 1;
+      poll.querySelectorAll('.chip').forEach(x => x.classList.add('disabled'));
+      c.classList.add(correct ? 'correct' : 'wrong');
+      result.classList.add('show', correct ? 'correct' : 'wrong');
+      result.textContent = correct ? '✓ ใช่ · กล้องโทรทรรศน์ใช้คลื่นต่างๆ ไม่ใช่แค่แสง' : '× ไม่ตรง · มนุษย์ใช้กล้องที่ถ่ายในคลื่นหลายช่วง';
+      KPA.log(correct ? 'K1' : 'K1', 'spectrum-awareness', { correct });
+      if (correct) CoinEnergy.reward('quickPollCorrect');
+      else CoinEnergy.penalty('crisisFail');
+      PBL.attempt(correct, { quiz:'spectrum-aware' });
+      document.getElementById('transferCard').style.display = 'block';
+      document.getElementById('nextBtn').style.display = '';
+      answered = true;
+      PBL._enter('transfer');
+    });
+  });
+</script>
+</body>
+</html>

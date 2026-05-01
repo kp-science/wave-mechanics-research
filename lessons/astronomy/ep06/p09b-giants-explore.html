@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P09b · GIANTS · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.giants-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.giant-card { padding:14px; border-radius:12px; min-height:100px; }
+.gas-bin { background:rgba(255,138,61,0.10); border:2px dashed #ff8a3d; }
+.ice-bin { background:rgba(100,216,255,0.12); border:2px dashed #64d8ff; }
+.giant-card h4 { font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; margin:0 0 8px; }
+.gas-bin h4 { color:#ff8a3d; } .ice-bin h4 { color:#64d8ff; }
+.gtag { padding:10px 14px; border-radius:10px; cursor:pointer; user-select:none;
+        background:rgba(20,28,52,0.7); border:1.5px solid rgba(120,140,220,0.4); margin:4px; display:inline-block; font-size:14px; }
+.gtag.placed-correct { background:rgba(126,255,178,0.15); border-color:#7effb2; }
+.gtag.placed-wrong { background:rgba(255,92,122,0.12); border-color:#ff5c7a; }
+.tag-pool { display:flex; flex-wrap:wrap; gap:6px; padding:14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px dashed rgba(120,140,220,0.3); margin:10px 0; min-height:60px; }
+.facts { padding:12px; background:rgba(20,28,52,0.6); border-radius:10px; margin:10px 0; font-size:13px; line-height:1.7; }
+</style>
+</head>
+<body data-page="p09b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">☄ GIANTS · B · EXPLORE</span>
+  <h1>แยก gas giant vs ice giant</h1>
+
+  <div class="card">
+    <h3>📚 Hints (อ่านก่อนคัด)</h3>
+    <div class="facts">
+      <b style="color:#ff8a3d;">Gas giant</b> = ส่วนใหญ่เป็น <b>H + He</b> · ขนาดใหญ่มาก<br>
+      <b style="color:#64d8ff;">Ice giant</b> = มี <b>น้ำแข็ง + มีเทน + แอมโมเนีย</b>มากกว่า · สีฟ้า/น้ำเงิน
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📦 ลาก 4 ดวงใส่ฝั่งที่ใช่</h3>
+    <div class="tag-pool" id="pool"></div>
+    <div class="giants-row">
+      <div class="giant-card gas-bin"><h4>☄ GAS GIANT</h4><div data-zone="gas" id="gasBin" style="min-height:60px;"></div></div>
+      <div class="giant-card ice-bin"><h4>❄️ ICE GIANT</h4><div data-zone="ice" id="iceBin" style="min-height:60px;"></div></div>
+    </div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P09b</summary>
+    <div>4/4 = ผ่าน · พฤหัส+เสาร์ = gas · ยูเรนัส+เนปจูน = ice</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ดาวยักษ์ gas (พฤหัส/เสาร์) ต่างจาก ice (ยูเรนัส/เนปจูน) ยังไง?',
+    durationSec: 60,
+    chips: [
+      'gas = H/He เด่น · ice = น้ำ/มีเทน/แอมโมเนีย',
+      'gas อยู่ใน · ice อยู่นอก ระยะห่างเฉลี่ย',
+      'gas ใหญ่กว่า ice ประมาณ 3-4 เท่า',
+      'ice มีสีน้ำเงิน-ฟ้าเข้ม จาก CH₄',
+      'ทั้งสองมีแก่นหิน-น้ำแข็งแกนกลาง'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const ITEMS = [
+  { id:'jupiter', n:'♃ พฤหัส',   t:'gas' },
+  { id:'saturn',  n:'♄ เสาร์',   t:'gas' },
+  { id:'uranus',  n:'♅ ยูเรนัส',  t:'ice' },
+  { id:'neptune', n:'♆ เนปจูน',  t:'ice' },
+];
+const placed = {};
+const pool = document.getElementById('pool');
+ITEMS.slice().sort(()=>Math.random()-0.5).forEach(it => {
+  const el = document.createElement('div'); el.className='gtag'; el.dataset.id=it.id;
+  el.textContent = it.n;
+  el.onclick = () => {
+    if(placed[it.id]) return;
+    const dlg = document.createElement('div');
+    dlg.style.cssText='position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:flex; align-items:center; justify-content:center;';
+    dlg.innerHTML = `<div style="background:#06091a; padding:18px; border-radius:14px; border:1px solid #64d8ff;">
+      <div style="font-size:13px; color:#fff; margin-bottom:10px;">${it.n}</div>
+      <button class="ghost" data-z="gas">☄ GAS</button>
+      <button class="ghost" data-z="ice" style="margin-left:6px;">❄️ ICE</button></div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelectorAll('button').forEach(b => b.onclick = () => {
+      const z = b.dataset.z; dlg.remove();
+      placed[it.id] = z;
+      document.getElementById(z+'Bin').appendChild(el);
+      el.onclick = null;
+    });
+  };
+  pool.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p09b', nextHref:'p09c-giants-quiz.html',
+    getPayload(){
+      let correct = 0;
+      ITEMS.forEach(it => { if(placed[it.id]===it.t) correct++; });
+      return { placed, correct, total:ITEMS.length };
+    },
+    validate(p){ if(Object.keys(placed).length<ITEMS.length){ alert('คัดให้ครบ 4 ดวง'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){
+      ITEMS.forEach(it => {
+        const el = document.querySelector(`.gtag[data-id="${it.id}"]`);
+        if(!el) return;
+        el.classList.add(placed[it.id]===it.t ? 'placed-correct' : 'placed-wrong');
+      });
+    }
+  });
+}, 200);
+</script>
+</body></html>

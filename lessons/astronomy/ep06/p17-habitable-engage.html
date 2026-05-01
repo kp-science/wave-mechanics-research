@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P17 · Habitable · ENGAGE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.factor-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.fc { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(126,255,178,0.4); text-align:center; }
+.fc .ic { font-size:36px; }
+.fc h4 { margin:6px 0 4px; color:#7effb2; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.1em; }
+.fc p { margin:0; font-size:12px; color:#9aa3c0; line-height:1.5; }
+</style>
+</head>
+<body data-page="p17" data-type="story">
+<div class="page">
+  <span class="lbl story">🌍 HABITABLE · ENGAGE</span>
+  <h1>ทำไมโลกอยู่ได้? · 4 ปัจจัย</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ทีมต้องเข้าใจว่าโลกพิเศษไหม · ถ้าเข้าใจ <b>habitable zone</b> · นักเรียนจะรู้ว่า<b style="color:#7effb2;">ระยะอย่างเดียวไม่พอ</b>"</span>
+  </div>
+
+  <div class="card green">
+    <h3>4 ปัจจัยที่ทำให้โลกเอื้อชีวิต</h3>
+    <div class="factor-grid" id="fhost"></div>
+  </div>
+
+  <div class="card cyan">
+    <h3>📌 หมายเหตุ</h3>
+    <ul style="line-height:1.7;">
+      <li>ดาวศุกร์อยู่ใกล้ habitable zone · แต่<b style="color:#ff5c7a;">ร้อนเกิน</b> (greenhouse runaway)</li>
+      <li>ดาวอังคารอยู่ขอบ habitable zone · แต่<b style="color:#ff5c7a;">บรรยากาศบางเกิน</b></li>
+      <li>โลกได้ทุกปัจจัยพอดี · "Goldilocks zone"</li>
+    </ul>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P17</summary>
+    <div>หน้านี้ engage 4 ปัจจัย · นักเรียนจะใช้ใน p18 (slider) + p19 (kill M7)</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: 'ดาวเคราะห์ที่อยู่ได้ ต้องมีอะไรบ้าง? (เลือกหลายข้อ)',
+    chips: [
+      'น้ำเหลว ✓',
+      'อุณหภูมิเหมาะ ✓',
+      'บรรยากาศ ✓',
+      'ระยะที่เหมาะกับดาวฤกษ์ (HZ) ✓',
+      'ดวงจันทร์',
+      'ภูเขาไฟ',
+      'ชนิดดาวฤกษ์ ✓'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ EXPLORE · slider ระยะ</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const fhost = document.getElementById('fhost');
+EP_CONFIG.habitableFactors.forEach(f => {
+  const c = document.createElement('div'); c.className='fc';
+  c.innerHTML = `<div class="ic">${f.ic}</div><h4>${f.name}</h4><p>${f.desc}</p>`;
+  fhost.appendChild(c);
+});
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p18-habitable-explore.html');if(window.PaceClient)Gate.wireButton('p17',btn,'p18-habitable-explore.html');},200);
+</script>
+</body></html>

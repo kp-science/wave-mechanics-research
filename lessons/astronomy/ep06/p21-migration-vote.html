@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P21 · Migration Vote</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.vote-card { padding:14px; border-radius:12px; margin:10px 0; cursor:pointer; transition:all .2s; }
+.vote-card:hover { transform:translateY(-2px); }
+.vote-card.picked { border-width:2px; box-shadow:0 0 24px currentColor; }
+.vote-earth { background:rgba(100,216,255,0.10); border:1px solid #64d8ff; color:#64d8ff; }
+.vote-452b { background:rgba(126,255,178,0.10); border:1px solid #7effb2; color:#7effb2; }
+.vote-1e { background:rgba(255,203,107,0.10); border:1px solid #ffcb6b; color:#ffcb6b; }
+.reason-pool { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+</style>
+</head>
+<body data-page="p21" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🗳️ MIGRATION VOTE</span>
+  <h1>ถ้าต้องย้ายบ้าน · จะเลือกดาวไหน?</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "สมมติว่า VOID สำเร็จ · เราต้องย้ายไปดาวอื่น · เลือก 1 ดวง · เลือกเหตุผลสนับสนุน · debate กับเพื่อน"</span>
+  </div>
+
+  <div class="card">
+    <h3>🌍 เลือก 1 ดวง</h3>
+    <div class="vote-card vote-earth" data-id="earth"><b>โลก</b> · 1 AU · G-type · habitable · บ้านเก่า</div>
+    <div class="vote-card vote-452b" data-id="452b"><b>Kepler-452b</b> · 1,400 ปีแสง · super-Earth · G-type · "ลูกพี่ลูกน้องโลก"</div>
+    <div class="vote-card vote-1e" data-id="1e"><b>TRAPPIST-1e</b> · 40 ปีแสง · ขนาดโลก · M-dwarf · tidally locked</div>
+  </div>
+
+  <div class="card cyan">
+    <h3>📝 เหตุผลของคุณ (เลือกได้หลายข้อ)</h3>
+    <div class="reason-pool" id="reasons"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P21</summary>
+    <div>เปิด debate · ไม่มีคำตอบถูกผิด · กระตุ้นให้นักเรียนใช้ข้อมูลจาก p17-p20 ตัดสินใจ</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ถ้าต้องเลือก 1 ดาวเพื่ออพยพ · อิงอะไร?',
+    durationSec: 60,
+    chips: [
+      'ระยะใกล้กว่าคือดี',
+      'HZ คือสำคัญที่สุด',
+      'ขนาดใกล้โลก',
+      'ดาวฤกษ์อายุยาว',
+      'สมดุลทุกปัจจัย'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ทำไมเลือกดาวนี้',
+    words: ['HZ', 'ดาวฤกษ์', 'ระยะ', 'บรรยากาศ', 'น้ำเหลว', 'ขนาด', 'โคจร', 'สนามแม่เหล็ก', 'M7', 'exoplanet'],
+    required: ['HZ', 'ดาวฤกษ์', 'ระยะ', 'น้ำเหลว'],
+    indicator: 'K6'
+  });
+})();
+</script>
+
+
+<div id="ljMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ljMount');
+  if(!el || !window.Journal) return;
+  Journal.mount(el, {
+    pageId: document.body.dataset.page,
+    sceneTitle: 'จดสมุด · 3-2-1 ปิด scene',
+    learnedChips: ['debate ใช้หลักฐาน', 'no perfect answer', 'เลือกตามค่า > 1', 'HZ + ดาวฤกษ์ + ระยะ', 'ทั้ง Kepler 452b · TRAPPIST-1e ดี', 'เกณฑ์เปลี่ยนตามคำถาม'],
+    useChips: ['ถกเรื่องวิทย์ในชั้น', 'ฟังเหตุผลคนอื่น', 'เปลี่ยนใจถ้าเหตุผลดี', 'ใช้ข้อมูลตัดสิน'],
+    askChips: ['Mars จะอพยพได้เมื่อไหร่', 'Proxima b อันตรายไหม', 'การเดินทาง 40 ปีแสง', 'generation ship เป็นยังไง']
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 บันทึกโหวต</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 บันทึกก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+let pickedPlanet = null;
+const reasonsSelected = new Set();
+document.querySelectorAll('.vote-card').forEach(c => {
+  c.onclick = () => {
+    document.querySelectorAll('.vote-card').forEach(x => x.classList.remove('picked'));
+    c.classList.add('picked');
+    pickedPlanet = c.dataset.id;
+  };
+});
+
+const REASONS = ['ใกล้สุด','สิ่งที่คุ้นเคย','คาบโคจรเหมาะสม','ดาวฤกษ์เสถียร','ขนาดเหมือนโลก','มีอากาศ','มีน้ำเหลว','tidally locked = อันตราย','ใช้พลังงานน้อยที่สุด','พิสูจน์แล้วว่ามีชีวิตได้'];
+const rh = document.getElementById('reasons');
+REASONS.forEach(r => {
+  const el = document.createElement('div'); el.className='chip'; el.textContent=r;
+  el.onclick = () => {
+    if(reasonsSelected.has(r)){ reasonsSelected.delete(r); el.classList.remove('selected'); }
+    else { reasonsSelected.add(r); el.classList.add('selected'); }
+  };
+  rh.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p21', nextHref:'p22-bolt-clue.html',
+    getPayload(){ return { planet:pickedPlanet, reasons:[...reasonsSelected] }; },
+    validate(p){ if(!p.planet){ alert('เลือก 1 ดาว'); return false; } if(p.reasons.length<1){ alert('เลือกเหตุผลอย่างน้อย 1'); return false; } return true; },
+    isPerfect(p){ return p.reasons.length>=2; },
+    onSubmit(){}
+  });
+}, 200);
+</script>
+</body></html>

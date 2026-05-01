@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p04 · EM Spectrum</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .spectrum-pool, .spectrum-target {
+    display:flex; gap:6px; min-height:60px; margin:10px 0;
+    border:2px dashed var(--line); border-radius:10px; padding:6px;
+  }
+  .spectrum-target { border-style:solid; }
+  .em-band {
+    flex:1; min-width:90px; padding:10px 8px; border-radius:8px;
+    text-align:center; font-weight:700; color:#001; cursor:grab;
+    box-shadow:0 2px 8px rgba(0,0,0,.2); user-select:none;
+  }
+  .em-band.placed { opacity:.5; cursor:default; }
+  .em-band[data-band="uv"]{ color:#fff; }
+  .em-band.drop-over { outline:3px solid #ff8a3d; outline-offset:-3px; transform:scale(1.05); }
+  .scale-bar { display:flex; justify-content:space-between; font-size:11px;
+    color:var(--text-mute); padding:0 6px; margin-top:-4px; }
+</style>
+</head>
+<body data-page="p04">
+<div class="page">
+  <div class="act-badge">ACT B · 1/8 · EM SPECTRUM</div>
+  <h1>คลื่นแม่เหล็กไฟฟ้า · ทั้ง 6 ช่วง</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · เครื่องสแกนตื่น · แต่จัดเรียงคลื่นไม่ถูก</div>
+    <div class="crisis-body">เพื่อจะตามล่า VOID · เราต้องสแกนคลื่นทุกช่วง · แต่เครื่องบันทึกของพ่อ <b>สลับลำดับคลื่น</b> ไว้ ·
+    เธอต้องเรียงให้ถูกตามความยาวคลื่น <em>ยาว → สั้น</em></div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🔬 TOOL · EM Spectrum (ตำรา หน้า 92)</div>
+    <div class="tool-body">คลื่นวิทยุ → ไมโครเวฟ → IR → แสง → UV → X-ray (ยาว → สั้น)</div>
+  </div>
+
+  <h3>📦 คลื่นที่ต้องเรียง · ลากไปวางตามลำดับ</h3>
+  <div class="spectrum-pool" id="pool"></div>
+
+  <div class="scale-bar"><span>ยาว 1 m</span><span>10⁻³ m</span><span>10⁻⁶ m</span><span>10⁻⁹ m</span><span>สั้น 10⁻¹¹ m</span></div>
+  <div class="spectrum-target" id="target"></div>
+
+  <p style="font-size:13px;color:var(--text-mute);text-align:center;margin:6px 0;">
+    💡 <b>คลิก</b>คลื่นที่วางผิดเพื่อเอากลับ pool · หรือกด <b>รีเซ็ต</b>เริ่มใหม่
+  </p>
+  <div style="text-align:center;margin:14px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn" id="check">✓ ตรวจคำตอบ</button>
+    <button class="btn ghost" id="reset">🔄 รีเซ็ต</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    มือถือใช้ <b>วิทยุ</b> · ไมโครเวฟใช้ <b>ไมโครเวฟ</b> · รีโมทใช้ <b>IR</b> · ตาเห็น <b>visible</b> · หลอดฆ่าเชื้อใช้ <b>UV</b> · เครื่อง CT ใช้ <b>X-ray</b>
+  </div>
+
+  <div style="text-align:center;margin:18px 0;">
+    <a href="p05-atmosphere.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p05 บรรยากาศดูดกลืน</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p04' });
+    PBL.init({ id:'p04-em-order' });
+
+    const correctOrder = ['radio','micro','ir','visible','uv','xray'];
+    const bands = EP_CONFIG.spectrum;
+    const pool = document.getElementById('pool');
+    const target = document.getElementById('target');
+
+    // shuffle
+    const shuffled = [...bands].sort(()=> Math.random() - .5);
+    shuffled.forEach(b => pool.appendChild(_make(b)));
+    correctOrder.forEach((_, i) => {
+      const slot = document.createElement('div');
+      slot.className = 'em-band'; slot.style.background = '#0a1226';
+      slot.style.color = 'var(--text-mute)'; slot.style.cursor='default';
+      slot.style.border='1px dashed var(--line)';
+      slot.dataset.slot = i;
+      slot.textContent = '#' + (i+1);
+      target.appendChild(slot);
+    });
+
+    function _make(b){
+      const el = document.createElement('div');
+      el.className = 'em-band'; el.style.background = b.color;
+      el.dataset.band = b.id;
+      el.draggable = true;
+      el.innerHTML = b.name + '<br><span style="font-weight:400;font-size:11px;">' + b.range + '</span>';
+      el.addEventListener('dragstart', e => e.dataTransfer.setData('text', b.id));
+      return el;
+    }
+
+    function _placeInSlot(slot, bandId){
+      const b = bands.find(x => x.id === bandId);
+      if (!b) return;
+      slot.style.background = b.color;
+      slot.style.color = b.id==='uv' ? '#fff' : '#001';
+      slot.style.border = 'none';
+      slot.style.cursor = 'pointer';
+      slot.dataset.band = bandId;
+      slot.draggable = true;
+      slot.innerHTML = b.name + '<br><span style="font-weight:400;font-size:11px;">' + b.range + '</span>';
+      slot.title = 'คลิกเพื่อนำกลับ pool';
+    }
+    function _emptySlot(slot){
+      const i = slot.dataset.slot;
+      slot.style.background = '#0a1226';
+      slot.style.color = 'var(--text-mute)';
+      slot.style.border = '1px dashed var(--line)';
+      slot.style.cursor = 'default';
+      delete slot.dataset.band;
+      slot.draggable = false;
+      slot.innerHTML = '#' + (parseInt(i,10)+1);
+      slot.title = '';
+    }
+    function _returnToPool(bandId){
+      // re-add band token to pool if not already there
+      if (pool.querySelector('[data-band="'+bandId+'"]')) return;
+      const b = bands.find(x => x.id === bandId);
+      if (!b) return;
+      pool.appendChild(_make(b));
+    }
+
+    [...target.children].forEach(slot => {
+      slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drop-over'); });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drop-over'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        slot.classList.remove('drop-over');
+        const id = e.dataTransfer.getData('text');
+        if (!id) return;
+        const fromPool   = pool.querySelector('[data-band="'+id+'"]');
+        const fromSlotEl = [...target.children].find(s => s !== slot && s.dataset.band === id);
+        const occupant = slot.dataset.band; // existing band in this slot
+
+        if (fromPool) {
+          // moving from pool: if slot occupied, swap occupant back to pool
+          if (occupant) _returnToPool(occupant);
+          fromPool.remove();
+          _placeInSlot(slot, id);
+        } else if (fromSlotEl) {
+          // moving from another slot: swap (or empty source if dest was empty)
+          if (occupant) {
+            _placeInSlot(fromSlotEl, occupant);
+          } else {
+            _emptySlot(fromSlotEl);
+          }
+          _placeInSlot(slot, id);
+        }
+      });
+      // make placed bands draggable + click to return
+      slot.addEventListener('dragstart', e => {
+        if (!slot.dataset.band) return;
+        e.dataTransfer.setData('text', slot.dataset.band);
+      });
+      slot.addEventListener('click', () => {
+        if (!slot.dataset.band) return;
+        const bandId = slot.dataset.band;
+        _returnToPool(bandId);
+        _emptySlot(slot);
+      });
+    });
+
+    // reset button: clear slots + rebuild pool
+    document.getElementById('reset').onclick = () => {
+      [...target.children].forEach(_emptySlot);
+      pool.innerHTML = '';
+      [...bands].sort(()=> Math.random() - .5).forEach(b => pool.appendChild(_make(b)));
+      const r = document.getElementById('resultHost');
+      r.classList.remove('show','correct','wrong');
+      r.textContent = '';
+      KPA.log('A3','reset-spectrum', { correct:false });
+    };
+
+    document.getElementById('check').onclick = () => {
+      const slots = [...target.children];
+      const order = slots.map(s => s.dataset.band || null);
+      const correct = order.every((b, i) => b === correctOrder[i]);
+      const result = document.getElementById('resultHost');
+      result.classList.add('show', correct ? 'correct' : 'wrong');
+      result.textContent = correct ? '✓ เรียงถูกครบ 6 ช่วง · จากยาวไปสั้น' : '× ลำดับยังไม่ถูก · ลองเรียงใหม่';
+      KPA.log(correct ? 'K1' : 'K1', 'em-order', { correct, order });
+      KPA.competency('C2', { evidence: 'sequencing-spectrum' });
+      PBL.attempt(correct, { order });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display = 'block';
+        document.getElementById('next').style.display = '';
+        PBL._enter('transfer');
+      } else {
+        CoinEnergy.penalty('crisisFail');
+      }
+    };
+  });
+</script>
+</body>
+</html>

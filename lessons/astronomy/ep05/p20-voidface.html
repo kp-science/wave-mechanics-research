@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P19 · VOID Face</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.void-stage { position:relative; height:280px; background:radial-gradient(circle at 50% 60%, rgba(58,10,74,0.6), #02030a 80%); border-radius:14px; overflow:hidden; margin:10px 0; }
+.void-eye { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:140px; height:140px; border-radius:50%;
+            background:radial-gradient(circle at 50% 50%, #000 25%, #b980ff 28%, #3a0a4a 60%, #000 80%);
+            box-shadow:0 0 60px #b980ff, inset 0 0 40px #ff5c7a; animation:eyePulse 2s ease-in-out infinite; }
+@keyframes eyePulse { 0%,100%{transform:translate(-50%,-50%) scale(1); filter:hue-rotate(0);} 50%{transform:translate(-50%,-50%) scale(1.05); filter:hue-rotate(20deg);} }
+.void-eye::before { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:30px; height:30px; border-radius:50%; background:#ff5c7a; box-shadow:0 0 24px #ff5c7a; }
+.taunt { padding:14px; border-radius:12px; background:rgba(58,10,74,0.4); border:1px solid #b980ff; margin:8px 0; }
+.taunt .who { font-family:Orbitron,monospace; font-size:11px; color:#b980ff; letter-spacing:.16em; margin-bottom:6px; }
+.taunt .quote { color:#d4b8ff; font-style:italic; font-size:14px; line-height:1.7; }
+.cd-mini { font-family:Orbitron,monospace; color:#ff5c7a; font-size:18px; letter-spacing:.18em; }
+</style>
+</head>
+<body data-page="p20" data-type="story">
+<div class="page">
+  <span class="lbl story">⚠ VOID · FACE TO FACE</span>
+  <h1>VOID ปรากฏที่ Photosphere</h1>
+
+  <div class="card red">
+    <div class="mb-head" style="color:#ff5c7a;">⏰ T-MINUS</div>
+    <div class="cd-mini center">06:42:18</div>
+  </div>
+
+  <div class="card">
+    <div class="void-stage">
+      <div class="void-eye"></div>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      sunspot ขนาดยักษ์เปิดขึ้นกลาง photosphere · ตาสีม่วง · จ้องกลับมา · เสียงดังในหัว...
+    </span>
+  </div>
+
+  <div class="taunt">
+    <div class="who">VOID · TAUNT 01</div>
+    <div class="quote">"พวกเจ้าศึกษาฟิวชัน · เผาไหม้ · มันก็เรื่องเดียวกัน · พลังงานคือพลังงาน"
+    <span style="color:#ff5c7a;">[M1]</span></div>
+  </div>
+  <div class="taunt">
+    <div class="who">VOID · TAUNT 02</div>
+    <div class="quote">"corona เย็นกว่า photosphere · กฎง่าย ๆ · ไกลแกน = เย็น · ใช่ไหม?"
+    <span style="color:#ff5c7a;">[M2]</span></div>
+  </div>
+  <div class="taunt">
+    <div class="who">VOID · TAUNT 03</div>
+    <div class="quote">"flare กับ CME คืออันเดียวกัน · เจ้าจะแยกไปทำไม"
+    <span style="color:#ff5c7a;">[M4]</span></div>
+  </div>
+  <div class="taunt">
+    <div class="who">VOID · TAUNT 04</div>
+    <div class="quote">"habitable zone? โลกอยู่ในนั้นเพราะใกล้ดวงอาทิตย์ที่สุดในกลุ่มหิน · เรื่องของระยะ · ไม่ใช่เรื่องของน้ำ"
+    <span style="color:#ff5c7a;">[M7]</span></div>
+  </div>
+
+  <div class="card gold">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ทุกประโยคที่มันพูด · เราพิสูจน์ผิดมาแล้วใน 18 หน้า · มันแค่กลัว · เราใกล้แล้ว"</span>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P19</summary>
+    <div>ให้นักเรียนระบุว่าแต่ละ taunt = misconception ตัวไหน · ทบทวนก่อน path select</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ เลือกจุดเบี่ยง</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p21-deflect-path.html');
+  if(window.PaceClient) Gate.wireButton('p20', btn,'p21-deflect-path.html');
+  if(Transition && Transition.play) Transition.play('VOID_REVEAL');
+},200);
+</script>
+</body></html>

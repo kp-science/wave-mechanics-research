@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p13 · Probe Hall</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .targets { display:grid; grid-template-columns:repeat(5, 1fr); gap:8px; margin:12px 0; }
+  .target { background:#0a1226; border:2px dashed var(--steel-blue); border-radius:10px;
+    padding:14px 6px; text-align:center; min-height:90px; }
+  .target.over { background:rgba(255,138,61,.15); border-color:var(--rocket-orange); }
+  .target b { display:block; color:var(--electric); font-size:14px; }
+  .target .planet { font-size:36px; }
+  .probes { display:flex; flex-wrap:wrap; gap:8px; padding:10px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px; margin:10px 0; }
+  .probe { background:var(--rocket-orange); color:#1a0e00;
+    padding:8px 12px; border-radius:20px; cursor:grab; font-weight:700; font-size:13px;
+    user-select:none; }
+  .probe.placed { opacity:.4; cursor:default; }
+</style>
+</head>
+<body data-page="p13">
+<div class="page">
+  <div class="act-badge">ACT C · 2/10</div>
+  <h1>Hall of Fame · ยานสำรวจประวัติศาสตร์</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · ต้องเลือกยานเก่าจากคลังพ่อ · ใช้เป็นต้นแบบไป Mars</div>
+    <div class="crisis-body">ยานแต่ละลำส่งไปคนละเป้าหมาย · จับคู่ให้ถูก = ปลด blueprint · จับคู่ผิด = ส่ง template ผิดไป Mars</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🚀 TOOL · ยานอวกาศ NASA (ตำรา p94)</div>
+    <div class="tool-body">Apollo · Curiosity · Juno · Cassini-Huygens · New Horizons</div>
+  </div>
+
+  <h3>🎯 เป้าหมาย:</h3>
+  <div class="targets" id="targets"></div>
+
+  <h3>🚀 ยาน · ลากไปวาง:</h3>
+  <div class="probes" id="probes"></div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="check">✓ ตรวจ</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Curiosity ยังส่งภาพ Mars ทุกวัน · Voyager 1 อยู่นอก heliopause · มนุษย์ใช้ยานพวกนี้สร้าง <b>knowledge ของจักรวาล</b>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p14-iss-cpr.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p14 ISS · CPR</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p13' });
+    PBL.init({ id:'p13-probe-hall' });
+
+    const probes = EP_CONFIG.probes;
+    const PLANET_ICONS = { 'ดวงจันทร์':'🌙','ดาวอังคาร':'🔴','พฤหัสบดี':'🪐','เสาร์':'💍','พลูโต':'❄️' };
+    const targets = [...new Set(probes.map(p => p.target))];
+    const tgtEl = document.getElementById('targets');
+    targets.forEach(t => {
+      const d = document.createElement('div');
+      d.className='target'; d.dataset.target=t;
+      d.innerHTML = `<div class="planet">${PLANET_ICONS[t]||'?'}</div><b>${t}</b><span style="color:var(--text-mute);font-size:11px;">? ลากยาน</span>`;
+      d.addEventListener('dragover', e => { e.preventDefault(); d.classList.add('over'); });
+      d.addEventListener('dragleave', () => d.classList.remove('over'));
+      d.addEventListener('drop', e => {
+        e.preventDefault(); d.classList.remove('over');
+        const id = e.dataTransfer.getData('text');
+        const tok = document.querySelector('.probe[data-id="'+id+'"]');
+        if (!tok || d.dataset.placed) return;
+        d.dataset.placed = id;
+        d.querySelector('span').textContent = probes.find(p => p.id===id).name;
+        d.style.borderStyle='solid';
+        tok.classList.add('placed'); tok.draggable=false;
+      });
+      tgtEl.appendChild(d);
+    });
+
+    const pool = document.getElementById('probes');
+    [...probes].sort(()=> Math.random()-.5).forEach(p => {
+      const tk = document.createElement('div');
+      tk.className='probe'; tk.draggable=true; tk.dataset.id=p.id;
+      tk.textContent = p.name;
+      tk.addEventListener('dragstart', e => e.dataTransfer.setData('text', p.id));
+      pool.appendChild(tk);
+    });
+
+    document.getElementById('check').onclick = () => {
+      const cells = [...tgtEl.querySelectorAll('.target')];
+      const correct = cells.every(c => {
+        const id = c.dataset.placed;
+        if (!id) return false;
+        return probes.find(p => p.id === id).target === c.dataset.target;
+      });
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = correct?'✓ จับคู่ครบและถูก':'× ยังไม่ครบ · ลองดูใหม่';
+      KPA.log('K2','probe-match',{correct});
+      KPA.competency('C2',{ evidence:'matching-probes' });
+      PBL.attempt(correct, {});
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    };
+  });
+</script>
+</body>
+</html>

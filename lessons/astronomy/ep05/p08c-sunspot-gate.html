@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P08c · SUNSPOT · MASTERY GATE (v3 · Discover-by-Click)</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+.phase-anatomy { background:rgba(100,216,255,.15); color:#64d8ff; border:1px solid rgba(100,216,255,.4); }
+
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* ANATOMY */
+.anatomy-card { padding:14px; border-radius:14px; background:linear-gradient(180deg,rgba(100,216,255,0.08),rgba(20,28,52,0.6));
+                border:1px solid rgba(100,216,255,0.4); margin:10px 0; }
+.anatomy-card h3 { margin:0 0 10px; color:#64d8ff; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.12em; }
+.anatomy-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.anatomy-fact { padding:10px 12px; border-radius:10px; background:rgba(0,0,0,0.4); border-left:3px solid #ffcb6b; }
+.anatomy-fact .ico { font-size:20px; margin-bottom:4px; }
+.anatomy-fact .head { font-family:Orbitron,monospace; font-size:11px; letter-spacing:.1em; color:#ffcb6b; margin-bottom:4px; }
+.anatomy-fact .body { font-size:12px; color:#fff; line-height:1.5; }
+.anatomy-fact .body b { color:#7effb2; }
+.anatomy-chain { display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:10px;
+                 border-radius:10px; background:rgba(255,92,122,0.06); border:1px dashed #ff5c7a;
+                 margin-top:10px; font-size:12px; color:#fff; }
+.anatomy-chain .step { padding:4px 10px; border-radius:999px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); }
+.anatomy-chain .arr { color:#ff5c7a; font-weight:700; }
+.anatomy-chain .step.boom { background:rgba(255,92,122,0.2); border-color:#ff5c7a; color:#ff5c7a; font-weight:700; }
+
+/* GATE */
+.forensics-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(255,92,122,0.10),rgba(58,10,74,0.10));
+                  border:2px solid #ff5c7a; margin:14px 0; box-shadow:0 0 24px rgba(255,92,122,0.2); }
+.forensics-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#ff5c7a; letter-spacing:.16em; margin-bottom:10px; }
+.forensics-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+
+/* SOLAR PHOTOSPHERE STAGE */
+.photo-wrap { position:relative; width:100%; }
+.photo-stage { position:relative; width:100%; height:460px; border-radius:12px; overflow:hidden; margin:10px 0;
+               background:#1a0500; border:1px solid rgba(255,255,255,0.25);
+               box-shadow:inset 0 0 80px rgba(0,0,0,0.6); cursor:crosshair; }
+.photo-stage svg.sun-bg { position:absolute; inset:0; width:100%; height:100%; display:block; }
+.photo-stage .photo-tag { position:absolute; top:8px; left:10px; padding:3px 8px; border-radius:6px;
+  background:rgba(0,0,0,0.65); color:#ffcb6b; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.14em; z-index:6; pointer-events:none; }
+.photo-stage .scale-bar { position:absolute; bottom:10px; right:12px; padding:3px 8px; border-radius:4px;
+  background:rgba(0,0,0,0.6); color:#9aa3c0; font-family:Orbitron,monospace; font-size:9px; letter-spacing:.1em; z-index:6;
+  border-top:2px solid #fff; pointer-events:none; }
+
+.hud-counter { position:absolute; top:8px; right:12px; padding:6px 12px; border-radius:8px;
+  background:rgba(0,0,0,0.7); border:1px solid #7effb2; color:#7effb2;
+  font-family:Orbitron,monospace; font-size:12px; letter-spacing:.14em; z-index:6; pointer-events:none; }
+.hud-counter b { color:#fff; font-size:14px; }
+
+/* feedback popup at click */
+.click-popup { position:absolute; z-index:8; padding:8px 12px; border-radius:8px; font-size:12px;
+  pointer-events:none; transform:translate(-50%,-110%); white-space:nowrap; max-width:280px; white-space:normal; width:max-content;
+  animation:popIn .25s ease-out, popOut .4s ease-in 1.6s forwards; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+.click-popup.bad { background:rgba(40,8,16,0.95); border:1px solid #ff5c7a; color:#ffd0d8; }
+.click-popup.good { background:rgba(8,40,20,0.95); border:1px solid #7effb2; color:#d0ffe2; }
+.click-popup b { color:#fff; }
+@keyframes popIn { from{opacity:0; transform:translate(-50%,-90%) scale(0.85);} to{opacity:1; transform:translate(-50%,-110%) scale(1);} }
+@keyframes popOut { to{opacity:0; transform:translate(-50%,-130%);} }
+
+/* sunspot reveal */
+.spot-reveal { position:absolute; transform:translate(-50%,-50%); pointer-events:none; z-index:5;
+  animation:spotAppear .6s ease-out; }
+@keyframes spotAppear { from{opacity:0; transform:translate(-50%,-50%) scale(0.3);} to{opacity:1; transform:translate(-50%,-50%) scale(1);} }
+
+/* === COMPASS DETECTOR === */
+.photo-stage { cursor:none; }
+.compass { position:absolute; width:84px; height:84px; pointer-events:none; z-index:7;
+  transform:translate(-50%,-50%); transition:opacity .2s; opacity:0; }
+.compass.show { opacity:1; }
+.compass .ring {
+  width:100%; height:100%; border-radius:50%;
+  background:radial-gradient(circle,rgba(20,28,52,0.92) 0 60%,rgba(20,28,52,0.65) 100%);
+  border:2px solid rgba(126,255,178,0.85);
+  box-shadow:0 0 18px rgba(126,255,178,0.5), inset 0 0 12px rgba(0,0,0,0.6);
+  position:relative;
+}
+.compass.disturbed .ring { border-color:#ff5c7a; box-shadow:0 0 24px rgba(255,92,122,0.8), inset 0 0 12px rgba(0,0,0,0.6); }
+.compass .mark { position:absolute; left:50%; top:4px; transform:translateX(-50%);
+  font-family:Orbitron,monospace; font-size:9px; color:#7effb2; letter-spacing:.05em; }
+.compass.disturbed .mark { color:#ff5c7a; }
+.compass .mark.s { top:auto; bottom:4px; }
+.compass .mark.e { top:50%; left:auto; right:4px; transform:translateY(-50%); }
+.compass .mark.w { top:50%; left:4px; transform:translateY(-50%); }
+.compass .needle { position:absolute; left:50%; top:50%; width:4px; height:36px;
+  transform-origin:50% 100%; transform:translate(-50%,-100%) rotate(0deg);
+  background:linear-gradient(180deg,#ff5c7a 0% 50%, #fff 50% 100%); border-radius:2px;
+  box-shadow:0 0 4px rgba(0,0,0,0.5); }
+.compass .pivot { position:absolute; left:50%; top:50%; width:8px; height:8px; border-radius:50%;
+  transform:translate(-50%,-50%); background:#ffcb6b; box-shadow:0 0 4px #000; }
+.compass .readout { position:absolute; left:50%; bottom:-22px; transform:translateX(-50%);
+  white-space:nowrap; font-family:Orbitron,monospace; font-size:10px; padding:2px 8px;
+  border-radius:4px; background:rgba(0,0,0,0.85); color:#7effb2; border:1px solid currentColor; }
+.compass.disturbed .readout { color:#ff5c7a; }
+.compass.wobble .readout { color:#ffcb6b; }
+
+@keyframes facShimmer  { 0%,100%{opacity:0.6;} 50%{opacity:0.9;} }
+
+.gate-controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; align-items:center; }
+.gate-controls .check-eq { background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; padding:12px 24px;
+                           font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; border-radius:10px; border:none; cursor:pointer; }
+.gate-controls .check-eq:disabled { opacity:0.4; cursor:not-allowed; }
+.gate-controls .reset-eq { background:transparent; color:#ffcb6b; border:1px solid #ffcb6b; padding:10px 18px; border-radius:10px; cursor:pointer; }
+.gate-feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:13px; min-height:40px; }
+.gate-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; }
+.gate-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; }
+
+.reason-section { padding:12px; border-radius:10px; background:rgba(20,28,52,0.5); margin-top:10px; display:none; }
+.reason-section h4 { margin:0 0 8px; color:#ffcb6b; font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; }
+.reason-pool2 { display:flex; flex-wrap:wrap; gap:6px; }
+.reason-chip2 { padding:8px 12px; border-radius:999px; font-size:12px; cursor:pointer; user-select:none;
+                background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.2); color:#fff; transition:all .15s; }
+.reason-chip2:hover { background:rgba(255,203,107,0.15); border-color:#ffcb6b; }
+.reason-chip2.selected { background:rgba(126,255,178,0.25); border-color:#7effb2; color:#7effb2; }
+
+.gate-passed-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(126,255,178,0.06));
+                      border:2px solid #7effb2; text-align:center; font-family:Orbitron,monospace;
+                      font-size:14px; color:#7effb2; letter-spacing:.16em; margin:10px 0;
+                      animation:gatePassed 1.2s ease-out; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.9);} 50%{opacity:1;transform:scale(1.02);} 100%{transform:scale(1);} }
+
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+
+.legend-tip { padding:10px 14px; border-radius:10px; background:rgba(0,0,0,0.4); margin:8px 0; font-size:12px; color:#d4b8ff; line-height:1.6; }
+.legend-tip b { color:#ffcb6b; }
+@media(max-width:560px){ .anatomy-grid{ grid-template-columns:1fr; } .photo-stage{ height:340px; } }
+</style>
+</head>
+<body data-page="p08c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 4 · SUNSPOT · C · MASTERY GATE</span>
+  <h1>Active Region Hunter · ดูภาพดวงอาทิตย์ · ตามหาบริเวณที่จะกลายเป็น sunspot</h1>
+  <div class="tags"><span class="kpa-chip">K3</span><span class="kpa-chip">P2</span><span class="kpa-chip">P3</span><span class="kpa-chip">M3</span></div>
+
+  <!-- COMPARE -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED</h4>
+        <div class="val">T ต่ำกว่ารอบ ~1,000 K · B (สนามแม่เหล็ก) แรงกว่ามาก</div>
+        <div class="reason">ใจกลาง (umbra): T ≈ 3,800 K · B ≈ 3,000 G<br>ขอบ (penumbra): T ≈ 5,780 K · B ≈ 500 G<br><b>T แปรผกผันกับ B</b></div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <!-- ANATOMY -->
+  <div class="phase-tag phase-anatomy">📖 ANATOMY BRIEFING · จากแฟ้ม HELION</div>
+  <div class="anatomy-card">
+    <h3>🔭 ก่อนล่า · ทบทวนกลไก sunspot</h3>
+    <div class="anatomy-grid">
+      <div class="anatomy-fact"><div class="ico">🌑</div><div class="head">WHERE</div><div class="body">จุดดำบน <b>photosphere</b> · ชั้นพลาสมาที่เรามองเห็น</div></div>
+      <div class="anatomy-fact"><div class="ico">🌡️</div><div class="head">HOW COOL</div><div class="body">เย็นกว่ารอบ <b>~1,000°C</b> · จึงดูดำเมื่อเทียบกับผิวข้างเคียง</div></div>
+      <div class="anatomy-fact"><div class="ico">🧲</div><div class="head">WHY · กลไก</div><div class="body">เส้นสนามแม่เหล็ก <b>criss-crossing</b> รบกวนการพาความร้อน → เกิดโพรงเย็น</div></div>
+      <div class="anatomy-fact"><div class="ico">💥</div><div class="head">WHAT'S NEXT</div><div class="body">heat สะสมรอบ → ปลดเป็น <b>flare + CME</b> ที่ <b>>1.6M km/h</b></div></div>
+    </div>
+    <div class="anatomy-chain">
+      <span class="step">🧲 field criss-cross</span><span class="arr">→</span>
+      <span class="step">🌑 cool dark spot</span><span class="arr">→</span>
+      <span class="step">🔥 heat build-up</span><span class="arr">→</span>
+      <span class="step boom">⚡ Flare + 🌋 CME</span>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ทีนี้ใช้ <b style="color:#7effb2;">COMPASS DETECTOR</b> · เลื่อนเมาส์ไปบนผิวดวงอาทิตย์ ·
+      เข็มทิศจะหมุนตามสนามแม่เหล็ก B ใต้ตำแหน่งนั้น · <b style="color:#ff5c7a;">ที่ไหนเข็มหมุนรัวเปลี่ยนทิศตลอด</b> = field แปรปวน = active region · คลิกตรงนั้นเลย!
+      <u>ระวัง</u> เข็มที่แค่<b>แกว่งช้าๆ</b> หรือ<b>ชี้ทิศเดียวนิ่ง</b> — ไม่ใช่ active region"
+    </span>
+  </div>
+
+  <!-- GATE · DISCOVER-BY-CLICK -->
+  <div class="phase-tag phase-gate">🔒 MASTERY GATE · ACTIVE REGION HUNTER</div>
+  <div class="forensics-gate">
+    <div class="gate-head">🎯 คลิกบนภาพ · หา 3 บริเวณที่จะกลายเป็น sunspot</div>
+    <div class="legend-tip">
+      🧭 <b>วิธีใช้ COMPASS DETECTOR:</b> เลื่อนเมาส์บนพื้นผิวดวงอาทิตย์ · เข็มทิศจะตอบสนอง<b>สนามแม่เหล็ก B</b> ใต้ตำแหน่งนั้น<br>
+      &nbsp;&nbsp;🌀 <b style="color:#ff5c7a;">เข็มหมุนเร็ว+เปลี่ยนทิศตลอด</b> = field <u>แปรปวนรุนแรง</u> = <b>active region</b> → คลิก!<br>
+      &nbsp;&nbsp;〰️ <b style="color:#ffcb6b;">เข็มแกว่งช้าๆ / สั่นเบา</b> = field อ่อน · กำลังตาย / แค่ความร้อน → <u>กับดัก</u><br>
+      &nbsp;&nbsp;⬆️ <b style="color:#9aa3c0;">เข็มชี้ทิศเดียวนิ่ง</b> = field คงที่ / ไม่มี field → ไม่ใช่ sunspot<br>
+      🚫 misclick เกิน <b>5 ครั้ง</b> = ต้อง reset
+    </div>
+
+    <div class="photo-wrap">
+      <div class="photo-stage" id="photoStage">
+        <svg class="sun-bg" viewBox="0 0 1000 460" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <radialGradient id="limbGrad" cx="50%" cy="50%" r="70%">
+              <stop offset="0%"  stop-color="#fff8c8"/>
+              <stop offset="35%" stop-color="#ffd96b"/>
+              <stop offset="75%" stop-color="#ff9a3d"/>
+              <stop offset="100%" stop-color="#a83400"/>
+            </radialGradient>
+            <radialGradient id="granLight"><stop offset="0%" stop-color="#fff5c0" stop-opacity="0.95"/><stop offset="60%" stop-color="#ffcf6b" stop-opacity="0.4"/><stop offset="100%" stop-color="#ff9a3d" stop-opacity="0"/></radialGradient>
+            <radialGradient id="granDark"><stop offset="0%" stop-color="#7a2400" stop-opacity="0.55"/><stop offset="100%" stop-color="#7a2400" stop-opacity="0"/></radialGradient>
+            <radialGradient id="facGlow"><stop offset="0%" stop-color="#fffbe0" stop-opacity="0.95"/><stop offset="60%" stop-color="#ffe48a" stop-opacity="0.5"/><stop offset="100%" stop-color="#ffe48a" stop-opacity="0"/></radialGradient>
+            <filter id="grainBlur"><feGaussianBlur stdDeviation="0.6"/></filter>
+          </defs>
+          <rect width="1000" height="460" fill="url(#limbGrad)"/>
+          <g id="granulation" filter="url(#grainBlur)"></g>
+          <g id="hintsLayer"></g>
+        </svg>
+        <div class="photo-tag">📷 SDO/HMI · PHOTOSPHERE · Hα 6563Å · 2026-04-28 14:32 UT</div>
+        <div class="scale-bar">━━━━ 50,000 km</div>
+        <div class="hud-counter">🎯 พบ <b id="foundCt">0</b>/<span id="totalCt">3</span></div>
+        <div class="compass" id="compass">
+          <div class="ring">
+            <div class="mark">N</div><div class="mark s">S</div>
+            <div class="mark e">E</div><div class="mark w">W</div>
+            <div class="needle" id="needle"></div>
+            <div class="pivot"></div>
+          </div>
+          <div class="readout" id="readout">B: locked N</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reason-section" id="reasonSection">
+      <h4>💭 ระบุเหตุผลที่เลือก 3 จุดนี้ · เลือก 3 chips ที่อิงกลไกจริง</h4>
+      <div class="reason-pool2" id="reasonPool2"></div>
+      <div style="font-size:11px;color:#9aa3c0;font-family:Orbitron,monospace;margin-top:6px;">เลือก: <b id="cntR2">0</b>/3</div>
+    </div>
+
+    <div class="gate-controls">
+      <button class="check-eq" id="checkBtn" disabled>⚡ CONFIRM REPORT</button>
+      <button class="reset-eq" id="resetBtn">↺ ล้างใหม่</button>
+      <span id="cAtt" style="color:#9aa3c0;font-family:Orbitron,monospace;font-size:11px;">misclick: <b id="missCt">0</b></span>
+    </div>
+    <div class="gate-feedback" id="gateFeedback" style="display:none;"></div>
+  </div>
+
+  <!-- APP QUIZ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 4</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- RUBRIC -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT</div>
+    <div class="card">
+      <h3>เธออธิบายได้ไหมว่า "ทำไม sunspot ดำ + ทำไมบางจุดปล่อย CME บางจุดไม่ปล่อย"?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P08c (v3 · Discover-by-Click)</summary>
+    <div>
+      <b>กิจกรรม:</b> ผู้เรียนดูภาพดวงอาทิตย์ที่มี "เบาะแสที่มองเห็น" (prominence + บิดพันสนามแม่เหล็ก + granulation + faculae + planet shadow) · <u>ไม่มีเลขกำกับ</u> · ต้องตีความเอง<br>
+      <b>คลิกถูก (active region 3 จุด)</b> → sunspot (umbra+penumbra) ปรากฏ + counter +1<br>
+      <b>คลิกผิด</b> → popup บอกเหตุผล เช่น "มีแต่ความร้อน · ไม่มี field แปรปวน" / "field ขนาน · ไม่มี criss-cross" / "เงาดาวเคราะห์ · ไม่ใช่ปรากฏการณ์บนผิว"<br>
+      <b>เน้น:</b> เด็กต้องเชื่อมเบาะแส → กลไก criss-cross → จุดที่เป็น sunspot จริง · ไม่ใช่เลือกจากตำแหน่งที่ดูดำสุด<br>
+      ✅ ผ่าน gate ต้อง: พบ 3/3 + เหตุผล 3 ข้อถูก · misclick ≤ 2 = perfect
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+/* === Compare === */
+const PRED_LABELS = ['หลุม/รู','T ต่ำเพราะแม่เหล็กแรง','ดาวเคราะห์ผ่าน','รอยแตก'];
+const REASONS_MAP = {
+  r1:'ดูเป็นรู → ก็คือรู', r2:'แม่เหล็กแรง = ปิดกั้นการพา', r3:'T ต่ำ → ดูเข้มกว่า',
+  r4:'ไม่มีหลักฐานว่ามีรู', r5:'ผิว = พลาสมา · ทำรูยาก', r6:'ดาวเคราะห์น้อยใหญ่พอ',
+  r7:'รอยแตก = ปลดพลังงาน', r8:'พลังงานติดในชั้นใน'
+};
+const pred = Chain.get('p08_prediction');
+const predReasons = Chain.get('p08_reasons') || [];
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){ banner.className='match-banner ok'; banner.textContent='✓ MATCH · เธอทำนายถูก! · M3 kill'; }
+  else { banner.className='match-banner diff'; banner.innerHTML='⚠ ทำนายไม่ตรง · จริง = <b>T ต่ำเพราะ field criss-cross ปิดกั้นการพาความร้อน</b>'; }
+}
+
+/* === ZONES (พิกัดบน viewBox 1000x460 · ไม่มีตัวเลขให้เด็กเห็น) ===
+ * kind:
+ *   active   → ถูก · เกิด sunspot
+ *   heat     → faculae · แค่ร้อน
+ *   stable   → field ขนาน · นิ่ง
+ *   planet   → เงาดาวเคราะห์ · ไม่ใช่ปรากฏการณ์บนผิว
+ *   granule  → ผิวปกติ
+ */
+const ZONES = [
+  // 3 ACTIVE REGIONS · ที่ใช่ (ครบทั้ง criss-cross + erupting prominence)
+  { id:'A1', kind:'active',       x:215, y:135, r:55 },  // ชัด
+  { id:'A2', kind:'active-subtle',x:545, y:295, r:50 },  // ซ่อนใน granulation
+  { id:'A3', kind:'emerging',     x:790, y:165, r:48 },  // bipolar emerging flux
+
+  // 3 TRAP DECOYS · เข้าครึ่งเดียว · ตัดสินยาก
+  { id:'T1', kind:'parallel-arch',x:380, y:130, r:58 },  // มี loop แต่ขนาน · ไม่ตัด
+  { id:'T2', kind:'decaying',     x:660, y:355, r:48 },  // จุดดำ + loop จาง · field ลด
+  { id:'T3', kind:'filament',     x:140, y:330, r:55 },  // streak ยาว · ดู prom แต่ไม่มี field
+
+  // 3 WEAK DECOYS · ชัดเจนว่าไม่ใช่
+  { id:'D1', kind:'heat',         x:880, y:355, r:42 },
+  { id:'D2', kind:'planet',       x:455, y:415, r:32 },
+  { id:'D3', kind:'granule',      x:325, y:420, r:36 },
+];
+const MAX_MISCLICKS = 5;
+
+const ACTIVE_KINDS = new Set(['active','active-subtle','emerging']);
+const FEEDBACK = {
+  'active'        : { cls:'good', html:'✅ <b>SUNSPOT!</b> · เข็มหมุนรัว 720°/s · field แปรปวนรุนแรง → candidate CME' },
+  'active-subtle' : { cls:'good', html:'✅ <b>SUNSPOT (subtle)!</b> · เข็มหมุน 540°/s · field active แต่ขนาดเล็ก' },
+  'emerging'      : { cls:'good', html:'✅ <b>EMERGING FLUX!</b> · เข็มกระตุกสับสน · bipolar pair กำลังก่อตัว' },
+  'parallel-arch' : { cls:'bad',  html:'❌ <b>กับดัก! UNIFORM FIELD</b> · เข็ม<u>ชี้ทิศเดียวนิ่ง (E)</b> · field แรงแต่<b>ไม่แปรปวน</b> → ไม่ปลดพลังงาน' },
+  'decaying'      : { cls:'bad',  html:'❌ <b>กับดัก! DYING REGION</b> · เข็มแกว่ง<u>ช้าๆ ±15°</u> · เคย active แต่ B กำลังลด · ไม่ใช่แล้ว' },
+  'filament'      : { cls:'bad',  html:'❌ <b>กับดัก! SLOW DRIFT</b> · เข็มหมุน<u>ช้ามาก 30°/s</u> · field อ่อน · ไม่พอจะระเบิด' },
+  'heat'          : { cls:'bad',  html:'❌ <b>FACULAE</b> · เข็ม<u>สั่นเบา</u> · ความร้อนล้วน · ไม่มี B แปรปวน' },
+  'planet'        : { cls:'bad',  html:'❌ <b>PLANET TRANSIT</b> · เข็มชี้ N นิ่ง (B=0) · เงาดาวเคราะห์ · ไม่ใช่บนผิว' },
+  'granule'       : { cls:'bad',  html:'❌ <b>GRANULE</b> · เข็มชี้ N นิ่ง · convection cell ปกติ' },
+  'miss'          : { cls:'bad',  html:'❌ <b>ผิวสงบ</b> · เข็มไม่ตอบสนอง · ไม่มี field ที่นี่' },
+};
+const TOTAL_ACTIVE = ZONES.filter(z => ACTIVE_KINDS.has(z.kind)).length;
+document.getElementById('totalCt').textContent = TOTAL_ACTIVE;
+
+/* === GRANULATION === */
+(function makeGranulation(){
+  const g = document.getElementById('granulation');
+  for(let i=0;i<140;i++){
+    const cx = Math.random()*1000, cy = Math.random()*460, r = 12 + Math.random()*10;
+    const c = document.createElementNS(SVG_NS,'circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r);
+    c.setAttribute('fill','url(#granLight)'); g.appendChild(c);
+  }
+  for(let i=0;i<90;i++){
+    const cx = Math.random()*1000, cy = Math.random()*460, r = 6 + Math.random()*5;
+    const c = document.createElementNS(SVG_NS,'circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r);
+    c.setAttribute('fill','url(#granDark)'); g.appendChild(c);
+  }
+})();
+
+/* === ไม่มี hint visible บนพื้นผิว · ผิวเรียบ photosphere + granulation เท่านั้น
+ * ผู้เรียนต้องใช้เข็มทิศกวาดสำรวจเอง · ทุก zone ซ่อน · เข็มทิศคือเครื่องมือเดียว
+ */
+
+/* === SUNSPOT REVEAL (เมื่อคลิกถูก) === */
+function sunspotSVG(scale){
+  scale = scale || 1;
+  const sz = Math.round(80*scale);
+  let pen = '';
+  for(let i=0;i<24;i++){
+    const a = (i/24)*Math.PI*2;
+    const x1 = 40 + Math.cos(a)*16, y1 = 40 + Math.sin(a)*16;
+    const x2 = 40 + Math.cos(a)*30, y2 = 40 + Math.sin(a)*30;
+    pen += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#3a0d00" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>`;
+  }
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 80 80" style="overflow:visible">
+    ${pen}
+    <circle cx="40" cy="40" r="18" fill="#5a1a00" opacity="0.6"/>
+    <circle cx="40" cy="40" r="14" fill="#0a0200"/>
+    <circle cx="36" cy="36" r="3" fill="#1a0500" opacity="0.8"/>
+  </svg>`;
+}
+
+/* === COMPASS DETECTOR === */
+const stage = document.getElementById('photoStage');
+const compass = document.getElementById('compass');
+const needle = document.getElementById('needle');
+const readout = document.getElementById('readout');
+const foundZones = new Set();
+let missCount = 0;
+let currentZone = null;
+let needleAngle = 0;     // current displayed angle (deg)
+let needleTarget = 0;    // target for ease modes
+let lastT = performance.now();
+let chaosNext = 0;
+
+// per-kind needle behavior
+// mode: 'spin' = continuous fast rotation
+//       'chaos' = random target every 120ms (jumpy spin)
+//       'wobble' = sine oscillation ±15°
+//       'drift' = slow constant rotation 30°/s
+//       'tremble' = small jitter ±4°
+//       'lock-N' / 'lock-E' = ชี้ทิศเดียว
+const ZONE_BEHAVIOR = {
+  'active'        : { mode:'spin',    speed:720, label:'B: SPINNING WILD ⚡', cls:'disturbed' },
+  'active-subtle' : { mode:'spin',    speed:540, label:'B: spinning · ±300 G/min', cls:'disturbed' },
+  'emerging'      : { mode:'chaos',   speed:0,   label:'B: chaos · bipolar emerging', cls:'disturbed' },
+  'parallel-arch' : { mode:'lock-E',  speed:0,   label:'B: locked E · uniform', cls:'wobble' },
+  'decaying'      : { mode:'wobble',  speed:1.4, label:'B: weak wobble · B↓', cls:'wobble' },
+  'filament'      : { mode:'drift',   speed:30,  label:'B: slow drift', cls:'wobble' },
+  'heat'          : { mode:'tremble', speed:0,   label:'B: ~0 · just heat', cls:'wobble' },
+  'planet'        : { mode:'lock-N',  speed:0,   label:'B: 0 · no field', cls:'' },
+  'granule'       : { mode:'lock-N',  speed:0,   label:'B: 0 · normal', cls:'' },
+  'empty'         : { mode:'lock-N',  speed:0,   label:'B: locked N · quiet', cls:'' },
+};
+
+function hitTest(svgX, svgY){
+  for(const z of ZONES){
+    const dx = svgX - z.x, dy = svgY - z.y;
+    if(dx*dx + dy*dy <= z.r*z.r) return z;
+  }
+  return null;
+}
+
+function setCompassClass(cls){
+  compass.classList.remove('disturbed','wobble');
+  if(cls) compass.classList.add(cls);
+}
+
+stage.addEventListener('mousemove', (e) => {
+  const rect = stage.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  compass.style.left = px + 'px';
+  compass.style.top  = py + 'px';
+  compass.classList.add('show');
+  const vx = (px / rect.width) * 1000, vy = (py / rect.height) * 460;
+  const z = hitTest(vx, vy);
+  const kind = z ? z.kind : 'empty';
+  if(!currentZone || currentZone !== kind){
+    currentZone = kind;
+    const b = ZONE_BEHAVIOR[kind] || ZONE_BEHAVIOR.empty;
+    readout.textContent = b.label;
+    setCompassClass(b.cls);
+    chaosNext = 0;
+  }
+});
+stage.addEventListener('mouseleave', () => { compass.classList.remove('show'); currentZone = null; });
+
+function tick(t){
+  const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
+  const b = ZONE_BEHAVIOR[currentZone || 'empty'] || ZONE_BEHAVIOR.empty;
+  switch(b.mode){
+    case 'spin':
+      needleAngle = (needleAngle + b.speed * dt) % 360; break;
+    case 'chaos':
+      if(t > chaosNext){ needleTarget = Math.random()*360; chaosNext = t + 100 + Math.random()*120; }
+      needleAngle += (needleTarget - needleAngle) * 0.35; break;
+    case 'wobble':
+      needleAngle = 90 + Math.sin(t / 1000 * b.speed) * 15; break;  // around east, ±15°
+    case 'drift':
+      needleAngle = (needleAngle + b.speed * dt) % 360; break;
+    case 'tremble':
+      needleAngle = 0 + (Math.random() - 0.5) * 8; break;
+    case 'lock-N':
+      needleAngle += (0 - needleAngle) * 0.2; break;
+    case 'lock-E':
+      needleAngle += (90 - needleAngle) * 0.2; break;
+  }
+  needle.style.transform = `translate(-50%,-100%) rotate(${needleAngle.toFixed(1)}deg)`;
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+function showPopup(clientX, clientY, fb){
+  const rect = stage.getBoundingClientRect();
+  const p = document.createElement('div');
+  p.className = 'click-popup ' + fb.cls;
+  p.style.left = (clientX - rect.left) + 'px';
+  p.style.top  = (clientY - rect.top) + 'px';
+  p.innerHTML = fb.html;
+  stage.appendChild(p);
+  setTimeout(() => p.remove(), 2100);
+}
+stage.addEventListener('click', (e) => {
+  if(gatePassed) return;
+  const rect = stage.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  // map to viewBox coords (preserveAspectRatio=slice → may crop, but fine for hit-test approx)
+  const vx = (px / rect.width) * 1000;
+  const vy = (py / rect.height) * 460;
+  const z = hitTest(vx, vy);
+  if(z && ACTIVE_KINDS.has(z.kind)){
+    if(foundZones.has(z.id)){
+      showPopup(e.clientX, e.clientY, { cls:'good', html:'✓ พบแล้ว · จุดนี้บันทึกไว้แล้ว' });
+      return;
+    }
+    foundZones.add(z.id);
+    const cx = (z.x / 1000) * rect.width;
+    const cy = (z.y / 460) * rect.height;
+    const reveal = document.createElement('div');
+    reveal.className = 'spot-reveal';
+    reveal.style.left = cx + 'px';
+    reveal.style.top = cy + 'px';
+    reveal.innerHTML = sunspotSVG(z.kind === 'emerging' ? 0.7 : (z.kind === 'active-subtle' ? 0.6 : 1));
+    stage.appendChild(reveal);
+    showPopup(e.clientX, e.clientY, FEEDBACK[z.kind]);
+    document.getElementById('foundCt').textContent = foundZones.size;
+    SFX&&SFX.play('correct');
+    if(foundZones.size === TOTAL_ACTIVE){
+      document.getElementById('reasonSection').style.display = 'block';
+      document.getElementById('checkBtn').disabled = false;
+    }
+  } else {
+    missCount++;
+    document.getElementById('missCt').textContent = missCount;
+    const fb = z ? FEEDBACK[z.kind] : FEEDBACK.miss;
+    showPopup(e.clientX, e.clientY, fb);
+    SFX&&SFX.play('wrong');
+    if(missCount >= MAX_MISCLICKS){
+      const f = document.getElementById('gateFeedback');
+      f.className='gate-feedback bad'; f.style.display='block';
+      f.innerHTML = `🚫 <b>misclick เกิน ${MAX_MISCLICKS} ครั้ง</b> · กลับไปอ่าน <b>เกณฑ์ active region</b> · กด <b>↺ ล้างใหม่</b> เพื่อเริ่มใหม่`;
+      stage.style.pointerEvents = 'none';
+    }
+  }
+});
+
+/* === REASONS === */
+const REASONS_GATE = [
+  { id:'a', txt:'เข็มทิศ <b>หมุนรัวเปลี่ยนทิศตลอด</b> · บอกว่า B แปรปวนรุนแรง · ปลดพลังงานต่อเนื่อง', correct:true },
+  { id:'b', txt:'B แปรปวน → field criss-cross → <b>กักความร้อน</b> → spot เย็น+ดำ + พร้อมระเบิด', correct:true },
+  { id:'c', txt:'การเปลี่ยนทิศของเข็มเร็ว = สัญญาณ <b>magnetic reconnection</b> · ต้นกำเนิด flare/CME', correct:true },
+  { id:'d', txt:'เข็มชี้ทิศเดียวนิ่ง = field แรง = active region', correct:false },
+  { id:'e', txt:'เข็มแกว่งช้า ±15° = active region (จริงๆคือ field กำลังตาย)', correct:false },
+  { id:'f', txt:'จุดดำใหญ่ = active region · ไม่ต้องดูเข็มทิศ', correct:false },
+];
+const selectedReasons = new Set();
+const pool2 = document.getElementById('reasonPool2');
+REASONS_GATE.forEach(r => {
+  const c = document.createElement('div'); c.className='reason-chip2'; c.dataset.id=r.id;
+  c.innerHTML = r.txt;
+  c.onclick = () => {
+    if(selectedReasons.has(r.id)){ selectedReasons.delete(r.id); c.classList.remove('selected'); }
+    else if(selectedReasons.size<3){ selectedReasons.add(r.id); c.classList.add('selected'); }
+    document.getElementById('cntR2').textContent = selectedReasons.size; SFX&&SFX.play('tap');
+  };
+  pool2.appendChild(c);
+});
+
+/* === CONFIRM === */
+let gatePassed = false;
+document.getElementById('checkBtn').onclick = () => {
+  if(gatePassed) return;
+  if(foundZones.size !== TOTAL_ACTIVE){
+    showFb('bad', `✗ พบเพียง ${foundZones.size}/${TOTAL_ACTIVE} จุด · หาให้ครบก่อน`); return;
+  }
+  if(selectedReasons.size !== 3){
+    showFb('bad', '✗ เลือกเหตุผล 3 ข้อก่อน · ตอนนี้ ' + selectedReasons.size + '/3'); return;
+  }
+  const reasonsCorrect = [...selectedReasons].filter(rid => REASONS_GATE.find(r=>r.id===rid).correct).length;
+  if(reasonsCorrect === 3){
+    gatePassed = true;
+    showFb('ok', `🟢 <b>REPORT VERIFIED</b> · พบ active region 3/3 · เหตุผล 3/3 · misclick ${missCount}<br>
+      <span style="font-size:11px;opacity:0.85;">📝 สรุป: criss-cross field → heat blocked → spot ดำ + เย็น ~1,000°C → ความร้อนสะสม → flare + CME @ >1.6M km/h</span>`);
+    SFX&&SFX.play('correct');
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.textContent = '✓ MASTERY GATE PASSED · 🔆 HELION 4/6 GRANTED';
+    document.querySelector('.forensics-gate').appendChild(banner);
+    QuestState.grant('h4');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    document.getElementById('checkBtn').disabled=true;
+    document.getElementById('resetBtn').disabled=true;
+    document.querySelectorAll('.reason-chip2').forEach(r => r.style.pointerEvents='none');
+    document.getElementById('appQuizCard').style.display='block';
+    mountAppQuiz();
+  } else {
+    showFb('bad', `✗ เหตุผล ${3-reasonsCorrect} ข้อไม่อิงกลไก · ต้องเป็น <b>field criss-cross + plasma พวยพุ่ง + flare history</b><br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">misclick: ${missCount}</span>`);
+    SFX&&SFX.play('wrong');
+  }
+};
+function showFb(cls, html){ const f=document.getElementById('gateFeedback'); f.className='gate-feedback '+cls; f.style.display='block'; f.innerHTML=html; }
+
+document.getElementById('resetBtn').onclick = () => {
+  if(gatePassed) return;
+  foundZones.clear(); missCount = 0;
+  document.getElementById('foundCt').textContent = '0';
+  document.getElementById('missCt').textContent = '0';
+  selectedReasons.clear();
+  document.querySelectorAll('.reason-chip2').forEach(r => r.classList.remove('selected'));
+  document.getElementById('cntR2').textContent = '0';
+  document.getElementById('reasonSection').style.display='none';
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('gateFeedback').style.display='none';
+  stage.querySelectorAll('.spot-reveal,.click-popup').forEach(n => n.remove());
+  stage.style.pointerEvents = '';
+  SFX&&SFX.play('tap');
+};
+
+/* === APP QUIZ + RUBRIC === */
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 4) · นักดาราศาสตร์เลื่อน magnetometer ผ่าน 2 จุดดำขนาดเท่ากัน · จุด A: เข็ม<b>หมุนรัว</b>เปลี่ยนทิศไม่หยุด · จุด B: เข็ม<b>ชี้ E นิ่ง</b>มาก (ค่า B สูงเท่ากันทั้งสอง) · จุดใดจะปล่อย CME มากกว่า?',
+    choices: [
+      { txt:'จุด B · เพราะเข็มชี้นิ่ง = field แรงและเสถียร', correct:false, hint:'field <b>เสถียร</b> = พลังงานไม่ถูกปลด · จะไม่เกิด flare/CME · ต้อง<b>แปรปวน</b>เท่านั้น' },
+      { txt:'จุด A · เข็มหมุนรัว = B แปรปวน → reconnection → CME', correct:true },
+      { txt:'เท่ากัน · เพราะ B สูงเท่ากัน', correct:false, hint:'ค่า B สูงไม่พอ · ต้องดู<b>การแปรปวนของทิศ</b> · นั่นคือสัญญาณว่าจะปลดพลังงาน' },
+    ],
+    onCorrect: () => { appQuizPassed=true; document.getElementById('rubricWrap').style.display='block'; mountRubric(); },
+  });
+}
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected'); rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap'); updateSubmit();
+    };
+  });
+}
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false; sb.textContent = '📤 ส่งผล · ออกจาก SUNSPOT';
+  }
+}
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p08c', nextHref:'p09-bridge.html',
+    getPayload(){ return { prediction:pred, predictionMatched:pred===1, gatePassed, missCount, found:foundZones.size, appQuizPassed, rubric:rubricChosen, helion:'h4' }; },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ผ่าน HUNTER GATE ก่อน'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.missCount<=2; },
+    onSubmit(){ window.Photon && Photon.add && Photon.add(25); }
+  });
+}, 200);
+</script>
+</body></html>

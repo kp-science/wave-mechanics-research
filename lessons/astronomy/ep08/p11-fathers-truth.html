@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p11 · Father's Truth</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .timeline { position:relative; padding-left:30px; margin:14px 0; }
+  .timeline::before { content:''; position:absolute; left:14px; top:0; bottom:0; width:2px;
+    background:linear-gradient(180deg,var(--quantum-pink),var(--genesis-gold)); }
+  .tl-item { position:relative; padding:10px 14px; background:var(--bg-card);
+    border:1px solid var(--line); border-radius:10px; margin:8px 0; }
+  .tl-item::before { content:''; position:absolute; left:-22px; top:14px;
+    width:14px; height:14px; border-radius:50%; background:var(--genesis-gold);
+    box-shadow:0 0 12px var(--genesis-gold); }
+  .tl-item .yr { color:var(--quantum-pink); font-weight:700; font-size:13px; }
+  .tl-item .ev { font-size:14px; }
+</style>
+</head>
+<body data-page="p11">
+<div class="page">
+  <div class="act-badge">ACT B · 7/8 · TRUTH</div>
+  <h1>📜 ความจริงของพ่อ</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <div class="card card-pink">
+    <p style="font-size:18px;line-height:1.7;">
+      "ปี 2008 · พ่อสร้าง warp drive ต้นแบบ · กำลังทดสอบรอบแรก<br>
+      VOID Prime จู่โจมห้องแล็บ · พ่อกระโดดเข้า warp ตัวเองเพื่อหนี<br>
+      ระบบพังกลางทาง · พ่อพุ่งไป<em>วินาทีที่ 0 ของบิกแบง</em><br>
+      ตั้งแต่นั้นมา · พ่อเป็น <b style="color:var(--genesis-gold);">'ผู้พิทักษ์บิกแบง'</b> · กั้น VOID Prime ไม่ให้ลบเอกภพ"
+    </p>
+  </div>
+
+  <h3>📜 Timeline · พ่อโบลท์</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="yr">2008 · โลก</div>
+      <div class="ev">ทดสอบ warp drive · ถูก VOID จู่โจม · กระโดด warp หนี</div>
+    </div>
+    <div class="tl-item">
+      <div class="yr">t = 0 · บิกแบง</div>
+      <div class="ev">ติดที่จุดเริ่มจักรวาล · ยังไม่มีดาว · ไม่มีสสาร</div>
+    </div>
+    <div class="tl-item">
+      <div class="yr">13.8 พันล้านปี (subjective ~10 ปี · time dilation)</div>
+      <div class="ev">เป็น sentinel · กั้น VOID Prime ที่ลอบเข้ามาลบเอกภพ</div>
+    </div>
+    <div class="tl-item">
+      <div class="yr">EP01-07</div>
+      <div class="ev">ส่งสัญญาณให้ลูกผ่าน drone · ทิ้ง message ใน Genesis Vault</div>
+    </div>
+    <div class="tl-item" style="border-color:var(--genesis-gold);">
+      <div class="yr">วันนี้ · t=0</div>
+      <div class="ev">โบลท์มาถึง · พ่อพร้อมให้ทางเลือก 2 ทาง</div>
+    </div>
+  </div>
+
+  <div class="howto">
+    <h4>🎮 EXPLAIN BACK</h4>
+    <ul><li>ตอบคำถาม: ทำไมพ่ออายุ subjective แค่ ~10 ปี · แต่ใน frame เอกภพคือ 13.8 พันล้านปี?</li></ul>
+  </div>
+
+  <div class="row" id="kw">
+    <button class="chip kw" data-on="1">time dilation · ใกล้ความเร็วแสง</button>
+    <button class="chip kw" data-on="1">frame ของพ่ออยู่ที่ t=0 · เวลาเดินช้า</button>
+    <button class="chip kw" data-on="0">เพราะพ่อ immortal</button>
+    <button class="chip kw" data-on="0">เพราะ VOID หยุดเวลา</button>
+    <button class="chip kw" data-on="1">general relativity</button>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่งคำตอบ · ฟังพ่อต่อ</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p11' });
+  EP08Page.story('p11');
+  EP08Page.markVisit('p11');
+
+  const sel = new Set();
+  document.getElementById('kw').addEventListener('click', e => {
+    const c = e.target.closest('.kw'); if (!c) return;
+    if (sel.has(c.textContent)) { sel.delete(c.textContent); c.classList.remove('selected'); }
+    else { sel.add(c.textContent); c.classList.add('selected'); }
+  });
+  document.getElementById('submitBtn').onclick = () => {
+    let r=0,w=0;
+    document.querySelectorAll('.kw').forEach(c => {
+      const should = c.dataset.on === '1';
+      const did = sel.has(c.textContent);
+      if (should && did) r++;
+      if (!should && did) w++;
+    });
+    const ok = r === 3 && w === 0;
+    if (window.KPA) {
+      KPA.log('K','K2','time dilation explanation');
+      KPA.research('fathers-truth', { right:r, wrong:w });
+    }
+    EP08Page.submit({ ok,
+      title: ok ? '✓ general relativity เข้าใจ' : '⚠️ ลองเลือก keyword 3 ตัว',
+      body:`<p>พ่อ subjective ~10 ปี เพราะ frame ของเขาอยู่ที่ t=0 · time dilation</p>
+            <p>ดร.ฮับเบิลเดินมา · จะสอนวิธีหา Anti-Genesis Engine 4 จุด</p>`
+    });
+  };
+</script>
+</body>
+</html>

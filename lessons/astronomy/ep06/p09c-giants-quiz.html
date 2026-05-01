@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P09c · GIANTS Quiz · kill M2</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p09c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">☄ PHASE 3 · QUIZ · kill M2</span>
+  <h1>ทำไมเรียก "แก๊สยักษ์"?</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ก่อนไป gate · ตอบให้ถูกว่า<b>แก๊สยักษ์</b>หมายความอย่างไร · ถ้าเข้าใจผิดจะติด M2"</span>
+  </div>
+
+  <div class="card cyan" id="quizHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P09c</summary>
+    <div>ตอบถูก = M2 ทำลาย + +25 coin · เน้น "แก๊สยักษ์ ≠ แก๊สล้วน · มีแก่นแข็ง"</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ทำไมโลกไม่ใช่ใหญ่ที่สุด',
+    words: ['พฤหัส', '11 เท่า', 'ขนาด', 'รัศมี', 'โลก', 'ดาวยักษ์', 'M3', 'misconception', 'ดาวเคราะห์ใหญ่ที่สุด', 'ระบบสุริยะ'],
+    required: ['พฤหัส', '11 เท่า', 'โลก', 'ดาวยักษ์'],
+    indicator: 'K3'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled style="opacity:0.5;">— quiz auto-submit —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตอบถูกก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+Phase3.mount({
+  container: document.getElementById('quizHost'),
+  question: 'ทำไมเรียก "แก๊สยักษ์"? · เลือกที่อธิบายถูกที่สุด',
+  choices: [
+    { txt:'เพราะเป็นแก๊สล้วนตั้งแต่แกนถึงผิว', correct:false, hint:'M2 · จริง ๆ มีแก่นแข็งอยู่ใน' },
+    { txt:'เพราะส่วนใหญ่ของปริมาตรเป็น H+He แต่<b>มีแก่นแข็ง</b>อยู่ตรงกลาง', correct:true },
+    { txt:'เพราะเย็นเท่ากับ ice giant ทุกประการ', correct:false, hint:'ไม่ใช่ · gas vs ice ต่างกัน · ice มี methane/water เยอะกว่า' },
+    { txt:'เพราะปล่อยแก๊สหนีออกมาตลอดเวลา', correct:false, hint:'ไม่ใช่ · แรงโน้มถ่วงสูงรั้งแก๊สไว้' },
+  ],
+  onCorrect: () => {
+    Submit.record('p09c', { correct:true });
+    Gate.markSubmitted();
+    if(window.Coin && Coin.awardPerfect) Coin.awardPerfect('p09c');
+  }
+});
+
+setTimeout(() => {
+  Gate.wireButton('p09c', document.querySelector('.next-btn'), 'p09d-giants-gate.html', { requireSubmit:true });
+}, 200);
+</script>
+</body></html>

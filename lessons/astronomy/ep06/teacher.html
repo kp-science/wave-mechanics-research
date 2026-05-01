@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8">
+<title>🎙️ EP06 Teacher Console · COSMOS LOG</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+body { padding:16px; max-width:820px; margin:0 auto; }
+.tr-now { padding:18px; background:linear-gradient(135deg, rgba(100,216,255,0.12), rgba(185,128,255,0.12));
+          border:1px solid #64d8ff; border-radius:14px; margin:14px 0; }
+.tr-now .lbl-mini { font-size:11px; color:#9aa3c0; letter-spacing:.14em; font-family:Orbitron,monospace; }
+.tr-now .now-title { font-size:22px; font-weight:800; margin:6px 0; color:#64d8ff; }
+.tr-now .now-sub { font-size:13px; color:#9aa3c0; }
+.tr-controls { display:grid; grid-template-columns:1fr 2fr 1fr; gap:10px; margin:14px 0; }
+.tr-controls button { padding:16px; font-size:14px; font-weight:700; border-radius:10px; }
+.tr-controls .primary { background:linear-gradient(180deg,#64d8ff,#b980ff); color:#021022; }
+.tr-list { margin-top:16px; }
+.tr-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:8px;
+          background:rgba(20,28,52,0.6); border:1px solid rgba(120,140,220,0.2); margin-bottom:5px; font-size:13px; }
+.tr-row.current { border-color:#64d8ff; background:rgba(100,216,255,0.1); }
+.tr-row.unlocked { background:rgba(126,255,178,0.06); }
+.tr-row .pid { font-family:Orbitron,monospace; color:#9aa3c0; width:42px; font-size:11px; }
+.tr-row .ttl { flex:1; cursor:pointer; }
+.tr-row .ttl:hover { color:#64d8ff; }
+.tr-row .tm { font-size:11px; color:#9aa3c0; width:60px; text-align:right; }
+.tr-row .chk { width:24px; height:24px; border:2px solid rgba(120,140,220,0.4); border-radius:5px;
+               display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; color:transparent; transition:all .15s; }
+.tr-row.unlocked .chk { background:#7effb2; border-color:#7effb2; color:#022; }
+.tr-row.current .chk { box-shadow:0 0 8px #64d8ff; }
+.stu-panel { padding:14px 16px; border-radius:14px; margin:14px 0;
+  background:linear-gradient(180deg, rgba(126,255,178,0.06), rgba(20,28,52,0.6));
+  border:1px solid rgba(126,255,178,0.4); }
+.stu-head { font-family:Orbitron,monospace; font-size:11px; letter-spacing:.16em;
+  color:#7effb2; margin-bottom:10px; }
+.stu-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+@media(min-width:560px){ .stu-grid { grid-template-columns:repeat(5,1fr); } }
+.stu-cell { padding:10px; border-radius:8px; background:rgba(0,0,0,0.4);
+  border:1px solid rgba(120,140,220,0.2); text-align:center; }
+.stu-cell .k { font-family:Orbitron,monospace; font-size:9px; letter-spacing:.14em;
+  color:#9aa3c0; margin-bottom:3px; }
+.stu-cell .v { font-family:Orbitron,monospace; font-size:18px; font-weight:700; color:#fff; }
+.stu-cell .v.ok { color:#7effb2; } .stu-cell .v.gold { color:#ffd700; }
+.stu-cell .v.warn { color:#ff8a3d; }
+.stu-cell .sub { font-size:10px; color:#6a7394; margin-top:2px; }
+.stu-helions { display:flex; gap:4px; justify-content:center; margin-top:6px; flex-wrap:wrap; }
+.stu-helion { font-size:14px; opacity:0.3; transition:all .2s; }
+.stu-helion.have { opacity:1; filter:drop-shadow(0 0 4px currentColor); }
+.stu-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.stu-btn { padding:8px 14px; border-radius:8px; cursor:pointer; font-family:Orbitron,monospace;
+  font-size:11px; letter-spacing:.1em; }
+.stu-btn.refresh { background:rgba(100,216,255,0.12); border:1px solid #64d8ff; color:#64d8ff; }
+.stu-btn.reset { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; }
+.tr-act { padding:6px 12px; margin:14px 0 4px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.16em;
+          border-radius:6px; }
+.tr-act.a { background:rgba(126,255,178,0.1); color:#7effb2; border-left:3px solid #7effb2; }
+.tr-act.b { background:rgba(185,128,255,0.1); color:#b980ff; border-left:3px solid #b980ff; }
+.tr-act.c { background:rgba(100,216,255,0.1); color:#64d8ff; border-left:3px solid #64d8ff; }
+.tr-act.d { background:rgba(255,138,61,0.1); color:#ff8a3d; border-left:3px solid #ff8a3d; }
+</style>
+</head>
+<body>
+<h1 style="color:#64d8ff;">🎙️ EP06 Teacher Console</h1>
+<div class="muted">ขอบฟ้าของบ้าน · COSMOS LOG · ว 7.1 ม.6/1</div>
+
+<div class="tr-now">
+  <div class="lbl-mini">CURRENT</div>
+  <div class="now-title" id="nowTitle">— ยังไม่เริ่ม —</div>
+  <div class="now-sub" id="nowSub">เลือกหน้าด้านล่าง · กดเช็กบ็อกซ์เพื่อปลดล็อก</div>
+</div>
+
+<div class="tr-controls">
+  <button id="prevBtn" class="ghost">◀ ย้อน</button>
+  <button id="lockBtn" class="primary">🔒 ปิดประตู</button>
+  <button id="nextBtn" class="ghost">▶ ปลด</button>
+</div>
+
+<div class="stu-panel">
+  <div class="stu-head">🎯 STUDENT PROGRESS · อ่านจาก browser นี้</div>
+  <div class="stu-grid">
+    <div class="stu-cell">
+      <div class="k">🪐 SHARD</div>
+      <div class="v ok" id="stHel">0/6</div>
+      <div class="stu-helions" id="stHelChips"></div>
+    </div>
+    <div class="stu-cell">
+      <div class="k">🪙 COIN</div>
+      <div class="v gold" id="stCoin">0</div>
+      <div class="sub">สะสม</div>
+    </div>
+    <div class="stu-cell">
+      <div class="k">⚡ PHOTON</div>
+      <div class="v" id="stPho">0</div>
+      <div class="sub">EP06 only</div>
+    </div>
+    <div class="stu-cell">
+      <div class="k">🌊 WAVE</div>
+      <div class="v" id="stWave">—</div>
+      <div class="sub">boss</div>
+    </div>
+    <div class="stu-cell">
+      <div class="k">🎬 ENDING</div>
+      <div class="v warn" id="stEnd">—</div>
+      <div class="sub" id="stEndSub">หลัง p24</div>
+    </div>
+  </div>
+  <div class="stu-actions">
+    <button class="stu-btn refresh" onclick="refreshStatus()">🔄 รีเฟรชข้อมูล</button>
+    <button class="stu-btn reset" onclick="resetStudent()">↻ รีเซ็ตความคืบหน้านักเรียน</button>
+  </div>
+</div>
+
+<!-- ===== KPA DASHBOARD ===== -->
+<div class="stu-panel" style="border-color:#b980ff; background:linear-gradient(180deg, rgba(185,128,255,0.08), rgba(20,12,30,0.6));">
+  <div class="stu-head" style="color:#b980ff;">📊 KPA HEAT MAP · evidence ของนักเรียน (อ่านจาก browser นี้)</div>
+  <div id="kpaHeat" style="font-size:13px;">— กดรีเฟรชเพื่ออ่าน —</div>
+
+  <div style="margin-top:14px; display:flex; gap:6px; flex-wrap:wrap;">
+    <button class="stu-btn" data-vtab="d1" style="background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2;">ด้านที่ 1 · จัดการเรียนรู้</button>
+    <button class="stu-btn" data-vtab="d2" style="background:rgba(100,216,255,0.12); border:1px solid #64d8ff; color:#64d8ff;">ด้านที่ 2 · ผลสัมฤทธิ์</button>
+    <button class="stu-btn" data-vtab="d3" style="background:rgba(255,138,61,0.12); border:1px solid #ff8a3d; color:#ff8a3d;">ด้านที่ 3 · พัฒนาตนเอง</button>
+  </div>
+  <div id="vpaList" style="margin-top:10px; max-height:240px; overflow-y:auto; padding:10px; border-radius:8px; background:rgba(0,0,0,0.4); font-size:12px; line-height:1.55;">— เลือกแท็บด้านบน —</div>
+
+  <div class="stu-head" style="color:#ffcb6b; margin-top:18px;">⏱ DWELL TIMELINE · เวลาที่ใช้ต่อหน้า · flag &lt; 10s</div>
+  <div id="dwellList" style="font-size:12px; max-height:200px; overflow-y:auto; padding:8px; border-radius:8px; background:rgba(0,0,0,0.4); line-height:1.55;">— ยังไม่มีข้อมูล —</div>
+
+  <div class="stu-head" style="color:#7effb2; margin-top:18px;">🗣️ GROUP TALK STATUS · กลุ่มที่ส่งข้อสรุปแล้ว</div>
+  <div id="groupList" style="font-size:12px; padding:8px; border-radius:8px; background:rgba(0,0,0,0.4);">— ยังไม่มีข้อมูล —</div>
+
+  <div class="stu-actions">
+    <button class="stu-btn refresh" onclick="refreshKPA()">🔄 รีเฟรช KPA</button>
+    <button class="stu-btn" style="background:rgba(185,128,255,0.12); border:1px solid #b980ff; color:#b980ff;" onclick="exportKPA()">📥 Export JSON</button>
+  </div>
+</div>
+
+<div class="tr-list" id="list"></div>
+
+<div class="muted" style="margin-top:14px;">
+  💡 กดที่ <b>ชื่อหน้า</b> เพื่อ preview · กด <b>checkbox</b> เพื่อปลดล็อกถึงหน้านั้น<br>
+  ⌨️ Shortcut: <b>n</b> = next · <b>p</b> = prev · <b>l</b> = lock all
+</div>
+
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script>
+const pages = EP_CONFIG.pages;
+const list = document.getElementById('list');
+let unlockedUpTo = null;
+
+function actOf(idx){
+  if(idx<=4)  return {cls:'a', name:'ACT A · ARRIVAL'};
+  if(idx<=10) return {cls:'b', name:'ACT B · NEBULA LAB · GS-1, GS-2'};
+  if(idx<=25) return {cls:'c', name:'ACT C · FOUR ZONES · GS-3 ถึง GS-6'};
+  return {cls:'d', name:'ACT D · HELIOPAUSE + VAULT'};
+}
+
+function render(){
+  list.innerHTML='';
+  let lastAct = null;
+  pages.forEach((p,i)=>{
+    const act = actOf(i);
+    if(act.cls!==lastAct){
+      const div = document.createElement('div'); div.className='tr-act '+act.cls; div.textContent=act.name;
+      list.appendChild(div); lastAct = act.cls;
+    }
+    const cur = i === currentIdx();
+    const unl = i <= unlockedIdx();
+    const row = document.createElement('div'); row.className = 'tr-row' + (cur?' current':'') + (unl?' unlocked':'');
+    row.innerHTML = `<div class="chk">${unl?'✓':''}</div><div class="pid">${p.id}</div><div class="ttl">${p.title}</div><div class="tm">${p.time}m</div>`;
+    row.querySelector('.chk').onclick = ()=>setUnlock(p.id);
+    row.querySelector('.ttl').onclick = ()=>window.open(p.file, '_blank');
+    list.appendChild(row);
+  });
+  const cur = pages[currentIdx()];
+  document.getElementById('nowTitle').textContent = cur ? cur.title : '— ยังไม่เริ่ม —';
+  document.getElementById('nowSub').textContent = cur ? `${cur.id} · ${cur.time} นาที` : 'เลือกหน้าด้านล่าง';
+}
+function unlockedIdx(){ if(!unlockedUpTo) return -1; return pages.findIndex(p=>p.id===unlockedUpTo); }
+function currentIdx(){ const u = unlockedIdx(); return u >= 0 ? u : 0; }
+function setUnlock(pageId){
+  unlockedUpTo = pageId;
+  if(window.PaceClient) PaceClient.set('default', { unlockedUpTo: pageId });
+  try { new BroadcastChannel('pace_default').postMessage({unlockedUpTo:pageId}); } catch{}
+  render();
+}
+function nextPage(){ const i = currentIdx(); if(i < pages.length-1) setUnlock(pages[i+1].id); }
+function prevPage(){ const i = currentIdx(); if(i > 0) setUnlock(pages[i-1].id); }
+function lockAll(){
+  unlockedUpTo = null;
+  if(window.PaceClient) PaceClient.clear && PaceClient.clear('default');
+  try { new BroadcastChannel('pace_default').postMessage({unlockedUpTo:null}); } catch{}
+  render();
+}
+document.getElementById('nextBtn').onclick = nextPage;
+document.getElementById('prevBtn').onclick = prevPage;
+document.getElementById('lockBtn').onclick = lockAll;
+document.addEventListener('keydown', e=>{
+  if(e.key==='n') nextPage();
+  if(e.key==='p') prevPage();
+  if(e.key==='l') lockAll();
+});
+if(window.PaceClient){
+  PaceClient.peek(null,'default','local').then(p=>{
+    if(p && p.unlockedUpTo) unlockedUpTo = p.unlockedUpTo;
+    render();
+  });
+} else render();
+
+const SHARD_DATA = [
+  { id:'gs1', icon:'☁️', color:'#b980ff' }, { id:'gs2', icon:'💍', color:'#64d8ff' },
+  { id:'gs3', icon:'🪨', color:'#cc5533' }, { id:'gs4', icon:'⭕', color:'#ffcb6b' },
+  { id:'gs5', icon:'☄', color:'#ff8a3d' }, { id:'gs6', icon:'❄️', color:'#7effb2' },
+];
+function readChain(){
+  try { return JSON.parse(localStorage.getItem('cosmosLog_ep06_chain')) || {}; }
+  catch { return {}; }
+}
+function refreshStatus(){
+  const chain = readChain();
+  const inv = Array.isArray(chain.helionInventory) ? chain.helionInventory : [];
+  document.getElementById('stHel').textContent = inv.length + '/6';
+  document.getElementById('stHel').className = 'v ' + (inv.length === 6 ? 'ok' : (inv.length > 0 ? '' : 'warn'));
+  const chips = document.getElementById('stHelChips');
+  chips.innerHTML = SHARD_DATA.map(h => {
+    const have = inv.includes(h.id);
+    return `<span class="stu-helion ${have?'have':''}" style="color:${h.color};" title="${h.id}">${h.icon}</span>`;
+  }).join('');
+  const coin = parseInt(localStorage.getItem('cosmosLog_ep03_coin')) || 0;
+  document.getElementById('stCoin').textContent = coin;
+  const photon = parseInt(localStorage.getItem('cosmosLog_ep06_photon')) || 0;
+  document.getElementById('stPho').textContent = photon;
+  const wave = chain.bossWave || 0;
+  document.getElementById('stWave').textContent = wave ? wave+'/3' : '—';
+  const ending = chain.bossEnding;
+  const endEl = document.getElementById('stEnd');
+  endEl.textContent = ending || '—';
+  if(ending){
+    const colors = { 'A+':'#ffd700', 'A':'#7effb2', 'B':'#64d8ff', 'C':'#ff8a3d' };
+    endEl.style.color = colors[ending] || '#fff';
+    document.getElementById('stEndSub').textContent = ending === 'A+' ? '🏆 PERFECT!' : 'จบแล้ว';
+  } else {
+    endEl.className = 'v warn';
+    document.getElementById('stEndSub').textContent = 'ยังไม่จบ boss';
+  }
+}
+function resetStudent(){
+  if(!confirm('⚠️ ลบความคืบหน้านักเรียน EP06 ทั้งหมด (SHARD · Powers · Photon · Ending)?')) return;
+  const keys = Object.keys(localStorage).filter(k => k.includes('cosmosLog_ep06'));
+  keys.forEach(k => localStorage.removeItem(k));
+  alert('✓ รีเซ็ตเรียบร้อย · ' + keys.length + ' keys ลบแล้ว');
+  refreshStatus();
+}
+refreshStatus();
+setInterval(refreshStatus, 5000);
+window.addEventListener('focus', refreshStatus);
+
+/* ===== KPA / วPA / Dwell dashboard ===== */
+function readKPA(){
+  try { return JSON.parse(localStorage.getItem('cosmosLog_ep06_kpa')) || null; }
+  catch { return null; }
+}
+function refreshKPA(){
+  const d = readKPA();
+  const heat = document.getElementById('kpaHeat');
+  const dwell = document.getElementById('dwellList');
+  const grp = document.getElementById('groupList');
+  if (!d){ heat.innerHTML = '<i>ยังไม่มีข้อมูล KPA · นักเรียนยังไม่เริ่มเล่นในเครื่องนี้</i>'; return; }
+  // Heat map
+  const groups = {
+    'K (Knowledge)': ['K1','K2','K3','K4','K5','K6'],
+    'P (Skill)':     ['P1','P2','P3'],
+    'A (Attitude)':  ['A1','A2','A3'],
+  };
+  let h = '';
+  for (const [t, ids] of Object.entries(groups)){
+    h += `<div style="margin:8px 0;"><b>${t}</b><div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px; margin-top:4px;">`;
+    ids.forEach(k => {
+      const x = (d.domains||{})[k] || {count:0,correct:0};
+      const c = x.count;
+      const bg = c >= 5 ? '#7effb2' : c >= 3 ? '#ffcb6b' : c >= 1 ? '#64d8ff' : '#2a3050';
+      const fg = c >= 1 ? '#021022' : '#9aa3c0';
+      h += `<div title="${k}: ${c} entries · correct ${x.correct||0}" style="padding:6px 4px; border-radius:6px; background:${bg}; color:${fg}; text-align:center; font-family:Orbitron,monospace; font-size:11px;">${k}<br><b style="font-size:14px;">${c}</b></div>`;
+    });
+    h += '</div></div>';
+  }
+  heat.innerHTML = h;
+
+  // Dwell timeline
+  const tl = (d.timeline||[]).slice(-30);
+  if (tl.length){
+    dwell.innerHTML = tl.map(e => {
+      const sec = Math.round(e.dwellMs/1000);
+      const flag = sec < 10 ? '<span style="color:#ff5c7a;"> ⚠ คลิกเร็ว</span>' : '';
+      return `<div>· <b>${e.page}</b> · ${sec}s${flag}</div>`;
+    }).join('');
+  }
+
+  // Group talk submissions (from per-page localStorage)
+  const groupKeys = Object.keys(localStorage).filter(k => k.startsWith('cosmosLog_ep06_group_'));
+  if (groupKeys.length){
+    grp.innerHTML = groupKeys.map(k => {
+      const pid = k.replace('cosmosLog_ep06_group_','');
+      let val = '?';
+      try { val = (JSON.parse(localStorage.getItem(k))||[]).join(' / '); } catch{}
+      return `<div>· <b>${pid}</b> → ${val || '(empty)'}</div>`;
+    }).join('');
+  } else {
+    grp.innerHTML = '<i>ยังไม่มีกลุ่มไหนส่ง group talk</i>';
+  }
+}
+function showVPA(side){
+  const d = readKPA();
+  const out = document.getElementById('vpaList');
+  if (!d){ out.innerHTML = '<i>ไม่มีข้อมูล</i>'; return; }
+  const list = (d.vpa && d.vpa[side]) || [];
+  if (!list.length){ out.innerHTML = '<i>ยังไม่มี evidence ใน '+side+'</i>'; return; }
+  out.innerHTML = list.map(e => {
+    const t = (e.ts||'').slice(11,19);
+    return `<div style="padding:6px 8px; margin:3px 0; border-left:2px solid #b980ff; background:rgba(185,128,255,0.08);">
+      <b>${e.page||'?'}</b> · <span style="color:#7effb2;">${e.kind||''}</span> · <small>${t}</small><br>
+      <span style="color:#c8e8ff;">${e.summary||''}</span>
+    </div>`;
+  }).join('');
+}
+document.querySelectorAll('[data-vtab]').forEach(b => {
+  b.onclick = () => showVPA(b.dataset.vtab);
+});
+function exportKPA(){
+  if (!window.KPA){ alert('KPA tracker ไม่โหลด'); return; }
+  KPA.download('ep06-teacher-kpa-' + new Date().toISOString().slice(0,10) + '.json');
+}
+refreshKPA();
+setInterval(refreshKPA, 5000);
+</script>
+</body></html>

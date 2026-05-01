@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P25 · Rescue · 4 Endings</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.ending-stage { position:relative; height:280px; border-radius:14px; overflow:hidden; margin:10px 0; }
+/* A+ Aurora */
+.stage-aplus { background:linear-gradient(180deg, #02030a 0%, #0a1f3a 60%, #0a3a5a 100%); }
+.aurora-veil { position:absolute; inset:0; background:linear-gradient(180deg, transparent 30%, rgba(126,255,178,0.4) 50%, rgba(100,216,255,0.4) 70%, transparent 90%); animation:auroraDance 6s ease-in-out infinite; }
+.aurora-veil.v2 { animation-delay:-3s; opacity:0.6; transform:translateY(-20px); }
+@keyframes auroraDance { 0%,100%{transform:translateY(0) skewX(0);} 50%{transform:translateY(-10px) skewX(5deg);} }
+.earth-disk { position:absolute; left:50%; bottom:8%; transform:translateX(-50%); width:120px; height:120px; border-radius:50%; background:radial-gradient(circle at 30% 30%, #5cb8ff, #1a4a8a); box-shadow:0 0 40px #5cb8ff; }
+/* A Deflect */
+.stage-a { background:radial-gradient(circle at 20% 50%, rgba(255,138,61,0.5), #02030a 70%); }
+.cme-deflected { position:absolute; left:25%; top:50%; transform:translateY(-50%); width:140px; height:6px; background:linear-gradient(90deg, transparent, #ff5c7a, transparent); animation:deflect 4s linear infinite; }
+@keyframes deflect { 0%{transform:translate(0,-50%) rotate(0);} 100%{transform:translate(120px,-150%) rotate(45deg);opacity:0;} }
+/* B Grid */
+.stage-b { background:linear-gradient(180deg, #1a0a08, #02030a); }
+.flicker-grid { position:absolute; inset:0; background:repeating-linear-gradient(0deg, rgba(255,138,61,0.1) 0 2px, transparent 2px 14px); animation:flicker 0.3s linear infinite; }
+@keyframes flicker { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+/* C Blackout */
+.stage-c { background:#02030a; }
+.blackout-glow { position:absolute; inset:0; background:radial-gradient(circle at 50% 50%, rgba(255,92,122,0.3), transparent 70%); animation:redPulse 1.5s ease-in-out infinite; }
+@keyframes redPulse { 0%,100%{opacity:0.4;} 50%{opacity:1;} }
+
+.end-title { font-family:Orbitron,monospace; font-size:24px; letter-spacing:.2em; text-align:center; margin:14px 0; }
+.cliffhanger { padding:14px; border-radius:12px; background:rgba(58,10,74,0.3); border:1px solid #b980ff; margin:14px 0; }
+</style>
+</head>
+<body data-page="p26" data-type="story">
+<div class="page">
+  <span class="lbl story">🌌 RESCUE · ENDING REVEAL</span>
+  <h1>กู้โลก · ผลลัพธ์</h1>
+
+  <div id="endingHost"></div>
+
+  <div class="cliffhanger" id="cliffCard" style="display:none;">
+    <div style="font-family:Orbitron,monospace;font-size:11px;color:#b980ff;letter-spacing:.16em;margin-bottom:6px;">⚠ CLIFFHANGER · TO BE CONTINUED</div>
+    <div class="narr" style="color:#d4b8ff;">
+      พ่ออารยา (เสียงเบา): "VOID หายไปแล้ว · ออกนอกระบบสุริยะ · แต่ทำไมมันฝึกซ้อมแค่ดวงเดียว ·
+      ในเมื่อกาแล็กซีของเรามี <b style="color:#ffcb6b;">ดาวฤกษ์ 4 แสนล้านดวง</b>?"
+    </div>
+    <div class="muted center" style="margin-top:10px; font-family:Orbitron,monospace; letter-spacing:.18em;">
+      EP06 · ทางที่ไม่เคยมีใครกลับมา · COMING SOON
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P25</summary>
+    <div>
+      ending ขึ้นกับ Energy ที่เหลือจาก boss + Coronal Anomaly Token (p07) + Aurora Resonance (shop)<br>
+      A+ = ทั้งหมด · A = energy ≥40 · B = ≥1 · C = 0
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn">▶ ไป Journal</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const ending = Chain.get('bossEnding') || 'A';
+const energyLeft = Chain.get('bossEnergyLeft') || 0;
+const ENDINGS = {
+  'A+': {
+    title: '✨ AURORA TRIUMPH',
+    color: '#7effb2',
+    stage: `<div class="ending-stage stage-aplus"><div class="aurora-veil"></div><div class="aurora-veil v2"></div><div class="earth-disk"></div></div>`,
+    body: `<div class="card lavender"><span class="narr">CME ถูกเบี่ยงที่ L1 · พลาสมาเลี้ยวอ่อน ๆ ผ่านโลกห่าง 50,000 km · <b style="color:#7effb2;">aurora สวยงามไปทั่วโลก</b> · เห็นได้ถึงเส้นศูนย์สูตร · นักวิทยาศาสตร์ทั่วโลกเก็บข้อมูล · กลายเป็นการศึกษา CME ใหญ่สุดในประวัติศาสตร์</span></div>
+      <div class="card gold"><span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ทำได้! ใช้ Coronal Anomaly Token + Aurora Resonance พอดี · พลาสมาเรโซแนนซ์ · เบี่ยงอย่างนุ่มนวล"</span></div>`
+  },
+  'A': {
+    title: '🛰 DEFLECTED',
+    color: '#64d8ff',
+    stage: `<div class="ending-stage stage-a"><div class="cme-deflected"></div><div class="earth-disk"></div></div>`,
+    body: `<div class="card lavender"><span class="narr">CME ถูกเบี่ยงที่ L1 ทันเวลา · พลาสมาผ่านโลกแบบเฉียง · <b style="color:#64d8ff;">โลกปลอดภัย</b> · ดาวเทียมรอดทั้งหมด · ภารกิจสำเร็จ</span></div>`
+  },
+  'B': {
+    title: '⚡ GRID FLICKER',
+    color: '#ffcb6b',
+    stage: `<div class="ending-stage stage-b"><div class="flicker-grid"></div><div class="earth-disk"></div></div>`,
+    body: `<div class="card"><span class="narr">เบี่ยงได้บางส่วน · CME ครึ่งหนึ่งกระทบโลก · <b style="color:#ffcb6b;">ดาวเทียมเสีย 30% · ไฟฟ้าดับยุโรปเหนือ 8 ชั่วโมง</b> · แต่ไม่มีผู้เสียชีวิต · ภารกิจ: ครึ่งสำเร็จ</span></div>`
+  },
+  'C': {
+    title: '🔴 BLACKOUT',
+    color: '#ff5c7a',
+    stage: `<div class="ending-stage stage-c"><div class="blackout-glow"></div><div class="earth-disk" style="filter:brightness(0.4);"></div></div>`,
+    body: `<div class="card red"><span class="narr">Energy หมดก่อน CME ถึง · ไม่ทันเบี่ยง · CME เต็มกำลังกระทบโลก · <b style="color:#ff5c7a;">grid blackout ทั่วโลก · ดาวเทียมเสียกว่า 60% · ความเสียหาย 1 ล้านล้านดอลลาร์</b> · ทีมรอดมาเล่าเรื่อง · แต่บทเรียนเจ็บปวด</span></div>`
+  },
+};
+const E = ENDINGS[ending];
+const host = document.getElementById('endingHost');
+host.innerHTML = `<div class="end-title" style="color:${E.color};">${E.title}</div>${E.stage}${E.body}
+  <div class="card" style="border-color:${E.color};"><div class="muted center">Energy เหลือ: <b style="color:${E.color};">${energyLeft}</b></div></div>`;
+if(ending==='A+' || ending==='A'){
+  document.getElementById('cliffCard').style.display='block';
+}
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p27-journal.html');
+  if(window.PaceClient) Gate.wireButton('p26', btn,'p27-journal.html');
+  if(Transition && Transition.play) Transition.play(ending==='A+'?'AURORA':(ending==='C'?'CME_BURST':'SOLAR_FLARE'));
+},200);
+</script>
+</body></html>

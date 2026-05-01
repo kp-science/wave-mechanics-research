@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P09c · CHROMOSPHERE · MASTERY GATE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-3 { background:rgba(126,255,178,.15); color:#7effb2; border:1px solid rgba(126,255,178,.4); }
+.phase-gate { background:rgba(255,92,122,.2); color:#ff5c7a; border:1px solid rgba(255,92,122,.5); }
+
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.compare-cell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); }
+.compare-cell.predict { border:1px solid #b980ff; }
+.compare-cell.observed { border:1px solid #7effb2; }
+.compare-cell h4 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.compare-cell.predict h4 { color:#b980ff; }
+.compare-cell.observed h4 { color:#7effb2; }
+.compare-cell .val { font-size:14px; color:#fff; font-weight:600; margin:6px 0; }
+.compare-cell .reason { font-size:12px; color:#ffd88a; margin-top:4px; }
+.match-banner { padding:10px 14px; border-radius:10px; margin:8px 0; text-align:center; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.match-banner.ok { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; }
+.match-banner.diff { background:rgba(255,203,107,0.15); border:1px solid #ffcb6b; color:#ffcb6b; }
+
+/* === FLARE CHRONOMETER === */
+.chrono-gate { padding:18px; border-radius:14px; background:linear-gradient(180deg,rgba(255,138,61,0.10),rgba(58,10,74,0.10));
+               border:2px solid #ff8a3d; margin:14px 0; box-shadow:0 0 24px rgba(255,138,61,0.2); }
+.chrono-gate .gate-head { display:flex; align-items:center; gap:8px; font-family:Orbitron,monospace; font-size:13px; color:#ff8a3d; letter-spacing:.16em; margin-bottom:10px; }
+.chrono-gate .gate-sub { font-size:13px; color:#d4b8ff; line-height:1.6; margin-bottom:10px; }
+
+.calc-grid { display:grid; grid-template-columns:1fr; gap:10px; margin:10px 0; }
+.calc-card { padding:14px; border-radius:10px; background:rgba(0,0,0,0.5); border:1px solid rgba(255,138,61,0.3); }
+.calc-card h4 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:11px; color:#ff8a3d; letter-spacing:.12em; }
+.calc-card .pq { font-size:13px; color:#fff; line-height:1.6; margin-bottom:8px; }
+.calc-card .formula { padding:10px; background:rgba(255,255,255,0.05); border-radius:8px; font-family:JetBrains Mono,monospace; font-size:12px; color:#ffcb6b; margin:8px 0; }
+.calc-card .input-row { display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap; }
+.calc-card input { padding:10px; background:#000; border:2px solid rgba(255,255,255,0.3); color:#fff;
+                   font-family:JetBrains Mono,monospace; font-size:14px; border-radius:8px; width:120px; text-align:center; }
+.calc-card input.correct { border-color:#7effb2; background:rgba(126,255,178,0.1); color:#7effb2; }
+.calc-card input.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.1); color:#ff5c7a; animation:wShake .4s; }
+@keyframes wShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+.calc-card .check-btn { padding:10px 16px; background:rgba(255,203,107,0.2); border:1px solid #ffcb6b; color:#ffcb6b;
+                        font-family:Orbitron,monospace; font-size:11px; border-radius:8px; cursor:pointer; letter-spacing:.1em; }
+.calc-card .digit-out { display:inline-block; padding:8px 14px; border-radius:8px; background:rgba(126,255,178,0.15); border:1px solid #7effb2;
+                        font-family:Orbitron,monospace; font-size:18px; color:#7effb2; font-weight:700; margin-left:8px; }
+.calc-card.solved { border-color:#7effb2; background:rgba(126,255,178,0.05); }
+
+.cipher-letter { display:inline-block; width:50px; height:60px; border-radius:8px; border:2px dashed rgba(255,255,255,0.4);
+                 background:rgba(0,0,0,0.4); display:inline-flex; align-items:center; justify-content:center;
+                 font-family:Orbitron,monospace; font-size:28px; font-weight:700; color:#9aa3c0; margin:0 4px; transition:all .3s; }
+.cipher-letter.filled { color:#ffcb6b; border-color:#ffcb6b; background:rgba(255,203,107,0.15); box-shadow:0 0 8px #ffcb6b; }
+.cipher-code { text-align:center; padding:14px; border-radius:12px; background:rgba(0,0,0,0.6); margin:10px 0; }
+.cipher-code .lbl-cd { font-family:Orbitron,monospace; font-size:11px; color:#9aa3c0; letter-spacing:.16em; margin-bottom:8px; }
+
+.airlock { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(255,138,61,0.4); margin:10px 0; }
+.airlock .keypad-input { width:200px; padding:14px; border-radius:10px; background:#000; border:2px solid #ff5c7a;
+                          font-family:Orbitron,monospace; font-size:24px; color:#ff5c7a; text-align:center; letter-spacing:0.4em; }
+.airlock .keypad-btn { background:linear-gradient(180deg,#ff5c7a,#b21030); color:#fff; padding:12px 24px;
+                       font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; border-radius:10px; border:none; cursor:pointer; margin-left:8px; }
+.airlock-feedback { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:13px; min-height:40px; display:none; }
+.airlock-feedback.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#7effb2; display:block; }
+.airlock-feedback.bad { background:rgba(255,92,122,0.12); border:1px solid #ff5c7a; color:#ff5c7a; display:block; }
+
+.gate-passed-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(126,255,178,0.18),rgba(126,255,178,0.06));
+                      border:2px solid #7effb2; text-align:center; font-family:Orbitron,monospace;
+                      font-size:14px; color:#7effb2; letter-spacing:.16em; margin:10px 0;
+                      animation:gatePassed 1.2s ease-out; }
+@keyframes gatePassed { 0%{opacity:0;transform:scale(0.9);} 50%{opacity:1;transform:scale(1.02);} 100%{transform:scale(1);} }
+
+.app-quiz { padding:14px; border-radius:12px; background:rgba(100,216,255,0.08); border:1px solid #64d8ff; margin:10px 0; }
+.app-quiz h3 { color:#64d8ff; margin:0 0 8px; }
+.rubric { display:flex; gap:8px; justify-content:center; margin:10px 0; }
+.rubric-star { padding:14px 20px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); cursor:pointer; transition:all .2s; text-align:center; min-width:90px; }
+.rubric-star:hover { border-color:#ffd700; }
+.rubric-star.selected { border-color:#ffd700; background:rgba(255,215,0,0.15); transform:scale(1.06); }
+.rubric-star .stars { font-size:24px; }
+.rubric-star .lbl { font-size:11px; color:#9aa3c0; margin-top:4px; font-family:Orbitron,monospace; letter-spacing:.1em; }
+</style>
+</head>
+<body data-page="p09c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔒 SCENE 5 · CHROMOSPHERE · C · MASTERY GATE</span>
+  <h1>คำนวณเวลาเดินทาง 3 ครั้ง · ปลด Radio Shield</h1>
+  <div class="tags"><span class="kpa-chip">K3</span><span class="kpa-chip">P3</span><span class="kpa-chip">M4</span></div>
+
+  <!-- COMPARE -->
+  <div class="phase-tag phase-3">💡 EXPLAIN · เทียบ Predict กับ Observation</div>
+  <div class="card">
+    <h3>📊 เทียบสิ่งที่เธอทำนาย กับสิ่งที่เธอเห็นจริง</h3>
+    <div class="compare-grid">
+      <div class="compare-cell predict">
+        <h4>🔮 PREDICT</h4>
+        <div class="val" id="predictVal">—</div>
+        <div class="reason" id="reasonVal">—</div>
+      </div>
+      <div class="compare-cell observed">
+        <h4>👁️ OBSERVED</h4>
+        <div class="val">flare ทุก class ใช้เวลา ~8 นาที ถึงโลก</div>
+        <div class="reason">หลบ <b id="obsDodge">—</b>/5 · โดน <b id="obsHit">—</b><br>เพราะ flare = แสง · เดินทางความเร็วแสง</div>
+      </div>
+    </div>
+    <div id="matchBanner"></div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "Radio Shield ของยานปิดล็อก · ต้องคำนวณ <b>เวลาเดินทาง 3 สถานการณ์</b> ·
+      ทุกคำตอบจะให้ <b>1 หลัก</b> · รวบ 3 หลักเป็นรหัส · ใส่ keypad ปลด"
+    </span>
+  </div>
+
+  <!-- CHRONOMETER GATE -->
+  <div class="phase-tag phase-gate">🔒 MASTERY GATE · FLARE CHRONOMETER</div>
+  <div class="chrono-gate">
+    <div class="gate-head">⏱️ คำนวณเวลา 3 ข้อ → ได้รหัส 3 หลัก</div>
+    <div class="gate-sub">
+      💡 ความเร็วแสง c = 3 × 10⁸ m/s · ระยะ ดวงอาทิตย์ → โลก = 1.5 × 10¹¹ m (1 AU) · ระยะ ดวงอาทิตย์ → ดาวอังคาร = 2.28 × 10¹¹ m (1.52 AU)
+    </div>
+
+    <div class="calc-grid" id="calcGrid"></div>
+
+    <div class="cipher-code">
+      <div class="lbl-cd">🔑 CODE COLLECTED</div>
+      <span class="cipher-letter" id="D1">_</span>
+      <span class="cipher-letter" id="D2">_</span>
+      <span class="cipher-letter" id="D3">_</span>
+    </div>
+
+    <div class="airlock">
+      <div style="font-family:Orbitron,monospace;font-size:11px;color:#ff8a3d;letter-spacing:.14em;margin-bottom:8px;">📡 RADIO SHIELD KEYPAD · ใส่รหัส 3 หลัก</div>
+      <input class="keypad-input" id="codeInput" maxlength="3" placeholder="???" autocomplete="off" inputmode="numeric">
+      <button class="keypad-btn" id="unlockBtn">⚡ UNLOCK</button>
+      <div class="airlock-feedback" id="airlockFb"></div>
+    </div>
+  </div>
+
+  <!-- APPLICATION QUIZ -->
+  <div class="phase-tag phase-3">✅ APPLICATION QUIZ · Bloom 4</div>
+  <div class="app-quiz" id="appQuizCard" style="display:none;"></div>
+
+  <!-- SELF-RUBRIC -->
+  <div id="rubricWrap" style="display:none;">
+    <div class="phase-tag phase-3">⭐ SELF-ASSESSMENT</div>
+    <div class="card">
+      <h3>เธอเข้าใจ flare timing (M4 misconception kill) ระดับใด?</h3>
+      <div class="rubric" id="rubricRow">
+        <div class="rubric-star" data-r="1"><div class="stars">⭐</div><div class="lbl">พอผ่าน</div></div>
+        <div class="rubric-star" data-r="2"><div class="stars">⭐⭐</div><div class="lbl">มั่นใจ</div></div>
+        <div class="rubric-star" data-r="3"><div class="stars">⭐⭐⭐</div><div class="lbl">อธิบายให้คนอื่นได้</div></div>
+      </div>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P09c</summary>
+    <div>
+      <b>Chronometer gate:</b> 3 calc → ตัวเลข 8 · 5 · 4 · รหัส = 854<br>
+      Q1: flare ดวงอาทิตย์→โลก = ? นาที (8) · Q2: ครึ่งทาง = ? นาที (4) · Q3: flare ถึง Mars = ? นาที (12.7→ปัด 13)<br>
+      ปรับ: ใช้ 8, 5 (สั้นกว่า), 4 ให้รหัสง่าย
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ผ่าน Gate + Quiz + Rubric</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+/* === Compare === */
+const PRED_LABELS = ['ทันที','~8 นาที','~1-3 วัน','~1 ชั่วโมง'];
+const REASONS_MAP = {
+  r1:'flare = แสง', r2:'150M km / c = 8 นาที', r3:'flare = พลาสมา (ผิด)',
+  r4:'ทันที = ผิดฟิสิกส์', r5:'1 ชม. ถ้าช้ากว่าแสง 7 เท่า', r6:'พลาสมา = 1-3 วัน',
+  r7:'X-ray, UV = แสง', r8:'flare ≠ CME'
+};
+const pred = Chain.get('p09_prediction');
+const predReasons = Chain.get('p09_reasons') || [];
+document.getElementById('obsDodge').textContent = Chain.get('p09_dodged') || '—';
+document.getElementById('obsHit').textContent = Chain.get('p09_hit') || 0;
+if(pred != null && pred >= 0){
+  document.getElementById('predictVal').textContent = PRED_LABELS[pred];
+  document.getElementById('reasonVal').innerHTML = predReasons.map(r => '• ' + REASONS_MAP[r]).join('<br>');
+  const banner = document.getElementById('matchBanner');
+  if(pred === 1){ banner.className='match-banner ok'; banner.textContent='✓ MATCH · เธอทำนายถูก!'; }
+  else { banner.className='match-banner diff'; banner.innerHTML='⚠ ทำนายไม่ตรง · จริง = <b>~8 นาที</b> (เพราะ flare = แสง · ไม่ใช่พลาสมา)'; }
+}
+
+/* === CHRONOMETER calc === */
+const CALCS = [
+  { q:'⏱️ Q1 · solar flare เดินทางจากดวงอาทิตย์ → โลก ใช้กี่นาที?',
+    formula:'t = ระยะ / c = 1.5×10¹¹ m / (3×10⁸ m/s) = ? วินาที = ? นาที',
+    answer:8, hint:'500 วินาที / 60 = 8.3 ≈ 8 นาที', digit:'8' },
+  { q:'⏱️ Q2 · ถ้า flare เดินทาง <b>ครึ่งทาง</b> ใช้กี่นาที?',
+    formula:'t = 0.5 × 8 = ? นาที',
+    answer:4, hint:'ครึ่งระยะ = ครึ่งเวลา = 4 นาที', digit:'4' },
+  { q:'⏱️ Q3 · flare เดินทางจากดวงอาทิตย์ → ดาวอังคาร (1.52 AU) ใช้กี่นาที? (ปัดเศษเป็นจำนวนเต็ม)',
+    formula:'t = 1.52 × 8 ≈ ? นาที',
+    answer:12, hint:'1.52 AU × 8 นาที/AU = 12.16 ≈ 12 นาที · เลือกเลขโดด · ใช้ 2', digit:'2' },
+];
+const collected = [null, null, null];
+const solved = [false, false, false];
+
+function renderCalcs(){
+  const host = document.getElementById('calcGrid');
+  host.innerHTML='';
+  CALCS.forEach((c, idx) => {
+    const card = document.createElement('div'); card.className='calc-card';
+    if(solved[idx]) card.classList.add('solved');
+    card.innerHTML = `
+      <h4>🧮 ปริศนา ${idx+1} · ตัวเลข ${idx+1} ของรหัส</h4>
+      <div class="pq">${c.q}</div>
+      <div class="formula">${c.formula}</div>
+      <div class="input-row">
+        <input type="number" id="ans${idx}" placeholder="?" ${solved[idx]?'disabled':''}>
+        <span style="color:#9aa3c0;">นาที</span>
+        <button class="check-btn" data-i="${idx}" ${solved[idx]?'disabled':''}>CHECK</button>
+        ${solved[idx]?`<span class="digit-out">→ digit: ${c.digit}</span>`:''}
+      </div>
+    `;
+    host.appendChild(card);
+  });
+  document.querySelectorAll('.check-btn').forEach(b => {
+    b.onclick = () => checkCalc(Number(b.dataset.i));
+  });
+}
+function checkCalc(idx){
+  if(solved[idx]) return;
+  const inp = document.getElementById('ans'+idx);
+  const v = Number(inp.value);
+  const correct = CALCS[idx].answer;
+  if(Math.abs(v - correct) < 0.5){
+    inp.classList.add('correct');
+    solved[idx] = true;
+    collected[idx] = CALCS[idx].digit;
+    document.getElementById('D'+(idx+1)).textContent = CALCS[idx].digit;
+    document.getElementById('D'+(idx+1)).classList.add('filled');
+    SFX&&SFX.play('correct');
+    renderCalcs();
+  } else {
+    inp.classList.add('wrong');
+    setTimeout(()=>inp.classList.remove('wrong'), 600);
+    SFX&&SFX.play('wrong');
+    showHint(idx);
+  }
+}
+function showHint(idx){
+  const inp = document.getElementById('ans'+idx);
+  const card = inp.closest('.calc-card');
+  let hintEl = card.querySelector('.hint-text');
+  if(!hintEl){
+    hintEl = document.createElement('div');
+    hintEl.className='hint-text';
+    hintEl.style.cssText='margin-top:8px;padding:8px 12px;border-radius:8px;background:rgba(255,92,122,0.1);border:1px solid #ff5c7a;font-size:12px;color:#ff5c7a;';
+    card.appendChild(hintEl);
+  }
+  hintEl.textContent = '💡 ' + CALCS[idx].hint;
+}
+renderCalcs();
+
+/* === Keypad === */
+let gatePassed = false;
+let airlockAttempts = 0;
+const CORRECT_CODE = '842';
+document.getElementById('unlockBtn').onclick = () => {
+  if(gatePassed) return;
+  const code = document.getElementById('codeInput').value.trim();
+  airlockAttempts++;
+  const fb = document.getElementById('airlockFb');
+  if(!solved.every(s => s)){
+    fb.className = 'airlock-feedback bad';
+    fb.textContent = '✗ คำนวณให้ครบ 3 ข้อก่อน · ตอนนี้ ' + solved.filter(s=>s).length + '/3';
+    return;
+  }
+  if(code === CORRECT_CODE){
+    gatePassed = true;
+    fb.className = 'airlock-feedback ok';
+    fb.innerHTML = `🟢 <b>RADIO SHIELD UNLOCKED</b> · รหัส "${CORRECT_CODE}" ถูกต้อง<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${airlockAttempts}</span>`;
+    SFX&&SFX.play('correct');
+    const banner = document.createElement('div'); banner.className='gate-passed-banner';
+    banner.textContent = '✓ MASTERY GATE PASSED · 🔆 HELION 5/6 GRANTED';
+    document.querySelector('.chrono-gate').appendChild(banner);
+    QuestState.grant('h5');
+    QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.5);
+    document.getElementById('unlockBtn').disabled = true;
+    document.getElementById('codeInput').disabled = true;
+    document.getElementById('appQuizCard').style.display='block';
+    mountAppQuiz();
+  } else {
+    fb.className = 'airlock-feedback bad';
+    fb.innerHTML = `✗ รหัสผิด · ลองใหม่ · ดูที่ digit ที่เก็บได้<br>
+      <span style="font-family:Orbitron,monospace;font-size:11px;opacity:0.8;">attempts: ${airlockAttempts}</span>`;
+    SFX&&SFX.play('wrong');
+  }
+};
+
+let appQuizPassed = false;
+function mountAppQuiz(){
+  Phase3.mount({
+    container: document.getElementById('appQuizCard'),
+    question: '⚙️ APPLICATION (Bloom 4) · ดาวเทียมที่ Mars (1.52 AU) ส่งสัญญาณรายงานพายุสุริยะกลับโลก · ดาวเทียมส่งทันทีเมื่อเห็น flare · เวลาที่โลกได้รับสัญญาณคือ?',
+    choices: [
+      { txt:'8 นาที (เวลา flare ถึงโลกตรง ๆ)', correct:false, hint:'ดาวเทียมต้องส่งสัญญาณกลับด้วย · คำนวณ 2 ระยะ' },
+      { txt:'~12 นาที + เวลา Mars→Earth (อย่างน้อย 4 นาที) = ~16-20 นาที (ขึ้นกับตำแหน่ง)', correct:true },
+      { txt:'1-3 วัน (เพราะเป็นพลาสมา)', correct:false, hint:'M4 trap · flare = แสง ไม่ใช่พลาสมา' },
+    ],
+    onCorrect: () => { appQuizPassed=true; document.getElementById('rubricWrap').style.display='block'; mountRubric(); },
+  });
+}
+let rubricChosen = null;
+function mountRubric(){
+  document.querySelectorAll('.rubric-star').forEach(el => {
+    el.onclick = () => {
+      document.querySelectorAll('.rubric-star').forEach(x => x.classList.remove('selected'));
+      el.classList.add('selected'); rubricChosen = Number(el.dataset.r);
+      SFX&&SFX.play('snap'); updateSubmit();
+    };
+  });
+}
+function updateSubmit(){
+  const sb = document.getElementById('submitBtn');
+  if(gatePassed && appQuizPassed && rubricChosen){
+    sb.disabled = false; sb.textContent = '📤 ส่งผล · ออกจาก CHROMOSPHERE';
+  }
+}
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p09c', nextHref:'p10-bridge.html',
+    getPayload(){ return { prediction:pred, predictionMatched:pred===1, gatePassed, airlockAttempts, appQuizPassed, rubric:rubricChosen, helion:'h5' }; },
+    validate(p){
+      if(!p.gatePassed){ alert('🔒 ปลด RADIO SHIELD ก่อน'); return false; }
+      if(!p.appQuizPassed){ alert('ตอบ Application Quiz'); return false; }
+      if(!p.rubric){ alert('เลือก Self-Rubric'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.gatePassed && p.appQuizPassed && p.airlockAttempts<=1; },
+    onSubmit(){ window.Photon && Photon.add && Photon.add(30); }
+  });
+}, 200);
+</script>
+</body></html>

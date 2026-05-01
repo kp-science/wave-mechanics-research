@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p21 · Mars Launch</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .timeline { display:flex; flex-direction:column; gap:6px; margin:14px 0; }
+  .day { display:flex; align-items:center; gap:10px; padding:8px 12px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
+    transition:all .4s; opacity:.4; }
+  .day.active { opacity:1; border-color:var(--rocket-orange); transform:translateX(8px); }
+  .day.done { opacity:.7; border-color:var(--good); background:rgba(155,231,196,.06); }
+  .day-num { font-weight:700; color:var(--electric); width:60px; }
+  .day-event { flex:1; font-size:14px; }
+  .day-status { font-size:18px; }
+</style>
+</head>
+<body data-page="p21">
+<div class="page">
+  <div class="act-badge">ACT C · 10/10 · LAUNCH SIM</div>
+  <h1>Launch · จำลอง 7 วันบินไป Mars</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ MISSION RUN · ระบบทดสอบการออกแบบของเธอ 7 วัน</div>
+    <div class="crisis-body">ถ้าออกแบบดี · ทีมจะรอดถึง Mars · กดปุ่มเพื่อเริ่ม sim</div>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="run">🚀 เริ่ม Mars Mission Run</button>
+  </div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 KPA · กิจกรรมตำรา</div>
+    เธอเพิ่งทำ <b>กิจกรรมลองทำดู ตำรา p95-96</b> ครบทุกปัจจัย · ในความจริง NASA ใช้กระบวนการเดียวกันออกแบบ Artemis
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p22-materials.html" class="btn alt" id="next" style="display:none;">ไปต่อ → ACT D · ประยุกต์ใช้</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p21' });
+    PBL.init({ id:'p21-mars-launch' });
+
+    const days = [
+      { d:'D1', e:'ปล่อยจรวด · v=11.5 km/s · เข้าสู่ trajectory ✓' },
+      { d:'D2', e:'ทะลุชั้นบรรยากาศโลก · heat shield ทำงาน ✓' },
+      { d:'D3', e:'cruise phase · เดินทางในห้วงอวกาศ' },
+      { d:'D4', e:'mid-course correction · ปรับ trajectory' },
+      { d:'D5', e:'เข้าใกล้ Mars · เตรียม atmospheric entry' },
+      { d:'D6', e:'EDL · Entry Descent Landing · 1500°C ✓ heat shield รับได้' },
+      { d:'D7', e:'แตะพื้น Mars · กางโดม · ขุดน้ำแข็ง · ปลูกพืช · ทีมรอด' }
+    ];
+    const tl = document.getElementById('timeline');
+    days.forEach(d => {
+      const el = document.createElement('div');
+      el.className='day'; el.dataset.d = d.d;
+      el.innerHTML = `<span class="day-num">${d.d}</span><span class="day-event">${d.e}</span><span class="day-status">⏳</span>`;
+      tl.appendChild(el);
+    });
+
+    document.getElementById('run').onclick = () => {
+      document.getElementById('run').disabled = true;
+      let i = 0;
+      const ix = setInterval(() => {
+        const els = tl.querySelectorAll('.day');
+        if (i > 0) { els[i-1].classList.remove('active'); els[i-1].classList.add('done');
+          els[i-1].querySelector('.day-status').textContent = '✓'; }
+        if (i >= days.length) {
+          clearInterval(ix);
+          const res = document.getElementById('resultHost');
+          res.classList.add('show','correct');
+          res.textContent = '✓ Mars Mission สำเร็จ · ทีมตั้งฐาน · พบสัญญาณ VOID ใต้ดิน';
+          KPA.log('K3','mars-launch-success',{ correct:true });
+          KPA.vpa(2, { kind:'mars-launch', summary:'7-days-run' });
+          CoinEnergy.reward('crisisSolveFirst', 2);
+          document.getElementById('transfer').style.display='block';
+          document.getElementById('next').style.display='';
+          PBL.attempt(true, {});
+          PBL._enter('transfer');
+          return;
+        }
+        els[i].classList.add('active');
+        i++;
+      }, 900);
+    };
+  });
+</script>
+</body>
+</html>

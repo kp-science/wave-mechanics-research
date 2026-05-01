@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P10b · KUIPER vs OORT</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.scale-stage { position:relative; height:80px; margin:14px 0; background:#03061a; border-radius:10px; overflow:hidden; }
+.sun-marker { position:absolute; left:2%; top:50%; transform:translate(-50%,-50%); width:14px; height:14px; border-radius:50%;
+              background:radial-gradient(circle,#fff8c8,#ffcb6b); box-shadow:0 0 10px #ffcb6b; }
+.kuip { position:absolute; left:8%; top:50%; transform:translateY(-50%); width:6%; height:30px;
+        background:linear-gradient(90deg, rgba(185,128,255,0.4), rgba(100,216,255,0.4)); border:1px dashed #b980ff; border-radius:4px; }
+.helio { position:absolute; left:18%; top:50%; transform:translateY(-50%); width:3%; height:30px;
+         background:rgba(255,138,61,0.3); border:1px solid #ff8a3d; }
+.oort { position:absolute; left:50%; top:50%; transform:translateY(-50%); width:48%; height:50px;
+        background:radial-gradient(ellipse, rgba(126,255,178,0.3), transparent 70%); border:1px dashed #7effb2; border-radius:50%; }
+.scale-label { position:absolute; font-family:Orbitron,monospace; font-size:9px; color:#9aa3c0; letter-spacing:.1em; }
+.comet-table { width:100%; border-collapse:collapse; margin:10px 0; font-size:13px; }
+.comet-table th, .comet-table td { padding:8px; border:1px solid rgba(120,140,220,0.3); text-align:left; }
+.comet-table th { background:rgba(100,216,255,0.1); color:#64d8ff; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.1em; }
+.comet-table tr:hover { background:rgba(100,216,255,0.05); }
+</style>
+</head>
+<body data-page="p10b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">❄️ KUIPER · B · EXPLORE</span>
+  <h1>Kuiper vs Oort · ดาวหางคาบสั้น/ยาว</h1>
+
+  <div class="card cyan">
+    <h3>📏 แผนที่ระยะทาง</h3>
+    <div class="scale-stage">
+      <div class="sun-marker"></div>
+      <div class="kuip"></div>
+      <div class="helio"></div>
+      <div class="oort"></div>
+      <div class="scale-label" style="left:8%; top:8px;">Kuiper<br>30-50 AU</div>
+      <div class="scale-label" style="left:18%; top:8px; color:#ff8a3d;">heliopause<br>120 AU</div>
+      <div class="scale-label" style="left:50%; top:8px; color:#7effb2;">Oort Cloud<br>5,000-70,000 AU</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>☄ ดาวหาง 3 ดวงในประวัติศาสตร์</h3>
+    <table class="comet-table">
+      <thead><tr><th>ชื่อ</th><th>คาบโคจร</th><th>มาจาก</th></tr></thead>
+      <tbody id="cometBody"></tbody>
+    </table>
+    <div class="muted" style="font-size:11px;">
+      <b>คาบสั้น &lt; 200 ปี</b> → มาจาก <b style="color:#b980ff;">Kuiper Belt</b><br>
+      <b>คาบยาว &gt; 200 ปี</b> → มาจาก <b style="color:#7effb2;">Oort Cloud</b>
+    </div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "Oort Cloud อยู่ที่ <b style="color:#7effb2;">~70,000 AU</b> · ห่างจากดวงอาทิตย์ <b>1/4 ทาง</b>ไปยังดาวฤกษ์ที่ใกล้สุด ·
+      ระบบสุริยะของเราใหญ่กว่าที่เราคิดกันมาก"
+    </span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P10b</summary>
+    <div>เน้น scale: Oort = 70,000 AU · ดาวที่ใกล้สุด (Proxima Centauri) อยู่ ~268,000 AU · ทำลาย M6</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'Kuiper Belt กับ Oort Cloud ต่างกันยังไง?',
+    durationSec: 60,
+    chips: [
+      'Kuiper อยู่ 30-50 AU · Oort 2k-100k AU',
+      'Kuiper เป็นแผ่นจาน · Oort เป็นทรงกลม',
+      'Kuiper สั้น period · Oort long period',
+      'ทั้งคู่เป็นต้นกำเนิดดาวหาง',
+      'Oort ยังไม่เคยเห็นโดยตรง'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ Quiz · พลูโตเป็นดาวเคราะห์ไหม?</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const tbody = document.getElementById('cometBody');
+EP_CONFIG.comets.forEach(c => {
+  const tr = document.createElement('tr');
+  const color = c.origin === 'Kuiper' ? '#b980ff' : '#7effb2';
+  tr.innerHTML = `<td>${c.name}</td><td>${c.period}</td><td style="color:${color};">${c.origin}</td>`;
+  tbody.appendChild(tr);
+});
+
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p10c-kuiper-quiz.html');if(window.PaceClient)Gate.wireButton('p10b',btn,'p10c-kuiper-quiz.html');},200);
+</script>
+</body></html>

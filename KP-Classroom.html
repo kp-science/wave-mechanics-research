@@ -1741,6 +1741,9 @@ function wsIdToSheet(wsId){
   // 1) Explicit iframe tools first (FT01, FT02, Review)
   const tk = WS_TO_TOOL[wsId];
   if (tk) return IFRAME_TOOLS[tk].sheet;
+  // 1.4) SHM unit-wide patterns (FT01/FT02 ครอบทุกแผน · ไม่ผูกกับ plan เดียว)
+  if (/^shm-ft01[-_]?/i.test(wsId)) return 'SHM_FT01';
+  if (/^shm-ft02[-_]?/i.test(wsId)) return 'SHM_FT02';
   // 1.5) SHM unit pattern: shm-plan{N}-{tool}[-{suffix}] → SHM_<Cap>_P{N}
   // ใช้แยก Sheet ของ SHM ออกจากคลื่นกล (เก็บคนละชีท)
   const sm = wsId.match(/^shm-plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);

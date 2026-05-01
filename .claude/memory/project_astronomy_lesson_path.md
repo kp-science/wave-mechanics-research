@@ -1,6 +1,6 @@
 ---
 name: Astronomy lesson files location
-description: ไฟล์ดาราศาสตร์ ม.6 อยู่ที่ wave-mechanics-research/lessons/astronomy/ · EP01-EP04 พร้อมใช้ · EP04 ใช้ 4-องก์ Lab-build model
+description: ไฟล์ดาราศาสตร์ ม.6 อยู่ที่ wave-mechanics-research/lessons/astronomy/ · EP01-EP05 พร้อมใช้ · EP04+EP05 ใช้ 4-องก์ Lab-build model
 type: project
 originSessionId: fb888f8f-8de0-44ee-b46d-d4aac2fa3d42
 ---
@@ -32,8 +32,9 @@ astronomy/
 ├── ep02/  · 20 หน้า · scaffold + game layer
 ├── ep03/  · 20 หน้า · 5-องก์ Adventure model (เสร็จ 2026-04-25)
 ├── ep04/  · 27 หน้า · 4-องก์ Lab-build model ⭐ (เสร็จ 2026-04-26)
+├── ep05/  · 45 หน้า · v8 RACE TO THE SUN ⭐⭐⭐ (rebuild 2026-04-28 · 3-Page Mastery Gate + 5 Mission Bridges + Active Region Scanner + Lucky popup + sun atmos viz)
 │
-├── HANDOFF_ep01.md → HANDOFF_ep04.md (อ่านก่อนเริ่มงานใหม่)
+├── HANDOFF_ep01.md → HANDOFF_ep05.md (อ่านก่อนเริ่มงานใหม่)
 └── cosmos-log-series-bible.html (overview ทั้ง 8 ตอน)
 ```
 
@@ -66,7 +67,36 @@ astronomy/
 
 ---
 
-## EP05 cliffhanger
+## EP05 v8 ✅ rebuild 2026-04-28 · RACE TO THE SUN · 3-Page Mastery Gate + Mission Bridges
 
-จบ EP04 → พ่อเตือนว่า VOID เป้าหมายต่อไป = ดวงอาทิตย์
-→ EP05 "หัวใจที่เต้นผิดจังหวะ" · ระบบสุริยะ · CME 18 ชั่วโมง
+"หัวใจที่เต้นผิดจังหวะ" · **45 หน้า** · 4-องก์ · ~125 นาที (2 คาบ) · ตรง ว 7.1 ม.4-6/1 ครบ 4 หัวข้อ
+**Quest:** ตามล่า **HELION CORES 6 ชิ้น** ก่อน VOID · ใช้ activate deflector @ L1
+**Pattern:** ทุก dive scene split 3 หน้า (Engage Predict / Explore Observe / **Mastery Gate**) + Mission Bridge ระหว่าง scene
+**Lock เข้ม:** ผ่าน Gate ไม่ได้ถ้าไม่ใช้ความรู้จริง · Predict→Observe→Compare→Apply→Self-rubric ทุก gate
+
+### โครง 45 หน้า
+- ACT A (5): cover · pretest · intro-quest · origin-zones · dive-plan
+- ACT B (11): CORE 3 หน้า → 🛰️bridge → RADIATIVE 3 หน้า → 🛰️bridge → CONVECTIVE 3 หน้า → 🛰️bridge
+- ACT C (12): SUNSPOT 3 → 🛰️bridge → CHROMOSPHERE 3 → 🛰️bridge → CORONA 3
+- ACT D (17): magnetic-bridge → boss → rescue → journal (เนื้อหาเดิมจาก v4)
+
+### 6 Unique Mastery Gates (each scene = different pattern)
+- p05c · 🔧 **REACTOR EQUATION LOCK** · เติม p-p chain 8 slot · trap chips มีหลอก (γ, O₂, N, e⁻)
+- p06c · 🔐 **PHOTON CIPHER BOX** · 4 ปริศนา → 4 ตัวอักษร = "WALK"
+- p07c · 🔄 **CONVECTION CYCLE BUILDER** · ลาก ↑→↓← สร้างวงจร hot rises/cool sinks
+- p08c · 🔍 **ACTIVE REGION SCANNER** · 3 active region (B แปรปวน + plasma erupting + flare history) จาก 8 dots · trap = quiet sunspot (B แรงแต่นิ่ง)
+- p09c · ⏱️ **FLARE CHRONOMETER** · 3 calc → รหัส 3 หลัก = "842"
+- p10c · 🗝️ **HELION KEY ASSEMBLY** · ประกอบ HELION 6 ชิ้นเรียง Core→Corona ปลด deflector
+
+### Visual highlights
+- **5 Mission Bridges:** sun cross-section + ship animated ไป layer ใหม่ + HELION inventory + recap/foreshadow narrative
+- **p06b Lucky Escape popup:** "🍀 คุณโชคดี · ไม่งั้นติด 170,000 ปี · photon random walk"
+- **p08b Sun visual ใหม่:** ก้อนดวงอาทิตย์ solid + atmosphere rings (chromo แดง + corona ม่วง) · sunspot บนผิว · ยานในชั้นบรรยากาศ (ไม่ออกนอกกรอบ)
+- **p10b Coronal Token:** ของ hidden ปลด ending A+ AURORA TRIUMPH
+
+shared/ep05-boot.js?v=2: QuestState (helions inventory + voidEta) + Phase3.mount()
+Badge: ☀️ Heliophysicist · NAVIGATOR → CAPTAIN
+Boss: SOLAR STORM · 3 zones · 24 ข้อ · 18hr countdown · 4 endings (A+/A/B/C)
+
+## EP06 cliffhanger
+VOID หนีนอกระบบสุริยะ → ทางช้างเผือก 4 แสนล้านดวง · "ทางที่ไม่เคยมีใครกลับมา"

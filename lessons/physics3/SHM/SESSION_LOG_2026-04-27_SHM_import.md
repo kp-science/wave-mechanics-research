@@ -140,11 +140,12 @@ P+E ใส่ห่อรอบ Observe (Jigsaw/TPS/3 ฐาน) เดิม ·
 - [ ] Deploy Apps Script + Google Sheet `Physics3-SHM-2569`
 - [ ] แทน `'TODO_DEPLOY_SHM_BACKEND'` ด้วย URL จริงใน `content/subjects.js:32`
 
-### ในอนาคต
-- [ ] FT-01 / FT-02 หลักของ SHM (Pre/Post unit-wide) — รอสร้างไฟล์ · แล้วเพิ่ม `ft01_shm`, `ft02_shm` ใน tools.js
-- [ ] หน่วยเสียง · แสง (ตอนนี้ `status:'coming-soon'`) — ทำได้ตาม pattern เดียวกับ SHM
-- [ ] สำรวจดาต้าจริงเข้า Sheet แล้ว fine-tune `wsIdToSheet` map ถ้ามี wsId pattern แปลก
-- [ ] (Optional) `KP_FT_BANK` ของ SHM ถ้าอยากให้ Four-tier render ในแอปโดยตรง (ตอนนี้ใช้ iframe ไฟล์ HTML แทน)
+### ในอนาคต — ดูรายละเอียดใน [HANDOFF_remaining.md](../HANDOFF_remaining.md)
+- [ ] ลบ row test ใน SHM Sheet (`TEST_VERIFY` · `E2E_TEST` · `FT_E2E`) ก่อนใช้จริง
+- [x] **FT-01 / FT-02 หลักของ SHM** ✓ สร้างแล้ว 12 ข้อ ครอบ 6 แผน · อยู่ในแผน 1 (ft01_shm) + แผน 6 (ft02_shm) · ส่งเข้า SHM_FT01 / SHM_FT02 · verify end-to-end ผ่าน
+- [x] **`KP_FT_BANK` ของ SHM** ✓ เติม 12 ข้อ (2 ต่อแผน) · ใช้กับ engine renderFTForm() เมื่อลบ def.file ของ f{N}-pre/post ใน tools.js
+- [ ] หน่วยเสียง · แสง — scaffold พร้อมที่ `content/physics3/units/{sound,light}/` · เปลี่ยน status:'open' หลังเติม plans
+- [x] (ผ่าน audit แล้ว) wsId mapping ของ SHM 41/41 ถูก · 2 collisions เป็น design choice (Exercise + Exercise-extra ลงชีทเดียวกัน)
 
 ---
 

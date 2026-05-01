@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · BRIDGE 3 · CONVECTIVE → PHOTOSPHERE/SUNSPOT</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-bridge { background:rgba(100,216,255,.15); color:#64d8ff; border:1px solid rgba(100,216,255,.4); }
+.sun-section { position:relative; width:100%; height:340px; border-radius:14px; margin:10px 0; overflow:hidden;
+               background:radial-gradient(ellipse at center,#02030a,#1a0500 40%,#3a0a00 80%); border:1px solid rgba(255,138,61,0.3); }
+.sun-cross { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:420px; height:420px; border-radius:50%; box-shadow:0 0 100px rgba(255,138,61,0.4); }
+.layer { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); border-radius:50%; transition:opacity .3s; }
+.layer.core   { width:60px;  height:60px;  background:radial-gradient(circle,#fff8c8,#ffcb6b); }
+.layer.rad    { width:140px; height:140px; background:radial-gradient(circle,transparent 30%,#ffd96b 30%,#ffd96b 80%,transparent 80%); opacity:0.7; }
+.layer.conv   { width:230px; height:230px; background:radial-gradient(circle,transparent 30%,#ffaa55 30%,#ffaa55 80%,transparent 80%); opacity:0.6; }
+.layer.photo  { width:300px; height:300px; background:radial-gradient(circle,transparent 30%,#ffcb6b 30%,#ffcb6b 80%,transparent 80%); opacity:0.5; }
+.layer.chromo { width:340px; height:340px; background:radial-gradient(circle,transparent 30%,#ff5c7a 30%,#ff5c7a 80%,transparent 80%); opacity:0.4; }
+.layer.corona { width:420px; height:420px; background:radial-gradient(circle,transparent 30%,#b980ff 30%,#b980ff 80%,transparent 80%); opacity:0.3; }
+.layer.passed { opacity:0.3; filter:grayscale(60%); }
+.layer.current { animation:layerPulse 1.5s ease-in-out infinite; }
+@keyframes layerPulse { 0%,100%{filter:brightness(1);} 50%{filter:brightness(1.3) drop-shadow(0 0 12px #fff);} }
+.ship-mark { position:absolute; left:50%; top:50%; transform:translate(-50%,-380%);
+             font-size:28px; z-index:10; filter:drop-shadow(0 0 14px #fff); transition:transform 2.5s ease-in-out; }
+.layer-label { position:absolute; left:50%; transform:translateX(-50%); font-family:Orbitron,monospace; font-size:10px; color:rgba(255,255,255,0.8); letter-spacing:.14em; text-shadow:0 1px 3px #000; pointer-events:none; }
+.status-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:10px 0; }
+.status-cell { padding:10px; border-radius:10px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); text-align:center; }
+.status-cell .lbl { font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0; letter-spacing:.12em; }
+.status-cell .val { font-family:Orbitron,monospace; font-size:18px; margin-top:4px; }
+.status-cell.helion .val { color:#ffcb6b; }
+.status-cell.eta .val { color:#ff5c7a; }
+.status-cell.scene .val { color:#7effb2; font-size:14px; }
+.helion-row { display:flex; gap:4px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+.h-mini { width:30px; height:30px; border-radius:6px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,138,61,0.3); display:flex; align-items:center; justify-content:center; font-size:14px; opacity:0.3; filter:grayscale(100%); }
+.h-mini.have { opacity:1; filter:none; border-color:#ffcb6b; background:rgba(255,138,61,0.15); }
+.recap-card { padding:14px; border-radius:12px; background:rgba(126,255,178,0.06); border-left:3px solid #7effb2; margin:8px 0; }
+.recap-card h4 { color:#7effb2; margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+.foreshadow-card { padding:14px; border-radius:12px; background:rgba(255,203,107,0.08); border-left:3px solid #ffcb6b; margin:8px 0; }
+.foreshadow-card h4 { color:#ffcb6b; margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.14em; }
+/* === RECALL CHECK === */
+.recall-card { padding:14px; border-radius:14px; margin:14px 0; background:linear-gradient(180deg, rgba(100,216,255,0.10), rgba(20,28,52,0.7)); border:2px solid #64d8ff; box-shadow:0 0 20px rgba(100,216,255,0.15); }
+.recall-tag { display:inline-block; padding:3px 10px; border-radius:6px; background:#64d8ff; color:#022; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; font-weight:700; margin-bottom:10px; }
+.recall-q { font-size:14px; color:#fff; line-height:1.6; margin-bottom:10px; padding:10px 12px; border-radius:8px; background:rgba(0,0,0,0.4); border-left:3px solid #64d8ff; }
+.recall-choices { display:grid; gap:6px; }
+.rc-btn { padding:10px 14px; border-radius:8px; background:rgba(20,28,52,0.7); border:1.5px solid rgba(120,140,220,0.3); color:#fff; cursor:pointer; text-align:left; font-size:13px; font-family:inherit; transition:all .15s; }
+.rc-btn:hover:not(:disabled) { border-color:#64d8ff; background:rgba(100,216,255,0.10); }
+.rc-btn.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); color:#7effb2; font-weight:700; }
+.rc-btn.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.12); color:#ff8a8a; animation:rcShake .35s; }
+@keyframes rcShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+.recall-fb { margin-top:10px; padding:8px 12px; border-radius:8px; font-size:12px; line-height:1.5; display:none; }
+.recall-fb.show { display:block; }
+.recall-fb.ok { background:rgba(126,255,178,0.12); border:1px solid #7effb2; color:#d0ffe2; }
+.recall-fb.bad { background:rgba(255,92,122,0.10); border:1px solid #ff5c7a; color:#ffd0d8; }
+.recall-fb b { color:#ffd700; }
+.next-button { display:block; width:100%; background:linear-gradient(180deg,#ff5c7a,#b21030); color:#fff; padding:16px; font-family:Orbitron,monospace; font-size:14px; letter-spacing:.18em; border-radius:12px; border:none; cursor:pointer; margin:14px 0; box-shadow:0 0 20px rgba(255,92,122,0.4); animation:nextPulse 2s ease-in-out infinite; }
+@keyframes nextPulse { 0%,100%{box-shadow:0 0 20px rgba(255,92,122,0.4);} 50%{box-shadow:0 0 40px rgba(255,92,122,0.8);} }
+.act-c-banner { padding:14px; border-radius:12px; background:linear-gradient(180deg,rgba(255,138,61,0.15),rgba(255,92,122,0.05)); border:1px solid #ff8a3d; margin:10px 0; text-align:center; }
+.act-c-banner b { color:#ff8a3d; font-family:Orbitron,monospace; letter-spacing:.18em; }
+</style>
+</head>
+<body data-page="p08-bridge" data-type="story">
+<div class="page">
+  <span class="lbl story">🛰️ MISSION BRIDGE · 3/5 · CONVECTIVE → PHOTOSPHERE</span>
+  <h1>ปีนถึงผิวดวงอาทิตย์ · เริ่ม ACT C · ATMOSPHERE BREAK</h1>
+
+  <div class="phase-tag phase-bridge">📍 MISSION STATUS</div>
+
+  <div class="act-c-banner">
+    🎬 <b>ACT C เริ่มแล้ว</b> · จาก "เนื้อใน" → "บรรยากาศ" ของดวงอาทิตย์
+  </div>
+
+  <div class="card">
+    <h3>🌞 ตำแหน่งยานในดวงอาทิตย์</h3>
+    <div class="sun-section">
+      <div class="sun-cross">
+        <div class="layer corona"></div>
+        <div class="layer chromo"></div>
+        <div class="layer photo current"></div>
+        <div class="layer conv passed"></div>
+        <div class="layer rad passed"></div>
+        <div class="layer core passed"></div>
+        <div class="ship-mark" id="shipMark">🚀</div>
+      </div>
+      <div class="layer-label" style="bottom:8px;">↑ ผ่าน 3 ชั้นเนื้อใน · ปัจจุบัน Photosphere (ผิวที่เห็น · pulse)</div>
+    </div>
+  </div>
+
+  <div class="status-row">
+    <div class="status-cell helion"><div class="lbl">🔆 HELION</div><div class="val" id="helionVal">—/6</div><div class="helion-row" id="helionRow"></div></div>
+    <div class="status-cell eta"><div class="lbl">⏰ VOID ETA</div><div class="val" id="etaVal">—h</div></div>
+    <div class="status-cell scene"><div class="lbl">🎯 SCENE</div><div class="val">4 / 6</div></div>
+  </div>
+
+  <div class="recap-card">
+    <h4>✓ ผ่านมา · Scene 3 · CONVECTIVE</h4>
+    <div class="narr" style="color:#d4b8ff;">
+      <b style="color:#ffcb6b;">เคน:</b> "เก่งมาก! เธอเข้าใจ <b>convection (density-driven)</b> · ใช้ก้อนพลาสมาร้อนปีนถึงผิว ·
+      ปลด CYCLE BUILDER สำเร็จ · เก็บ <b style="color:#7effb2;">🌊 Convection Bubble</b> · <b>ครึ่งทางแล้ว!</b> 3/6"
+    </div>
+  </div>
+
+  <div class="foreshadow-card">
+    <h4>⏳ กำลังจะเข้า · Scene 4 · PHOTOSPHERE / SUNSPOT</h4>
+    <div class="narr" style="color:#ffd88a;">
+      <b style="color:#ff8a3d;">อารยา (มองจอ · ตาเบิกกว้าง):</b> "เห็นไหม! · มี <b style="color:#ff5c7a;">จุดดำขนาดยักษ์</b>บนผิว
+      · ขนาดเท่าโลก! · <b>เข็มทิศแปรปวน</b><br>
+      เคน: นี่คือ <b>sunspot</b> · ไม่ใช่หลุม · เป็นพื้นที่ที่<b style="color:#b980ff;">สนามแม่เหล็กแรงมาก</b> ·
+      เธอต้องเป็น <b>นักสืบ</b> · ระบุว่าจุดไหนเป็น sunspot จริง · จุดไหนของหลอก"
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · Bridge 3</summary>
+    <div>
+      จุดเริ่ม ACT C atmosphere · เปลี่ยนโทนจาก "ดิ่งลึก" → "ฝ่าผิว"<br>
+      foreshadow forensics gate ใน p08c
+    </div>
+  </details>
+
+  <div class="recall-card">
+    <div class="recall-tag">🔁 RECALL CHECK · ทบทวน CONVECTIVE 1 ข้อ · ปิดท้าย ACT B</div>
+    <div class="recall-q">ในชั้น Convective · พลาสมาที่ <u>ร้อน</u> มีพฤติกรรมยังไง?</div>
+    <div class="recall-choices">
+      <button class="rc-btn" data-i="0">A. ลอยขึ้น (เพราะหนาแน่นต่ำ)</button>
+      <button class="rc-btn" data-i="1">B. จมลง (เพราะหนัก)</button>
+      <button class="rc-btn" data-i="2">C. นิ่งอยู่กับที่</button>
+    </div>
+    <div class="recall-fb" id="recallFb"></div>
+  </div>
+  <script>
+  (function(){
+    const correct = 0, pageId = 'p08-bridge';
+    const explain = 'ร้อน = ความหนาแน่นต่ำ → ลอยขึ้น · เย็น = หนัก → จม · นี่คือ <b>วงจรพา (convection cell)</b>';
+    const fb = document.getElementById('recallFb'); let answered = false;
+    document.querySelectorAll('.rc-btn').forEach(b => {
+      b.onclick = () => {
+        if(answered) return;
+        if(+b.dataset.i === correct){
+          answered = true; b.classList.add('correct');
+          fb.className = 'recall-fb show ok';
+          const key = 'cosmosLog_ep05_recall_' + pageId;
+          const firstTime = !localStorage.getItem(key);
+          if(firstTime && window.Coin && Coin.add){ Coin.add(5, 'recall:'+pageId); localStorage.setItem(key,'1'); }
+          fb.innerHTML = '✓ ถูกต้อง! · ' + explain + (firstTime ? ' · <b>+5 🪙</b>' : '');
+          document.querySelectorAll('.rc-btn').forEach(x => x.disabled = true);
+          if(window.SFX) SFX.play('correct');
+        } else {
+          b.classList.add('wrong');
+          fb.className = 'recall-fb show bad';
+          fb.innerHTML = '✗ ยังไม่ใช่ · ลองอีก · <i>hint:</i> น้ำเดือดในหม้อ · ฟองอากาศร้อนทำตัวยังไง?';
+          if(window.SFX) SFX.play('wrong');
+          setTimeout(() => b.classList.remove('wrong'), 400);
+        }
+      };
+    });
+  })();
+  </script>
+  <button class="next-button" id="nextBtn">▶ เข้า PHOTOSPHERE / SUNSPOT</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const have = QuestState.helions();
+const total = (EP_CONFIG.helions||[]).length;
+document.getElementById('helionVal').textContent = have.length + '/' + total;
+document.getElementById('etaVal').textContent = QuestState.voidEta().toFixed(1) + 'h';
+const row = document.getElementById('helionRow');
+EP_CONFIG.helions.forEach(h => {
+  const el = document.createElement('div'); el.className='h-mini' + (have.includes(h.id)?' have':'');
+  el.textContent = h.icon; row.appendChild(el);
+});
+setTimeout(() => { document.getElementById('shipMark').style.transform = 'translate(-50%,-510%)'; }, 600);
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p08a-sunspot-engage.html');
+  if(window.PaceClient) Gate.wireButton('p08-bridge', btn, 'p08a-sunspot-engage.html');
+}, 200);
+</script>
+</body></html>

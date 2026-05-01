@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P18 · Habitable Zone</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.helio-map { position:relative; width:100%; height:300px; background:radial-gradient(ellipse at left, rgba(255,138,61,0.2), transparent 60%); border-radius:14px; overflow:hidden; margin:10px 0; border:1px solid rgba(255,203,107,0.3); }
+.helio-map .sun { position:absolute; left:5%; top:50%; transform:translate(-50%,-50%); width:80px; height:80px; border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff8a3d); box-shadow:0 0 50px #ffcb6b; }
+.zone-band { position:absolute; top:0; bottom:0; pointer-events:none; }
+.zone-band.hot       { left:0; width:23%; background:linear-gradient(90deg, rgba(255,92,122,0.18), rgba(255,138,61,0.05)); }
+.zone-band.habitable { left:23%; width:25%; background:linear-gradient(90deg, rgba(126,255,178,0.05), rgba(126,255,178,0.18), rgba(126,255,178,0.05)); }
+.zone-band.cold      { left:48%; width:52%; background:linear-gradient(90deg, rgba(100,216,255,0.05), rgba(100,216,255,0.18)); }
+.zb-lbl { position:absolute; top:8px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.14em; }
+.zb-lbl.hot { left:5%; color:#ff5c7a; }
+.zb-lbl.hab { left:30%; color:#7effb2; }
+.zb-lbl.cold{ left:55%; color:#64d8ff; }
+.cme-arrow { position:absolute; left:13%; top:50%; transform:translateY(-50%); width:200px; height:4px; background:linear-gradient(90deg, #ff5c7a, #ffcb6b, transparent); border-radius:4px; box-shadow:0 0 12px #ff5c7a; animation:cmeMove 4s linear infinite; }
+@keyframes cmeMove { 0%{opacity:0; transform:translateY(-50%) translateX(0);} 30%{opacity:1;} 80%{opacity:1; transform:translateY(-50%) translateX(60px);} 100%{opacity:0; transform:translateY(-50%) translateX(80px);} }
+.planet-slot { position:absolute; width:36px; height:36px; border-radius:50%; transform:translate(-50%,-50%); cursor:grab; touch-action:none;
+               border:2px solid rgba(255,255,255,0.3); transition:all .2s; }
+.planet-slot.placed { cursor:default; border:2px dashed rgba(126,255,178,0.6); animation:planetPulse 2s ease-in-out infinite; }
+@keyframes planetPulse { 0%,100%{box-shadow:0 0 0 rgba(126,255,178,0);} 50%{box-shadow:0 0 12px rgba(126,255,178,0.6);} }
+.planet-pool { display:flex; flex-wrap:wrap; gap:10px; padding:10px; border-radius:12px; background:rgba(20,28,52,0.6); margin:10px 0; }
+.pp-item { display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background:rgba(255,203,107,0.08); border:1px solid rgba(255,203,107,0.3); cursor:grab; touch-action:none; }
+.pp-item .dot { width:14px; height:14px; border-radius:50%; }
+</style>
+</head>
+<body data-page="p19" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌍 HABITABLE ZONE · 8 ดาวเคราะห์</span>
+  <h1>Habitable Zone · ลาก 8 ดาวเคราะห์เข้า zone</h1>
+  <div class="tags"><span class="kpa-chip">K4</span><span class="kpa-chip">M7</span></div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <h3>🗺️ Heliosphere Map · CME มาจากซ้าย</h3>
+    <div class="helio-map" id="map">
+      <div class="zone-band hot"></div>
+      <div class="zone-band habitable"></div>
+      <div class="zone-band cold"></div>
+      <div class="zb-lbl hot">🔥 TOO HOT</div>
+      <div class="zb-lbl hab">💚 HABITABLE</div>
+      <div class="zb-lbl cold">❄ TOO COLD</div>
+      <div class="sun"></div>
+      <div class="cme-arrow"></div>
+    </div>
+    <div class="planet-pool" id="pool"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="ghost" id="checkBtn">เปรียบเทียบ</button>
+      <button class="ghost" id="resetBtn">↺ ล้าง</button>
+      <span id="result" class="muted" style="align-self:center;"></span>
+    </div>
+  </div>
+
+  <div class="card cyan">
+    <h3>💡 ปัจจัยที่เอื้อต่อสิ่งมีชีวิต</h3>
+    <ul style="margin:0; padding-left:20px; line-height:1.7;">
+      <li><b>น้ำเหลว</b> · ต้องอยู่ใน habitable zone (~0.95-1.5 AU สำหรับดาวฤกษ์ G-type)</li>
+      <li><b>บรรยากาศ</b> · กักความร้อน + ป้องกันรังสี</li>
+      <li><b>สนามแม่เหล็ก</b> · ป้องกัน solar wind + CME</li>
+      <li><b>ดาวฤกษ์เสถียร</b> · ไม่ flare ใหญ่บ่อย ๆ</li>
+    </ul>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P18</summary>
+    <div>
+      Mercury, Venus = hot · <b>Earth = habitable, Mars = habitable-edge</b><br>
+      Jupiter, Saturn, Uranus, Neptune = cold<br>
+      <b>เน้น M7:</b> habitable ≠ ใกล้สุด · ขึ้นกับชนิดดาวฤกษ์
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const planets = EP_CONFIG.planets;
+const placed = {}; // planet id -> {x%,y%}
+const pool = document.getElementById('pool');
+const map = document.getElementById('map');
+
+function zoneOfX(xPct){
+  if(xPct < 23) return 'hot';
+  if(xPct < 48) return 'habitable';
+  return 'cold';
+}
+function expectedZone(p){
+  if(p.zone==='habitable-edge') return 'habitable'; // Mars accepted in habitable zone band
+  return p.zone;
+}
+
+function render(){
+  // pool
+  pool.innerHTML='';
+  planets.forEach(p=>{
+    if(placed[p.id]) return;
+    const it = document.createElement('div'); it.className='pp-item';
+    it.innerHTML = `<span class="dot" style="background:${p.color};box-shadow:0 0 6px ${p.color};"></span><span>${p.name}</span>`;
+    it.draggable=true;
+    it.ondragstart = e=>{ e.dataTransfer.setData('text/plain', p.id); };
+    if(window.TouchDrag) TouchDrag.makeDraggable(it, ()=>p.id);
+    pool.appendChild(it);
+  });
+  // map planets
+  map.querySelectorAll('.planet-slot').forEach(e=>e.remove());
+  Object.entries(placed).forEach(([id,pos])=>{
+    const p = planets.find(x=>x.id===id);
+    const el = document.createElement('div'); el.className='planet-slot placed';
+    el.style.cssText = `left:${pos.x}%;top:${pos.y}%;background:radial-gradient(circle at 30% 30%, #fff, ${p.color});`;
+    el.title = p.name;
+    map.appendChild(el);
+  });
+}
+render();
+map.ondragover = e=>e.preventDefault();
+map.ondrop = e=>{
+  e.preventDefault();
+  const id = e.dataTransfer.getData('text/plain');
+  if(!id) return;
+  const r = map.getBoundingClientRect();
+  const x = ((e.clientX - r.left)/r.width)*100;
+  const y = ((e.clientY - r.top)/r.height)*100;
+  placed[id] = { x: Math.max(8,Math.min(95,x)), y: Math.max(15,Math.min(85,y)) };
+  render(); SFX&&SFX.play('snap');
+};
+if(window.TouchDrag){
+  TouchDrag.makeDropTarget(map, (id, x, y)=>{
+    const r = map.getBoundingClientRect();
+    const xp = ((x - r.left)/r.width)*100;
+    const yp = ((y - r.top)/r.height)*100;
+    placed[id] = { x: Math.max(8,Math.min(95,xp)), y: Math.max(15,Math.min(85,yp)) };
+    render(); SFX&&SFX.play('snap');
+  });
+}
+document.getElementById('resetBtn').onclick=()=>{ for(const k in placed) delete placed[k]; render(); document.getElementById('result').textContent=''; };
+document.getElementById('checkBtn').onclick=()=>{
+  let c=0;
+  planets.forEach(p=>{
+    if(!placed[p.id]) return;
+    const z = zoneOfX(placed[p.id].x);
+    if(z===expectedZone(p)) c++;
+  });
+  document.getElementById('result').textContent=`ถูก ${c}/${planets.length}`;
+  document.getElementById('result').style.color = c===planets.length?'#7effb2':'#ffcb6b';
+  if(c===planets.length) SFX&&SFX.play('correct'); else SFX&&SFX.play('wrong');
+};
+setTimeout(()=>{
+  Submit.wirePair({
+    page:'p19', nextHref:'p20-voidface.html',
+    getPayload(){
+      let c=0; planets.forEach(p=>{ if(placed[p.id] && zoneOfX(placed[p.id].x)===expectedZone(p)) c++; });
+      return {correct:c, total:planets.length};
+    },
+    validate(p){ if(p.correct<6){ alert('ต้องถูกอย่างน้อย 6/8'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){ if(window.MysteryBox && MysteryBox.roll) MysteryBox.roll({ wrongs:0, page:'p19' }); }
+  });
+},200);
+</script>
+</body></html>

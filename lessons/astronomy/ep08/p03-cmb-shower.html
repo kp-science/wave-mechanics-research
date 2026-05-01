@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p03 · CMB Shower</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .cmb-canvas { width:100%; height:240px; background:#0a0410; border:1px solid var(--line);
+    border-radius:12px; display:block; }
+  .slider-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:10px 0; }
+  .slider-row input[type=range] { flex:1; min-width:200px; }
+  .reading { background:var(--bg-card); border:1px solid var(--genesis-gold); border-radius:10px;
+    padding:10px 14px; margin:10px 0; }
+  .reading b { color:var(--genesis-gold); font-size:22px; }
+</style>
+</head>
+<body data-page="p03">
+<div class="page">
+  <div class="act-badge">ACT A · 4/5 · CMB</div>
+  <h1>📡 CMB Shower · 2.73 K</h1>
+
+  <details class="story-tab" open>
+    <summary>📖 Story Tab</summary>
+    <div id="storySpine"></div>
+  </details>
+
+  <canvas id="cmbCanvas" class="cmb-canvas"></canvas>
+
+  <div class="howto">
+    <h4>🎮 EXPERIMENT · ปรับเวลาเอกภพ</h4>
+    <ul>
+      <li>ลาก slider เพื่อเดินเวลาจาก <b>10⁻⁶ s → 380,000 ปี</b></li>
+      <li>สังเกต: เมื่อใดก็ตามที่ T ลดต่ำกว่า ~3000 K · electron จับกับ nucleus = atom เกิด</li>
+      <li>เมื่อ atom เกิด · photon หลุดออกได้ = นั่นคือ <b>CMB</b> ที่เราตรวจจับวันนี้ · 2.73 K</li>
+      <li>M-FINAL-3: เห็นไกลขึ้น = เห็น<em>อดีต</em></li>
+    </ul>
+  </div>
+
+  <div class="slider-row">
+    <span class="lbl">เวลา:</span>
+    <input type="range" id="tSlider" min="0" max="100" value="10" />
+    <span id="tLbl" style="min-width:140px;">10⁻⁶ s</span>
+  </div>
+
+  <div class="reading">
+    <span class="lbl">อุณหภูมิเอกภพ:</span> <b id="tempLbl">10¹² K</b><br>
+    <span class="lbl">สถานะ:</span> <span id="statusLbl">quark soup</span>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn" disabled>เลื่อนถึง recombination · ส่ง</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p03' });
+  const s = EP_CONFIG.story.p03 || {};
+  document.getElementById('storySpine').innerHTML = `
+    <div class="story-row"><b>NPC</b><span>${s.npc}</span></div>
+    <div class="story-row"><b>LINE</b><span>"${s.line}"</span></div>
+    <div class="story-row"><b>NOW</b><span>${s.now}</span></div>
+    <div class="story-row"><b>NEXT</b><span>${s.next}</span></div>
+  `;
+
+  // animate CMB shower canvas
+  const c = document.getElementById('cmbCanvas');
+  function resize(){ c.width = c.clientWidth; c.height = 240; }
+  resize();
+  window.addEventListener('resize', resize);
+  const ctx = c.getContext('2d');
+  const drops = Array.from({length:120}).map(()=>({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    r: 0.5 + Math.random()*1.5, vy: 0.2 + Math.random()*0.5
+  }));
+  let temp = 12; // log10 K
+  function loop(){
+    ctx.fillStyle = 'rgba(10,4,16,0.18)';
+    ctx.fillRect(0,0,c.width,c.height);
+    drops.forEach(d => {
+      d.y += d.vy;
+      if (d.y > c.height) { d.y = -2; d.x = Math.random()*c.width; }
+      const intensity = Math.max(0.2, Math.min(1, (12 - temp)/9));
+      ctx.fillStyle = `hsl(${40 + Math.random()*15}, 100%, ${50 + intensity*30}%)`;
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2); ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+
+  const slider = document.getElementById('tSlider');
+  function update(){
+    const v = +slider.value;
+    // map 0..100 → temp log10 K from 12 (start) to 3 (recombination at 380kyr)
+    temp = 12 - v * 0.09;
+    const tempK = Math.pow(10, temp);
+    let tLabel, status;
+    if (v < 5) { tLabel = '10⁻⁶ s'; status = 'quark soup'; }
+    else if (v < 30) { tLabel = '3 นาที'; status = 'nucleosynthesis · เกิด H/He/Li'; }
+    else if (v < 60) { tLabel = '~1,000 ปี'; status = 'plasma · photon ติดกับ electron'; }
+    else if (v < 88) { tLabel = '~100,000 ปี'; status = 'plasma เริ่มเย็นลง'; }
+    else if (v < 95) { tLabel = '~380,000 ปี'; status = '✨ RECOMBINATION · CMB ปลดปล่อย'; }
+    else { tLabel = '> 380,000 ปี'; status = 'CMB redshift มาถึงเรา 2.73 K'; }
+    document.getElementById('tLbl').textContent = tLabel;
+    document.getElementById('tempLbl').textContent = tempK > 1e9 ? Math.round(temp*100)/100 + ' (log10 K)' : Math.round(tempK) + ' K';
+    document.getElementById('statusLbl').textContent = status;
+    if (v >= 88) document.getElementById('submitBtn').disabled = false;
+  }
+  slider.addEventListener('input', update);
+  update();
+
+  document.getElementById('submitBtn').onclick = () => {
+    if (window.KPA) {
+      KPA.log('K','K1','CMB recombination demonstration');
+      KPA.research('cmbDemo', { sliderEnd: slider.value });
+    }
+    document.getElementById('resultHost').innerHTML = `
+      <div class="card card-gold">
+        <h3>✓ Recombination เข้าใจแล้ว</h3>
+        <p>380,000 ปีหลังบิกแบง · electron จับกับ nucleus → atom เกิดครั้งแรก · photon หลุดออกได้</p>
+        <p>photon ชุดนั้น redshift มาถึงเรา = <b style="color:var(--genesis-gold);">CMB 2.73 K</b></p>
+        <p style="color:var(--quantum-pink);">M-FINAL-3: เห็นไกล = เห็นอดีต · CMB คือภาพอดีตที่เก่าที่สุดที่เราเห็นได้</p>
+      </div>
+    `;
+    window.dispatchEvent(new CustomEvent('cosmosLog:submitted', { detail:{ ok:true } }));
+    window.dispatchEvent(new CustomEvent('ep08:storyEntered'));
+  };
+  localStorage.setItem('cosmosLog_ep08_lastPage', 'p03');
+</script>
+</body>
+</html>

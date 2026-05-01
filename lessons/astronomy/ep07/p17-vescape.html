@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p17 · v_escape</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .traj-stage { background:radial-gradient(circle at 50% 80%, #1a3050, #060a14);
+    border-radius:14px; border:1px solid var(--line); padding:20px;
+    height:340px; position:relative; margin:14px 0; overflow:hidden; }
+  .planet { position:absolute; left:50%; bottom:0; transform:translate(-50%, 30%);
+    width:180px; height:180px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, #4a90e2, #1a4060); }
+  .rocket { position:absolute; left:50%; bottom:30%; font-size:32px;
+    transform:translate(-50%, 0); transition:all 1.6s ease-out; z-index:2; }
+  .label { position:absolute; top:10px; left:14px; color:var(--text-soft); font-size:13px; }
+  .ctrl { display:flex; gap:10px; align-items:center; margin:14px 0; }
+  .ctrl input[type=range] { flex:1; }
+  .ranges { display:flex; gap:6px; margin-top:6px; }
+  .ranges > div { flex:1; padding:4px 6px; border-radius:6px; font-size:11px; text-align:center;
+    border:1px solid var(--line); background:var(--bg-card); color:var(--text-mute); }
+  .ranges .fall { background:rgba(255,106,106,.15); border-color:var(--bad); color:var(--bad); }
+  .ranges .orbit { background:rgba(155,231,196,.15); border-color:var(--good); color:var(--good); }
+  .ranges .escape { background:rgba(255,216,74,.15); border-color:var(--warn); color:var(--warn); }
+</style>
+</head>
+<body data-page="p17">
+<div class="page">
+  <div class="act-badge">ACT C · 6/10 · v_escape</div>
+  <h1>v_escape Lab · ความเร็วเท่าไหร่ถึงจะถึง?</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · จรวดประกอบเสร็จ · เร่งความเร็วเท่าไหร่?</div>
+    <div class="crisis-body">เป้า Sputnik-Echo @ LEO 400 km · ต้องเข้า <b>orbit เท่านั้น</b> · ตกกลับ = พลาด · หลุด = หายไป Mars</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🚀 TOOL · ความเร็ว 3 ระดับ (ตำรา p94)</div>
+    <div class="tool-body">
+      <b>v &lt; 7.9 km/s</b> = ตกกลับโลก ·
+      <b>7.9 ≤ v &lt; 11.2</b> = เข้าวงโคจร (orbit) ·
+      <b>v ≥ 11.2 km/s</b> = หลุดออกจากแรงโน้มถ่วง (escape velocity)
+    </div>
+  </div>
+
+  <div class="traj-stage" id="stage">
+    <div class="label">Earth · v <span id="vTxt">7.9</span> km/s</div>
+    <div class="planet"></div>
+    <div class="rocket" id="rk">🚀</div>
+  </div>
+
+  <div class="ctrl">
+    <span>v:</span>
+    <input type="range" id="v" min="50" max="150" value="79" />
+    <span class="metric"><b id="vLbl">7.9</b> km/s</span>
+  </div>
+  <div class="ranges">
+    <div class="fall">v &lt; 7.9 ตก</div>
+    <div class="orbit">7.9-11.2 orbit ✓</div>
+    <div class="escape">≥ 11.2 หลุด</div>
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <button class="btn" id="launch">🚀 ปล่อย!</button>
+  </div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    ดาวเทียมที่อยู่ <b>ยิ่งสูง · ยิ่งช้า</b> (Kepler) · ไม่ใช่ "ยิ่งสูงยิ่งเร็ว" · OS-2 Rocket Build ปลด
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p18-mars-brief.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p18 Mars brief</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p17' });
+    PBL.init({ id:'p17-vescape' });
+
+    const v = document.getElementById('v');
+    const lbl = document.getElementById('vLbl');
+    const vTxt = document.getElementById('vTxt');
+    v.oninput = () => {
+      lbl.textContent = (+v.value/10).toFixed(1);
+      vTxt.textContent = (+v.value/10).toFixed(1);
+    };
+
+    document.getElementById('launch').onclick = () => {
+      const speed = +v.value/10;
+      const rk = document.getElementById('rk');
+      let outcome = 'fall';
+      if (speed >= 7.9 && speed < 11.2) outcome = 'orbit';
+      else if (speed >= 11.2) outcome = 'escape';
+
+      // animate
+      if (outcome === 'fall') {
+        rk.style.bottom = '5%';
+        rk.style.left = '60%';
+      } else if (outcome === 'orbit') {
+        rk.style.bottom = '80%';
+        rk.style.left = '85%';
+      } else {
+        rk.style.bottom = '95%';
+        rk.style.left = '110%';
+      }
+
+      const correct = outcome === 'orbit';
+      const res = document.getElementById('resultHost');
+      res.classList.add('show', correct?'correct':'wrong');
+      res.textContent = ({
+        fall:   '× ตกกลับโลก · v ต่ำกว่า 7.9 km/s',
+        orbit:  '✓ เข้า orbit · Sputnik-Echo รับ Activator · ทำงาน!',
+        escape: '× หลุดออกอวกาศ · v เกิน 11.2 · พลาด Sputnik'
+      })[outcome];
+      KPA.log('K3','vescape',{ v:speed, outcome, correct });
+      KPA.misconception('M3', correct?'resolved':'persistent', { v:speed });
+      KPA.misconception('M4', correct?'resolved':'persistent', { v:speed });
+      PBL.attempt(correct, { v:speed, outcome });
+      if (correct) {
+        CoinEnergy.reward('crisisSolveFirst');
+        Boot07.grantOS('os2');
+        // post-solve confidence calibration
+        RI.confidence('มั่นใจแค่ไหนว่าทำได้ first-try ในข้อต่อไป?', (c) => {
+          KPA.calibrate(c, true, { ctx:'vescape' });
+        });
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+        PBL._enter('transfer');
+      } else CoinEnergy.penalty('crisisFail');
+    };
+  });
+</script>
+</body>
+</html>

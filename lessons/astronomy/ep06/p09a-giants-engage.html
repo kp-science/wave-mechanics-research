@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P09a · GIANTS · ENGAGE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.jupiter-stage { position:relative; width:300px; height:300px; margin:14px auto; border-radius:50%; overflow:hidden;
+                 background:radial-gradient(circle at 35% 35%, #f0d8a8, #d8a878 30%, #a87830 60%, #6a4810 95%);
+                 box-shadow:0 0 60px rgba(255,203,107,0.5); }
+.jupiter-stage::before { content:''; position:absolute; inset:0; border-radius:50%;
+                         background:repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,0,0,0.15) 18px, rgba(0,0,0,0.15) 22px); }
+.red-spot { position:absolute; left:25%; top:55%; width:50px; height:30px; border-radius:50%;
+            background:radial-gradient(ellipse, #cc4040, #6a2020); box-shadow:inset 0 0 8px rgba(0,0,0,0.5); }
+.scan-overlay { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s; }
+.scan-overlay.show { opacity:1; }
+.scan-overlay::before { content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:60px; height:60px; border-radius:50%;
+                        background:radial-gradient(circle, #cc5533, #6a2010); box-shadow:0 0 20px #ff5c7a; }
+.layer-info { padding:12px; border-radius:10px; background:rgba(20,28,52,0.7); border:1px solid rgba(120,140,220,0.3); margin:6px 0; }
+.layer-info b { color:#ffcb6b; font-family:Orbitron,monospace; }
+</style>
+</head>
+<body data-page="p09a" data-type="story">
+<div class="page">
+  <span class="lbl story">☄ GIANTS · A · ENGAGE</span>
+  <h1>พฤหัส · close-up + core scan</h1>
+
+  <div class="card cyan">
+    <h3>🔭 ภาพจริง · Voyager 1 (1979)</h3>
+    <div class="jupiter-stage" id="jup">
+      <div class="red-spot"></div>
+      <div class="scan-overlay" id="scan"></div>
+    </div>
+    <div class="row" style="justify-content:center;">
+      <button id="scanBtn">📡 SCAN แก่นพฤหัส</button>
+    </div>
+  </div>
+
+  <div id="scanResult" style="display:none;">
+    <div class="layer-info"><b>🔴 แก่น (core):</b> <span style="color:#cc5533;">หิน + น้ำแข็ง · ~10-25 เท่ามวลโลก</span> · ของแข็ง · M2 ทำลาย!</div>
+    <div class="layer-info"><b>🟠 ชั้นไฮโดรเจนเหลวโลหะ:</b> H ภายใต้ความดันสูง · ทำตัวเหมือนโลหะนำไฟฟ้า</div>
+    <div class="layer-info"><b>🟡 ชั้นไฮโดรเจนเหลว:</b> H + He · ความดัน-อุณหภูมิสูง</div>
+    <div class="layer-info"><b>☁️ ชั้นเมฆบรรยากาศ:</b> NH₃ · CH₄ · H₂O · มี Great Red Spot</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "VOID อ้างว่าดาวยักษ์เป็นแก๊สล้วน (M2) · แต่<b style="color:#7effb2;">ความจริง</b> ·
+      ทุกดวงมี<b>แก่นแข็ง</b>อยู่ตรงกลาง · ห่อด้วยชั้นแก๊ส/น้ำแข็ง"
+    </span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P09a</summary>
+    <div>กดสแกน → เปิดข้อมูลแก่น · เน้น "แก่นแข็ง" ทำลาย M2</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: 'ดาวยักษ์ทั้ง 4 ดวงเป็น "แก๊สล้วน" จริงหรือไม่?',
+    chips: [
+      'จริง · เป็นแก๊สตั้งแต่ผิวถึงใจกลาง',
+      'เท็จ · มีแก่นแข็ง rock+ice ตรงกลาง ✓',
+      'จริง · ลงไปได้เรื่อย ๆ',
+      'เท็จ · ความดันสูง · แก๊สกลายเป็นโลหะ ✓',
+      'พฤหัส=gas · ยูเรนัส=ice แตกต่างกัน ✓'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ EXPLORE · gas vs ice giant</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+document.getElementById('scanBtn').onclick = () => {
+  document.getElementById('scan').classList.add('show');
+  document.getElementById('scanResult').style.display='block';
+  if(window.SFX) SFX.play('charge');
+};
+setTimeout(()=>{const btn=document.getElementById('nextBtn');Gate.soloMode(btn,'p09b-giants-explore.html');if(window.PaceClient)Gate.wireButton('p09a',btn,'p09b-giants-explore.html');},200);
+</script>
+</body></html>

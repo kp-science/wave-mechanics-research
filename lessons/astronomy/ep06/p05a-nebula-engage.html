@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P05a · NEBULA · ENGAGE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.nebula-stage { position:relative; height:280px; border-radius:14px; overflow:hidden; margin:8px 0;
+                background:radial-gradient(ellipse at 30% 40%, #b980ff 0%, rgba(100,216,255,0.4) 30%, transparent 70%),
+                           radial-gradient(ellipse at 70% 60%, #ff8a3d 0%, transparent 50%),
+                           #02030a;
+                animation:nebulaSwirl 20s linear infinite; }
+@keyframes nebulaSwirl { from{filter:hue-rotate(0);} to{filter:hue-rotate(60deg);} }
+.year-tag { position:absolute; top:10px; left:14px; padding:4px 10px; border-radius:6px;
+            background:rgba(0,0,0,0.6); font-family:Orbitron,monospace; font-size:10px;
+            color:#64d8ff; letter-spacing:.16em; }
+</style>
+</head>
+<body data-page="p05a" data-type="story">
+<div class="page">
+  <span class="lbl story">☁️ NEBULA · A · ENGAGE</span>
+  <h1>4.6 พันล้านปีก่อน · ห้องแล็บ holo-lab</h1>
+
+  <div class="card cyan">
+    <h3>🌌 holo-lab จำลองอดีต</h3>
+    <div class="nebula-stage">
+      <div class="year-tag">⏪ 4.6 Gyr ago</div>
+    </div>
+    <div class="muted center" style="font-size:12px;">เมฆแก๊สและฝุ่น · ขนาดข้ามแสงหลายปี · ลอยอยู่ในกาแล็กซีทางช้างเผือก</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "ทุกอย่างที่นักเรียนเห็นในระบบสุริยะ — โลก · ดวงอาทิตย์ · ดวงจันทร์ ·
+      ดาวเคราะห์ทุกดวง · แม้แต่ <b>อะตอมในร่างกายเรา</b> — เคยเป็น<b style="color:#b980ff;">เมฆแก๊สก้อนเดียวกัน</b>เมื่อนานมาก"
+    </span>
+  </div>
+
+  <div class="card">
+    <h3>🤔 PREDICT · เมฆนี้จะกลายเป็นระบบสุริยะได้อย่างไร?</h3>
+    <div class="muted">เลือก 1 ข้อที่คุณคิดว่าใช่ (ไม่ตรวจ · ตอบตามที่คิด)</div>
+    <div id="predictArea" style="margin-top:8px;"></div>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P05a</summary>
+    <div>เน้น "อะตอมในร่างกายเรา = เมฆเดียวกัน" · จุดประกาย wonder · ห้ามเฉลย · ให้นักเรียนเดาก่อนหน้า explore</div></details>
+
+  
+<div id="pcMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('pcMount');
+  if(!el || !window.PauseCard) return;
+  PauseCard.mount(el, {
+    pageId: document.body.dataset.page,
+    question: '4.6 พันล้านปีก่อน · เมฆแก๊สก้อนหนึ่งจะกลายเป็นระบบสุริยะได้ยังไง?',
+    chips: [
+      'แรงโน้มถ่วงดึงให้ยุบตัวลงมา ✓',
+      'พระเจ้าสร้างทีละดวง',
+      'ดาวฤกษ์ใกล้เคียงระเบิดกระตุ้นเมฆให้ยุบ ✓',
+      'เมฆแยกเป็น 8 ดวงทันที',
+      'การหมุนทำให้แบนเป็นจาน ✓',
+      'ลมจักรวาลเป่ามารวมกัน'
+    ],
+    minSeconds: 30,
+    indicator: 'A2'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ ทดลองยุบเนบิวลา (EXPLORE)</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const PRED = ['เมฆยุบตัวเพราะแรงโน้มถ่วง','เมฆแยกออกเป็น 8 ดวงทันที','พระเจ้าสร้างทีละดวง','ดาวฤกษ์ใกล้เคียงระเบิดแล้วกระจายเป็นดาว'];
+const area = document.getElementById('predictArea');
+PRED.forEach((t,i) => {
+  const b = document.createElement('button'); b.className='ghost';
+  b.style.cssText='display:block; width:100%; text-align:left; margin:6px 0; padding:10px; font-family:inherit; letter-spacing:0; font-weight:400;';
+  b.textContent = (i+1)+'. '+t;
+  b.onclick = () => {
+    [...area.children].forEach(x => x.style.borderColor='rgba(100,216,255,0.4)');
+    b.style.borderColor='#b980ff'; b.style.background='rgba(185,128,255,0.15)';
+    Chain.set('p05a_predict', i);
+  };
+  area.appendChild(b);
+});
+
+setTimeout(() => {
+  const btn = document.getElementById('nextBtn');
+  Gate.soloMode(btn, 'p05b-nebula-explore.html');
+  if(window.PaceClient) Gate.wireButton('p05a', btn, 'p05b-nebula-explore.html');
+}, 200);
+</script>
+</body></html>

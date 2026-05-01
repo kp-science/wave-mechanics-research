@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P24b · VOYAGER CACHE · ร้านค้าก่อนสู้ VOID</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  body { background:#04050d; }
+  .wallet { position:sticky; top:0; z-index:10; padding:12px 16px;
+    background:rgba(10,10,24,0.95); border-bottom:1px solid rgba(255,203,107,0.3);
+    display:flex; justify-content:space-between; align-items:center; backdrop-filter:blur(10px); gap:10px; flex-wrap:wrap; }
+  .wallet .tag { font-family:Orbitron,monospace; font-size:12px; letter-spacing:.18em; color:#9aa3c0; }
+  .wallet .bal { font-family:Orbitron,monospace; font-size:20px; color:#ffcb6b; letter-spacing:.1em; }
+  .wallet .photon { font-family:Orbitron,monospace; font-size:14px; color:#64d8ff; letter-spacing:.08em; }
+
+  .shop-head { text-align:center; padding:18px 0 6px; }
+  .shop-head h1 { color:#ffcb6b; font-family:Orbitron,sans-serif; font-size:26px; letter-spacing:.12em; margin:0 0 6px; }
+  .shop-head .sub { color:#9aa3c0; font-size:13px; font-style:italic; }
+
+  .lemaitre-voice { padding:12px 16px; background:rgba(212,184,255,0.06); border-left:3px solid #d4b8ff;
+    font-style:italic; color:#d4b8ff; border-radius:0 10px 10px 0; margin:12px 0; line-height:1.6; }
+
+  .strategy { padding:14px; background:rgba(100,216,255,0.05); border:1px dashed rgba(100,216,255,0.3);
+    border-radius:10px; margin:14px 0; font-size:13px; color:#d4f0ff; line-height:1.8; }
+  .strategy b { color:#64d8ff; }
+  .strategy .hl { color:#ff8a3d; font-weight:700; }
+
+  .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin:14px 0; }
+  .card { padding:16px; background:rgba(22,27,58,0.7); border:2px solid rgba(120,140,220,0.3);
+    border-radius:14px; transition:all .2s; position:relative; }
+  .card:hover { transform:translateY(-3px); border-color:#ffcb6b; }
+  .card.can { border-color:rgba(126,255,178,0.4); }
+  .card.cant { opacity:0.5; filter:grayscale(0.3); }
+  .card.owned { border-color:#7effb2; background:rgba(126,255,178,0.08); }
+  .card.unique { border-color:#d4b8ff; background:rgba(212,184,255,0.05); }
+  .card .icon { font-size:34px; display:block; margin-bottom:6px; }
+  .card .name { font-family:Orbitron,sans-serif; font-size:14px; color:#fff; letter-spacing:.08em; margin-bottom:4px; }
+  .card .desc { font-size:12px; color:#9aa3c0; line-height:1.5; margin-bottom:10px; min-height:46px; }
+  .card .cost { font-family:Orbitron,monospace; font-size:16px; color:#ffcb6b; margin-bottom:10px; }
+  .card button { width:100%; padding:10px; background:rgba(255,203,107,0.1); border:1px solid #ffcb6b;
+    color:#ffcb6b; border-radius:8px; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; letter-spacing:.1em; }
+  .card button:hover:not(:disabled) { background:rgba(255,203,107,0.2); }
+  .card button:disabled { cursor:not-allowed; opacity:0.4; }
+  .card .owned-tag { position:absolute; top:8px; right:10px; padding:2px 8px; background:#7effb2;
+    color:#03040c; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; }
+  .card .key-tag { position:absolute; top:8px; right:10px; padding:2px 8px; background:#d4b8ff;
+    color:#1a0530; border-radius:10px; font-size:10px; font-family:Orbitron,sans-serif; letter-spacing:.08em; }
+
+  .a-plus-banner { padding:12px 14px; border-radius:10px; background:rgba(212,184,255,0.08);
+    border:1px solid #d4b8ff; margin:10px 0; font-size:13px; color:#e8d8ff; line-height:1.7; }
+  .a-plus-banner b { color:#d4b8ff; }
+  .a-plus-banner.ok { background:rgba(126,255,178,0.08); border-color:#7effb2; color:#d4ffd8; }
+  .a-plus-banner.ok b { color:#7effb2; }
+
+  /* ENERGY CELLS section */
+  .energy-section { padding:16px; border-radius:14px; margin:14px 0;
+    background:linear-gradient(180deg, rgba(126,255,178,0.08), rgba(0,0,0,0.4));
+    border:2px solid #7effb2; box-shadow:0 0 20px rgba(126,255,178,0.15); }
+  .energy-section h3 { margin:0 0 4px; color:#7effb2; font-family:Orbitron,monospace;
+    font-size:15px; letter-spacing:.12em; }
+  .energy-section .sub { font-size:12px; color:#9aa3c0; margin-bottom:12px; line-height:1.6; }
+  .energy-section .sub b { color:#7effb2; }
+  .energy-bar { display:flex; gap:10px; align-items:center; padding:10px 14px;
+    background:rgba(0,0,0,0.4); border-radius:10px; margin-bottom:12px; }
+  .energy-bar .total-label { font-family:Orbitron,monospace; font-size:11px;
+    letter-spacing:.14em; color:#9aa3c0; }
+  .energy-bar .total-val { font-family:Orbitron,monospace; font-size:22px;
+    font-weight:700; color:#7effb2; letter-spacing:.08em; }
+  .energy-bar .breakdown { font-size:11px; color:#9aa3c0; margin-left:auto; }
+  .energy-bar .breakdown b { color:#ffcb6b; }
+  .energy-cells { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; }
+  .ecell { padding:14px; border-radius:12px; background:rgba(20,28,52,0.7);
+    border:2px solid rgba(126,255,178,0.3); cursor:pointer; transition:all .2s; text-align:center; }
+  .ecell:hover:not(.cant) { transform:translateY(-2px); border-color:#7effb2;
+    box-shadow:0 0 16px rgba(126,255,178,0.25); }
+  .ecell.cant { opacity:0.45; cursor:not-allowed; filter:grayscale(0.4); }
+  .ecell .ic { font-size:28px; margin-bottom:4px; }
+  .ecell .gain { font-family:Orbitron,monospace; font-size:18px; color:#7effb2;
+    font-weight:700; margin-bottom:2px; }
+  .ecell .nm { font-size:11px; color:#d4f0ff; margin-bottom:6px; letter-spacing:.06em; }
+  .ecell .pr { font-family:Orbitron,monospace; font-size:14px; color:#ffcb6b; }
+
+  .proceed { display:block; margin:24px auto 8px; width:100%; max-width:500px; padding:18px;
+    background:linear-gradient(180deg,rgba(255,92,122,0.15),rgba(178,16,48,0.15));
+    border:2px solid #ff5c7a; color:#ff8a8a; border-radius:14px;
+    font-family:Orbitron,sans-serif; font-size:16px; letter-spacing:.18em; font-weight:700; cursor:pointer;
+    transition:all .2s; }
+  .proceed:hover { background:linear-gradient(180deg,rgba(255,92,122,0.3),rgba(178,16,48,0.3));
+    box-shadow:0 0 24px rgba(255,92,122,0.4); transform:translateY(-2px); }
+</style>
+</head>
+<body data-page="p24b" data-type="setup">
+
+<div class="wallet">
+  <div class="tag">🛒 VOYAGER CACHE · ก่อนสู้ VOID</div>
+  <div style="display:flex;gap:14px;align-items:center;">
+    <div class="bal" id="balance">🪙 0</div>
+    <div class="photon" id="photonBal">⚡ 0</div>
+  </div>
+</div>
+
+<div class="page">
+  <span class="lbl puzzle">🛒 P24b · VOYAGER CACHE · เลือกอาวุธก่อนเข้าพายุ</span>
+
+  <div class="shop-head">
+    <h1>VOYAGER CACHE</h1>
+    <div class="sub">คลังเก่าที่พ่อทิ้งไว้ใน L1 · ใช้ 🪙 ที่เก็บมาแลกอุปกรณ์</div>
+  </div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">อารยา:</b> "พ่อซ่อนคลังไว้ใน Voyager โบราณที่ลอยอยู่ใกล้ L1 ·
+      ข้างในมีเครื่องมือที่<b>ไม่ใช่พลัง HELION</b> · เป็น<b>ของช่วยเหลือเสริม</b> · เลือกให้พอกับสไตล์ของเธอ"
+    </span>
+  </div>
+
+  <div class="strategy">
+    💡 <b>สไตล์การใช้งาน</b> · <b style="color:#ff8a8a;">ซื้อ ⚡ ก่อน · เพื่อรอด blackout!</b><br>
+    · <span class="hl">⚡ ENERGY</span> (ขั้นต่ำเพื่อรอด): +50 ⚡ = 🪙40 · safer +100 ⚡ = 🪙70<br>
+    · <span class="hl">DPS</span> (ตอบเยอะ · ทำคะแนน): 🔆+ + ⚡×2 = 🪙110<br>
+    · <span class="hl">Tank</span> (กันผิด · เสี่ยงน้อย): 🧲 + 🌑 = 🪙110<br>
+    · <span class="hl">A+ ENDING</span> (ต้องมี <b>Aurora Resonance</b> + Coronal Token): 🌌 = 🪙90<br>
+    · <span class="hl">Hint</span> (ติดที่ใดก็ได้ใบ้): 💡 = 🪙30
+  </div>
+
+  <div class="energy-section">
+    <h3>⚡ REACTOR ENERGY CELLS · เติมพลังงานก่อนสู้บอส</h3>
+    <div class="sub">
+      Boss <b>SOLAR STORM</b> เริ่มต้นด้วย <b>100 พลังงาน</b> · CME pulse แต่ละลูก -8 · ตอบผิด -3 ·
+      <b>ถ้าพลังงาน = 0 ใน boss = BLACKOUT · ไม่สามารถสู้ต่อได้</b><br>
+      ใช้ 🪙 ที่เก็บมาแลก ⚡ เพิ่มก่อนเข้าสนาม · stackable · ซื้อกี่ครั้งก็ได้
+    </div>
+    <div class="energy-bar">
+      <div>
+        <div class="total-label">⚡ EXTRA ENERGY · เติมแล้ว</div>
+        <div class="total-val" id="extraEnergyVal">+0</div>
+      </div>
+      <div class="breakdown">
+        Boss start = <b>100</b> + <b id="extraEnergyAdd">0</b> = <b id="totalEnergy" style="color:#7effb2;">100</b>
+      </div>
+    </div>
+    <div class="energy-cells" id="energyCells"></div>
+  </div>
+
+  <div id="aPlusBanner"></div>
+
+  <div class="grid" id="grid"></div>
+
+  <button class="proceed" id="proceedBtn">▶ พร้อมสู้ · ENGAGE SOLAR STORM (p25)</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+function syncShopChain(){
+  // ให้ p25-boss ที่อ่าน Chain.get('shopBought') ใช้งานได้
+  Chain.set('shopBought', ShopItems.load());
+}
+
+/* ============ ENERGY CELLS · ซื้อพลังงานด้วย coin · stack ได้ ============ */
+const ENERGY_CELLS = [
+  { id:'small',  ic:'⚡',     gain:20,  cost:20, name:'Small Cell' },
+  { id:'medium', ic:'⚡⚡',   gain:50,  cost:40, name:'Medium Cell' },
+  { id:'large',  ic:'⚡⚡⚡', gain:100, cost:70, name:'Large Cell' },
+];
+function getExtraEnergy(){ return Number(Chain.get('bossExtraEnergy') || 0); }
+function setExtraEnergy(v){ Chain.set('bossExtraEnergy', Math.max(0, v|0)); }
+
+function renderEnergyCells(){
+  const bal = Coin.get();
+  const extra = getExtraEnergy();
+  document.getElementById('extraEnergyVal').textContent = '+' + extra;
+  document.getElementById('extraEnergyAdd').textContent = extra;
+  document.getElementById('totalEnergy').textContent = 100 + extra;
+  document.getElementById('energyCells').innerHTML = ENERGY_CELLS.map(c => {
+    const cant = bal < c.cost;
+    return `<div class="ecell ${cant?'cant':''}" data-cell="${c.id}">
+      <div class="ic">${c.ic}</div>
+      <div class="gain">+${c.gain} ⚡</div>
+      <div class="nm">${c.name}</div>
+      <div class="pr">🪙 ${c.cost}</div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-cell]').forEach(el => {
+    el.onclick = () => buyEnergy(el.dataset.cell);
+  });
+}
+
+function buyEnergy(cellId){
+  const c = ENERGY_CELLS.find(x => x.id === cellId);
+  if(!c) return;
+  if(Coin.get() < c.cost) return;
+  if(!Coin.spend(c.cost, 'energy:'+cellId)) return;
+  setExtraEnergy(getExtraEnergy() + c.gain);
+  if(window.SFX) SFX.play && SFX.play('charge');
+  if(window.Sync && Sync.recordDecision) Sync.recordDecision({ tag:'⚡ energy-buy', note:cellId+' (+'+c.gain+')' });
+  render();
+}
+
+function renderAPlus(){
+  const owned = ShopItems.load();
+  const hasAurora = !!owned.auroraToken;
+  const hasCoronaToken = !!Chain.get('coronaToken');
+  const banner = document.getElementById('aPlusBanner');
+  if(hasAurora && hasCoronaToken){
+    banner.innerHTML = `<div class="a-plus-banner ok">
+      ✨ <b>A+ ENDING UNLOCK พร้อม:</b> Aurora Resonance ✓ + Coronal Token ✓ ·
+      ถ้า energy ≥ 70 ใน boss = <b>AURORA TRIUMPH</b></div>`;
+  } else if(hasAurora && !hasCoronaToken){
+    banner.innerHTML = `<div class="a-plus-banner">
+      🌌 <b>มี Aurora Resonance แล้ว · ขาด Coronal Token</b> ·
+      Token ได้จาก p10b (Corona Explore · เลื่อนชั้นครบ 6) · ถ้าไม่มี Token ใช้ <b>Prismatic Key (h6)</b> แทนได้</div>`;
+  } else if(!hasAurora && hasCoronaToken){
+    banner.innerHTML = `<div class="a-plus-banner">
+      ⚡ <b>มี Coronal Token แล้ว · ขาด Aurora Resonance</b> ·
+      ซื้อ 🌌 ด้านล่างเพื่อปลด A+ ENDING (หรือใช้ Prismatic Key h6 จาก Power Forge)</div>`;
+  } else {
+    banner.innerHTML = `<div class="a-plus-banner">
+      💎 <b>A+ ENDING:</b> ต้องมี Aurora Resonance + Coronal Token · หรือมี <b>Prismatic Key (h6)</b> จาก Power Forge แทนได้</div>`;
+  }
+}
+
+function render(){
+  const bal = Coin.get();
+  document.getElementById('balance').textContent = '🪙 ' + bal;
+  const photon = (window.Photon && Photon.get) ? Photon.get() : 0;
+  document.getElementById('photonBal').textContent = '⚡ ' + photon;
+  const items = (EP_CONFIG.shop && EP_CONFIG.shop.items) || [];
+  const owned = ShopItems.load();
+  document.getElementById('grid').innerHTML = items.map(it => {
+    const isOwned = !!owned[it.id];
+    const canAfford = bal >= it.cost;
+    const cls = isOwned ? 'owned' : (it.type === 'unique' ? 'unique' : (canAfford ? 'can' : 'cant'));
+    const btnTxt = isOwned ? '✓ ซื้อแล้ว' : (canAfford ? '🪙 ซื้อ' : '🪙 ไม่พอ');
+    const tag = isOwned ? '<span class="owned-tag">OWNED</span>'
+              : (it.type === 'unique' ? '<span class="key-tag">A+ KEY</span>' : '');
+    const useTxt = it.uses === Infinity ? 'ใช้ตลอด' : (it.uses > 1 ? `ใช้ได้ ${it.uses} ครั้ง` : 'ใช้ได้ 1 ครั้ง');
+    return `
+      <div class="card ${cls}">
+        ${tag}
+        <span class="icon">${it.icon}</span>
+        <div class="name">${it.name}</div>
+        <div class="desc">${it.desc}<br><span style="color:#64d8ff;font-size:11px;">· ${useTxt}</span></div>
+        <div class="cost">🪙 ${it.cost}</div>
+        <button data-buy="${it.id}" ${isOwned || !canAfford ? 'disabled' : ''}>${btnTxt}</button>
+      </div>`;
+  }).join('');
+  document.querySelectorAll('[data-buy]').forEach(b => {
+    b.onclick = () => buy(b.dataset.buy);
+  });
+  renderEnergyCells();
+  renderAPlus();
+}
+
+function buy(id){
+  if(ShopItems.buy(id)){
+    syncShopChain();
+    if(window.Sync && Sync.recordDecision) Sync.recordDecision({ tag:'🛒 shop', note:'bought '+id });
+    if(window.SFX) SFX.play && SFX.play('snap');
+    render();
+  }
+}
+
+document.getElementById('proceedBtn').onclick = () => {
+  syncShopChain();
+  if(window.Submit && Submit.record){
+    Submit.record('p24b', { items: ShopItems.load(), coinLeft: Coin.get() });
+  }
+  location.href = 'p25-boss.html';
+};
+
+// init
+syncShopChain();
+render();
+
+// dev helper
+window._addCoin = (n=100) => { Coin.add(n, 'dev'); render(); };
+</script>
+</body></html>

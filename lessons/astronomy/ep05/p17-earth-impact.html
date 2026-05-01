@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P16 · Earth Impact</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.scale-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin:10px 0; }
+.lvl-bin { padding:10px; border-radius:12px; min-height:140px; }
+.lvl-bin.l1 { background:rgba(126,255,178,0.06); border:2px dashed #7effb2; }
+.lvl-bin.l2 { background:rgba(255,203,107,0.06); border:2px dashed #ffcb6b; }
+.lvl-bin.l3 { background:rgba(255,138,61,0.08); border:2px dashed #ff8a3d; }
+.lvl-bin.l4 { background:rgba(255,92,122,0.10); border:2px dashed #ff5c7a; }
+.lvl-bin h5 { margin:0 0 6px; font-family:Orbitron,monospace; font-size:11px; letter-spacing:.12em; }
+.lvl-bin.l1 h5 { color:#7effb2; }
+.lvl-bin.l2 h5 { color:#ffcb6b; }
+.lvl-bin.l3 h5 { color:#ff8a3d; }
+.lvl-bin.l4 h5 { color:#ff5c7a; }
+.imp-pool { display:flex; flex-wrap:wrap; gap:8px; padding:10px; border-radius:12px; background:rgba(20,28,52,0.6); margin:10px 0; }
+.imp { padding:8px 12px; border-radius:8px; cursor:grab; touch-action:none; font-size:12px;
+       background:rgba(255,255,255,.05); border:1px solid rgba(120,140,220,.3); }
+.lvl-bin .imp { cursor:default; margin:3px 0; display:block; }
+.lvl-bin .imp.correct { border-color:#7effb2; background:rgba(126,255,178,0.1); }
+.lvl-bin .imp.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.12); }
+.earth-vis { width:80px; height:80px; margin:8px auto; border-radius:50%; background:radial-gradient(circle at 30% 30%, #5cb8ff, #1a4a8a); box-shadow:0 0 24px rgba(100,180,255,0.4); position:relative; }
+.earth-vis::before { content:''; position:absolute; inset:-10px; border-radius:50%; border:2px solid rgba(126,255,178,0.4); animation:fieldPulse 3s ease-in-out infinite; }
+@keyframes fieldPulse { 0%,100%{transform:scale(1);opacity:0.5;} 50%{transform:scale(1.15);opacity:1;} }
+</style>
+</head>
+<body data-page="p17" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌍 IMPACT SCALE</span>
+  <h1>อิทธิพลสุริยะต่อโลก · 4 ระดับ</h1>
+  <div class="tags"><span class="kpa-chip">K3</span><span class="kpa-chip">A3</span><span class="kpa-chip">M5</span></div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <div class="earth-vis"></div>
+    <div class="muted center" style="margin-bottom:8px;">โลกมีสนามแม่เหล็ก (magnetosphere) ปกป้อง · แต่ก็มีขีดจำกัด</div>
+    <div class="scale-grid">
+      <div class="lvl-bin l1" data-lvl="1"><h5>L1 · MILD</h5><div class="bin-body" data-lvl="1"></div></div>
+      <div class="lvl-bin l2" data-lvl="2"><h5>L2 · MODERATE</h5><div class="bin-body" data-lvl="2"></div></div>
+      <div class="lvl-bin l3" data-lvl="3"><h5>L3 · STRONG</h5><div class="bin-body" data-lvl="3"></div></div>
+      <div class="lvl-bin l4" data-lvl="4"><h5>L4 · EXTREME</h5><div class="bin-body" data-lvl="4"></div></div>
+    </div>
+    <div class="imp-pool" id="pool"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="ghost" id="checkBtn">เปรียบเทียบ</button>
+      <button class="ghost" id="resetBtn">↺ ล้าง</button>
+      <span id="result" class="muted" style="align-self:center;"></span>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P16</summary>
+    <div>
+      L1: aurora ปกติ, ความสวยทางสายตา · L2: GPS drift, รังสีบนเที่ยวบินขั้วโลก<br>
+      L3: ดาวเทียมเสียบางส่วน, radio blackout · L4: grid blackout, transformer ไหม้, สูญเสียทางเศรษฐกิจ
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const ITEMS = [
+  { id:1, txt:'Aurora ที่ขั้วโลก',           lvl:1 },
+  { id:2, txt:'Aurora เห็นถึงละติจูดกลาง',     lvl:2 },
+  { id:3, txt:'GPS drift 1-2 เมตร',           lvl:2 },
+  { id:4, txt:'Radio HF blackout',            lvl:3 },
+  { id:5, txt:'ดาวเทียมเสียบางส่วน',           lvl:3 },
+  { id:6, txt:'รังสีเสี่ยงต่อนักบินขั้วโลก',   lvl:3 },
+  { id:7, txt:'Power Grid Blackout (Quebec 1989)', lvl:4 },
+  { id:8, txt:'Transformer ไหม้ทั่วทวีป (Carrington-class)', lvl:4 },
+];
+const placed = {};
+const pool = document.getElementById('pool');
+function render(){
+  pool.innerHTML='';
+  document.querySelectorAll('.bin-body').forEach(b=>b.innerHTML='');
+  ITEMS.forEach(it=>{
+    const t = document.createElement('div'); t.className='imp'; t.textContent=it.txt; t.dataset.id=it.id;
+    if(placed[it.id]){
+      const clone = t.cloneNode(true);
+      document.querySelector(`.bin-body[data-lvl="${placed[it.id]}"]`).appendChild(clone);
+    } else {
+      t.draggable=true; t.ondragstart=e=>e.dataTransfer.setData('text/plain', String(it.id));
+      if(window.TouchDrag) TouchDrag.makeDraggable(t, ()=>String(it.id));
+      pool.appendChild(t);
+    }
+  });
+}
+render();
+document.querySelectorAll('.lvl-bin').forEach(b=>{
+  b.ondragover=e=>e.preventDefault();
+  b.ondrop=e=>{ e.preventDefault(); const id=Number(e.dataTransfer.getData('text/plain')); if(id){ placed[id]=Number(b.dataset.lvl); render(); SFX&&SFX.play('snap'); }};
+  if(window.TouchDrag) TouchDrag.makeDropTarget(b, id=>{ placed[Number(id)]=Number(b.dataset.lvl); render(); SFX&&SFX.play('snap'); });
+});
+document.getElementById('resetBtn').onclick=()=>{ for(const k in placed) delete placed[k]; render(); document.getElementById('result').textContent=''; };
+document.getElementById('checkBtn').onclick=()=>{
+  let c=0;
+  document.querySelectorAll('.bin-body .imp').forEach(el=>{
+    const id=Number(el.dataset.id); const it=ITEMS.find(x=>x.id===id);
+    if(placed[id]===it.lvl){ el.classList.add('correct'); c++; }
+    else { el.classList.add('wrong'); }
+  });
+  document.getElementById('result').textContent=`ถูก ${c}/8`;
+  document.getElementById('result').style.color = c>=7?'#7effb2':'#ffcb6b';
+  if(c>=7) SFX&&SFX.play('correct'); else SFX&&SFX.play('wrong');
+};
+setTimeout(()=>{
+  Submit.wirePair({
+    page:'p17', nextHref:'p18-fatherlog.html',
+    getPayload(){ let c=0; ITEMS.forEach(it=>{ if(placed[it.id]===it.lvl) c++; }); return {correct:c, total:8}; },
+    validate(p){ if(p.correct<7){ alert('ต้องถูก ≥ 7/8'); return false; } return true; },
+    isPerfect(p){ return p.correct===8; },
+  });
+},200);
+</script>
+</body></html>

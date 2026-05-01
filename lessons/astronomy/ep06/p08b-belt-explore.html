@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P08b · BELT · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.sim-stage { position:relative; height:240px; border-radius:14px; overflow:hidden; margin:8px 0;
+             background:#03061a; border:1px solid rgba(100,216,255,0.3); }
+.sun-mini { position:absolute; left:8%; top:50%; transform:translateY(-50%); width:30px; height:30px; border-radius:50%;
+            background:radial-gradient(circle,#fff8c8,#ffcb6b); box-shadow:0 0 20px #ffcb6b; }
+.jupiter-mini { position:absolute; right:8%; top:50%; transform:translateY(-50%); width:50px; height:50px; border-radius:50%;
+                background:radial-gradient(circle,#e8c8a8,#a87830); box-shadow:0 0 30px rgba(255,203,107,0.4); }
+.belt-zone { position:absolute; left:35%; top:50%; transform:translateY(-50%); width:25%; height:30px;
+             background:linear-gradient(90deg, rgba(204,85,51,0.2), rgba(255,203,107,0.2)); border:1px dashed rgba(255,203,107,0.5); border-radius:6px; }
+.particle { position:absolute; width:5px; height:5px; background:#cc5533; border-radius:50%;
+            transition:all 1.2s ease-in-out; }
+.pull-line { position:absolute; height:1px; background:linear-gradient(90deg, transparent, #ff5c7a, transparent); transform-origin:0 50%; }
+</style>
+</head>
+<body data-page="p08b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">⭕ BELT · B · EXPLORE</span>
+  <h1>ทำไม belt ไม่รวมเป็นดาวเคราะห์?</h1>
+
+  <div class="card cyan">
+    <h3>🎮 simulation · กดปุ่มเริ่ม</h3>
+    <div class="sim-stage" id="stage">
+      <div class="sun-mini"></div>
+      <div class="belt-zone"></div>
+      <div class="jupiter-mini"></div>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <button id="runBtn">▶ เริ่ม simulation</button>
+      <button id="resetBtn" class="ghost">↻ reset</button>
+    </div>
+  </div>
+
+  <div class="card lavender" id="explainCard" style="display:none;">
+    <span class="narr">
+      <b style="color:#ffcb6b;">เคน:</b> "เห็นไหม? ทุกครั้งที่ asteroid พยายามรวมตัว · <b style="color:#ff5c7a;">แรงโน้มถ่วงพฤหัส</b>กระชากออก ·
+      มันเลย<b style="color:#7effb2;">ไม่มีโอกาส</b>เป็นดาวเคราะห์ · ติดอยู่ในรูป<b>หินกระจัดกระจาย</b>ตลอดกาล"
+    </span>
+  </div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P08b</summary>
+    <div>กดเริ่ม → asteroid ถูกแรงพฤหัสรบกวน · นักเรียนเข้าใจ resonance พฤหัส 3:1 ที่กั้น Belt ไม่ให้ accrete</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ทำไม asteroid belt ถึงไม่รวมตัวเป็นดาวเคราะห์?',
+    durationSec: 60,
+    chips: [
+      'แรงโน้มถ่วงพฤหัสรบกวน',
+      'วัตถุดิบมีน้อยเกิน',
+      'ระยะห่างมากเกินจะรวม',
+      'ความเร็วสัมพัทธ์สูงทำให้แตกแทนรวม',
+      'ทุกข้อเป็นเหตุผล'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <button class="next-btn" id="nextBtn" style="width:100%;">▶ BELT NAVIGATOR (GATE)</button>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const stage = document.getElementById('stage');
+let particles = [];
+function spawn(){
+  particles.forEach(p => p.remove());
+  particles = [];
+  for(let i=0; i<8; i++){
+    const p = document.createElement('div'); p.className='particle';
+    const x = 35 + Math.random()*25;
+    const y = 35 + Math.random()*30;
+    p.style.left = x+'%'; p.style.top = y+'%';
+    stage.appendChild(p);
+    particles.push(p);
+  }
+}
+spawn();
+document.getElementById('runBtn').onclick = () => {
+  // pull each particle toward Jupiter slightly
+  particles.forEach((p,i) => {
+    setTimeout(() => {
+      const newX = parseFloat(p.style.left) + 8 + Math.random()*15;
+      const newY = parseFloat(p.style.top) + (Math.random()-0.5)*30;
+      p.style.left = Math.min(85,newX)+'%';
+      p.style.top = Math.max(10,Math.min(85,newY))+'%';
+      p.style.background = '#ff8a3d';
+    }, i*120);
+  });
+  setTimeout(() => {
+    document.getElementById('explainCard').style.display='block';
+    if(window.SFX) SFX.play('charge');
+  }, 1500);
+};
+document.getElementById('resetBtn').onclick = () => {
+  spawn();
+  document.getElementById('explainCard').style.display='none';
+};
+
+setTimeout(() => {
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p08c-belt-gate.html');
+  if(window.PaceClient) Gate.wireButton('p08b',btn,'p08c-belt-gate.html');
+},200);
+</script>
+</body></html>

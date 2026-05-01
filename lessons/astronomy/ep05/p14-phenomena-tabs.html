@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P14 · Phenomena Lab (Interactive)</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.tab-row { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0; }
+.tab-btn { padding:10px 14px; border-radius:10px 10px 0 0; cursor:pointer; background:rgba(20,28,52,0.6);
+  border:1px solid rgba(120,140,220,0.2); color:#9aa3c0; font-family:Orbitron,monospace;
+  letter-spacing:.1em; font-size:12px; transition:all .2s; }
+.tab-btn.active { background:rgba(255,138,61,0.15); border-color:#ff8a3d; color:#ffcb6b; }
+.tab-btn.completed { color:#7effb2; border-color:rgba(126,255,178,0.4); }
+.tab-btn.completed::after { content:' ✓'; }
+.tab-panel { padding:14px; border-radius:0 12px 12px 12px; background:rgba(20,28,52,0.7);
+  border:1px solid rgba(255,138,61,0.3); min-height:380px; }
+
+.lab-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; gap:10px; }
+.lab-head h3 { color:#ffcb6b; margin:0; font-family:Orbitron,monospace; font-size:14px; letter-spacing:.12em; }
+.lab-task { padding:6px 12px; border-radius:8px; background:rgba(255,138,61,0.1); border:1px dashed #ff8a3d;
+  color:#ffcb6b; font-size:12px; max-width:55%; text-align:right; }
+.lab-task.done { background:rgba(126,255,178,0.15); border:1px solid #7effb2; color:#7effb2; border-style:solid; }
+.lab-stage { position:relative; height:200px; border-radius:12px; overflow:hidden; margin:10px 0;
+  background:radial-gradient(ellipse at center, #1a0a1a, #02030a 80%); border:1px solid rgba(255,255,255,0.1); }
+.lab-controls { padding:10px 12px; border-radius:10px; background:rgba(0,0,0,0.4);
+  border:1px solid rgba(255,255,255,0.08); margin-top:8px; }
+.lab-controls label { font-size:12px; color:#d4b8ff; display:block; margin-bottom:6px; font-family:Orbitron,monospace; letter-spacing:.08em; }
+.lab-controls input[type=range] { width:100%; accent-color:#ff8a3d; }
+.lab-readout { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; margin-top:8px; }
+.lab-readout .cell { padding:8px 10px; border-radius:8px; background:rgba(20,28,52,0.6); border:1px solid rgba(255,255,255,0.1); }
+.lab-readout .cell .k { font-size:10px; color:#9aa3c0; font-family:Orbitron,monospace; letter-spacing:.1em; }
+.lab-readout .cell .v { font-size:14px; color:#fff; font-weight:700; margin-top:2px; }
+.lab-readout .cell .v.hot { color:#ff5c7a; } .lab-readout .cell .v.cool { color:#64d8ff; } .lab-readout .cell .v.ok { color:#7effb2; }
+
+/* === KEY THEORY panel · เน้น · จดได้ === */
+.facts { display:grid; grid-template-columns:1fr; gap:10px; margin-top:14px;
+  padding:14px 14px 12px; border-radius:14px;
+  background:linear-gradient(180deg, rgba(255,138,61,0.10), rgba(20,28,52,0.4));
+  border:2px solid rgba(255,138,61,0.55); position:relative;
+  box-shadow:0 4px 18px rgba(255,138,61,0.15); }
+.facts::before {
+  content:'📚 KEY THEORY · จดในสมุด · เอาไปใช้ตอบ quiz';
+  position:absolute; top:-11px; left:14px; padding:2px 12px; border-radius:6px;
+  background:#ff8a3d; color:#1a0500; font-family:Orbitron,monospace;
+  font-size:10px; letter-spacing:.14em; font-weight:700;
+  box-shadow:0 2px 6px rgba(0,0,0,0.4);
+}
+.fact { padding:12px 14px 12px 18px; border-radius:10px;
+  background:rgba(20,28,52,0.85); border-left:4px solid #ffcb6b;
+  font-size:14px; line-height:1.7; color:#fff; }
+.fact b:first-child { display:block; font-family:Orbitron,monospace; font-size:12px;
+  color:#ffcb6b; letter-spacing:.08em; margin-bottom:4px; font-weight:700; }
+.fact b { color:#7effb2; }      /* inline bold = key term highlight */
+.fact u { text-decoration:none; background:rgba(255,203,107,0.18); padding:1px 4px; border-radius:3px; color:#ffd88a; }
+
+.btn-action { padding:10px 18px; background:linear-gradient(180deg,#ff8a3d,#b21030); color:#fff;
+  border:none; border-radius:8px; font-family:Orbitron,monospace; font-size:12px; letter-spacing:.14em; cursor:pointer; }
+.btn-action:disabled { opacity:0.5; cursor:not-allowed; }
+.btn-action.green { background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; }
+.btn-action.purple { background:linear-gradient(180deg,#b980ff,#5a0a8a); color:#fff; }
+
+/* === Step progression === */
+.step-bar { display:flex; gap:6px; margin:8px 0 12px; }
+.step-bar .step { flex:1; padding:6px 8px; border-radius:6px; background:rgba(20,28,52,0.6);
+  border:1px solid rgba(120,140,220,0.2); text-align:center; font-family:Orbitron,monospace;
+  font-size:10px; letter-spacing:.1em; color:#9aa3c0; }
+.step-bar .step.active { background:rgba(255,138,61,0.18); border-color:#ff8a3d; color:#ffcb6b; }
+.step-bar .step.done { background:rgba(126,255,178,0.12); border-color:#7effb2; color:#7effb2; }
+
+.explain-card { padding:10px 14px; border-radius:10px; margin-top:8px;
+  background:linear-gradient(180deg, rgba(100,216,255,0.08), rgba(20,28,52,0.6));
+  border:1px solid rgba(100,216,255,0.4); font-size:13px; color:#d4f0ff; line-height:1.6; }
+.explain-card .why { color:#64d8ff; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.14em; display:block; margin-bottom:4px; }
+.explain-card b { color:#ffcb6b; }
+.explain-card.warn { background:linear-gradient(180deg, rgba(255,92,122,0.1), rgba(20,28,52,0.6)); border-color:#ff5c7a; color:#ffd0d8; }
+.explain-card.warn .why { color:#ff5c7a; }
+.explain-card.win { background:linear-gradient(180deg, rgba(126,255,178,0.12), rgba(20,28,52,0.6)); border-color:#7effb2; color:#d0ffe2; }
+.explain-card.win .why { color:#7effb2; }
+
+.btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+
+/* === Earth effects (Flare/CME tabs) === */
+.earth-fx { position:absolute; right:30px; top:30%; display:flex; flex-direction:column; gap:4px;
+  align-items:flex-end; pointer-events:none; z-index:8; }
+.fx-badge { padding:4px 10px; border-radius:6px; background:rgba(20,8,16,0.95);
+  border:1px solid #ff5c7a; color:#ffd0d8; font-family:Orbitron,monospace; font-size:10px;
+  letter-spacing:.08em; opacity:0; transform:translateX(20px); transition:all .3s; white-space:nowrap; }
+.fx-badge.show { opacity:1; transform:translateX(0); }
+.fx-badge.warn { border-color:#ffcb6b; color:#ffd88a; }
+.fx-badge.info { border-color:#64d8ff; color:#d4f0ff; }
+
+/* Magnetosphere (CME/Wind labs) */
+.magnetosphere { position:absolute; pointer-events:none; opacity:0.7; }
+
+/* Convection cells (Sunspot lab) */
+.convection { position:absolute; inset:0; pointer-events:none; opacity:0.7; }
+.conv-cell { position:absolute; width:24px; height:24px; border-radius:50%;
+  background:radial-gradient(circle, rgba(255,255,200,0.9), rgba(255,170,90,0.3) 60%, transparent);
+  animation:convFlow 2.5s ease-in-out infinite; }
+@keyframes convFlow { 0%{transform:translateY(8px) scale(0.7); opacity:0.4;}
+                      50%{transform:translateY(-8px) scale(1); opacity:0.9;}
+                      100%{transform:translateY(8px) scale(0.7); opacity:0.4;} }
+.convection.frozen .conv-cell { animation-play-state:paused; opacity:0.25; filter:grayscale(0.6); }
+
+/* Field arches over sunspot (animated criss-cross) */
+.field-arches { position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .5s; }
+.field-arches.on { opacity:1; }
+
+/* CME outcome badges (3 regimes tracker) */
+.regime-tracker { display:flex; gap:6px; margin-top:6px; }
+.regime-pill { flex:1; padding:6px 8px; border-radius:6px; text-align:center; font-size:11px;
+  font-family:Orbitron,monospace; letter-spacing:.08em; border:1px solid rgba(120,140,220,0.3);
+  background:rgba(20,28,52,0.5); color:#9aa3c0; }
+.regime-pill.visited { border-color:#7effb2; color:#7effb2; background:rgba(126,255,178,0.08); }
+.regime-pill.visited::after { content:' ✓'; }
+
+/* ======= SUNSPOT LAB ======= */
+.ss-sun { width:160px; height:160px; border-radius:50%; position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%); box-shadow:0 0 60px rgba(255,170,90,0.7);
+  background:radial-gradient(circle, #fff8c8 0%, #ffd96b 35%, #ff9a3d 75%, #b21030 100%); }
+.ss-spot { position:absolute; left:55%; top:50%; transform:translate(-50%,-50%);
+  width:42px; height:42px; border-radius:50%; transition:background .3s, opacity .3s;
+  background:radial-gradient(circle, var(--spot-core) 0 30%, var(--spot-rim) 50%, transparent 70%); }
+.ss-thermo { position:absolute; left:8px; top:8px; padding:6px 10px; border-radius:8px;
+  background:rgba(0,0,0,0.7); border:1px solid #ffcb6b; color:#ffcb6b;
+  font-family:Orbitron,monospace; font-size:11px; }
+
+/* ======= PROMINENCE LAB ======= */
+.prom-stage-wrap { position:relative; height:260px; }
+.prom-sun { position:absolute; left:50%; top:100%; transform:translate(-50%,-50%);
+  width:240px; height:240px; border-radius:50%;
+  background:radial-gradient(circle at 50% 30%, #fff8c8 0%, #ffd96b 30%, #ff9a3d 65%, #b21030 95%);
+  box-shadow:0 0 50px rgba(255,170,90,0.5); }
+.prom-handle { position:absolute; width:20px; height:20px; border-radius:50%; cursor:grab;
+  background:radial-gradient(circle, #ff5c7a, #b21030); border:2px solid #fff;
+  box-shadow:0 0 14px #ff5c7a; transform:translate(-50%,-50%); z-index:6; touch-action:none; }
+.prom-handle:active, .prom-handle.drag { cursor:grabbing; transform:translate(-50%,-50%) scale(1.2); }
+.prom-loop-svg { position:absolute; inset:0; pointer-events:none; z-index:3; }
+.prom-altmark { position:absolute; left:8px; padding:3px 8px; border-radius:5px;
+  background:rgba(0,0,0,0.7); border:1px solid #b980ff; color:#b980ff;
+  font-family:Orbitron,monospace; font-size:9px; letter-spacing:.1em; pointer-events:none; z-index:4; }
+.prom-altmark.target { border-color:#7effb2; color:#7effb2; }
+.prom-altmark.target::after { content:''; position:absolute; left:100%; top:50%; width:60px; height:1px;
+  background:repeating-linear-gradient(90deg, #7effb2 0 6px, transparent 6px 10px); }
+.prom-foot { position:absolute; width:8px; height:8px; border-radius:50%; background:#ff5c7a;
+  box-shadow:0 0 8px #ff5c7a; transform:translate(-50%,-50%); z-index:4; pointer-events:none; }
+.prom-hint { position:absolute; left:50%; top:8px; transform:translateX(-50%);
+  padding:3px 10px; border-radius:6px; background:rgba(0,0,0,0.7); border:1px dashed #b980ff;
+  color:#d4b8ff; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.1em; pointer-events:none; }
+
+/* ======= FLARE LAB ======= */
+.race-stage { position:relative; height:200px; }
+.race-sun { position:absolute; left:8%; top:50%; transform:translate(-50%,-50%);
+  width:60px; height:60px; border-radius:50%;
+  background:radial-gradient(circle, #fff8c8, #ff9a3d 70%, #b21030); box-shadow:0 0 30px #ff8a3d; }
+.race-earth { position:absolute; right:8%; top:50%; transform:translate(50%,-50%);
+  width:36px; height:36px; border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #4ad0ff, #1a4a8a 70%, #0a1a3a);
+  box-shadow:0 0 16px #64d8ff; }
+.race-track { position:absolute; left:14%; right:14%; top:50%; height:2px;
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,0.2) 0 8px, transparent 8px 14px);
+  transform:translateY(-50%); }
+.race-projectile { position:absolute; top:50%; left:14%; transform:translate(-50%,-50%);
+  font-size:24px; opacity:0; transition:opacity .2s; z-index:3; }
+.race-projectile.live { opacity:1; }
+.race-timer { position:absolute; left:50%; top:14px; transform:translateX(-50%);
+  padding:4px 12px; border-radius:8px; background:rgba(0,0,0,0.7); border:1px solid #ffcb6b;
+  color:#ffcb6b; font-family:Orbitron,monospace; font-size:12px; letter-spacing:.14em; }
+.race-launchers { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+.race-launchers button { flex:1; padding:10px; border-radius:8px; cursor:pointer;
+  font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; min-width:140px; }
+.race-launchers .btn-flare { background:linear-gradient(180deg,#ffd96b,#ff8a3d); color:#1a0500; border:none; }
+.race-launchers .btn-cme { background:linear-gradient(180deg,#b980ff,#5a0a8a); color:#fff; border:none; }
+.race-launchers button:disabled { opacity:0.4; cursor:not-allowed; }
+
+/* ======= CME LAB ======= */
+.cme-stage { position:relative; height:200px; overflow:hidden; }
+.cme-sun-l { position:absolute; left:0; top:50%; width:80px; height:80px; transform:translate(-30%,-50%);
+  border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff9a3d 70%, #b21030);
+  box-shadow:0 0 40px #ff8a3d; }
+.cme-earth-r { position:absolute; right:8px; top:50%; width:24px; height:24px; transform:translateY(-50%);
+  border-radius:50%; background:radial-gradient(circle at 30% 30%, #4ad0ff, #1a4a8a);
+  box-shadow:0 0 12px #64d8ff; }
+.cme-cloud { position:absolute; left:60px; top:50%; transform:translateY(-50%);
+  width:60px; height:80px; border-radius:50%;
+  background:radial-gradient(ellipse, rgba(185,128,255,0.85), rgba(255,138,61,0.4) 60%, transparent);
+  filter:blur(2px); will-change:transform; }
+.cme-targetbar { position:absolute; bottom:8px; left:8px; right:8px; padding:4px 10px; border-radius:6px;
+  background:rgba(0,0,0,0.7); font-family:Orbitron,monospace; font-size:10px; color:#9aa3c0;
+  display:flex; gap:10px; justify-content:space-around; }
+.cme-targetbar b { color:#ffcb6b; }
+
+/* ======= WIND LAB ======= */
+.wind-stage { position:relative; height:200px; overflow:hidden; }
+.wind-sun-l { position:absolute; left:-30px; top:50%; width:120px; height:120px; transform:translateY(-50%);
+  border-radius:50%; background:radial-gradient(circle, #fff8c8, #ff9a3d 70%, #b21030);
+  box-shadow:0 0 60px #ff8a3d; }
+.wind-stream { position:absolute; left:90px; right:0; top:50%; height:90px; transform:translateY(-50%);
+  background:linear-gradient(90deg,
+    rgba(126,255,178,0.04) 0%,
+    rgba(126,255,178,0.18) 50%,
+    rgba(126,255,178,0.06) 100%);
+  pointer-events:none; }
+.wind-particle { position:absolute; width:3px; height:3px; border-radius:50%; background:#7effb2;
+  box-shadow:0 0 4px #7effb2; pointer-events:none; }
+.wind-earth { position:absolute; width:48px; height:48px; border-radius:50%; cursor:grab;
+  background:radial-gradient(circle at 30% 30%, #4ad0ff, #1a4a8a 70%, #0a1a3a);
+  box-shadow:0 0 12px #64d8ff; transform:translate(-50%,-50%); z-index:5; touch-action:none;
+  border:2px solid rgba(255,255,255,0.5); overflow:visible; }
+.wind-earth:active, .wind-earth.drag { cursor:grabbing; }
+.wind-earth.in-stream { box-shadow:0 0 22px #7effb2, 0 0 38px rgba(126,255,178,0.6); border-color:#7effb2; }
+/* Aurora as child of earth · positioned at poles · always tracks earth */
+.wind-aurora { position:absolute; left:50%; width:42px; height:14px; border-radius:50%;
+  transform:translateX(-50%); pointer-events:none; opacity:0; transition:opacity .25s;
+  background:radial-gradient(ellipse, rgba(126,255,178,0.95) 0%, rgba(185,128,255,0.55) 50%, transparent 80%);
+  filter:blur(2px); }
+.wind-aurora.north { top:-10px; }
+.wind-aurora.south { bottom:-10px; }
+.wind-earth.in-stream .wind-aurora { opacity:1; }
+.wind-earth.in-stream .wind-aurora.north { animation:auroraDance 1.6s ease-in-out infinite; }
+.wind-earth.in-stream .wind-aurora.south { animation:auroraDance 1.6s ease-in-out infinite reverse; }
+@keyframes auroraDance { 0%,100%{transform:translateX(-50%) scaleX(1) scaleY(1);}
+                        50%   {transform:translateX(-50%) scaleX(1.35) scaleY(1.2);} }
+/* Pole markers (small dots showing N/S axis) */
+.wind-earth::before, .wind-earth::after { content:''; position:absolute; left:50%; width:4px; height:4px;
+  border-radius:50%; background:rgba(255,255,255,0.4); transform:translateX(-50%); }
+.wind-earth::before { top:2px; }
+.wind-earth::after  { bottom:2px; }
+</style>
+</head>
+<body data-page="p14" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🎁 MYSTERY BOX · 5 PHENOMENA LAB</span>
+  <h1>5 ปรากฏการณ์ · ทดลองในแต่ละ tab จนปลด ✓</h1>
+  <div class="tags"><span class="kpa-chip">K3</span><span class="kpa-chip">P1</span><span class="kpa-chip">P2</span></div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <div class="tab-row" id="tabRow"></div>
+    <div class="tab-panel" id="panel"></div>
+    <div class="muted" style="margin-top:8px;">ทดลองสำเร็จ: <b id="visited" style="color:#ffcb6b;">0/5</b> · <span style="color:#9aa3c0;font-size:11px;">แต่ละ tab ต้องทำ "งาน" ให้ครบก่อนติ๊ก ✓</span></div>
+  </div>
+
+  <div class="card cyan" id="quiz" style="display:none;">
+    <div class="q-prompt">📝 อันใดเดินทางมาถึงโลกเร็วที่สุด?</div>
+    <div class="choice-row" data-q="0">
+      <label><input type="radio" name="q0" value="0"> CME</label>
+      <label><input type="radio" name="q0" value="1"> Solar Flare (แสง/รังสี)</label>
+      <label><input type="radio" name="q0" value="2"> Sunspot</label>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P14 (v3 · Interactive Labs)</summary>
+    <div>
+      <b>แต่ละ tab มี interaction:</b><br>
+      ① <b>Sunspot</b> · slider อุณหภูมิ → เลื่อนหา T = 3,800 K (umbra) เห็นจุดดำเปลี่ยนสีตาม T<br>
+      ② <b>Prominence</b> · ลาก handle ขึ้นจากผิวสร้าง loop พลาสมา · ขึ้นถึงระดับ ≥30,000 km<br>
+      ③ <b>Solar Flare</b> · ปล่อย Flare (แสง · 8 วิ จำลอง) + ปล่อย CME (ช้ากว่า) · เห็น race time<br>
+      ④ <b>CME</b> · slider ความเร็ว → คำนวณ ETA ถึงโลก · หา speed ที่ทำให้ ≤ 24 ชม. (~1700 km/s)<br>
+      ⑤ <b>Solar Wind</b> · ลากโลกเข้า stream → เห็น aurora ที่ขั้ว<br>
+      <b>คำตอบ quiz:</b> Solar Flare (8 นาที · เพราะเป็นแสง) · CME ใช้ 1-3 วัน · Sunspot ไม่เดินทาง
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ทดลองครบ 5 tab ก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const TABS = [
+  { id:'sunspot',    name:'Sunspot',    icon:'⚫', render:renderSunspot },
+  { id:'prominence', name:'Prominence', icon:'🔴', render:renderProminence },
+  { id:'flare',      name:'Solar Flare',icon:'⚡', render:renderFlare },
+  { id:'cme',        name:'CME',        icon:'💥', render:renderCME },
+  { id:'wind',       name:'Solar Wind', icon:'🌬️', render:renderWind },
+];
+const completed = new Set();
+const tabRow  = document.getElementById('tabRow');
+const panel   = document.getElementById('panel');
+let active = 0;
+
+TABS.forEach((t,i) => {
+  const b = document.createElement('button');
+  b.className = 'tab-btn'; b.textContent = t.icon + ' ' + t.name;
+  b.onclick = () => activate(i);
+  tabRow.appendChild(b);
+});
+
+function activate(i){
+  active = i;
+  document.querySelectorAll('.tab-btn').forEach((b,k) => b.classList.toggle('active', k===i));
+  panel.innerHTML = '';
+  TABS[i].render(panel);
+  SFX&&SFX.play('tap');
+}
+function markDone(id){
+  if(completed.has(id)) return;
+  completed.add(id);
+  const idx = TABS.findIndex(t => t.id === id);
+  document.querySelectorAll('.tab-btn')[idx].classList.add('completed');
+  document.getElementById('visited').textContent = completed.size + '/5';
+  SFX&&SFX.play('correct');
+  // toast
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed; right:14px; bottom:80px; z-index:60; padding:10px 16px; border-radius:10px; background:rgba(8,40,20,0.95); border:1px solid #7effb2; font-family:Orbitron,monospace; font-size:12px; color:#7effb2; letter-spacing:.12em; animation:intelToast 1.6s forwards;';
+  t.innerHTML = `✓ INTEL · ${TABS[idx].name} · ANALYZED`;
+  document.body.appendChild(t);
+  if(!document.getElementById('intelToastStyle')){
+    const s = document.createElement('style'); s.id='intelToastStyle';
+    s.textContent='@keyframes intelToast { 0%{opacity:0;transform:translateX(20px);} 20%{opacity:1;transform:translateX(0);} 80%{opacity:1;} 100%{opacity:0;transform:translateY(-10px);} }';
+    document.head.appendChild(s);
+  }
+  setTimeout(() => t.remove(), 1700);
+  // panel task indicator
+  const taskEl = panel.querySelector('.lab-task');
+  if(taskEl) taskEl.classList.add('done');
+  if(completed.size === 5) onAllDone();
+}
+
+function onAllDone(){
+  document.getElementById('quiz').style.display = 'block';
+  const sb = document.getElementById('submitBtn');
+  sb.disabled = false; sb.textContent = '📤 ส่งผล';
+  SFX&&SFX.play('charge');
+  if(!document.getElementById('intelUnlockCard')){
+    const card = document.createElement('div');
+    card.id = 'intelUnlockCard'; card.className = 'card green';
+    card.style.cssText = 'border-color:#7effb2; background:rgba(126,255,178,0.1); margin-top:12px;';
+    card.innerHTML = `
+      <h3 style="color:#7effb2; margin:0 0 6px;">📡 INTEL DATABASE COMPLETE</h3>
+      <div class="narr" style="color:#d4b8ff;">
+        เธอวิเคราะห์ครบ 5 ปรากฏการณ์ · AI ของยานสังเคราะห์เป็น <b style="color:#7effb2;">Intel Hint</b>
+      </div>
+      <div style="margin-top:10px; padding:10px; border-radius:10px; background:rgba(255,138,61,0.1); border:1px dashed #ff8a3d;">
+        <div style="font-family:Orbitron,monospace; font-size:11px; color:#ff8a3d; letter-spacing:.16em;">🔓 UNLOCKED · BOSS ZONE 2</div>
+        <div style="margin-top:4px; font-size:13px;">💡 <b>Intel Hint</b> · <span style="color:#7effb2;">เผยคำตอบใน boss 1 ครั้ง</span> (auto · zone 2)</div>
+      </div>`;
+    document.querySelector('.tc').parentNode.insertBefore(card, document.querySelector('.tc'));
+    const powers = Chain.get('bossPowers') || {};
+    powers.intelHint = true; Chain.set('bossPowers', powers);
+  }
+}
+
+/* ============================================================
+ *  TAB 1 · SUNSPOT · Temperature Slider Lab
+ * ============================================================ */
+function renderSunspot(host){
+  host.innerHTML = `
+    <div class="lab-head">
+      <h3>⚫ Sunspot · ทำไมเย็น+ดำ?</h3>
+      <div class="lab-task">🎯 เดิน 3 ขั้น: <b>ผิวปกติ → field criss-cross → cooling</b></div>
+    </div>
+    <div class="step-bar" id="ssSteps">
+      <div class="step active">1 · ผิวปกติ</div>
+      <div class="step">2 · field ON</div>
+      <div class="step">3 · cooling + ฟอร์มจุดดำ</div>
+    </div>
+    <div class="lab-stage">
+      <div class="ss-thermo" id="ssThermo">T = 5,780 K</div>
+      <div class="ss-sun" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);">
+        <div class="convection" id="ssConv">
+          <div class="conv-cell" style="left:20%; top:20%; animation-delay:0s;"></div>
+          <div class="conv-cell" style="left:35%; top:55%; animation-delay:0.4s;"></div>
+          <div class="conv-cell" style="left:55%; top:35%; animation-delay:0.8s;"></div>
+          <div class="conv-cell" style="left:70%; top:65%; animation-delay:0.2s;"></div>
+          <div class="conv-cell" style="left:45%; top:80%; animation-delay:0.6s;"></div>
+          <div class="conv-cell" style="left:15%; top:60%; animation-delay:1.0s;"></div>
+        </div>
+        <svg class="field-arches" id="ssField" viewBox="0 0 160 160">
+          <path d="M 50 90 Q 80 30 110 90" fill="none" stroke="rgba(180,200,255,0.85)" stroke-width="1.4">
+            <animate attributeName="opacity" values="0.5;1;0.5" dur="1.4s" repeatCount="indefinite"/>
+          </path>
+          <path d="M 110 90 Q 80 35 50 90" fill="none" stroke="rgba(255,150,180,0.85)" stroke-width="1.4">
+            <animate attributeName="opacity" values="1;0.5;1" dur="1.4s" repeatCount="indefinite"/>
+          </path>
+          <path d="M 60 100 Q 80 50 100 100" fill="none" stroke="rgba(180,200,255,0.6)" stroke-width="1"/>
+          <path d="M 100 100 Q 80 55 60 100" fill="none" stroke="rgba(255,150,180,0.6)" stroke-width="1"/>
+        </svg>
+        <div class="ss-spot" id="ssSpot" style="--spot-core:#ffd96b; --spot-rim:#ff9a3d; opacity:0;"></div>
+      </div>
+    </div>
+    <div class="explain-card" id="ssExplain">
+      <span class="why">STEP 1 · WHY · ผิวปกติทำงานยังไง</span>
+      <b>convection cells</b> (จุดเหลืองที่ลอยขึ้น-ลง) พาความร้อนจาก core ขึ้นมาที่ผิว · T ผิว = <b>5,780 K</b> · สว่างทั่วถึง · ไม่มี field รบกวน
+    </div>
+    <div class="btn-row">
+      <button class="btn-action" id="ssBtnNext">🧲 เปิดสนามแม่เหล็ก criss-cross →</button>
+      <button class="btn-action" id="ssBtnReset" style="background:transparent;border:1px solid #ffcb6b;color:#ffcb6b;display:none;">↻ ดูใหม่</button>
+    </div>
+    <div class="lab-controls" id="ssControls" style="display:none;">
+      <label>🌡️ ลอง slider ดูผลของ T ละเอียด · <span style="color:#ffcb6b;font-family:Orbitron,monospace;" id="ssTval">3800</span> K</label>
+      <input type="range" min="3000" max="6500" step="20" value="3800" id="ssRange"/>
+      <div class="lab-readout">
+        <div class="cell"><div class="k">T_spot</div><div class="v" id="ssV1">3,800 K</div></div>
+        <div class="cell"><div class="k">T_surface</div><div class="v">5,780 K</div></div>
+        <div class="cell"><div class="k">ΔT</div><div class="v cool" id="ssV3">−1,980 K</div></div>
+      </div>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>🧲 SUNSPOT คือ</b>บริเวณบนผิวที่<b>สนามแม่เหล็กพันกัน</b> · ปิดทางความร้อนจาก core ไม่ให้ขึ้นถึงผิว</div>
+      <div class="fact"><b>🌑 ทำไมดำ?</b>เพราะ<u>เย็นกว่ารอบ ~1,500 K</b></u> · ไม่ได้ดำจริง · เทียบกับผิวรอบที่สว่าง เลย "ดูเหมือนดำ"</div>
+    </div>`;
+  const steps = host.querySelectorAll('#ssSteps .step');
+  const conv  = host.querySelector('#ssConv');
+  const field = host.querySelector('#ssField');
+  const spot  = host.querySelector('#ssSpot');
+  const thermo= host.querySelector('#ssThermo');
+  const explain = host.querySelector('#ssExplain');
+  const btnNext = host.querySelector('#ssBtnNext');
+  const btnReset= host.querySelector('#ssBtnReset');
+  const controls= host.querySelector('#ssControls');
+  let stage = 1;
+  function setStep(n){
+    stage = n;
+    steps.forEach((s,i) => {
+      s.classList.toggle('active', i+1 === n);
+      s.classList.toggle('done',   i+1 < n);
+    });
+  }
+  function spotColor(T){
+    if(T < 4000) return ['#0a0200','#3a0d00'];
+    if(T < 4800) return ['#3a0d00','#7a1a00'];
+    if(T < 5500) return ['#7a1a00','#b85a2a'];
+    if(T < 6000) return ['#ffd96b','#ff9a3d'];
+    return ['#fff8c8','#fff'];
+  }
+  function setTemp(T){
+    const [core, rim] = spotColor(T);
+    spot.style.setProperty('--spot-core', core);
+    spot.style.setProperty('--spot-rim',  rim);
+    spot.style.opacity = T < 5500 ? Math.min(1, (5780 - T) / 1980) : 0;
+    thermo.textContent = `T = ${T.toLocaleString()} K`;
+  }
+  // Step 1 → 2: turn on field
+  btnNext.onclick = () => {
+    if(stage === 1){
+      setStep(2); field.classList.add('on'); conv.classList.add('frozen');
+      explain.className = 'explain-card warn';
+      explain.innerHTML = `<span class="why">STEP 2 · WHY · field ทำอะไร</span>
+        เส้นสนามแม่เหล็ก <b>ตัดกัน (criss-cross)</b> เหนือผิว · <u>บล็อก convection cells</u> ที่จะพาความร้อนขึ้นมา ·
+        cells ในบริเวณนี้<b>หยุดไหล</b> · ความร้อนจาก core ขึ้นมาไม่ได้`;
+      btnNext.textContent = '❄️ เริ่ม cooling · ดูจุดดำฟอร์ม →';
+      SFX&&SFX.play('snap');
+    } else if(stage === 2){
+      setStep(3);
+      // animate T from 5780 → 3800
+      let T = 5780;
+      const tickT = () => {
+        T -= 60;
+        if(T <= 3800){ T = 3800; setTemp(T); }
+        else { setTemp(T); requestAnimationFrame(tickT); }
+        if(T === 3800){
+          explain.className = 'explain-card win';
+          explain.innerHTML = `<span class="why">STEP 3 · SO WHAT · sunspot ฟอร์ม</span>
+            T ดิ่งจาก 5,780 → <b>3,800 K</b> (∆T = <b>−1,980 K</b>) · เย็นกว่ารอบมาก ·
+            จุดที่เย็นกว่า → <b>ปล่อยแสงน้อยกว่า</b> → เมื่อเทียบกับผิวรอบที่สว่าง จึงเห็นเป็น<b>จุดดำ</b><br>
+            🔁 ถ้า field ลด → cells กลับมา → ความร้อนกลับมา → จุดดำหาย`;
+          btnNext.style.display = 'none';
+          btnReset.style.display = '';
+          controls.style.display = '';
+          markDone('sunspot');
+        }
+      };
+      requestAnimationFrame(tickT);
+      SFX&&SFX.play('correct');
+    }
+  };
+  btnReset.onclick = () => {
+    setStep(1); field.classList.remove('on'); conv.classList.remove('frozen');
+    setTemp(5780); spot.style.opacity = '0';
+    explain.className = 'explain-card';
+    explain.innerHTML = `<span class="why">STEP 1 · WHY · ผิวปกติทำงานยังไง</span>
+      <b>convection cells</b> พาความร้อน · T = <b>5,780 K</b> · ไม่มี field รบกวน`;
+    btnNext.textContent = '🧲 เปิดสนามแม่เหล็ก criss-cross →';
+    btnNext.style.display = '';
+    btnReset.style.display = 'none';
+    controls.style.display = 'none';
+  };
+  // Slider for fine control after stage 3
+  host.querySelector('#ssRange').addEventListener('input', (e) => {
+    const T = +e.target.value;
+    host.querySelector('#ssTval').textContent = T.toLocaleString();
+    host.querySelector('#ssV1').textContent = T.toLocaleString() + ' K';
+    const dT = T - 5780;
+    host.querySelector('#ssV3').textContent = (dT >= 0 ? '+' : '−') + Math.abs(dT).toLocaleString() + ' K';
+    setTemp(T);
+  });
+  setTemp(5780); spot.style.opacity = '0';
+}
+
+/* ============================================================
+ *  TAB 2 · PROMINENCE · Loop Builder
+ * ============================================================ */
+function renderProminence(host){
+  host.innerHTML = `
+    <div class="lab-head">
+      <h3>🔴 Prominence · Magnetic Trap → Snap</h3>
+      <div class="lab-task">🎯 เดิน 3 ขั้น: <b>plasma escape → loop trap → snap = CME</b></div>
+    </div>
+    <div class="step-bar" id="prSteps">
+      <div class="step active">1 · ไม่มี loop · พลาสมาหลุด</div>
+      <div class="step">2 · loop trap</div>
+      <div class="step">3 · snap → CME</div>
+    </div>
+    <div class="lab-stage prom-stage-wrap" id="promStage">
+      <div class="prom-hint" id="prHint">⚛️ พลาสมาหลุดออกอวกาศ · ไม่มี field กักไว้</div>
+      <div class="prom-sun"></div>
+      <div class="prom-foot" id="promFootL" style="opacity:0;"></div>
+      <div class="prom-foot" id="promFootR" style="opacity:0;"></div>
+      <svg class="prom-loop-svg" id="promSvg"></svg>
+      <div class="prom-handle" id="promHandle" style="display:none;"></div>
+      <div class="prom-altmark" id="prMark0" style="opacity:0;">▬ ผิว · 0 km</div>
+      <div class="prom-altmark target" id="prMarkT" style="opacity:0;">▬ เป้า · 30,000 km</div>
+    </div>
+    <div class="explain-card" id="prExplain">
+      <span class="why">STEP 1 · WHY · ทำไมพลาสมาไม่อยู่นิ่ง</span>
+      พลาสมาในชั้น chromosphere ร้อน + ความดันสูง · <b>อยากระบายออก</b> · <u>ถ้าไม่มี field มากัก</u> → จะหลุดออกสู่อวกาศตามแรงดัน · ดูจากผิวจะเห็นพลาสมาพ่นไปทั่ว
+    </div>
+    <div class="btn-row">
+      <button class="btn-action" id="prBtnNext">🧲 สร้าง magnetic loop · trap พลาสมา →</button>
+      <button class="btn-action purple" id="prBtnSnap" style="display:none;">💥 SNAP loop · ดู CME ก่อตัว</button>
+      <button class="btn-action" id="prBtnReset" style="background:transparent;border:1px solid #ffcb6b;color:#ffcb6b;display:none;">↻ ดูใหม่</button>
+    </div>
+    <div class="lab-controls" id="prControls" style="display:none;">
+      <div class="lab-readout">
+        <div class="cell"><div class="k">altitude</div><div class="v" id="prAlt">0 km</div></div>
+        <div class="cell"><div class="k">arc length</div><div class="v" id="prArc">0 km</div></div>
+        <div class="cell"><div class="k">B field</div><div class="v ok">~100 G</div></div>
+      </div>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>🔴 PROMINENCE คือ</b><b>พลาสมาที่ติดอยู่บนเส้นสนามแม่เหล็ก</b>โค้งเหนือผิวดวงอาทิตย์ · ไม่หลุดออกเพราะ field กักไว้</div>
+      <div class="fact"><b>💥 ทำไมสำคัญ?</b>ถ้าเส้นแม่เหล็ก<u>ขาด</u> → พลาสมาที่กักไว้<b>กลายเป็น CME</b> · ยิงเข้าโลกได้</div>
+    </div>`;
+  const stage  = host.querySelector('#promStage');
+  const handle = host.querySelector('#promHandle');
+  const svg    = host.querySelector('#promSvg');
+  const footL  = host.querySelector('#promFootL'), footR = host.querySelector('#promFootR');
+  const mark0  = host.querySelector('#prMark0'), markT = host.querySelector('#prMarkT');
+  const altEl  = host.querySelector('#prAlt'), arcEl = host.querySelector('#prArc');
+  const steps    = host.querySelectorAll('#prSteps .step');
+  const explain  = host.querySelector('#prExplain');
+  const hint     = host.querySelector('#prHint');
+  const btnNext  = host.querySelector('#prBtnNext');
+  const btnSnap  = host.querySelector('#prBtnSnap');
+  const btnReset = host.querySelector('#prBtnReset');
+  const controls = host.querySelector('#prControls');
+  let phase = 1;       // 1 escape · 2 trap · 3 snapped
+  let escapeAnim = null;
+  function setStep(n){
+    phase = n;
+    steps.forEach((s,i) => {
+      s.classList.toggle('active', i+1 === n);
+      s.classList.toggle('done',   i+1 < n);
+    });
+  }
+  function spawnEscapeParticles(){
+    if(escapeAnim) clearInterval(escapeAnim);
+    escapeAnim = setInterval(() => {
+      if(phase !== 1) return;
+      const p = document.createElement('div');
+      const xPct = 35 + Math.random()*30;
+      p.style.cssText = `position:absolute;left:${xPct}%;top:80%;width:4px;height:4px;border-radius:50%;
+        background:#ff8866;box-shadow:0 0 6px #ff5c7a;pointer-events:none;z-index:4;
+        animation:prEscape ${1.4 + Math.random()*0.6}s ease-out forwards;`;
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 2200);
+    }, 220);
+  }
+  function stopEscape(){ if(escapeAnim){ clearInterval(escapeAnim); escapeAnim = null; } }
+  if(!document.getElementById('prEscapeKF')){
+    const s = document.createElement('style'); s.id = 'prEscapeKF';
+    s.textContent = '@keyframes prEscape { 0%{opacity:0;transform:translateY(0);} 20%{opacity:1;} 100%{opacity:0;transform:translateY(-200px);} }';
+    document.head.appendChild(s);
+  }
+  /* Geometry · stage 260px tall · sun = 240px circle centered at bottom of stage
+     → sun center at (cx, H), radius R=120 → top of sun at y = H - 120 = limb top
+     → space above limb is the "prominence" region */
+  const SUN_R = 120;
+  const FOOT_DX = 50;      // horizontal offset of feet from sun center
+  let limbTopY, cx, cy, footY;
+  let dragging = false;
+  let handleXFrac = 0;     // -1..1 (left..right of center)
+  let handleY = 0;         // px from top of stage
+  function recalc(){
+    const r = stage.getBoundingClientRect();
+    cx = r.width / 2;
+    cy = r.height;                                // sun center at bottom edge
+    limbTopY = cy - SUN_R;                        // = r.height - 120
+    // foot Y on circle at x = cx ± FOOT_DX:
+    footY = cy - Math.sqrt(SUN_R*SUN_R - FOOT_DX*FOOT_DX); // ≈ cy - 109
+    footL.style.left = (cx - FOOT_DX) + 'px'; footL.style.top = footY + 'px';
+    footR.style.left = (cx + FOOT_DX) + 'px'; footR.style.top = footY + 'px';
+    // altitude markers
+    mark0.style.top = (footY - 7) + 'px';
+    // 30,000 km target: max altitude = limbTopY - 10 (handle min y) → maps to 60,000 km
+    // so 30,000 km is at midpoint between footY and topMin
+    const topMin = 10;
+    const targetY = footY - (footY - topMin) * 0.5;
+    markT.style.top = (targetY - 7) + 'px';
+  }
+  function setHandle(px, py){
+    // clamp: above limb (py < footY-5), within stage horizontally near sun
+    const r = stage.getBoundingClientRect();
+    px = Math.max(cx - 80, Math.min(cx + 80, px));
+    py = Math.max(10, Math.min(footY - 5, py));
+    handle.style.left = px + 'px'; handle.style.top = py + 'px';
+    handleY = py;
+    handleXFrac = (px - cx) / 80;
+    // altitude in km · footY=0 km, topMin=60,000 km
+    const topMin = 10;
+    const heightPx = footY - py;                  // 0..(footY - topMin)
+    const altKm = Math.round((heightPx / (footY - topMin)) * 60000);
+    altEl.textContent = altKm.toLocaleString() + ' km';
+    altEl.className = 'v ' + (altKm >= 30000 ? 'ok' : '');
+    // arc length approx = π * (chord + apex-extra) — quick estimate
+    const chordKm = (FOOT_DX*2 / SUN_R) * 700000;  // sun radius ~ 700,000 km mapped roughly
+    const arcKm = Math.round(Math.PI * altKm * 0.6 + chordKm * 0.5);
+    arcEl.textContent = arcKm.toLocaleString() + ' km';
+    // draw loop
+    const fLx = cx - FOOT_DX, fLy = footY;
+    const fRx = cx + FOOT_DX, fRy = footY;
+    const apexX = px, apexY = py;
+    // smooth arch: cubic Bezier with control points pushed outward
+    const ctrl1X = fLx + (apexX - fLx) * 0.4, ctrl1Y = apexY - 10;
+    const ctrl2X = fRx + (apexX - fRx) * 0.4, ctrl2Y = apexY - 10;
+    svg.innerHTML = `
+      <path d="M ${fLx} ${fLy} C ${ctrl1X} ${ctrl1Y}, ${apexX} ${apexY-2}, ${apexX} ${apexY}
+                                C ${apexX} ${apexY}, ${ctrl2X} ${ctrl2Y}, ${fRx} ${fRy}"
+            fill="none" stroke="#ff5c7a" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+      <path d="M ${fLx} ${fLy} C ${ctrl1X} ${ctrl1Y}, ${apexX} ${apexY-2}, ${apexX} ${apexY}
+                                C ${apexX} ${apexY}, ${ctrl2X} ${ctrl2Y}, ${fRx} ${fRy}"
+            fill="none" stroke="#ffaa55" stroke-width="2" opacity="0.7"/>
+      <circle cx="${apexX}" cy="${apexY}" r="6" fill="#ff5c7a" opacity="0.4"/>`;
+    if(altKm >= 30000 && phase === 2){
+      btnSnap.style.display = '';
+    }
+  }
+  function moveTo(clientX, clientY){
+    if(phase !== 2) return;
+    const r = stage.getBoundingClientRect();
+    setHandle(clientX - r.left, clientY - r.top);
+  }
+  function startDrag(e){ if(phase !== 2) return; dragging = true; handle.classList.add('drag');
+    if(stage.setPointerCapture) stage.setPointerCapture(e.pointerId); moveTo(e.clientX, e.clientY); }
+  function endDrag(){ dragging = false; handle.classList.remove('drag'); }
+  stage.addEventListener('pointerdown',  startDrag);
+  stage.addEventListener('pointermove',  e => { if(dragging) moveTo(e.clientX, e.clientY); });
+  stage.addEventListener('pointerup',    endDrag);
+  stage.addEventListener('pointercancel',endDrag);
+
+  // STAGE TRANSITIONS
+  btnNext.onclick = () => {
+    setStep(2); stopEscape();
+    hint.textContent = '↕️ ลาก ⊙ ขึ้น-ลง · เห็นพลาสมาติดใน loop';
+    explain.className = 'explain-card warn';
+    explain.innerHTML = `<span class="why">STEP 2 · HOW · field arches กักพลาสมา</span>
+      <b>magnetic field โค้ง</b> เป็นซุ้มเหนือผิว (จาก foot ซ้ายไป foot ขวา) · <b>พลาสมาเคลื่อนที่ตามเส้น field เท่านั้น</b> ·
+      ติดอยู่ใน arch · <u>ไม่หลุดออก</u> · เกิดเป็น <b>prominence</b> สูง 10,000-100,000 km · อยู่ได้นานเป็นวัน`;
+    btnNext.style.display = 'none';
+    [footL, footR, mark0, markT].forEach(el => el.style.opacity = '');
+    handle.style.display = '';
+    controls.style.display = '';
+    recalc(); setHandle(cx, footY - 6);
+    SFX&&SFX.play('snap');
+  };
+  btnSnap.onclick = () => {
+    setStep(3);
+    explain.className = 'explain-card win';
+    explain.innerHTML = `<span class="why">STEP 3 · SO WHAT · loop ขาด → CME</span>
+      ถ้า field <b>unstable</b> (เช่น filament มีพลังงานเกิน) → loop <b>ขาด</b> · พลาสมาที่กักไว้
+      <b>ปลดออก</b>เป็นก้อน <b>CME (Coronal Mass Ejection)</b> ที่พุ่งเข้าอวกาศ · ถ้าเล็งโลก → ถึงโลกใน 1-3 วัน · 🔗 ดูต่อใน <b>tab CME</b>`;
+    btnSnap.style.display = 'none';
+    btnReset.style.display = '';
+    handle.style.display = 'none';
+    // Animate snap: loop fades + a "blob" particle launches up
+    svg.innerHTML = '';
+    const r = stage.getBoundingClientRect();
+    const blob = document.createElement('div');
+    blob.style.cssText = `position:absolute;left:${(cx)}px;top:${footY - 50}px;width:60px;height:60px;border-radius:50%;
+      background:radial-gradient(circle, rgba(185,128,255,0.95), rgba(255,138,61,0.5) 60%, transparent);
+      filter:blur(3px);transform:translate(-50%,-50%);pointer-events:none;z-index:6;
+      animation:prCmeBlast 1.6s ease-out forwards;`;
+    stage.appendChild(blob);
+    if(!document.getElementById('prCmeKF')){
+      const s = document.createElement('style'); s.id = 'prCmeKF';
+      s.textContent = '@keyframes prCmeBlast { 0%{transform:translate(-50%,-50%) scale(0.5);opacity:1;} 100%{transform:translate(-50%,-300%) scale(2.5);opacity:0;} }';
+      document.head.appendChild(s);
+    }
+    SFX&&SFX.play('charge');
+    markDone('prominence');
+  };
+  btnReset.onclick = () => {
+    setStep(1);
+    [footL, footR, mark0, markT].forEach(el => el.style.opacity = '0');
+    handle.style.display = 'none';
+    svg.innerHTML = '';
+    controls.style.display = 'none';
+    btnNext.style.display = ''; btnSnap.style.display = 'none'; btnReset.style.display = 'none';
+    explain.className = 'explain-card';
+    explain.innerHTML = `<span class="why">STEP 1 · WHY · ทำไมพลาสมาไม่อยู่นิ่ง</span>
+      พลาสมาในชั้น chromosphere ร้อน + ความดันสูง · <b>อยากระบายออก</b> · <u>ถ้าไม่มี field มากัก</u> → จะหลุดออกสู่อวกาศ`;
+    hint.textContent = '⚛️ พลาสมาหลุดออกอวกาศ · ไม่มี field กักไว้';
+    spawnEscapeParticles();
+  };
+  // init
+  setTimeout(() => { recalc(); spawnEscapeParticles(); }, 50);
+  window.addEventListener('resize', () => { recalc(); if(phase === 2) setHandle(cx + handleXFrac*80, handleY); });
+}
+
+/* ============================================================
+ *  TAB 3 · SOLAR FLARE · Race to Earth
+ * ============================================================ */
+function renderFlare(host){
+  host.innerHTML = `
+    <div class="lab-head">
+      <h3>⚡ Solar Flare · Light vs Plasma · Earth Damage</h3>
+      <div class="lab-task">🎯 ทำครบ 3: <b>ปล่อย Flare + CME + คลิกแถบสเปกตรัม 3 แถบ</b></div>
+    </div>
+    <div class="step-bar" id="flSteps">
+      <div class="step active">1 · race · light vs plasma</div>
+      <div class="step">2 · ผลต่อโลก</div>
+      <div class="step">3 · spectrum (X-ray/UV/visible)</div>
+    </div>
+    <div class="lab-stage race-stage" id="raceStage">
+      <div class="race-track"></div>
+      <div class="race-sun"></div>
+      <div class="race-earth"></div>
+      <div class="race-projectile" id="rcFlare">⚡</div>
+      <div class="race-projectile" id="rcCme">💥</div>
+      <div class="race-timer" id="rcTimer">⏱️ 0.0 s · กดปล่อย</div>
+      <div class="earth-fx" id="rcFx"></div>
+    </div>
+    <div class="race-launchers">
+      <button class="btn-flare" id="btnFlare">⚡ ปล่อย Flare (แสง · 8 นาที)</button>
+      <button class="btn-cme" id="btnCme">💥 ปล่อย CME (พลาสมา · 1-3 วัน)</button>
+    </div>
+    <div class="lab-readout">
+      <div class="cell"><div class="k">Flare ถึงโลก</div><div class="v ok" id="rcFt">—</div></div>
+      <div class="cell"><div class="k">CME ถึงโลก</div><div class="v" id="rcCt">—</div></div>
+      <div class="cell"><div class="k">CME ช้ากว่า</div><div class="v" id="rcDiff">—</div></div>
+    </div>
+    <div style="font-size:11px;color:#9aa3c0;text-align:center;margin-top:6px;font-family:Orbitron,monospace;letter-spacing:.08em;">⚠️ animation ย่อสเกล · ตัวเลขในจอ = <b style="color:#ffcb6b;">เวลาจริง</b></div>
+    <div class="explain-card" id="rcExplain">
+      <span class="why">STEP 1 · ลองปล่อยทั้ง 2 · ดูว่าใครถึงก่อน</span>
+      Flare = <b>คลื่นแม่เหล็กไฟฟ้า</b> (X-ray, UV, แสง) → เดินทางด้วย <b>ความเร็วแสง c</b> · CME = <b>พลาสมา</b> มวลมหาศาล → เดินทางช้ากว่ามาก
+    </div>
+    <div id="rcSpectrumWrap" style="display:none;">
+      <div style="font-family:Orbitron,monospace;font-size:11px;color:#ffcb6b;letter-spacing:.12em;margin:10px 0 6px;">📊 SPECTRUM · คลิกทุกแถบเพื่อดูผล</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;" id="rcBands"></div>
+    </div>
+    <div class="facts">
+      <div class="fact"><b>⚡ FLARE คือ</b><b>การปลดพลังงานแม่เหล็ก</b>เหนือ active region · ออกมาเป็น<b>คลื่นแม่เหล็กไฟฟ้า</b> (X-ray + UV + แสง)</div>
+      <div class="fact"><b>🌍 ถึงโลกใน 8 นาที</b>เพราะเป็นแสง → เดินทางด้วย<b>ความเร็วแสง c</b> = 300,000 km/s · เร็วสุดในจักรวาล</div>
+      <div class="fact"><b>🎯 จำให้ขึ้นใจ</b>Flare = <b>warning</b> 🔔 (แสง · ทำลายน้อย) · CME = <b>damage</b> 👊 (พลาสมา · ทำลายไฟฟ้า)</div>
+    </div>`;
+  const stage = host.querySelector('#raceStage');
+  const flare = host.querySelector('#rcFlare');
+  const cme   = host.querySelector('#rcCme');
+  const timer = host.querySelector('#rcTimer');
+  const ft = host.querySelector('#rcFt'), ct = host.querySelector('#rcCt'), diff = host.querySelector('#rcDiff');
+  const btnF = host.querySelector('#btnFlare'), btnC = host.querySelector('#btnCme');
+  const fx   = host.querySelector('#rcFx');
+  const explain = host.querySelector('#rcExplain');
+  const steps = host.querySelectorAll('#flSteps .step');
+  const spectrumWrap = host.querySelector('#rcSpectrumWrap');
+  let flareDone = false, cmeDone = false, bandsDone = 0;
+  let flareSec = null, cmeSec = null;
+
+  function pushFx(html, cls, delayMs){
+    setTimeout(() => {
+      const b = document.createElement('div');
+      b.className = 'fx-badge ' + (cls||''); b.innerHTML = html;
+      fx.appendChild(b); requestAnimationFrame(() => b.classList.add('show'));
+    }, delayMs);
+  }
+  function clearFx(){ fx.innerHTML = ''; }
+
+  // Real-world durations · displayed as the clock counts up
+  // Flare: 8 นาที (light · ความเร็วแสง)
+  // CME:   2 วัน (~ 2880 นาที) · เร็วกลาง 870 km/s ใช้เวลาประมาณนี้
+  const FLARE_REAL_MIN = 8;
+  const CME_REAL_DAYS  = 2;            // = 2880 นาที = 360× ของ flare
+  const REAL_RATIO = (CME_REAL_DAYS * 24 * 60) / FLARE_REAL_MIN;  // 360
+
+  function launch(el, durMs, label, realText, realInterp, onEnd, onArrive){
+    el.classList.add('live');
+    el.style.transition = `left ${durMs}ms linear`;
+    el.style.left = '14%';
+    requestAnimationFrame(() => { el.style.left = '86%'; });
+    const t0 = performance.now();
+    const tick = () => {
+      const e = (performance.now() - t0) / 1000;          // sim seconds
+      const pct = Math.min(1, e / (durMs/1000));
+      timer.textContent = `🚀 ${label} · ⏱️ ${realInterp(pct)}`;
+      if(pct < 1.05) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    setTimeout(() => {
+      timer.textContent = `✓ ${label} ถึงโลก · ${realText}`;
+      el.classList.remove('live'); el.style.left = '14%';
+      onArrive && onArrive();
+      onEnd();
+    }, durMs);
+  }
+  btnF.onclick = () => {
+    btnF.disabled = true;
+    launch(flare, 1600, 'Flare (แสง)',
+      `${FLARE_REAL_MIN} นาที`,
+      pct => `${(pct * FLARE_REAL_MIN).toFixed(1)} นาที`,
+      () => {
+        flareDone = true;
+        ft.innerHTML = `<b>${FLARE_REAL_MIN} นาที</b>`; ft.className = 'v ok';
+        checkBoth();
+      },
+      () => {
+        pushFx('📻 HF radio blackout', 'warn', 0);
+        pushFx('🛰️ GPS jitter', 'info', 250);
+        pushFx(`💡 ตรวจพบใน ${FLARE_REAL_MIN} นาที`, '', 500);
+      });
+  };
+  btnC.onclick = () => {
+    btnC.disabled = true;
+    launch(cme, 6500, 'CME (พลาสมา)',
+      `${CME_REAL_DAYS} วัน`,
+      pct => {
+        const days = pct * CME_REAL_DAYS;
+        if(days < 1) return `${(days * 24).toFixed(1)} ชม.`;
+        return `${days.toFixed(2)} วัน`;
+      },
+      () => {
+        cmeDone = true;
+        ct.innerHTML = `<b>~${CME_REAL_DAYS} วัน</b> (1-3 วัน)`; ct.className = 'v hot';
+        checkBoth();
+      },
+      () => {
+        pushFx('🌪️ geomagnetic storm', '', 0);
+        pushFx('⚡ grid surge · transformer', '', 250);
+        pushFx('🌌 aurora amplified', 'info', 500);
+      });
+  };
+  function checkBoth(){
+    if(flareDone && cmeDone){
+      diff.innerHTML = `<b>~${Math.round(REAL_RATIO)}×</b>`; diff.className = 'v hot';
+      // advance to step 2 then 3
+      steps[0].classList.add('done'); steps[0].classList.remove('active');
+      steps[1].classList.add('done');
+      steps[2].classList.add('active');
+      explain.className = 'explain-card warn';
+      explain.innerHTML = `<span class="why">STEP 2 ✓ · ผลต่อโลก</span>
+        Flare ถึงก่อนใน 8 นาที → แค่ <b>radio/GPS รบกวน</b> (เพราะเป็นแสง · ไม่มีมวล) ·
+        CME ถึงทีหลัง 1-3 วัน → <b>geomagnetic storm + grid surge + aurora</b> (เพราะมีมวล + B)<br>
+        <b>นี่คือเหตุผลที่ flare = "warning" · CME = "damage"</b><br><br>
+        <span class="why">STEP 3 · คลิกทุกแถบ spectrum ของ flare</span>`;
+      spectrumWrap.style.display = '';
+      // bands
+      const BANDS = [
+        { name:'X-ray', color:'#ff5c7a', effect:'พลังงานสูงสุด · ทำให้ ionosphere ขยาย → <b>HF radio blackout</b> ทันที' },
+        { name:'UV',    color:'#b980ff', effect:'ทำให้ <b>ozone</b> เปลี่ยนแปลงชั่วคราว · เพิ่ม drag ดาวเทียม LEO' },
+        { name:'Visible', color:'#ffd96b', effect:'แสงที่ตามองเห็น · เพิ่มแสงรวมจากดวงอาทิตย์เพียงเล็กน้อย · ปลอดภัย' },
+      ];
+      const bandsEl = host.querySelector('#rcBands');
+      BANDS.forEach((b, i) => {
+        const el = document.createElement('button');
+        el.style.cssText = `padding:10px;border-radius:8px;cursor:pointer;font-family:Orbitron,monospace;font-size:11px;
+          background:rgba(20,28,52,0.6);border:1px solid ${b.color};color:${b.color};letter-spacing:.1em;`;
+        el.innerHTML = `▮ ${b.name}`;
+        el.onclick = () => {
+          if(el.dataset.done) return;
+          el.dataset.done = '1';
+          el.style.background = `${b.color}22`;
+          el.innerHTML = `✓ ${b.name}`;
+          // append explanation
+          const p = document.createElement('div');
+          p.style.cssText = `padding:6px 10px;border-radius:6px;background:rgba(0,0,0,0.4);font-size:11px;color:#d4f0ff;margin-top:4px;border-left:3px solid ${b.color};`;
+          p.innerHTML = `<b style="color:${b.color};">${b.name}:</b> ${b.effect}`;
+          bandsEl.parentElement.appendChild(p);
+          bandsDone++;
+          if(bandsDone === 3) markDone('flare');
+        };
+        bandsEl.appendChild(el);
+      });
+    }
+  }
+}
+
+/* ============================================================
+ *  TAB 4 · CME · Speed → ETA Calculator
+ * ============================================================ */
+function renderCME(host){
+  host.innerHTML = `
+    <div class="lab-head">
+      <h3>💥 CME · ความเร็ว → ความเสียหายต่อโลก</h3>
+      <div class="lab-task">🎯 ลอง <b>3 ระดับความเร็ว</b> · ดูว่า magnetosphere โลกรับมือไหวมั้ย</div>
+    </div>
+    <div class="step-bar"></div>
+    <div class="regime-tracker" id="cmeRegimes">
+      <div class="regime-pill" data-r="slow">🐌 ช้า · 400-1000</div>
+      <div class="regime-pill" data-r="med">⚠️ กลาง · 1000-1700</div>
+      <div class="regime-pill" data-r="fast">🚨 เร็ว · 1700+</div>
+    </div>
+    <div class="lab-stage cme-stage" id="cmeStage">
+      <div class="cme-sun-l"></div>
+      <div class="cme-cloud" id="cmeCloud"></div>
+      <svg id="cmeShield" style="position:absolute;right:0;top:0;width:140px;height:100%;pointer-events:none;z-index:3;">
+        <defs>
+          <radialGradient id="shieldGrad"><stop offset="0%" stop-color="rgba(100,216,255,0.4)"/><stop offset="100%" stop-color="rgba(100,216,255,0)"/></radialGradient>
+        </defs>
+        <path id="shieldPath" d="M 50 100 Q 5 100 5 60 Q 5 20 50 20" fill="none" stroke="#64d8ff" stroke-width="2" opacity="0.85"/>
+        <path d="M 60 100 Q 15 100 15 60 Q 15 20 60 20" fill="none" stroke="#64d8ff" stroke-width="1" opacity="0.5"/>
+      </svg>
+      <div class="cme-earth-r"></div>
+      <div class="earth-fx" id="cmeFx"></div>
+      <div class="cme-targetbar">
+        <span>🐌 ช้า · 3+ วัน · shield รับไหว</span>
+        <span>⚠️ กลาง · 1-3 วัน · ดาวเทียมเริ่มเสีย</span>
+        <span>🚨 เร็ว · ≤ 24 ชม. · grid พัง!</span>
+      </div>
+    </div>
+    <div class="lab-controls">
+      <label>🌬️ ความเร็ว CME (km/s) · <span style="color:#ffcb6b;font-family:Orbitron,monospace;" id="cmeVval">800</span></label>
+      <input type="range" min="400" max="3000" step="50" value="800" id="cmeRange"/>
+      <div class="lab-readout">
+        <div class="cell"><div class="k">ระยะ Sun→Earth</div><div class="v">1.5×10⁸ km</div></div>
+        <div class="cell"><div class="k">ETA</div><div class="v" id="cmeEta">—</div></div>
+        <div class="cell"><div class="k">shield ทนไหม</div><div class="v" id="cmeRisk">—</div></div>
+      </div>
+    </div>
+    <div class="explain-card" id="cmeExplain">
+      <span class="why">WHY · magnetosphere = เกราะแม่เหล็กของโลก</span>
+      โลกมี <b>magnetosphere</b> ห่อล้อม (เส้นโค้งฟ้า) · ทำหน้าที่<u>เบี่ยง</u>พลาสมา CME ให้ไหลอ้อมไป · แต่ถ้า CME เร็วและแรงมาก → <b>ทะลุเกราะ</b> · เกิด geomagnetic storm
+    </div>
+    <div class="facts">
+      <div class="fact"><b>💥 CME คือ</b><b>ก้อนพลาสมา + สนามแม่เหล็ก</b>ขนาดใหญ่กว่าโลก · ดวงอาทิตย์ปลดออกจาก corona · ความเร็ว 250-3,000 km/s</div>
+      <div class="fact"><b>🛡️ ผลต่อโลก</b>ถ้าเร็วพอ → <u>ทะลุ magnetosphere</u> → <b>geomagnetic storm</b> → grid blackout · ดาวเทียมเสียหาย · GPS รวน</div>
+      <div class="fact"><b>📚 ตัวอย่าง</b><b>Carrington Event 1859</b> · CME รุนแรงสุดในประวัติ · telegraph ลุกไหม้ · ถ้าเกิดวันนี้ = ไฟดับนานหลายเดือน</div>
+    </div>`;
+  const range = host.querySelector('#cmeRange');
+  const cloud = host.querySelector('#cmeCloud');
+  const shield = host.querySelector('#shieldPath');
+  const eta = host.querySelector('#cmeEta'), risk = host.querySelector('#cmeRisk'), vval = host.querySelector('#cmeVval');
+  const explain = host.querySelector('#cmeExplain');
+  const fx = host.querySelector('#cmeFx');
+  const regimes = host.querySelectorAll('#cmeRegimes .regime-pill');
+  const visited = new Set();
+  function setRegime(r){
+    if(visited.has(r)) return;
+    visited.add(r);
+    host.querySelector(`.regime-pill[data-r="${r}"]`).classList.add('visited');
+    if(visited.size === 3) markDone('cme');
+  }
+  function clearFx(){ fx.innerHTML = ''; }
+  function pushFx(html, cls, delay){
+    setTimeout(() => {
+      const b = document.createElement('div'); b.className = 'fx-badge ' + (cls||''); b.innerHTML = html;
+      fx.appendChild(b); requestAnimationFrame(() => b.classList.add('show'));
+    }, delay || 0);
+  }
+  function update(){
+    const v = +range.value;
+    vval.textContent = v;
+    const hours = (1.5e8 / v) / 3600;
+    let etaText, riskText, riskCls, regime, shieldColor;
+    clearFx();
+    if(v < 1000){
+      etaText = (hours/24).toFixed(1) + ' วัน'; riskText = '✓ shield รับไหว';
+      riskCls = 'ok'; regime = 'slow'; shieldColor = '#7effb2';
+      explain.className = 'explain-card win';
+      explain.innerHTML = `<span class="why">🐌 ช้า · 400-1000 km/s</span>
+        magnetosphere <b>เบี่ยง CME ออกได้สบาย</b> · พลาสมาไหลอ้อมโลก · เกิดแค่ <b>aurora สวยที่ขั้ว</b> · ไม่มีความเสียหาย`;
+      pushFx('🌌 aurora สวย', 'info', 0);
+    } else if(v < 1700){
+      etaText = (hours/24).toFixed(1) + ' วัน'; riskText = '⚠️ shield รั่ว';
+      riskCls = ''; regime = 'med'; shieldColor = '#ffcb6b';
+      explain.className = 'explain-card warn';
+      explain.innerHTML = `<span class="why">⚠️ กลาง · 1000-1700 km/s</span>
+        CME แรงพอที่จะ<b>กดเกราะ</b> · พลาสมาบางส่วนทะลุเข้ามา · เกิด <b>satellite glitch · GPS jitter · radio fade</b> · aurora ขยายไปละติจูดต่ำ`;
+      pushFx('🛰️ satellite glitch', 'warn', 0);
+      pushFx('📡 GPS jitter', 'warn', 200);
+      pushFx('🌌 aurora แรง', 'info', 400);
+    } else {
+      etaText = hours.toFixed(1) + ' ชม.'; riskText = '🚨 shield พัง';
+      riskCls = 'hot'; regime = 'fast'; shieldColor = '#ff5c7a';
+      explain.className = 'explain-card warn';
+      explain.innerHTML = `<span class="why">🚨 เร็วมาก · 1700+ km/s · Carrington-class</span>
+        CME <b>ทะลุเกราะ</b> · ปะทะ ionosphere โดยตรง · เกิด <b>geomagnetic storm รุนแรง</b> ·
+        <u>grid blackout · transformer ระเบิด · ดาวเทียมเสียหาย · เที่ยวบินขั้วต้องเปลี่ยนเส้นทาง</u>`;
+      pushFx('⚡ grid blackout', '', 0);
+      pushFx('🛰️ satellite damage', '', 200);
+      pushFx('🛬 polar flights divert', 'warn', 400);
+      pushFx('🌪️ geomagnetic storm', '', 600);
+    }
+    eta.innerHTML = `<b>${etaText}</b>`;
+    eta.className = 'v ' + (hours <= 24 ? 'hot' : '');
+    risk.textContent = riskText; risk.className = 'v ' + riskCls;
+    shield.setAttribute('stroke', shieldColor);
+    setRegime(regime);
+    // animate cloud speed
+    const dur = Math.max(1.5, 12 - v/300);
+    cloud.style.animation = 'none';
+    requestAnimationFrame(() => { cloud.style.animation = `cmeFly ${dur}s linear infinite`; });
+  }
+  if(!document.getElementById('cmeFlyKF')){
+    const s = document.createElement('style'); s.id = 'cmeFlyKF';
+    s.textContent = '@keyframes cmeFly { 0%{transform:translate(0,-50%) scale(0.6); opacity:0.4;} 30%{opacity:0.95;} 100%{transform:translate(380%,-50%) scale(1.4); opacity:0;} }';
+    document.head.appendChild(s);
+  }
+  range.addEventListener('input', update);
+  update();
+}
+
+/* ============================================================
+ *  TAB 5 · SOLAR WIND · Drag Earth into Stream → Aurora
+ * ============================================================ */
+function renderWind(host){
+  host.innerHTML = `
+    <div class="lab-head">
+      <h3>🌬️ Solar Wind · Magnetosphere · Aurora</h3>
+      <div class="lab-task">🎯 ทำครบ 2: <b>ลากโลกเข้า stream + ดู zoom ขั้ว</b></div>
+    </div>
+    <div class="step-bar" id="wdSteps">
+      <div class="step active">1 · drag earth เข้า stream</div>
+      <div class="step">2 · zoom ขั้ว · ดู particle funnel</div>
+    </div>
+    <div class="lab-stage wind-stage" id="windStage">
+      <div class="wind-sun-l"></div>
+      <div class="wind-stream" id="windStream"></div>
+      <div class="wind-earth" id="windEarth" style="left:75%; top:20%;">
+        <svg style="position:absolute;left:-22px;top:-22px;width:92px;height:92px;pointer-events:none;overflow:visible;" id="wdMagSvg">
+          <path d="M 46 12 Q 78 46 46 80 Q 14 46 46 12" fill="none" stroke="rgba(100,216,255,0.6)" stroke-width="1.2"/>
+          <path d="M 46 6 Q 88 46 46 86 Q 4 46 46 6" fill="none" stroke="rgba(100,216,255,0.4)" stroke-width="1"/>
+          <path d="M 46 0 Q 96 46 46 92 Q -4 46 46 0" fill="none" stroke="rgba(100,216,255,0.25)" stroke-width="0.8"/>
+        </svg>
+        <div class="wind-aurora north"></div>
+        <div class="wind-aurora south"></div>
+      </div>
+    </div>
+    <div class="explain-card" id="wdExplain">
+      <span class="why">STEP 1 · WHY · solar wind คืออะไร</span>
+      พลาสมาไหลจาก corona ของดวงอาทิตย์<b>ตลอดเวลา</b> ที่ ~400 km/s · ไปทุกทิศ · ห่อโลกใน "heliosphere" ·
+      โลกมี <b>magnetosphere</b> (เส้นสีฟ้ารอบโลก) เป็นเกราะ
+    </div>
+    <div class="lab-controls">
+      <div class="lab-readout">
+        <div class="cell"><div class="k">wind speed</div><div class="v ok">~400 km/s</div></div>
+        <div class="cell"><div class="k">earth in stream</div><div class="v" id="wIn">— ลากโลกเข้า</div></div>
+        <div class="cell"><div class="k">aurora</div><div class="v" id="wAur">OFF</div></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-action green" id="wdZoom" style="display:none;">🔍 ZOOM ขั้วโลก · ดู particle funnel</button>
+    </div>
+    <div id="wdZoomPanel" style="display:none;margin-top:10px;padding:12px;border-radius:10px;background:rgba(20,28,52,0.8);border:1px solid #7effb2;">
+      <div style="font-family:Orbitron,monospace;font-size:11px;color:#7effb2;letter-spacing:.12em;margin-bottom:6px;">🔍 POLE ZOOM · เส้นทางอนุภาคจาก ☀️ → ขั้วโลก</div>
+      <div style="position:relative;height:240px;border-radius:8px;background:radial-gradient(ellipse at 50% 50%,#0a1a3a,#02030a 80%);overflow:hidden;" id="wdZoomStage">
+        <svg style="position:absolute;inset:0;width:100%;height:100%;" viewBox="0 0 320 240" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="zEarthGrad" cx="40%" cy="40%">
+              <stop offset="0%" stop-color="#7ad8ff"/><stop offset="55%" stop-color="#1a4a8a"/><stop offset="100%" stop-color="#0a1a3a"/>
+            </radialGradient>
+            <linearGradient id="zAuroraGrad" x1="0" x2="1">
+              <stop offset="0%"   stop-color="rgba(126,255,178,0.95)"/>
+              <stop offset="50%"  stop-color="rgba(185,128,255,0.85)"/>
+              <stop offset="100%" stop-color="rgba(126,255,178,0.95)"/>
+            </linearGradient>
+            <!-- Helical/spiral field-line paths · จากนอกอวกาศ → โค้งเข้าขั้วโลก -->
+            <path id="zFlNL" d="M 5 60 C 60 60, 120 60, 160 70" />
+            <path id="zFlNR" d="M 315 60 C 260 60, 200 60, 160 70" />
+            <path id="zFlSL" d="M 5 180 C 60 180, 120 180, 160 170" />
+            <path id="zFlSR" d="M 315 180 C 260 180, 200 180, 160 170" />
+          </defs>
+
+          <!-- Solar wind label · ทิศพลาสมาเข้ามา -->
+          <text x="10" y="20"  font-size="9" fill="#9aa3c0" font-family="Orbitron">☀️ solar wind →</text>
+          <text x="245" y="20" font-size="9" fill="#9aa3c0" font-family="Orbitron">← solar wind</text>
+
+          <!-- Magnetic field lines · approach from sides, curve into both poles -->
+          <g fill="none" stroke="rgba(100,216,255,0.45)" stroke-width="1.2" stroke-dasharray="3,3">
+            <use href="#zFlNL"/><use href="#zFlNR"/>
+            <use href="#zFlSL"/><use href="#zFlSR"/>
+          </g>
+
+          <!-- Earth body -->
+          <circle cx="160" cy="120" r="50" fill="url(#zEarthGrad)" stroke="rgba(126,255,178,0.3)" stroke-width="0.5"/>
+          <text x="160" y="74"  text-anchor="middle" font-size="11" fill="#fff" font-family="Orbitron" font-weight="700">N</text>
+          <text x="160" y="174" text-anchor="middle" font-size="11" fill="#fff" font-family="Orbitron" font-weight="700">S</text>
+
+          <!-- AURORAL OVAL · วงรอบขั้ว (ring projected as thin ellipse from side view) -->
+          <!-- North oval -->
+          <ellipse cx="160" cy="72" rx="22" ry="6" fill="url(#zAuroraGrad)" opacity="0.85">
+            <animate attributeName="rx" values="20;26;20" dur="2s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="160" cy="72" rx="14" ry="3.5" fill="rgba(126,255,178,0.95)" opacity="0.9">
+            <animate attributeName="rx" values="12;18;12" dur="1.4s" repeatCount="indefinite"/>
+          </ellipse>
+          <!-- South oval -->
+          <ellipse cx="160" cy="168" rx="22" ry="6" fill="url(#zAuroraGrad)" opacity="0.85">
+            <animate attributeName="rx" values="22;28;22" dur="2.4s" repeatCount="indefinite"/>
+            <animate attributeName="opacity" values="0.7;1;0.7" dur="2.4s" repeatCount="indefinite"/>
+          </ellipse>
+          <ellipse cx="160" cy="168" rx="14" ry="3.5" fill="rgba(126,255,178,0.95)" opacity="0.9">
+            <animate attributeName="rx" values="12;18;12" dur="1.6s" repeatCount="indefinite"/>
+          </ellipse>
+
+          <!-- SPIRALING particles · เกลียวตามเส้น field · multiple staggered dots = visual helix -->
+          <g>
+            <!-- North-bound from left -->
+            <circle r="2.6" fill="#7effb2"><animateMotion dur="2.6s" repeatCount="indefinite"><mpath href="#zFlNL"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.6s" begin="0.4s" repeatCount="indefinite"><mpath href="#zFlNL"/></animateMotion></circle>
+            <circle r="2.4" fill="#7effb2"><animateMotion dur="2.6s" begin="0.9s" repeatCount="indefinite"><mpath href="#zFlNL"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.6s" begin="1.4s" repeatCount="indefinite"><mpath href="#zFlNL"/></animateMotion></circle>
+            <!-- North-bound from right -->
+            <circle r="2.6" fill="#7effb2"><animateMotion dur="2.8s" repeatCount="indefinite"><mpath href="#zFlNR"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.8s" begin="0.5s" repeatCount="indefinite"><mpath href="#zFlNR"/></animateMotion></circle>
+            <circle r="2.4" fill="#7effb2"><animateMotion dur="2.8s" begin="1.0s" repeatCount="indefinite"><mpath href="#zFlNR"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.8s" begin="1.5s" repeatCount="indefinite"><mpath href="#zFlNR"/></animateMotion></circle>
+            <!-- South-bound from left -->
+            <circle r="2.6" fill="#7effb2"><animateMotion dur="3.0s" repeatCount="indefinite"><mpath href="#zFlSL"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="3.0s" begin="0.6s" repeatCount="indefinite"><mpath href="#zFlSL"/></animateMotion></circle>
+            <circle r="2.4" fill="#7effb2"><animateMotion dur="3.0s" begin="1.2s" repeatCount="indefinite"><mpath href="#zFlSL"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="3.0s" begin="1.8s" repeatCount="indefinite"><mpath href="#zFlSL"/></animateMotion></circle>
+            <!-- South-bound from right -->
+            <circle r="2.6" fill="#7effb2"><animateMotion dur="2.7s" repeatCount="indefinite"><mpath href="#zFlSR"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.7s" begin="0.55s" repeatCount="indefinite"><mpath href="#zFlSR"/></animateMotion></circle>
+            <circle r="2.4" fill="#7effb2"><animateMotion dur="2.7s" begin="1.1s" repeatCount="indefinite"><mpath href="#zFlSR"/></animateMotion></circle>
+            <circle r="2.0" fill="#b980ff"><animateMotion dur="2.7s" begin="1.65s" repeatCount="indefinite"><mpath href="#zFlSR"/></animateMotion></circle>
+          </g>
+
+          <!-- Hint labels -->
+          <text x="60"  y="50"  font-size="8" fill="#7effb2" font-family="Orbitron">🌀 spiral helix</text>
+          <text x="195" y="98"  font-size="8" fill="#ffcb6b" font-family="Orbitron">funnel ↘</text>
+          <text x="195" y="148" font-size="8" fill="#ffcb6b" font-family="Orbitron">funnel ↗</text>
+          <text x="105" y="68"  font-size="8" fill="#b980ff" font-family="Orbitron">N oval</text>
+          <text x="105" y="180" font-size="8" fill="#b980ff" font-family="Orbitron">S oval</text>
+        </svg>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:#d4f0ff;line-height:1.7;">
+        🔬 <b>กลไก aurora · 4 ขั้น:</b><br>
+        ① อนุภาคประจุจาก solar wind (e⁻, p⁺) วิ่งมาถึงสนามแม่เหล็กโลก<br>
+        ② <b>ประจุ</b> + <b>field</b> → ถูกบังคับให้เคลื่อนที่เป็น <b>เกลียว (helix)</b> ตามเส้นสนามแม่เหล็ก · ไม่หลุดออก<br>
+        ③ เส้น field รวมกันที่ <b>ขั้วเหนือ + ขั้วใต้</b> → อนุภาคถูก<u>เหวี่ยงเข้าทั้ง 2 ขั้ว</u> + <b>วนเป็นวงรอบขั้ว</b> (auroral oval)<br>
+        ④ ในวงนั้น อนุภาคชนโมเลกุลอากาศ → ปลดพลังงานเป็นแสง · <b>O = เขียว 🟢</b> · <b>N₂ = ม่วง 🟣</b>
+      </div>
+    </div>
+    <div class="facts" style="margin-top:10px;">
+      <div class="fact"><b>🌬️ SOLAR WIND คือ</b><b>กระแสพลาสมา</b>ที่ไหลออกจาก corona <u>ตลอดเวลา</u> · ไปทุกทิศ · ความเร็ว ~400 km/s</div>
+      <div class="fact"><b>🛡️ MAGNETOSPHERE</b>โลกมี<b>เกราะแม่เหล็ก</b>ห่อล้อม · เบี่ยงพลาสมาออก · ป้องกันบรรยากาศ + สิ่งมีชีวิต</div>
+      <div class="fact"><b>🌌 AURORA</b>อนุภาคประจุวิ่ง<b>เป็นเกลียวตามเส้นแม่เหล็ก</b> → เข้าทั้ง 2 ขั้ว → วนเป็นวง → ชนอากาศ → <b>O = เขียว 🟢 · N₂ = ม่วง 🟣</b></div>
+    </div>`;
+  const stage = host.querySelector('#windStage');
+  const earth = host.querySelector('#windEarth');
+  const stream= host.querySelector('#windStream');
+  const wIn = host.querySelector('#wIn'), wAur = host.querySelector('#wAur');
+  const wdSteps = host.querySelectorAll('#wdSteps .step');
+  const wdExplain = host.querySelector('#wdExplain');
+  const wdZoomBtn = host.querySelector('#wdZoom');
+  const wdZoomPanel = host.querySelector('#wdZoomPanel');
+  let dragging = false;
+  let didEnterStream = false;
+  wdZoomBtn.onclick = () => {
+    wdZoomPanel.style.display = '';
+    wdZoomBtn.style.display = 'none';
+    wdSteps[0].classList.add('done'); wdSteps[0].classList.remove('active');
+    wdSteps[1].classList.add('active');
+    wdExplain.className = 'explain-card win';
+    wdExplain.innerHTML = `<span class="why">STEP 2 ✓ · กลไก aurora · เกลียว → วงขั้ว → ชน → เปร่งแสง</span>
+      อนุภาคประจุจาก solar wind ถูกสนามแม่เหล็กโลก<u>บังคับให้เคลื่อนที่เป็นเกลียว (helix)</u> ตามเส้น field ·
+      เส้น field โค้งเข้า <b>ทั้งขั้วเหนือและขั้วใต้</b> → อนุภาคถูกเหวี่ยงเข้า + <b>วนเป็นวงรอบขั้ว</b> (auroral oval) →
+      <b>ชนอากาศ</b> · ปลดพลังงานเป็นแสง · O = 🟢 เขียว · N₂ = 🟣 ม่วง`;
+    setTimeout(() => markDone('wind'), 600);
+    SFX&&SFX.play('correct');
+  };
+  // particles
+  const particles = [];
+  for(let i=0;i<14;i++){
+    const p = document.createElement('div'); p.className = 'wind-particle';
+    p.style.left = (Math.random()*100) + '%';
+    p.style.top  = (40 + Math.random()*30) + '%';
+    p.style.animation = `windDrift ${2 + Math.random()*2}s linear ${Math.random()*2}s infinite`;
+    stream.appendChild(p); particles.push(p);
+  }
+  if(!document.getElementById('windDriftKF')){
+    const s = document.createElement('style'); s.id = 'windDriftKF';
+    s.textContent = '@keyframes windDrift { 0%{transform:translateX(-20px); opacity:0;} 20%{opacity:1;} 80%{opacity:1;} 100%{transform:translateX(400px); opacity:0;} }';
+    document.head.appendChild(s);
+  }
+  function checkInStream(){
+    const r = stage.getBoundingClientRect();
+    const er = earth.getBoundingClientRect();
+    const sr = stream.getBoundingClientRect();
+    const ecy = er.top + er.height/2;
+    const ecx = er.left + er.width/2;
+    const inStream = ecy >= sr.top && ecy <= sr.bottom && ecx >= sr.left && ecx <= sr.right;
+    earth.classList.toggle('in-stream', inStream);
+    if(inStream){
+      wIn.innerHTML = '<b>YES</b>'; wIn.className = 'v ok';
+      wAur.innerHTML = '<b>ON · 🟢🟣</b>'; wAur.className = 'v ok';
+      if(!didEnterStream){
+        didEnterStream = true;
+        wdExplain.className = 'explain-card warn';
+        wdExplain.innerHTML = `<span class="why">STEP 1 ✓ · ทำไม aurora ที่ขั้วเท่านั้น?</span>
+          เห็น aurora สว่างที่ <b>ขั้วเหนือ-ใต้</b> · ไม่ใช่ที่เส้นศูนย์สูตร ·
+          ทำไม? · <b>กด ZOOM</b> เพื่อดูกลไก field line funnel ที่ขั้ว`;
+        wdZoomBtn.style.display = '';
+      }
+    } else {
+      wIn.innerHTML = '— ลากโลกเข้า'; wIn.className = 'v';
+      wAur.innerHTML = 'OFF'; wAur.className = 'v';
+    }
+  }
+  earth.addEventListener('pointerdown', e => {
+    dragging = true; earth.classList.add('drag');
+    earth.setPointerCapture(e.pointerId);
+  });
+  earth.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    const r = stage.getBoundingClientRect();
+    const x = e.clientX - r.left, y = e.clientY - r.top;
+    earth.style.left = Math.max(80, Math.min(r.width - 20, x)) + 'px';
+    earth.style.top  = Math.max(20, Math.min(r.height - 20, y)) + 'px';
+    checkInStream();
+  });
+  earth.addEventListener('pointerup',     () => { dragging = false; earth.classList.remove('drag'); });
+  earth.addEventListener('pointercancel', () => { dragging = false; earth.classList.remove('drag'); });
+  setTimeout(checkInStream, 50);
+}
+
+/* === init === */
+activate(0);
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p14', nextHref:'p15-event-order.html',
+    getPayload(){
+      const v = document.querySelector('input[name="q0"]:checked');
+      return { completed:[...completed], q0:v?Number(v.value):-1, correct:v && Number(v.value)===1 };
+    },
+    validate(p){
+      if(p.completed.length < 5){ alert('ทำการทดลองในแต่ละ tab ให้ครบ 5'); return false; }
+      if(p.q0 === -1){ alert('ตอบ quiz ก่อน'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.correct; },
+    onSubmit(){ if(window.MysteryBox && MysteryBox.roll) MysteryBox.roll({ wrongs:0, page:'p14' }); }
+  });
+}, 200);
+</script>
+</body></html>

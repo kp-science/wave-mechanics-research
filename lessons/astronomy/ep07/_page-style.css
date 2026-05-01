@@ -1,0 +1,236 @@
+/* ===== COSMOS LOG · EP07 · Page Style · Industrial Spectrum =====
+ * Theme: orange (rocket) + steel blue (metal) + electric cyan (X-ray glow)
+ * Spectrum accents per band: radio/micro/IR/visible/UV/X-ray
+ */
+:root {
+  --rocket-orange: #ff8a3d;
+  --rocket-deep: #d65a18;
+  --steel-blue: #4a90e2;
+  --steel-deep: #2a5a8e;
+  --electric: #00d4ff;
+  --bg-deep: #060a14;
+  --bg-mid: #0e1424;
+  --bg-card: #11182a;
+  --line: #2a3a55;
+  --line-soft: #1d2a44;
+  --text: #e3ecf8;
+  --text-soft: #9bb;
+  --text-mute: #7a8aa8;
+  --good: #9be7c4;
+  --warn: #ffd84a;
+  --bad: #ff6a6a;
+
+  /* Spectrum colors (สสวท. EM spectrum) */
+  --c-radio:   #27ae60;
+  --c-micro:   #3498db;
+  --c-ir:      #e67e22;
+  --c-visible: #f1c40f;
+  --c-uv:      #9b59b6;
+  --c-xray:    #00d4ff;
+  --c-gamma:   #ecf0f1;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0;
+  background: radial-gradient(ellipse at 50% 0%, #1a2540 0%, var(--bg-deep) 70%);
+  color: var(--text);
+  font-family: 'Sarabun', system-ui, -apple-system, sans-serif;
+  font-size: 18px;
+  line-height: 1.55;
+  min-height: 100vh;
+}
+
+h1 { font-size: 36px; font-weight: 800; color: var(--rocket-orange); margin: 0 0 12px; line-height: 1.2; }
+h2 { font-size: 26px; font-weight: 700; color: var(--electric); margin: 16px 0 8px; }
+h3 { font-size: 20px; font-weight: 700; color: var(--steel-blue); margin: 12px 0 6px; }
+p  { font-size: 18px; margin: 0 0 12px; }
+.lbl { font-weight: 700; color: var(--rocket-orange); display: inline-block; margin-bottom: 4px; }
+
+a { color: var(--electric); }
+
+/* Page layout */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 60px 18px 80px;
+  position: relative;
+  z-index: 5;
+}
+
+/* Crisis Card · "Crisis → Tool → Solution" header */
+.crisis {
+  background: linear-gradient(180deg, #2a1010 0%, #1a0808 100%);
+  border: 2px solid var(--bad);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  box-shadow: 0 0 28px rgba(255, 80, 80, 0.18);
+  animation: crisisPulse 2.6s ease-in-out infinite;
+}
+@keyframes crisisPulse {
+  0%, 100% { box-shadow: 0 0 24px rgba(255, 80, 80, 0.18); }
+  50%      { box-shadow: 0 0 40px rgba(255, 80, 80, 0.36); }
+}
+.crisis-h { font-weight: 800; color: var(--bad); font-size: 14px; letter-spacing: .14em; margin-bottom: 4px; }
+.crisis-body { font-size: 17px; color: var(--text); }
+
+/* Tool Card · "ทำไมตำราช่วยตอนนี้" */
+.tool {
+  background: linear-gradient(180deg, #0e2a30 0%, #0a1a20 100%);
+  border: 1px solid var(--electric);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+.tool-h { font-weight: 700; color: var(--electric); font-size: 13px; letter-spacing: .12em; }
+.tool-body { font-size: 16px; }
+
+/* Transfer Card · "ในชีวิตจริง" */
+.transfer {
+  background: linear-gradient(180deg, #0e2a1e 0%, #081a14 100%);
+  border-left: 4px solid var(--good);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 14px 0;
+  font-size: 15px;
+}
+.transfer-h { font-weight: 700; color: var(--good); font-size: 13px; letter-spacing: .12em; margin-bottom: 4px; }
+
+/* Standard card */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 12px 0;
+}
+.card-title { font-size: 15px; font-weight: 700; color: var(--steel-blue); letter-spacing: .08em; margin-bottom: 6px; }
+
+/* Action buttons */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--rocket-orange); color: #1a0e00;
+  border: none; border-radius: 10px;
+  padding: 10px 18px;
+  font: 700 15px 'Sarabun', system-ui;
+  cursor: pointer; transition: transform .15s, box-shadow .2s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255, 138, 61, .4); }
+.btn.alt { background: var(--steel-blue); color: #fff; }
+.btn.electric { background: var(--electric); color: #001824; }
+.btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* Quick poll chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.chip {
+  background: var(--bg-card); color: var(--text);
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 8px 14px; cursor: pointer;
+  font-size: 14px; transition: all .15s;
+}
+.chip:hover { border-color: var(--rocket-orange); }
+.chip.selected { background: var(--rocket-orange); color: #1a0e00; border-color: var(--rocket-orange); }
+.chip.correct  { background: #1a3a2a; color: var(--good); border-color: var(--good); }
+.chip.wrong    { background: #3a1a1a; color: var(--bad); border-color: var(--bad); }
+
+/* Spectrum band (drag/drop spectrum visual) */
+.spectrum-bar {
+  display: flex; height: 60px; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--line);
+}
+.spectrum-band {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #000; font-weight: 700;
+  cursor: grab; user-select: none;
+}
+.spectrum-band[draggable="true"]:active { cursor: grabbing; }
+
+/* Drop zones */
+.drop-row { display: flex; gap: 8px; margin: 12px 0; }
+.drop-slot {
+  flex: 1; min-height: 70px; padding: 10px;
+  background: rgba(74, 144, 226, .08);
+  border: 2px dashed var(--steel-blue);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  font-size: 13px; color: var(--text-soft);
+  transition: all .2s;
+}
+.drop-slot.over { background: rgba(255, 138, 61, .12); border-color: var(--rocket-orange); }
+.drop-slot.filled { border-style: solid; color: var(--text); }
+
+/* HUD chips per spectrum band */
+.band-tag { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; color: #001; }
+.band-tag.radio   { background: var(--c-radio); }
+.band-tag.micro   { background: var(--c-micro); }
+.band-tag.ir      { background: var(--c-ir); }
+.band-tag.visible { background: var(--c-visible); }
+.band-tag.uv      { background: var(--c-uv); color: #fff; }
+.band-tag.xray    { background: var(--c-xray); }
+
+/* Submit/result host */
+#resultHost {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(0, 212, 255, .06);
+  border: 1px solid var(--line);
+  color: var(--text-soft);
+  display: none;
+  font-size: 14px;
+}
+#resultHost.show { display: block; }
+#resultHost.correct { background: rgba(155, 231, 196, .1); border-color: var(--good); color: var(--good); }
+#resultHost.wrong   { background: rgba(255, 106, 106, .1); border-color: var(--bad);  color: var(--bad); }
+
+/* Section divider */
+.divider { height: 1px; background: linear-gradient(90deg, transparent, var(--line), transparent); margin: 18px 0; }
+
+/* Quote (NPC dialogue) */
+.npc {
+  background: linear-gradient(180deg, #1a2030 0%, #0e1424 100%);
+  border-left: 4px solid var(--rocket-orange);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-style: italic;
+  color: var(--text-soft);
+}
+.npc b { color: var(--rocket-orange); font-style: normal; }
+
+/* ACT badge */
+.act-badge {
+  display: inline-block; padding: 4px 12px;
+  background: var(--bg-card); border: 1px solid var(--rocket-orange);
+  border-radius: 999px; font-size: 12px; font-weight: 700;
+  color: var(--rocket-orange); letter-spacing: .12em;
+  margin-bottom: 8px;
+}
+
+/* Cinematic intro */
+.cinematic {
+  background: #000; color: #fff; padding: 60px 24px;
+  text-align: center; border-radius: 16px;
+  border: 1px solid var(--rocket-orange);
+  box-shadow: 0 0 60px rgba(255, 138, 61, .2);
+  margin: 20px 0;
+}
+.cinematic h1 { color: var(--rocket-orange); font-size: 42px; }
+.cinematic p { font-size: 19px; color: #ccc; }
+
+/* Inline metrics */
+.metric { display: inline-block; background: var(--bg-card); padding: 4px 10px;
+  border-radius: 8px; border: 1px solid var(--line); font-size: 13px; margin: 0 4px; }
+.metric b { color: var(--electric); }
+
+/* Mobile */
+@media (max-width: 600px) {
+  body { font-size: 16px; }
+  h1 { font-size: 28px; }
+  h2 { font-size: 22px; }
+  .page { padding: 70px 12px 80px; }
+  .drop-row { flex-direction: column; }
+}

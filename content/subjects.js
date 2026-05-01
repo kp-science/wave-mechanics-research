@@ -50,7 +50,8 @@ window.KP_SUBJECTS = [
         icon: '🔊',
         status: 'coming-soon',
         numPlans: 0,
-        dbUrl: null
+        unit: 'sound',  // ← scaffold พร้อมที่ content/physics3/units/sound/ · เปลี่ยน status:'open' หลังเติม plans
+        dbUrl: null     // ← null = ใช้ API_URL ของวิชา · ถ้าอยากแยกชีท → deploy backend แล้ววาง URL
       },
       {
         id: 'light',
@@ -59,6 +60,7 @@ window.KP_SUBJECTS = [
         icon: '💡',
         status: 'coming-soon',
         numPlans: 0,
+        unit: 'light',  // ← scaffold พร้อมที่ content/physics3/units/light/
         dbUrl: null
       }
     ]

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P10d · COMET ORIGIN MAP · GS-6</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.map-stage { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.origin { padding:14px; border-radius:12px; min-height:120px; }
+.kuip-bin { background:rgba(185,128,255,0.10); border:2px dashed #b980ff; }
+.oort-bin { background:rgba(126,255,178,0.10); border:2px dashed #7effb2; }
+.origin h4 { font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; margin:0 0 6px; }
+.kuip-bin h4 { color:#b980ff; } .oort-bin h4 { color:#7effb2; }
+.comet-tag { padding:8px 12px; border-radius:10px; cursor:pointer; user-select:none;
+             background:rgba(20,28,52,0.7); border:1.5px solid rgba(120,140,220,0.4); margin:4px; display:inline-block; font-size:13px; }
+.comet-tag.placed-correct { background:rgba(126,255,178,0.18); border-color:#7effb2; }
+.comet-tag.placed-wrong { background:rgba(255,92,122,0.12); border-color:#ff5c7a; }
+.tag-pool { display:flex; flex-wrap:wrap; gap:6px; padding:14px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px dashed rgba(120,140,220,0.3); margin:10px 0; min-height:60px; }
+</style>
+</head>
+<body data-page="p10d" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">❄️ COMET ORIGIN MAP · GATE 6</span>
+  <h1>ปลด GS-6 · Oort Whisper · FINAL</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ลาก 6 ดาวหางใส่<b>แหล่งกำเนิด</b> · คาบสั้น = Kuiper · คาบยาว = Oort · ครบ 6/6 = ปลด <b style="color:#7effb2;">SHARD-6 สุดท้าย!</b>"</span>
+  </div>
+
+  <div class="card">
+    <h3>📦 6 ดาวหาง</h3>
+    <div class="tag-pool" id="pool"></div>
+    <div class="map-stage">
+      <div class="origin kuip-bin"><h4>💜 KUIPER (คาบสั้น &lt; 200 ปี)</h4><div data-z="kuip" id="kuipBin" style="min-height:60px;"></div></div>
+      <div class="origin oort-bin"><h4>💚 OORT (คาบยาว &gt; 200 ปี)</h4><div data-z="oort" id="oortBin" style="min-height:60px;"></div></div>
+    </div>
+  </div>
+
+  <div id="resultHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P10d</summary>
+    <div>6/6 = ผ่าน · GS-6 = SHARD ครบ 6/6 · ปลด pop-up FINAL · นำไป p23 forge</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ดาวหาง short/long period มาจากไหน',
+    words: ['Kuiper Belt', 'Oort Cloud', 'short period', 'long period', 'ดาวหาง', '30 AU', '70000 AU', 'โคจร', 'น้ำแข็ง', 'โครเอนเทียม'],
+    required: ['Kuiper Belt', 'Oort Cloud', 'short period', 'long period'],
+    indicator: 'K4'
+  });
+})();
+</script>
+
+
+<div id="ljMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ljMount');
+  if(!el || !window.Journal) return;
+  Journal.mount(el, {
+    pageId: document.body.dataset.page,
+    sceneTitle: 'จดสมุด · 3-2-1 ปิด scene',
+    learnedChips: ['Kuiper 30-50 AU', 'Oort 2k-100k AU', 'พลูโต = dwarf', 'ดาวหาง 2 ต้นกำเนิด', '3 เกณฑ์ดาวเคราะห์', 'New Horizons 2015'],
+    useChips: ['อธิบายเพื่อนเรื่องพลูโต', 'อ่านข่าวดาวหาง', 'เข้าใจระบบสุริยะใหญ่กว่าคิด', 'ไม่ดราม่าเรื่อง 9 ดวง'],
+    askChips: ['Planet 9 มีจริงไหม', 'Sedna คืออะไร', 'Voyager จะถึง Oort เมื่อไหร่', 'ที่ Oort หนาวเท่าไหร่']
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const COMETS = [
+  { id:'halley',   n:'Halley · 76 ปี',          t:'kuip' },
+  { id:'encke',    n:'Encke · 3.3 ปี',           t:'kuip' },
+  { id:'tempel',   n:'Tempel 1 · 5.5 ปี',        t:'kuip' },
+  { id:'halebopp', n:'Hale-Bopp · 2,500 ปี',     t:'oort' },
+  { id:'west',     n:'West · 558,000 ปี',         t:'oort' },
+  { id:'mcnaught', n:'McNaught · 92,600 ปี',     t:'oort' },
+];
+const placed = {};
+const pool = document.getElementById('pool');
+COMETS.slice().sort(()=>Math.random()-0.5).forEach(c => {
+  const el = document.createElement('div'); el.className='comet-tag'; el.dataset.id=c.id;
+  el.textContent = '☄ '+c.n;
+  el.onclick = () => {
+    if(placed[c.id]) return;
+    const dlg = document.createElement('div');
+    dlg.style.cssText='position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:flex; align-items:center; justify-content:center;';
+    dlg.innerHTML = `<div style="background:#06091a; padding:18px; border-radius:14px; border:1px solid #64d8ff;">
+      <div style="font-size:13px; color:#fff; margin-bottom:10px;">☄ ${c.n}</div>
+      <button class="ghost" data-z="kuip">💜 KUIPER</button>
+      <button class="ghost" data-z="oort" style="margin-left:6px;">💚 OORT</button></div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelectorAll('button').forEach(b => b.onclick = () => {
+      const z = b.dataset.z; dlg.remove();
+      placed[c.id] = z;
+      document.getElementById(z+'Bin').appendChild(el);
+      el.onclick = null;
+    });
+  };
+  pool.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p10d', nextHref:'p11-voyager-replay.html',
+    getPayload(){
+      let correct = 0;
+      COMETS.forEach(c => { if(placed[c.id]===c.t) correct++; });
+      return { placed, correct, total:COMETS.length };
+    },
+    validate(p){ if(Object.keys(placed).length<COMETS.length){ alert('คัดให้ครบ 6 ดวง'); return false; } return true; },
+    isPerfect(p){ return p.correct===p.total; },
+    onSubmit(){
+      let correct = 0;
+      COMETS.forEach(c => {
+        const el = document.querySelector(`.comet-tag[data-id="${c.id}"]`);
+        if(!el) return;
+        const ok = placed[c.id]===c.t;
+        el.classList.add(ok ? 'placed-correct' : 'placed-wrong');
+        if(ok) correct++;
+      });
+      const r = document.getElementById('resultHost');
+      if(correct === COMETS.length){
+        QuestState.grant('gs6');
+        QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene||0.6);
+        r.innerHTML = '<div class="card green">✓ <b>COMET MAP COMPLETE</b> · ปลด <b style="color:#7effb2;">GS-6 ❄️ Oort Whisper</b> · <b style="color:#ffd700;">FINAL SHARD 6/6!</b></div>';
+      } else {
+        r.innerHTML = `<div class="card red">⚠ ${correct}/6 · ลองคิดใหม่</div>`;
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

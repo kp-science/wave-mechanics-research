@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P06b · RADIATIVE · EXPLORE</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.phase-tag { display:inline-block; padding:4px 10px; border-radius:6px; font-family:Orbitron,monospace; font-size:10px; letter-spacing:.16em; margin:8px 0; }
+.phase-2 { background:rgba(255,138,61,.15); color:#ff8a3d; border:1px solid rgba(255,138,61,.4); }
+.heat-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:4px; padding:10px; border-radius:12px; background:rgba(0,0,0,0.4); margin:10px 0; }
+.heat-cell { aspect-ratio:1; border-radius:6px; display:flex; align-items:center; justify-content:center;
+             font-family:Orbitron,monospace; font-size:11px; color:#fff; cursor:pointer; transition:all .15s;
+             text-shadow:0 1px 2px rgba(0,0,0,0.7); user-select:none; position:relative; }
+.heat-cell:hover { transform:scale(1.06); outline:2px solid #fff; }
+.heat-cell.ship { box-shadow:0 0 0 3px #7effb2 inset; }
+.heat-cell.ship::after { content:'🚀'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:20px; }
+.heat-cell.path { outline:2px dashed rgba(126,255,178,0.5); }
+.heat-cell.exit { box-shadow:0 0 0 3px #ffcb6b inset; }
+.heat-cell.exit::after { content:'EXIT'; position:absolute; left:50%; bottom:2px; transform:translateX(-50%); font-size:8px; font-family:Orbitron,monospace; color:#ffcb6b; }
+.legend { display:flex; gap:12px; align-items:center; justify-content:center; font-size:11px; color:#9aa3c0; margin-top:6px; flex-wrap:wrap; }
+.legend .swatch { display:inline-block; width:14px; height:14px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+.steps-info { padding:10px 14px; border-radius:10px; background:rgba(255,138,61,0.08); border:1px solid rgba(255,138,61,0.3); margin:8px 0; }
+.steps-info b { color:#ffcb6b; font-family:Orbitron,monospace; }
+.obs-log { padding:12px; border-radius:12px; background:rgba(126,255,178,0.06); border:1px dashed #7effb2; margin:10px 0; }
+.obs-log h3 { color:#7effb2; margin:0 0 8px; font-family:Orbitron,monospace; font-size:13px; letter-spacing:.14em; }
+.obs-row { display:grid; grid-template-columns:30px 1fr 80px; gap:8px; padding:6px; border-radius:6px;
+           background:rgba(20,28,52,0.4); margin-bottom:4px; font-size:12px; align-items:center; }
+.obs-row .num { font-family:Orbitron,monospace; color:#7effb2; text-align:center; }
+.obs-row .res.ok { color:#7effb2; font-weight:600; }
+.obs-row .res.bad { color:#ff5c7a; font-weight:600; }
+</style>
+</head>
+<body data-page="p06b" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🌫️ SCENE 2 · RADIATIVE · B · EXPLORE</span>
+  <h1>ทดลองเดินตาม gradient · ทะลุออกจาก Radiative</h1>
+  <div class="tags"><span class="kpa-chip">P1</span><span class="kpa-chip">K2</span></div>
+
+  <div class="phase-tag phase-2">🔬 PHASE 2 · EXPLORE + OBSERVE</div>
+
+  <div class="card lavender">
+    <span class="narr">
+      <b style="color:#ffcb6b;">พ่อ:</b> "<b>ดูที่ gradient อุณหภูมิ</b> · อุณหภูมิยิ่งต่ำ = ยิ่งใกล้ทางออก ·
+      ทดลองเดิน · บันทึกทุก step · เธอจะเห็น <b>กฎ</b> ของ random walk เอง"
+    </span>
+  </div>
+
+  <div class="steps-info">
+    📌 ลากยาน <b>🚀</b> ไปยัง cell ที่ <b>T ต่ำกว่า</b> (cell ติดกัน 4 ทิศ)<br>
+    เดินถึง EXIT (มุมบนซ้าย · เย็นสุด) = ทะลุออก<br>
+    Step: <b id="stepCount">0</b> · ผิด: <b id="wrongCount" style="color:#ff5c7a;">0</b> · ทุก step บันทึกใน Log
+  </div>
+
+  <div class="heat-grid" id="heatGrid"></div>
+
+  <div class="legend">
+    <div><span class="swatch" style="background:#fff8c8;"></span>เย็น (1M K)</div>
+    <div><span class="swatch" style="background:#ffcb6b;"></span>กลาง (3M K)</div>
+    <div><span class="swatch" style="background:#ff5c7a;"></span>ร้อน (7M K · ใกล้แกน)</div>
+  </div>
+
+  <div class="obs-log">
+    <h3>📓 OBSERVATION LOG · บันทึกทุก step</h3>
+    <div id="obsRows" style="font-size:12px; color:#9aa3c0;">— ยังไม่มี step —</div>
+  </div>
+
+  <div id="phase2Result" style="margin-top:10px;"></div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P06b</summary>
+    <div>
+      เด็กต้อง <b>เดินไป EXIT</b> โดยเลือก cell ที่ T ต่ำกว่าเท่านั้น<br>
+      ผิด = T สูงกว่า · บันทึกอัตโนมัติ · ผ่าน gate ใน p06c ใช้ข้อมูลจาก log
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled>🔒 ทะลุออกถึง EXIT ก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=2"></script>
+<script>
+const grid = document.getElementById('heatGrid');
+const obsRows = document.getElementById('obsRows');
+const SIZE = 5;
+const cells = [];
+const shipStart = [4,4];
+const exitPos = [0,0];
+let observations = [];
+
+for(let r=0; r<SIZE; r++){
+  cells[r] = [];
+  for(let c=0; c<SIZE; c++){
+    const dist = Math.abs(r-exitPos[0]) + Math.abs(c-exitPos[1]);
+    const noise = (Math.random()-0.5)*0.4;
+    const t = 1 + dist*1.4 + noise;
+    const cell = document.createElement('div'); cell.className='heat-cell'; cell.dataset.r=r; cell.dataset.c=c;
+    cell.dataset.t = t.toFixed(1);
+    cell.textContent = t.toFixed(1) + 'M';
+    const ratio = (t-1)/6;
+    const hue = 50 - ratio*50;
+    const light = 75 - ratio*25;
+    cell.style.background = `hsl(${hue}, 80%, ${light}%)`;
+    cells[r][c] = { temp:t, el:cell };
+    cell.onclick = () => onMove(r,c);
+    grid.appendChild(cell);
+  }
+}
+let shipPos = [...shipStart];
+let stepCount = 0, wrongCount = 0, finished = false;
+cells[shipStart[0]][shipStart[1]].el.classList.add('ship');
+cells[exitPos[0]][exitPos[1]].el.classList.add('exit');
+
+function logObs(fromT, toT, dir, ok){
+  observations.push({ fromT:fromT.toFixed(1), toT:toT.toFixed(1), dir, ok });
+  obsRows.innerHTML = observations.map((o,i) => `
+    <div class="obs-row">
+      <div class="num">${i+1}</div>
+      <div>T: ${o.fromT}M → ${o.toT}M (${o.dir})</div>
+      <div class="res ${o.ok?'ok':'bad'}">${o.ok?'✓ ลด':'✗ เพิ่ม'}</div>
+    </div>`).join('');
+}
+
+function onMove(r,c){
+  if(finished) return;
+  const dr = Math.abs(r-shipPos[0]), dc = Math.abs(c-shipPos[1]);
+  if(!((dr===1 && dc===0) || (dr===0 && dc===1))) return;
+  const fromT = cells[shipPos[0]][shipPos[1]].temp;
+  const toT = cells[r][c].temp;
+  const dir = (r<shipPos[0]?'↑':(r>shipPos[0]?'↓':(c<shipPos[1]?'←':'→')));
+  if(toT < fromT){
+    cells[shipPos[0]][shipPos[1]].el.classList.remove('ship');
+    cells[shipPos[0]][shipPos[1]].el.classList.add('path');
+    shipPos = [r,c];
+    cells[r][c].el.classList.add('ship');
+    stepCount++;
+    document.getElementById('stepCount').textContent = stepCount;
+    logObs(fromT, toT, dir, true);
+    SFX&&SFX.play('snap');
+    if(r===exitPos[0] && c===exitPos[1]) winRound();
+  } else {
+    wrongCount++;
+    document.getElementById('wrongCount').textContent = wrongCount;
+    logObs(fromT, toT, dir, false);
+    SFX&&SFX.play('wrong');
+  }
+}
+function winRound(){
+  finished = true;
+  document.getElementById('phase2Result').innerHTML = `
+    <div class="card green" style="border-color:#7effb2;background:rgba(126,255,178,0.1);">
+      <h3 style="color:#7effb2;margin:0 0 6px;">✓ ทะลุ Radiative · บันทึก ${stepCount} step</h3>
+      <div class="narr" style="color:#d4b8ff;">เธอเห็นแล้วว่า <b>เดินตามทิศที่ T ต่ำลง</b> = ทางออกจริง · <b>ผิด ${wrongCount} ครั้ง</b> · ข้อมูลใน Log ใช้ปลด GATE หน้าถัดไป</div>
+      <div style="margin-top:8px;font-size:13px;color:#ffd88a;">🔓 ปลด <b>MASTERY GATE</b> หน้าถัดไป</div>
+    </div>`;
+  Chain.set('p06_observations', observations);
+  Chain.set('p06_steps', stepCount);
+  Chain.set('p06_wrongs', wrongCount);
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = '📤 ไป MASTERY GATE';
+  SFX&&SFX.play('charge');
+}
+/* Lucky-escape popup · shown when user submits successfully */
+function showLuckyPopup(){
+  if(document.getElementById('luckyPop')) return;
+  const overlay = document.createElement('div');
+  overlay.id = 'luckyPop';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;animation:luckyFade 0.4s ease-out;backdrop-filter:blur(8px);';
+  overlay.innerHTML = `
+    <div style="max-width:520px;margin:20px;padding:28px;border-radius:18px;
+                background:linear-gradient(180deg,rgba(255,203,107,0.15),rgba(58,10,74,0.4));
+                border:2px solid #ffcb6b;box-shadow:0 0 60px rgba(255,203,107,0.4);
+                animation:luckyPop 0.6s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+      <div style="font-size:64px;animation:luckyShake 0.8s ease-in-out infinite;">🍀</div>
+      <h2 style="color:#ffcb6b;font-family:Orbitron,monospace;letter-spacing:.18em;margin:14px 0 6px;font-size:18px;">
+        LUCKY ESCAPE!
+      </h2>
+      <div style="color:#fff;font-size:15px;line-height:1.7;margin:14px 0;">
+        คุณ <b style="color:#7effb2;">โชคดีมาก</b> ที่ออกมาได้!<br>
+        <br>
+        ไม่งั้นคุณจะติดอยู่ชั้นนี้ถึง<br>
+        <b style="color:#ff5c7a;font-family:Orbitron,monospace;font-size:24px;letter-spacing:.1em;display:inline-block;margin:8px 0;">170,000 ปี</b><br>
+        <span style="color:#ffd88a;font-size:13px;">เนื่องจากอุณหภูมิเท่ากันทุกจุด</span>
+      </div>
+      <div style="padding:12px;border-radius:10px;background:rgba(0,0,0,0.4);font-size:13px;color:#d4b8ff;line-height:1.6;margin:14px 0;">
+        💡 นี่คือ <b style="color:#64d8ff;">photon random walk</b> · โฟตอนที่เกิดในแกนต้องใช้เวลา ~170,000 ปี
+        เดินทางผ่านชั้น Radiative ออกมา · เพราะถูกดูดซับ-ปล่อยซ้ำ ๆ จนทิศเปลี่ยนตลอด
+      </div>
+      <button id="luckyClose" style="margin-top:10px;padding:14px 32px;border:none;border-radius:10px;
+              background:linear-gradient(180deg,#7effb2,#4ad08a);color:#022;
+              font-family:Orbitron,monospace;font-size:13px;letter-spacing:.18em;cursor:pointer;font-weight:700;
+              box-shadow:0 0 20px rgba(126,255,178,0.4);">
+        ▶ เข้าใจแล้ว · ไป MASTERY GATE
+      </button>
+    </div>
+  `;
+  if(!document.getElementById('luckyStyle')){
+    const s=document.createElement('style'); s.id='luckyStyle';
+    s.textContent = `
+      @keyframes luckyFade { from{opacity:0;} to{opacity:1;} }
+      @keyframes luckyPop { 0%{opacity:0;transform:scale(0.7);} 100%{opacity:1;transform:scale(1);} }
+      @keyframes luckyShake { 0%,100%{transform:rotate(-8deg);} 50%{transform:rotate(8deg);} }
+    `;
+    document.head.appendChild(s);
+  }
+  document.body.appendChild(overlay);
+  document.getElementById('luckyClose').onclick = () => overlay.remove();
+  SFX&&SFX.play('charge');
+}
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p06b', nextHref:'p06c-radiative-gate.html',
+    getPayload(){ return { stepCount, wrongCount, observations }; },
+    validate(p){ if(!finished){ alert('ต้องทะลุถึง EXIT ก่อน'); return false; } return true; },
+    onSubmit(){ showLuckyPopup(); }
+  });
+}, 200);
+</script>
+</body></html>

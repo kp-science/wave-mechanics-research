@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p01 · Pretest 10 ข้อ</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .q-card { background:var(--bg-card); border:1px solid var(--line); border-radius:12px;
+    padding:14px; margin:10px 0; }
+  .q-num { color:var(--quantum-pink); font-size:12px; letter-spacing:.15em; }
+  .q-text { font-size:17px; margin:6px 0 10px; }
+  .opts { display:flex; flex-direction:column; gap:6px; }
+  .opts .chip { width:100%; justify-content:flex-start; }
+  .progress-bar { height:6px; background:var(--bg-mid); border-radius:3px; overflow:hidden; margin:10px 0; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--quantum-pink),var(--genesis-gold)); width:0%; transition:width .3s; }
+</style>
+</head>
+<body data-page="p01">
+<div class="page">
+  <div class="act-badge">ACT A · 2/5 · BASELINE</div>
+  <h1>📋 Pretest · ทั้งซีซัน</h1>
+  <p style="color:var(--text-soft);">10 ข้อ summative · M-FINAL-1..7 · เก็บ baseline ก่อนเริ่มภารกิจสุดท้าย</p>
+
+  <details class="story-tab" open>
+    <summary>📖 Story Tab</summary>
+    <div id="storySpine"></div>
+  </details>
+
+  <div class="howto">
+    <h4>🎮 HOW TO PLAY</h4>
+    <ul>
+      <li>เลือก <b>1 ตัวเลือก</b> ต่อข้อ · ตอบให้ดีที่สุดที่ทำได้</li>
+      <li>ระบบจะเก็บคำตอบเป็น baseline · ไม่บอกถูกผิดตอนนี้</li>
+      <li>เปรียบกับ <b>posttest p27</b> ตอนจบเพื่อดูพัฒนาการ</li>
+    </ul>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+  <div id="quizHost"></div>
+
+  <div class="result-host" id="resultHost"></div>
+
+  <button class="btn" id="submitBtn" disabled>ส่งคำตอบ · เก็บ baseline →</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p01' });
+  const story = EP_CONFIG.story.p01 || {};
+  document.getElementById('storySpine').innerHTML = `
+    <div class="story-row"><b>NPC</b><span>${story.npc||'-'}</span></div>
+    <div class="story-row"><b>PREV</b><span>${story.prev||''}</span></div>
+    <div class="story-row"><b>LINE</b><span>"${story.line||''}"</span></div>
+    <div class="story-row"><b>NOW</b><span>${story.now||''}</span></div>
+    <div class="story-row"><b>NEXT</b><span>${story.next||''}</span></div>
+  `;
+
+  const answers = new Array(10).fill(null);
+  const host = document.getElementById('quizHost');
+  EP_CONFIG.pretest.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.innerHTML = `
+      <div class="q-num">ข้อ ${i+1} · ${q.tag||''}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="opts" data-i="${i}">
+        ${q.opts.map((o,j) => `<button class="chip" data-j="${j}">${o}</button>`).join('')}
+      </div>
+    `;
+    host.appendChild(card);
+  });
+
+  host.addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    const wrap = chip.closest('.opts');
+    const i = +wrap.dataset.i;
+    const j = +chip.dataset.j;
+    answers[i] = j;
+    wrap.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    const done = answers.filter(a => a !== null).length;
+    document.getElementById('prog').style.width = (done * 10) + '%';
+    document.getElementById('submitBtn').disabled = done < 10;
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    let correct = 0;
+    EP_CONFIG.pretest.forEach((q, i) => { if (answers[i] === q.answer) correct++; });
+    const pct = Math.round(correct * 10);
+    if (window.KPA) {
+      KPA.research('pretest', { score: correct, total: 10, pct, answers });
+      KPA.log('K','K1','pretest done · ' + pct + '%');
+    }
+    document.getElementById('resultHost').innerHTML = `
+      <div class="card card-gold" style="text-align:center;">
+        <h3 style="color:var(--genesis-gold);margin:0;">📋 Baseline บันทึกแล้ว</h3>
+        <p style="font-size:24px;margin:6px 0;">คุณตอบถูก <b style="color:var(--genesis-gold);">${correct}/10</b> (${pct}%)</p>
+        <p style="color:var(--text-soft);font-size:13px;">ระบบจะเปรียบกับ posttest ตอนจบ EP08 · ไม่ต้องกังวลเรื่องคะแนนตอนนี้</p>
+      </div>
+    `;
+    if (window.Submit && Submit.broadcast) Submit.broadcast({ ok:true, pageId:'p01' });
+    window.dispatchEvent(new CustomEvent('cosmosLog:submitted', { detail:{ ok:true } }));
+    window.dispatchEvent(new CustomEvent('ep08:storyEntered'));
+  };
+  localStorage.setItem('cosmosLog_ep08_lastPage', 'p01');
+</script>
+</body>
+</html>

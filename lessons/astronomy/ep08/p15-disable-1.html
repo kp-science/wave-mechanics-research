@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p15 · Disable 1 · Inflation</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .disable-canvas { width:100%; height:280px; background:#050108; border:1px solid var(--quantum-pink);
+    border-radius:14px; display:block; box-shadow:0 0 30px rgba(255,106,184,.2); }
+  .keys-pool { display:flex; gap:6px; flex-wrap:wrap; margin:10px 0; }
+  .keys-pool .keychip { background:var(--bg-card); border:1px solid var(--line); border-radius:8px;
+    padding:6px 10px; font-size:13px; cursor:pointer; }
+  .keys-pool .keychip.used { opacity:.4; }
+  .progress { height:10px; background:var(--bg-mid); border-radius:5px; margin:10px 0; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--quantum-pink),var(--genesis-gold)); width:0%; transition:width .3s; }
+</style>
+</head>
+<body data-page="p15">
+<div class="page">
+  <div class="act-badge">ACT C · 3/8 · DISABLE 1</div>
+  <h1>⚙️ Disable Engine #1 · INFLATION</h1>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <canvas id="canvas" class="disable-canvas"></canvas>
+
+  <div class="howto">
+    <h4>🎮 MINI-BOSS · Stabilize Inflation</h4>
+    <ul>
+      <li>คลิก <b>S1 keys ที่เกี่ยวกับ Big Bang/forces</b> 4 ตัวเพื่อ stabilize quantum fluctuation</li>
+      <li>ใช้ผิด type = HP -1 · ใช้ถูกครบ 4 = engine disabled</li>
+    </ul>
+  </div>
+
+  <div class="row between">
+    <div>HP: <b id="hp" style="color:var(--genesis-gold);font-size:20px;">5/5</b></div>
+    <div>Stabilization: <b id="prog" style="color:var(--genesis-gold);">0/4</b></div>
+  </div>
+  <div class="progress"><div class="progress-fill" id="bar"></div></div>
+
+  <p><b>เลือก keys ที่จะใช้:</b></p>
+  <div class="keys-pool" id="keyPool"></div>
+
+  <div class="result-host" id="resultHost"></div>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/s1-keyring.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p15' });
+  EP08Page.story('p15');
+  EP08Page.markVisit('p15');
+
+  // canvas: pulsing fluctuation field
+  const c = document.getElementById('canvas');
+  function fit(){ c.width = c.clientWidth; c.height = 280; }
+  fit(); window.addEventListener('resize', fit);
+  const ctx = c.getContext('2d');
+  let t = 0, stable = 0, hp = 5, done = false;
+  function draw(){
+    t += 0.02;
+    ctx.fillStyle = 'rgba(5,1,8,0.3)'; ctx.fillRect(0,0,c.width,c.height);
+    const cx = c.width/2, cy = c.height/2;
+    const stability = stable / 4;
+    // chaos waves vs stable circle
+    for (let i=0;i<5;i++){
+      const r = 30 + i*30 + Math.sin(t + i)*15*(1-stability);
+      ctx.strokeStyle = `hsla(${stability * 50 + 280}, 70%, 60%, ${0.5 - i*0.08})`;
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.stroke();
+    }
+    // central seed
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, 30);
+    grad.addColorStop(0, '#fff5e3');
+    grad.addColorStop(0.5, stability > 0.5 ? '#ffd84a' : '#ff6ab8');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(cx, cy, 30, 0, Math.PI*2); ctx.fill();
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // populate keys pool
+  const pool = document.getElementById('keyPool');
+  S1Keyring.all().forEach(k => {
+    const chip = document.createElement('button');
+    chip.className = 'keychip';
+    chip.dataset.id = k.id;
+    chip.dataset.cat = k.cat;
+    chip.dataset.owned = k.owned;
+    chip.innerHTML = k.icon + ' ' + k.name;
+    if (!k.owned) chip.style.opacity = '0.3';
+    pool.appendChild(chip);
+  });
+
+  pool.addEventListener('click', e => {
+    if (done) return;
+    const chip = e.target.closest('.keychip'); if (!chip) return;
+    if (chip.classList.contains('used')) return;
+    if (chip.dataset.owned !== 'true'){
+      alert('🔒 key นี้ยังไม่ได้ปลด · ต้องเล่น EP เก่าก่อน');
+      return;
+    }
+    const cat = chip.dataset.cat;
+    const valid = ['bigbang','stellar'];
+    if (valid.includes(cat)) {
+      stable++;
+      chip.classList.add('used');
+      chip.style.borderColor = '#ffd84a';
+    } else {
+      hp--;
+      chip.classList.add('used');
+      chip.style.borderColor = '#ff6a6a';
+    }
+    document.getElementById('hp').textContent = hp + '/5';
+    document.getElementById('prog').textContent = stable + '/4';
+    document.getElementById('bar').style.width = (stable/4*100) + '%';
+    if (stable >= 4){ finish(true); }
+    else if (hp <= 0){ finish(false); }
+  });
+
+  function finish(ok){
+    done = true;
+    if (window.KPA) {
+      KPA.log('K','K1','disable inflation engine ' + (ok?'ok':'fail'));
+      KPA.research('disableEngine1', { ok, hp, stable });
+    }
+    if (ok) EP08Boot.grantEpoch(1);
+    EP08Page.submit({ ok,
+      title: ok ? '✅ INFLATION ENGINE DISABLED' : '💀 HP หมด · ลองใหม่',
+      body: ok ? '<p>Inflation stabilize · 10²⁶ เท่าสำเร็จ · เปลี่ยนไป CMB</p>' : '<p>กดปุ่ม footer ↻ refresh เพื่อลอง</p>'
+    });
+  }
+</script>
+</body>
+</html>

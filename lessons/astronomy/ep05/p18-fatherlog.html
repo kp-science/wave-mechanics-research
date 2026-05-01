@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P17 · Father Log</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.log-page { background:rgba(20,12,8,0.85); border:1px solid #ff8a3d; border-radius:12px; padding:20px; margin:10px 0;
+            font-family:'Courier New', monospace; line-height:1.8; position:relative;
+            box-shadow:inset 0 0 30px rgba(255,138,61,0.15); }
+.log-page::before { content:'⚠ FATHER LOG · ARYA-Δ'; position:absolute; top:8px; right:14px; font-size:10px; color:#ff8a3d; letter-spacing:.14em; opacity:.7; }
+.log-page p { margin:8px 0; color:#ffcb6b; }
+.log-page .red { color:#ff5c7a; font-weight:700; }
+.log-page .key { color:#7effb2; font-weight:700; }
+.log-page .static { display:inline-block; color:#666; font-size:11px; }
+.tab-nav { display:flex; gap:4px; margin:10px 0; }
+.tab-nav button { font-size:11px; padding:6px 12px; background:rgba(255,138,61,0.1); border:1px solid rgba(255,138,61,0.3); color:#ffcb6b; }
+.tab-nav button.active { background:#ff8a3d; color:#1a0500; }
+.tab-nav button.read { border-color:#7effb2; }
+</style>
+</head>
+<body data-page="p18" data-type="story">
+<div class="page">
+  <span class="lbl story">📓 FATHER'S LOG · 3 ENTRIES</span>
+  <h1>บันทึกพ่ออารยา · กุญแจ deflect</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">อารยา (เปิดกล่องบันทึก):</b> "บันทึกพ่อ · 3 entry · เขียนก่อนหายตัว · บางส่วนถูกเผา"</span>
+  </div>
+
+  <div class="tab-nav" id="tabNav">
+    <button data-i="0" class="active">📖 Entry 1</button>
+    <button data-i="1">📖 Entry 2</button>
+    <button data-i="2">📖 Entry 3</button>
+  </div>
+
+  <div id="logBox"></div>
+
+  <div class="card cyan" id="conclude" style="display:none;">
+    <h3>🔑 สิ่งที่ได้จากบันทึก</h3>
+    <ul style="margin:0; padding-left:20px; line-height:1.8;">
+      <li>VOID ปลอมเป็น sunspot · เร่ง magnetic reconnection ให้เร็วขึ้น</li>
+      <li>CME ก้อนนี้ <b style="color:#ff5c7a;">ใหญ่กว่า Carrington 3 เท่า</b></li>
+      <li>ทางออก: ใช้ <b style="color:#7effb2;">magnetic deflector</b> ที่ <b>L1 Lagrange</b></li>
+      <li>เวลาจำกัด: 18 ชั่วโมง · เหลือ ~12 ชม.</li>
+    </ul>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P17</summary>
+    <div>เป็นจุด narrative reveal · ไม่มี puzzle · ให้นักเรียนอ่านดัง ๆ ทีละ entry · เพื่อสร้างอารมณ์</div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" disabled style="opacity:.5;">— ไม่ต้องส่ง —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 อ่านครบ 3 entry ก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const ENTRIES = [
+  `<p>[2089-03-12 · 04:18 UTC]</p>
+   <p>เห็น sunspot เกิดผิดวัฏจักร · ละติจูด <span class="key">±5°</span> · ไม่ใช่ ±35° ที่ควรเป็น</p>
+   <p>มัน...<span class="static">--ขาดหาย--</span> เคลื่อนที่ <span class="red">มีจุดประสงค์</span></p>
+   <p>ฉันสงสัยว่ามี <span class="red">"สิ่ง"</span> อยู่ในนั้น · ปลอมเป็น sunspot</p>`,
+
+  `<p>[2089-03-13 · 19:42 UTC]</p>
+   <p>ยืนยันแล้ว · มันคือ <span class="red">VOID</span> · เข้ามาทาง corona · ลงไปถึง convective zone</p>
+   <p>มันเร่ง <span class="key">magnetic reconnection</span> ทุก 20 นาที · flare ใหญ่ขึ้นเรื่อย ๆ</p>
+   <p>ถ้ามันสะสมพอ <span class="static">--ไหม้--</span> CME ใหญ่กว่า <span class="red">Carrington Event 3 เท่า</span></p>
+   <p>โลก... <span class="static">--ขาดหาย--</span></p>`,
+
+  `<p>[2089-03-14 · 23:55 UTC · last entry]</p>
+   <p>ต้องเบี่ยง CME · มี 4 จุดที่เป็นไปได้</p>
+   <p>1. <span class="key">L1 Lagrange</span> · ระหว่างโลก-ดวงอาทิตย์ · ✓ ดีที่สุด · เห็นก่อน 1 ชม.</p>
+   <p>2. Asteroid Belt · เบี่ยงสาย · อาจช้าไป</p>
+   <p>3. Jupiter Magnetosphere · ไกลโลกมาก · CME ผ่านโลกก่อน</p>
+   <p>4. Earth Field Only · เกือบโดน · grid risk</p>
+   <p>ทีมต้องเลือก L1 · ใช้ <span class="key">magnetic deflector</span> · ลูกฉัน · ถ้าอ่านอันนี้ได้</p>
+   <p>...<span class="red">บอกแม่ว่าฉันรัก</span></p>
+   <p>[<span class="static">--end--</span>]</p>`,
+];
+const logBox = document.getElementById('logBox');
+const read = new Set();
+function show(i){
+  document.querySelectorAll('#tabNav button').forEach((b,k)=>b.classList.toggle('active', k===i));
+  logBox.innerHTML = `<div class="log-page">${ENTRIES[i]}</div>`;
+  read.add(i);
+  document.querySelectorAll('#tabNav button').forEach((b,k)=>{ if(read.has(k)) b.classList.add('read'); });
+  if(read.size===3){
+    document.getElementById('conclude').style.display='block';
+    const btn = document.getElementById('nextBtn');
+    btn.disabled = false; btn.textContent = '▶ ดู Star Map';
+    SFX&&SFX.play('charge');
+  }
+  if(SFX) SFX.play('tap');
+}
+document.querySelectorAll('#tabNav button').forEach(b=>b.onclick = ()=>show(Number(b.dataset.i)));
+show(0);
+setTimeout(()=>{
+  const btn=document.getElementById('nextBtn');
+  Gate.soloMode(btn,'p19-habitable-zone.html');
+  if(window.PaceClient) Gate.wireButton('p18', btn,'p19-habitable-zone.html');
+},200);
+</script>
+</body></html>

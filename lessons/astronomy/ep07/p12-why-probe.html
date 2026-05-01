@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p12 · ทำไมต้องส่งยาน</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+  .compare .col { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:14px; }
+  .compare h3 { margin-top:0; }
+  .compare img, .compare .ph { width:100%; height:120px; border-radius:8px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; font-size:50px;
+    background:radial-gradient(circle, #1a3050, #0a1226); }
+</style>
+</head>
+<body data-page="p12">
+<div class="page">
+  <div class="act-badge">ACT C · 1/10</div>
+  <h1>ทำไมต้องส่ง<em>ยาน</em> ไม่ใช่แค่กล้อง?</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · Hubble เห็น "วัตถุน่าสงสัย" ที่ Mars · ภาพไม่คม · ไม่รู้ว่าอะไร</div>
+    <div class="crisis-body">กล้องอยู่ห่าง · ภาพได้แค่จุดเล็กๆ · <b>ต้องส่งยาน</b>ไปดูใกล้ · เพื่อรู้รายละเอียด</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🚀 TOOL · Telescope vs Spaceship (ตำรา p94)</div>
+    <div class="tool-body">กล้อง = วิเคราะห์เบื้องต้น · ยาน = ดูใกล้ · เก็บตัวอย่าง · ทดลองในที่</div>
+  </div>
+
+  <div class="compare">
+    <div class="col">
+      <h3>🔭 กล้องโทรทรรศน์</h3>
+      <div class="ph">🔭</div>
+      <ul style="font-size:14px;padding-left:18px;">
+        <li>อยู่บนโลก/รอบโลก</li>
+        <li>เห็นจากระยะไกล</li>
+        <li>ภาพ "เริ่มต้น" เท่านั้น</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h3>🚀 ยานอวกาศ</h3>
+      <div class="ph">🚀</div>
+      <ul style="font-size:14px;padding-left:18px;">
+        <li>ไปถึงดาวเป้าหมาย</li>
+        <li>เก็บตัวอย่าง · ขุดดิน · ลงสำรวจ</li>
+        <li>ทดลองในที่จริง</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>📋 Quick poll</h3>
+  <p>เพราะเหตุใดต้องส่งยานออกไปสำรวจนอกโลก?</p>
+  <div class="chips" id="poll"></div>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    Curiosity ขุดดิน Mars · Cassini ส่ง Huygens ไปลงไททัน · New Horizons บินผ่านพลูโต · ทั้งหมดได้รายละเอียดที่กล้องบนโลกทำไม่ได้
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p13-probe-hall.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p13 ยานสำรวจ</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p12' });
+    PBL.init({ id:'p12-why-probe' });
+    const opts = [
+      'กล้องบนโลกเห็นได้ใกล้พอ',
+      'การศึกษาด้วยกล้องได้แค่ลักษณะเบื้องต้น · ต้องส่งยานไปดูใกล้และทดลองในที่ ✓',
+      'ยานสนุกกว่ากล้อง',
+      'กล้องไม่มีกล้องดี'
+    ];
+    const poll = document.getElementById('poll');
+    let answered=false;
+    opts.forEach((t,i)=>{
+      const c=document.createElement('div'); c.className='chip'; c.textContent=t;
+      c.onclick=()=>{
+        if(answered)return; answered=true;
+        const correct=i===1;
+        c.classList.add(correct?'correct':'wrong');
+        const res=document.getElementById('resultHost');
+        res.classList.add('show', correct?'correct':'wrong');
+        res.textContent = correct?'✓ ใช่ · กล้อง = เบื้องต้น · ยาน = รายละเอียด':'× คำตอบที่ถูกคือข้อ 2';
+        KPA.log('K2', 'probe-why', { correct });
+        PBL.attempt(correct, {});
+        if(correct) CoinEnergy.reward('quickPollCorrect'); else CoinEnergy.penalty('crisisFail');
+        document.getElementById('transfer').style.display='block';
+        document.getElementById('next').style.display='';
+      };
+      poll.appendChild(c);
+    });
+  });
+</script>
+</body>
+</html>

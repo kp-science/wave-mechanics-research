@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P10c · KUIPER Quiz · kill M5</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+</head>
+<body data-page="p10c" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">❄️ PHASE 3 · QUIZ · kill M5</span>
+  <h1>พลูโต/เอริส = ดาวเคราะห์?</h1>
+
+  <div class="card lavender">
+    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "M5 · นักเรียนหลายคนเชื่อว่าพลูโต = ดาวเคราะห์ดวงที่ 9 · ตอบให้ถูกตามมาตรฐาน IAU 2006"</span>
+  </div>
+
+  <div class="card cyan" id="quizHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P10c</summary>
+    <div>ตอบถูก = M5 ทำลาย · เน้น "ไม่ครองวงโคจร" + "เพื่อน Kuiper เยอะ"</div></details>
+
+  
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ทำไมพลูโตไม่ใช่ดาวเคราะห์ดวงที่ 9',
+    words: ['ดาวเคราะห์แคระ', 'Kuiper Belt', 'โคจรไม่โล่ง', 'ขนาดเล็ก', '2006 IAU', 'Eris', 'พลูโต', '3 เกณฑ์', 'clearing the orbit', 'M5'],
+    required: ['ดาวเคราะห์แคระ', 'Kuiper Belt', 'โคจรไม่โล่ง', '2006 IAU'],
+    indicator: 'K4'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn" disabled style="opacity:0.5;">— quiz auto-submit —</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตอบถูกก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+Phase3.mount({
+  container: document.getElementById('quizHost'),
+  question: 'ตามมาตรฐาน IAU 2006 · พลูโต/เอริสคืออะไร?',
+  choices: [
+    { txt:'ดาวเคราะห์ปกติ · ดวงที่ 9 และ 10', correct:false, hint:'M5 · ตั้งแต่ 2006 ถูกจัดใหม่' },
+    { txt:'<b>ดาวเคราะห์แคระ</b> · เพราะไม่ครองวงโคจร · มี Kuiper สมาชิกหลายดวง', correct:true },
+    { txt:'ดาวบริวารของเนปจูน', correct:false, hint:'ไม่ใช่ · พลูโตโคจรรอบดวงอาทิตย์' },
+    { txt:'ดาวหางคาบยาว', correct:false, hint:'ไม่ใช่ · ดาวหางมีหาง · พลูโตไม่มี' },
+  ],
+  onCorrect: () => {
+    Submit.record('p10c', { correct:true });
+    Gate.markSubmitted();
+    if(window.Coin && Coin.awardPerfect) Coin.awardPerfect('p10c');
+  }
+});
+
+setTimeout(() => {
+  Gate.wireButton('p10c', document.querySelector('.next-btn'), 'p10d-kuiper-gate.html', { requireSubmit:true });
+}, 200);
+</script>
+</body></html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p05 · Inflation</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .scale-readout { font-size:32px; color:var(--quantum-pink); text-align:center; padding:10px; }
+  .infl-canvas { width:100%; height:200px; background:#0a0410; border:1px solid var(--line);
+    border-radius:12px; display:block; }
+</style>
+</head>
+<body data-page="p05">
+<div class="page">
+  <div class="act-badge">ACT B · 1/8 · INFLATION</div>
+  <div id="epochHost"></div>
+
+  <details class="story-tab" open><summary>📖 Story Tab</summary><div id="storySpine"></div></details>
+
+  <canvas id="inflCanvas" class="infl-canvas"></canvas>
+  <div class="scale-readout">10<sup>0</sup> → 10<sup id="exp">0</sup> เท่า</div>
+
+  <div class="howto">
+    <h4>🎮 EXPERIMENT · slider พอง fluctuation</h4>
+    <ul>
+      <li>เลื่อน slider · จับให้ขยายถึง <b>10²⁶ เท่า</b> พอดี (ค่าจริงของ inflation)</li>
+      <li>น้อยเกิน = จักรวาล clumpy · มากเกิน = เจือจางจนไม่มีดาว</li>
+    </ul>
+  </div>
+
+  <div class="row">
+    <span class="lbl">expansion factor:</span>
+    <input type="range" id="expSlider" min="0" max="40" value="0" style="flex:1;min-width:200px;" />
+    <span id="expVal" style="min-width:60px;">10⁰</span>
+  </div>
+
+  <div class="result-host" id="resultHost"></div>
+  <button class="btn" id="submitBtn">ส่งค่า inflation factor</button>
+</div>
+
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="../shared/research-instruments.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/starfield.js"></script>
+<script src="../shared/reveal-after-submit.js"></script>
+<script src="../shared/timeline-viz.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep08-page.js"></script>
+<script src="../shared/ep08-boot.js"></script>
+<script>
+  EP08Boot.init({ pageId:'p05' });
+  TimelineViz.epochCard(document.getElementById('epochHost'), 1);
+  EP08Page.story('p05');
+  EP08Page.markVisit('p05');
+
+  const c = document.getElementById('inflCanvas');
+  function fit(){ c.width = c.clientWidth; c.height = 200; }
+  fit(); window.addEventListener('resize', fit);
+  const ctx = c.getContext('2d');
+  let scale = 1;
+  function draw(){
+    ctx.fillStyle = '#0a0410'; ctx.fillRect(0,0,c.width,c.height);
+    const r = 6 + Math.log10(scale) * 8;
+    const g = ctx.createRadialGradient(c.width/2, c.height/2, 0, c.width/2, c.height/2, r);
+    g.addColorStop(0, '#fff5e3');
+    g.addColorStop(0.4, '#ff6ab8');
+    g.addColorStop(1, 'rgba(106,58,255,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(c.width/2, c.height/2, r, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,106,184,0.5)'; ctx.lineWidth = 2;
+    ctx.stroke();
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  const slider = document.getElementById('expSlider');
+  slider.addEventListener('input', () => {
+    const v = +slider.value;
+    scale = Math.pow(10, v * 0.65);
+    document.getElementById('exp').textContent = (v*0.65).toFixed(0);
+    document.getElementById('expVal').textContent = '10' + ('' + (v*0.65).toFixed(0)).split('').map(d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d]).join('');
+  });
+
+  document.getElementById('submitBtn').onclick = () => {
+    const v = +slider.value;
+    const exp = v * 0.65;
+    const target = 26;
+    const diff = Math.abs(exp - target);
+    const ok = diff < 1.5;
+    if (window.KPA) {
+      KPA.log('K','K1','inflation factor ' + exp.toFixed(0));
+      KPA.research('inflationFactor', { exp, ok });
+    }
+    EP08Page.submit({
+      ok,
+      title: ok ? '✓ INFLATION STABLE · 10²⁶ เท่า' : '⚠️ ยังไม่พอ · ลอง 10²⁶ เท่า',
+      body: `<p>ค่าที่ส่ง: 10<sup>${exp.toFixed(0)}</sup> เท่า · เป้าหมาย: 10²⁶</p>
+             <p>นี่คือเหตุผลที่เอกภพดู<em>ราบเรียบ</em> · M-FINAL-2: ไม่มีขอบ · ขยายทุกทิศ</p>`
+    });
+  };
+</script>
+</body>
+</html>

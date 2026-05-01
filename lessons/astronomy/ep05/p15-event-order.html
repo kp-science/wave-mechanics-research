@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP05 · P14 · Event Order</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.timeline-track { display:flex; flex-direction:column; gap:8px; margin:10px 0; }
+.tt-slot { display:grid; grid-template-columns:50px 1fr; gap:10px; align-items:center; padding:12px; border-radius:10px;
+           background:rgba(100,216,255,0.05); border:1px dashed rgba(100,216,255,0.4); min-height:56px; position:relative; }
+.tt-slot::before { content:''; position:absolute; left:25px; top:100%; width:2px; height:8px; background:rgba(255,138,61,0.4); }
+.tt-slot:last-child::before { display:none; }
+.tt-slot .num { font-family:Orbitron,monospace; color:#ffcb6b; font-size:18px; text-align:center; }
+.tt-slot.filled { background:rgba(255,138,61,0.1); border-style:solid; border-color:#ff8a3d; }
+.tt-slot.correct { background:rgba(126,255,178,0.14); border-color:#7effb2; }
+.tt-slot.wrong { animation:shake .4s; }
+.evt-pool { display:flex; flex-wrap:wrap; gap:8px; padding:12px; border-radius:12px; background:rgba(20,28,52,0.6); margin:10px 0; }
+.evt-tag { padding:8px 14px; border-radius:10px; cursor:grab; touch-action:none; font-weight:600;
+           background:rgba(255,203,107,.12); border:1px solid rgba(255,203,107,.4); }
+</style>
+</head>
+<body data-page="p15" data-type="puzzle">
+<div class="page">
+  <span class="lbl puzzle">🎁 MYSTERY BOX · EVENT CHAIN</span>
+  <h1>ลำดับเหตุการณ์สุริยะ</h1>
+  <div class="tags"><span class="kpa-chip">K3</span><span class="kpa-chip">P3</span></div>
+
+  <div data-mission-brief></div>
+
+  <div class="card">
+    <h3>🔗 ลากเรียงจาก #1 → #6</h3>
+    <div class="timeline-track" id="track"></div>
+    <div class="evt-pool" id="pool"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="ghost" id="checkBtn">เปรียบเทียบ</button>
+      <button class="ghost" id="resetBtn">↺ ล้าง</button>
+      <span id="result" class="muted" style="align-self:center;"></span>
+    </div>
+  </div>
+
+  <details class="tc">
+    <summary>🎓 Teacher Cue · P14</summary>
+    <div>
+      ลำดับ: 1 Field Twist → 2 Sunspot → 3 Flare → 4 CME → 5 Solar Wind → 6 Aurora<br>
+      <b>Aurora</b> = ผลลัพธ์สุดท้ายบนโลก (ไม่ใช่ที่ดวงอาทิตย์)
+    </div>
+  </details>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ส่งผล</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/touch-drag.js?v=1"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/ep05-boot.js?v=1"></script>
+<script>
+const events = EP_CONFIG.eventChain; // 6 in correct order
+const slots = events.map((e,i)=>({ pos:i+1, expect:e.step, filled:null }));
+const track = document.getElementById('track');
+const pool = document.getElementById('pool');
+function render(){
+  track.innerHTML='';
+  slots.forEach((s,i)=>{
+    const div=document.createElement('div'); div.className='tt-slot' + (s.filled?' filled':'');
+    const ev = s.filled ? events.find(e=>e.step===s.filled) : null;
+    div.innerHTML=`<div class="num">${s.pos}</div><div>${ev?ev.icon+' <b>'+ev.label+'</b>':'<span class="muted">— ลากมาวาง —</span>'}</div>`;
+    div.ondragover=e=>e.preventDefault();
+    div.ondrop=e=>{ e.preventDefault(); const id=Number(e.dataTransfer.getData('text/plain')); if(id){ s.filled=id; render(); SFX&&SFX.play('snap'); }};
+    if(window.TouchDrag) TouchDrag.makeDropTarget(div, id=>{ s.filled=Number(id); render(); SFX&&SFX.play('snap'); });
+    track.appendChild(div);
+  });
+  // shuffle pool display order so it's not solved by visual order
+  const shuffled = events.slice().sort((a,b)=>(''+a.step).localeCompare(''+b.step));
+  pool.innerHTML='';
+  shuffled.forEach(ev=>{
+    if(slots.find(s=>s.filled===ev.step)) return;
+    const t=document.createElement('div'); t.className='evt-tag'; t.textContent=ev.icon+' '+ev.label;
+    t.draggable=true; t.ondragstart=e=>e.dataTransfer.setData('text/plain', String(ev.step));
+    if(window.TouchDrag) TouchDrag.makeDraggable(t, ()=>String(ev.step));
+    pool.appendChild(t);
+  });
+}
+render();
+document.getElementById('resetBtn').onclick=()=>{ slots.forEach(s=>s.filled=null); render(); document.getElementById('result').textContent=''; };
+document.getElementById('checkBtn').onclick=()=>{
+  let c=0;
+  slots.forEach((s,i)=>{
+    const div=track.children[i];
+    if(s.filled===s.expect){ div.classList.add('correct'); c++; }
+    else if(s.filled){ div.classList.add('wrong'); setTimeout(()=>div.classList.remove('wrong'),500); s.filled=null; }
+  });
+  render();
+  document.getElementById('result').textContent=`ถูก ${c}/6`;
+  document.getElementById('result').style.color = c===6?'#7effb2':'#ffcb6b';
+  if(c===6) SFX&&SFX.play('correct'); else SFX&&SFX.play('wrong');
+};
+
+setTimeout(()=>{
+  Submit.wirePair({
+    page:'p15', nextHref:'p16-flare-vs-cme.html',
+    getPayload(){ let c=0; slots.forEach(s=>{ if(s.filled===s.expect) c++; }); return {correct:c, total:6}; },
+    validate(p){ if(p.correct<6){ alert('ต้องเรียงถูกครบ 6/6'); return false; } return true; },
+    isPerfect(p){ return p.correct===6; },
+    onSubmit(){ if(window.MysteryBox && MysteryBox.roll) MysteryBox.roll({ wrongs:0, page:'p15' }); }
+  });
+},200);
+</script>
+</body></html>

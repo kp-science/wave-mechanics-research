@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p18 · Mars brief</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .factors { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px,1fr)); gap:10px; margin:14px 0; }
+  .fac { background:var(--bg-card); border:1px solid var(--line); border-radius:12px;
+    padding:12px; }
+  .fac h4 { margin:0 0 4px; color:var(--rocket-orange); font-size:15px; }
+  .fac p { font-size:13px; color:var(--text-soft); margin:0; }
+</style>
+</head>
+<body data-page="p18">
+<div class="page">
+  <div class="act-badge">ACT C · 7/10 · MARS</div>
+  <h1>กิจกรรมลองทำดู · ภารกิจสู่ดาวอังคาร</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · Hubble จับ "บางอย่าง" บน Mars · VOID ฐานหลักอาจอยู่ที่นั่น</div>
+    <div class="crisis-body">โบลท์ตัดสินใจ: <b>"เราต้องส่งทีมไปเอง"</b> · แต่ไป Mars ใช้ <em>5 ปัจจัย</em> · ก่อนปล่อยจรวดต้องวางแผน</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">🪐 TOOL · 5 ปัจจัยภารกิจ Mars (ตำรา p95-96 กิจกรรมลองทำดู)</div>
+    <div class="tool-body">เชื้อเพลิง · วัสดุยาน · ที่อยู่ · อาหาร · น้ำ · พลาดข้อใดข้อหนึ่ง = ทีมตาย</div>
+  </div>
+
+  <div class="factors" id="factors"></div>
+
+  <div class="npc">
+    <b>โบลท์</b>: "ผมจะนำทีม 3 คน · พ่ออารยา · เคน · และผม · เธอเป็นวิศวกรหลัก · ต้องออกแบบยานให้พวกเรา"
+  </div>
+
+  <div style="text-align:center;margin:18px 0;">
+    <a href="p19-mars-design-a.html" class="btn">▶ เริ่มออกแบบ A · ยาน + เชื้อเพลิง</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p18' });
+    const f = document.getElementById('factors');
+    EP_CONFIG.marsFactors.forEach(x => {
+      const d = document.createElement('div');
+      d.className='fac';
+      d.innerHTML = `<h4>${x.label}</h4><p>${x.need}</p>`;
+      f.appendChild(d);
+    });
+    KPA.log('A2','mars-mission-accepted');
+    KPA.vpa(1, { kind:'mars-brief' });
+  });
+</script>
+</body>
+</html>

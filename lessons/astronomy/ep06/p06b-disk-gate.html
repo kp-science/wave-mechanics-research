@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP06 · P06b · DISK SORT · GS-2</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+.bins { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.bin { padding:14px; border-radius:12px; min-height:120px; }
+.bin.inner { background:rgba(255,138,61,0.10); border:2px dashed #ff8a3d; }
+.bin.outer { background:rgba(100,216,255,0.10); border:2px dashed #64d8ff; }
+.bin h4 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:12px; letter-spacing:.12em; }
+.bin.inner h4 { color:#ff8a3d; } .bin.outer h4 { color:#64d8ff; }
+.bin .drop-area { display:flex; flex-wrap:wrap; gap:6px; min-height:60px; }
+.mat { padding:8px 12px; border-radius:10px; cursor:pointer; user-select:none;
+       background:rgba(20,28,52,0.7); border:1.5px solid rgba(120,140,220,0.4);
+       font-size:13px; transition:all .2s; }
+.mat:hover { border-color:#fff; }
+.mat.placed-correct { background:rgba(126,255,178,0.15); border-color:#7effb2; }
+.mat.placed-wrong { background:rgba(255,92,122,0.12); border-color:#ff5c7a; animation:shake .35s; }
+.mat-pool { display:flex; flex-wrap:wrap; gap:8px; padding:12px; border-radius:12px; background:rgba(0,0,0,0.4); border:1px dashed rgba(120,140,220,0.3); margin:10px 0; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-5px);} 75%{transform:translateX(5px);} }
+</style>
+</head>
+<body data-page="p06b" data-type="mixed">
+<div class="page">
+  <span class="lbl mixed">🔍 DISK SORT · GATE 2</span>
+  <h1>คัดวัสดุ 8 ชนิด · INNER vs OUTER</h1>
+
+  <div class="card">
+    <h3>📦 กดวัสดุ → เลือกฝั่ง</h3>
+    <div class="muted">8 ชนิด · INNER (ร้อน · ของแข็งทนความร้อน) · OUTER (เย็น · น้ำแข็ง/แก๊ส)</div>
+    <div class="mat-pool" id="pool"></div>
+    <div class="bins">
+      <div class="bin inner"><h4>🪨 INNER (ร้อน)</h4><div class="drop-area" data-zone="inner"></div></div>
+      <div class="bin outer"><h4>❄️ OUTER (เย็น)</h4><div class="drop-area" data-zone="outer"></div></div>
+    </div>
+  </div>
+
+  <div id="resultHost"></div>
+
+  <details class="tc"><summary>🎓 Teacher Cue · P06b</summary>
+    <div>คัด 8/8 = SHARD-2 (DISK RING) ปลด · เน้น frost line ตัดสินวัสดุ</div></details>
+
+  
+<div id="gtMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('gtMount');
+  if(!el || !window.GroupTalk) return;
+  GroupTalk.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'ทำไม frost line ถึงกำหนดว่าเขตในเป็นหิน · เขตนอกเป็นยักษ์?',
+    durationSec: 60,
+    chips: [
+      'ในร้อน · ระเหิดน้ำแข็ง · เหลือแต่หิน',
+      'นอกเย็น · น้ำแข็งคงตัว · มีวัตถุดิบมาก',
+      'ขนาดเขตในเล็กกว่า · วัตถุดิบจำกัด',
+      'ขนาดเขตนอกใหญ่ · รวมตัวได้ใหญ่',
+      'frost line ~3 AU ตามตำรา'
+    ],
+    indicator: 'A1'
+  });
+})();
+</script>
+
+
+<div id="ebMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('ebMount');
+  if(!el || !window.ExplainBack) return;
+  ExplainBack.mount(el, {
+    pageId: document.body.dataset.page,
+    prompt: 'อธิบาย · ทำไมจานก่อกำเนิดสร้าง 2 เขตที่ต่างกัน?',
+    words: ['frost line', 'เขตใน', 'เขตนอก', 'อุณหภูมิ', 'น้ำแข็ง', 'หิน', 'แก๊ส', 'รัศมี', 'วัตถุดิบ', 'ดวงอาทิตย์'],
+    required: ['frost line', 'เขตใน', 'เขตนอก', 'อุณหภูมิ'],
+    indicator: 'K1'
+  });
+})();
+</script>
+
+
+<div id="cgMount" style="margin:14px 0;"></div>
+<script>
+(function(){
+  var el = document.getElementById('cgMount');
+  if(!el || !window.ConfidenceGate) return;
+  ConfidenceGate.mount(el, {
+    pageId: document.body.dataset.page,
+    onConfirm: function(){
+      var nb = document.getElementById('nextBtn');
+      if (nb) { nb.disabled = false; nb.classList.add('gate-open'); nb.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
+  });
+  // lock next until confirmed
+  setTimeout(function(){
+    var nb = document.getElementById('nextBtn');
+    if (nb && !nb.disabled) {
+      nb.dataset.cgLocked = '1';
+      nb.disabled = true;
+    }
+  }, 250);
+})();
+</script>
+
+  <div class="btn-pair">
+    <button class="submit-btn" id="submitBtn">📤 ตรวจ</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 ตรวจก่อน</button>
+  </div>
+</div>
+
+<script src="../shared/firebase-config.js"></script>
+<script src="./config.js"></script>
+<script src="../../shared/pace-client.js"></script>
+<script src="../shared/sync-client.js"></script>
+<script src="../shared/photon.js?v=3"></script>
+<script src="../shared/role-view.js"></script>
+<script src="../shared/starfield.js?v=1"></script>
+<script src="../shared/audio.js?v=2"></script>
+<script src="../shared/mission-brief.js?v=1"></script>
+<script src="../shared/mystery-box.js?v=2"></script>
+<script src="../shared/kpa-tracker.js?v=1"></script>
+<script src="../shared/pause-card.js?v=1"></script>
+<script src="../shared/group-talk.js?v=1"></script>
+<script src="../shared/explain-back.js?v=1"></script>
+<script src="../shared/confidence-gate.js?v=1"></script>
+<script src="../shared/learning-journal.js?v=1"></script>
+<script src="../shared/reveal-after-submit.js?v=1"></script>
+<script src="../shared/ep06-boot.js?v=1"></script>
+<script>
+const MATS = [
+  { id:'iron',     n:'⚙️ เหล็ก (Fe)',    z:'inner' },
+  { id:'silica',   n:'🪨 ซิลิเกต',         z:'inner' },
+  { id:'rock',     n:'🪨 หินทนความร้อน',  z:'inner' },
+  { id:'nickel',   n:'⚙️ นิกเกิล',        z:'inner' },
+  { id:'water',    n:'❄️ น้ำแข็ง H₂O',    z:'outer' },
+  { id:'methane',  n:'🟢 มีเทนแข็ง',       z:'outer' },
+  { id:'ammonia',  n:'🔵 แอมโมเนียแข็ง',    z:'outer' },
+  { id:'hydrogen', n:'💨 ไฮโดรเจน (H₂)',  z:'outer' },
+];
+
+let placed = {};
+const pool = document.getElementById('pool');
+MATS.slice().sort(() => Math.random()-0.5).forEach(m => {
+  const el = document.createElement('div'); el.className='mat'; el.dataset.id = m.id;
+  el.textContent = m.n;
+  el.onclick = () => {
+    if(placed[m.id]) return;
+    // pick zone with quick-prompt
+    const dlg = document.createElement('div');
+    dlg.style.cssText='position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; display:flex; align-items:center; justify-content:center;';
+    dlg.innerHTML = `
+      <div style="background:#06091a; padding:18px; border-radius:14px; border:1px solid #64d8ff; max-width:300px;">
+        <div style="font-size:13px; color:#fff; margin-bottom:10px;">${m.n}<br><span style="color:#9aa3c0; font-size:11px;">ใส่ฝั่งไหน?</span></div>
+        <button class="ghost" data-z="inner" style="margin-right:6px;">🪨 INNER</button>
+        <button class="ghost" data-z="outer">❄️ OUTER</button>
+        <div style="margin-top:8px;"><button class="ghost" data-z="cancel" style="font-size:11px;">ยกเลิก</button></div>
+      </div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelectorAll('button').forEach(b => {
+      b.onclick = () => {
+        const z = b.dataset.z;
+        dlg.remove();
+        if(z === 'cancel') return;
+        placed[m.id] = z;
+        const correct = (z === m.z);
+        el.classList.add(correct ? 'placed-correct' : 'placed-wrong');
+        const targetBin = document.querySelector(`.drop-area[data-zone="${z}"]`);
+        targetBin.appendChild(el);
+        el.onclick = null;
+        if(window.SFX) SFX.play(correct ? 'correct' : 'wrong');
+      };
+    });
+  };
+  pool.appendChild(el);
+});
+
+setTimeout(() => {
+  Submit.wirePair({
+    page:'p06b', nextHref:'p07-bridge.html',
+    getPayload(){
+      let correct = 0;
+      MATS.forEach(m => { if(placed[m.id] === m.z) correct++; });
+      return { placed, correct, total:MATS.length };
+    },
+    validate(p){
+      if(Object.keys(placed).length < MATS.length){ alert('คัดให้ครบ 8 ชนิด'); return false; }
+      return true;
+    },
+    isPerfect(p){ return p.correct === p.total; },
+    onSubmit(tag){
+      const r = document.getElementById('resultHost');
+      let correct = 0;
+      MATS.forEach(m => { if(placed[m.id] === m.z) correct++; });
+      if(correct === MATS.length){
+        QuestState.grant('gs2');
+        QuestState.decreaseEta(EP_CONFIG.voidEtaPerScene || 0.6);
+        r.innerHTML = '<div class="card green" style="margin-top:14px;">✓ <b>DISK SORTED</b> · ปลด <b style="color:#64d8ff;">GS-2 💍 Disk Ring</b></div>';
+      } else {
+        r.innerHTML = `<div class="card red" style="margin-top:14px;">⚠ ${correct}/${MATS.length} ถูก · ลองทบทวน frost line อีกครั้ง</div>`;
+      }
+    }
+  });
+}, 200);
+</script>
+</body></html>

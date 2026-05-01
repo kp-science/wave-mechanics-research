@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP07 · p06 · Radio FAST</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .dish { width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle at 50% 30%, #444, #222);
+    border:4px solid #555; margin:14px auto; position:relative;
+    transition:transform .4s; }
+  .dish.tuned { transform:rotate(0); border-color:#27ae60; box-shadow:0 0 30px rgba(39,174,96,.6); }
+  .signal { font-family:monospace; padding:10px; background:#000; color:#27ae60;
+    border-radius:8px; min-height:60px; }
+  .tune { display:flex; gap:10px; align-items:center; margin:14px 0; }
+  .tune input[type=range] { flex:1; }
+</style>
+</head>
+<body data-page="p06">
+<div class="page">
+  <div class="act-badge">ACT B · 3/8 · RADIO</div>
+  <h1>กล้องวิทยุ FAST · ฟังเสียงในที่มืด</h1>
+
+  <div class="crisis">
+    <div class="crisis-h">⚠️ CRISIS · เคนติดต่อทีมไม่ได้ · ลำแสง visible โดน VOID จาม</div>
+    <div class="crisis-body">ต้องใช้คลื่น<b>วิทยุยาว</b>ที่ทะลุ noise ของ VOID · ปรับจาน FAST 500m ที่จีนเพื่อจับสัญญาณ</div>
+  </div>
+
+  <div class="tool">
+    <div class="tool-h">📡 TOOL · FAST (Five-hundred-meter Aperture Spherical Telescope · ตำรา p101)</div>
+    <div class="tool-body">รับคลื่นวิทยุ 1 cm-20 m · ศึกษาหลุมดำ · CMB · วัตถุที่ visible เห็นไม่ได้</div>
+  </div>
+
+  <div class="dish" id="dish"></div>
+  <div class="tune">
+    <span>ความถี่:</span>
+    <input type="range" id="freq" min="0" max="100" value="50"/>
+    <span class="metric">→ <b id="freqVal">5.0</b> GHz</span>
+  </div>
+  <div class="signal" id="signal">···· · · · · ···· (สัญญาณรบกวน)</div>
+
+  <p style="margin-top:14px;">🎯 ปรับให้ความถี่อยู่ในช่วง <b>1.4-1.5 GHz</b> (Hydrogen line) เพื่อจับสัญญาณเคน</p>
+  <div id="resultHost"></div>
+
+  <div class="transfer" id="transfer" style="display:none;">
+    <div class="transfer-h">💡 ในชีวิตจริง</div>
+    FAST จีนคือกล้องวิทยุใหญ่ที่สุดในโลก · ตรวจพบสัญญาณ Fast Radio Burst · ใช้ตามล่าหลุมดำ M87 · ตำรา p101
+  </div>
+
+  <div style="text-align:center;margin:14px 0;">
+    <a href="p07-visible.html" class="btn alt" id="next" style="display:none;">ไปต่อ → p07 visible</a>
+  </div>
+</div>
+
+<script src="../shared/starfield.js"></script>
+<script src="../shared/kpa-tracker-v2.js"></script>
+<script src="../shared/coin-energy.js"></script>
+<script src="../shared/hud-v2.js"></script>
+<script src="../shared/pbl-frame.js"></script>
+<script src="../shared/mystery-box-v2.js"></script>
+<script src="config.js"></script>
+<script src="../shared/ep07-boot.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    Boot07.init({ pageId:'p06' });
+    PBL.init({ id:'p06-radio' });
+    const freq = document.getElementById('freq');
+    const sig = document.getElementById('signal');
+    const dish = document.getElementById('dish');
+    let solved = false;
+    freq.oninput = () => {
+      const v = +freq.value / 10;
+      document.getElementById('freqVal').textContent = v.toFixed(1);
+      const inRange = v >= 1.4 && v <= 1.5;
+      if (inRange && !solved) {
+        sig.textContent = '✓ "ทุกคน...ได้ยินผมไหม นี่เคน · พิกัด VOID อยู่ที่ MEO 20,200 km..."';
+        sig.style.color = '#fff';
+        dish.classList.add('tuned');
+        document.getElementById('transfer').style.display = 'block';
+        document.getElementById('next').style.display = '';
+        const res = document.getElementById('resultHost');
+        res.classList.add('show','correct');
+        res.textContent = '✓ จับสัญญาณเคนได้ · OS ครบช่อง: คลื่นวิทยุ';
+        KPA.log('K1', 'radio-fast', { freq:v, correct:true });
+        KPA.competency('C3', { evidence:'tune-radio' });
+        PBL.attempt(true, { freq:v });
+        CoinEnergy.reward('crisisSolveFirst');
+        solved = true;
+        PBL._enter('transfer');
+      } else if (!inRange) {
+        sig.textContent = '···· · · · · ···· (สัญญาณรบกวน · ความถี่ ' + v.toFixed(1) + ' GHz)';
+        sig.style.color = '#27ae60';
+      }
+    };
+  });
+</script>
+</body>
+</html>
