@@ -10,8 +10,8 @@ window.KP_CONFIG = {
   courseId:     'astronomy',
   title:        'ดาราศาสตร์',
   subtitle:     'ห้องเรียนออนไลน์ · ครูโกเมน',
-  subject:      'ดาราศาสตร์',
-  subjectCode:  '—', // TODO: ใส่รหัสวิชา เช่น ว30260
+  subject:      'วิทยาศาสตร์พื้นฐาน 5 (โลกและอวกาศ)',
+  subjectCode:  'ว 30105',
   grade:        'ม.5',
   school:       'สตรีวิทยา',
   schoolFull:   'โรงเรียนสตรีวิทยา',
@@ -21,7 +21,7 @@ window.KP_CONFIG = {
   year:         '2569',
 
   // ─── Backend (Apps Script Web App URL · แยกจาก Physics 3) ───
-  apiUrl:       'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec',
+  apiUrl:       'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec',
 
   // ─── Admin Password (Phase 4: server-side) ───
   // ⚠️ รหัสเก็บใน Apps Script Properties (ชื่อ 'TEACHER_PASSWORD')

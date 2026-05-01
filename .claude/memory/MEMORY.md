@@ -3,6 +3,7 @@
 - [Plan pipeline checklist + common mistakes](reference_plan_pipeline_checklist.md) — 7-step pipeline per plan + 13 bugs to avoid + pre-push checklist (from Plan 5 lessons)
 - [Apps Script Drive scope](feedback_apps_script_drive_scope.md) — createFolder ต้อง authorize full drive scope · getRootFolder ไม่พอ · ต้องกด New version เมื่อ redeploy
 - [Astronomy lesson path](project_astronomy_lesson_path.md) — ไฟล์ที่ wave-mechanics-research/lessons/astronomy/ · EP01-EP05 พร้อมใช้
+- [Astronomy KP-Classroom integration](project_astronomy_kp_classroom.md) ⭐ — ว30105 · 8 EP · file standardized (p01-pretest, p27-journal) · Pre/Post 5 ข้อ 1:1 · LS scope per-course · sync TODO G1/G3 · CLAUDE.md @ wave-mechanics-research/CLAUDE.md
 - [COSMOS LOG design](feedback_cosmos_log_design.md) — Book-page flow · Experience Before Labeling · ไม่มี info dump · Before→Activity→After · Teacher Cue ทุกหน้า
 - [EP02 Game Layer](reference_ep02_game_layer.md) — shared/{game,items,corruption,leaderboard,boss,teacher-cards}.js + ep02/config.js · API, state model, load order
 - **EP02 Handoff**: `wave-mechanics-research/lessons/astronomy/HANDOFF_ep02.md` — scaffold ครบ 20 หน้า · รอเติมเนื้อหาจริง

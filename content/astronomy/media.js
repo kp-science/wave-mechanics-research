@@ -34,12 +34,18 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 1 — EP01 · The Collision · กำเนิดเอกภพ',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
     sections: [
+      { title:'📋 FT-01 · Pre-test หลัก (ทำก่อนเรียน · 20 ข้อ)', items:[
+        { cls:'sim', no:'FT', t:'FT-01 · Pre-test หลัก (Baseline)', file:'../ft01-pretest.html',
+          d:'20 ข้อ · ครอบคลุม EP01-EP08 · เก็บ baseline สำหรับคำนวณ Hake\'s gain',
+          meta:'~15 นาที · ทำครั้งเดียวก่อนเริ่ม Season 1',
+          chips:[['k','Pre-test'],['k','20 ข้อ'],['k','ทำก่อน EP01']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP01','The Collision','หน้า launcher EP01 · เลือกหน้าได้ทั้งหมด','19 หน้า · ~50 นาที',
           [['k','Big Bang'],['k','CMB'],['k','13.8 พันล้านปี']])
       ]},
       { title:'📖 หน้าบทเรียน (19 หน้า)', items:[
-        _ASTRO_PAGE('01','ทางเข้า COSMOS LOG','p01-entry.html','story'),
+        _ASTRO_PAGE('01','ทางเข้า COSMOS LOG','p01-pretest.html','story'),
         _ASTRO_PAGE('02','ทีมสำรวจ · ตัวละคร 4 คน','p02-team.html','story'),
         _ASTRO_PAGE('03','The Collision · จำลองการชน','p03-collision.html','puzzle'),
         _ASTRO_PAGE('04','Debris · เศษซากเอกภพ','p04-debris.html','story'),
@@ -57,7 +63,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('16','Map · แผนที่ทางช้างเผือก','p16-map.html','puzzle'),
         _ASTRO_PAGE('16b','Review · ทบทวน','p16-review.html','reflection'),
         _ASTRO_PAGE('17','Exercise · แบบฝึกหัด','p17-exercise.html','puzzle'),
-        _ASTRO_PAGE('17b','Exit · ออก','p17-exit.html','reflection')
+        _ASTRO_PAGE('17b','Exit · ออก','p27-journal.html','reflection')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
         { cls:'info', no:'SH', t:'shared/book.css · book.js · particles.js', file:'',
@@ -86,7 +92,7 @@ window.KP_PLAN_MEDIA = {
       { title:'📖 หน้าบทเรียน (23 หน้า)', items:[
         _ASTRO_PAGE('00','Tutorial · พบ VOID','p00-howtoplay.html','story',5),
         _ASTRO_PAGE('00b','Tutorial · ทรัพยากร','p00b-resources.html','story',3),
-        _ASTRO_PAGE('01','Entry Ticket','p01-entry.html','puzzle',3),
+        _ASTRO_PAGE('01','Entry Ticket','p01-pretest.html','puzzle',3),
         _ASTRO_PAGE('02','โหลดทีม','p02-continue.html','setup',2),
         _ASTRO_PAGE('03','สัญญาณ VOID','p03-signal.html','story',3),
         _ASTRO_PAGE('04','จำแนก 12 กาแล็กซี','p04-classify.html','puzzle',7),
@@ -105,7 +111,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('17','Bloom · Scene','p17-bloom.html','story'),
         _ASTRO_PAGE('17a','ตลาด · ก่อนตีบอสสุดท้าย','p17-shop.html','setup',5),
         _ASTRO_PAGE('17b','BOSS สุดท้าย · 15 คลื่น','p17b-finalboss.html','mixed',10),
-        _ASTRO_PAGE('18','Journal 3-2-1 · ปิดเล่ม','p18-log.html','reflection',4),
+        _ASTRO_PAGE('18','Journal 3-2-1 · ปิดเล่ม','p27-journal.html','reflection',4),
         _ASTRO_PAGE('19','Journey Map · Post-test','p19-map.html','reflection',5)
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -136,7 +142,7 @@ window.KP_PLAN_MEDIA = {
       ]},
       { title:'📖 หน้าบทเรียน (24 หน้า)', items:[
         _ASTRO_PAGE('00','Recap EP02 · Intro','p00-howtoplay.html','story',2),
-        _ASTRO_PAGE('01','จดหมาย + Pre-test','p01-entry.html','reflection',4),
+        _ASTRO_PAGE('01','จดหมาย + Pre-test','p01-pretest.html','reflection',4),
         _ASTRO_PAGE('02','SOS "ARYA" · decode','p02-sos.html','story',2),
         _ASTRO_PAGE('02b','📓 MISSION GENESIS','p02b-genesis.html','story',3),
         _ASTRO_PAGE('03','VOIDHUNTER · Password','p03-join.html','setup',3),
@@ -157,7 +163,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('17','🛍️ Hubble Trading Post','shop.html','setup',3),
         _ASTRO_PAGE('18','🔥 WARP RUN (climax · BOSS)','warprun.html','mixed',7),
         _ASTRO_PAGE('19','Post-test · Badge','p19-map.html','reflection',5),
-        _ASTRO_PAGE('19b','📒 3-2-1 Journal','p19b-journal.html','reflection',5),
+        _ASTRO_PAGE('19b','📒 3-2-1 Journal','p27-journal.html','reflection',5),
         _ASTRO_PAGE('JN','Join · ร่วมภารกิจ','join.html','setup')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -211,7 +217,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('23','🛒 Voyager Cache · Shop','p23-shop.html','setup',3),
         _ASTRO_PAGE('24','🔥 GRAVITY ASCENT (BOSS)','p24-boss.html','mixed',6),
         _ASTRO_PAGE('25','💫 Frame Dragging · กู้พ่อ','p25-rescue.html','story',3),
-        _ASTRO_PAGE('26','📋 Journal 3-2-1 · Badge','p26-journal.html','reflection',4),
+        _ASTRO_PAGE('26','📋 Journal 3-2-1 · Badge','p27-journal.html','reflection',4),
         _ASTRO_PAGE('JN','Join · ร่วมภารกิจ','join.html','setup')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -449,6 +455,12 @@ window.KP_PLAN_MEDIA = {
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP08','Genesis Forge · Season Finale','GENESIS FORGE 4-phase canvas boss · 5 endings · 17-key S1 keyring','28 หน้า · ~120 นาที',
           [['k','Big Bang'],['k','Inflation'],['k','BOSS Finale']])
+      ]},
+      { title:'🏆 FT-02 · Post-test หลัก (ทำหลังจบ Season · 20 ข้อ)', items:[
+        { cls:'sim', no:'FT', t:'FT-02 · Post-test หลัก (Gain Measurement)', file:'../ft02-posttest.html',
+          d:'20 ข้อเดียวกับ FT-01 · เทียบ pre/post 1:1 · คำนวณ Hake\'s normalized gain อัตโนมัติ',
+          meta:'~15 นาที · ทำครั้งเดียวหลังจบ EP08',
+          chips:[['k','Post-test'],['k','20 ข้อ'],['k','Hake\'s gain']] }
       ]},
       { title:'📖 องก์ A · ภาพรวมเอกภพ (5 หน้า)', items:[
         _ASTRO_PAGE('00','Cover · Warp Jump','p00-cover.html','story'),

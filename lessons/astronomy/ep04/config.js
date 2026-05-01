@@ -44,7 +44,7 @@ window.EP_CONFIG = {
     { id:'p23',  file:'p23-shop.html',          title:'🛒 Voyager Cache · Shop',     type:'setup',    time:3 },
     { id:'p24',  file:'p24-boss.html',          title:'🔥 GRAVITY ASCENT (Boss)',    type:'mixed',    time:6 },
     { id:'p25',  file:'p25-rescue.html',        title:'💫 Frame Dragging · กู้พ่อ',   type:'story',    time:3 },
-    { id:'p26',  file:'p26-journal.html',       title:'📋 Journal 3-2-1 · Badge',    type:'reflection', time:4 },
+    { id:'p26',  file:'p27-journal.html',       title:'📋 Journal 3-2-1 · Badge',    type:'reflection', time:4 },
   ],
 
   /* ------------------------------------------------------------------ */

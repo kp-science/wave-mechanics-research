@@ -68,17 +68,18 @@ window.KP_SUBJECTS = [
   {
     id: 'astronomy',
     title: 'ดาราศาสตร์',
-    subtitle: 'ม.5',
+    subtitle: 'ว 30105 · โลกและอวกาศ · ม.5',
     icon: '🌌',
     color: '#6a1b9a',
     bgGradient: 'linear-gradient(135deg,#6a1b9a,#4a148c)',
     topics: [
       {
         id: 'cosmos-log-s1',
-        title: 'COSMOS LOG · Season 1',
-        shortTitle: 'COSMOS LOG S1',
-        icon: '🌠',
+        title: 'โลกและอวกาศ · COSMOS LOG Season 1',
+        shortTitle: 'โลกและอวกาศ',
+        icon: '🌍',
         status: 'open',
+        current: true,
         numPlans: 8,
         dbUrl: null  // ← null = ใช้ KP_CONFIG.apiUrl ของ astronomy
       }

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FT-01 · Pre-test หลัก · COSMOS LOG · ดาราศาสตร์ ว 30105</title>
+<link rel="stylesheet" href="../../content/astronomy/_ft.css?v=1">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#0a0e27,#1a1d3a);color:#e2e8f0;padding:20px;min-height:100vh;line-height:1.6}
+.wrap{max-width:880px;margin:0 auto}
+.hero{background:linear-gradient(135deg,#6a1b9a,#4a148c);padding:24px 28px;border-radius:14px;margin-bottom:18px;border:1px solid rgba(168,85,247,.3)}
+.hero h1{font-size:24px;color:#fff;font-weight:800;margin-bottom:6px}
+.hero .meta{color:#d4b8ff;font-size:13px}
+.tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{background:rgba(255,255,255,.15);padding:4px 12px;border-radius:100px;font-size:12px;color:#fff}
+.intro{background:#1a1d3a;border:1px solid #2d3253;border-radius:12px;padding:18px 22px;margin-bottom:14px;font-size:14px;color:#cbd5e1}
+.intro b{color:#fbbf24}
+.q-card{background:#1a1d3a;border:1px solid #2d3253;border-radius:12px;padding:18px 22px;margin-bottom:12px;transition:border-color .15s}
+.q-card.answered{border-color:#22d3ee}
+.q-no{display:inline-block;background:#a855f7;color:#fff;font-weight:700;padding:2px 10px;border-radius:100px;font-size:12px;margin-bottom:8px}
+.q-text{font-size:15px;color:#f1f5f9;margin-bottom:12px;font-weight:500}
+.opt{display:block;padding:10px 14px;margin:6px 0;background:rgba(34,211,238,.05);border:1.5px solid #2d3253;border-radius:8px;cursor:pointer;font-size:14px;color:#e2e8f0;transition:all .12s}
+.opt:hover{border-color:#22d3ee;background:rgba(34,211,238,.10)}
+.opt input{margin-right:10px;accent-color:#a855f7}
+.opt.selected{border-color:#a855f7;background:rgba(168,85,247,.15)}
+.progress{position:sticky;bottom:0;background:#0a0e27;padding:14px 0;border-top:1px solid #2d3253;margin-top:18px;z-index:10}
+.progress-bar{height:8px;background:#2d3253;border-radius:100px;overflow:hidden;margin-bottom:10px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#a855f7,#22d3ee);width:0%;transition:width .3s}
+.progress-text{font-size:13px;color:#cbd5e1;margin-bottom:10px}
+.btn{padding:12px 24px;border-radius:8px;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .12s}
+.btn-primary{background:linear-gradient(135deg,#a855f7,#6a1b9a);color:#fff;width:100%}
+.btn-primary:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 16px rgba(168,85,247,.4)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.result{margin-top:18px;padding:20px;background:linear-gradient(135deg,#16a34a,#15803d);border-radius:12px;color:#fff;display:none}
+.result.show{display:block}
+.result h3{font-size:18px;margin-bottom:8px}
+.result .score{font-size:32px;font-weight:800;margin:8px 0}
+.tc{margin-top:14px;padding:12px 16px;background:rgba(251,191,36,.1);border-left:3px solid #fbbf24;border-radius:6px;font-size:13px;color:#fbbf24}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <h1>📋 FT-01 · Pre-test หลัก</h1>
+  <div class="meta">วิทยาศาสตร์พื้นฐาน 5 (โลกและอวกาศ) · ว 30105 · COSMOS LOG · ก่อนเริ่มเรียน</div>
+  <div class="tag-row">
+    <span class="tag">📊 20 ข้อ · 4 ตัวเลือก</span>
+    <span class="tag">🎯 ครอบคลุม EP01-EP08</span>
+    <span class="tag">📈 baseline สำหรับ Hake's gain</span>
+  </div>
+</div>
+
+<div class="intro">
+  <p><b>วัตถุประสงค์:</b> วัดความเข้าใจเดิมก่อนเริ่ม COSMOS LOG · ใช้เปรียบเทียบกับ FT-02 (Post-test) เพื่อคำนวณ <b>normalized gain</b> · ตอบตามที่คิด · ผิดได้ ไม่ตัดคะแนน</p>
+  <p style="margin-top:8px"><b>คำแนะนำ:</b> เงียบ · ไม่ปรึกษา · ไม่กดดัน · ใช้เวลา ~15 นาที · ตอบให้ครบทุกข้อก่อนส่ง</p>
+</div>
+
+<div id="quizArea"></div>
+
+<div class="progress">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-text" id="progressText">ตอบแล้ว 0 / 20</div>
+  <button class="btn btn-primary" id="submitBtn" disabled>🔒 ตอบให้ครบ 20 ข้อก่อน</button>
+</div>
+
+<div class="result" id="resultBox">
+  <h3>✓ ส่ง FT-01 เรียบร้อย</h3>
+  <div class="score" id="scoreText">– / 20</div>
+  <div>เก็บเป็น <b>baseline</b> · ระบบจะเทียบกับ FT-02 หลังจบ EP08 เพื่อคำนวณ gain</div>
+  <div class="tc">📚 พร้อมเริ่ม EP01 · The Collision · กำเนิดเอกภพ — กดปุ่มด้านล่างเพื่อกลับหน้าหลัก</div>
+  <button class="btn btn-primary" style="margin-top:14px;background:#fff;color:#0f2c5c" onclick="goHome()">← กลับหน้าหลัก</button>
+</div>
+
+</div>
+
+<script src="../../content/astronomy/config.js?v=2"></script>
+<script src="../../content/astronomy/questions.js?v=3"></script>
+<script>
+// ─── Require login ───
+const STU = (() => {
+  try { return JSON.parse(localStorage.getItem('wave_student') || 'null'); }
+  catch(_){ return null; }
+})();
+if (!STU || !STU.student_id){
+  document.body.innerHTML = '<div style="max-width:520px;margin:80px auto;padding:32px;background:#1a1d3a;border:1px solid #ef4444;border-radius:14px;color:#fff;text-align:center;font-family:Sarabun,sans-serif"><h2 style="color:#ef4444;margin-bottom:12px">⚠️ ยังไม่ได้ลงชื่อเข้าเรียน</h2><p style="margin-bottom:18px">FT-01 เป็นข้อมูลวิจัย · ต้องลงชื่อก่อนทำ</p><a href="../../KP-Classroom.html?course=astronomy" style="display:inline-block;padding:12px 24px;background:#a855f7;color:#fff;border-radius:8px;text-decoration:none;font-weight:700">→ ไปหน้า login</a></div>';
+  throw new Error('not logged in');
+}
+
+const API_URL = (window.KP_CONFIG && window.KP_CONFIG.apiUrl) || '';
+const QS = (window.KP_FT_BANK && window.KP_FT_BANK['FT-01']) || [];
+const TOTAL = QS.length;
+const answers = {};
+const area = document.getElementById('quizArea');
+const fill = document.getElementById('progressFill');
+const txt = document.getElementById('progressText');
+const btn = document.getElementById('submitBtn');
+
+QS.forEach((q,i) => {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.id = 'q-'+i;
+  card.innerHTML = `
+    <span class="q-no">ข้อ ${i+1} / ${TOTAL}</span>
+    <span class="q-no" style="background:#0ea5e9">${q.mcode || '—'}</span>
+    <div class="q-text">${q.q}</div>
+    ${q.opts.map((o,k) => `
+      <label class="opt" data-i="${i}" data-k="${k}">
+        <input type="radio" name="q${i}" value="${k}">${o}
+      </label>
+    `).join('')}
+  `;
+  area.appendChild(card);
+});
+
+area.addEventListener('change', (e) => {
+  if (e.target.tagName !== 'INPUT') return;
+  const i = +e.target.closest('label').dataset.i;
+  const k = +e.target.value;
+  answers[i] = k;
+  document.getElementById('q-'+i).classList.add('answered');
+  document.querySelectorAll(`#q-${i} .opt`).forEach(l => l.classList.remove('selected'));
+  e.target.closest('label').classList.add('selected');
+  updateProgress();
+});
+
+function updateProgress(){
+  const done = Object.keys(answers).length;
+  fill.style.width = (done/TOTAL*100) + '%';
+  txt.textContent = `ตอบแล้ว ${done} / ${TOTAL}`;
+  btn.disabled = done < TOTAL;
+  btn.textContent = done < TOTAL ? `🔒 เหลืออีก ${TOTAL-done} ข้อ` : '📤 ส่ง FT-01 (Baseline)';
+}
+
+// Send-to-backend with retry queue (Apps Script doPost)
+async function sendToBackend(payload){
+  if (!API_URL) return { ok:false, reason:'no apiUrl' };
+  try {
+    // Apps Script Web App รับ POST แบบ form-encoded หรือ text/plain (กัน CORS preflight)
+    const body = JSON.stringify(payload);
+    const r = await fetch(API_URL, {
+      method:'POST',
+      mode:'cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body
+    });
+    if (!r.ok) throw new Error('HTTP '+r.status);
+    const txt = await r.text();
+    return { ok:true, response:txt };
+  } catch(e){
+    // Queue for retry
+    try {
+      const Q_KEY = 'wave_ft_astronomy_queue';
+      const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
+      q.push(payload);
+      localStorage.setItem(Q_KEY, JSON.stringify(q));
+    } catch(_){}
+    return { ok:false, reason:e.message };
+  }
+}
+
+btn.onclick = async () => {
+  btn.disabled = true;
+  btn.textContent = '⏳ กำลังส่ง...';
+
+  let correct = 0;
+  const detailed = QS.map((q,i) => {
+    const ans = answers[i];
+    const ok = ans === q.answer;
+    if (ok) correct++;
+    return { id:q.id, ep:q.ep, mcode:q.mcode, kcode:q.kcode, ans, correct:ok };
+  });
+
+  const payload = {
+    action:'submitFT',           // ← Apps Script doPost router key
+    test:'FT-01',
+    course:'astronomy',
+    student_id: STU.student_id,
+    name: STU.name || '',
+    no: STU.no || '',
+    class: STU.class || '',
+    total:TOTAL,
+    correct,
+    score:correct,
+    percent: Math.round(correct/TOTAL*100),
+    answers:detailed,
+    timestamp: new Date().toISOString(),
+    ua: navigator.userAgent.slice(0,80)
+  };
+
+  // localStorage (course-scoped key + per-student)
+  try {
+    const key = 'wave_ft_astronomy';
+    const saved = JSON.parse(localStorage.getItem(key) || '{}');
+    saved['FT-01'] = payload;
+    localStorage.setItem(key, JSON.stringify(saved));
+  } catch(_){}
+
+  // Send to Apps Script
+  const result = await sendToBackend(payload);
+  const syncTag = result.ok
+    ? '<span style="background:#16a34a;padding:2px 10px;border-radius:100px;font-size:12px">☁️ ส่งขึ้น Sheet แล้ว</span>'
+    : '<span style="background:#ca8a04;padding:2px 10px;border-radius:100px;font-size:12px">⚠️ บันทึกไว้ในเครื่อง · จะส่งเมื่อ online</span>';
+
+  document.getElementById('scoreText').textContent = `${correct} / ${TOTAL}  (${Math.round(correct/TOTAL*100)}%)`;
+  document.getElementById('scoreText').insertAdjacentHTML('afterend', '<div style="margin:8px 0">' + syncTag + '</div>');
+  document.getElementById('resultBox').classList.add('show');
+  btn.textContent = '✓ ส่งแล้ว';
+  document.getElementById('resultBox').scrollIntoView({behavior:'smooth'});
+};
+
+// Background: retry queued payloads when online
+window.addEventListener('load', async () => {
+  try {
+    const Q_KEY = 'wave_ft_astronomy_queue';
+    const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
+    if (!q.length || !API_URL) return;
+    const remaining = [];
+    for (const item of q){
+      const r = await sendToBackend(item);
+      if (!r.ok) remaining.push(item);
+    }
+    localStorage.setItem(Q_KEY, JSON.stringify(remaining));
+  } catch(_){}
+});
+
+function goHome(){
+  location.href = '../../KP-Classroom.html?course=astronomy';
+}
+
+updateProgress();
+</script>
+</body>
+</html>

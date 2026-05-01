@@ -16,7 +16,7 @@ window.EP_CONFIG = {
   pages: [
     // ACT 1 · HOOK
     { id:'p00', file:'p00-howtoplay.html', title:'Recap EP02 · Intro',      type:'story',      time:2 },
-    { id:'p01', file:'p01-entry.html',     title:'จดหมาย + Pre-test',      type:'reflection', time:4 },
+    { id:'p01', file:'p01-pretest.html',     title:'จดหมาย + Pre-test',      type:'reflection', time:4 },
     { id:'p02', file:'p02-sos.html',       title:'SOS "ARYA" · decode',     type:'story',      time:2 },
     { id:'p02b', file:'p02b-genesis.html', title:'📓 MISSION GENESIS',      type:'story',      time:3 },
     { id:'p03', file:'p03-join.html',      title:'VOIDHUNTER · Password',   type:'setup',      time:3 },
@@ -42,7 +42,7 @@ window.EP_CONFIG = {
     { id:'p19', file:'p19-map.html',       title:'Post-test · Badge',       type:'reflection', time:5 },
     { id:'p17', file:'shop.html',          title:'🛍️ Hubble Trading Post',  type:'setup',      time:3 },
     { id:'p18', file:'warprun.html',       title:'🔥 WARP RUN (climax)',    type:'mixed',      time:7 },
-    { id:'p19b', file:'p19b-journal.html', title:'📒 3-2-1 Journal',         type:'reflection', time:5 },
+    { id:'p19b', file:'p27-journal.html', title:'📒 3-2-1 Journal',         type:'reflection', time:5 },
   ],
 
   /* ------------------------------------------------------------------ */
