@@ -4,6 +4,7 @@
 (function(global){
   const Boot = {
     init(opts={}) {
+      if (global.KPDB && global.KPDB.init) global.KPDB.init({ subject: 'astronomy', unit: 'ep06' });
       global.Starfield && global.Starfield.init();
       global.SFX && global.SFX.init();
       global.Sync && global.Sync.init();
@@ -380,22 +381,25 @@
       this._submitted = false;
       this._teacherActive = false;
       this._teacherOpen = false;
+      this._cfg = (global.PaceResolver && global.PaceResolver.get({ subject: 'astronomy', ep: 'ep06' })) || { enabled: false };
       this._update();
-      if (this._forceSolo) return;
+      if (this._forceSolo || !this._cfg.enabled) return;
       this._check();
       if (this._pollTimer) clearInterval(this._pollTimer);
-      this._pollTimer = setInterval(() => this._check(), 2000);
-      try {
-        const ch = new BroadcastChannel('pace_default');
-        ch.onmessage = () => this._check();
-      } catch {}
+      this._pollTimer = setInterval(() => this._check(), this._cfg.pollMs || 2000);
+      if (this._cfg.mode === 'local') {
+        try {
+          const ch = new BroadcastChannel('pace_' + this._cfg.roomCode);
+          ch.onmessage = () => this._check();
+        } catch {}
+      }
     },
 
     markSubmitted() { this._submitted = true; this._update(); },
 
     _check() {
-      if (!global.PaceClient || !this._buttonEl) return;
-      PaceClient.peek(null, 'default', 'local').then(pace => {
+      if (!global.PaceClient || !this._buttonEl || !this._cfg || !this._cfg.enabled) return;
+      PaceClient.peek(this._cfg.apiUrl, this._cfg.roomCode, this._cfg.mode).then(pace => {
         if (!pace) { this._teacherActive = false; this._teacherOpen = false; }
         else {
           this._teacherActive = true;

@@ -44,10 +44,20 @@ originSessionId: 12c3c4fc-dd6e-4643-aa4f-fd33c6621913
 - Keyboard: `→`/`Space` = next · `←` = prev
 
 ## Scope + known gaps
-- ✅ astronomy EP01/EP02 (share book.js)
+- ✅ astronomy EP01/EP02 (share book.js · Book.pace)
+- ✅ astronomy EP03–EP06 (Gate ใน ep0X-boot.js · ใช้ PaceResolver · รองรับ remote+local+multi-room ตั้งแต่ refactor 2026-05-02)
+- ✅ astronomy EP07/EP08 (เพิ่ม EP07Gate/EP08Gate ใน boot · gate footer next anchor · lazy-load pace-client+resolver · refactor 2026-05-02)
 - ❌ physics3 — ต้อง copy teacher-remote + adapt (ไม่ใช้ book.js · navigation ต่างกัน) + เปลี่ยน API_URL
 - ❌ readiness counter · multi-room UI · active session list
 - ⚠️ quota: 50 students × poll 8s × 60 min = ~22k req/hr · ชน Apps Script daily limit 20k (consumer)
+
+## PaceResolver (เพิ่ม 2026-05-02) · `lessons/shared/pace-resolver.js`
+- **Single source of truth** สำหรับ resolve pace config จาก URL+localStorage
+- API: `PaceResolver.get({subject, ep})` → `{enabled, mode, roomCode, apiUrl, pollMs, reason}`
+- URL flags: `?room=X` `?local=1` `?mode=remote` `?pace=off` `?solo=1`
+- Auto-detect astronomy apiUrl ถ้าอยู่ใน `/lessons/astronomy/` (hardcoded mirror ของ `content/astronomy/config.js`)
+- ใช้แทน hard-code `peek(null,'default','local')` ใน EP03–06 + boot ของ EP07/08
+- ⚠️ ถ้า apiUrl เปลี่ยนใน `content/astronomy/config.js` ต้องอัพเดต SUBJECT_API ใน pace-resolver.js ด้วย
 
 ## Debugging tools
 - นักเรียน: คลิก pace pill → alert แสดง mode/room/unlockedUpTo + localStorage raw

@@ -92,16 +92,27 @@
   <div class="tr-log" id="log"></div>
 </div>
 
-<script src="../../shared/pace-client.js?v=1"></script>
+<script src="../shared/firebase-config.js"></script>
+<script src="../../shared/kpdb.js"></script>
+<script src="../../shared/pace-resolver.js"></script>
+<script src="../../shared/pace-client.js?v=2"></script>
 <script>
   const params = new URLSearchParams(location.search);
   const ep   = params.get('ep')   || 'ep02';
   const room = params.get('room') || 'default';
-  const mode = (params.get('local') === '1' || params.get('mode') === 'local') ? 'local' : 'remote';
-  const API_URL = 'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec';
+  const subject = params.get('subject') || 'astronomy';
+  const fbReady = window.FirebaseConfig && window.FirebaseConfig.isConfigured();
+  const forcedLocal = (params.get('local') === '1' || params.get('mode') === 'local');
+  // Auto-prefer firebase when configured · fallback remote (Apps Script) · force local with ?local=1
+  const mode = forcedLocal ? 'local' : (fbReady ? 'firebase' : 'remote');
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec';
 
+  // initialize KPDB so PaceClient firebase mode works
+  if (window.KPDB) KPDB.init({ subject, unit: ep });
+
+  const modeBadge = mode === 'firebase' ? ' · ⚡ REALTIME' : (mode === 'local' ? ' · 🧪 LOCAL' : ' · 📡 POLL');
   document.getElementById('meta').textContent =
-    'EP: ' + ep + ' · Room: ' + room + (mode === 'local' ? ' · 🧪 LOCAL' : '');
+    'EP: ' + ep + ' · Room: ' + room + modeBadge;
 
   let pages = [];
   let currentIdx = -1;
@@ -205,13 +216,19 @@
     if (currentIdx < 0) return;
     const p = pages[currentIdx];
     const uIdx = Math.max(unlockedUpToIdx, currentIdx);
-    PaceClient.setPage({
-      mode: mode, apiUrl: API_URL, roomCode: room,
+    const payload = {
       page: p.id,
       unlockedUpTo: pages[uIdx] ? pages[uIdx].id : p.id,
-      ep: ep, subject: 'astronomy',
-      teacherPw: getPw()
-    });
+      ep: ep, subject: subject,
+      roomCode: room
+    };
+    if (mode === 'firebase') {
+      PaceClient.setPageFirebase(payload);
+    } else {
+      PaceClient.setPage(Object.assign({}, payload, {
+        mode: mode, apiUrl: API_URL, teacherPw: getPw()
+      }));
+    }
   }
 
   /* --- current page display + timer --- */
@@ -243,7 +260,27 @@
 
   /* --- pull server state --- */
   async function pullCurrent() {
-    const pace = await PaceClient.peek(API_URL, room, mode);
+    let pace = null;
+    if (mode === 'firebase' && window.KPDB) {
+      // realtime mode · subscribe ครั้งเดียว · ทุกการเปลี่ยน push เข้ามาทันที
+      KPDB.watchPace(room, (p) => {
+        pace = p;
+        if (p && p.page) {
+          const idx = pages.findIndex(pg => pg.id === p.page);
+          const uIdx = p.unlockedUpTo ? pages.findIndex(pg => pg.id === p.unlockedUpTo) : idx;
+          if (idx >= 0) {
+            unlockedUpToIdx = Math.max(uIdx, idx, 0);
+            setCurrent(idx, p.at);
+          }
+        }
+      }, { subject });
+      // initial: ถ้ายังไม่มี data หลัง 800ms → start ที่หน้าแรก
+      setTimeout(() => {
+        if (!pace) { unlockedUpToIdx = 0; setCurrent(0, Date.now()); }
+      }, 800);
+      return;
+    }
+    pace = await PaceClient.peek(API_URL, room, mode);
     if (pace && pace.page) {
       const idx = pages.findIndex(p => p.id === pace.page);
       const uIdx = pace.unlockedUpTo ? pages.findIndex(p => p.id === pace.unlockedUpTo) : idx;

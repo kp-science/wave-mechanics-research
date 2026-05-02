@@ -4,6 +4,7 @@
 (function(global){
   const Boot = {
     init(opts={}) {
+      if (global.KPDB && global.KPDB.init) global.KPDB.init({ subject: 'astronomy', unit: 'ep03' });
       // Sync
       global.Sync && global.Sync.init();
       // Auto-create solo room if no state · so Photon/VoidHunter work offline
@@ -130,18 +131,23 @@
       this._teacherActive = false;
       this._teacherOpen = false;
 
+      // ดึง pace config จาก resolver (URL ?room/?local/?pace · localStorage · subject default)
+      this._cfg = (global.PaceResolver && global.PaceResolver.get({ subject: 'astronomy', ep: 'ep03' })) || { enabled: false };
+
       this._update();
 
-      // ?solo=1 → skip teacher polling
-      if (this._forceSolo) return;
+      // ?solo=1 หรือ pace=off → skip teacher polling
+      if (this._forceSolo || !this._cfg.enabled) return;
 
       this._check();
       if (this._pollTimer) clearInterval(this._pollTimer);
-      this._pollTimer = setInterval(() => this._check(), 2000);
-      try {
-        const ch = new BroadcastChannel('pace_default');
-        ch.onmessage = () => this._check();
-      } catch {}
+      this._pollTimer = setInterval(() => this._check(), this._cfg.pollMs || 2000);
+      if (this._cfg.mode === 'local') {
+        try {
+          const ch = new BroadcastChannel('pace_' + this._cfg.roomCode);
+          ch.onmessage = () => this._check();
+        } catch {}
+      }
     },
 
     markSubmitted() {
@@ -150,8 +156,8 @@
     },
 
     _check() {
-      if (!global.PaceClient || !this._buttonEl) return;
-      PaceClient.peek(null, 'default', 'local').then(pace => {
+      if (!global.PaceClient || !this._buttonEl || !this._cfg || !this._cfg.enabled) return;
+      PaceClient.peek(this._cfg.apiUrl, this._cfg.roomCode, this._cfg.mode).then(pace => {
         if (!pace) {
           // ครูยังไม่ set pace = ไม่ active · ใช้ submit gate
           this._teacherActive = false;

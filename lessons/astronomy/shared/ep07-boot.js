@@ -58,6 +58,11 @@
       `;
       document.body.appendChild(foot);
       document.body.style.paddingBottom = '54px';
+      // Wire teacher-pace gate to footer next anchor
+      if (next) {
+        const nextAnchor = foot.querySelector('#ep07NextBtn');
+        global.EP07Gate && global.EP07Gate.attach(pageId, nextAnchor, next.file);
+      }
     },
 
     _injectTopBar(){
@@ -159,4 +164,112 @@
 
   global.EP07Boot = Boot;
   global.Boot07 = Boot;
+
+  /* ============ Teacher Pace Gate (lazy-loaded pace-client + resolver) ============ */
+  const Gate = {
+    _pollTimer: null,
+    _anchor: null,
+    _pageId: null,
+    _href: null,
+    _label: '',
+    _cfg: null,
+    _ready: false,
+
+    attach(pageId, anchor, href){
+      if (!anchor) return;
+      this._anchor = anchor;
+      this._pageId = pageId;
+      this._href = href;
+      this._label = anchor.textContent;
+      // intercept click — block when locked
+      anchor.addEventListener('click', (e) => {
+        if (this._cfg && this._cfg.enabled && this._teacherActive && !this._teacherOpen) {
+          e.preventDefault();
+          this._flash();
+        }
+      });
+      this._loadDeps().then(() => {
+        this._cfg = (global.PaceResolver && global.PaceResolver.get({ subject:'astronomy', ep:'ep07' })) || { enabled:false };
+        if (!this._cfg.enabled) return;
+        this._ready = true;
+        this._check();
+        this._pollTimer = setInterval(() => this._check(), this._cfg.pollMs || 2000);
+        if (this._cfg.mode === 'local') {
+          try {
+            const ch = new BroadcastChannel('pace_' + this._cfg.roomCode);
+            ch.onmessage = () => this._check();
+          } catch {}
+        }
+      }).catch(() => {});
+    },
+
+    _loadDeps(){
+      const base = '../../shared/';
+      const epShared = '../shared/';
+      const load = (src, globalKey) => new Promise((res, rej) => {
+        if (globalKey && global[globalKey]) return res();
+        const s = document.createElement('script');
+        s.src = src; s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+      // load order: firebase-config → kpdb → pace-client → pace-resolver
+      return load(epShared + 'firebase-config.js', 'FirebaseConfig')
+        .catch(() => {})
+        .then(() => load(base + 'kpdb.js', 'KPDB'))
+        .then(() => { if (global.KPDB) global.KPDB.init({ subject: 'astronomy', unit: 'ep07' }); })
+        .then(() => load(base + 'pace-client.js', 'PaceClient'))
+        .then(() => load(base + 'pace-resolver.js', 'PaceResolver'));
+    },
+
+    _check(){
+      if (!this._ready || !global.PaceClient || !this._cfg || !this._cfg.enabled) return;
+      PaceClient.peek(this._cfg.apiUrl, this._cfg.roomCode, this._cfg.mode).then(pace => {
+        if (!pace) { this._teacherActive = false; this._teacherOpen = false; }
+        else {
+          this._teacherActive = true;
+          const pages = (global.EP_CONFIG && global.EP_CONFIG.pages) || [];
+          const curIdx = pages.findIndex(p => p.id === this._pageId);
+          const unlockedIdx = pages.findIndex(p => p.id === pace.unlockedUpTo);
+          this._teacherOpen = (unlockedIdx >= curIdx + 1);
+        }
+        this._render();
+      }).catch(() => {});
+    },
+
+    _render(){
+      if (!this._anchor) return;
+      if (this._teacherActive && !this._teacherOpen) {
+        this._anchor.classList.add('pace-locked');
+        this._anchor.textContent = '🔒 รอครูปลดล็อค';
+      } else {
+        this._anchor.classList.remove('pace-locked');
+        this._anchor.textContent = (this._teacherActive && this._teacherOpen ? '✓ ' : '') + this._label;
+      }
+    },
+
+    _flash(){
+      if (!this._anchor) return;
+      this._anchor.style.transition = 'transform .12s';
+      this._anchor.style.transform = 'translateX(-6px)';
+      setTimeout(() => { this._anchor.style.transform = 'translateX(6px)'; }, 100);
+      setTimeout(() => { this._anchor.style.transform = ''; }, 200);
+    }
+  };
+  global.EP07Gate = Gate;
+
+  // pace-locked styling
+  (function injectGateCss(){
+    if (document.getElementById('ep07-gate-css')) return;
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('ep07-gate-css')) return;
+      const s = document.createElement('style');
+      s.id = 'ep07-gate-css';
+      s.textContent = `
+        .ep07-nav.pace-locked{color:#ff5c7a !important;cursor:not-allowed;
+          animation:ep07PaceLockedPulse 1.6s ease-in-out infinite;}
+        @keyframes ep07PaceLockedPulse{0%,100%{opacity:.7;}50%{opacity:1;}}
+      `;
+      document.head.appendChild(s);
+    });
+  })();
 })(window);

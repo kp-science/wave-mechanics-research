@@ -16,6 +16,21 @@
   let localChannel = null;
   let localChannelListener = null;
 
+  // Firebase realtime cache (populated โดย KPDB.watchPace)
+  const _fbCache = {};   // { roomCode: pace }
+  const _fbSubscribed = {};  // { roomCode: true }
+
+  function _ensureFirebaseSub(subject, roomCode) {
+    if (_fbSubscribed[roomCode]) return;
+    if (!window.KPDB || !window.FirebaseConfig || !window.FirebaseConfig.isConfigured()) return;
+    _fbSubscribed[roomCode] = true;
+    try {
+      window.KPDB.watchPace(roomCode, (pace) => {
+        _fbCache[roomCode] = pace;
+      }, { subject });
+    } catch (e) { _fbSubscribed[roomCode] = false; }
+  }
+
   function paceKey(p) {
     if (!p || !p.page) return null;
     return p.page + '|' + (p.unlockedUpTo || p.page);
@@ -140,10 +155,27 @@
       });
     },
 
-    /** One-shot read (remote or local). */
-    peek(apiUrl, roomCode, mode) {
+    /** One-shot read (firebase | remote | local). */
+    peek(apiUrl, roomCode, mode, opts) {
+      if (mode === 'firebase') {
+        // ensure subscription · cache อัพเดทอัตโนมัติเมื่อมี data ใหม่
+        const subject = (opts && opts.subject) || (window.PaceResolver && window.PaceResolver.get({}).subject) || null;
+        _ensureFirebaseSub(subject, roomCode);
+        return Promise.resolve(_fbCache[roomCode] || null);
+      }
       if (mode === 'local') return Promise.resolve(localPeek(roomCode));
       return fetchPace(apiUrl, roomCode);
+    },
+
+    /** Teacher push (firebase mode · ใช้ KPDB) */
+    setPageFirebase(opts) {
+      if (!opts || !opts.page || !window.KPDB) return Promise.resolve();
+      return window.KPDB.setPace(opts.roomCode || 'default', {
+        page: opts.page,
+        unlockedUpTo: opts.unlockedUpTo || opts.page,
+        ep: opts.ep || '',
+        subject: opts.subject || ''
+      }, { subject: opts.subject });
     }
   };
 
