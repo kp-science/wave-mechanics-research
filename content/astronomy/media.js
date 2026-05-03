@@ -34,15 +34,11 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 1 — EP01 · The Collision · กำเนิดเอกภพ',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
     sections: [
-      { title:'📜 ก่อนเริ่มงานวิจัย (ทำตามลำดับ)', items:[
+      { title:'📜 ก่อนเริ่มงานวิจัย', items:[
         { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
           d:'อ่านและเลือกความยินยอม · ทำครั้งเดียว · ปฏิเสธได้',
           meta:'~3 นาที · ทำก่อนเป็นอันดับแรก',
-          chips:[['k','Consent'],['k','จริยธรรมวิจัย']] },
-        { cls:'sim', no:'R1', t:'IMI · แบบสอบถามแรงจูงใจ (ก่อนเรียน)', file:'../research/imi-21.html?phase=pre',
-          d:'21 ข้อ · 3 ด้าน (Autonomy · Competence · Relatedness)',
-          meta:'~5 นาที · ทำก่อนเริ่ม EP01',
-          chips:[['k','IMI Pre'],['k','21 ข้อ'],['k','SDT']] }
+          chips:[['k','Consent'],['k','จริยธรรมวิจัย']] }
       ]},
       { title:'📋 FT-01 · Pre-test หลัก (ทำก่อนเรียน · 20 ข้อ)', items:[
         { cls:'sim', no:'FT', t:'FT-01 · Pre-test หลัก (Baseline)', file:'../ft01-pretest.html',
@@ -472,12 +468,12 @@ window.KP_PLAN_MEDIA = {
           meta:'~15 นาที · ทำครั้งเดียวหลังจบ EP08',
           chips:[['k','Post-test'],['k','20 ข้อ'],['k','Hake\'s gain']] }
       ]},
-      { title:'🌟 หลังจบ Season — แบบสอบถามงานวิจัย (ทำตามลำดับ)', items:[
-        { cls:'sim', no:'R2', t:'IMI · แบบสอบถามแรงจูงใจ (หลังเรียน)', file:'../research/imi-21.html?phase=post',
-          d:'21 ข้อชุดเดียวกับก่อนเรียน · เทียบ Pre/Post 3 ด้าน SDT',
+      { title:'🏁 จบ 8 EP แล้ว — แบบสอบถามงานวิจัย (ทำตามลำดับ)', items:[
+        { cls:'sim', no:'R1', t:'IMI · แบบสอบถามแรงจูงใจในการเรียน', file:'../research/imi-21.html',
+          d:'21 ข้อ · 3 ด้าน (Autonomy · Competence · Relatedness) · ตอบครั้งเดียวหลังเล่นจบ',
           meta:'~5 นาที · ทำหลังจบ Boss',
-          chips:[['k','IMI Post'],['k','21 ข้อ'],['k','SDT']] },
-        { cls:'sim', no:'R3', t:'แบบสอบถามความพึงพอใจ', file:'../research/satisfaction-20.html',
+          chips:[['k','IMI'],['k','21 ข้อ'],['k','SDT']] },
+        { cls:'sim', no:'R2', t:'แบบสอบถามความพึงพอใจ', file:'../research/satisfaction-20.html',
           d:'20 ข้อ · 4 ด้าน (เนื้อหา · กิจกรรม · สื่อ · วัดผล) + ข้อเสนอแนะ',
           meta:'~5 นาที · ทำเป็นอันดับสุดท้าย',
           chips:[['k','Satisfaction'],['k','20 ข้อ'],['k','4 ด้าน']] }
