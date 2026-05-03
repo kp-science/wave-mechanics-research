@@ -35,11 +35,11 @@ window.KP_PLAN_MEDIA = {
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
     sections: [
       { title:'📜 ก่อนเริ่มงานวิจัย (ทำตามลำดับ)', items:[
-        { cls:'mj', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
+        { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
           d:'อ่านและเลือกความยินยอม · ทำครั้งเดียว · ปฏิเสธได้',
           meta:'~3 นาที · ทำก่อนเป็นอันดับแรก',
           chips:[['k','Consent'],['k','จริยธรรมวิจัย']] },
-        { cls:'mj', no:'R1', t:'IMI · แบบสอบถามแรงจูงใจ (ก่อนเรียน)', file:'../research/imi-21.html?phase=pre',
+        { cls:'sim', no:'R1', t:'IMI · แบบสอบถามแรงจูงใจ (ก่อนเรียน)', file:'../research/imi-21.html?phase=pre',
           d:'21 ข้อ · 3 ด้าน (Autonomy · Competence · Relatedness)',
           meta:'~5 นาที · ทำก่อนเริ่ม EP01',
           chips:[['k','IMI Pre'],['k','21 ข้อ'],['k','SDT']] }
@@ -473,11 +473,11 @@ window.KP_PLAN_MEDIA = {
           chips:[['k','Post-test'],['k','20 ข้อ'],['k','Hake\'s gain']] }
       ]},
       { title:'🌟 หลังจบ Season — แบบสอบถามงานวิจัย (ทำตามลำดับ)', items:[
-        { cls:'mj', no:'R2', t:'IMI · แบบสอบถามแรงจูงใจ (หลังเรียน)', file:'../research/imi-21.html?phase=post',
+        { cls:'sim', no:'R2', t:'IMI · แบบสอบถามแรงจูงใจ (หลังเรียน)', file:'../research/imi-21.html?phase=post',
           d:'21 ข้อชุดเดียวกับก่อนเรียน · เทียบ Pre/Post 3 ด้าน SDT',
           meta:'~5 นาที · ทำหลังจบ Boss',
           chips:[['k','IMI Post'],['k','21 ข้อ'],['k','SDT']] },
-        { cls:'mj', no:'R3', t:'แบบสอบถามความพึงพอใจ', file:'../research/satisfaction-20.html',
+        { cls:'sim', no:'R3', t:'แบบสอบถามความพึงพอใจ', file:'../research/satisfaction-20.html',
           d:'20 ข้อ · 4 ด้าน (เนื้อหา · กิจกรรม · สื่อ · วัดผล) + ข้อเสนอแนะ',
           meta:'~5 นาที · ทำเป็นอันดับสุดท้าย',
           chips:[['k','Satisfaction'],['k','20 ข้อ'],['k','4 ด้าน']] }
