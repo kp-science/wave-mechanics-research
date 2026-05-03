@@ -34,6 +34,16 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 1 — EP01 · The Collision · กำเนิดเอกภพ',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
     sections: [
+      { title:'📜 ก่อนเริ่มงานวิจัย (ทำตามลำดับ)', items:[
+        { cls:'mj', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
+          d:'อ่านและเลือกความยินยอม · ทำครั้งเดียว · ปฏิเสธได้',
+          meta:'~3 นาที · ทำก่อนเป็นอันดับแรก',
+          chips:[['k','Consent'],['k','จริยธรรมวิจัย']] },
+        { cls:'mj', no:'R1', t:'IMI · แบบสอบถามแรงจูงใจ (ก่อนเรียน)', file:'../research/imi-21.html?phase=pre',
+          d:'21 ข้อ · 3 ด้าน (Autonomy · Competence · Relatedness)',
+          meta:'~5 นาที · ทำก่อนเริ่ม EP01',
+          chips:[['k','IMI Pre'],['k','21 ข้อ'],['k','SDT']] }
+      ]},
       { title:'📋 FT-01 · Pre-test หลัก (ทำก่อนเรียน · 20 ข้อ)', items:[
         { cls:'sim', no:'FT', t:'FT-01 · Pre-test หลัก (Baseline)', file:'../ft01-pretest.html',
           d:'20 ข้อ · ครอบคลุม EP01-EP08 · เก็บ baseline สำหรับคำนวณ Hake\'s gain',
@@ -461,6 +471,16 @@ window.KP_PLAN_MEDIA = {
           d:'20 ข้อเดียวกับ FT-01 · เทียบ pre/post 1:1 · คำนวณ Hake\'s normalized gain อัตโนมัติ',
           meta:'~15 นาที · ทำครั้งเดียวหลังจบ EP08',
           chips:[['k','Post-test'],['k','20 ข้อ'],['k','Hake\'s gain']] }
+      ]},
+      { title:'🌟 หลังจบ Season — แบบสอบถามงานวิจัย (ทำตามลำดับ)', items:[
+        { cls:'mj', no:'R2', t:'IMI · แบบสอบถามแรงจูงใจ (หลังเรียน)', file:'../research/imi-21.html?phase=post',
+          d:'21 ข้อชุดเดียวกับก่อนเรียน · เทียบ Pre/Post 3 ด้าน SDT',
+          meta:'~5 นาที · ทำหลังจบ Boss',
+          chips:[['k','IMI Post'],['k','21 ข้อ'],['k','SDT']] },
+        { cls:'mj', no:'R3', t:'แบบสอบถามความพึงพอใจ', file:'../research/satisfaction-20.html',
+          d:'20 ข้อ · 4 ด้าน (เนื้อหา · กิจกรรม · สื่อ · วัดผล) + ข้อเสนอแนะ',
+          meta:'~5 นาที · ทำเป็นอันดับสุดท้าย',
+          chips:[['k','Satisfaction'],['k','20 ข้อ'],['k','4 ด้าน']] }
       ]},
       { title:'📖 องก์ A · ภาพรวมเอกภพ (5 หน้า)', items:[
         _ASTRO_PAGE('00','Cover · Warp Jump','p00-cover.html','story'),
