@@ -117,9 +117,12 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function markDone() {
-  Book.addEnergy(1, 'P12 viewed');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p12', amount:(1), reason:'P12 viewed' });
+  else Book.addEnergy(1, 'P12 viewed');
   Book.completePage('p12');
   document.getElementById('result').innerHTML = '<div class="success">✓ เข้าใจโจทย์แล้ว · กด "ต่อไป →"</div>';
 }

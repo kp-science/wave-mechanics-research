@@ -109,6 +109,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -129,7 +130,9 @@
 
     // ×3 multiplier (safe haven · no risk)
     const base = correct * 10 * 3;
-    Book.addEnergy(base, 'checkpoint-3x');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+    if (window.Economy) Economy.energyOnce({ page:'p10', amount: base, reason:'checkpoint-3x:correct=' + correct });
+    else Book.addEnergy(base, 'checkpoint-3x');
     if (correct >= 2) { Obj.hit('K1', { page:'p10' }); Obj.hit('K4', { page:'p10' }); }
     else { Obj.miss('K1', { page:'p10' }); }
 

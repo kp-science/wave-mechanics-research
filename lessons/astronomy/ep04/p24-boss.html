@@ -208,6 +208,16 @@ let chargeStart = 0;
 let qActive = false;
 let answers = []; // log
 let started = false;
+// ⭐ Boss telemetry: start time + retry counter (สำหรับ ActivitySync.submitBoss)
+let bossStartTime = 0;
+const BOSS_RETRY_KEY = 'cosmosLog_ep04_boss_retries';
+const bossRetries = (function(){
+  try {
+    const n = (parseInt(localStorage.getItem(BOSS_RETRY_KEY) || '0', 10) || 0) + 1;
+    localStorage.setItem(BOSS_RETRY_KEY, String(n));
+    return n - 1; // 0 ครั้งแรก · 1 = retry รอบ 1
+  } catch(_) { return 0; }
+})();
 const inv = (Chain.get('shop.purchased')) || [];
 const hasBlackDwarf = inv.includes('blackDwarf');
 const hasSpectroPro = inv.includes('spectroPro');
@@ -217,6 +227,7 @@ let massSensorUsed = false;
 function startBoss(){
   document.getElementById('introOvl').style.display='none';
   started = true;
+  bossStartTime = Date.now(); // ⭐ เก็บเวลาเริ่มสำหรับ Boss telemetry
   showZoneIntro(0);
 }
 
@@ -353,6 +364,22 @@ function endBoss(){
   if (ending === 'A+' && !hasBlackDwarf) ending = 'A';
 
   Chain.set('boss.result', { ending, energy, answers });
+
+  // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement` (ไม่นับ E1 · construct validity)
+  try {
+    if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+      const correctN = answers.filter(a => a.correct).length;
+      const totalN = answers.length || 1;
+      const timeSpent = bossStartTime ? Math.round((Date.now() - bossStartTime) / 1000) : 0;
+      ActivitySync.submitBoss({
+        ep: 4,
+        accuracy: +(correctN / totalN).toFixed(3),
+        timeSpent,
+        retries: bossRetries,
+        endingPath: ending
+      });
+    }
+  } catch(_) {}
 
   const box = document.getElementById('endingBox');
   box.style.display = 'block';

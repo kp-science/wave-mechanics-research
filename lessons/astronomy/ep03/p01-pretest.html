@@ -244,8 +244,11 @@ setTimeout(() => {
     }
 
     // Reward · pre-test ไม่วัดถูกผิด · แค่ effort · +5 coin + +5 photon
-    if (typeof Coin !== 'undefined' && Coin.add) {
+    // ⭐ Economy: once-per-page (กันกดซ้ำได้ +5 coin ซ้ำ)
+    const _ck = 'cosmosLog_ep03_p01_pretest_coin';
+    if (!localStorage.getItem(_ck) && typeof Coin !== 'undefined' && Coin.add) {
       Coin.add(5, 'p01-pretest-effort');
+      localStorage.setItem(_ck, '1');
     }
     if (typeof Photon !== 'undefined' && Photon.add) {
       Photon.add(5, 'p01-pretest-effort');

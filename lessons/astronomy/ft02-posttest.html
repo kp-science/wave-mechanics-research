@@ -23,6 +23,14 @@ body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#0a0e27,
 .opt:hover{border-color:#22c55e;background:rgba(34,197,94,.10)}
 .opt input{margin-right:10px;accent-color:#22c55e}
 .opt.selected{border-color:#22c55e;background:rgba(34,197,94,.15)}
+.conf-block{margin-top:12px;padding:10px 12px;background:rgba(251,191,36,.06);border:1.5px dashed #fbbf24;border-radius:8px;display:none}
+.q-card.has-answer .conf-block{display:block}
+.conf-label{font-size:12px;color:#fbbf24;margin-bottom:6px;font-weight:600}
+.conf-row{display:flex;gap:6px}
+.conf-btn{flex:1;padding:8px 4px;text-align:center;background:rgba(255,255,255,.03);border:1.5px solid #2d3253;border-radius:6px;cursor:pointer;font-size:11px;color:#cbd5e1;transition:all .12s}
+.conf-btn:hover{border-color:#fbbf24}
+.conf-btn.selected{border-color:#fbbf24;background:rgba(251,191,36,.18);color:#fff;font-weight:700}
+.conf-btn .num{display:block;font-size:16px;font-weight:800;margin-bottom:2px}
 .progress{position:sticky;bottom:0;background:#0a0e27;padding:14px 0;border-top:1px solid #2d3253;margin-top:18px;z-index:10}
 .progress-bar{height:8px;background:#2d3253;border-radius:100px;overflow:hidden;margin-bottom:10px}
 .progress-fill{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);width:0%;transition:width .3s}
@@ -103,10 +111,18 @@ const API_URL = (window.KP_CONFIG && window.KP_CONFIG.apiUrl) || '';
 const QS = (window.KP_FT_BANK && window.KP_FT_BANK['FT-02']) || [];
 const TOTAL = QS.length;
 const answers = {};
+const confidences = {};   // ← Two-tier
 const area = document.getElementById('quizArea');
 const fill = document.getElementById('progressFill');
 const txt = document.getElementById('progressText');
 const btn = document.getElementById('submitBtn');
+
+const CONF_LABELS = [
+  {n:1, t:'เดา',          emo:'🎲'},
+  {n:2, t:'ไม่ค่อยมั่นใจ', emo:'🤔'},
+  {n:3, t:'มั่นใจ',        emo:'😊'},
+  {n:4, t:'มั่นใจมาก',     emo:'💪'}
+];
 
 // Send-to-backend with retry queue
 async function sendToBackend(payload){
@@ -144,6 +160,16 @@ QS.forEach((q,i) => {
         <input type="radio" name="q${i}" value="${k}">${o}
       </label>
     `).join('')}
+    <div class="conf-block">
+      <div class="conf-label">💡 มั่นใจในคำตอบนี้แค่ไหน?</div>
+      <div class="conf-row">
+        ${CONF_LABELS.map(c => `
+          <div class="conf-btn" data-i="${i}" data-c="${c.n}">
+            <span class="num">${c.emo}</span>${c.t}
+          </div>
+        `).join('')}
+      </div>
+    </div>
   `;
   area.appendChild(card);
 });
@@ -153,16 +179,32 @@ area.addEventListener('change', (e) => {
   const i = +e.target.closest('label').dataset.i;
   const k = +e.target.value;
   answers[i] = k;
-  document.getElementById('q-'+i).classList.add('answered');
+  document.getElementById('q-'+i).classList.add('has-answer');
   document.querySelectorAll(`#q-${i} .opt`).forEach(l => l.classList.remove('selected'));
   e.target.closest('label').classList.add('selected');
   updateProgress();
 });
 
+area.addEventListener('click', (e) => {
+  const cbtn = e.target.closest('.conf-btn');
+  if (!cbtn) return;
+  const i = +cbtn.dataset.i;
+  const c = +cbtn.dataset.c;
+  if (answers[i] === undefined) return;
+  confidences[i] = c;
+  document.querySelectorAll(`#q-${i} .conf-btn`).forEach(b => b.classList.remove('selected'));
+  cbtn.classList.add('selected');
+  document.getElementById('q-'+i).classList.add('answered');
+  updateProgress();
+});
+
 function updateProgress(){
-  const done = Object.keys(answers).length;
+  let done = 0;
+  for (let i = 0; i < TOTAL; i++){
+    if (answers[i] !== undefined && confidences[i] !== undefined) done++;
+  }
   fill.style.width = (done/TOTAL*100) + '%';
-  txt.textContent = `ตอบแล้ว ${done} / ${TOTAL}`;
+  txt.textContent = `ตอบครบ ${done} / ${TOTAL} (คำตอบ + ความมั่นใจ)`;
   btn.disabled = done < TOTAL;
   btn.textContent = done < TOTAL ? `🔒 เหลืออีก ${TOTAL-done} ข้อ` : '📤 ส่ง FT-02';
 }
@@ -174,9 +216,15 @@ btn.onclick = async () => {
   let correct = 0;
   const detailed = QS.map((q,i) => {
     const ans = answers[i];
+    const conf = confidences[i] || 0;
     const ok = ans === q.answer;
     if (ok) correct++;
-    return { id:q.id, ep:q.ep, mcode:q.mcode, kcode:q.kcode, ans, correct:ok };
+    let category;
+    if (ok && conf >= 3) category = 'Sound';
+    else if (ok && conf <= 2) category = 'Guessing';
+    else if (!ok && conf >= 3) category = 'Misconception';
+    else category = 'No-K';
+    return { id:q.id, ep:q.ep, mcode:q.mcode, kcode:q.kcode, ans, correct:ok, confidence:conf, category };
   });
 
   // Get pretest baseline first to include in payload

@@ -66,6 +66,7 @@
 
 <script src="../shared/starfield.js"></script>
 <script src="../shared/kpa-tracker-v2.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="../shared/coin-energy.js"></script>
 <script src="../shared/hud-v2.js"></script>
 <script src="../shared/pbl-frame.js"></script>
@@ -142,11 +143,29 @@
           document.getElementById('prepZone').style.display = 'none';
           document.getElementById('triageRoot').style.display = '';
           KPA.research('preBossProfile', { profile, items: items.map(i=>i.id) });
+          window._bossStartTime = Date.now(); // ⭐ Boss telemetry start
           CipherVault.start({
             boosters: items.map(i => i.id),
             keys,
             onComplete: ({ ending, hp }) => {
               KPA.research('bossComplete', { ending, hp });
+              // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement`
+              try {
+                if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+                  // accuracy proxy จาก hp ที่เหลือ (สมมติ hpMax=10) · ถ้า ending=A+ → 1.0
+                  const accMap = { 'A+':1.0, 'A':0.75, 'B':0.5, 'C':0.25 };
+                  const _retryKey = 'cosmosLog_ep07_boss_retries';
+                  const _retries = (parseInt(localStorage.getItem(_retryKey) || '0', 10) || 0);
+                  localStorage.setItem(_retryKey, String(_retries + 1));
+                  ActivitySync.submitBoss({
+                    ep: 7,
+                    accuracy: accMap[ending] != null ? accMap[ending] : (typeof hp === 'number' ? Math.max(0, Math.min(1, hp/10)) : 0),
+                    timeSpent: window._bossStartTime ? Math.round((Date.now() - window._bossStartTime) / 1000) : 0,
+                    retries: _retries,
+                    endingPath: ending || 'unknown'
+                  });
+                }
+              } catch(_) {}
             }
           });
         }

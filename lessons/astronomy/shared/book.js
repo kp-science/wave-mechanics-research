@@ -1,5 +1,27 @@
 /* ===== COSMOS LOG · Shared Book Engine ===== */
 
+/* ⭐ E1 capture: auto-inject activity-sync.js + activity-registry.js
+ * (so every G1 page that loads book.js gets E1 telemetry without per-page edits) */
+(function injectActivityScripts(){
+  try {
+    const cs = document.currentScript;
+    const baseSrc = cs && cs.src ? cs.src : '';
+    const baseDir = baseSrc.replace(/\/[^\/]*$/, '/'); // .../shared/
+    function need(name){
+      if (document.querySelector('script[data-activity="'+name+'"]')) return;
+      if (document.querySelector('script[src*="'+name+'"]')) return;
+      const s = document.createElement('script');
+      s.src = baseDir + name;
+      s.setAttribute('data-activity', name);
+      s.async = false;
+      document.head.appendChild(s);
+    }
+    need('activity-sync.js');
+    need('activity-registry.js');
+    need('economy.js'); // ⭐ 2-tier currency engine
+  } catch(_){}
+})();
+
 const PAGES = [
   { id: 'p01', file: 'p01-entry.html',      title: 'Entry Ticket',        type: 'puzzle',     time: 3 },
   { id: 'p02', file: 'p02-team.html',       title: 'เลือกทีม',             type: 'setup',      time: 2 },
@@ -294,6 +316,23 @@ const Book = {
     this.state.gates[pageId] = true;
     this.save();
     this.updateHUD();
+    // ⭐ E1 capture: auto-submit if registered (best-score per page)
+    try {
+      if (window.ActivitySync && window.ActivityRegistry) {
+        const ep  = ActivityRegistry.detectEp();
+        const cat = ActivityRegistry.categoryOf(ep, pageId);
+        if (cat === 'MISSION' || cat === 'LAB' || cat === 'RECALL') {
+          const score = Number(opts && opts.score);
+          const max   = Number(opts && opts.max);
+          if (Number.isFinite(score) && Number.isFinite(max) && max > 0) {
+            ActivitySync.submit({ ep, pageId, category: cat, rawScore: score, maxScore: max });
+          } else {
+            ActivitySync.submit({ ep, pageId, category: cat, rawScore: 1, maxScore: 1 });
+          }
+        }
+        // BOSS pages เรียก ActivitySync.submitBoss() เอง · ไม่ auto ที่นี่
+      }
+    } catch(_){}
     const footerNext = document.getElementById('btn-next');
     if (footerNext) {
       footerNext.disabled = false;
@@ -656,29 +695,29 @@ Book.pace = {
   roomCode: null,
   mode: 'remote',
   unlockedUpTo: null,  // pageId · หน้าสูงสุดที่ครูปลดล็อคแล้ว (ถ้า null = ยังไม่เคยรับ state)
-  // ⚠️ astronomy's Apps Script deployment (content/astronomy/config.js → apiUrl)
-  API_URL: 'https://script.google.com/macros/s/AKfycbzt4qyJPIh7zudsQVEMIkLdRk2M1lricq9fx73orp7dZA1B3_MdwgkwZrz6YWFuuRZq/exec',
+  // ⚠️ astronomy's Apps Script deployment · ตรงกับ content/astronomy/config.js → apiUrl
+  API_URL: 'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec',
 
   init() {
     const params = new URLSearchParams(location.search);
     if (params.get('pace') === 'off') { localStorage.removeItem('paceRoom'); localStorage.removeItem('paceMode'); return; }
-    const room = params.get('room') || localStorage.getItem('paceRoom');
-    if (!room) return;
-    if (params.get('room')) localStorage.setItem('paceRoom', room);
+    // ⭐ Auto-pace: นักเรียน astronomy ทุกคนเข้า room "auto_astronomy" อัตโนมัติ · ไม่ต้องตั้งค่า
+    // (course derive จาก path: lessons/<course>/...)
+    const m = location.pathname.match(/\/lessons\/([a-z0-9_-]+)\//i);
+    const course = m ? m[1] : 'astronomy';
+    const room = params.get('room') || localStorage.getItem('paceRoom') || ('auto_' + course);
     this.enabled = true;
     this.roomCode = room;
-    const urlLocal = (params.get('local') === '1' || params.get('mode') === 'local');
-    this.mode = urlLocal ? 'local' : (localStorage.getItem('paceMode') || 'remote');
-    if (urlLocal) localStorage.setItem('paceMode', 'local');
+    this.mode = 'remote'; // auto-pace ใช้ remote (Apps Script · ข้ามเน็ต/อุปกรณ์ได้)
+    try { localStorage.setItem('paceRoom', room); localStorage.setItem('paceMode', 'remote'); } catch(e){}
     this._loadClient(() => {
       window.PaceClient.watch({
         mode: Book.pace.mode,
         apiUrl: Book.pace.API_URL,
         roomCode: room,
-        intervalMs: Book.pace.mode === 'local' ? 2000 : 8000,
+        intervalMs: 2000, // ⭐ poll 2 วิ · เร็วกว่าเดิม (8 วิ)
         onChange: (pace) => Book.pace.onRemote(pace)
       });
-      if (Book.pace.mode === 'local') console.info('[pace] local mode · room=' + room);
     });
     // refresh pace ตอนกลับมาโฟกัส tab (BroadcastChannel อาจพลาดตอน tab hidden)
     document.addEventListener('visibilitychange', () => {
@@ -723,7 +762,54 @@ Book.pace = {
     const pages = Book.getPages();
     const t = pages.find(p => p.id === target);
     if (!t) return;
-    this.showBanner(t);
+    // ⭐ Auto-jump mode: countdown แล้วเด้งไปอัตโนมัติ · นักเรียนทั้งห้องเปิดหน้าเดียวกันพร้อมกัน
+    if (pace.auto === true || pace.auto === 'true') {
+      this.startAutoJump(t, pace);
+    } else {
+      this.showBanner(t);
+    }
+  },
+
+  // ⭐ Auto-jump: countdown 3 วินาที (ยกเลิกได้) · ป้องกัน double-jump ด้วย key เดียวกัน
+  _autoJumpKey: null,
+  _autoJumpTimer: null,
+  startAutoJump(target, pace) {
+    const key = (pace.page || '') + '|' + (pace.at || '');
+    if (this._autoJumpKey === key) return; // ส่งซ้ำ · ignore
+    this._autoJumpKey = key;
+    if (this._autoJumpTimer) { clearInterval(this._autoJumpTimer); this._autoJumpTimer = null; }
+    let secs = 3;
+    let el = document.getElementById('pace-banner');
+    if (!el) {
+      el = document.createElement('div'); el.id = 'pace-banner';
+      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;padding:14px 18px;background:linear-gradient(135deg,#ff5c7a,#b980ff);color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:inherit';
+      document.body.appendChild(el);
+    } else {
+      el.style.background = 'linear-gradient(135deg,#ff5c7a,#b980ff)';
+    }
+    const render = () => {
+      el.innerHTML = `🚀 ครูพาไปหน้า <b>${target.id.toUpperCase()} · ${target.title}</b>
+        &nbsp; เด้งใน <b style="font-size:22px;color:#ffe066">${secs}</b> วินาที
+        <button onclick="Book.pace.cancelAutoJump()" style="margin-left:10px;padding:5px 12px;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit">⏸ หยุด</button>
+        <button onclick="Book.pace.goTo('${target.file}')" style="padding:5px 12px;background:#fff;color:#b80050;border:none;border-radius:6px;font-weight:800;cursor:pointer;font-family:inherit">⏭ ไปเลย</button>`;
+    };
+    render();
+    this._autoJumpTimer = setInterval(() => {
+      secs--;
+      if (secs <= 0) {
+        clearInterval(this._autoJumpTimer); this._autoJumpTimer = null;
+        // double-check ก่อนเด้ง · ถ้าผู้ใช้กด cancel ระหว่าง interval
+        if (this._autoJumpKey === key) location.href = target.file;
+      } else {
+        render();
+      }
+    }, 1000);
+  },
+  cancelAutoJump() {
+    if (this._autoJumpTimer) { clearInterval(this._autoJumpTimer); this._autoJumpTimer = null; }
+    this._autoJumpKey = '__cancelled__';
+    const el = document.getElementById('pace-banner');
+    if (el) el.innerHTML = '⏸ หยุด auto-jump · กดปุ่ม "ต่อไป →" เองเมื่อพร้อม &nbsp;<button onclick="Book.pace.dismissBanner()" style="padding:4px 10px;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;font-weight:700;cursor:pointer">×</button>';
   },
 
   /* Sync visual lock state ของปุ่ม footer "ต่อไป →" กับ unlockedUpTo */
@@ -895,5 +981,9 @@ Book.pace = {
     location.href = file;
   }
 };
+
+// Pre-load state synchronously so inline scripts that run during HTML parse
+// (e.g. p02-team.html renderGrid reading Book.state.teamId) don't hit null.
+try { Book.state = Book.load(); } catch(e) { Book.state = Book.defaultState ? Book.defaultState() : {}; }
 
 document.addEventListener('DOMContentLoaded', () => { Book.init(); Book.pace.init(); });

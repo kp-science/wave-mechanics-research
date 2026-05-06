@@ -141,6 +141,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 let armor = 3;
 function updateHP() {
@@ -158,7 +159,9 @@ function rebut(n, correct) {
     card.classList.add('solved');
     armor--;
     updateHP();
-    Book.addEnergy(3, `VOID claim ${n} rebutted`);
+    // ⭐ Economy: once-per-claim (กันกดซ้ำใน claim เดียวกัน)
+    if (window.Economy) Economy.energyOnce({ page:'p14_claim'+n, amount:3, reason:`VOID claim ${n} rebutted` });
+    else Book.addEnergy(3, `VOID claim ${n} rebutted`);
     r.innerHTML = '<div class="success">✓ หลักฐานตรงจุด · เกราะ VOID แตก 1 ชั้น!</div>';
     document.querySelectorAll(`input[name="ev${n}"]`).forEach(i => i.disabled = true);
     if (armor === 0) finishBoss();
@@ -170,7 +173,9 @@ function rebut(n, correct) {
 }
 function finishBoss() {
   Book.savePageData('p14', { rebuted: 3 });
-  Book.addEnergy(5, 'VOID defeated');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p14', amount:(5), reason:'VOID defeated' });
+  else Book.addEnergy(5, 'VOID defeated');
   Book.addDiscovery('3 Misconceptions rebutted');
   Book.addInventory('🏅 Badge · Void Slayer');
   Book.completePage('p14');

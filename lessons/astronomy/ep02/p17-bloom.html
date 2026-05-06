@@ -58,6 +58,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -129,7 +130,9 @@
 
     // streak bonus
     const streakBonus = Math.floor(maxStreak / 3) * 10;
-    Book.addEnergy(correct * 5 + streakBonus, 'bloom');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p17', amount:(correct * 5 + streakBonus), reason:'bloom' });
+  else Book.addEnergy(correct * 5 + streakBonus, 'bloom');
 
     // medal
     let medal = '', mlbl = '';

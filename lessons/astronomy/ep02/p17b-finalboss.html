@@ -168,6 +168,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -317,6 +318,8 @@
   function startBattle() {
     document.getElementById('introSection').style.display = 'none';
     document.getElementById('battleSection').style.display = '';
+    window._bossStartTime = Date.now(); // ⭐ Boss telemetry start
+
     timerHandle = setInterval(() => {
       if (battleEnded) { clearInterval(timerHandle); return; }
       bossChargeT--;
@@ -497,6 +500,22 @@
 
     Book.savePageData('p17b', { totalDmg, hits, misses, bossHp, won, reason, medal, voidBeamsAbsorbed, voidBeamsHit });
     Book.completePage('p17b', { score: hits, max: 15, msg: `${medal} ${mlbl} · hit ${hits}/15 · ${won?'won':'survived'}` });
+    // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement`
+    try {
+      if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+        const total = (hits || 0) + (misses || 0);
+        const _retryKey = 'cosmosLog_ep02_boss_retries';
+        const _retries = (parseInt(localStorage.getItem(_retryKey) || '0', 10) || 0);
+        localStorage.setItem(_retryKey, String(_retries + 1));
+        ActivitySync.submitBoss({
+          ep: 2,
+          accuracy: total ? +(hits / total).toFixed(3) : 0,
+          timeSpent: window._bossStartTime ? Math.round((Date.now() - window._bossStartTime) / 1000) : 0,
+          retries: _retries,
+          endingPath: won ? medal : 'survived'
+        });
+      }
+    } catch(_) {}
     Obj.hit('A4', { page:'p17b' });
     if (won) Obj.hit('A2', { page:'p17b' });
     if (Book.state.teamId) Leaderboard.adjust(Book.state.teamId, totalDmg, 'p17b-final');

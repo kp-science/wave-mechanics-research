@@ -38,6 +38,7 @@ window.EP_CONFIG = {
     // ACT D · SYNTHESIS + JOURNEY
     { id:'p18',  file:'p18-starmap.html',       title:'Star Map Reveal',             type:'story',    time:3 },
     { id:'p19',  file:'p19-voidface.html',      title:'⚠ VOID FACE-TO-FACE',          type:'story',    time:3 },
+    { id:'p19b', file:'p19b-recall.html',       title:'🎯 Recall · ดาว/มวล',          type:'puzzle',   time:3 },
     { id:'p20',  file:'p20-path-select.html',   title:'🎁 Path Selection · 4 เส้นทาง', type:'puzzle',  time:5 },
     { id:'p21',  file:'p21-posttest.html',      title:'Post-test · 4-choice',        type:'reflection', time:5 },
     { id:'p22',  file:'p22-sequencer.html',     title:'Story Sequencer · เรียงเหตุการณ์', type:'puzzle', time:3 },

@@ -72,6 +72,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -84,7 +85,9 @@
     Book.completePage();   // 🔑 ตั้ง gate ก่อน · กัน scoring throw แล้ว gate ไม่ติด
     try {
       Book.addDiscovery('Milky Way · Orion arm · 26,000 ly');
-      Book.addEnergy(+5, 'labeling');
+      // ⭐ Economy: once-per-page (กันกดซ้ำ)
+      if (window.Economy) Economy.energyOnce({ page:'p07', amount:5, reason:'labeling' });
+      else Book.addEnergy(+5, 'labeling');
       Obj.hit('K2', { page:'p07' });
     } catch(e){ console.warn('p07 scoring failed', e); }
     const btn = document.querySelector('.finish-btn');

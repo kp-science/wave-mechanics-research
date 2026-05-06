@@ -15,9 +15,10 @@
  * ═══════════════════════════════════════════════════════════════════ */
 (function (global) {
   // Subject → Apps Script Web App URL (mirror ของ content/<subject>/config.js apiUrl)
-  // ⚠️ ถ้า apiUrl ใน content/astronomy/config.js เปลี่ยน · ต้องอัพเดตที่นี่ด้วย
+  // ⚠️ ถ้า apiUrl ใน content/<subject>/config.js เปลี่ยน · ต้องอัพเดตที่นี่ด้วย
   const SUBJECT_API = {
-    astronomy: 'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec'
+    astronomy: 'https://script.google.com/macros/s/AKfycbyVahd2W0MOH20wxfeU60h6fbBj6kpjaOEM9UoHpQWBQHM2SPiqIXZ3q2FufEpFg5YQDw/exec',
+    physics3:  'https://script.google.com/macros/s/AKfycbwoI8M3mJ3wKdNHUigoK4LFbZJH0f94WykTfBz97KPgeTo0Zi-N9DZdiEGzW3u6jofiwA/exec'
   };
 
   function readSubjectApiUrl(subjectHint) {
@@ -66,17 +67,18 @@
       if (params.get('local') === '1') { try { localStorage.setItem('paceMode', 'local'); } catch (e) {} }
       if (params.get('mode') === 'remote') { try { localStorage.setItem('paceMode', 'remote'); } catch (e) {} }
 
-      // ถ้าไม่มี room เลย → fallback: enabled แบบ "passive peek" room=default local
-      // (ครู preview ผ่าน teacher-remote ที่ไม่ระบุ room ยังใช้ได้)
+      // ⭐ Auto-pace fallback: ถ้าไม่มี room ใน URL/localStorage → ใช้ "auto_<subject>"
+      // (KP-Classroom Pace Panel ใช้ key นี้ · นักเรียนรับ pace อัตโนมัติโดยไม่ต้องตั้งค่า)
       if (!room) {
-        return {
-          enabled: true,
-          mode: 'local',
-          roomCode: 'default',
-          apiUrl: null,
-          pollMs: 2000,
-          reason: 'fallback-default'
-        };
+        const subj = opts.subject || (location.pathname.indexOf('/astronomy/') >= 0 ? 'astronomy'
+                                    : location.pathname.indexOf('/physics3/')  >= 0 ? 'physics3' : null);
+        if (subj) {
+          room = 'auto_' + subj;
+          mode = 'remote';
+          try { localStorage.setItem('paceRoom', room); localStorage.setItem('paceMode', 'remote'); } catch (e) {}
+        } else {
+          return { enabled:false, reason:'no-subject' };
+        }
       }
 
       const apiUrl = opts.apiUrl || readSubjectApiUrl(opts.subject);
@@ -96,9 +98,58 @@
         roomCode: room,
         apiUrl: apiUrl,
         subject: opts.subject || null,
-        pollMs: mode === 'local' ? 2000 : (mode === 'firebase' ? 0 : 8000),
+        // ⭐ poll 2s ทุก mode (เดิม remote=8s) · เร็วขึ้น 4 เท่า
+        pollMs: mode === 'firebase' ? 0 : 2000,
         reason: useFirebase ? 'firebase-realtime' : 'configured'
       };
+    },
+
+    /**
+     * Shared force-jump helper · เรียกจาก EP*Gate._check ตอนรับ pace ใหม่
+     * - ถ้า pace.auto && pace.page !== currentPageId → countdown 3 วิ → location.href
+     * - de-dupe ด้วย key (page|at) กัน trigger ซ้ำ
+     */
+    _autoJumpKey: null,
+    _autoJumpTimer: null,
+    maybeForceJump(pace, currentPageId, pages) {
+      if (!pace || !pace.auto || !pace.page) return false;
+      if (pace.page === currentPageId) return false;
+      const target = (pages || []).find(p => p.id === pace.page);
+      if (!target || !target.file) return false;
+      const key = pace.page + '|' + (pace.at || '');
+      if (this._autoJumpKey === key) return true;
+      this._autoJumpKey = key;
+      if (this._autoJumpTimer) { clearInterval(this._autoJumpTimer); this._autoJumpTimer = null; }
+      let secs = 3;
+      let el = document.getElementById('pace-resolver-banner');
+      if (!el) {
+        el = document.createElement('div');
+        el.id = 'pace-resolver-banner';
+        el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;padding:13px 18px;color:#fff;font-weight:700;font-size:14.5px;display:flex;align-items:center;justify-content:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:Sarabun,sans-serif;background:linear-gradient(135deg,#ff5c7a,#b980ff)';
+        document.body.appendChild(el);
+      }
+      const self = this;
+      const render = () => {
+        el.innerHTML = `🚀 ครูพาไปหน้า <b>${String(target.id).toUpperCase()} · ${target.title || ''}</b>
+          &nbsp; เด้งใน <b style="font-size:22px;color:#ffe066">${secs}</b> วิ
+          <button onclick="PaceResolver.cancelForceJump()" style="margin-left:10px;padding:5px 12px;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;font-weight:700;cursor:pointer;font-family:inherit">⏸ หยุด</button>
+          <a href="${target.file}" style="padding:5px 12px;background:#fff;color:#b80050;border-radius:6px;font-weight:800;font-family:inherit;text-decoration:none">⏭ ไปเลย</a>`;
+      };
+      render();
+      this._autoJumpTimer = setInterval(() => {
+        secs--;
+        if (secs <= 0) {
+          clearInterval(self._autoJumpTimer); self._autoJumpTimer = null;
+          if (self._autoJumpKey === key) location.href = target.file;
+        } else render();
+      }, 1000);
+      return true;
+    },
+    cancelForceJump() {
+      if (this._autoJumpTimer) { clearInterval(this._autoJumpTimer); this._autoJumpTimer = null; }
+      this._autoJumpKey = '__cancelled__';
+      const el = document.getElementById('pace-resolver-banner');
+      if (el) el.innerHTML = '⏸ หยุด · กดปุ่ม "ไปต่อ" เองเมื่อพร้อม &nbsp;<button onclick="document.getElementById(\'pace-resolver-banner\').remove()" style="padding:4px 10px;background:rgba(255,255,255,.2);color:#fff;border:1.5px solid rgba(255,255,255,.5);border-radius:6px;font-weight:700;cursor:pointer">×</button>';
     },
 
     /** ensure pace-client.js loaded (dynamic) */

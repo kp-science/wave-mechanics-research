@@ -190,6 +190,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 const SCENES = [
   { id: 's1', icon: '💥', name: 'ยานชนศิลาต้นกำเนิด · เซ็นเซอร์จับแสงอายุ 13.8 พันล้านปี',
@@ -288,7 +289,9 @@ function setupDrop() {
 }
 
 function complete() {
-  Book.addEnergy(5, 'Movie recap complete');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p16', amount:(5), reason:'Movie recap complete' });
+  else Book.addEnergy(5, 'Movie recap complete');
   Book.addDiscovery('EP01 Story arc complete');
   Book.addInventory('🎬 Badge · Story Master');
   Book.completePage('p16');

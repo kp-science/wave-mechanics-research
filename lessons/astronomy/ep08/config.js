@@ -42,6 +42,7 @@ window.EP_CONFIG = {
     /* ACT D · GENESIS DEFENSE + FAREWELL */
     { id:'p21', title:"⭐ Father's Choice · Reset/Preserve", file:'p21-fathers-choice.html', act:'D' },
     { id:'p22', title:'Boss Prep · Forge GENESIS LANCE',     file:'p22-boss-prep.html',     act:'D' },
+    { id:'p22b',title:'🎯 Recall · Big Bang + Hubble',        file:'p22b-recall.html',       act:'D' },
     { id:'p23', title:'🔥 BOSS · GENESIS FORGE',              file:'p23-boss.html',          act:'D' },
     { id:'p24', title:'Ending A · PRESERVE',                  file:'p24-ending-preserve.html', act:'D' },
     { id:'p25', title:'🌟 Ending Reset Route',                file:'p25-ending-reset.html',   act:'D' },

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP08 · p22b · Recall · Big Bang Timeline + Hubble</title>
+<link rel="stylesheet" href="_page-style.css" />
+<style>
+  .q-card { background:rgba(255,255,255,0.04); border:1px solid #2a3050; border-radius:12px;
+    padding:14px; margin:12px 0; }
+  .q-num { color:#ffcb6b; font-size:12px; letter-spacing:.18em; font-family:Orbitron,sans-serif; }
+  .q-text { font-size:16px; margin:8px 0 12px; line-height:1.55; color:#e8ecf8; }
+  .opts { display:flex; flex-direction:column; gap:8px; }
+  .opt-btn {
+    padding:12px 14px; min-height:54px;
+    background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.4); color:#e8ecf8;
+    border-radius:10px; cursor:pointer; text-align:left; font-size:14.5px; line-height:1.5;
+    font-family:inherit; transition:all .12s;
+    display:flex; align-items:flex-start; gap:10px;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .opt-btn .letter { font-family:Orbitron; color:#ffcb6b; min-width:22px; }
+  .opt-btn:hover:not(:disabled) { border-color:#64d8ff; transform:translateY(-1px); }
+  .opt-btn.selected { border-color:#ffcb6b; background:rgba(255,203,107,0.12); }
+  .opt-btn.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+  .opt-btn.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); }
+  .feedback { margin-top:10px; padding:10px 12px; border-radius:8px; font-size:13px; line-height:1.55;
+    background:rgba(126,255,178,0.10); border:1px solid #7effb2; color:#bcffd6; }
+  .feedback.bad { background:rgba(255,92,122,0.10); border-color:#ff5c7a; color:#ffb5c2; }
+  .submit-row { display:flex; gap:10px; margin-top:14px; }
+  .btn-primary { padding:12px 20px; background:linear-gradient(135deg,#ffcb6b,#ff8a3d); color:#1a0e00;
+    border:none; border-radius:10px; cursor:pointer; font-weight:700; font-size:15px; font-family:Orbitron;
+    letter-spacing:.05em; }
+  .btn-primary:disabled { opacity:.4; cursor:not-allowed; }
+  .next-btn { padding:12px 20px; background:rgba(126,255,178,0.18); border:2px solid #7effb2;
+    color:#bcffd6; border-radius:10px; cursor:pointer; font-weight:700; font-size:15px; font-family:inherit;
+    text-decoration:none; }
+  .score-box { padding:14px; background:rgba(126,255,178,0.10); border:2px solid #7effb2;
+    border-radius:12px; text-align:center; margin-top:14px; }
+  .score-box.partial { background:rgba(255,203,107,0.10); border-color:#ffcb6b; }
+  .page { padding:18px; max-width:760px; margin:0 auto; }
+  h1 { color:#ffcb6b; font-family:Orbitron; font-size:22px; letter-spacing:.05em; }
+  .act-badge { display:inline-block; padding:4px 10px; background:rgba(255,203,107,0.15);
+    border:1px solid #ffcb6b; color:#ffcb6b; border-radius:4px; font-size:11px;
+    letter-spacing:.18em; font-family:Orbitron; }
+</style>
+</head>
+<body data-page="p22b">
+<div class="page">
+
+  <span class="act-badge">🎯 RECALL · BIG BANG + HUBBLE</span>
+  <h1>ทบทวนก่อนเข้า BOSS</h1>
+
+  <p style="color:#9aa3c0;font-size:13.5px;line-height:1.65;">
+    "GENESIS LANCE forge แล้ว · ก่อนยิงใส่ VOID Prime · ขอ confirm 2 ข้อสุดท้าย — ถ้าตอบครบ ทีมจะรู้แน่ว่าเอกภพทำงานยังไง"
+  </p>
+
+  <div id="quiz"></div>
+
+  <div id="scoreBox"></div>
+
+  <div class="submit-row">
+    <button class="btn-primary" id="submitBtn" disabled>📤 ส่งคำตอบ</button>
+    <a class="next-btn" id="nextBtn" href="p23-boss.html" style="display:none;">→ เข้า BOSS · GENESIS FORGE</a>
+  </div>
+
+</div>
+
+<script src="../shared/activity-sync.js"></script>
+<script src="../shared/activity-registry.js"></script>
+<script>
+const QUESTIONS = [
+  {
+    q: 'เรียงเหตุการณ์หลัง Big Bang ตามลำดับเวลา <b>จากเร็วสุด → ช้าสุด</b>:<br>① Inflation · ② Nucleosynthesis (สร้าง H, He) · ③ First stars · ④ Galaxies form',
+    opts: [
+      '① Inflation → ③ First stars → ② Nucleosynthesis → ④ Galaxies',
+      '② Nucleosynthesis → ① Inflation → ④ Galaxies → ③ First stars',
+      '① Inflation → ② Nucleosynthesis → ③ First stars → ④ Galaxies',
+      '③ First stars → ④ Galaxies → ② Nucleosynthesis → ① Inflation'
+    ],
+    answer: 2,
+    why: 'Inflation (~10⁻³⁶ s) → Nucleosynthesis (~3 นาที สร้าง H, He) → First stars (~ 100-400 ล้านปี · ดวงแรกจุดในกาแลกซีก่อนเป็นรูป) → Galaxies form (~500 ล้านปีขึ้นไป) · ลำดับนี้ตรงกับ timeline ที่ทีมเดินเรียงใน p06-09'
+  },
+  {
+    q: 'กฎฮับเบิล <b>v = H₀d</b> บอกอะไรเกี่ยวกับเอกภพ?',
+    opts: [
+      'กาแล็กซีทุกแห่งหยุดนิ่ง · ระยะทางคงที่',
+      'กาแล็กซียิ่งไกล ยิ่งเคลื่อนที่ออกห่างเราเร็วขึ้น = เอกภพกำลังขยายตัว',
+      'แสงจากกาแล็กซีไกลจะหายไป (red-shift = แสงตาย)',
+      'มีเพียง Andromeda เท่านั้นที่เคลื่อนที่ — กาแล็กซีอื่นนิ่ง'
+    ],
+    answer: 1,
+    why: 'v = H₀d · ความเร็วถอยห่าง v แปรผันตรงกับระยะทาง d · กาแล็กซีไกลกว่าถอยเร็วกว่า · นี่คือหลักฐานสำคัญที่บอกว่า "เอกภพขยายตัว" (expanding universe) · ใช้คำนวณอายุและขนาดของเอกภพได้ (Q02 ใน FT-01)'
+  }
+];
+
+const answers = new Array(QUESTIONS.length).fill(null);
+const host = document.getElementById('quiz');
+
+QUESTIONS.forEach((q, i) => {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.innerHTML = `
+    <div class="q-num">ข้อ ${i+1} / ${QUESTIONS.length}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts" data-i="${i}">
+      ${q.opts.map((o,j) => `
+        <button class="opt-btn" data-i="${i}" data-j="${j}">
+          <span class="letter">${'ABCD'[j]}</span><span>${o}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" id="fb-${i}" style="display:none;"></div>
+  `;
+  host.appendChild(card);
+});
+
+host.addEventListener('click', e => {
+  const btn = e.target.closest('.opt-btn');
+  if (!btn || btn.disabled) return;
+  const i = +btn.dataset.i;
+  const j = +btn.dataset.j;
+  if (document.getElementById('submitBtn').classList.contains('done')) return;
+  answers[i] = j;
+  const wrap = btn.closest('.opts');
+  wrap.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById('submitBtn').disabled = done < QUESTIONS.length;
+});
+
+document.getElementById('submitBtn').onclick = () => {
+  let correct = 0;
+  QUESTIONS.forEach((q, i) => {
+    const wrap = host.querySelectorAll('.opts')[i];
+    wrap.querySelectorAll('.opt-btn').forEach((b, j) => {
+      b.disabled = true;
+      if (j === q.answer) b.classList.add('correct');
+      if (j === answers[i] && j !== q.answer) b.classList.add('wrong');
+    });
+    const fb = document.getElementById('fb-' + i);
+    fb.style.display = '';
+    fb.className = 'feedback' + (answers[i] === q.answer ? '' : ' bad');
+    fb.innerHTML = (answers[i] === q.answer ? '✓ ถูก · ' : '✗ ยังไม่ใช่ · ') + q.why;
+    if (answers[i] === q.answer) correct++;
+  });
+  const pct = Math.round(correct * 100 / QUESTIONS.length);
+  const sb = document.getElementById('scoreBox');
+  sb.className = 'score-box' + (correct === QUESTIONS.length ? '' : ' partial');
+  sb.innerHTML = `
+    <div style="font-family:Orbitron;font-size:13px;color:#ffcb6b;letter-spacing:.18em;">RECALL SCORE</div>
+    <div style="font-size:28px;margin:6px 0;color:${correct===QUESTIONS.length?'#7effb2':'#ffcb6b'};">
+      <b>${correct}/${QUESTIONS.length}</b> · ${pct}%
+    </div>
+    <div style="color:#9aa3c0;font-size:12px;">${correct===QUESTIONS.length?'พร้อมเข้า BOSS · GENESIS FORGE':'อ่าน feedback แล้วไปต่อ · BOSS จะใช้ความรู้นี้'}</div>
+  `;
+  const sBtn = document.getElementById('submitBtn');
+  sBtn.classList.add('done'); sBtn.disabled = true; sBtn.textContent = '✓ ส่งแล้ว';
+  document.getElementById('nextBtn').style.display = '';
+
+  // ⭐ E1 capture
+  try {
+    if (window.ActivitySync) {
+      ActivitySync.submit({
+        ep: 8, pageId: 'p22b-recall', category: 'RECALL',
+        rawScore: correct, maxScore: QUESTIONS.length, attempts: 1
+      });
+    }
+  } catch(_){}
+};
+</script>
+</body></html>

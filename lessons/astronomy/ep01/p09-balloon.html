@@ -152,6 +152,7 @@ canvas.graph {
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function savePred() {
   const p1 = document.querySelector('input[name="p1"]:checked');
@@ -161,7 +162,9 @@ function savePred() {
   const data = Book.getPageData('p09') || {};
   data.predictions = { p1: p1.value, p2: p2.value, p3: p3.value };
   Book.savePageData('p09', data);
-  Book.addEnergy(2, 'Predictions saved');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(2), reason:'Predictions saved' });
+  else Book.addEnergy(2, 'Predictions saved');
   const btn = document.getElementById('save-pred');
   btn.textContent = '✓ บันทึกแล้ว · ทดลองได้เลย';
   btn.disabled = true;
@@ -252,7 +255,9 @@ function submit() {
   data.summary = summary;
   Book.savePageData('p09', data);
   const bonus = summary.length > 30 ? 2 : 0;
-  Book.addEnergy(Math.max(3, correct + bonus - wrong), 'P09 Balloon Lab');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(Math.max(3, correct + bonus - wrong)), reason:'P09 Balloon Lab' });
+  else Book.addEnergy(Math.max(3, correct + bonus - wrong), 'P09 Balloon Lab');
   Book.addDiscovery('การขยายตัว · ไม่มีศูนย์กลาง');
   Book.addInventory('🎈 Balloon Data · อัตราขยาย');
   Book.completePage('p09');

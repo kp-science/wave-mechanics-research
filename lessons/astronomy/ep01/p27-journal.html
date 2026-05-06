@@ -309,7 +309,7 @@
 </div>
 
 <div class="center mt-20">
-  <button class="btn primary" onclick="submit()">✓ ยืนยัน · ส่ง Exit Ticket</button>
+  <button class="btn primary finish-btn" id="finishBtn" onclick="submit()">✓ ยืนยัน · ส่ง Exit Ticket</button>
 </div>
 <div id="result"></div>
 
@@ -323,6 +323,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 // SECTION 3 · checkbox limit 3
 let selected3 = [];
@@ -453,10 +454,12 @@ function submit() {
     confidence: parseInt(document.getElementById('confidence').value),
     at: Date.now(),
   };
-  Book.savePageData('p17', data);
-  Book.addEnergy(3, 'Exit Ticket submitted');
+  Book.savePageData('p18', data);
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p18', amount:(3), reason:'Exit Ticket submitted' });
+  else Book.addEnergy(3, 'Exit Ticket submitted');
   Book.addInventory('📒 3-2-1 Journal complete');
-  Book.completePage('p17');
+  Book.completePage('p18');
   document.getElementById('result').innerHTML = `
     <div class="branch-reveal main" style="padding: 22px;">
       <h3>✓ EXIT TICKET บันทึกแล้ว</h3>

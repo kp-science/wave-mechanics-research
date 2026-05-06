@@ -233,4 +233,59 @@
 
   // Backward-compat: expose as KPA (replaces v1 if both loaded)
   global.KPA = KPA;
+
+  /* ⭐ E1 capture (G3) — auto-inject + hook KPA.log/research for registered pages
+   * One submit per page per session (best-score per page handled by backend) */
+  (function injectActivityAndHookKPA(){
+    try {
+      const cs = document.currentScript;
+      const baseSrc = cs && cs.src ? cs.src : '';
+      const baseDir = baseSrc.replace(/\/[^\/]*$/, '/');
+      function need(name){
+        if (document.querySelector('script[data-activity="'+name+'"]')) return;
+        if (document.querySelector('script[src*="'+name+'"]')) return;
+        const s = document.createElement('script');
+        s.src = baseDir + name;
+        s.setAttribute('data-activity', name);
+        s.async = false;
+        document.head.appendChild(s);
+      }
+      need('activity-sync.js');
+      need('activity-registry.js');
+      // ⭐ Universal pace gate (G3 EP07-08)
+      try {
+        if (!document.querySelector('script[data-activity="pace-auto.js"]')) {
+          const ps = document.createElement('script');
+          ps.src = baseDir.replace(/\/lessons\/astronomy\/shared\/$/, '/lessons/shared/') + 'pace-auto.js';
+          ps.setAttribute('data-activity', 'pace-auto.js');
+          ps.async = false;
+          document.head.appendChild(ps);
+        }
+      } catch(_){}
+    } catch(_){}
+
+    const e1Sent = {};
+    function fireE1(){
+      try {
+        if (!global.ActivitySync || !global.ActivityRegistry) return;
+        const ep  = global.ActivityRegistry.detectEp();
+        const pid = _page();
+        if (!pid || pid === '?') return;
+        const cat = global.ActivityRegistry.categoryOf(ep, pid);
+        if (cat !== 'MISSION' && cat !== 'LAB' && cat !== 'RECALL') return;
+        const k = ep + ':' + pid;
+        if (e1Sent[k]) return;
+        e1Sent[k] = true;
+        global.ActivitySync.submit({ ep, pageId: pid, category: cat, rawScore: 1, maxScore: 1 });
+      } catch(_){}
+    }
+
+    // Wrap KPA.log + KPA.research + KPA.competency to also fire E1
+    const origLog = KPA.log.bind(KPA);
+    KPA.log = function(){ const r = origLog.apply(KPA, arguments); fireE1(); return r; };
+    const origRes = KPA.research.bind(KPA);
+    KPA.research = function(){ const r = origRes.apply(KPA, arguments); fireE1(); return r; };
+    const origComp = KPA.competency.bind(KPA);
+    KPA.competency = function(){ const r = origComp.apply(KPA, arguments); fireE1(); return r; };
+  })();
 })(window);

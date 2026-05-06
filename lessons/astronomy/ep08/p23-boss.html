@@ -28,6 +28,7 @@
 </div>
 
 <script src="../shared/kpa-tracker-v2.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="../shared/hud-v2.js"></script>
 <script src="../shared/coin-energy.js"></script>
 <script src="../shared/mystery-box-v2.js"></script>
@@ -53,6 +54,22 @@
         localStorage.setItem('cosmosLog_ep08_bossResult', JSON.stringify(result));
         localStorage.setItem('cosmosLog_ep08_ending', result.ending);
       } catch(e){}
+      // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement`
+      try {
+        if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+          const total = (result.hits || 0) + (result.miss || 0);
+          const _retryKey = 'cosmosLog_ep08_boss_retries';
+          const _retries = (parseInt(localStorage.getItem(_retryKey) || '0', 10) || 0);
+          localStorage.setItem(_retryKey, String(_retries + 1));
+          ActivitySync.submitBoss({
+            ep: 8,
+            accuracy: total ? +(result.hits / total).toFixed(3) : 0,
+            timeSpent: result.durationMs ? Math.round(result.durationMs / 1000) : 0,
+            retries: _retries,
+            endingPath: result.ending || 'unknown'
+          });
+        }
+      } catch(_) {}
       const choice = localStorage.getItem('cosmosLog_ep08_choice') || 'preserve';
       // RESET path → ending-reset · PRESERVE path → ending-preserve
       const next = choice === 'reset' ? 'p25-ending-reset.html' : 'p24-ending-preserve.html';

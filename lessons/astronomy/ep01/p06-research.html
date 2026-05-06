@@ -119,6 +119,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 const SOURCES = {
   video: {
@@ -204,7 +205,9 @@ function decrypt() {
   ['d-year','d-who1','d-who2','d-lab','d-temp','d-name','d-nobel'].forEach(id => g(id).style.borderColor = '');
   const r = document.getElementById('result');
   if (errors.length === 0) {
-    Book.addEnergy(5, 'P06 Decryption');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p06', amount:(5), reason:'P06 Decryption' });
+  else Book.addEnergy(5, 'P06 Decryption');
     Book.addDiscovery('CMB · 1965 · Penzias-Wilson');
     Book.addInventory('🔑 Decryption Key · CMB-1965');
     Book.completePage('p06');

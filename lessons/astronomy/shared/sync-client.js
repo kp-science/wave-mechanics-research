@@ -263,4 +263,65 @@
   };
 
   global.Sync = Sync;
+
+  /* ⭐ E1 capture (G2) — auto-inject activity-sync + registry · patch Submit.wirePair */
+  (function injectActivityAndPatchSubmit(){
+    try {
+      const cs = document.currentScript;
+      const baseSrc = cs && cs.src ? cs.src : '';
+      const baseDir = baseSrc.replace(/\/[^\/]*$/, '/'); // .../shared/
+      function need(name){
+        if (document.querySelector('script[data-activity="'+name+'"]')) return;
+        if (document.querySelector('script[src*="'+name+'"]')) return;
+        const s = document.createElement('script');
+        s.src = baseDir + name;
+        s.setAttribute('data-activity', name);
+        s.async = false;
+        document.head.appendChild(s);
+      }
+      need('activity-sync.js');
+      need('activity-registry.js');
+      // ⭐ Universal pace gate (G2 EP03-06)
+      try {
+        if (!document.querySelector('script[data-activity="pace-auto.js"]')) {
+          const ps = document.createElement('script');
+          ps.src = baseDir.replace(/\/lessons\/astronomy\/shared\/$/, '/lessons/shared/') + 'pace-auto.js';
+          ps.setAttribute('data-activity', 'pace-auto.js');
+          ps.async = false;
+          document.head.appendChild(ps);
+        }
+      } catch(_){}
+    } catch(_){}
+
+    function patchE1(){
+      if (!global.Submit || global.Submit._e1Patched) return false;
+      const orig = global.Submit.wirePair.bind(global.Submit);
+      global.Submit.wirePair = function(opts){
+        const wrappedOnSubmit = opts.onSubmit;
+        const newOpts = Object.assign({}, opts, {
+          onSubmit: function(tag, n){
+            try { wrappedOnSubmit && wrappedOnSubmit(tag, n); } catch(e){ console.warn(e); }
+            try {
+              if (global.ActivitySync && global.ActivityRegistry) {
+                const ep  = global.ActivityRegistry.detectEp();
+                const cat = global.ActivityRegistry.categoryOf(ep, opts.page);
+                if (cat === 'MISSION' || cat === 'LAB' || cat === 'RECALL') {
+                  // perfect → 1/1 · ok → 1/1 (best-score per page · resubmit overrides)
+                  global.ActivitySync.submit({ ep, pageId: opts.page, category: cat, rawScore: 1, maxScore: 1 });
+                }
+              }
+            } catch(_){}
+          }
+        });
+        return orig(newOpts);
+      };
+      global.Submit._e1Patched = true;
+      return true;
+    }
+    let tries = 0;
+    (function tryPatch(){
+      if (patchE1()) return;
+      if (tries++ < 80) setTimeout(tryPatch, 50);
+    })();
+  })();
 })(window);

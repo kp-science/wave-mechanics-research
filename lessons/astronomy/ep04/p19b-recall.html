@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="th"><head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>EP04 · p19b · Recall · ดาว/มวล</title>
+<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="_page-style.css">
+<style>
+  .q-card { background:rgba(255,255,255,0.04); border:1px solid #2a3050; border-radius:12px;
+    padding:14px; margin:12px 0; }
+  .q-num { color:#ffcb6b; font-size:12px; letter-spacing:.18em; font-family:Orbitron,sans-serif; }
+  .q-text { font-size:16px; margin:8px 0 12px; line-height:1.55; color:#e8ecf8; }
+  .opts { display:flex; flex-direction:column; gap:8px; }
+  .opt-btn {
+    padding:12px 14px; min-height:54px;
+    background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.4); color:#e8ecf8;
+    border-radius:10px; cursor:pointer; text-align:left; font-size:14.5px; line-height:1.5;
+    font-family:inherit; transition:all .12s;
+    display:flex; align-items:flex-start; gap:10px;
+    -webkit-tap-highlight-color:transparent; touch-action:manipulation;
+  }
+  .opt-btn .letter { font-family:Orbitron; color:#ffcb6b; min-width:22px; }
+  .opt-btn:hover:not(:disabled) { border-color:#64d8ff; transform:translateY(-1px); }
+  .opt-btn.selected { border-color:#ffcb6b; background:rgba(255,203,107,0.12); }
+  .opt-btn.correct { border-color:#7effb2; background:rgba(126,255,178,0.18); }
+  .opt-btn.wrong { border-color:#ff5c7a; background:rgba(255,92,122,0.18); }
+  .feedback { margin-top:10px; padding:10px 12px; border-radius:8px; font-size:13px; line-height:1.55;
+    background:rgba(126,255,178,0.10); border:1px solid #7effb2; color:#bcffd6; }
+  .feedback.bad { background:rgba(255,92,122,0.10); border-color:#ff5c7a; color:#ffb5c2; }
+  .submit-row { display:flex; gap:10px; margin-top:14px; }
+  .btn-primary { padding:12px 20px; background:linear-gradient(135deg,#ffcb6b,#ff8a3d); color:#1a0e00;
+    border:none; border-radius:10px; cursor:pointer; font-weight:700; font-size:15px; font-family:Orbitron;
+    letter-spacing:.05em; }
+  .btn-primary:disabled { opacity:.4; cursor:not-allowed; }
+  .next-btn { padding:12px 20px; background:rgba(126,255,178,0.18); border:2px solid #7effb2;
+    color:#bcffd6; border-radius:10px; cursor:pointer; font-weight:700; font-size:15px; font-family:inherit; }
+  .next-btn:disabled { opacity:.3; cursor:not-allowed; }
+  .score-box { padding:14px; background:rgba(126,255,178,0.10); border:2px solid #7effb2;
+    border-radius:12px; text-align:center; margin-top:14px; }
+  .score-box.partial { background:rgba(255,203,107,0.10); border-color:#ffcb6b; }
+</style>
+</head>
+<body data-page="p19b">
+<div class="page">
+
+  <span class="lbl puzzle">🎯 RECALL · ดาว/มวล</span>
+  <h1>ทบทวนสั้น ๆ ก่อนเลือกเส้นทาง</h1>
+
+  <div class="card lavender">
+    <span class="leader-voice">
+      "ก่อนกระโดดเข้า Path Selection · ขอเช็คความเข้าใจ 2 ข้อ — ครูจะรู้ว่าทีมจับหลักได้แล้วหรือยัง"
+    </span>
+  </div>
+
+  <div id="quiz"></div>
+
+  <div id="scoreBox"></div>
+
+  <div class="submit-row">
+    <button class="btn-primary" id="submitBtn" disabled>📤 ส่งคำตอบ</button>
+    <a class="next-btn" id="nextBtn" href="p20-path-select.html" style="display:none; text-decoration:none;">ต่อไป → p20</a>
+  </div>
+
+</div>
+
+<script src="../shared/activity-sync.js"></script>
+<script src="../shared/activity-registry.js"></script>
+<script>
+const QUESTIONS = [
+  {
+    q: 'ดาวสีแดงดวงหนึ่งวัดอุณหภูมิพื้นผิวได้ ~3,500 K · ต่อมาทีมพบดาวอีกดวงสีน้ำเงิน · <b>ดาวไหนร้อนกว่า</b> และ<b>เพราะอะไร</b>?',
+    opts: [
+      'ดาวสีแดง — สีแดงคือสีของไฟที่แรงและร้อน',
+      'ดาวสีแดง — แสงสีแดงมีพลังงานมากกว่าน้ำเงิน',
+      'ดาวสีน้ำเงิน — สีของดาวจัดตามอุณหภูมิ ยิ่งร้อนยิ่งเลื่อนสีไปทางน้ำเงิน (Wien\'s law)',
+      'ทั้งสองดวงร้อนเท่ากัน — สีไม่บอกอุณหภูมิ บอกแค่ระยะทาง'
+    ],
+    answer: 2,
+    why: 'ตามกฎของ Wien (λ_max ∝ 1/T) · ยิ่งดาวร้อน peak ของสเปกตรัมยิ่งเลื่อนไปทางความยาวคลื่นสั้น (สีน้ำเงิน) · สีแดง = เย็นกว่า · สีน้ำเงิน = ร้อนกว่า'
+  },
+  {
+    q: 'ดาวฤกษ์มวล 25 M☉ เปรียบเทียบกับดวงอาทิตย์ (1 M☉) · <b>อายุของดวงไหนสั้นกว่า</b> และ<b>เพราะอะไร</b>?',
+    opts: [
+      'ดวงอาทิตย์สั้นกว่า — มวลน้อย เชื้อเพลิงน้อย หมดเร็ว',
+      'ดาว 25 M☉ สั้นกว่า — มวลมาก แต่เผาเชื้อเพลิงเร็วกว่ามากจนชดเชยปริมาณที่มีไม่ทัน (T ∝ M / L · L ∝ M³⁻⁴)',
+      'อายุเท่ากัน — เพราะดาวทุกดวงเกิดและตายพร้อมกันในกาแล็กซี',
+      'ดาว 25 M☉ ยาวกว่า — มวลมาก = เชื้อเพลิงมาก = อายุมาก'
+    ],
+    answer: 1,
+    why: 'ดาวมวลมาก ⇒ Luminosity เพิ่มแบบ ~M³⁻⁴ · เผาไฮโดรเจนเร็วกว่ามาก ⇒ อายุ Main Sequence ~M/L ~ M⁻²⁻³ · ดาว 25 M☉ จึงอยู่ได้แค่ ~ล้านปี vs ดวงอาทิตย์ ~10,000 ล้านปี (กลับสามัญสำนึก = K4 misconception)'
+  }
+];
+
+const answers = new Array(QUESTIONS.length).fill(null);
+const host = document.getElementById('quiz');
+
+QUESTIONS.forEach((q, i) => {
+  const card = document.createElement('div');
+  card.className = 'q-card';
+  card.innerHTML = `
+    <div class="q-num">ข้อ ${i+1} / ${QUESTIONS.length}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="opts" data-i="${i}">
+      ${q.opts.map((o,j) => `
+        <button class="opt-btn" data-i="${i}" data-j="${j}">
+          <span class="letter">${'ABCD'[j]}</span><span>${o}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" id="fb-${i}" style="display:none;"></div>
+  `;
+  host.appendChild(card);
+});
+
+host.addEventListener('click', e => {
+  const btn = e.target.closest('.opt-btn');
+  if (!btn || btn.disabled) return;
+  const i = +btn.dataset.i;
+  const j = +btn.dataset.j;
+  if (document.getElementById('submitBtn').classList.contains('done')) return;
+  answers[i] = j;
+  const wrap = btn.closest('.opts');
+  wrap.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const done = answers.filter(a => a !== null).length;
+  document.getElementById('submitBtn').disabled = done < QUESTIONS.length;
+});
+
+document.getElementById('submitBtn').onclick = () => {
+  let correct = 0;
+  QUESTIONS.forEach((q, i) => {
+    const wrap = host.querySelectorAll('.opts')[i];
+    wrap.querySelectorAll('.opt-btn').forEach((b, j) => {
+      b.disabled = true;
+      if (j === q.answer) b.classList.add('correct');
+      if (j === answers[i] && j !== q.answer) b.classList.add('wrong');
+    });
+    const fb = document.getElementById('fb-' + i);
+    fb.style.display = '';
+    fb.className = 'feedback' + (answers[i] === q.answer ? '' : ' bad');
+    fb.innerHTML = (answers[i] === q.answer ? '✓ ถูก · ' : '✗ ยังไม่ใช่ · ') + q.why;
+    if (answers[i] === q.answer) correct++;
+  });
+  const pct = Math.round(correct * 100 / QUESTIONS.length);
+  const sb = document.getElementById('scoreBox');
+  sb.className = 'score-box' + (correct === QUESTIONS.length ? '' : ' partial');
+  sb.innerHTML = `
+    <div style="font-family:Orbitron;font-size:13px;color:#ffcb6b;letter-spacing:.18em;">RECALL SCORE</div>
+    <div style="font-size:28px;margin:6px 0;color:${correct===QUESTIONS.length?'#7effb2':'#ffcb6b'};">
+      <b>${correct}/${QUESTIONS.length}</b> · ${pct}%
+    </div>
+    <div style="color:#9aa3c0;font-size:12px;">${correct===QUESTIONS.length?'ครบทั้ง 2 ข้อ · พร้อมไป Path Selection':'อ่าน feedback แล้วไปต่อได้ · ครูจะคุยเสริมในชั้น'}</div>
+  `;
+  const sBtn = document.getElementById('submitBtn');
+  sBtn.classList.add('done'); sBtn.disabled = true; sBtn.textContent = '✓ ส่งแล้ว';
+  document.getElementById('nextBtn').style.display = '';
+
+  // ⭐ E1 capture
+  try {
+    if (window.ActivitySync) {
+      ActivitySync.submit({
+        ep: 4, pageId: 'p19b-recall', category: 'RECALL',
+        rawScore: correct, maxScore: QUESTIONS.length, attempts: 1
+      });
+    }
+  } catch(_){}
+};
+</script>
+</body></html>

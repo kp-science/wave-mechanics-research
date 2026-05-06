@@ -189,6 +189,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -342,7 +343,9 @@
 
     Obj.hit('A1', { page:'p09' });
     Obj.hit('A2', { page:'p09' });
-    Book.addEnergy(+10, 'journal-defend');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(+10), reason:'journal-defend' });
+  else Book.addEnergy(+10, 'journal-defend');
     if (j1.length >= 40 && j2.length >= 40) Book.addCoin(5, 'journal-thorough');
 
     Book.savePageData('p09', { predictScore, arrangeCorrect, journal1: j1, journal2: j2 });

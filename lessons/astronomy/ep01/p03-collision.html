@@ -61,6 +61,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 const lines = [
   '> 2267.03.14 · 14:22:07 UTC',
@@ -94,7 +95,9 @@ function saveHypo() {
   const v = document.getElementById('hypo-text').value.trim();
   if (!v) { alert('เขียนสั้น ๆ สัก 1 ประโยคก็พอ'); return; }
   Book.savePageData('p03', { hypothesis_pre: v });
-  Book.addEnergy(1, 'Hypothesis saved');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p03', amount:(1), reason:'Hypothesis saved' });
+  else Book.addEnergy(1, 'Hypothesis saved');
   Book.completePage('p03');
   document.getElementById('result').innerHTML = '<div class="success">✓ บันทึกสมมติฐานแล้ว · กด "ต่อไป →"</div>';
 }

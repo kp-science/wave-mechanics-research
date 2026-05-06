@@ -152,6 +152,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -297,7 +298,9 @@
     const log = { concepts, scenes, oneQuestion, at: Date.now() };
     localStorage.setItem('cosmosLog_captainLog_ep02', JSON.stringify(log));
     Book.savePageData('p18', log);
-    Book.addEnergy(+20, 'journal-321');
+    // ⭐ Economy: once-per-page (กันกดซ้ำได้ energy ซ้ำ)
+    if (window.Economy) Economy.energyOnce({ page:'p18', amount:20, reason:'journal-321' });
+    else Book.addEnergy(+20, 'journal-321');
     Obj.hit('A3', { page:'p18' });
     Obj.hit('A4', { page:'p18' });
     Book.completePage('p18', { score: 3, max: 3, msg: 'Journal 3-2-1 · เก็บข้ามไป EP03' });

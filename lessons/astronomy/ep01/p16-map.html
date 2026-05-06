@@ -160,6 +160,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="../../../content/astronomy/config.js?v=2"></script>
 <script src="../shared/ep-sync.js?v=1"></script>
 <script>
@@ -218,7 +219,9 @@ function submitPost() {
       <h4 style="color: ${shiftColor};">CONCEPTUAL SHIFT · ${shift > 0 ? '+' : ''}${shift} ข้อ</h4>
       <p>${shift > 0 ? 'ทีมเข้าใจเพิ่มขึ้น · เก่งมาก!' : shift === 0 ? 'คงเดิม · ลองทบทวนอีกครั้ง' : 'คิดก่อนตอบ'}</p>
     </div>`;
-  Book.addEnergy(Math.max(2, post + shift), 'Post-test shift');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p19', amount:(Math.max(2, post + shift)), reason:'Post-test shift' });
+  else Book.addEnergy(Math.max(2, post + shift), 'Post-test shift');
   Book.completePage('p16');
 }
 

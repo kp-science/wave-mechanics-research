@@ -981,6 +981,23 @@ function submitResults() {
   };
   try { localStorage.setItem('cosmosLog_ep03_warprun', JSON.stringify(payload)); } catch {}
   Sync.recordDecision({ tag:'💾 warprun', note:'submit ending='+state.ending });
+  // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement`
+  try {
+    if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+      const totalQ = state.log.length || 1;
+      const correctQ = state.log.filter(l => l.correct).length;
+      const _retryKey = 'cosmosLog_ep03_boss_retries';
+      const _retries = (parseInt(localStorage.getItem(_retryKey) || '0', 10) || 0);
+      localStorage.setItem(_retryKey, String(_retries + 1));
+      ActivitySync.submitBoss({
+        ep: 3,
+        accuracy: +(correctQ / totalQ).toFixed(3),
+        timeSpent: state.svStart ? Math.round((Date.now() - state.svStart) / 1000) : 0,
+        retries: _retries,
+        endingPath: state.ending || 'unknown'
+      });
+    }
+  } catch(_) {}
   document.getElementById('submitBtn').classList.add('done');
   document.getElementById('submitBtn').disabled = true;
   document.getElementById('submitBtn').textContent = '✓ ส่งแล้ว';

@@ -76,6 +76,7 @@
 </div></div>
 
 <script src="../shared/book.js?v=15"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script src="./config.js?v=7"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
@@ -139,7 +140,9 @@
     try {
       Game.recordDecision({ page:'p05', choice:selected, votes, minorityHeard:heard, note:'council' });
       Obj.hit('A1', { page:'p05' });
-      if (heard) Book.addEnergy(+10, 'minority-heard');
+      if (heard) // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p05', amount:(+10), reason:'minority-heard' });
+  else Book.addEnergy(+10, 'minority-heard');
     } catch(err) { console.warn('Scoring failed:', err); }
 
     // auto-advance 800ms · กันกรณี book.js เก่าใน cache

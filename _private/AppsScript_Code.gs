@@ -49,6 +49,7 @@ function doPost(e) {
     if (action === 'setCanvasScore')  return handleSetCanvasScore(data);
     if (action === 'setScore')        return handleSetCanvasScore(data); // alias · grading dashboard (generic cell write)
     if (action === 'paceSet')         return handlePaceSet(data);
+    if (action === 'paceSetOpen')     return handlePaceSetOpen(data);
     return jsonOut({status:'error', message:'unknown action: ' + action});
   } catch (err) {
     return jsonOut({status:'error', message:err.toString()});
@@ -189,9 +190,30 @@ function handlePaceSet(data) {
     unlockedUpTo: String(data.unlockedUpTo || page),
     ep: String(data.ep || ''),
     subject: String(data.subject || ''),
+    auto: data.auto === true || data.auto === 'true',
     at: Date.now()
   };
   PropertiesService.getScriptProperties().setProperty(paceKey_(data.code), JSON.stringify(pace));
+  return jsonOut({status:'ok', pace: pace});
+}
+
+// Open paceSet — ไม่ต้องใช้ teacher_pw · code ต้องขึ้นต้นด้วย "auto_" เท่านั้น
+// (ใช้กับ Teacher Pace Control ใน KP-Classroom · 1 ครู 1 course key)
+function handlePaceSetOpen(data) {
+  const code = String(data.code || '').trim();
+  if (!/^auto_[a-z0-9_-]{1,32}$/i.test(code))
+    return jsonOut({status:'error', message:'code must match auto_<course>'});
+  const page = String(data.page || '').trim();
+  if (!page) return jsonOut({status:'error', message:'page required'});
+  const pace = {
+    page: page,
+    unlockedUpTo: String(data.unlockedUpTo || page),
+    ep: String(data.ep || ''),
+    subject: String(data.subject || ''),
+    auto: data.auto === true || data.auto === 'true',
+    at: Date.now()
+  };
+  PropertiesService.getScriptProperties().setProperty(paceKey_(code), JSON.stringify(pace));
   return jsonOut({status:'ok', pace: pace});
 }
 

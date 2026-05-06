@@ -22,6 +22,12 @@
   const _params = new URLSearchParams(location.search);
   window.KP_COURSE = _params.get('course') || 'physics3';
   window.KP_UNIT   = _params.get('unit')   || null;
+  // ⭐ Auto-pace: นักเรียน opt-in เข้าห้องครูอัตโนมัติ · ใช้ course เป็น room key
+  // (ไม่ต้อง URL param · ไม่ต้องกดปุ่ม · ทำงานข้ามอุปกรณ์/เน็ตคนละที่ผ่าน Apps Script polling)
+  try {
+    localStorage.setItem('paceRoom', 'auto_' + window.KP_COURSE);
+    localStorage.setItem('paceMode', 'remote');
+  } catch(e){}
   const courseBase = 'content/' + window.KP_COURSE;
   // packBase = ที่อยู่ของ plans/tools/media/questions/worksheets
   // ถ้ามี unit → subfolder · ถ้าไม่มี → top-level (waves เดิมอยู่ที่ top-level)
@@ -429,6 +435,14 @@ input[type=text],input[type=number]{padding:8px 12px;border:1.5px solid #cbd5e1;
 .media-card:hover{border-color:#1565c0;box-shadow:0 4px 10px rgba(21,101,192,.15);transform:translateY(-2px)}
 .media-dl{position:absolute;top:8px;right:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border:1.5px solid #cbd5e1;border-radius:8px;color:#475569;text-decoration:none;font-size:16px;font-weight:700;z-index:2;transition:all .12s}
 .media-dl:hover{background:#1565c0;color:#fff;border-color:#1565c0;transform:scale(1.08)}
+.pace-lock-btn{position:absolute;bottom:8px;right:8px;padding:5px 10px;background:#fff7e6;border:1.5px solid #ff9800;color:#bf6500;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;z-index:2;transition:all .12s;letter-spacing:.02em}
+.pace-lock-btn:hover{background:#ff9800;color:#fff;transform:scale(1.05);box-shadow:0 2px 6px rgba(255,152,0,.3)}
+.pace-lock-btn.auto{background:#fce7f3;border-color:#db2777;color:#9d174d}
+.pace-lock-btn.auto:hover{background:#db2777;color:#fff;box-shadow:0 2px 6px rgba(219,39,119,.4)}
+.pace-lock-btn.active{background:#16a34a !important;border-color:#15803d !important;color:#fff !important;box-shadow:0 0 0 3px rgba(22,163,74,.2)}
+.pace-lock-btn.active:hover{background:#15803d !important}
+.media-card-wrap.pace-active .media-card{border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.18)}
+.media-card-wrap.pace-active .media-card .no{background:#16a34a}
 .media-card .no{display:inline-block;background:#1565c0;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:800;margin-right:6px}
 .media-card .t{font-size:15.5px;font-weight:700;color:#0f2c5c;margin:4px 0}
 .media-card .d{font-size:13px;color:#555;margin-top:4px;line-height:1.45}
@@ -3766,18 +3780,233 @@ function renderSheetSummary(name, data, isFT){
         <b>Normalized gain:</b> ${Object.entries(data.normalized_gain).map(([q,g])=>`${q}: ${g.normalized_gain ?? '—'}`).join(' · ')}
       </div>`;
     }
+  } else if (name === 'IMI_Responses' && data.data && data.data.length){
+    // ─── Bonus: แสดงค่าเฉลี่ย Autonomy / Competence / Relatedness / Total ของห้อง
+    const rows = data.data;
+    const mean = (arr) => arr.length ? (arr.reduce((a,b)=>a+(+b||0),0)/arr.length) : 0;
+    const A = mean(rows.map(r => r.autonomy_avg));
+    const C = mean(rows.map(r => r.competence_avg));
+    const R = mean(rows.map(r => r.relatedness_avg));
+    const T = mean(rows.map(r => r.total_avg));
+    const interp = v => v >= 4.5 ? '🟢 มากที่สุด' : v >= 3.51 ? '🟢 มาก' : v >= 2.51 ? '🟡 ปานกลาง' : v >= 1.51 ? '🟠 น้อย' : '🔴 น้อยที่สุด';
+    const badge = v => v >= 3.51 ? '#16a34a' : v >= 2.51 ? '#ca8a04' : '#dc2626';
+    body += `<div class="desc">💫 ${rows.length} ผู้ตอบ · IMI 21 ข้อ (SDT)</div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:6px 10px;background:#dbeafe;border-left:3px solid #2563eb;border-radius:4px"><b>Autonomy</b><br><span style="font-size:18px;font-weight:800;color:${badge(A)}">${A.toFixed(2)}</span></div>
+        <div style="padding:6px 10px;background:#dcfce7;border-left:3px solid #059669;border-radius:4px"><b>Competence</b><br><span style="font-size:18px;font-weight:800;color:${badge(C)}">${C.toFixed(2)}</span></div>
+        <div style="padding:6px 10px;background:#fef3c7;border-left:3px solid #d97706;border-radius:4px"><b>Relatedness</b><br><span style="font-size:18px;font-weight:800;color:${badge(R)}">${R.toFixed(2)}</span></div>
+        <div style="padding:6px 10px;background:#f3e8ff;border-left:3px solid #9333ea;border-radius:4px"><b>Total</b><br><span style="font-size:18px;font-weight:800;color:${badge(T)}">${T.toFixed(2)}</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:11px;color:#666">
+        💡 เกณฑ์ ≥ 3.51 = "ระดับมาก" (ตาม H3) · ปัจจุบัน: ${interp(T)}
+      </div>`;
+  } else if (name === 'Satisfaction' && data.data && data.data.length){
+    // ─── Bonus: แสดงค่าเฉลี่ย 4 ด้าน (เนื้อหา · กิจกรรม · สื่อ · วัดผล)
+    const rows = data.data;
+    const mean = (arr) => arr.length ? (arr.reduce((a,b)=>a+(+b||0),0)/arr.length) : 0;
+    const c = mean(rows.map(r => r.content_avg));
+    const a = mean(rows.map(r => r.activity_avg));
+    const m = mean(rows.map(r => r.media_avg));
+    const s = mean(rows.map(r => r.assessment_avg));
+    const T = mean(rows.map(r => r.total_avg));
+    const badge = v => v >= 3.51 ? '#16a34a' : v >= 2.51 ? '#ca8a04' : '#dc2626';
+    const interp = v => v >= 4.5 ? '🟢 มากที่สุด' : v >= 3.51 ? '🟢 มาก' : v >= 2.51 ? '🟡 ปานกลาง' : '🔴 น้อย';
+    body += `<div class="desc">⭐ ${rows.length} ผู้ตอบ · ความพึงพอใจ 20 ข้อ</div>
+      <div style="margin-top:10px;font-size:12px;line-height:1.7">
+        <div>📘 <b>เนื้อหา:</b> <span style="color:${badge(c)};font-weight:700">${c.toFixed(2)}</span></div>
+        <div>🎯 <b>กิจกรรม:</b> <span style="color:${badge(a)};font-weight:700">${a.toFixed(2)}</span></div>
+        <div>🎨 <b>สื่อ:</b> <span style="color:${badge(m)};font-weight:700">${m.toFixed(2)}</span></div>
+        <div>📊 <b>การวัดผล:</b> <span style="color:${badge(s)};font-weight:700">${s.toFixed(2)}</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:13px">
+        🌟 <b>รวม:</b> <span style="font-size:18px;font-weight:800;color:${badge(T)}">${T.toFixed(2)}</span>
+        <span style="font-size:11px;color:#666;margin-left:6px">${interp(T)}</span>
+      </div>`;
+  } else if (name === 'Consent_Log' && data.data && data.data.length){
+    // ─── Bonus: แสดงสถิติ consent (agreed vs declined)
+    const rows = data.data;
+    const agreed = rows.filter(r => r.consent_status === 'agreed').length;
+    const declined = rows.filter(r => r.consent_status === 'declined').length;
+    const useRes = rows.filter(r => r.data_use_research === true || r.data_use_research === 'TRUE').length;
+    const usePub = rows.filter(r => r.data_use_publication === true || r.data_use_publication === 'TRUE').length;
+    const total = rows.length;
+    const pct = v => total ? ((v/total)*100).toFixed(1) + '%' : '—';
+    body += `<div class="desc">📜 ${total} ผู้ตอบ · จริยธรรมวิจัย</div>
+      <div style="margin-top:10px;font-size:13px;line-height:1.7">
+        <div style="color:#16a34a">✅ <b>ยินดีเข้าร่วม:</b> ${agreed} คน (${pct(agreed)})</div>
+        <div style="color:#64748b">❌ <b>ไม่เข้าร่วม:</b> ${declined} คน (${pct(declined)})</div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:12px;color:#666">
+        🔬 ใช้ในวิจัย: ${useRes} · 📤 เผยแพร่: ${usePub}
+      </div>`;
+  } else if (name === 'Activity_Summary' && data.data && data.data.length){
+    // ─── E1 (ระหว่างเรียน) · 240 คะแนน · Mission 7 + Lab 13 + Recall 10 × 8 EP
+    const rows = data.data;
+    const E1_MAX = 240;
+    const totals = rows.map(r => +r.E1_total || 0);
+    const mean = totals.length ? totals.reduce((a,b)=>a+b,0)/totals.length : 0;
+    const max = Math.max(0, ...totals);
+    const min = totals.length ? Math.min(...totals) : 0;
+    const passN = totals.filter(t => t >= 0.6 * E1_MAX).length;
+    const histBuckets = [0,0,0,0,0]; // 0-20, 20-40, 40-60, 60-80, 80-100 (%)
+    totals.forEach(t => {
+      const pct = (t / E1_MAX) * 100;
+      const idx = Math.min(4, Math.floor(pct / 20));
+      histBuckets[idx]++;
+    });
+    const histMax = Math.max(1, ...histBuckets);
+    const epAvg = {};
+    for (let i = 1; i <= 8; i++){
+      const key = 'EP0' + i;
+      const vals = rows.map(r => +r[key] || 0).filter(v => v > 0);
+      if (vals.length) epAvg[key] = vals.reduce((a,b)=>a+b,0)/vals.length;
+    }
+    body += `<div class="desc">⚡ E1 ระหว่างเรียน · ${rows.length} คน · เต็ม ${E1_MAX} คะแนน</div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:6px 8px;background:#dcfce7;border-left:3px solid #059669;border-radius:4px"><b>เฉลี่ย</b><br><span style="font-size:18px;font-weight:800;color:#059669">${mean.toFixed(1)}</span><span style="color:#666">/${E1_MAX}</span></div>
+        <div style="padding:6px 8px;background:#dbeafe;border-left:3px solid #2563eb;border-radius:4px"><b>ผ่าน 60%</b><br><span style="font-size:18px;font-weight:800;color:#2563eb">${passN}</span><span style="color:#666">/${rows.length}</span></div>
+        <div style="padding:6px 8px;background:#fef3c7;border-left:3px solid #d97706;border-radius:4px"><b>สูง/ต่ำ</b><br><span style="font-size:13px;font-weight:700;color:#d97706">${max} / ${min}</span></div>
+      </div>
+      <div style="margin-top:10px;padding-top:8px;border-top:1px solid #eee;font-size:11px;color:#666">
+        <b>การกระจาย (% ของเต็ม):</b>
+        <div style="display:flex;align-items:flex-end;gap:3px;height:42px;margin-top:4px">
+          ${histBuckets.map((n,i) => `
+            <div style="flex:1;text-align:center">
+              <div style="height:${(n/histMax)*36}px;background:#2563eb;border-radius:2px 2px 0 0;min-height:1px"></div>
+              <div style="font-size:9px;color:#888;margin-top:2px">${i*20}-${(i+1)*20}</div>
+              <div style="font-size:10px;font-weight:700;color:#2563eb">${n}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:11px">
+        <b>เฉลี่ยรายตอน (EP):</b>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          ${Object.entries(epAvg).map(([ep,v]) => `<span style="padding:2px 6px;background:#f3f4f6;border-radius:3px;font-size:10px">${ep}: <b>${v.toFixed(1)}</b>/30</span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:8px;text-align:right">
+        <button onclick="exportE1CSV(window._e1Data || [])" style="padding:4px 10px;background:#0ea5e9;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer">📥 Export CSV</button>
+      </div>`;
+    try { window._e1Data = rows; } catch(_){}
+  } else if (name === 'Boss_Engagement' && data.data && data.data.length){
+    // ─── Boss engagement (ไม่นับ E1 · เป็น engagement metric)
+    const rows = data.data;
+    const mean = (arr) => arr.length ? (arr.reduce((a,b)=>a+(+b||0),0)/arr.length) : 0;
+    const accAvg = mean(rows.map(r => r.accuracy));
+    const timeAvg = mean(rows.map(r => r.timeSpent));
+    const retAvg = mean(rows.map(r => r.retries));
+    const endings = {};
+    rows.forEach(r => { const e = r.endingPath || '-'; endings[e] = (endings[e]||0)+1; });
+    body += `<div class="desc">🔥 Boss engagement · ${rows.length} ครั้ง · ${new Set(rows.map(r=>r.student_id)).size} คน</div>
+      <div style="margin-top:10px;font-size:12px;line-height:1.7">
+        <div>🎯 <b>Accuracy เฉลี่ย:</b> <span style="font-weight:700;color:#059669">${(accAvg*100).toFixed(1)}%</span></div>
+        <div>⏱ <b>เวลาเฉลี่ย:</b> <span style="font-weight:700;color:#2563eb">${timeAvg.toFixed(0)} วินาที</span></div>
+        <div>🔁 <b>Retry เฉลี่ย:</b> <span style="font-weight:700;color:#d97706">${retAvg.toFixed(1)}</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:11px">
+        <b>Ending paths:</b>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          ${Object.entries(endings).map(([k,v]) => `<span style="padding:2px 6px;background:#f3e8ff;border-radius:3px;font-size:10px">${k}: <b>${v}</b></span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#888;font-style:italic">
+        ※ Boss = engagement metric · ไม่นับใน E1 (รักษา construct validity)
+      </div>`;
+  } else if (name === 'Energy_Log' && data.data && data.data.length){
+    // ⚡ Energy events (once-per-page · construct: task completion)
+    const rows = data.data;
+    const students = new Set(rows.map(r => r.student_id));
+    const totalAmount = rows.reduce((a,r) => a + (+r.amount || 0), 0);
+    const avgPerStudent = students.size ? +(totalAmount / students.size).toFixed(1) : 0;
+    const epDist = {};
+    rows.forEach(r => { const e = 'EP0' + (r.ep || '?'); epDist[e] = (epDist[e]||0) + (+r.amount||0); });
+    body += `<div class="desc">⚡ Energy events · ${rows.length} ครั้ง · ${students.size} คน</div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:6px 8px;background:#dcfce7;border-left:3px solid #16a34a;border-radius:4px"><b>เก็บรวม</b><br><span style="font-size:18px;font-weight:800;color:#15803d">${totalAmount}</span> ⚡</div>
+        <div style="padding:6px 8px;background:#dbeafe;border-left:3px solid #2563eb;border-radius:4px"><b>เฉลี่ย/คน</b><br><span style="font-size:18px;font-weight:800;color:#1d4ed8">${avgPerStudent}</span> ⚡</div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:11px">
+        <b>รวมรายตอน:</b>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px">
+          ${Object.entries(epDist).sort().map(([e,v]) => `<span style="padding:2px 6px;background:#dcfce7;border-radius:3px;font-size:10px">${e}: <b>${v}</b></span>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#888;font-style:italic">
+        ※ Energy = task completion (once-per-page · ไม่รั่ว · construct: effort thoroughness)
+      </div>`;
+  } else if (name === 'Coin_Log' && data.data && data.data.length){
+    // 🪙 Coin events (decay-based · construct: mastery quality)
+    const rows = data.data;
+    const students = new Set(rows.map(r => r.student_id));
+    const tier1 = rows.filter(r => +r.tier === 1).length;
+    const tier2 = rows.filter(r => +r.tier === 2).length;
+    const tier3 = rows.filter(r => +r.tier === 3).length;
+    const tier4 = rows.filter(r => +r.tier >= 4).length;
+    const total = rows.length || 1;
+    const masteryRate = +(tier1 / total).toFixed(2);
+    const totalCoin = rows.reduce((a,r) => a + (+r.amount || 0), 0);
+    body += `<div class="desc">🪙 Coin events · ${rows.length} ครั้ง · ${students.size} คน</div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:6px 8px;background:#fef3c7;border-left:3px solid #d97706;border-radius:4px"><b>เก็บรวม</b><br><span style="font-size:18px;font-weight:800;color:#b45309">${totalCoin}</span> 🪙</div>
+        <div style="padding:6px 8px;background:#dcfce7;border-left:3px solid #16a34a;border-radius:4px"><b>Mastery (1st try)</b><br><span style="font-size:18px;font-weight:800;color:#15803d">${(masteryRate*100).toFixed(0)}%</span></div>
+      </div>
+      <div style="margin-top:8px;padding-top:8px;border-top:1px solid #eee;font-size:11px;line-height:1.7">
+        <b>Attempts breakdown (decay tiers):</b>
+        <div>🥇 ครั้งที่ 1 ถูก (100% reward): <b style="color:#16a34a">${tier1}</b></div>
+        <div>🥈 ครั้งที่ 2 ถูก (60% reward): <b style="color:#ca8a04">${tier2}</b></div>
+        <div>🥉 ครั้งที่ 3 ถูก (30% reward): <b style="color:#ea580c">${tier3}</b></div>
+        <div>⚪ ครั้งที่ 4+ (10% reward): <b style="color:#dc2626">${tier4}</b></div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#888;font-style:italic">
+        ※ Coin = mastery quality (decay by attempts · construct: first-attempt accuracy)
+      </div>`;
+  } else if (name === 'Shop_Log' && data.data && data.data.length){
+    // 🛒 Shop transactions (construct: self-regulated learning)
+    const rows = data.data;
+    const students = new Set(rows.map(r => r.student_id));
+    const totalCoinSpent = rows.reduce((a,r) => a + (+r.coinSpent || 0), 0);
+    const totalEnergyGained = rows.reduce((a,r) => a + (+r.energyGained || 0), 0);
+    const txnPerStudent = students.size ? +(rows.length / students.size).toFixed(1) : 0;
+    body += `<div class="desc">🛒 Shop transactions · ${rows.length} ครั้ง · ${students.size} คน</div>
+      <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:12px">
+        <div style="padding:6px 8px;background:#fef3c7;border-left:3px solid #d97706;border-radius:4px"><b>Coin spent</b><br><span style="font-size:16px;font-weight:800;color:#b45309">${totalCoinSpent}</span> 🪙</div>
+        <div style="padding:6px 8px;background:#dcfce7;border-left:3px solid #16a34a;border-radius:4px"><b>Energy gained</b><br><span style="font-size:16px;font-weight:800;color:#15803d">${totalEnergyGained}</span> ⚡</div>
+        <div style="padding:6px 8px;background:#f3e8ff;border-left:3px solid #9333ea;border-radius:4px"><b>Txn/คน</b><br><span style="font-size:16px;font-weight:800;color:#7e22ce">${txnPerStudent}</span></div>
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#888;font-style:italic">
+        ※ Shop = strategic decision (construct: self-regulated learning · pre-boss preparation)
+      </div>`;
   } else {
     body += `<div class="desc">📝 ${data.count || 0} ข้อตอบ</div>`;
     if (data.data && data.data.length){
       const latest = data.data.slice(-3).reverse();
       body += `<div style="margin-top:8px;font-size:12px;color:#666">
         <b>ล่าสุด:</b><br>
-        ${latest.map(r => `• ${r.student_name || '-'} (เลขที่ ${r.student_no || '-'})`).join('<br>')}
+        ${latest.map(r => `• ${r.student_name || r.name || '-'} (เลขที่ ${r.student_no || r.no || '-'})`).join('<br>')}
       </div>`;
     }
   }
 
   return bar + body;
+}
+
+function exportE1CSV(rows){
+  if (!rows || !rows.length) { alert('ยังไม่มีข้อมูล E1'); return; }
+  const headers = ['student_id','name','no','class','EP01','EP02','EP03','EP04','EP05','EP06','EP07','EP08','E1_total','E1_percent','last_update'];
+  const esc = v => {
+    if (v == null) return '';
+    const s = String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+  };
+  const lines = [headers.join(',')];
+  rows.forEach(r => lines.push(headers.map(h => esc(r[h])).join(',')));
+  const blob = new Blob(['﻿' + lines.join('\n')], { type:'text/csv;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'E1_summary_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -4549,15 +4778,168 @@ function renderMediaTab(){
   el.innerHTML = `
     <div class="hero" style="background:linear-gradient(135deg,#0f2c5c,#1565c0);margin-bottom:16px">
       <h2>📚 Index สื่อและเครื่องมือ</h2>
-      <p style="opacity:.9;margin-top:6px">คลังสื่อ ใบกิจกรรม และเครื่องมือวัดประเมินรายแผน · คลิกการ์ดเพื่อเปิดไฟล์</p>
+      <p style="opacity:.9;margin-top:6px">คลังสื่อ ใบกิจกรรม และเครื่องมือวัดประเมินรายแผน · คลิกการ์ดเพื่อเปิดไฟล์ · กด 🔓 เพื่อปลดหน้านั้นให้นักเรียนทั้งห้อง</p>
     </div>
     <div class="media-plan-select">
       <label style="font-weight:700;color:#0f2c5c">เลือกแผน:</label>
       <select id="mediaPlanSel" onchange="mediaCurrentPlan=parseInt(this.value,10);renderMediaTab();">${opts}</select>
     </div>
+    <div id="paceCtrlHost"></div>
     <div id="mediaBody"></div>
   `;
+  paceLoadConfig();
+  renderPacePanel();
   renderMediaBody();
+  // Auto-poll pace state ทุก 5 วิ ขณะอยู่ที่ tab สื่อ
+  if (pacePollTimer) clearInterval(pacePollTimer);
+  pacePollTimer = setInterval(() => { if (teacherCurrentTab === 'media') paceRefreshState(); }, 5000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// Teacher Pace Control · ปลดหน้าให้นักเรียนทั้งห้องพร้อมกัน
+// ═══════════════════════════════════════════════════════════
+let paceState = { auto: true, current: null };
+let pacePollTimer = null;
+
+function paceAutoCode(){ return 'auto_' + (window.KP_COURSE || 'astronomy'); }
+
+function paceLoadConfig(){
+  paceState.auto = localStorage.getItem('teacher_pace_auto') !== '0'; // default ON
+}
+function paceSaveConfig(){
+  localStorage.setItem('teacher_pace_auto', paceState.auto ? '1' : '0');
+}
+
+function paceMakeId(no){
+  if (no == null) return null;
+  const t = String(no).trim();
+  // skip non-page items (Launcher / FT / Consent / Section header / shorthand)
+  if (/^(JN|FT|EP|R\d|SH|PR|PT|PG|F\d|IM|SA|CO)$/i.test(t)) return null;
+  return 'p' + t.toLowerCase();
+}
+function paceCurrentEp(){
+  if (window.KP_COURSE === 'astronomy') return 'ep' + String(mediaCurrentPlan).padStart(2,'0');
+  return 'plan' + mediaCurrentPlan;
+}
+
+async function paceRefreshState(){
+  let pace = null;
+  try {
+    const r = await fetch(API_URL + '?action=paceGet&code=' + encodeURIComponent(paceAutoCode()) + '&_=' + Date.now());
+    const j = await r.json();
+    pace = (j && j.status === 'ok') ? (j.pace || null) : null;
+  } catch {}
+  paceState.current = pace;
+  updatePaceStatusBox();
+  paceMarkActiveCard();
+}
+
+async function paceSetCurrent(pageId){
+  const subject = window.KP_COURSE || '';
+  const ep = paceCurrentEp();
+  const auto = !!paceState.auto;
+  try {
+    await fetch(API_URL, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action: 'paceSetOpen', code: paceAutoCode(),
+        page: pageId, unlockedUpTo: pageId,
+        ep, subject, auto
+      })
+    });
+  } catch(e){ alert('ส่งไม่สำเร็จ: ' + e.message); return; }
+  // optimistic: update local state ทันที (ไม่ต้องรอ poll)
+  paceState.current = { page: pageId, unlockedUpTo: pageId, ep, subject, auto, at: Date.now() };
+  updatePaceStatusBox();
+  paceMarkActiveCard();
+  const verb = auto ? '🚀 พาทุกคนไป' : '🔓 ปลดถึง';
+  paceFlashToast(verb + ' ' + pageId.toUpperCase() + ' · นักเรียนเด้งภายใน ~2 วินาที');
+}
+
+async function paceClear(){
+  if (!confirm('ปิด pace mode? นักเรียนจะกดต่อไปได้อิสระ')) return;
+  try {
+    await fetch(API_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'paceSetOpen', code: paceAutoCode(),
+        page:'p99', unlockedUpTo:'p99',
+        ep: paceCurrentEp(), subject: window.KP_COURSE||'',
+        auto: false
+      })
+    });
+  } catch {}
+  paceState.current = null;
+  updatePaceStatusBox();
+  paceMarkActiveCard();
+  paceFlashToast('🔓 ปลดทุกหน้า · pace mode ปิด');
+}
+
+function paceFlashToast(msg){
+  const t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;padding:12px 18px;background:#0f2c5c;color:#fff;border-radius:10px;font-weight:700;box-shadow:0 4px 16px rgba(0,0,0,.3);font-size:14px';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2400);
+}
+
+function renderPacePanel(){
+  const host = document.getElementById('paceCtrlHost');
+  if (!host) return;
+  host.innerHTML = `
+    <div style="margin-bottom:14px;padding:12px 16px;background:linear-gradient(135deg,#fff7e6,#fff);border:2px solid #ff9800;border-radius:12px;box-shadow:0 2px 8px rgba(255,152,0,.12)">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="font-weight:800;color:#bf6500;font-size:15px">🎛 Teacher Pace Control</div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:700;color:${paceState.auto?'#15803d':'#475569'};padding:5px 11px;background:${paceState.auto?'rgba(22,163,74,0.10)':'#f8fafc'};border:1.5px dashed ${paceState.auto?'#16a34a':'#cbd5e1'};border-radius:6px">
+          <input type="checkbox" id="paceAutoChk" ${paceState.auto?'checked':''} onchange="paceState.auto=this.checked;paceSaveConfig();renderPacePanel();renderMediaBody();"
+            style="width:16px;height:16px;cursor:pointer">
+          🚀 Auto-jump · เด้งนักเรียนพร้อมกัน
+        </label>
+        <div id="paceStatusBox" style="margin-left:auto;font-size:13px"></div>
+        <button onclick="paceClear()" style="padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px" title="ปิด pace mode · ปลดทุกหน้า · นักเรียนเดินอิสระ">✕ ปิด pace</button>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:#666;line-height:1.6">
+        💡 ระบบเปิดอัตโนมัติ — ครูกด <b>🚀 พาทุกคนมาที่นี่</b> บนการ์ดด้านล่าง · นักเรียนทุกคนที่ login วิชา <b>${escapeHtml(window.KP_COURSE||'astronomy')}</b> จะเด้งภายใน <b>~2 วินาที</b> · ไม่ต้องกรอก room code, ไม่ต้องส่ง link
+        ${paceState.auto
+          ? '<br>✅ <b>Auto-jump เปิด:</b> นักเรียน countdown 3 วิ แล้วเด้งหน้าใหม่อัตโนมัติ'
+          : '<br>⚪ <b>Auto-jump ปิด:</b> นักเรียนเห็น banner "ไปเลย →" ให้กดเอง'}
+      </div>
+    </div>
+  `;
+  paceRefreshState();
+}
+
+function updatePaceStatusBox(){
+  const box = document.getElementById('paceStatusBox');
+  if (!box) return;
+  if (!paceState.current) { box.innerHTML = '<span style="color:#999">⏳ ยังไม่ปลด</span>'; return; }
+  const t = new Date(paceState.current.at || Date.now());
+  const tStr = t.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+  const up = (paceState.current.unlockedUpTo||'').toUpperCase();
+  if (up === 'P99') { box.innerHTML = '<span style="color:#999">⚪ ปิด pace · นักเรียนเดินอิสระ</span>'; return; }
+  box.innerHTML = `<span style="color:#16a34a;font-weight:700">🔓 ${up}</span>
+    <span style="color:#666"> · ${tStr}</span>`;
+}
+
+function paceMarkActiveCard(){
+  // เคลียร์ทั้งหมด · ใส่ class active บนการ์ดที่ pageId ตรง
+  document.querySelectorAll('.media-card-wrap').forEach(w => {
+    w.classList.remove('pace-active');
+    const btn = w.querySelector('.pace-lock-btn');
+    if (btn) {
+      btn.classList.remove('active');
+      btn.textContent = '🔓 ปลดถึงนี่';
+    }
+  });
+  if (!paceState.current || !paceState.current.unlockedUpTo) return;
+  const target = String(paceState.current.unlockedUpTo).toLowerCase();
+  document.querySelectorAll('.media-card-wrap[data-pace-id="' + target + '"]').forEach(w => {
+    w.classList.add('pace-active');
+    const btn = w.querySelector('.pace-lock-btn');
+    if (btn) { btn.classList.add('active'); btn.textContent = '✓ ปลดอยู่'; }
+  });
 }
 
 function renderMediaBody(){
@@ -4596,8 +4978,16 @@ function renderMediaBody(){
         // Download button only for local files (GitHub Pages same-origin · download attr works)
         const dlBtn = isExternal ? '' :
           `<a class="media-dl" href="${href}" download="${escapeHtml(cleanName)}" title="ดาวน์โหลด: ${escapeHtml(cleanName)}" onclick="event.stopPropagation()">⬇</a>`;
+        // Pace lock button: เฉพาะหน้าที่ map เป็น page id ได้ (skip launcher/FT/consent)
+        const paceId = paceMakeId(it.no);
+        const isHtml = !isExternal && /\.html?(\?|#|$)/i.test(it.file);
+        const lockLabel = paceState.auto ? '🚀 พาทุกคนมาที่นี่' : '🔓 ปลดถึงนี่';
+        const lockTitle = paceState.auto ? 'นักเรียนทั้งห้องจะเด้งมาหน้านี้อัตโนมัติ (countdown 3 วิ)' : 'ปลด lock ปุ่มต่อไป · นักเรียนกดเดินเองได้';
+        const lockBtn = (paceId && isHtml)
+          ? `<button class="pace-lock-btn ${paceState.auto?'auto':''}" data-pace-id="${paceId}" onclick="event.preventDefault();event.stopPropagation();paceSetCurrent('${paceId}')" title="${lockTitle}">${lockLabel}</button>`
+          : '';
         return `
-          <div class="media-card-wrap" style="position:relative">
+          <div class="media-card-wrap" style="position:relative" ${paceId?`data-pace-id="${paceId}"`:''}>
             <a class="media-card ${it.cls}" href="${href}" target="_blank" rel="noopener">
               <div><span class="no">${it.no}</span><b>${it.t}</b></div>
               <div class="d">${it.d}</div>
@@ -4605,6 +4995,7 @@ function renderMediaBody(){
               ${chips ? `<div>${chips}</div>` : ''}
             </a>
             ${dlBtn}
+            ${lockBtn}
           </div>`;
       }).join('')}
     </div>
@@ -4621,6 +5012,8 @@ function renderMediaBody(){
       <ul style="margin:8px 0 0 22px">${links}</ul>
     </div>
   `;
+  // re-apply pace highlight หลัง re-render
+  if (typeof paceMarkActiveCard === 'function') paceMarkActiveCard();
 }
 
 // ═══════════════════════════════════════════════════════════

@@ -179,6 +179,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function checkAll() {
   const c1 = document.querySelector('input[name="c1"]:checked');
@@ -188,7 +189,9 @@ function checkAll() {
   const correct = [c1,c2,c3].filter(a => a.value === 'c').length;
   Book.savePageData('p10', { c1: c1.value, c2: c2.value, c3: c3.value, score: correct });
   if (correct === 3) {
-    Book.addEnergy(5, 'P10 Checkpoint perfect');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p10', amount:(5), reason:'P10 Checkpoint perfect' });
+  else Book.addEnergy(5, 'P10 Checkpoint perfect');
     Book.addDiscovery('Big Bang Theory · v=H₀D · CMB');
     Book.completePage('p10');
     document.getElementById('result').innerHTML = `

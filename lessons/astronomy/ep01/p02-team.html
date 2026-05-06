@@ -84,6 +84,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function renderGrid() {
   const grid = document.getElementById('team-grid');
@@ -113,7 +114,9 @@ function submitTeam() {
   Book.state.teamName = name;
   Book.state.role = role;
   Book.save(); Book.updateHUD();
-  Book.addEnergy(2, 'Team formed');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p02', amount:(2), reason:'Team formed' });
+  else Book.addEnergy(2, 'Team formed');
   Book.completePage('p02');
   document.getElementById('result').innerHTML = `
     <div class="branch-reveal main">

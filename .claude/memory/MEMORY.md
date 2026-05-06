@@ -1,3 +1,8 @@
+- [Assistant persona "เจน"](user_assistant_persona.md) — ผู้ช่วยชื่อเจน เป็นผู้หญิง · ใช้ "เจน/ค่ะ/นะคะ"
+- [Telemetry sync 4 EP](project_telemetry_sync_4ep.md) ⭐ — shared/telemetry-sync.js auto-wraps Book + KPA · sheets EP{n}_Pages/Research/MC/Calibration/Problems · 103 HTML patched · 2026-05-06
+- [KPA Assessment ครบแล้ว](project_kpa_assessment_complete.md) ⭐ — KP-Classroom Auto-fill + Dashboard ครบ · 5 rubric EP01/02/03/07/08 + DOCX 51KB เสร็จ 2026-05-06
+- [E1/E2 pipeline design](project_e1_pipeline_design.md) ⭐ — Hybrid A+C · 30/EP × 8 = 240 (Mission 7 + Lab 13 + Recall 10) · Boss แยกเป็น engagement metric · 10-day build
+- [Research report progress](project_research_report_progress.md) ⭐ — COSMOS LOG วPA วิจัย · Ch.1+2 ขยาย · แบบสัมภาษณ์ 9 คน เสร็จ · ม.5 ไม่ใช่ ม.6 · user ต้องการ Ch.2 prose แบบพรรณนา แบ่งทำ 2 พาร์ท
 - [Interactive drawing pattern](feedback_interactive_drawing_pattern.md) — scene-stack SVG bg + transparent canvas overlay, "ทิศการเคลื่อนที่"/"หน้าคลื่น" language for wave drawing tasks
 - [Worksheet core infrastructure](reference_worksheet_core.md) — lessons/shared/worksheet-core.js provides auto-save + identity auto-fill + JSON export + print PDF for all worksheets
 - [Plan pipeline checklist + common mistakes](reference_plan_pipeline_checklist.md) — 7-step pipeline per plan + 13 bugs to avoid + pre-push checklist (from Plan 5 lessons)

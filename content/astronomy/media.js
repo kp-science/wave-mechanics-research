@@ -69,6 +69,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('16','Map · แผนที่ทางช้างเผือก','p16-map.html','puzzle'),
         _ASTRO_PAGE('16b','Review · ทบทวน','p16-review.html','reflection'),
         _ASTRO_PAGE('17','Exercise · แบบฝึกหัด','p17-exercise.html','puzzle'),
+        _ASTRO_PAGE('18','📊 Post-test · วัดหลัง EP01','p18-posttest.html','puzzle'),
         _ASTRO_PAGE('17b','Exit · ออก','p27-journal.html','reflection')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -117,6 +118,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('17','Bloom · Scene','p17-bloom.html','story'),
         _ASTRO_PAGE('17a','ตลาด · ก่อนตีบอสสุดท้าย','p17-shop.html','setup',5),
         _ASTRO_PAGE('17b','BOSS สุดท้าย · 15 คลื่น','p17b-finalboss.html','mixed',10),
+        _ASTRO_PAGE('20','📊 Post-test · วัดหลัง EP02','p20-posttest.html','puzzle',5),
         _ASTRO_PAGE('18','Journal 3-2-1 · ปิดเล่ม','p27-journal.html','reflection',4),
         _ASTRO_PAGE('19','Journey Map · Post-test','p19-map.html','reflection',5)
       ]},
@@ -168,7 +170,8 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('16','Movie Recap + 2 trap','p16-recap.html','puzzle',5),
         _ASTRO_PAGE('17','🛍️ Hubble Trading Post','shop.html','setup',3),
         _ASTRO_PAGE('18','🔥 WARP RUN (climax · BOSS)','warprun.html','mixed',7),
-        _ASTRO_PAGE('19','Post-test · Badge','p19-map.html','reflection',5),
+        _ASTRO_PAGE('19','Post-test · Badge (เดิม)','p19-map.html','reflection',5),
+        _ASTRO_PAGE('20','📊 Post-test · วัดหลัง EP03 (CRI)','p20-posttest.html','puzzle',5),
         _ASTRO_PAGE('19b','📒 3-2-1 Journal','p27-journal.html','reflection',5),
         _ASTRO_PAGE('JN','Join · ร่วมภารกิจ','join.html','setup')
       ]},
@@ -217,6 +220,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('17','📓 ห้องวิจัยพ่อ · กำลังไหม้','p17-fatherlab.html','story',4),
         _ASTRO_PAGE('18','Star Map Reveal','p18-starmap.html','story',3),
         _ASTRO_PAGE('19','⚠ VOID FACE-TO-FACE','p19-voidface.html','story',3),
+        _ASTRO_PAGE('19b','🎯 Recall · ดาว/มวล','p19b-recall.html','puzzle',3),
         _ASTRO_PAGE('20','🎁 Path Selection · 4 เส้นทาง','p20-path-select.html','puzzle',5),
         _ASTRO_PAGE('21','Post-test · 4-choice','p21-posttest.html','reflection',5),
         _ASTRO_PAGE('22','Story Sequencer · เรียงเหตุการณ์','p22-sequencer.html','puzzle',3),
@@ -508,6 +512,7 @@ window.KP_PLAN_MEDIA = {
       { title:'📖 องก์ D · Boss + Endings (7 หน้า)', items:[
         _ASTRO_PAGE('21',"⭐ Father's Choice · Reset/Preserve",'p21-fathers-choice.html','setup'),
         _ASTRO_PAGE('22','Boss Prep · Forge GENESIS LANCE','p22-boss-prep.html','puzzle'),
+        _ASTRO_PAGE('22b','🎯 Recall · Big Bang Timeline + Hubble','p22b-recall.html','puzzle'),
         _ASTRO_PAGE('23','🔥 BOSS · GENESIS FORGE','p23-boss.html','mixed'),
         _ASTRO_PAGE('24','Ending A · PRESERVE','p24-ending-preserve.html','story'),
         _ASTRO_PAGE('25','🌟 Ending Reset Route','p25-ending-reset.html','story'),

@@ -91,9 +91,12 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function markDone() {
-  Book.addEnergy(1, 'P08 viewed');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p08', amount:(1), reason:'P08 viewed' });
+  else Book.addEnergy(1, 'P08 viewed');
   Book.completePage('p08');
   document.getElementById('result').innerHTML = '<div class="success">✓ เตรียมเข้าห้องแล็บ · กด "ต่อไป →"</div>';
 }

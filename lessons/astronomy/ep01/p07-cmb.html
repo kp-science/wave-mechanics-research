@@ -106,9 +106,12 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function markDone() {
-  Book.addEnergy(1, 'P07 viewed');
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p07', amount:(1), reason:'P07 viewed' });
+  else Book.addEnergy(1, 'P07 viewed');
   Book.completePage('p07');
   document.getElementById('result').innerHTML = '<div class="success">✓ คอร์สตั้งแล้ว · กด "ต่อไป →"</div>';
 }

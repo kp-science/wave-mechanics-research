@@ -97,6 +97,7 @@
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 function checkLock() {
   const past = parseFloat(document.getElementById('lock-past').value);
@@ -112,7 +113,9 @@ function checkLock() {
     light.className = 'lock-indicator green';
     light.innerHTML = '🟢 GREEN · COORDINATES LOCKED';
     Book.savePageData('p13', { past, vel, correct: true });
-    Book.addEnergy(5, 'Ship Lock');
+    // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p13', amount:(5), reason:'Ship Lock' });
+  else Book.addEnergy(5, 'Ship Lock');
     Book.addDiscovery('Galaxy A · Past Position 50 Mpc');
     Book.addInventory('🚀 Ship Course · Galaxy A @ 50 Mpc · 7000 km/s');
     Book.completePage('p13');

@@ -415,6 +415,7 @@ table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent
 
 </div></main>
 <script src="../shared/book.js"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
 const TOTAL_BY_LEVEL = { L1: 3, L2: 3, L3: 3, L4: 3, L5: 2, L6: 1 };
 let checked = {};
@@ -433,7 +434,9 @@ function updateSummary() {
     const totalScore = Object.values(scores).reduce((a,b)=>a+b,0);
     msg.innerHTML = `<b style="color:var(--accent-green)">✓ ครบแล้ว · รวม ${totalScore}/15 ข้อ</b> · ระดับที่อ่อนที่สุดคือระดับที่ควรทบทวน`;
     if (!Book.state.gates.p17) {
-      Book.addEnergy(Math.max(3, totalScore), 'Exercise complete');
+      // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p17', amount:(Math.max(3, totalScore)), reason:'Exercise complete' });
+  else Book.addEnergy(Math.max(3, totalScore), 'Exercise complete');
       Book.addInventory(`📝 Badge · Bloom ${totalScore}/15`);
       Book.completePage('p17');
       document.getElementById('result').innerHTML = `<div class="branch-reveal main"><h3>✓ ทำแบบฝึกหัดครบ · รวม ${totalScore}/15</h3><p class="mt-10">กด "ต่อไป →" เพื่อไป Exit Ticket</p></div>`;

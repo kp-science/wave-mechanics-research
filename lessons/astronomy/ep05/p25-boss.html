@@ -428,6 +428,24 @@ function finalizeEnding(){
   }
   // unlock next
   Submit.record('p25', { ending, energy:Math.round(energy), answered });
+  // ⭐ Boss Engagement telemetry → Sheet `Boss_Engagement`
+  try {
+    if (window.ActivitySync && typeof ActivitySync.submitBoss === 'function') {
+      const totalQ = answered || 1;
+      // accuracy proxy: derive จาก ending tier (A+/A/B/C → 1.0/0.75/0.5/0.25)
+      const accMap = { 'A+':1.0, 'A':0.75, 'B':0.5, 'C':0.25 };
+      const _retryKey = 'cosmosLog_ep05_boss_retries';
+      const _retries = (parseInt(localStorage.getItem(_retryKey) || '0', 10) || 0);
+      localStorage.setItem(_retryKey, String(_retries + 1));
+      ActivitySync.submitBoss({
+        ep: 5,
+        accuracy: accMap[ending] || 0,
+        timeSpent: window._bossStartTime ? Math.round((Date.now() - window._bossStartTime) / 1000) : 0,
+        retries: _retries,
+        endingPath: ending
+      });
+    }
+  } catch(_) {}
   Gate.markSubmitted();
   const btn = document.getElementById('nextBtn');
   btn.disabled = false; btn.textContent = '▶ ดู Ending';
@@ -443,6 +461,7 @@ function endBoss(){
 
 document.getElementById('startBtn').onclick = ()=>{
   document.getElementById('startBtn').style.display='none';
+  window._bossStartTime = Date.now(); // ⭐ Boss telemetry start
   loadZonePool(1);
   renderPowerBar();
   showQ();

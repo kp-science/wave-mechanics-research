@@ -440,6 +440,11 @@
           const curIdx = pages.findIndex(p => p.id === this._currentPage);
           const unlockedIdx = pages.findIndex(p => p.id === pace.unlockedUpTo);
           this._teacherOpen = (unlockedIdx >= curIdx + 1);
+          // ⭐ Auto-jump: ถ้าครูเปิด Auto-jump · countdown แล้วเด้งหน้าใหม่
+          try {
+            const pages = (global.EP_CONFIG && global.EP_CONFIG.pages) || [];
+            global.PaceResolver && global.PaceResolver.maybeForceJump(pace, this._currentPage || this._pageId, pages);
+          } catch(_){}
         }
         this._update();
       }).catch(() => { this._teacherActive=false; this._teacherOpen=false; this._update(); });
