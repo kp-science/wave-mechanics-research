@@ -125,11 +125,26 @@
   }
 
   // ─── Auto-wrap Book.savePageData ──────────────────────────────────
+  // book.js declares `const Book = {...}` at top-level (NOT exported to
+  // window). Use lexical lookup via Function eval to grab it from script
+  // scope · fall back to global.Book if exported.
+  function _findBook(){
+    if (global.Book) return global.Book;
+    try {
+      const ref = (new Function('try { return Book; } catch(_){ return null; }'))();
+      if (ref) {
+        global.Book = ref;  // promote to window for later access
+        return ref;
+      }
+    } catch(_){}
+    return null;
+  }
   function _wrapBook(){
-    if (!global.Book || global.Book._telemetryWrapped) return false;
-    const orig = global.Book.savePageData;
+    const Book = _findBook();
+    if (!Book || Book._telemetryWrapped) return false;
+    const orig = Book.savePageData;
     if (typeof orig !== 'function') return false;
-    global.Book.savePageData = function(pageId, data){
+    Book.savePageData = function(pageId, data){
       const r = orig.call(this, pageId, data);
       try {
         const ep = _ep();
@@ -142,7 +157,7 @@
       } catch(_){}
       return r;
     };
-    global.Book._telemetryWrapped = true;
+    Book._telemetryWrapped = true;
     return true;
   }
 
