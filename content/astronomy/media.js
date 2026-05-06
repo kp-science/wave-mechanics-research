@@ -34,6 +34,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 1 — EP01 · The Collision · กำเนิดเอกภพ',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · SETUP · เริ่มภารกิจ', file:'../shared/act-divider.html?ep=1&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · INVESTIGATION · สืบสวนเอกภพ', file:'../shared/act-divider.html?ep=1&act=2&next=p06-research.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · TEACHING · ครูเปิดเวทีสอน', file:'../shared/act-divider.html?ep=1&act=3&next=p10-hubble.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · CLIMAX · ปะทะ VOID', file:'../shared/act-divider.html?ep=1&act=4&next=p13-shiplock.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · ปิดฉาก', file:'../shared/act-divider.html?ep=1&act=5&next=p16-review.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'📜 ก่อนเริ่มงานวิจัย', items:[
         { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
           d:'อ่านและเลือกความยินยอม · ทำครั้งเดียว · ปฏิเสธได้',
@@ -92,6 +99,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 2 — EP02 · เสียงเรียกจากกาแล็กซี · ระบบดาว',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 3–4 · COSMOS LOG · Season 1 · 23 หน้า · Game Layer',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · SETUP · เสียงเรียกในกาแล็กซี', file:'../shared/act-divider.html?ep=2&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · CLASSIFY · จำแนกกาแล็กซี', file:'../shared/act-divider.html?ep=2&act=2&next=p07-home.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · DOPPLER HUNT · การล่าด้วย Doppler', file:'../shared/act-divider.html?ep=2&act=3&next=p11-doppler.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS FIGHT · VOID', file:'../shared/act-divider.html?ep=2&act=4&next=p15-boss-prep.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · Reflection', file:'../shared/act-divider.html?ep=2&act=5&next=p18-log.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP02','Galaxy + VOID Boss','หน้า launcher · มี Game Layer + boss 2 ตัว','23 หน้า · ~100 นาที',
           [['k','Galaxy'],['k','Tuning Fork'],['k','BOSS']])
@@ -144,6 +158,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 3 — EP03 · เสียงร้องจากอดีต · พาแรลแลกซ์/ระยะดาว',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 5–6 · COSMOS LOG · Season 1 · 24 หน้า · Firebase sync · 5-องก์',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · CALL FROM PAST · เสียงร้องจากอดีต', file:'../shared/act-divider.html?ep=3&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · PARALLAX METHOD · พาแรลแลกซ์', file:'../shared/act-divider.html?ep=3&act=2&next=p05-beat.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · BRIGHTNESS · Magnitude', file:'../shared/act-divider.html?ep=3&act=3&next=p09-magnitude.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · CLIMAX · WARP RUN', file:'../shared/act-divider.html?ep=3&act=4&next=p17-warp.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · Choice Save', file:'../shared/act-divider.html?ep=3&act=5&next=p21-posttest.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP03','VOIDHUNTER · Adventure','5-องก์ Adventure model · WARP RUN boss','24 หน้า · ~70 นาที',
           [['k','Parallax'],['k','Stellar Magnitude'],['k','BOSS']])
@@ -195,6 +216,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 4 — EP04 · วันสุดท้ายของยักษ์แดง · วิวัฒนาการดาว',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 7–8 · COSMOS LOG · Season 1 · 27 หน้า · Firebase sync · 4-องก์ Lab-build',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · COLD OPEN · วันสุดท้ายของยักษ์แดง', file:'../shared/act-divider.html?ep=4&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · STAR DECODER · อ่านสเปกตรัม', file:'../shared/act-divider.html?ep=4&act=2&next=p07-group-code.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · MASS DECISION · 9 vs 25 M☉', file:'../shared/act-divider.html?ep=4&act=3&next=p14-evo-order.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS · GRAVITY ASCENT', file:'../shared/act-divider.html?ep=4&act=4&next=p21-boss.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · รำลึก', file:'../shared/act-divider.html?ep=4&act=5&next=p26-journal.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP04','Stellar Evolution + Gravity Ascent','4-องก์ Lab-build · GRAVITY ASCENT boss · cliffhanger → EP05','27 หน้า · ~80 นาที',
           [['k','OBAFGKM'],['k','Stellar Evolution'],['k','BOSS']])
@@ -250,6 +278,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 5 — EP05 · หัวใจที่เต้นผิดจังหวะ · ดวงอาทิตย์',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 9–11 · COSMOS LOG · Season 1 · 46 หน้า · Firebase sync · v9 RACE→FORGE→FIGHT',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · SOLAR ANOMALY · หัวใจที่เต้นผิดจังหวะ', file:'../shared/act-divider.html?ep=5&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · STRUCTURE · ATMOSPHERIC LAYERS', file:'../shared/act-divider.html?ep=5&act=2&next=p08-corona.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · BUILD POWERS · POWER FORGE', file:'../shared/act-divider.html?ep=5&act=3&next=p16-forge.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS · SOLAR STORM', file:'../shared/act-divider.html?ep=5&act=4&next=p25-boss.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · Reset Choice', file:'../shared/act-divider.html?ep=5&act=5&next=p33-reflect.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP05','Solar Storm + Power Forge','46 หน้า v9 · POWER FORGE · 5 RECALL CHECKS · HUD 6 ช่อง','46 หน้า · ~150 นาที',
           [['k','ดวงอาทิตย์'],['k','POWER FORGE'],['k','BOSS']])
@@ -326,6 +361,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 6 — EP06 · ขอบฟ้าของบ้าน · ระบบสุริยะ',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 12–13 · COSMOS LOG · Season 1 · 47 หน้า · Firebase sync · Pedagogy peak',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · HOME SYSTEM · ขอบฟ้าของบ้าน', file:'../shared/act-divider.html?ep=6&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · COLLECT · 6 GENESIS SHARDS', file:'../shared/act-divider.html?ep=6&act=2&next=p09-shards.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · PERSPECTIVE · Pale Blue Dot', file:'../shared/act-divider.html?ep=6&act=3&next=p21-pale-blue.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS · VOID ZERO-FIX MAZE', file:'../shared/act-divider.html?ep=6&act=4&next=p27-maze.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · KPA Tracker', file:'../shared/act-divider.html?ep=6&act=5&next=p39-reflect.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP06','Solar System + Genesis Vault','Edge of Home · Maze boss · GS-1 ถึง GS-6 · 6 zones','47 หน้า · ~150 นาที',
           [['k','Solar System'],['k','Habitable Zone'],['k','Maze BOSS']])
@@ -402,6 +444,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 7 — EP07 · สงครามในวงโคจร · คลื่นแม่เหล็กไฟฟ้า',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 14–15 · COSMOS LOG · Season 1 · 28 หน้า · HUD-v2 · PBL frame · 4 acts',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · PBL OPEN · สงครามในวงโคจร', file:'../shared/act-divider.html?ep=7&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · EM CLASSIFY · 7 ช่วงคลื่น', file:'../shared/act-divider.html?ep=7&act=2&next=p07-em.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · ORBIT MASTERY · LEO/MEO/GEO', file:'../shared/act-divider.html?ep=7&act=3&next=p14-orbit.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS · CIPHER Triage', file:'../shared/act-divider.html?ep=7&act=4&next=p21-cipher.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · รายงาน PBL', file:'../shared/act-divider.html?ep=7&act=5&next=p26-report.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP07','Orbital War + Cipher Vault','EM Spectrum · 6 ช่วงคลื่น · CIPHER boss · 4 องก์ A/B/C/D','28 หน้า · ~90 นาที',
           [['k','EM Spectrum'],['k','Mars'],['k','CIPHER BOSS']])
@@ -462,6 +511,13 @@ window.KP_PLAN_MEDIA = {
     title: 'แผน 8 — EP08 · Genesis Again · Season Finale',
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 16–17 · COSMOS LOG · Season 1 · 28 หน้า · HUD-v2 · PBL frame · FINALE',
     sections: [
+      { title:'🎬 หน้ากั้นองก์ (5 องก์ · cinematic chapter cards)', items:[
+        { cls:'sim', no:'A1', t:'🎬 ACT 1 · RECAP · ทบทวน 7 EP', file:'../shared/act-divider.html?ep=8&act=1&next=p01-pretest.html', d:'หน้ากั้นองก์ที่ 1 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 1']] },
+        { cls:'sim', no:'A2', t:'🎬 ACT 2 · TWIST · Mentor Reveal', file:'../shared/act-divider.html?ep=8&act=2&next=p06-mentor.html', d:'หน้ากั้นองก์ที่ 2 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 2']] },
+        { cls:'sim', no:'A3', t:'🎬 ACT 3 · SYNTHESIS · 17 Keys', file:'../shared/act-divider.html?ep=8&act=3&next=p11-keys.html', d:'หน้ากั้นองก์ที่ 3 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 3']] },
+        { cls:'sim', no:'A4', t:'🎬 ACT 4 · BOSS · GENESIS FORGE 4-phase', file:'../shared/act-divider.html?ep=8&act=4&next=p18-genesis.html', d:'หน้ากั้นองก์ที่ 4 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 4']] },
+        { cls:'sim', no:'A5', t:'🎬 ACT 5 · CLOSURE · Reset/Preserve', file:'../shared/act-divider.html?ep=8&act=5&next=p26-finale.html', d:'หน้ากั้นองก์ที่ 5 · auto-skip 7s · กดที่ใดก็ได้เพื่อข้าม', meta:'~10 วิ · cinematic intro', chips:[['k','Chapter 5']] }
+      ]},
       { title:'🚀 Launcher', items:[
         _ASTRO_LAUNCHER('EP08','Genesis Forge · Season Finale','GENESIS FORGE 4-phase canvas boss · 5 endings · 17-key S1 keyring','28 หน้า · ~120 นาที',
           [['k','Big Bang'],['k','Inflation'],['k','BOSS Finale']])

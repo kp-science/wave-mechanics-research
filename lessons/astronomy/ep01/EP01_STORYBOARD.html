@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EP01 Storyboard · The Collision · COSMOS LOG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@300;400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-0: #050817;
+  --bg-1: #0a0e2a;
+  --bg-2: #161a3a;
+  --text: #e8ecf8;
+  --text-dim: #9aa3c0;
+  --border: rgba(120,140,220,0.25);
+  --accent: #64d8ff;
+  --accent-gold: #ffcb6b;
+  --accent-pink: #ff8fa5;
+  --accent-purple: #d4b8ff;
+  --accent-green: #7effb2;
+  --act-1: #64d8ff;
+  --act-2: #7effb2;
+  --act-3: #ffcb6b;
+  --act-4: #ff5c7a;
+  --act-5: #d4b8ff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg-0);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(100,216,255,0.12), transparent),
+    radial-gradient(ellipse 60% 50% at 80% 100%, rgba(255,143,165,0.08), transparent);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Starfield BG */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 25% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 60% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 90%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 70% 40%, #fff, transparent);
+  background-size: 800px 800px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.hero::before {
+  content: 'STORYBOARD';
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Orbitron';
+  font-size: 11px;
+  letter-spacing: 0.5em;
+  color: var(--accent);
+  opacity: 0.7;
+}
+.hero .ep-tag {
+  display: inline-block;
+  font-family: 'Orbitron';
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: var(--accent);
+  background: rgba(100,216,255,0.08);
+  border: 1px solid rgba(100,216,255,0.3);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font-family: 'Sarabun';
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 700;
+  margin: 8px 0 4px;
+  background: linear-gradient(135deg, #fff 30%, var(--accent) 70%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 60px rgba(100,216,255,0.3);
+}
+.hero .subtitle {
+  font-family: 'Orbitron';
+  font-size: 14px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+.hero .meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+  justify-content: center;
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.hero .meta b { color: var(--text); font-weight: 600; }
+
+/* ACT NAV */
+.act-nav {
+  position: sticky;
+  top: 0;
+  background: rgba(5,8,23,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 100;
+  padding: 14px 24px;
+  margin: 0 -24px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.act-nav-inner {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  max-width: 1280px;
+  margin: 0 auto;
+  scrollbar-width: thin;
+}
+.act-nav a {
+  flex-shrink: 0;
+  font-family: 'Orbitron';
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.act-nav a:hover {
+  color: var(--text);
+  background: rgba(100,216,255,0.08);
+  border-color: var(--border);
+}
+.act-nav a .num {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  line-height: 22px;
+  background: rgba(100,216,255,0.15);
+  border-radius: 50%;
+  text-align: center;
+  margin-right: 6px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ACT HEADER */
+.act {
+  margin: 60px 0 30px;
+  padding-top: 20px;
+}
+.act-header {
+  position: relative;
+  padding: 30px 40px;
+  border-radius: 20px;
+  margin-bottom: 30px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.act-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top left, var(--act-color, #64d8ff)22, transparent 60%);
+  opacity: 0.4;
+  z-index: 0;
+}
+.act-header > * { position: relative; z-index: 1; }
+.act-header .label {
+  font-family: 'Orbitron';
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: var(--act-color);
+  margin-bottom: 8px;
+}
+.act-header h2 {
+  font-family: 'Sarabun';
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.act-header .tagline {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+}
+.act-header .duration {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-family: 'Orbitron';
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--act-color);
+}
+
+.act-1 { --act-color: var(--act-1); }
+.act-2 { --act-color: var(--act-2); }
+.act-3 { --act-color: var(--act-3); }
+.act-4 { --act-color: var(--act-4); }
+.act-5 { --act-color: var(--act-5); }
+
+/* SCENE CARD */
+.scenes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+}
+.scene {
+  background: linear-gradient(180deg, rgba(22,26,58,0.6), rgba(10,14,42,0.7));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.scene:hover {
+  border-color: var(--act-color);
+  box-shadow: 0 0 40px rgba(100,216,255,0.15);
+  transform: translateY(-2px);
+}
+.scene::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--act-color), transparent);
+}
+
+.scene-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--border);
+}
+.scene-num {
+  font-family: 'Orbitron';
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--act-color);
+  margin-bottom: 4px;
+}
+.scene h3 {
+  font-family: 'Sarabun';
+  font-size: 19px;
+  font-weight: 700;
+  margin: 0;
+}
+.scene-time {
+  background: rgba(255,203,107,0.1);
+  border: 1px solid rgba(255,203,107,0.3);
+  color: var(--accent-gold);
+  font-family: 'Orbitron';
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+.scene-tag {
+  display: inline-block;
+  font-family: 'Orbitron';
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.scene-tag.hook { background: rgba(255,92,122,0.15); color: var(--accent-pink); border: 1px solid rgba(255,92,122,0.3); }
+.scene-tag.reveal { background: rgba(126,255,178,0.15); color: var(--accent-green); border: 1px solid rgba(126,255,178,0.3); }
+.scene-tag.boss { background: rgba(255,92,122,0.2); color: #fff; border: 1px solid rgba(255,92,122,0.5); }
+.scene-tag.lab { background: rgba(212,184,255,0.15); color: var(--accent-purple); border: 1px solid rgba(212,184,255,0.3); }
+.scene-tag.teach { background: rgba(255,203,107,0.15); color: var(--accent-gold); border: 1px solid rgba(255,203,107,0.3); }
+.scene-tag.cliff { background: rgba(212,184,255,0.15); color: var(--accent-purple); border: 1px solid rgba(212,184,255,0.4); }
+.scene-tag.research { background: rgba(126,255,178,0.15); color: var(--accent-green); border: 1px solid rgba(126,255,178,0.3); }
+
+.beat {
+  margin: 14px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border-left: 3px solid;
+  position: relative;
+  font-size: 14px;
+}
+.beat .beat-label {
+  font-family: 'Orbitron';
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.beat-hook { background: rgba(255,92,122,0.06); border-color: var(--accent-pink); }
+.beat-hook .beat-label { color: var(--accent-pink); }
+.beat-show { background: rgba(100,216,255,0.06); border-color: var(--accent); }
+.beat-show .beat-label { color: var(--accent); }
+.beat-teacher { background: rgba(255,203,107,0.06); border-color: var(--accent-gold); }
+.beat-teacher .beat-label { color: var(--accent-gold); }
+.beat-teacher .quote {
+  font-family: 'Sarabun';
+  font-style: italic;
+  font-weight: 500;
+  color: var(--text);
+  padding-left: 14px;
+  border-left: 2px solid var(--accent-gold);
+  margin-top: 4px;
+}
+.beat-do { background: rgba(126,255,178,0.06); border-color: var(--accent-green); }
+.beat-do .beat-label { color: var(--accent-green); }
+.beat-close { background: rgba(212,184,255,0.06); border-color: var(--accent-purple); }
+.beat-close .beat-label { color: var(--accent-purple); }
+.beat-close .text {
+  font-style: italic;
+  color: var(--text);
+}
+.beat-visual { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.3); }
+.beat-visual .beat-label { color: var(--text-dim); }
+
+.video-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,92,122,0.1);
+  border: 1px solid rgba(255,92,122,0.4);
+  color: var(--accent-pink);
+  font-family: 'Orbitron';
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-right: 4px;
+}
+
+/* ASSETS PANEL */
+.assets {
+  margin: 60px 0;
+  padding: 40px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(22,26,58,0.7), rgba(10,14,42,0.8));
+  border: 1px solid var(--border);
+}
+.assets h2 {
+  font-family: 'Sarabun';
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+.assets .lead {
+  color: var(--text-dim);
+  margin-bottom: 24px;
+}
+.asset-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+@media (max-width: 768px) { .asset-grid { grid-template-columns: 1fr; } }
+.asset-list h3 {
+  font-family: 'Orbitron';
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.asset-list ul { list-style: none; padding: 0; }
+.asset-list li {
+  padding: 10px 12px;
+  margin: 6px 0;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.asset-list li .num {
+  font-family: 'Orbitron';
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent);
+  background: rgba(100,216,255,0.1);
+  padding: 2px 7px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.asset-list .meta {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* CHECKLIST */
+.checklist {
+  margin: 40px 0;
+  padding: 30px;
+  background: rgba(126,255,178,0.04);
+  border: 1px solid rgba(126,255,178,0.25);
+  border-radius: 16px;
+}
+.checklist h2 {
+  font-family: 'Sarabun';
+  font-size: 24px;
+  color: var(--accent-green);
+  margin-bottom: 16px;
+}
+.checklist .phase {
+  margin: 16px 0;
+}
+.checklist .phase-name {
+  font-family: 'Orbitron';
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+.checklist label {
+  display: block;
+  padding: 6px 0;
+  cursor: pointer;
+  font-size: 14px;
+}
+.checklist input[type=checkbox] {
+  margin-right: 10px;
+  accent-color: var(--accent-green);
+}
+.checklist label.done {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+/* FOOTER */
+.foot {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* PRINT */
+@media print {
+  body::before { display: none; }
+  .act-nav, .checklist input[type=checkbox] { display: none; }
+  .scene { break-inside: avoid; }
+  .act-divider { break-before: page; height: auto !important; min-height: 0 !important; padding: 60px 30px !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACT DIVIDER · Cinematic chapter break (full-bleed)
+   ═══════════════════════════════════════════════════════════ */
+.act-divider {
+  position: relative;
+  margin: 80px -24px 40px;
+  padding: 100px 40px;
+  text-align: center;
+  border-top: 1px solid var(--act-color);
+  border-bottom: 1px solid var(--act-color);
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.act-divider::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 50%, var(--act-color)22, transparent 70%),
+    radial-gradient(ellipse 40% 80% at 0% 50%, var(--act-color)18, transparent 80%),
+    radial-gradient(ellipse 40% 80% at 100% 50%, var(--act-color)18, transparent 80%);
+  z-index: -2;
+}
+.act-divider::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(90deg, transparent, transparent 80px, var(--act-color)08 80px, var(--act-color)08 81px);
+  opacity: 0.5;
+  z-index: -1;
+}
+.act-divider .ribbon {
+  font-family: 'Orbitron';
+  font-size: 11px;
+  letter-spacing: 0.6em;
+  color: var(--act-color);
+  margin-bottom: 14px;
+  position: relative;
+  display: inline-block;
+}
+.act-divider .ribbon::before,
+.act-divider .ribbon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--act-color));
+}
+.act-divider .ribbon::before { right: calc(100% + 16px); transform: scaleX(-1); }
+.act-divider .ribbon::after { left: calc(100% + 16px); }
+
+.act-divider .big-num {
+  font-family: 'Orbitron';
+  font-size: clamp(120px, 22vw, 220px);
+  font-weight: 900;
+  line-height: 0.9;
+  background: linear-gradient(180deg, var(--act-color) 30%, transparent 95%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 80px var(--act-color);
+  letter-spacing: -0.04em;
+  margin: 0;
+  filter: drop-shadow(0 0 40px var(--act-color)44);
+  position: relative;
+}
+.act-divider .big-num::after {
+  content: attr(data-num);
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, var(--act-color)33 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: scaleY(-1) translateY(20%);
+  opacity: 0.4;
+  filter: blur(6px);
+  pointer-events: none;
+}
+.act-divider .act-title {
+  font-family: 'Sarabun';
+  font-size: clamp(28px, 4.5vw, 44px);
+  font-weight: 700;
+  margin: 18px 0 6px;
+  color: #fff;
+  text-shadow: 0 0 30px var(--act-color)66;
+}
+.act-divider .act-en {
+  font-family: 'Orbitron';
+  font-size: 14px;
+  letter-spacing: 0.35em;
+  color: var(--act-color);
+  margin-bottom: 20px;
+  opacity: 0.9;
+}
+.act-divider .act-quote {
+  font-family: 'Sarabun';
+  font-size: 18px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text);
+  max-width: 640px;
+  margin: 14px auto 22px;
+  opacity: 0.92;
+  line-height: 1.5;
+}
+.act-divider .act-quote::before { content: '“'; color: var(--act-color); font-size: 1.4em; vertical-align: -0.18em; margin-right: 6px; }
+.act-divider .act-quote::after  { content: '”'; color: var(--act-color); font-size: 1.4em; vertical-align: -0.18em; margin-left: 6px; }
+
+.act-divider .stats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: 24px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--act-color)55;
+  border-radius: 999px;
+  padding: 4px;
+  backdrop-filter: blur(10px);
+}
+.act-divider .stats > span {
+  font-family: 'Orbitron';
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  padding: 8px 18px;
+  border-radius: 999px;
+  color: var(--text-dim);
+  position: relative;
+}
+.act-divider .stats > span:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 1px;
+  background: var(--act-color)33;
+}
+.act-divider .stats b { color: var(--act-color); font-weight: 700; }
+
+.act-divider .rail {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+.act-divider .rail i {
+  width: 28px;
+  height: 3px;
+  background: var(--act-color)33;
+  border-radius: 2px;
+  display: block;
+  transition: all 0.3s;
+}
+.act-divider .rail i.on { background: var(--act-color); box-shadow: 0 0 12px var(--act-color); }
+
+/* Pulse animation on big num */
+@keyframes actNumPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 40px var(--act-color)44); }
+  50% { transform: scale(1.02); filter: drop-shadow(0 0 60px var(--act-color)66); }
+}
+.act-divider .big-num { animation: actNumPulse 4s ease-in-out infinite; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HERO -->
+<header class="hero">
+  <span class="ep-tag">EPISODE 01</span>
+  <h1>วันแห่งการปะทะ</h1>
+  <div class="subtitle">THE COLLISION · กำเนิดเอกภพ</div>
+  <div class="meta">
+    <span>🎬 <b>5 องก์</b> · 14 scenes</span>
+    <span>⏱ <b>~90 นาที</b> · 2 คาบ</span>
+    <span>📚 <b>19 หน้าเว็บ</b></span>
+    <span>🎯 <b>Big Bang · CMB · Hubble's Law</b></span>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="act-nav">
+  <div class="act-nav-inner">
+    <a href="#act1"><span class="num">1</span>SETUP</a>
+    <a href="#act2"><span class="num">2</span>INVESTIGATION</a>
+    <a href="#act3"><span class="num">3</span>TEACHING</a>
+    <a href="#act4"><span class="num">4</span>CLIMAX</a>
+    <a href="#act5"><span class="num">5</span>CLOSURE</a>
+    <a href="#assets">🎨 ASSETS</a>
+    <a href="#checklist">✅ CHECKLIST</a>
+  </div>
+</nav>
+
+<!-- ═══ ACT 1 DIVIDER ═══ -->
+<div class="act-divider act-1">
+  <div class="ribbon">CHAPTER ONE</div>
+  <div class="big-num" data-num="01">01</div>
+  <div class="act-title">เริ่มภารกิจ</div>
+  <div class="act-en">SETUP</div>
+  <div class="act-quote">เกิดอะไรขึ้นในห้วงอวกาศ? · ทีมต้องไปหาคำตอบ</div>
+  <div class="stats">
+    <span><b>15</b> นาที</span>
+    <span><b>5</b> SCENES</span>
+    <span><b>p01</b> → <b>p05</b></span>
+  </div>
+  <div class="rail"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<!-- ACT 1 -->
+<section id="act1" class="act act-1">
+  <div class="act-header">
+    <div class="duration">15 min</div>
+    <div class="label">◤ ACT 1</div>
+    <h2>SETUP — เกิดอะไรขึ้นในห้วงอวกาศ?</h2>
+    <div class="tagline">เปิดเรื่อง · จัดทีม · ส่งภารกิจ · ค้นพบสัญญาณเก่า 13.8 พันล้านปี</div>
+  </div>
+  <div class="scenes">
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 1.1 · p01-pretest</div>
+          <h3>Entry Ticket</h3>
+        </div>
+        <span class="scene-time">3 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        ครูเปิดเพลงธีม COSMOS LOG · ดับไฟ · ฉาย "EP01 · The Collision"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        <span class="video-pill">🎥 VIDEO 10s</span> Logo intro · ครูทำเอง
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"วันนี้ทุกคนเป็นลูกเรือยาน T.H.E.O.S.-IX · ก่อนเริ่มภารกิจ ผมต้องเช็คความรู้พื้นฐาน 5 ข้อ · ไม่มีถูกผิด"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        ทำ Pre-test 5 ข้อ (baseline)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ตอนจบ EP เราจะเทียบดูว่าใครเปลี่ยนใจ"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 1.2 · p02-team</div>
+          <h3>Team Selection</h3>
+        </div>
+        <span class="scene-time">2 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ภารกิจนี้ต้องใช้ทีม · เลือกยานของพวกคุณ"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        ภาพยาน 6 ลำ (Frontier · Aurora · Andromeda · Horizon · Voyager · Pioneer)
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"เลือกบทบาท NAV · ENG · MED · MECH · แต่ละหน้าทีมคุณจะมี role-specific decision"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        เลือกยาน + บทบาท (4 คน/ทีม)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ทีมพร้อมแล้ว · เริ่มภารกิจ"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 1.3 · p03-collision</div>
+          <h3>The Collision <span class="scene-tag hook">HOOK ใหญ่</span></h3>
+        </div>
+        <span class="scene-time">3 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        ภาพ deep space + alarm sound · "เหตุการณ์ฉุกเฉิน · เกิดการปะทะนอกวงโคจรเนปจูน"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW · สำคัญ</div>
+        <span class="video-pill">🎥 VIDEO 30s</span> NASA Deep Space Object Impact simulation
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"20 นาทีที่ผ่านมา · เซ็นเซอร์จับสัญญาณการชน · ห่างโลก 4.5 พันล้าน km · เศษซากกำลังกระจาย ภารกิจคุณ: ไปสำรวจ · เก็บตัวอย่าง · ค้นว่ามันคืออะไร · เกิดเมื่อไหร่"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        อ่าน narrative · ตอบ "เห็นอะไรในภาพ?"
+      </div>
+      <div class="beat beat-visual">
+        <div class="beat-label">🎨 VISUAL UPGRADE</div>
+        Hero image full-width: deep space + collision flash · Alarm pulse animation (red glow border)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"WARP เปิด · ไปกัน"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 1.4 · p04-debris</div>
+          <h3>Fragment Analysis</h3>
+        </div>
+        <span class="scene-time">7 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ยานถึงจุดเกิดเหตุ · เก็บ 5 ชิ้นซากกลับมา"
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ชิ้นซากเหล่านี้ไม่ใช่ของยุคปัจจุบัน · มันมาจากที่ไหนสักแห่ง ทีมคุณต้องจำแนก 5 หมวด"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        drag-classify 5 ชิ้น (proton/neutron/photon/electron/quark) → 5 หมวด
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ทุกชิ้นคือ 'อนุภาคพื้นฐาน' · แต่ทำไมมันมาเจอกันที่นี่?"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 1.5 · p05-age</div>
+          <h3>Signal Age <span class="scene-tag reveal">REVEAL</span></h3>
+        </div>
+        <span class="scene-time">2 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        เครื่องวิเคราะห์ดัง · ค่ายังไม่นิ่ง · ชาร์จขึ้นเรื่อยๆ
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW · DRAMA</div>
+        Age counter วิ่งจาก 0 → 13,800,000,000 ปี (animated number)
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด · DRAMA</div>
+        <div class="quote">"... 13.8 พันล้านปี · สัญญาณนี้เก่ากว่าระบบสุริยะ 3 เท่า · เรากำลังจับสัญญาณจากจุดกำเนิดของเอกภพ"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        ดู reveal · ตอบ "รู้สึกยังไง?" (chip emotion)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ภารกิจเปลี่ยน · เราต้อง decode สัญญาณนี้"</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ACT 2 DIVIDER ═══ -->
+<div class="act-divider act-2">
+  <div class="ribbon">CHAPTER TWO</div>
+  <div class="big-num" data-num="02">02</div>
+  <div class="act-title">สืบสวนเอกภพ</div>
+  <div class="act-en">INVESTIGATION</div>
+  <div class="act-quote">เราถ่ายภาพการกำเนิดเอกภพได้? · CMB จะตอบคุณ</div>
+  <div class="stats">
+    <span><b>25</b> นาที</span>
+    <span><b>4</b> SCENES</span>
+    <span><b>p06</b> → <b>p09</b></span>
+  </div>
+  <div class="rail"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+</div>
+
+<!-- ACT 2 -->
+<section id="act2" class="act act-2">
+  <div class="act-header">
+    <div class="duration">25 min</div>
+    <div class="label">◤ ACT 2</div>
+    <h2>INVESTIGATION — เราถ่ายภาพการกำเนิดเอกภพได้?</h2>
+    <div class="tagline">ปลดล็อค CMB · พบหลักฐานบิกแบง · ทดลองลูกโป่งสัมผัสการขยายตัว</div>
+  </div>
+  <div class="scenes">
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 2.1 · p06-research</div>
+          <h3>CMB Research</h3>
+        </div>
+        <span class="scene-time">8 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "Active Research Mode · ปลดล็อคข้อมูล 7 fields"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        Terminal-style decrypt interface
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ระบบเจอข้อมูลใน archive แต่เข้ารหัสไว้ · ทีมต้องคำนวณตัวเลขจริงเพื่อปลดล็อค"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        Decrypt 7 fields (T = 2.725 K · λ · ปีที่ค้นพบ · ฯลฯ)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ปลดล็อคได้ · ดูว่าจอแสดงอะไร"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 2.2 · p07-cmb</div>
+          <h3>CMB Identified <span class="scene-tag reveal">REVEAL ใหญ่</span></h3>
+        </div>
+        <span class="scene-time">2 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        ภาพ CMB ของ Planck/WMAP เต็มจอ · pulse
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW · สำคัญ</div>
+        🖼 HERO IMAGE · Planck CMB all-sky map<br>
+        <span class="video-pill">🎥 VIDEO 20s</span> "What is CMB?" (NASA/ESA)
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"นี่คือ Cosmic Microwave Background · CMB · 2.725 K เย็นมาก · 'แสงแรก' ของเอกภพตอนอายุ 380,000 ปี · เปล่งออกมาตอนอะตอมเป็นกลาง · เดินทางมา 13.8 พันล้านปี"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        อ่าน + ตอบ "CMB คือหลักฐานอะไร?"
+      </div>
+      <div class="beat beat-visual">
+        <div class="beat-label">🎨 VISUAL UPGRADE</div>
+        ภาพ CMB เต็มจอ · ภาษาเหมือน Cosmos series
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"เข้าใกล้คำตอบแล้ว · ไปสถานี Alpha"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 2.3 · p08-arrive</div>
+          <h3>Arrive Outpost</h3>
+        </div>
+        <span class="scene-time">2 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        Transition · WARP exit · station Alpha visible
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        ภาพ space station + planet ในแสง
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ยานถึงสถานีวิจัย Alpha · ดร.ฮับเบิล รออยู่ · เขาทำการทดลองจำลองเอกภพให้ทีมเราดู"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        กดปุ่ม "ลงยาน"
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"นี่เป็นการทดลองที่ทุกคนต้องทำเอง"</div>
+      </div>
+    </div>
+
+    <div class="scene" style="grid-column: span 2;">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 2.4 · p09-balloon</div>
+          <h3>Balloon Lab <span class="scene-tag lab">LAB ใหญ่</span></h3>
+        </div>
+        <span class="scene-time">20 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ก่อนผมอธิบาย · ผมขอให้ทีมเล่นลูกโป่งก่อน"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        ภาพดร.ฮับเบิล ถือลูกโป่ง · ปากกามาร์กเกอร์
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ทุกทีมรับลูกโป่ง · วาดจุด 5 จุด (A, B, C, D, E) · เป่า 3 รอบ · วัดระยะ ขอให้สังเกต — <b>ห้ามใช้คำว่า 'ขยายตัว' จนกว่าผมจะบอก</b>"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY · 3 PHASES</div>
+        <b>BEFORE</b> · ทำนาย 3 ข้อ (จุดศูนย์กลาง? · เคลื่อนเร็ว/ช้า? · เข้า/ออก?)<br>
+        <b>ACTIVITY</b> · เป่าลูกโป่ง 3 รอบ · วัด · กรอกตาราง · วาดกราฟ canvas<br>
+        <b>OBSERVATION</b> · checkbox สิ่งที่สังเกตจริง + summary
+      </div>
+      <div class="beat beat-visual">
+        <div class="beat-label">🎨 VISUAL UPGRADE</div>
+        Phase tag (BEFORE/ACTIVITY/AFTER) ใหญ่ + เปลี่ยนสี · Canvas graph เน้น border glow · Step indicator (Phase 1/2/3)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ทุกทีมส่งข้อมูลแล้ว · ไปฟังดร.ฮับเบิลอธิบาย"</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ACT 3 DIVIDER ═══ -->
+<div class="act-divider act-3">
+  <div class="ribbon">CHAPTER THREE</div>
+  <div class="big-num" data-num="03">03</div>
+  <div class="act-title">ครูเปิดเวทีสอน</div>
+  <div class="act-en">TEACHING MOMENT</div>
+  <div class="act-quote">ทฤษฎีบิกแบงคืออะไรกันแน่? · v = H₀d เปลี่ยนทุกอย่าง</div>
+  <div class="stats">
+    <span><b>15</b> นาที</span>
+    <span><b>3</b> SCENES</span>
+    <span><b>p10</b> → <b>p12</b></span>
+  </div>
+  <div class="rail"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+</div>
+
+<!-- ACT 3 -->
+<section id="act3" class="act act-3">
+  <div class="act-header">
+    <div class="duration">15 min</div>
+    <div class="label">◤ ACT 3</div>
+    <h2>TEACHING MOMENT — ทฤษฎีบิกแบงคืออะไรกันแน่?</h2>
+    <div class="tagline">ครูสอนเต็ม · v = H₀d · 6 ยุคของเอกภพ · ปริศนา Galaxy A</div>
+  </div>
+  <div class="scenes">
+
+    <div class="scene" style="grid-column: span 2;">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 3.1 · p10-hubble</div>
+          <h3>Hubble's Reveal <span class="scene-tag teach">ครูสอนเต็ม</span></h3>
+        </div>
+        <span class="scene-time">5 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        ดร.ฮับเบิลเข้าฉาก · ภาพ portrait หน้าจอ
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW · สำคัญ</div>
+        <span class="video-pill">🎥 VIDEO 60s</span> "Big Bang in 60 seconds" (PBS Space Time / Crash Course)<br>
+        หรือ slide ครูทำเอง
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด · TEACHER'S MOMENT</div>
+        <div class="quote">"ทุกคนเพิ่งทดลองด้วยมือของตัวเอง · ลูกโป่ง = เอกภพ · ไม่มีจุดศูนย์กลาง<br><br>
+        สิ่งที่เกิดคือ '<b>space ขยายตัว</b>' · ไม่ใช่ '<b>สสารเคลื่อนที่ในอวกาศ</b>'<br><br>
+        ทฤษฎีบิกแบงไม่ใช่ 'การระเบิด' · มันคือ 'การยืดของอวกาศเอง'<br><br>
+        สูตรของฮับเบิล: <b>v = H₀ × d</b> · ยิ่งกาแล็กซีไกลเท่าไหร่ · ยิ่งเคลื่อนหนีเร็วเท่านั้น<br><br>
+        นี่คือสิ่งที่ผมค้นพบในปี 1929"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        ดู + จด key formula · ไม่มี input · ครูเป็นจุดเด่น
+      </div>
+      <div class="beat beat-visual">
+        <div class="beat-label">🎨 VISUAL UPGRADE</div>
+        Big formula box: <b>v = H₀ × d</b> (Orbitron · 48px · glow) · Hubble portrait ใหญ่ขึ้น caption "Edwin Hubble · 1929"
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ตอนนี้รู้สูตรแล้ว · ขอแสดงให้เห็น 6 ยุคของเอกภพ"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 3.2 · p11-timeline</div>
+          <h3>Cosmic Timeline</h3>
+        </div>
+        <span class="scene-time">10 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "เอกภพมี 6 ยุค · ตั้งแต่ 0 วินาทีถึง 13.8 Gyr"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        Timeline horizontal scroll · 6 eras
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"เรียงเหตุการณ์ 6 ยุคให้ถูก · Quark · Proton · Nucleosynthesis · Recombination · Dark Ages · Galaxy"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        Drag-order 6 cards เรียงเวลา
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ทีมเข้าใจ timeline แล้ว"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 3.3 · p12-galaxy</div>
+          <h3>Galaxy Mystery <span class="scene-tag cliff">CLIFFHANGER</span></h3>
+        </div>
+        <span class="scene-time">2 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        Alarm · "Galaxy A หายไปจากแผนที่"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        Map ที่ Galaxy A หายไปทันที
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด · MYSTERIOUS</div>
+        <div class="quote">"Galaxy A อยู่ห่าง 10,000 ปีแสง · 10,000 ปีก่อน มันยังอยู่ · แต่ตอนนี้? ทีมต้องคำนวณว่ามันอยู่ที่ไหนตอนนี้"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        อ่าน + ตอบ "ทำไมเห็นแบบนี้?"
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ใช้สูตรฮับเบิลคำนวณ"</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ACT 4 DIVIDER ═══ -->
+<div class="act-divider act-4">
+  <div class="ribbon">CHAPTER FOUR</div>
+  <div class="big-num" data-num="04">04</div>
+  <div class="act-title">ปะทะ VOID</div>
+  <div class="act-en">CLIMAX</div>
+  <div class="act-quote">ปกป้องทฤษฎี · หักล้าง 3 คำโกหก · WARP เข้า Galaxy A</div>
+  <div class="stats">
+    <span><b>20</b> นาที</span>
+    <span><b>3</b> SCENES</span>
+    <span><b>p13</b> → <b>p15</b></span>
+  </div>
+  <div class="rail"><i></i><i></i><i></i><i class="on"></i><i></i></div>
+</div>
+
+<!-- ACT 4 -->
+<section id="act4" class="act act-4">
+  <div class="act-header">
+    <div class="duration">20 min</div>
+    <div class="label">◤ ACT 4</div>
+    <h2>CLIMAX — ปกป้องทฤษฎีจาก VOID</h2>
+    <div class="tagline">ตั้งคอร์สด้วย v=H₀d · BOSS FIGHT · WARP เข้าสู่ Galaxy A</div>
+  </div>
+  <div class="scenes">
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 4.1 · p13-shiplock</div>
+          <h3>Ship Lock</h3>
+        </div>
+        <span class="scene-time">8 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ตั้งคอร์สยาน · ใช้สูตรฮับเบิลคำนวณ d, v"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        Cockpit interface · coordinate input
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ทีมใช้ v = H₀d · คำนวณ Galaxy A อยู่ตรงไหน · ไฟเขียว = ผ่าน · ผิดเกิน 2 ครั้ง = overload"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        Apply v=H₀d · 3 ข้อ · ตั้งค่า field ทีละตัว
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ไฟเขียวทุกค่า · พร้อม WARP"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 4.2 · p14-void</div>
+          <h3>VOID Boss <span class="scene-tag boss">BOSS FIGHT</span></h3>
+        </div>
+        <span class="scene-time">8 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        หน้าจอกะพริบสีแดง · "INCOMING · UNKNOWN ENTITY"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        VOID character (ปริศนา · เงาดำ)
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด · DRAMA</div>
+        <div class="quote">"VOID โผล่มา · มันต้องการลบความจริงเรื่องเอกภพ · มันส่ง 3 ข้ออ้างผิดๆ · ทีมต้องหักล้างทุกข้อด้วยความจริง"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY · 3 CLAIMS</div>
+        ① "บิกแบงเป็นการระเบิดในที่ว่าง" ❌<br>
+        ② "Galaxy เคลื่อนที่ในอวกาศ" ❌<br>
+        ③ "เอกภพมีจุดศูนย์กลาง" ❌
+      </div>
+      <div class="beat beat-visual">
+        <div class="beat-label">🎨 VISUAL UPGRADE</div>
+        VOID portrait · animated glitch effect · Health bar 3-phase · Damage flash
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"VOID พ่าย · แต่จะกลับมา"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 4.3 · p15-warp</div>
+          <h3>Warp Engaged</h3>
+        </div>
+        <span class="scene-time">3 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "WARP DRIVE ENGAGED · DESTINATION: GALAXY A"
+      </div>
+      <div class="beat beat-show">
+        <div class="beat-label">📺 SHOW</div>
+        <span class="video-pill">🎥 VIDEO 5s</span> WARP tunnel animation
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ภารกิจจบ · ทีมพิสูจน์ทฤษฎีบิกแบงได้ · WARP ไป Galaxy A · พบกัน EP02"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        ดู cinematic · กดต่อ
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ทีมขับยาน · ไปต่อ"</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ ACT 5 DIVIDER ═══ -->
+<div class="act-divider act-5">
+  <div class="ribbon">FINAL CHAPTER</div>
+  <div class="big-num" data-num="05">05</div>
+  <div class="act-title">ปิดฉาก · เก็บข้อมูล</div>
+  <div class="act-en">CLOSURE</div>
+  <div class="act-quote">เนื้อเรื่องไหลแล้ว · วัดความเปลี่ยนแปลง · เปิดทางสู่ EP02</div>
+  <div class="stats">
+    <span><b>15</b> นาที</span>
+    <span><b>4</b> SCENES</span>
+    <span><b>p16</b> → <b>p27</b></span>
+  </div>
+  <div class="rail"><i></i><i></i><i></i><i></i><i class="on"></i></div>
+</div>
+
+<!-- ACT 5 -->
+<section id="act5" class="act act-5">
+  <div class="act-header">
+    <div class="duration">15 min</div>
+    <div class="label">◤ ACT 5</div>
+    <h2>CLOSURE — สรุปภารกิจ + วัดความเปลี่ยนแปลง</h2>
+    <div class="tagline">รีวิวหนัง · ฝึก 15 ข้อ · Post-test · 3-2-1 Journal</div>
+  </div>
+  <div class="scenes">
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 5.1 · p16-review</div>
+          <h3>Movie Recap</h3>
+        </div>
+        <span class="scene-time">7 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ก่อนจบ · มาดูหนังของเราที่เพิ่งสร้าง"
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"เรียงฉากที่ทีมผ่านมา · ตั้งแต่ Pre-test ถึง VOID Boss · ปลดล็อค concept ของแต่ละฉาก"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        Drag-order 6 scenes
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"เห็นภาพรวมแล้ว · เนื้อเรื่องไหลไหม?"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 5.2 · p17-exercise</div>
+          <h3>Exercise</h3>
+        </div>
+        <span class="scene-time">10 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ฝึก 15 ข้อ Bloom 6 ระดับ"
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"จำ → เข้าใจ → ประยุกต์ → วิเคราะห์ → ประเมิน → สร้าง · ทำเอง · ครูเดินดู"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        15 MCQ
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ดูคะแนน · จุดอ่อนตรงไหน?"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 5.3 · p18-posttest</div>
+          <h3>Post-test <span class="scene-tag research">RESEARCH</span></h3>
+        </div>
+        <span class="scene-time">5 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "เทียบกับตอนเริ่ม EP · ความรู้คุณเปลี่ยนแค่ไหน?"
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"ตอบใหม่ 5 ข้อ · ระบบจะคำนวณ Hake gain · ดูว่าใครเปลี่ยนใจ · เปลี่ยนเพราะอะไร"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        Post-test 5 ข้อ (parallel form)
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"ระบบบันทึกแล้ว"</div>
+      </div>
+    </div>
+
+    <div class="scene">
+      <div class="scene-head">
+        <div>
+          <div class="scene-num">SCENE 5.4 · p27-journal</div>
+          <h3>Journal 3-2-1</h3>
+        </div>
+        <span class="scene-time">5 min</span>
+      </div>
+      <div class="beat beat-hook">
+        <div class="beat-label">🎬 HOOK</div>
+        "ปิด EP01 · เขียน reflection"
+      </div>
+      <div class="beat beat-teacher">
+        <div class="beat-label">👩‍🏫 ครูพูด</div>
+        <div class="quote">"3 สิ่งเรียนรู้ · 2 สิ่งอยากรู้ต่อ · 1 คำถามถามครู · เขียนเอง · ใช้คำตัวเอง · นี่คือข้อมูลวิจัยของผม"</div>
+      </div>
+      <div class="beat beat-do">
+        <div class="beat-label">🎮 ACTIVITY</div>
+        3-2-1 + chip emotion + badge
+      </div>
+      <div class="beat beat-close">
+        <div class="beat-label">✨ CLOSING</div>
+        <div class="text">"EP01 ปิดฉาก · เจอกัน EP02 · กาแล็กซี"</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ASSETS -->
+<section id="assets" class="assets">
+  <h2>🎨 Visual Assets ที่ต้องเตรียม</h2>
+  <p class="lead">รายการภาพ + วิดีโอที่ครูต้องเตรียม/หา/อัพ ก่อนสอน</p>
+  <div class="asset-grid">
+    <div class="asset-list">
+      <h3>🖼 HERO IMAGES</h3>
+      <ul>
+        <li><span class="num">1.3</span><div><b>Deep space + collision flash</b><span class="meta">Source: NASA/Hubble (CC)</span></div></li>
+        <li><span class="num">1.5</span><div><b>Animated counter 13.8 Gyr</b><span class="meta">สร้าง CSS animation</span></div></li>
+        <li><span class="num">2.2</span><div><b>Planck CMB all-sky map</b><span class="meta">Source: ESA Planck (CC)</span></div></li>
+        <li><span class="num">2.4</span><div><b>ดร.ฮับเบิล + ลูกโป่ง</b><span class="meta">ภาพประกอบ · AI gen</span></div></li>
+        <li><span class="num">3.1</span><div><b>Edwin Hubble portrait + telescope</b><span class="meta">Source: Wikipedia (PD)</span></div></li>
+        <li><span class="num">3.2</span><div><b>6-era infographic</b><span class="meta">สร้างเอง</span></div></li>
+        <li><span class="num">4.2</span><div><b>VOID character art</b><span class="meta">สร้างเอง · AI gen</span></div></li>
+      </ul>
+    </div>
+    <div class="asset-list">
+      <h3>🎥 VIDEOS</h3>
+      <ul>
+        <li><span class="num">1</span><div><b>EP01 logo intro</b> · 10s<span class="meta">สร้างเอง</span></div></li>
+        <li><span class="num">2</span><div><b>Deep space collision sim</b> · 30s<span class="meta">Source: NASA Goddard YouTube</span></div></li>
+        <li><span class="num">3</span><div><b>What is CMB?</b> · 20s<span class="meta">Source: NASA/ESA · trim</span></div></li>
+        <li><span class="num">4</span><div><b>Big Bang in 60s</b> · 60s<span class="meta">Source: PBS Space Time / Crash Course</span></div></li>
+        <li><span class="num">5</span><div><b>WARP transition</b> · 5s<span class="meta">Source: stock</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section id="checklist" class="checklist">
+  <h2>✅ Implementation Checklist</h2>
+  <p style="color:var(--text-dim);margin-bottom:14px">ติ๊กถูกเมื่อทำเสร็จ · save status local browser</p>
+
+  <div class="phase">
+    <div class="phase-name">PHASE 1 · STORYBOARD</div>
+    <label class="done"><input type="checkbox" checked disabled> 5 acts · 14 scenes · script ครบ</label>
+    <label class="done"><input type="checkbox" checked disabled> Visual asset list</label>
+    <label class="done"><input type="checkbox" checked disabled> Markdown + HTML version</label>
+  </div>
+
+  <div class="phase">
+    <div class="phase-name">PHASE 2 · VISUAL UPGRADE</div>
+    <label><input type="checkbox" data-key="hero-banner"> Hero Image banner ที่ p03, p05, p07, p09, p10, p14</label>
+    <label><input type="checkbox" data-key="video-iframe"> Video iframe ที่ p03, p07, p10</label>
+    <label><input type="checkbox" data-key="cinematic"> Cinematic banner เด่นขึ้น (Orbitron + glow + 32px)</label>
+    <label><input type="checkbox" data-key="scene-transition"> Scene transition card ระหว่าง act</label>
+    <label><input type="checkbox" data-key="character-portrait"> Character portrait ใน dialog-box</label>
+    <label><input type="checkbox" data-key="phase-indicator"> Phase indicator (BEFORE/ACTIVITY/AFTER) ที่ p09</label>
+  </div>
+
+  <div class="phase">
+    <div class="phase-name">PHASE 3 · STORY POLISH</div>
+    <label><input type="checkbox" data-key="narrative-bridge"> รวม narrative ระหว่าง p07-p08</label>
+    <label><input type="checkbox" data-key="void-impact"> เน้น VOID มาแล้ว ที่ p14 ด้วย sound + flash</label>
+    <label><input type="checkbox" data-key="mission-complete"> Mission complete celebration ที่ p15</label>
+  </div>
+
+  <div class="phase">
+    <div class="phase-name">PHASE 4 · PRINT MATERIAL</div>
+    <label><input type="checkbox" data-key="teacher-script"> Teacher Script PDF · 1 A4 ต่อ scene</label>
+    <label><input type="checkbox" data-key="cue-card"> Cue Card · ตัวสำรอง</label>
+  </div>
+</section>
+
+<footer class="foot">
+  Storyboard v1.0 · COSMOS LOG EP01 · 2026-05-06 · ผู้ออกแบบ: เจน 🌸<br>
+  ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ว 30105 ดาราศาสตร์
+</footer>
+
+</div>
+
+<script>
+// Save checklist state to localStorage
+const STORAGE_KEY = 'ep01_storyboard_checklist';
+const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+document.querySelectorAll('.checklist input[data-key]').forEach(cb => {
+  const k = cb.dataset.key;
+  if (saved[k]) {
+    cb.checked = true;
+    cb.parentElement.classList.add('done');
+  }
+  cb.addEventListener('change', () => {
+    saved[k] = cb.checked;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    cb.parentElement.classList.toggle('done', cb.checked);
+  });
+});
+</script>
+</body>
+</html>

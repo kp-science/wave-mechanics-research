@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Act Divider · COSMOS LOG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sarabun:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="book.css?v=6">
+<style>
+:root {
+  --bg-0: #050817;
+  --bg-1: #0a0e2a;
+  --text: #e8ecf8;
+  --text-dim: #9aa3c0;
+  --act-color: #64d8ff;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+html, body { height:100%; }
+body {
+  font-family:'Sarabun',sans-serif;
+  background:var(--bg-0);
+  color:var(--text);
+  overflow:hidden;
+  position:relative;
+}
+/* Starfield */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    radial-gradient(1px 1px at 25% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 80% 60%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 60% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 15% 80%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.5px 1.5px at 40% 70%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 90%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 70% 40%, #fff, transparent);
+  background-size:800px 800px;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.55;
+  animation:drift 120s linear infinite;
+}
+@keyframes drift {
+  to { background-position:800px 800px,800px 800px,800px 800px,800px 800px,800px 800px,800px 800px,800px 800px; }
+}
+
+.divider {
+  position:relative;
+  width:100%; height:100vh;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:40px 24px;
+  text-align:center;
+  isolation:isolate;
+  overflow:hidden;
+}
+.divider::before {
+  content:'';
+  position:absolute; inset:0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 50%, var(--act-color)22, transparent 70%),
+    radial-gradient(ellipse 40% 80% at 0% 50%, var(--act-color)14, transparent 80%),
+    radial-gradient(ellipse 40% 80% at 100% 50%, var(--act-color)14, transparent 80%);
+  z-index:-2;
+}
+.divider::after {
+  content:'';
+  position:absolute; inset:0;
+  background-image:repeating-linear-gradient(90deg, transparent, transparent 80px, var(--act-color)08 80px, var(--act-color)08 81px);
+  opacity:0.5;
+  z-index:-1;
+}
+
+.ep-tag {
+  font-family:'Orbitron';
+  font-size:10px;
+  letter-spacing:0.5em;
+  color:var(--text-dim);
+  margin-bottom:12px;
+  opacity:0.7;
+}
+
+.ribbon {
+  font-family:'Orbitron';
+  font-size:11px;
+  letter-spacing:0.6em;
+  color:var(--act-color);
+  margin-bottom:12px;
+  position:relative;
+  display:inline-block;
+}
+.ribbon::before, .ribbon::after {
+  content:'';
+  position:absolute; top:50%;
+  width:60px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--act-color));
+}
+.ribbon::before { right:calc(100% + 16px); transform:scaleX(-1); }
+.ribbon::after { left:calc(100% + 16px); }
+
+.big-num {
+  font-family:'Orbitron';
+  font-size:clamp(140px, 24vw, 260px);
+  font-weight:900;
+  line-height:0.9;
+  background:linear-gradient(180deg, var(--act-color) 30%, transparent 95%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  letter-spacing:-0.04em;
+  margin:0;
+  filter:drop-shadow(0 0 60px var(--act-color)44);
+  animation:numPulse 4s ease-in-out infinite;
+}
+@keyframes numPulse {
+  0%,100% { filter:drop-shadow(0 0 60px var(--act-color)44); }
+  50% { filter:drop-shadow(0 0 100px var(--act-color)88); }
+}
+
+.act-title {
+  font-family:'Sarabun';
+  font-size:clamp(32px, 5vw, 52px);
+  font-weight:700;
+  margin:14px 0 6px;
+  color:#fff;
+  text-shadow:0 0 30px var(--act-color)66;
+}
+.act-en {
+  font-family:'Orbitron';
+  font-size:14px;
+  letter-spacing:0.35em;
+  color:var(--act-color);
+  margin-bottom:18px;
+  opacity:0.92;
+}
+.act-quote {
+  font-family:'Sarabun';
+  font-size:clamp(16px, 2.2vw, 20px);
+  font-weight:300;
+  font-style:italic;
+  color:var(--text);
+  max-width:680px;
+  margin:14px auto 22px;
+  opacity:0.92;
+  line-height:1.55;
+}
+.act-quote::before { content:'\201C'; color:var(--act-color); font-size:1.4em; vertical-align:-0.18em; margin-right:6px; }
+.act-quote::after  { content:'\201D'; color:var(--act-color); font-size:1.4em; vertical-align:-0.18em; margin-left:6px; }
+
+.stats {
+  display:inline-flex; flex-wrap:wrap;
+  margin-top:20px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid var(--act-color)55;
+  border-radius:999px;
+  padding:4px;
+  backdrop-filter:blur(10px);
+}
+.stats > span {
+  font-family:'Orbitron';
+  font-size:11px;
+  letter-spacing:0.15em;
+  padding:8px 18px;
+  border-radius:999px;
+  color:var(--text-dim);
+  position:relative;
+}
+.stats > span:not(:last-child)::after {
+  content:'';
+  position:absolute; right:0; top:25%; bottom:25%;
+  width:1px; background:var(--act-color)33;
+}
+.stats b { color:var(--act-color); font-weight:700; }
+
+/* Continue button */
+.continue {
+  margin-top:36px;
+  display:inline-flex; align-items:center; gap:10px;
+  padding:14px 30px;
+  background:linear-gradient(135deg, var(--act-color)22, var(--act-color)11);
+  border:1.5px solid var(--act-color);
+  border-radius:999px;
+  color:#fff;
+  font-family:'Orbitron';
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.2em;
+  text-decoration:none;
+  cursor:pointer;
+  transition:all 0.3s;
+  box-shadow:0 0 30px var(--act-color)33;
+}
+.continue:hover {
+  transform:translateY(-2px) scale(1.02);
+  box-shadow:0 0 50px var(--act-color)66;
+  background:linear-gradient(135deg, var(--act-color)33, var(--act-color)22);
+}
+.continue .arrow { font-size:18px; transition:transform 0.3s; }
+.continue:hover .arrow { transform:translateX(4px); }
+
+.countdown {
+  position:absolute;
+  bottom:36px; left:50%;
+  transform:translateX(-50%);
+  font-family:'Orbitron';
+  font-size:11px;
+  letter-spacing:0.3em;
+  color:var(--text-dim);
+  opacity:0.7;
+}
+.countdown b { color:var(--act-color); font-weight:700; margin:0 4px; }
+
+.rail {
+  position:absolute;
+  top:24px; left:50%;
+  transform:translateX(-50%);
+  display:flex; gap:6px;
+}
+.rail i {
+  width:32px; height:3px;
+  background:var(--act-color)33;
+  border-radius:2px;
+  transition:all 0.3s;
+}
+.rail i.on { background:var(--act-color); box-shadow:0 0 12px var(--act-color); }
+</style>
+</head>
+<body data-page="act-divider">
+<main class="divider">
+  <div class="rail" id="rail"></div>
+  <div class="ep-tag" id="ep-tag">EP — · CHAPTER —</div>
+  <div class="ribbon" id="ribbon">CHAPTER —</div>
+  <div class="big-num" id="big-num">—</div>
+  <div class="act-title" id="title">—</div>
+  <div class="act-en" id="en">—</div>
+  <div class="act-quote" id="quote">—</div>
+  <div class="stats" id="stats">
+    <span><b id="stat-min">—</b> นาที</span>
+    <span><b id="stat-scenes">—</b> SCENES</span>
+    <span id="stat-pages"><b>—</b></span>
+  </div>
+  <a class="continue" id="continue" href="#">เข้าเริ่ม <span class="arrow">→</span></a>
+  <div class="countdown">เริ่มอัตโนมัติใน <b id="cd">7</b> วินาที · กดที่ใดก็ได้เพื่อข้าม</div>
+</main>
+
+<script>
+/* ═════════════════════════════════════════════════════════════
+ * Act Divider · reads URL params and renders cinematic chapter card
+ * Usage: act-divider.html?ep=1&act=1&next=p01-pretest.html
+ * Falls back to EP_CONFIG.acts[N] if loaded
+ * ═════════════════════════════════════════════════════════════ */
+(function(){
+  const params = new URLSearchParams(location.search);
+  const ep   = Number(params.get('ep')   || 1);
+  const act  = Number(params.get('act')  || 1);
+  const next = params.get('next') || '';
+
+  // Default act library (override per EP if needed)
+  const ACTS = {
+    1: { // EP01
+      1: { title:'เริ่มภารกิจ', en:'SETUP', quote:'เกิดอะไรขึ้นในห้วงอวกาศ? · ทีมต้องไปหาคำตอบ', minutes:15, scenes:5, pages:'p01→p05', color:'#64d8ff' },
+      2: { title:'สืบสวนเอกภพ', en:'INVESTIGATION', quote:'เราถ่ายภาพการกำเนิดเอกภพได้? · CMB จะตอบคุณ', minutes:25, scenes:4, pages:'p06→p09', color:'#7effb2' },
+      3: { title:'ครูเปิดเวทีสอน', en:'TEACHING MOMENT', quote:'ทฤษฎีบิกแบงคืออะไรกันแน่? · v = H₀d เปลี่ยนทุกอย่าง', minutes:15, scenes:3, pages:'p10→p12', color:'#ffcb6b' },
+      4: { title:'ปะทะ VOID', en:'CLIMAX', quote:'ปกป้องทฤษฎี · หักล้าง 3 คำโกหก · WARP เข้า Galaxy A', minutes:20, scenes:3, pages:'p13→p15', color:'#ff5c7a' },
+      5: { title:'ปิดฉาก · เก็บข้อมูล', en:'CLOSURE', quote:'เนื้อเรื่องไหลแล้ว · วัดความเปลี่ยนแปลง · เปิดทาง EP02', minutes:15, scenes:4, pages:'p16→p27', color:'#d4b8ff' }
+    },
+    2: { // EP02
+      1: { title:'เสียงเรียกในกาแล็กซี', en:'SETUP', quote:'สัญญาณแปลกจาก Local Group · ทีมต้องตามไปดู', minutes:15, scenes:4, pages:'p00→p06', color:'#64d8ff' },
+      2: { title:'จำแนกกาแล็กซี', en:'CLASSIFY', quote:'Spiral · Elliptical · Irregular — Tuning Fork ของฮับเบิล', minutes:20, scenes:4, pages:'p07→p10', color:'#7effb2' },
+      3: { title:'การล่าด้วย Doppler', en:'DOPPLER HUNT', quote:'Redshift · Blueshift · ใครเคลื่อนเข้าใครเคลื่อนออก?', minutes:20, scenes:4, pages:'p11→p14', color:'#ffcb6b' },
+      4: { title:'VOID Boss สงครามครั้งแรก', en:'BOSS FIGHT', quote:'3-Phase BOSS · ปกป้อง Local Group จาก VOID', minutes:25, scenes:4, pages:'p15→p17', color:'#ff5c7a' },
+      5: { title:'Reflection · Save Game', en:'CLOSURE', quote:'EP02 ปิด · เตรียม Pre-test EP03 · เดินทางต่อ', minutes:15, scenes:3, pages:'p18→p27', color:'#d4b8ff' }
+    },
+    3: { // EP03
+      1: { title:'เสียงร้องจากอดีต', en:'CALL FROM PAST', quote:'ดาวห่าง 400 ปีแสง · พ่ออารยา ส่ง SOS', minutes:15, scenes:4, pages:'p01→p04', color:'#64d8ff' },
+      2: { title:'พาแรลแลกซ์ · วัดดาว', en:'PARALLAX METHOD', quote:'d = 1/p · นิ้วโป้งบอกระยะของดวงดาว', minutes:25, scenes:5, pages:'beat 5-8', color:'#7effb2' },
+      3: { title:'Magnitude · ความสว่างจริง', en:'BRIGHTNESS', quote:'m vs M · ดาวสว่างใกล้กับดาวริบหรี่ไกล', minutes:20, scenes:4, pages:'beat 9-12', color:'#ffcb6b' },
+      4: { title:'WARP RUN', en:'CLIMAX', quote:'3 Endings · ทีมเลือกทางไปหาพ่ออารยา', minutes:25, scenes:4, pages:'p17→p20', color:'#ff5c7a' },
+      5: { title:'Reflection · Choice Save', en:'CLOSURE', quote:'เลือก Ending แล้ว · เปิดทาง EP04 ดวงดาวกำลังจะตาย', minutes:15, scenes:3, pages:'p21→p27', color:'#d4b8ff' }
+    },
+    4: { // EP04
+      1: { title:'วันสุดท้ายของยักษ์แดง', en:'COLD OPEN', quote:'ดาวที่เห็นทุกคืน · สีของมันผิดไปหมด', minutes:15, scenes:4, pages:'p00→p06', color:'#64d8ff' },
+      2: { title:'STAR DECODER', en:'SPECTRAL ANALYSIS', quote:'OBAFGKM · อ่านสีดาว → อุณหภูมิ → ชนิด', minutes:25, scenes:5, pages:'p07→p13', color:'#7effb2' },
+      3: { title:'MASS THRESHOLD · 9 vs 25 M☉', en:'MASS DECISION', quote:'มวลตัดสินชะตา · WD · NS · BH · ใครจะรอด?', minutes:20, scenes:5, pages:'p14→p20', color:'#ffcb6b' },
+      4: { title:'GRAVITY ASCENT', en:'BOSS FIGHT', quote:'ขับยานฝ่าหลุมดำ · ผิดครั้งเดียว = event horizon', minutes:25, scenes:4, pages:'p21→p25', color:'#ff5c7a' },
+      5: { title:'รำลึกถึงยักษ์แดง', en:'CLOSURE', quote:'ดาวตาย · แต่ทิ้งธาตุไว้ให้ดาวรุ่นใหม่ · เปิดทาง EP05', minutes:15, scenes:3, pages:'p26→p27', color:'#d4b8ff' }
+    },
+    5: { // EP05
+      1: { title:'หัวใจที่เต้นผิดจังหวะ', en:'SOLAR ANOMALY', quote:'ดวงอาทิตย์ส่งสัญญาณผิดปกติ · ภัยพิบัติใกล้มา', minutes:20, scenes:5, pages:'p01→p07', color:'#64d8ff' },
+      2: { title:'ATMOSPHERIC LAYERS', en:'STRUCTURE', quote:'Photosphere · Chromosphere · Corona — แต่ละชั้นมีบทบาท', minutes:25, scenes:6, pages:'p08→p15', color:'#7effb2' },
+      3: { title:'POWER FORGE', en:'BUILD POWERS', quote:'HELION code → ปลดล็อค 6 powers · ทีมเตรียมรบ', minutes:25, scenes:6, pages:'p16→p24', color:'#ffcb6b' },
+      4: { title:'SOLAR STORM', en:'BOSS FIGHT', quote:'พายุสุริยะมา · ใช้ powers ที่ FORGE · RACE→FORGE→FIGHT', minutes:25, scenes:6, pages:'p25→p32', color:'#ff5c7a' },
+      5: { title:'Solar Reset Choice', en:'CLOSURE', quote:'สงบลง · เลือก Reset หรือ Preserve · เปิดทาง EP06', minutes:25, scenes:5, pages:'p33→p45', color:'#d4b8ff' }
+    },
+    6: { // EP06
+      1: { title:'ขอบฟ้าของบ้าน', en:'HOME SYSTEM', quote:'ระบบสุริยะ · บ้านของเรา · มีอะไรที่เรายังไม่รู้?', minutes:20, scenes:5, pages:'p01→p08', color:'#64d8ff' },
+      2: { title:'6 GENESIS SHARDS', en:'COLLECT', quote:'6 ดาวเคราะห์ · 6 shards · เก็บครบเปิด maze', minutes:30, scenes:8, pages:'p09→p20', color:'#7effb2' },
+      3: { title:'Pale Blue Dot · จุดเล็กของเรา', en:'PERSPECTIVE', quote:'มองโลกจากระยะ 6 พันล้าน km · เราเห็นอะไร?', minutes:15, scenes:4, pages:'p21→p26', color:'#ffcb6b' },
+      4: { title:'VOID ZERO-FIX · MAZE', en:'BOSS FIGHT', quote:'ฝ่า maze · 4 endings · 7 achievements', minutes:30, scenes:7, pages:'p27→p38', color:'#ff5c7a' },
+      5: { title:'KPA Tracker · สรุป', en:'CLOSURE', quote:'ปิดระบบสุริยะ · เก็บ Tracker · เปิดทาง EP07 EM', minutes:20, scenes:5, pages:'p39→p47', color:'#d4b8ff' }
+    },
+    7: { // EP07
+      1: { title:'สงครามในวงโคจร', en:'PBL OPEN', quote:'ดาวเทียมชนกัน · เรามีเวลา 100 นาทีตัดสิน', minutes:20, scenes:4, pages:'p01→p06', color:'#64d8ff' },
+      2: { title:'EM SPECTRUM · 7 ช่วง', en:'EM CLASSIFY', quote:'Radio → Gamma · ดาวเทียมแต่ละชนิดใช้คลื่นไหน?', minutes:20, scenes:5, pages:'p07→p13', color:'#7effb2' },
+      3: { title:'ORBITS · LEO · MEO · GEO', en:'ORBIT MASTERY', quote:'ระยะ vs ช่วงเวลา · Kepler ในการจัดการดาวเทียม', minutes:20, scenes:5, pages:'p14→p20', color:'#ffcb6b' },
+      4: { title:'CIPHER · Orbital Triage', en:'BOSS FIGHT', quote:'3 ชั้นไข · PBL group decision · ทีมต้อง consensus', minutes:25, scenes:5, pages:'p21→p25', color:'#ff5c7a' },
+      5: { title:'รายงาน PBL · สรุปบทเรียน', en:'CLOSURE', quote:'ส่งรายงาน Triage · เปิดทาง EP08 Finale', minutes:15, scenes:3, pages:'p26→p27', color:'#d4b8ff' }
+    },
+    8: { // EP08 · Finale
+      1: { title:'Recap · ทบทวน 7 EP', en:'RECAP', quote:'จากบิกแบง ถึงดาวเทียม · ทีมเดินทางมาไกลแล้ว', minutes:15, scenes:4, pages:'p01→p05', color:'#64d8ff' },
+      2: { title:'Mentor Reveal', en:'TWIST', quote:'ดร.ฮับเบิล เปิดเผยตัวจริง · เป้าหมายคืออะไร?', minutes:15, scenes:4, pages:'p06→p10', color:'#7effb2' },
+      3: { title:'17 Keys · Cosmic Genesis', en:'SYNTHESIS', quote:'รวม 17 keys ของทั้ง Season · เห็นภาพรวม', minutes:20, scenes:5, pages:'p11→p17', color:'#ffcb6b' },
+      4: { title:'GENESIS FORGE', en:'4-PHASE BOSS', quote:'รบครั้งสุดท้าย · 5 endings · เลือกได้', minutes:30, scenes:7, pages:'p18→p25', color:'#ff5c7a' },
+      5: { title:'Reset / Preserve · S2 Cliffhanger', en:'CLOSURE', quote:'พ่อกลับมา · เลือก Reset หรือ Preserve · Andromeda เรียก S2', minutes:20, scenes:4, pages:'p26→p27', color:'#d4b8ff' }
+    }
+  };
+
+  const cfg = (ACTS[ep] && ACTS[ep][act]) || ACTS[1][1];
+
+  // Apply
+  document.documentElement.style.setProperty('--act-color', cfg.color);
+  document.getElementById('ep-tag').textContent = `EP ${String(ep).padStart(2,'0')} · CHAPTER ${String(act).padStart(2,'0')}`;
+  document.getElementById('ribbon').textContent = `CHAPTER ${['ONE','TWO','THREE','FOUR','FIVE'][act-1] || act}`;
+  document.getElementById('big-num').textContent = String(act).padStart(2,'0');
+  document.getElementById('title').textContent = cfg.title;
+  document.getElementById('en').textContent = cfg.en;
+  document.getElementById('quote').textContent = cfg.quote;
+  document.getElementById('stat-min').textContent = cfg.minutes;
+  document.getElementById('stat-scenes').textContent = cfg.scenes;
+  document.querySelector('#stat-pages b').textContent = cfg.pages;
+
+  // Render rail (5 dots, current = act)
+  const rail = document.getElementById('rail');
+  rail.innerHTML = '';
+  for (let i = 1; i <= 5; i++){
+    const d = document.createElement('i');
+    if (i === act) d.classList.add('on');
+    rail.appendChild(d);
+  }
+
+  // Continue button → next page
+  const nextHref = next || 'index.html';
+  const cont = document.getElementById('continue');
+  cont.href = nextHref;
+  document.title = `${cfg.title} · EP${ep} CHAPTER ${act}`;
+
+  // Auto-advance with countdown (7s)
+  let t = 7;
+  const cd = document.getElementById('cd');
+  const timer = setInterval(() => {
+    t--;
+    if (t <= 0) { clearInterval(timer); location.href = nextHref; return; }
+    cd.textContent = t;
+  }, 1000);
+
+  // Skip on click anywhere
+  document.body.addEventListener('click', (e) => {
+    if (e.target.closest('.continue')) return; // continue button handles itself
+    location.href = nextHref;
+  });
+
+  // Skip on space/enter
+  document.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') location.href = nextHref;
+  });
+
+  // Telemetry: log act enter (best-effort)
+  try {
+    if (window.TelemetrySync) {
+      TelemetrySync.send(`EP${ep}_Acts`, { act, title: cfg.title, en: cfg.en });
+    }
+  } catch(_){}
+})();
+</script>
+<script src="telemetry-sync.js"></script>
+</body>
+</html>
