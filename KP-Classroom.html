@@ -6457,12 +6457,44 @@ function switchSummarySub(id){
 async function loadSummaryData(force){
   const panel = document.getElementById('summarySubPanel');
   if (!panel) return;
-  panel.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">⏳ กำลังโหลด Summary_All...</div>`;
+  const isAstro = (window.KP_COURSE || 'physics3') === 'astronomy';
+  const summarySheet = isAstro ? 'EP_Summary' : '📊 Summary_All';
+  panel.innerHTML = `<div style="padding:40px;text-align:center;color:#718096">⏳ กำลังโหลด ${summarySheet}...</div>`;
   try {
     if (force) { _summaryData = null; _summaryExtra = { ft01:null, ft02:null, loading:false }; }
-    const r = await DB.listSheet('📊 Summary_All');
+    let r = await DB.listSheet(summarySheet);
+    // astronomy fallback: ถ้า EP_Summary ยังไม่มี · build จาก EP_Pre_Raw + EP_Post_Raw
+    if (isAstro && (!r || r.status !== 'ok' || !(r.data || []).length)) {
+      const [pre, post] = await Promise.all([DB.listSheet('EP_Pre_Raw'), DB.listSheet('EP_Post_Raw')]);
+      const preRows  = (pre  && pre.status  === 'ok') ? (pre.data  || []) : [];
+      const postRows = (post && post.status === 'ok') ? (post.data || []) : [];
+      // Aggregate per student: 1 row per (student_id, ep) with pre/post score + gain
+      const byKey = {};
+      const upsert = (row, phase) => {
+        const k = `${row.student_id}_${row.ep}`;
+        const e = byKey[k] || (byKey[k] = {
+          s_num: row.no || '', s_name: row.name || '', s_room: row.class || '',
+          s_id: row.student_id || '', ep: row.ep,
+        });
+        e[`${phase}_score`] = Number(row.correct || 0);
+        e[`${phase}_total`] = Number(row.total || 0);
+        e[`${phase}_pct`]   = Number(row.percent || 0);
+      };
+      preRows.forEach(r2 => upsert(r2, 'pre'));
+      postRows.forEach(r2 => upsert(r2, 'post'));
+      // Compute Hake gain
+      Object.values(byKey).forEach(e => {
+        if (e.pre_total && e.post_total){
+          const pre  = (e.pre_score  / e.pre_total)  * 100;
+          const post = (e.post_score / e.post_total) * 100;
+          e.absGain = +(post - pre).toFixed(1);
+          e.normalizedGain = (100 - pre) > 0 ? +((post - pre) / (100 - pre)).toFixed(2) : null;
+        }
+      });
+      r = { status: 'ok', data: Object.values(byKey) };
+    }
     if (!r || r.status !== 'ok'){
-      panel.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ โหลดไม่สำเร็จ: ${r && r.message || 'unknown error'}<br><small>ตรวจว่ามี sheet 📊 Summary_All ใน database หรือยัง</small></div>`;
+      panel.innerHTML = `<div style="padding:40px;text-align:center;color:#e53e3e">❌ โหลดไม่สำเร็จ: ${r && r.message || 'unknown error'}<br><small>ตรวจว่ามี sheet ${summarySheet} ใน database หรือยัง</small></div>`;
       return;
     }
     _summaryData = (r.data || []).filter(row => row.s_num !== '📊 สรุปรวม');
@@ -6481,8 +6513,12 @@ async function ensureFTScored(){
   if (_summaryExtra.ft01 && _summaryExtra.ft02) return;
   if (_summaryExtra.loading) return;
   _summaryExtra.loading = true;
+  // astronomy: ใช้ FT01_Raw / FT02_Raw (ยังไม่มี _Scored variant)
+  const isAstro = (window.KP_COURSE || 'physics3') === 'astronomy';
+  const ft01Name = isAstro ? 'FT01_Raw' : 'FT01_Scored';
+  const ft02Name = isAstro ? 'FT02_Raw' : 'FT02_Scored';
   try {
-    const [r1, r2] = await Promise.all([DB.listSheet('FT01_Scored'), DB.listSheet('FT02_Scored')]);
+    const [r1, r2] = await Promise.all([DB.listSheet(ft01Name), DB.listSheet(ft02Name)]);
     _summaryExtra.ft01 = (r1 && r1.status === 'ok') ? (r1.data || []) : [];
     _summaryExtra.ft02 = (r2 && r2.status === 'ok') ? (r2.data || []) : [];
     _summaryExtra.ft01.forEach(row => { row.s_room = _normRoom(row.s_room); });
@@ -8349,10 +8385,100 @@ function wirePostPlanButtons(){
   if (semExp) semExp.onclick = exportSemesterWord;
 }
 
+// ═══════════════════════════════════════════════════════════
+// Astronomy Adapter · แปลง schema astronomy → physics3-like
+// ───────────────────────────────────────────────────────────
+// astronomy ใช้: EP_Pre_Raw, EP_Post_Raw (filter ep=N), Activity_Raw,
+// Boss_Engagement, EP{n}_Pages (telemetry-sync) · ไม่ใช้ TL/POE/MJ/OB/GR
+// ═══════════════════════════════════════════════════════════
+async function loadPostPlanData_astronomy(plan){
+  const auto = document.getElementById('pp-auto');
+  const data = {
+    plan, plan_title: PLANS.find(p=>p.no===plan)?.title || '',
+    plan_periods: PLANS.find(p=>p.no===plan)?.periods || '',
+    tl_pre: null, tl_post: null, f_pre: null, f_post: null, poe: null, mj: null,
+    ob: null, gr: null, cer: null, calc: null, spot: null,
+    activity: null, boss: null, pages: null,
+    attendance: 0,
+    _astronomy: true
+  };
+
+  const fetchSheet = async (name) => {
+    try {
+      const url = API_URL + '?action=list&sheet=' + encodeURIComponent(name);
+      return await fetch(url).then(r => r.json());
+    } catch(e){ return null; }
+  };
+
+  const [epPre, epPost, activity, boss, pages] = await Promise.all([
+    fetchSheet('EP_Pre_Raw'),
+    fetchSheet('EP_Post_Raw'),
+    fetchSheet('Activity_Raw'),
+    fetchSheet('Boss_Engagement'),
+    fetchSheet(`EP${plan}_Pages`)
+  ]);
+
+  // Filter rows by ep=plan
+  const filterEp = (r) => {
+    if (!r || !r.data) return [];
+    return r.data.filter(x => Number(x.ep) === plan);
+  };
+  const preRows = filterEp(epPre);
+  const postRows = filterEp(epPost);
+  const actRows = filterEp(activity);
+  const bossRows = filterEp(boss);
+  const pageRows = (pages && pages.data) || [];
+
+  // Transform to physics3-like f_pre / f_post structure
+  // Two-tier categorization: correct → Sound · incorrect+M-code → Misconception · incorrect no M → No-K
+  const toFourTier = (rows) => {
+    const overall = { Sound:0, Misconception:0, Guessing:0, 'No-K':0 };
+    rows.forEach(r => {
+      for (let i = 1; i <= 5; i++) {
+        const ok = Number(r['Q0'+i+'_ok'] || 0);
+        const m  = String(r['Q0'+i+'_m']  || '');
+        if (ok === 1) overall.Sound++;
+        else if (m) overall.Misconception++;
+        else overall['No-K']++;
+      }
+    });
+    return { data: rows, count: rows.length, overall };
+  };
+  data.f_pre  = toFourTier(preRows);
+  data.f_post = toFourTier(postRows);
+  data.activity = { data: actRows, count: actRows.length };
+  data.boss = { data: bossRows, count: bossRows.length };
+  data.pages = { data: pageRows, count: pageRows.length };
+
+  // Attendance — unique student_id across all sources
+  const ids = new Set();
+  [preRows, postRows, actRows, pageRows].forEach(arr =>
+    arr.forEach(x => { if (x.student_id) ids.add(String(x.student_id)); }));
+  data.attendance = ids.size;
+
+  currentPostPlanData = data;
+  renderPostPlanAuto(data);
+  try {
+    const r = applyAutoAll(false);
+    const stat = document.getElementById('pp-auto-stat');
+    if (stat){
+      stat.className = 'status ok';
+      stat.textContent = `🤖 Auto-fill (astronomy): ${r.applied} ข้อ · manual ${r.skipped} · ไม่มีข้อมูล ${r.nodata}`;
+    }
+  } catch(e){ console.error('astronomy auto-fill failed', e); }
+  refreshAutoBadges();
+  wirePostPlanButtons();
+}
+
 async function loadPostPlanData(){
   const plan = Number(document.getElementById('pp-plan').value);
   const auto = document.getElementById('pp-auto');
   auto.innerHTML = '<div class="info">⏳ กำลังดึงข้อมูลจาก Google Sheets...</div>';
+
+  // Course-aware: astronomy uses different sheet schema → adapt
+  if ((window.KP_COURSE || 'physics3') === 'astronomy') {
+    return loadPostPlanData_astronomy(plan);
+  }
 
   const data = {
     plan, plan_title: PLANS.find(p=>p.no===plan)?.title || '',
