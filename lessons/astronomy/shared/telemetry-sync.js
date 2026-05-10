@@ -22,6 +22,18 @@
   'use strict';
   if (global.TelemetrySync && global.TelemetrySync._installed) return;
 
+  // Auto-load CollectClient (data-collection gate) ถ้ายังไม่ได้โหลด
+  // ทำให้หน้าทุกหน้าที่ใช้ telemetry-sync ได้ gate อัตโนมัติ ไม่ต้องไล่แก้แต่ละไฟล์
+  if (!global.CollectClient) {
+    try {
+      const s = document.createElement('script');
+      // shared/collect-client.js อยู่ที่ lessons/shared/ · path จาก astronomy/shared/ → ../../shared/
+      s.src = '../../shared/collect-client.js';
+      s.async = true;
+      (document.head || document.documentElement).appendChild(s);
+    } catch(_){}
+  }
+
   const Q_KEY = 'wave_telemetry_astronomy_queue';
   const STU_KEY = 'wave_student';
 
@@ -56,7 +68,14 @@
     } catch(_){}
   }
 
+  function _collectOff(){
+    // ถ้ามี CollectClient โหลดอยู่ และ enabled=false → drop silently (ไม่ enqueue)
+    // ป้องกันไม่ให้ queue โตขึ้นเรื่อย ๆ ระหว่างคาบที่ไม่เก็บข้อมูล
+    return !!(global.CollectClient && !global.CollectClient.isEnabled());
+  }
+
   async function _post(payload){
+    if (_collectOff()) return { ok:false, reason:'collection-off', dropped:true };
     const url = _apiUrl();
     if (!url) { _enqueue(payload); return { ok:false, reason:'no apiUrl', queued:true }; }
     try {
@@ -75,6 +94,7 @@
   }
 
   async function flush(){
+    if (_collectOff()) return { sent:0, remaining:0, blocked:true };
     try {
       const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
       if (!q.length) return { sent:0, remaining:0 };

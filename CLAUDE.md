@@ -152,6 +152,18 @@ http://localhost:3000/KP-Classroom.html?course=physics3
 
 หลัง deploy ใหม่ · ผู้ใช้เดิมต้อง **Cmd+Shift+R** (hard reload) เพื่อบังคับโหลด `media.js` + `subjects.js` + `KP-Classroom.html` ใหม่ · Python http.server cache อาจไม่ bust อัตโนมัติ
 
+## Data-Collection Gate (Phase 8 · 2026-05-10) ⭐
+
+ครูเปิด/ปิดการเก็บข้อมูลต่อห้องผ่านปุ่ม **📊 เก็บข้อมูล** ใน Teacher Dashboard tab "สื่อ" (อยู่เหนือ Pace Control) · default **ปิด** · เปิดเฉพาะคาบสอน
+
+- **Server gate** (`Astronomy_AppsScript_Code.gs` + `AppsScript_Code.gs`): ก่อน dispatch · ถ้า action อยู่ใน `COLLECT_DATA_ACTIONS` (submit, sendFeedback, logEnergy/Coin/Shop, submitFT/EP/Consent/IMI/Satisfaction/Activity/Boss) และ `COLLECT_<roomCode>` ≠ enabled → return `{ok:true, blocked:true}` ไม่เขียน sheet
+- **Client gate** (`lessons/shared/collect-client.js`): poll `collectGet` ทุก 8 วิ · cache 30s · default OFF · `telemetry-sync.js` เช็คก่อน POST → drop silently ถ้า OFF (ไม่ enqueue)
+- **Room key**: `auto_<course>` (เหมือน pace) — astronomy → `auto_astronomy`, physics3 → `auto_physics3`
+- **State storage**: Script Properties `COLLECT_<roomCode>` JSON `{enabled, at}`
+- **Actions ไม่ถูก gate**: pace*, verifyPin/Admin, uploadStudents, updateSetting, deleteSetting, markRead, setCourseStatus, uploadFile, deleteRow, setCanvasScore, setScore, collectGet/Set
+
+⚠️ หลัง pull โค้ดใหม่ ต้อง **redeploy ทั้ง 2 Apps Script** (astronomy + physics3) ตาม Deploy Caveat ด้านล่าง · ไม่งั้น server gate ไม่ทำงาน
+
 ## Apps Script Deploy Caveat (สำคัญ!) ⭐
 
 หลังแก้โค้ดใน `Astronomy_AppsScript_Code.gs` ทุกครั้ง:

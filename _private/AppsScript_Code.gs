@@ -35,6 +35,11 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     const action = data.action || 'submit';
+    // Phase 8 · Data-Collection Gate
+    if (action === 'collectGet')      return handleCollectGet(data);
+    if (action === 'collectSet')      return handleCollectSet(data);
+    if (!_collectGateAllow_(action, data))
+      return jsonOut({status:'ok', blocked:true, reason:'collection-off'});
     if (action === 'submit')          return handleSubmit(data);
     if (action === 'uploadStudents')  return handleUploadStudents(data);
     if (action === 'updateSetting')   return handleUpdateSetting(data);
@@ -169,6 +174,51 @@ function paceKey_(code) {
   return 'PACE_' + (safe || 'default');
 }
 
+// ═══════════════════════════════════════════════════════════════════
+// Data-Collection Gate (Phase 8 · 2026-05-10)
+// ─────────────────────────────────────────────────────────────────
+// ครูเปิด/ปิดการเก็บข้อมูลต่อห้องผ่านปุ่มใน Teacher Dashboard
+// Default: enabled=false · Gate ครอบเฉพาะ data-actions
+// ═══════════════════════════════════════════════════════════════════
+const COLLECT_DEFAULT_CODE = 'auto_physics3';
+const COLLECT_DATA_ACTIONS = { submit:1, sendFeedback:1 };
+
+function collectKey_(code){
+  const safe = String(code || COLLECT_DEFAULT_CODE).replace(/[^A-Za-z0-9_\-]/g,'').slice(0,32);
+  return 'COLLECT_' + (safe || 'default');
+}
+
+function getCollectState_(code){
+  try {
+    const v = PropertiesService.getScriptProperties().getProperty(collectKey_(code));
+    if (!v) return { enabled:false, at:0 };
+    const obj = JSON.parse(v);
+    return { enabled: obj.enabled === true, at: Number(obj.at)||0 };
+  } catch(e){ return { enabled:false, at:0 }; }
+}
+
+function _collectGateAllow_(action, data){
+  if (!COLLECT_DATA_ACTIONS[action]) return true;
+  const code = (data && data.code) || COLLECT_DEFAULT_CODE;
+  return getCollectState_(code).enabled;
+}
+
+function handleCollectGet(p){
+  const code = (p && p.code) || COLLECT_DEFAULT_CODE;
+  const st = getCollectState_(code);
+  return jsonOut({status:'ok', collect: st, code: code});
+}
+
+function handleCollectSet(data){
+  const code = String(data.code || '').trim();
+  if (!/^auto_[a-z0-9_-]{1,32}$/i.test(code))
+    return jsonOut({status:'error', message:'code must match auto_<course>'});
+  const enabled = data.enabled === true || data.enabled === 'true';
+  const st = { enabled: enabled, at: Date.now() };
+  PropertiesService.getScriptProperties().setProperty(collectKey_(code), JSON.stringify(st));
+  return jsonOut({status:'ok', collect: st, code: code});
+}
+
 function handlePaceGet(p) {
   try {
     const key = paceKey_(p.code);
@@ -236,6 +286,8 @@ function doGet(e) {
     if (action === 'planStats')    return handlePlanStats(p);
     // Phase 7: teacher pace remote (broadcast current page to students)
     if (action === 'paceGet')      return handlePaceGet(p);
+    // Phase 8: data-collection gate
+    if (action === 'collectGet')   return handleCollectGet(p);
     return jsonOut({status:'error', message:'unknown action: ' + action});
   } catch (err) {
     return jsonOut({status:'error', message:err.toString()});
