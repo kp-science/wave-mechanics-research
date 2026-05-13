@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>POE-01 Predict-Observe-Explain · แผน 6</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:980px;margin:0 auto 20px;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:28px 32px}
+.head{border-bottom:3px solid #1565c0;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#0f2c5c}
+.head .meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#1565c0;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.namebar input{border:1.5px solid #bbdefb;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px}
+.sec{margin:14px 0;border-radius:12px;padding:14px 18px}
+.sec.p{background:#e3f2fd;border-left:6px solid #1976d2}
+.sec.o{background:#fff3e0;border-left:6px solid #ef6c00}
+.sec.e{background:#e8f5e9;border-left:6px solid #2e7d32}
+.sec h2{font-size:18px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec.p h2{color:#0d47a1} .sec.o h2{color:#c05621} .sec.e h2{color:#1b5e20}
+.badge{font-size:13px;padding:2px 10px;border-radius:12px;background:#fff;border:1px solid currentColor}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:10px;margin-bottom:12px;font-size:14.5px}
+.q b{color:#7a5800}
+.opt{display:flex;align-items:flex-start;gap:8px;cursor:pointer;margin:5px 0;font-size:14px;padding:4px 8px;border-radius:6px}
+.opt:hover{background:rgba(25,118,210,0.08)}
+.opt input{margin-top:4px;flex-shrink:0}
+.opt-row{display:flex;flex-wrap:wrap;gap:6px}
+.conf{margin-top:8px;font-size:14px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #bbdefb;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical;min-height:50px}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #bbdefb;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e3f2fd 28px);touch-action:none;cursor:crosshair;margin-top:8px}
+.canvas-toolbar{display:flex;gap:6px;margin:8px 0 4px;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #1976d2;border-radius:8px;padding:5px 10px;font-family:inherit;font-size:13px;cursor:pointer;color:#0d47a1;font-weight:600}
+.c-btn.active{background:#1976d2;color:#fff;border-color:#1976d2}
+.c-color{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1;flex-shrink:0}
+.c-color.active{border:3px solid #1976d2;box-shadow:0 0 0 2px #fff,0 0 0 4px #1976d2}
+.exp-card{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:12px 14px;margin:10px 0}
+.exp-card h4{color:#92400e;font-size:14.5px;margin-bottom:6px}
+.station{background:#fff;border:1.5px solid #cfd8e3;border-radius:10px;padding:10px 14px;margin:8px 0}
+.station .num{display:inline-block;background:#ef6c00;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;margin-right:6px}
+.station .lbl{font-size:14.5px;font-weight:700;color:#c05621;display:inline-block}
+.station .what{font-size:13.5px;color:#4a5568;margin:4px 0}
+.station .obs-row{margin-top:6px}
+table.data{width:100%;border-collapse:collapse;margin-top:8px;font-size:13.5px}
+table.data th{background:#0f2c5c;color:#fff;padding:6px 8px;text-align:left}
+table.data td{padding:6px 8px;border-bottom:1px solid #e2e8f0}
+table.data input{width:100%;border:none;border-bottom:1px dashed #aaa;padding:2px;font-family:inherit;font-size:13px;background:transparent}
+.q-list{background:#e8f5e9;border-radius:8px;padding:10px 14px;margin-top:10px}
+.q-list .qi{margin:6px 0;font-size:14px}
+.q-list .qi .qn{display:inline-block;background:#2e7d32;color:#fff;border-radius:50%;width:22px;height:22px;text-align:center;line-height:22px;font-size:12px;font-weight:700;margin-right:6px}
+.mc-reflect{background:#fff8e1;border:1.5px solid #fde68a;border-left:4px solid #f9a825;border-radius:10px;padding:14px;margin-top:14px}
+.mc-reflect h4{font-size:15px;font-weight:800;color:#92400e;margin-bottom:6px}
+.mc-item{background:#fff;border:1.5px solid #fde68a;border-radius:10px;padding:10px 14px;margin-bottom:10px}
+.mc-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:13.5px}
+.mc-code{background:#c53030;color:#fff;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700}
+.mc-wrong-label{color:#991b1b;font-weight:700}
+.mc-wrong-text{font-style:italic;color:#2d3748}
+.mc-row{margin:7px 0}
+.mc-q{font-size:13px;font-weight:700;color:#0d47a1;display:block;margin-bottom:4px}
+.mc-opt{background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;margin-right:6px}
+.mc-opt:hover{border-color:#1976d2;background:#e3f2fd}
+.mc-row textarea{width:100%;min-height:44px;font-size:13.5px;border:1.5px solid #cbd5e1;border-radius:6px;padding:6px 8px;font-family:inherit;resize:vertical}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:18px;border-top:1px solid #eee;padding-top:10px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0;page-break-after:always}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="plan6-sound-poe">
+
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📝 POE-01 ใบบันทึก Predict–Observe–Explain</h1>
+      <div class="meta"><span class="tag">แผน 6</span><span class="tag">เสียง</span> คู่กับ Concept Cartoon "อายุกับการได้ยิน" + การทดลอง <b>Online Hearing Test + Noise Audit</b></div>
+    </div>
+    <div class="meta namebar" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <label><b>ชื่อ</b> <input type="text" style="width:160px"></label>
+      <label><b>เลขที่</b> <input type="text" style="width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" style="width:50px"></label>
+      <label><b>กลุ่ม</b> <input type="text" style="width:50px"></label>
+    </div>
+  </div>
+
+  <div class="q"><b>🎯 คำถามนำการเรียนรู้:</b> ทำไมเด็ก แม่ ปู่ ได้ยินเสียง 17 kHz ต่างกัน?</div>
+
+  <!-- P · Predict -->
+  <div class="sec p">
+    <h2>🔮 P · Predict (ทำนาย) <span class="badge">ก่อนทดลอง</span></h2>
+    <div><b>ฉันคิดว่า:</b></div>
+    <div class="opt-row"><label class="opt"><input type="radio" name="p-pick" value="p1"> ทุกคนได้ยินเหมือนกัน</label><label class="opt"><input type="radio" name="p-pick" value="p2"> เด็กได้ยินดีกว่าผู้ใหญ่</label><label class="opt"><input type="radio" name="p-pick" value="p3"> ขึ้นกับความสนใจ ไม่ใช่อายุ</label></div>
+    <div style="margin-top:6px"><b>เพราะเหตุใด:</b> (เลือกข้อที่ตรงกับความคิดมากที่สุด)</div>
+    <div><label class="opt"><input type="radio" name="p-reason" value="r1"> หูคนได้ยินทุกความถี่</label><label class="opt"><input type="radio" name="p-reason" value="r2"> ผู้ใหญ่เซลล์ขนเสียหายตามอายุ (presbycusis)</label><label class="opt"><input type="radio" name="p-reason" value="r3"> ขึ้นกับสุขภาพหู</label><label class="opt"><input type="radio" name="p-reason" value="r4"> ขึ้นกับชาติพันธุ์</label><label class="opt"><input type="radio" name="p-reason" value="r0"> อื่น ๆ</label></div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ วาด/อธิบายเพิ่มเติม:</span>
+      <button class="c-btn active" id="tb-canvasP6-pencil" onclick="setTool('canvasP6','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb-canvasP6-eraser" onclick="setTool('canvasP6','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasP6','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasP6','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasP6','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasP6')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasP6" data-bg="lined" width="900" height="120"></canvas>
+    <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+    <div class="conf"><b>ความมั่นใจ:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="p-conf"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- O · Observe (Experiment-based) -->
+  <div class="sec o">
+    <h2>👁 O · Observe (สังเกต + บันทึกผล) <span class="badge">จากการทดลอง</span></h2>
+
+    <div class="exp-card">
+      <h4>🧪 การทดลอง: Online Hearing Test + Noise Audit</h4>
+      <div style="font-size:13.5px;color:#7a5800">แบ่ง 2 ช่วง · (A) ทำ Audiogram ของตัวเอง · (B) วัด dB ใน 5 จุดของโรงเรียน + เสนอแนวทางลด</div>
+    </div>
+
+    
+    <div class="station">
+      <div><span class="num">A1</span><span class="lbl">Hearing Test</span></div>
+      <div class="what"><b>📋 ทำอย่างไร:</b> Tone Gen เปิดความถี่ 100, 500, 1k, 2k, 4k, 8k, 12k, 15k, 17k, 20k Hz · ยกมือเมื่อได้ยิน</div>
+      <div class="obs-row"><b>👁 บันทึกที่สังเกต (บันทึกความถี่สูงสุดที่ได้ยิน):</b></div>
+      <textarea class="ans-ta" rows="2" placeholder="สิ่งที่ฉันสังเกตได้..."></textarea>
+    </div>
+    <div class="station">
+      <div><span class="num">A2</span><span class="lbl">วาด Audiogram</span></div>
+      <div class="what"><b>📋 ทำอย่างไร:</b> จดความถี่ที่ได้ยิน vs threshold dB · วาดเป็นกราฟ</div>
+      <div class="obs-row"><b>👁 บันทึกที่สังเกต (เทียบกับ Fletcher-Munson):</b></div>
+      <textarea class="ans-ta" rows="2" placeholder="สิ่งที่ฉันสังเกตได้..."></textarea>
+    </div>
+    <div class="station">
+      <div><span class="num">B1</span><span class="lbl">Noise Audit 5 จุด</span></div>
+      <div class="what"><b>📋 ทำอย่างไร:</b> โรงอาหาร · ห้องเรียน · สนาม · ทางเดิน · ห้องสมุด</div>
+      <div class="obs-row"><b>👁 บันทึกที่สังเกต (วัด β กลางวัน 5 นาที):</b></div>
+      <textarea class="ans-ta" rows="2" placeholder="สิ่งที่ฉันสังเกตได้..."></textarea>
+    </div>
+    <div class="station">
+      <div><span class="num">B2</span><span class="lbl">วิเคราะห์ + แก้</span></div>
+      <div class="what"><b>📋 ทำอย่างไร:</b> เทียบมาตรฐาน · เสนอ Engineering > Admin > PPE</div>
+      <div class="obs-row"><b>👁 บันทึกที่สังเกต (3 แนวทาง/จุดที่เกิน):</b></div>
+      <textarea class="ans-ta" rows="2" placeholder="สิ่งที่ฉันสังเกตได้..."></textarea>
+    </div>
+
+    
+    <div class="exp-card">
+      <h4>📊 ตารางบันทึกข้อมูล</h4>
+      <table class="data">
+        <thead><tr><th>สถานที่</th><th>β (dB)</th><th>มาตรฐาน</th><th>เกิน?</th><th>แนวทางลด</th></tr></thead>
+        <tbody><tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr><tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr><tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr><tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr><tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr></tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">📐 พื้นที่วาดกราฟ/ภาพร่าง/แผนภาพ:</span>
+      <button class="c-btn active" id="tb-canvasO6-pencil" onclick="setTool('canvasO6','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb-canvasO6-eraser" onclick="setTool('canvasO6','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasO6','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasO6','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasO6','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasO6')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasO6" data-bg="lined" width="900" height="140"></canvas>
+    </div>
+
+    <div class="q-list">
+      <b style="color:#1b5e20">❓ คำถามจากการสังเกต:</b>
+      
+      <div class="qi"><span class="qn">1</span>ความถี่สูงสุดที่ฉันได้ยินคือกี่ Hz? (อายุปกติ ม.5 ≈ 18-19 kHz)<textarea class="ans-ta" rows="2" placeholder="คำตอบของฉัน..." style="margin-top:4px"></textarea></div>
+      <div class="qi"><span class="qn">2</span>จุดใดของโรงเรียนเกินมาตรฐานมากที่สุด?<textarea class="ans-ta" rows="2" placeholder="คำตอบของฉัน..." style="margin-top:4px"></textarea></div>
+      <div class="qi"><span class="qn">3</span>หากต้องอยู่ในจุดที่ 90 dB 4 ชม./วัน ปลอดภัยตาม OSHA หรือไม่?<textarea class="ans-ta" rows="2" placeholder="คำตอบของฉัน..." style="margin-top:4px"></textarea></div>
+    </div>
+  </div>
+
+  <!-- E · Explain -->
+  <div class="sec e">
+    <h2>✍️ E · Explain (อธิบาย) <span class="badge">เชื่อม P↔O</span></h2>
+    <div><b>เปรียบ P กับ O:</b> คำทำนายตรงกับผลสังเกตหรือไม่?</div>
+    <div class="opt-row">
+      <label class="opt"><input type="radio" name="e-cmp"> ตรงกัน</label>
+      <label class="opt"><input type="radio" name="e-cmp"> ตรงบางส่วน</label>
+      <label class="opt"><input type="radio" name="e-cmp"> ไม่ตรง</label>
+    </div>
+    <div style="margin-top:8px"><b>อธิบายว่าข้อใดตรง ข้อใดต่าง เพราะอะไร? (อ้างหลักฐานจาก O)</b></div>
+    <div class="canvas-toolbar">
+      <span style="font-size:13px;font-weight:700;color:#0d47a1">✍️ คำอธิบาย (วาดหรือพิมพ์):</span>
+      <button class="c-btn active" id="tb-canvasE6-pencil" onclick="setTool('canvasE6','pencil',this)">✏️ ดินสอ</button>
+      <button class="c-btn" id="tb-canvasE6-eraser" onclick="setTool('canvasE6','eraser',this)">⬜ ยางลบ</button>
+      <div class="c-color active" style="background:#1a202c" onclick="setColor('canvasE6','#1a202c',this)"></div>
+      <div class="c-color" style="background:#3182ce" onclick="setColor('canvasE6','#3182ce',this)"></div>
+      <div class="c-color" style="background:#e53e3e" onclick="setColor('canvasE6','#e53e3e',this)"></div>
+      <button class="c-btn" onclick="clearCanvas('canvasE6')" style="margin-left:auto;color:#c53030">🗑️</button>
+    </div>
+    <canvas id="canvasE6" data-bg="lined" width="900" height="130"></canvas>
+    <textarea class="ans-ta" rows="3" placeholder="หรือพิมพ์คำตอบที่นี่..." style="margin-top:6px"></textarea>
+
+    <div style="margin-top:10px"><b>สรุปหลักการตามฟิสิกส์:</b> (1-3 ประโยค · ใช้ศัพท์เทคนิคที่เรียนวันนี้)</div>
+    <textarea class="ans-ta" rows="3" placeholder="ตามหลักการ... เพราะ... ดังนั้น..." style="margin-top:6px"></textarea>
+
+    <div class="conf"><b>ความมั่นใจในคำอธิบาย:</b>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf"> มาก</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf"> ปานกลาง</label>
+      <label class="opt" style="display:inline-flex"><input type="radio" name="e-conf"> น้อย</label>
+    </div>
+  </div>
+
+  <!-- Misconception Reflection -->
+  <div class="mc-reflect">
+    <h4>🧠 สรุปแก้ Misconception · 4 ตัว (Posner Conceptual Change)</h4>
+    <div style="font-size:12.5px;color:#92400e;margin-bottom:10px;opacity:.85">ทำ 3 ขั้นต่อข้อ · (①) ประเมินความเชื่อเดิม (②) ยืนยันแนวคิดที่ถูก (③) ยกหลักฐานจากการทดลองวันนี้</div>
+    
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M6.1</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"หูคนได้ยินทุกความถี่"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <label class="mc-opt"><input type="radio" name="m0-held"> เคย</label>
+        <label class="mc-opt"><input type="radio" name="m0-held"> ไม่เคย</label>
+        <label class="mc-opt"><input type="radio" name="m0-held"> ไม่แน่ใจ</label>
+      </div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div style="background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px;font-size:13.5px;color:#276749"><b>✅ เฉพาะ 20 Hz–20 kHz</b></div>
+      </div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลองในแผนนี้ (1-2 ประโยค):</label>
+        <textarea placeholder="จาก Audiogram และ Noise Audit ของฉัน..."></textarea>
+      </div>
+    </div>
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M6.2</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"Ultrasound ไม่ใช่เสียง"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <label class="mc-opt"><input type="radio" name="m1-held"> เคย</label>
+        <label class="mc-opt"><input type="radio" name="m1-held"> ไม่เคย</label>
+        <label class="mc-opt"><input type="radio" name="m1-held"> ไม่แน่ใจ</label>
+      </div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div style="background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px;font-size:13.5px;color:#276749"><b>✅ เป็นคลื่นเสียง f > 20 kHz</b></div>
+      </div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลองในแผนนี้ (1-2 ประโยค):</label>
+        <textarea placeholder="จาก Audiogram และ Noise Audit ของฉัน..."></textarea>
+      </div>
+    </div>
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M6.3</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"เด็กกับผู้ใหญ่ได้ยินเท่ากัน"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <label class="mc-opt"><input type="radio" name="m2-held"> เคย</label>
+        <label class="mc-opt"><input type="radio" name="m2-held"> ไม่เคย</label>
+        <label class="mc-opt"><input type="radio" name="m2-held"> ไม่แน่ใจ</label>
+      </div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div style="background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px;font-size:13.5px;color:#276749"><b>✅ ผู้ใหญ่ความถี่สูงลด (presbycusis)</b></div>
+      </div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลองในแผนนี้ (1-2 ประโยค):</label>
+        <textarea placeholder="จาก Audiogram และ Noise Audit ของฉัน..."></textarea>
+      </div>
+    </div>
+    <div class="mc-item">
+      <div class="mc-header"><span class="mc-code">M6.4</span><span class="mc-wrong-label">ข้อความที่ผิด:</span> <span class="mc-wrong-text">"เสียงดังหายเอง"</span></div>
+      <div class="mc-row"><label class="mc-q">① ก่อนเรียน ฉันเคยคิดแบบนี้ไหม?</label>
+        <label class="mc-opt"><input type="radio" name="m3-held"> เคย</label>
+        <label class="mc-opt"><input type="radio" name="m3-held"> ไม่เคย</label>
+        <label class="mc-opt"><input type="radio" name="m3-held"> ไม่แน่ใจ</label>
+      </div>
+      <div class="mc-row"><label class="mc-q">② แนวคิดที่ถูกต้องคือ:</label>
+        <div style="background:#fff;border:1.5px solid #fde68a;border-radius:8px;padding:8px;font-size:13.5px;color:#276749"><b>✅ NIHL เซลล์ขนเสียถาวร</b></div>
+      </div>
+      <div class="mc-row"><label class="mc-q">③ หลักฐานจากการทดลองในแผนนี้ (1-2 ประโยค):</label>
+        <textarea placeholder="จาก Audiogram และ Noise Audit ของฉัน..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">POE-01 · แผน 6 · การได้ยินและมลพิษทางเสียง · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+
+<script>
+const canvasState={};
+function initCanvas(id){const canvas=document.getElementById(id);if(!canvas)return;const ctx=canvas.getContext('2d');canvasState[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,ctx};
+function getPos(e){const r=canvas.getBoundingClientRect();const sx=canvas.width/r.width,sy=canvas.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function start(e){e.preventDefault();canvasState[id].drawing=true;ctx.beginPath();const p=getPos(e);ctx.moveTo(p.x,p.y);}
+function move(e){e.preventDefault();const st=canvasState[id];if(!st.drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);if(st.tool==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.strokeStyle='rgba(0,0,0,1)';ctx.lineWidth=24;}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=st.color;ctx.lineWidth=st.lw;}ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function end(e){e.preventDefault();canvasState[id].drawing=false;}
+canvas.addEventListener('mousedown',start);canvas.addEventListener('mousemove',move);canvas.addEventListener('mouseup',end);canvas.addEventListener('mouseleave',end);canvas.addEventListener('touchstart',start,{passive:false});canvas.addEventListener('touchmove',move,{passive:false});canvas.addEventListener('touchend',end,{passive:false});}
+function setTool(id,tool,btn){canvasState[id].tool=tool;btn.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+function setColor(id,color,el){canvasState[id].color=color;canvasState[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');el.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(b=>{b.classList.toggle('active',b.id&&b.id.includes('pencil'));});}
+function clearCanvas(id){const st=canvasState[id];const canvas=document.getElementById(id);st.ctx.globalCompositeOperation='source-over';st.ctx.clearRect(0,0,canvas.width,canvas.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>initCanvas(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+<script src="../../../shared/pace-auto.js"></script>
+</body></html>

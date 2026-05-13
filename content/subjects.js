@@ -48,8 +48,8 @@ window.KP_SUBJECTS = [
         title: 'เสียง',
         shortTitle: 'เสียง',
         icon: '🔊',
-        status: 'coming-soon',
-        numPlans: 0,
+        status: 'open',
+        numPlans: 11,
         unit: 'sound',  // ← scaffold พร้อมที่ content/physics3/units/sound/ · เปลี่ยน status:'open' หลังเติม plans
         dbUrl: null     // ← null = ใช้ API_URL ของวิชา · ถ้าอยากแยกชีท → deploy backend แล้ววาง URL
       },

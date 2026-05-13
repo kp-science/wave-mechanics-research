@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8"><title>ใบงาน Calc · แผน 4 (คลื่นกล)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#f1f2f9;color:#1a202c;font-size:16px;line-height:1.55;padding:20px}
+.page{max-width:1000px;margin:0 auto;background:#fff;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:26px 30px}
+.head{border-bottom:3px solid #1e88e5;padding-bottom:10px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:10px}
+.head h1{font-size:22px;color:#0d47a1}
+.meta{font-size:13px;color:#555}
+.tag{display:inline-block;background:#1e88e5;color:#fff;font-size:12px;padding:2px 10px;border-radius:12px;margin-right:6px}
+.q{background:#fff8e1;border-left:6px solid #f9a825;padding:12px 16px;border-radius:8px;margin:14px 0;font-size:14.5px}
+.formula{background:#e3f2fd;border:1.5px solid #90caf9;border-radius:10px;padding:12px 16px;margin:10px 0;font-size:15px}
+.formula code{font-family:'Cambria Math',serif;color:#0d47a1;font-weight:700;margin:0 6px}
+.item{border:2px solid #e2e8f0;border-radius:12px;padding:14px 16px;margin:12px 0;background:#fafafa}
+.item .num{display:inline-block;background:#1e88e5;color:#fff;border-radius:50%;width:30px;height:30px;text-align:center;line-height:30px;font-weight:800;margin-right:8px}
+.step{background:#fff;border:1.5px solid #90caf9;border-radius:8px;padding:10px 12px;margin-top:8px}
+.step-lbl{font-weight:700;color:#0d47a1;margin-bottom:4px}
+.ans-ta{width:100%;padding:6px 10px;border:1.5px solid #90caf9;border-radius:6px;font-family:inherit;font-size:14px;resize:vertical}
+.ans-in{border:none;border-bottom:1.5px solid #94a3b8;padding:3px 6px;font-family:inherit;font-size:15px;width:130px;text-align:center;background:#fff}
+canvas[data-bg="lined"]{display:block;width:100%;border:2px solid #90caf9;border-radius:8px;background:repeating-linear-gradient(to bottom,#fff 0,#fff 27px,#e3f2fd 28px);touch-action:none;cursor:crosshair;margin-top:6px}
+.canvas-toolbar{display:flex;gap:6px;margin:4px 0;flex-wrap:wrap;align-items:center}
+.c-btn{background:#fff;border:2px solid #1e88e5;border-radius:8px;padding:4px 9px;font-family:inherit;font-size:13px;cursor:pointer;color:#0d47a1;font-weight:600}
+.c-btn.active{background:#1e88e5;color:#fff}
+.c-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid #cbd5e1}
+.hint{font-size:13px;color:#64748b;font-style:italic;margin-top:4px}
+.namebar input{border:1.5px solid #90caf9;border-radius:6px;padding:3px 8px;font-family:inherit;font-size:13px}
+.foot{text-align:center;color:#888;font-size:12px;margin-top:14px;border-top:1px solid #eee;padding-top:8px}
+@media print{body{background:#fff;padding:0}.page{box-shadow:none;border-radius:0}.canvas-toolbar{display:none}}
+</style></head>
+<body data-ws-id="waves-plan4-calc">
+<div class="page">
+  <div class="head">
+    <div>
+      <h1>📐 ใบงาน 4.1 — Math Builder (Calc)</h1>
+      <div class="meta"><span class="tag">แผน 4</span><span class="tag">คลื่นกล</span><span class="tag">E4 Elaborate</span> 5 ข้อ · 15-20'</div>
+    </div>
+    <div class="meta namebar" style="display:flex;gap:10px;flex-wrap:wrap">
+      <label><b>ชื่อ</b> <input type="text" style="width:150px"></label>
+      <label><b>เลขที่</b> <input type="text" style="width:50px"></label>
+      <label><b>ห้อง</b> <input type="text" style="width:50px"></label>
+    </div>
+  </div>
+  <div class="q"><b>🎯 คำสั่ง:</b> ใช้สูตรและความสัมพันธ์ของคลื่น · <b>แสดงวิธีคิดให้ชัดเจน</b> · <b>เกณฑ์ผ่าน:</b> ≥ 3/5 ข้อ</div>
+  <div class="formula">📐 <b>สูตร/หลักการ:</b><br><code>Superposition: y_total = y₁ + y₂</code> · <code>Huygens: ทุกจุดบนหน้าคลื่นเป็นแหล่งย่อย</code> · <code>หน้าคลื่นใหม่ = ผลรวมของหน้าคลื่นจากแหล่งย่อย</code></div>
+  
+  <div class="item">
+    <div><span class="num">1</span><b>คลื่น 2 ขบวน A₁=3 cm + A₂=4 cm พบกัน · เฟสเดียวกัน · A รวม = ?</b></div>
+    <div class="step">
+      <div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cv1','pencil',this)">✏️</button>
+        <button class="c-btn" onclick="setTool('cv1','eraser',this)">⬜</button>
+        <div class="c-color" style="background:#1a202c;border:3px solid #1e88e5" onclick="setColor('cv1','#1a202c',this)"></div>
+        <div class="c-color" style="background:#1e88e5" onclick="setColor('cv1','#1e88e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('cv1','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cv1')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cv1" data-bg="lined" width="900" height="120"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..." style="margin-top:6px"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> A = <input class="ans-in"> cm</div>
+    <div class="hint">💡 3+4=7 cm</div>
+  </div>
+  <div class="item">
+    <div><span class="num">2</span><b>คลื่น 2 ขบวน A₁=5 cm + A₂=3 cm · เฟสตรงข้าม · A รวม = ?</b></div>
+    <div class="step">
+      <div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cv2','pencil',this)">✏️</button>
+        <button class="c-btn" onclick="setTool('cv2','eraser',this)">⬜</button>
+        <div class="c-color" style="background:#1a202c;border:3px solid #1e88e5" onclick="setColor('cv2','#1a202c',this)"></div>
+        <div class="c-color" style="background:#1e88e5" onclick="setColor('cv2','#1e88e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('cv2','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cv2')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cv2" data-bg="lined" width="900" height="120"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..." style="margin-top:6px"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ:</b> A = <input class="ans-in"> cm</div>
+    <div class="hint">💡 |5−3|=2 cm</div>
+  </div>
+  <div class="item">
+    <div><span class="num">3</span><b>หลังคลื่นพบกัน · ผ่านทะลุกัน หรือ ชนกันแล้วสะท้อน?</b></div>
+    <div class="step">
+      <div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cv3','pencil',this)">✏️</button>
+        <button class="c-btn" onclick="setTool('cv3','eraser',this)">⬜</button>
+        <div class="c-color" style="background:#1a202c;border:3px solid #1e88e5" onclick="setColor('cv3','#1a202c',this)"></div>
+        <div class="c-color" style="background:#1e88e5" onclick="setColor('cv3','#1e88e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('cv3','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cv3')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cv3" data-bg="lined" width="900" height="120"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..." style="margin-top:6px"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ/อธิบาย:</b><textarea class="ans-ta" rows="2"></textarea></div>
+    <div class="hint">💡 ผ่านทะลุกัน · เป็นไปตาม Superposition Principle</div>
+  </div>
+  <div class="item">
+    <div><span class="num">4</span><b>คลื่นน้ำผ่านช่องเปิดแคบ · หน้าคลื่นใหม่หลังช่องเป็นรูปอย่างไร?</b></div>
+    <div class="step">
+      <div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cv4','pencil',this)">✏️</button>
+        <button class="c-btn" onclick="setTool('cv4','eraser',this)">⬜</button>
+        <div class="c-color" style="background:#1a202c;border:3px solid #1e88e5" onclick="setColor('cv4','#1a202c',this)"></div>
+        <div class="c-color" style="background:#1e88e5" onclick="setColor('cv4','#1e88e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('cv4','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cv4')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cv4" data-bg="lined" width="900" height="120"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..." style="margin-top:6px"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ/อธิบาย:</b><textarea class="ans-ta" rows="2"></textarea></div>
+    <div class="hint">💡 วงครึ่ง · จาก Huygens (จุดเดียวเป็นแหล่งย่อย)</div>
+  </div>
+  <div class="item">
+    <div><span class="num">5</span><b>คลื่น 2 ขบวน f เท่ากัน A เท่ากัน เฟสต่างกัน π/2 · A รวม = ?</b></div>
+    <div class="step">
+      <div class="step-lbl">🧮 แสดงวิธีคิด:</div>
+      <div class="canvas-toolbar">
+        <button class="c-btn active" onclick="setTool('cv5','pencil',this)">✏️</button>
+        <button class="c-btn" onclick="setTool('cv5','eraser',this)">⬜</button>
+        <div class="c-color" style="background:#1a202c;border:3px solid #1e88e5" onclick="setColor('cv5','#1a202c',this)"></div>
+        <div class="c-color" style="background:#1e88e5" onclick="setColor('cv5','#1e88e5',this)"></div>
+        <div class="c-color" style="background:#dc2626" onclick="setColor('cv5','#dc2626',this)"></div>
+        <button class="c-btn" onclick="clearCanvas('cv5')" style="margin-left:auto;color:#c53030">🗑️</button>
+      </div>
+      <canvas id="cv5" data-bg="lined" width="900" height="120"></canvas>
+      <textarea class="ans-ta" rows="2" placeholder="หรือพิมพ์วิธีคิด..." style="margin-top:6px"></textarea>
+    </div>
+    <div style="margin-top:8px"><b>คำตอบ/อธิบาย:</b><textarea class="ans-ta" rows="2"></textarea></div>
+    <div class="hint">💡 A√2</div>
+  </div>
+  <div style="background:#f0fdf4;border-left:6px solid #16a34a;padding:12px 16px;border-radius:10px;margin-top:14px">
+    <b style="color:#166534">✅ Self-check:</b> ฉันตอบถูก ........ / 5 ข้อ · ข้อที่อยากให้ครูอธิบายเพิ่ม: ..................................................
+  </div>
+  <div class="foot">ใบงาน Calc · คลื่นกล แผน 4 · หลักการซ้อนทับและหลักของฮอยเกนส์ · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · 2569</div>
+</div>
+<script>
+const cs={};
+function ic(id){const c=document.getElementById(id);if(!c)return;const x=c.getContext('2d');cs[id]={drawing:false,tool:'pencil',color:'#1a202c',lw:2.5,x};
+function gp(e){const r=c.getBoundingClientRect();const sx=c.width/r.width,sy=c.height/r.height;const s=e.touches?e.touches[0]:e;return{x:(s.clientX-r.left)*sx,y:(s.clientY-r.top)*sy};}
+function st(e){e.preventDefault();cs[id].drawing=true;x.beginPath();const p=gp(e);x.moveTo(p.x,p.y);}
+function mv(e){e.preventDefault();const s=cs[id];if(!s.drawing)return;const p=gp(e);x.lineTo(p.x,p.y);if(s.tool==='eraser'){x.globalCompositeOperation='destination-out';x.strokeStyle='rgba(0,0,0,1)';x.lineWidth=24;}else{x.globalCompositeOperation='source-over';x.strokeStyle=s.color;x.lineWidth=s.lw;}x.lineCap='round';x.lineJoin='round';x.stroke();x.beginPath();x.moveTo(p.x,p.y);}
+function en(e){e.preventDefault();cs[id].drawing=false;}
+c.addEventListener('mousedown',st);c.addEventListener('mousemove',mv);c.addEventListener('mouseup',en);c.addEventListener('mouseleave',en);c.addEventListener('touchstart',st,{passive:false});c.addEventListener('touchmove',mv,{passive:false});c.addEventListener('touchend',en,{passive:false});}
+function setTool(id,t,b){cs[id].tool=t;b.closest('.canvas-toolbar').querySelectorAll('.c-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');}
+function setColor(id,co,el){cs[id].color=co;cs[id].tool='pencil';el.closest('.canvas-toolbar').querySelectorAll('.c-color').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
+function clearCanvas(id){const s=cs[id];const c=document.getElementById(id);s.x.globalCompositeOperation='source-over';s.x.clearRect(0,0,c.width,c.height);}
+document.addEventListener('DOMContentLoaded',()=>{document.querySelectorAll('canvas[data-bg="lined"]').forEach(c=>ic(c.id));});
+</script>
+<script src="../../../shared/worksheet-core.js"></script>
+<script src="../../../shared/pace-auto.js"></script>
+</body></html>
