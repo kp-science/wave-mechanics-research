@@ -51,10 +51,9 @@ window.KP_SUBJECTS = [
         status: 'open',
         numPlans: 11,
         unit: 'sound',  // ← content pack ที่ content/physics3/units/sound/ · 11 แผน · 165 ไฟล์สื่อ
-        // ⚠️ TODO: deploy Sound backend ตาม _private/SETUP_Sound_Backend.md แล้วแทน URL ด้านล่าง
-        // ปัจจุบัน null = ใช้ API_URL ของคลื่น (ข้อมูล Sound_* จะปนกับชีทคลื่น)
-        // หลังแทนแล้ว · refresh browser · Dashboard ใน ?unit=sound จะเริ่มอ่าน Sheet `Physics3-Sound-2569`
-        dbUrl: 'TODO_DEPLOY_SOUND_BACKEND'
+        // ✅ Sound Backend deployed (2026-05-13) · Sheet `Physics3-Sound-2569`
+        // Apps Script project: KP-Sound-Backend · TEACHER_PASSWORD + COLLECT_auto_sound + UNIT_NAME set
+        dbUrl: 'https://script.google.com/macros/s/AKfycbw22POLPv8fOSH2JTgkW1B0HbohsiMkNrVpxDYr3nokG5TL5a8vnV6_QmST27myEjYa/exec'
       },
       {
         id: 'light',
