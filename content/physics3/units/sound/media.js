@@ -73,6 +73,11 @@ window.KP_PLAN_MEDIA = {
           d:'คำถามสั้น 5 ข้อ · ตอบ 1-2 ประโยค · ปลายคาบ',
           meta:'ก่อนเลิกคาบ · 5 นาที',
           chips:[['k','K1'],['k','K2']] }
+      ,
+        { cls:'ft', no:'R0', t:'📜 หนังสือยินยอมเข้าร่วมการวิจัย (Consent)', file:'../research/consent.html',
+          d:'นักเรียนเลือก: ยินยอม/ไม่ยินยอม · ข้อมูลใช้ในงานวิจัย วPA (ก่อนเริ่มแผน 1 · ครั้งเดียว)',
+          meta:'ก่อนเริ่มหน่วยเสียง · 5 นาที',
+          chips:[['','R0'],['w','วิจัย วPA']] }
       ]}
     ],
     linkOut: [
@@ -843,6 +848,15 @@ window.KP_PLAN_MEDIA = {
           d:'คำถามสั้น 5 ข้อ · ตอบ 1-2 ประโยค · ปลายคาบ',
           meta:'ก่อนเลิกคาบ · 5 นาที',
           chips:[['k','K1'],['k','K2']] }
+      ,
+        { cls:'ft', no:'R1', t:'🎯 IMI · แบบสำรวจแรงจูงใจภายใน (21 ข้อ)', file:'../research/imi-21.html',
+          d:'Intrinsic Motivation Inventory · Autonomy/Competence/Relatedness · post-only หลังจบหน่วย',
+          meta:'หลังจบแผน 11 · 8-10 นาที',
+          chips:[['','R1'],['w','วิจัย วPA']] },
+        { cls:'ft', no:'R2', t:'⭐ แบบสอบถามความพึงพอใจ (20 ข้อ)', file:'../research/satisfaction-20.html',
+          d:'4 ด้าน: เนื้อหา · กิจกรรม · สื่อ · การวัดและประเมิน · 5-point Likert',
+          meta:'หลังจบหน่วย · 7-10 นาที',
+          chips:[['','R2'],['w','วิจัย วPA']] }
       ]}
     ],
     linkOut: [
