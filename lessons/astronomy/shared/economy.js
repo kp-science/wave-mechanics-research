@@ -258,7 +258,7 @@
       @keyframes ecoToastSlide{from{transform:translateX(40px);opacity:0}to{transform:translateX(0);opacity:1}}
       .eco-earned{filter:saturate(.5);position:relative}
       .eco-earned::after{content:'✓ ได้แล้ว';position:absolute;top:-8px;right:-4px;font-size:9px;padding:2px 6px;background:#16a34a;color:#fff;border-radius:8px;font-family:monospace;letter-spacing:.05em;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-      .eco-hud-chip{position:fixed;bottom:14px;right:14px;z-index:9998;padding:6px 12px;background:rgba(0,0,0,.7);color:#fff;border-radius:20px;font-size:11px;font-family:monospace;font-weight:700;letter-spacing:.05em;pointer-events:auto;cursor:pointer;display:flex;gap:8px;align-items:center}
+      .eco-hud-chip{position:fixed;top:64px;right:14px;z-index:49;padding:5px 11px;background:rgba(0,0,0,.7);color:#fff;border-radius:20px;font-size:11px;font-family:monospace;font-weight:700;letter-spacing:.05em;pointer-events:auto;cursor:pointer;display:flex;gap:8px;align-items:center;border:1px solid rgba(255,255,255,0.1)}
       .eco-hud-chip:hover{background:rgba(0,0,0,.9)}
     `;
     document.head.appendChild(s);
@@ -279,7 +279,11 @@
     refresh();
     setInterval(refresh, 3000);
   }
-  document.addEventListener('DOMContentLoaded', () => setTimeout(renderHudChip, 800));
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(renderHudChip, 800));
+  } else {
+    setTimeout(renderHudChip, 100);
+  }
 
   global.Economy = Economy;
 })(window);

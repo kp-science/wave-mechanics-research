@@ -27,12 +27,12 @@ const _ASTRO_PAGE = (no, title, file, type, time) => {
 
 window.KP_PLAN_MEDIA = {
   // ─────────────────────────────────────────────────────────────────
-  // EP01 · The Collision · 19 หน้า · G1 (story-only · no config.js)
+  // EP01 · The Collision · 20 หน้า · G1 (story-only · no config.js)
   // ─────────────────────────────────────────────────────────────────
   1: {
     folder: 'lessons/astronomy/ep01',
     title: 'แผน 1 — EP01 · The Collision · กำเนิดเอกภพ',
-    meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 19 หน้า',
+    meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 20 หน้า · 🏆 Team Competition',
     sections: [
       { title:'📜 ก่อนเริ่มงานวิจัย', items:[
         { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
@@ -47,10 +47,10 @@ window.KP_PLAN_MEDIA = {
           chips:[['k','Pre-test'],['k','20 ข้อ'],['k','ทำก่อน EP01']] }
       ]},
       { title:'🚀 Launcher', items:[
-        _ASTRO_LAUNCHER('EP01','The Collision','หน้า launcher EP01 · เลือกหน้าได้ทั้งหมด','19 หน้า · ~50 นาที',
+        _ASTRO_LAUNCHER('EP01','The Collision','หน้า launcher EP01 · เลือกหน้าได้ทั้งหมด','20 หน้า · ~55 นาที',
           [['k','Big Bang'],['k','CMB'],['k','13.8 พันล้านปี']])
       ]},
-      { title:'📖 หน้าบทเรียน (19 หน้า)', items:[
+      { title:'📖 หน้าบทเรียน (20 หน้า)', items:[
         _ASTRO_PAGE('01','ทางเข้า COSMOS LOG','p01-pretest.html','story'),
         _ASTRO_PAGE('02','ทีมสำรวจ · ตัวละคร 4 คน','p02-team.html','story'),
         _ASTRO_PAGE('03','The Collision · จำลองการชน','p03-collision.html','puzzle'),
@@ -70,6 +70,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('16b','Review · ทบทวน','p16-review.html','reflection'),
         _ASTRO_PAGE('17','Exercise · แบบฝึกหัด','p17-exercise.html','puzzle'),
         _ASTRO_PAGE('18','📊 Post-test · วัดหลัง EP01','p18-posttest.html','puzzle'),
+        _ASTRO_PAGE('18b','🏆 Hall of Fame · ทีมชนะ EP01','p18b-halloffame.html','reflection'),
         _ASTRO_PAGE('17b','Exit · ออก','p27-journal.html','reflection')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -119,6 +120,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('17a','ตลาด · ก่อนตีบอสสุดท้าย','p17-shop.html','setup',5),
         _ASTRO_PAGE('17b','BOSS สุดท้าย · 15 คลื่น','p17b-finalboss.html','mixed',10),
         _ASTRO_PAGE('20','📊 Post-test · วัดหลัง EP02','p20-posttest.html','puzzle',5),
+        _ASTRO_PAGE('17d','🏆 Hall of Fame · ทีมชนะ EP02','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('18','Journal 3-2-1 · ปิดเล่ม','p27-journal.html','reflection',4),
         _ASTRO_PAGE('19','Journey Map · Post-test','p19-map.html','reflection',5)
       ]},
@@ -172,6 +174,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('18','🔥 WARP RUN (climax · BOSS)','warprun.html','mixed',7),
         _ASTRO_PAGE('19','Post-test · Badge (เดิม)','p19-map.html','reflection',5),
         _ASTRO_PAGE('20','📊 Post-test · วัดหลัง EP03 (CRI)','p20-posttest.html','puzzle',5),
+        _ASTRO_PAGE('19a','🏆 Hall of Fame · ทีมชนะ EP03','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('19b','📒 3-2-1 Journal','p27-journal.html','reflection',5),
         _ASTRO_PAGE('JN','Join · ร่วมภารกิจ','join.html','setup')
       ]},
@@ -227,6 +230,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('23','🛒 Voyager Cache · Shop','p23-shop.html','setup',3),
         _ASTRO_PAGE('24','🔥 GRAVITY ASCENT (BOSS)','p24-boss.html','mixed',6),
         _ASTRO_PAGE('25','💫 Frame Dragging · กู้พ่อ','p25-rescue.html','story',3),
+        _ASTRO_PAGE('25b','🏆 Hall of Fame · ทีมชนะ EP04','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('26','📋 Journal 3-2-1 · Badge','p27-journal.html','reflection',4),
         _ASTRO_PAGE('JN','Join · ร่วมภารกิจ','join.html','setup')
       ]},
@@ -304,6 +308,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('24b','🛒 Voyager Cache','p24-shopb.html','setup',3),
         _ASTRO_PAGE('25','🔥 SOLAR STORM (BOSS)','p25-boss.html','mixed',7),
         _ASTRO_PAGE('26','🌌 4 endings','p26-rescue.html','story',3),
+        _ASTRO_PAGE('26b','🏆 Hall of Fame · ทีมชนะ EP05','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('27','🏆 Badge + 3-2-1','p27-journal.html','reflection',4)
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -380,6 +385,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('24','🔥 VOID ZERO-FIX (BOSS Grid)','p24-boss-grid.html','mixed',10),
         _ASTRO_PAGE('25','🌌 4 endings A+/A/B/C','p25-rescue-ending.html','story',4),
         _ASTRO_PAGE('26','ดาวเทียมโลกดับ · cliffhanger','p26-satellite-fail.html','story',3),
+        _ASTRO_PAGE('26b','🏆 Hall of Fame · ทีมชนะ EP06','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('27','🏆 Scale Master · 3-2-1','p27-journal.html','reflection',4)
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -440,6 +446,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('24','การแพทย์ · spinoff','p24-medicine.html','story'),
         _ASTRO_PAGE('25','Spinoff Quiz','p25-spinoff-quiz.html','puzzle'),
         _ASTRO_PAGE('26','🔥 BOSS · Orbital Triage (CIPHER)','p26-boss.html','mixed'),
+        _ASTRO_PAGE('26b','🏆 Hall of Fame · ทีมชนะ EP07','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('27','Journal · → EP08','p27-journal.html','reflection')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[
@@ -517,6 +524,7 @@ window.KP_PLAN_MEDIA = {
         _ASTRO_PAGE('24','Ending A · PRESERVE','p24-ending-preserve.html','story'),
         _ASTRO_PAGE('25','🌟 Ending Reset Route','p25-ending-reset.html','story'),
         _ASTRO_PAGE('26','Farewell · 4 NPC ลาจาก','p26-farewell.html','story'),
+        _ASTRO_PAGE('26b','🏆 Hall of Fame · ทีมชนะ EP08 · Season Final','p26b-halloffame.html','reflection',3),
         _ASTRO_PAGE('27','Journal · 🏆 COMMANDER + S2','p27-journal.html','reflection')
       ]},
       { title:'🛠 ทรัพยากรเสริม', items:[

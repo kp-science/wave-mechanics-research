@@ -66,6 +66,7 @@ window.EP_CONFIG = {
     { id:'p24b', file:'p24-shopb.html',         title:'🛒 Voyager Cache · ร้านค้า',       type:'setup',      time:3 },
     { id:'p25',  file:'p25-boss.html',          title:'🔥 SOLAR STORM (Boss)',           type:'mixed',      time:7 },
     { id:'p26', file:'p26-rescue.html',         title:'🌌 4 endings',                    type:'story',      time:3 },
+    { id:'p26b', file:'p26b-halloffame.html',        title:'🏆 Hall of Fame · ทีมชนะ EP05',                type:'reflection', time:3 },
     { id:'p27', file:'p27-journal.html',        title:'🏆 Badge + 3-2-1',                type:'reflection', time:4 },
   ],
 

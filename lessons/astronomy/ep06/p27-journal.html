@@ -1,374 +1,595 @@
 <!DOCTYPE html>
-<html lang="th"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EP06 · P27 · Journal · Badge Scale Master</title>
-<link rel="stylesheet" href="../shared/book.css?v=6">
-<link rel="stylesheet" href="_page-style.css">
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exit Ticket · EP06 · ขอบฟ้าของบ้าน · ระบบสุริยะ</title>
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
-.badge-stage { text-align:center; padding:20px 0; }
-.badge-disk { display:inline-block; width:180px; height:180px; border-radius:50%; position:relative;
-              background:radial-gradient(circle at 35% 35%, #fff, #64d8ff 30%, #b980ff 70%, #1a0830 95%);
-              box-shadow:0 0 60px #b980ff, inset 0 0 40px #64d8ff;
-              animation:badgeSpin 6s linear infinite, badgeBreathe 3s ease-in-out infinite; }
-@keyframes badgeSpin { from{filter:hue-rotate(0);} to{filter:hue-rotate(360deg);} }
-@keyframes badgeBreathe { 0%,100%{transform:scale(1);} 50%{transform:scale(1.04);} }
-.badge-disk::before { content:'🪐'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:80px; filter:drop-shadow(0 0 20px #fff); }
-.badge-name { font-family:Orbitron,monospace; font-size:22px; letter-spacing:.2em; color:#64d8ff; margin-top:16px; }
-.rank-up { padding:12px; border-radius:12px; background:rgba(185,128,255,0.10); border:1px solid #b980ff; margin:14px 0; text-align:center; }
-.rank-up b { font-family:Orbitron,monospace; letter-spacing:.18em; color:#b980ff; }
-.three-two-one { display:grid; grid-template-columns:1fr; gap:10px; margin:12px 0; }
-@media(min-width:560px){ .three-two-one { grid-template-columns:1fr 1fr 1fr; } }
-.section { padding:12px; border-radius:12px; background:rgba(20,28,52,0.7); border:1px solid rgba(100,216,255,0.3); }
-.section h4 { margin:0 0 8px; font-family:Orbitron,monospace; font-size:11px; color:#64d8ff; letter-spacing:.14em; }
-.chip-counter { font-size:11px; color:#9aa3c0; margin-top:6px; font-family:Orbitron,monospace; }
-.gain-card { padding:12px; border-radius:10px; background:rgba(126,255,178,0.10); border:1px solid #7effb2; margin:14px 0; }
-.gain-card b { color:#7effb2; }
+.section-321 {
+  padding: 22px 26px;
+  border-radius: 16px;
+  margin: 18px 0;
+  position: relative;
+}
+.section-321::before {
+  content: attr(data-num);
+  position: absolute;
+  top: -18px; left: 20px;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px; font-weight: 900;
+  color: var(--section-color); background: var(--bg-0);
+  border: 2px solid var(--section-color);
+  box-shadow: 0 0 20px var(--section-color);
+}
+.section-3 {
+  --section-color: #7effb2;
+  background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(126,255,178,0.35);
+}
+.section-2 {
+  --section-color: #b980ff;
+  background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(185,128,255,0.35);
+}
+.section-1 {
+  --section-color: #ffcb6b;
+  background: linear-gradient(135deg, rgba(255,203,107,0.06), rgba(255,92,122,0.03));
+  border: 1px solid rgba(255,203,107,0.35);
+}
+.section-321 h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 0.2em;
+  color: var(--section-color); margin-bottom: 4px;
+  padding-left: 54px;
+}
+.section-321 .s-sub {
+  font-size: 13px; color: var(--text-dim);
+  padding-left: 54px; margin-bottom: 16px;
+}
+
+/* 3 · Checkbox grid */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+.cpt-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer; font-size: 13.5px;
+  transition: all 0.2s;
+}
+.cpt-item:hover { border-color: var(--border-strong); }
+.cpt-item input { accent-color: var(--accent-green); width: 18px; height: 18px; flex-shrink: 0; }
+.cpt-item.selected { border-color: var(--accent-green); background: rgba(126,255,178,0.08); }
+.cpt-count {
+  margin-top: 10px; padding: 8px 14px;
+  background: rgba(0,0,0,0.3); border-radius: 100px;
+  font-size: 12px; display: inline-block;
+}
+.cpt-count b { color: var(--accent-green); }
+
+/* 2 · Scene drag pool + 2 drop zones */
+.scene-layout {
+  display: grid; grid-template-columns: 2fr 1fr;
+  gap: 16px; margin: 16px 0;
+}
+@media (max-width: 800px) { .scene-layout { grid-template-columns: 1fr; } }
+.scene-src {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  padding: 14px; background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.scene-src-card {
+  padding: 10px; text-align: center;
+  background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.06));
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  cursor: grab; font-size: 11px; color: var(--text);
+  user-select: none;
+}
+.scene-src-card:hover { transform: translateY(-2px); border-color: var(--accent-2); }
+.scene-src-card.picked { opacity: 0.3; cursor: not-allowed; }
+.scene-src-card .icon { font-size: 22px; margin-bottom: 4px; }
+.fav-zones { display: flex; flex-direction: column; gap: 12px; }
+.fav-zone {
+  padding: 14px; min-height: 140px;
+  background: rgba(185,128,255,0.05);
+  border: 2px dashed rgba(185,128,255,0.4);
+  border-radius: 12px; text-align: center;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; gap: 6px;
+  justify-content: center;
+}
+.fav-zone.drag-over { border-color: var(--accent-2); background: rgba(185,128,255,0.1); }
+.fav-zone.filled {
+  border-style: solid; border-color: var(--accent-2);
+  justify-content: flex-start;
+}
+.fav-zone .zone-lbl { font-family: 'Orbitron'; font-size: 10px; color: var(--accent-2); letter-spacing: 0.2em; }
+.fav-zone .picked-card { font-size: 12px; color: var(--text); }
+.fav-zone .picked-card .icon { font-size: 24px; display: block; }
+.fav-zone textarea { margin-top: 6px; min-height: 44px; font-size: 12px; }
+
+/* 1 · Dropdown + text */
+.q-row {
+  display: grid; grid-template-columns: 1fr; gap: 10px;
+  margin: 14px 0;
+}
+.q-row select, .q-row textarea { width: 100%; }
+
+/* BONUS · emoji + stars + slider */
+.bonus-wrap {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px; margin: 18px 0;
+}
+@media (max-width: 800px) { .bonus-wrap { grid-template-columns: 1fr; } }
+.bonus-card {
+  padding: 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.bonus-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--accent); margin-bottom: 10px;
+}
+.emoji-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.emoji-btn {
+  flex: 1; min-width: 50px;
+  padding: 10px 6px;
+  background: rgba(22,27,58,0.4);
+  border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: center;
+  font-size: 24px;
+  transition: all 0.2s;
+}
+.emoji-btn:hover { transform: translateY(-2px); }
+.emoji-btn.active {
+  border-color: var(--accent-gold);
+  background: rgba(255,203,107,0.1);
+  box-shadow: 0 0 15px rgba(255,203,107,0.3);
+}
+.emoji-btn .label {
+  display: block; font-size: 9px;
+  color: var(--text-faint); margin-top: 4px;
+  font-family: 'Sarabun', sans-serif;
+}
+.star-row { display: flex; gap: 4px; }
+.star {
+  font-size: 28px; cursor: pointer;
+  color: rgba(255,203,107,0.2);
+  transition: all 0.15s;
+}
+.star:hover, .star.on { color: var(--accent-gold); transform: scale(1.1); }
+.slider-wrap { margin: 10px 0; }
+.slider-wrap input[type="range"] {
+  width: 100%; accent-color: var(--accent);
+  -webkit-appearance: none; height: 6px;
+  background: rgba(100,216,255,0.2); border-radius: 100px;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+}
+.slider-val {
+  text-align: center; font-family: 'Orbitron', sans-serif;
+  font-size: 24px; color: var(--accent); margin: 4px 0;
+}
+.slider-val::after { content: '%'; font-size: 14px; margin-left: 2px; }
+
+/* Cognitive load · Difficulty perception (research-only) */
+.research-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 14px 0;
+}
+@media (max-width: 800px) { .research-row { grid-template-columns: 1fr; } }
+.cl-card, .diff-card {
+  padding: 14px 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.cl-card h5, .diff-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--accent); margin-bottom: 6px;
+}
+.cl-card .sub, .diff-card .sub {
+  font-size: 11px; color: var(--text-faint); margin-bottom: 10px;
+}
+.cl-slider input { width: 100%; accent-color: var(--accent-2); }
+.cl-slider .vlbl {
+  text-align: center; font-family: 'Orbitron', sans-serif;
+  font-size: 22px; color: var(--accent-2); margin: 4px 0;
+}
+.cl-slider .scale-row {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--text-faint); margin-top: 4px;
+}
+.diff-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.diff-chip {
+  padding: 6px 12px; background: rgba(22,27,58,0.4);
+  border: 1px solid var(--border); border-radius: 100px;
+  cursor: pointer; font-size: 12px; color: var(--text-dim);
+  transition: all 0.2s;
+}
+.diff-chip:hover { border-color: var(--border-strong); color: var(--text); }
+.diff-chip.active {
+  background: rgba(255,92,122,0.15);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
 </style>
 </head>
-<body data-page="p27" data-type="reflection">
-<div class="page">
-  <span class="lbl reflection">🏆 JOURNAL · BADGE</span>
-  <h1>Journal · ภารกิจสำเร็จ</h1>
+<body data-page="p27">
+<main class="page"><div class="page-inner">
 
-  <div class="card gold">
-    <div class="badge-stage">
-      <div class="badge-disk"></div>
-      <div class="badge-name">SCALE MASTER</div>
-      <div class="muted">บทที่ 6 · COSMOS LOG</div>
-    </div>
-  </div>
+<div class="page-label">◤ EXIT TICKET · EP06 · 5 นาที</div>
+<h1 class="page-title">3-2-1 Journal</h1>
+<h2 class="page-sub">SOLAR SYSTEM · SCALE & KEPLER · 3-2-1 EXIT TICKET</h2>
 
-  <div class="rank-up">📈 ยศใหม่: <b>CAPTAIN → CAPTAIN+</b></div>
-
-  <div id="gainCard" class="gain-card" style="display:none;"></div>
-
-  <div class="card cyan">
-    <h3>📋 Post-test 5 ข้อ (โจทย์เดียวกับ pretest · เทียบ gain 1:1)</h3>
-    <div id="postArea"></div>
-    <button id="postBtn" class="ghost" style="margin-top:8px;">📊 ดู gain เทียบ Pre-test</button>
-  </div>
-
-  <div class="card cyan">
-    <h3>📋 3-2-1 Reflection · กดเลือก chips</h3>
-    <div class="three-two-one">
-      <div class="section">
-        <h4>3 · สิ่งที่ได้เรียน</h4>
-        <div class="chip-pool" id="learn3"></div>
-        <div class="chip-counter">เลือก <b id="cnt3">0</b>/3</div>
-      </div>
-      <div class="section">
-        <h4>2 · คำถามที่อยากรู้ต่อ</h4>
-        <div class="chip-pool" id="learn2"></div>
-        <div class="chip-counter">เลือก <b id="cnt2">0</b>/2</div>
-      </div>
-      <div class="section">
-        <h4>1 · สิ่งที่จะนำไปใช้</h4>
-        <div class="chip-pool" id="learn1"></div>
-        <div class="chip-counter">เลือก <b id="cnt1">0</b>/1</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card lavender">
-    <span class="narr"><b style="color:#ffcb6b;">เคน:</b> "ภารกิจสำเร็จ · ทีมยึด Genesis Vault ในแถบไคเปอร์ · ดาวน์โหลดแผนที่เวลาเรียบร้อย · แต่..."</span>
-    <br><br>
-    <span class="narr" style="color:#ff8a3d;"><b>📡 ALERT:</b> ดาวเทียมโลกเริ่มดับทีละดวง · GPS ดับ · อินเทอร์เน็ตขาดหาย · ดาวเทียมสื่อสารปิด · โลกถูกตัดขาด</span>
-    <br><br>
-    <span class="narr"><b style="color:#7effb2;">โบลท์</b> (มือกุมสมุดบันทึกของพ่อ): "ผม...ผมเห็นสัญลักษณ์มุมแผนที่ ตรงกับลายมือพ่อตอนเด็ก · ทำไมพ่อผมรู้ภาษานี้?"</span>
-    <br><br>
-    <span class="narr"><b style="color:#64d8ff;">โบลท์</b> (ครั้งแรกที่นำทีม): "ถ้าจะอ่านแผนที่นี้ · เราต้องกลับไปจุดเริ่มต้น <b>เทคโนโลยีอวกาศของมนุษย์</b> — Sputnik · 1957 · LEO"</span>
-    <br><br>
-    <span class="narr"><b style="color:#ffcb6b;">พ่ออารยา</b> (พยักหน้าเงียบ): "...ไปเลย กัปตัน"</span>
-    <br><br>
-    <a href="../ep07/p00-cover.html" style="display:inline-block;background:#ff8a3d;color:#1a0e00;padding:12px 24px;border-radius:10px;font-weight:800;text-decoration:none;font-size:16px;">→ EP07 "สงครามในวงโคจร · Orbital War"</a>
-  </div>
-
-  <details class="tc"><summary>🎓 Teacher Cue · P27</summary>
-    <div>เปรียบเทียบ pretest vs posttest · เห็น gain ต่อ M1-M7 · ทำลาย misconception ทั้งหมด</div></details>
-
-  <div class="btn-pair">
-    <button class="submit-btn" id="submitBtn">📤 บันทึก Journal</button>
-    <button class="next-btn" id="nextBtn" disabled>🔒 ส่งผลก่อน</button>
-  </div>
-
-  <!-- ===== F9 · Achievement Hall ===== -->
-  <div class="card gold">
-    <h3 style="color:#ffd700;">🏆 ACHIEVEMENT HALL · เหรียญที่ปลดล็อกในศึก VOID ZERO-FIX</h3>
-    <div class="ach-hall-progress" id="achProgress">ปลด 0/7</div>
-    <div class="ach-hall" id="achHall"></div>
-  </div>
-
-  <!-- ===== KPA · วPA SUMMARY PANEL ===== -->
-  <div class="card" style="border-color:#b980ff; background:linear-gradient(180deg, rgba(185,128,255,0.10), rgba(20,12,30,0.7));">
-    <h3 style="color:#b980ff;">📊 KPA · วPA SUMMARY · สรุปหลักฐานการเรียนรู้ทั้ง EP06</h3>
-    <div id="kpaPanel" style="font-size:14px; line-height:1.6;">กำลังโหลด...</div>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
-      <button id="kpaExport" class="ghost" style="flex:1 1 200px;">📥 Export KPA JSON</button>
-      <button id="kpaPrint" class="ghost" style="flex:1 1 200px;">🖨️ พิมพ์รายงาน</button>
-      <button id="btnPrintJournal" class="ghost" style="flex:1 1 200px;">🖨️ พิมพ์ใบสรุปนักเรียน (A4)</button>
-    </div>
-  </div>
-
-  <!-- F11 · Print-only signature area -->
-  <div class="signature-area print-only" style="display:none;">
-    <div class="sig-line">ลายเซ็นนักเรียน</div>
-    <div class="sig-line">ลายเซ็นครู</div>
-  </div>
-  <style>
-    @media print { .signature-area.print-only { display: grid !important; } .print-only { display: block !important; } }
-  </style>
-
-  <div style="margin-top:24px; padding:18px; border-radius:14px; background:linear-gradient(180deg, rgba(126,255,178,0.08), rgba(20,28,52,0.6)); border:2px dashed #7effb2; text-align:center;">
-    <div style="font-family:Orbitron,monospace; font-size:11px; letter-spacing:.16em; color:#7effb2; margin-bottom:8px;">🎮 PLAY AGAIN</div>
-    <button id="btnPlayAgain" style="padding:14px 28px; background:linear-gradient(180deg,#7effb2,#4ad08a); color:#022; border:none; border-radius:12px; font-family:Orbitron,monospace; font-size:14px; letter-spacing:.16em; font-weight:700; cursor:pointer;">↻ เล่นใหม่ตั้งแต่ต้น</button>
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · เก็บข้อมูลวิจัย</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">นำเข้า</span><span>"ก่อนจบ · ทบทวนสั้น ๆ แบบ 3-2-1 · บอก 3 สิ่งที่เรียน · 2 ฉากประทับใจ · 1 คำถามที่อยากรู้ต่อ"</span></div>
+    <div class="role"><span class="tag do">ทำ</span><span>ปล่อยให้ทีมตอบเอง · Export JSON ใน P18 จะเก็บคำตอบทั้งหมด</span></div>
+    <div class="role"><span class="tag teach">วิจัย</span><span>Data ที่เก็บ: frequency ของ concept ที่จำได้ · preference ของฉาก · direction ของความอยากรู้ · affective · self-rating · confidence · ใช้วิเคราะห์ conceptual change ได้ละเอียดกว่า pre/post</span></div>
   </div>
 </div>
 
-<script src="../shared/firebase-config.js"></script>
-<script src="./config.js"></script>
+<div class="dialog-box lem" data-speaker="LEMAÎTRE">
+  <div class="txt">จบ EP06 · ระบบสุริยะ · ขอบันทึกสั้น ๆ · <b>3 · สิ่งที่เรียน · 2 · ฉากที่ประทับใจ · 1 · คำถามที่อยากรู้ต่อ</b></div>
+</div>
 
-<script src="../../shared/pace-client.js"></script><script src="../../shared/kpdb.js"></script><script src="../../shared/pace-resolver.js"></script>
-<script src="../shared/sync-client.js"></script>
-<script src="../shared/photon.js?v=3"></script>
-<script src="../shared/role-view.js"></script>
-<script src="../shared/starfield.js?v=1"></script>
-<script src="../shared/audio.js?v=2"></script>
-<script src="../shared/mission-brief.js?v=1"></script>
-<script src="../shared/mystery-box.js?v=2"></script>
-<script src="../shared/kpa-tracker.js?v=1"></script>
-<script src="../shared/pause-card.js?v=1"></script>
-<script src="../shared/group-talk.js?v=1"></script>
-<script src="../shared/explain-back.js?v=1"></script>
-<script src="../shared/confidence-gate.js?v=1"></script>
-<script src="../shared/learning-journal.js?v=1"></script>
-<script src="../shared/reveal-after-submit.js?v=1"></script>
-<script src="../shared/ep06-boot.js?v=1"></script>
-<script src="../../../content/astronomy/config.js?v=2"></script>
-<script src="../shared/ep-sync.js?v=1"></script>
+<!-- SECTION 3 · CONTENT -->
+<div class="section-321 section-3" data-num="3">
+  <h3>สิ่งที่เรียนรู้วันนี้ (เนื้อหา)</h3>
+  <div class="s-sub">เลือก <b>3 ข้อ</b> ที่ทีมรู้สึกว่า "ใช่" ที่สุด · ตอบตามที่ทีมเข้าใจจริง · ไม่มีถูก/ผิด</div>
+
+  <div class="concept-grid" id="concept-grid">
+    <label class="cpt-item" data-id="c1" data-correct="1"><input type="checkbox" value="c1"><span>ระบบสุริยะ = ดวงอาทิตย์ (99.86% ของมวล) + 8 ดาวเคราะห์ + ดาวเคราะห์แคระ + ดาวหาง + ดาวเคราะห์น้อย</span></label>
+    <label class="cpt-item" data-id="c2" data-correct="1"><input type="checkbox" value="c2"><span>ดาวหิน 4 ใน (Mercury · Venus · Earth · Mars) vs ดาวก๊าซ/น้ำแข็ง 4 นอก (Jupiter · Saturn · Uranus · Neptune)</span></label>
+    <label class="cpt-item" data-id="c3" data-correct="1"><input type="checkbox" value="c3"><span>ฤดูกาลของโลก = แกนเอียง 23.5° · ไม่ใช่ระยะห่างจากดวงอาทิตย์</span></label>
+    <label class="cpt-item" data-id="c4" data-correct="1"><input type="checkbox" value="c4"><span>Asteroid Belt (Mars-Jupiter) · Kuiper Belt (หลัง Neptune) · Oort Cloud (ขอบนอกสุด)</span></label>
+    <label class="cpt-item" data-id="c5" data-correct="1"><input type="checkbox" value="c5"><span>ดาวเคราะห์โคจรเป็นวงรี (ellipse) ตาม Kepler · มี perihelion/aphelion</span></label>
+    <label class="cpt-item" data-id="c6" data-correct="1"><input type="checkbox" value="c6"><span>Pluto = ดาวเคราะห์แคระ (Dwarf Planet) ตั้งแต่ 2006 · ไม่ผ่านเกณฑ์ "เคลียร์วงโคจร"</span></label>
+    <label class="cpt-item" data-id="m1" data-correct="0" data-mc="1"><input type="checkbox" value="m1"><span>ฤดูกาลเกิดจากระยะห่างจากดวงอาทิตย์ · เข้าใกล้ = ร้อน · ห่าง = หนาว</span></label>
+    <label class="cpt-item" data-id="m2" data-correct="0" data-mc="2"><input type="checkbox" value="m2"><span>Pluto ยังเป็นดาวเคราะห์ดวงที่ 9 ของระบบสุริยะ</span></label>
+  </div>
+  <div class="cpt-count">เลือกแล้ว · <b id="cpt-n">0</b> / 3</div>
+
+  <div class="form-row mt-20">
+    <label>✍ ถ้ามีความรู้อื่นที่ไม่อยู่ในรายการ · เขียนที่นี่</label>
+    <textarea id="extra-concept" rows="2" placeholder="optional · เช่น 'สเปกตรัม OBAFGKM' · ฯลฯ"></textarea>
+  </div>
+</div>
+
+<!-- SECTION 2 · STORY FAVORITE -->
+<div class="section-321 section-2" data-num="2">
+  <h3>ฉากที่ประทับใจ (เรื่อง)</h3>
+  <div class="s-sub">ลาก <b>2 ฉาก</b> ที่ทีมชอบที่สุดจากซ้ายไปวางในกล่องขวา · แล้วเขียนเหตุผลสั้น ๆ</div>
+
+  <div class="scene-layout">
+    <div class="scene-src" id="scene-src"></div>
+    <div class="fav-zones">
+      <div class="fav-zone" data-slot="fav1">
+        <div class="zone-lbl">◦ FAVORITE 1</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+      <div class="fav-zone" data-slot="fav2">
+        <div class="zone-lbl">◦ FAVORITE 2</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1 · QUESTION -->
+<div class="section-321 section-1" data-num="1">
+  <h3>คำถามที่อยากรู้ต่อ (ต่อยอด)</h3>
+  <div class="s-sub">เลือก 1 คำถามจาก dropdown หรือเขียนเอง · จะไปต่อใน EP02</div>
+
+  <div class="q-row">
+    <select id="q-preset" onchange="onPresetChange()">
+      <option value="">-- เลือกคำถาม หรือเลือก "อื่นๆ" เพื่อเขียนเอง --</option>
+      <option value="q1">ถ้าโลกแกนเอียง 0° จะเป็นยังไง?</option>
+      <option value="q2">มี Planet 9 จริงไหม?</option>
+      <option value="q3">Mars เคยมีน้ำหรือสิ่งมีชีวิตไหม?</option>
+      <option value="q4">Europa ใต้เปลือกน้ำแข็งมีสิ่งมีชีวิตได้ไหม?</option>
+      <option value="q5">ดาวเคราะห์น้อยตกใส่โลกอันตรายแค่ไหน?</option>
+      <option value="q6">New Horizons ดู Pluto แล้วเจออะไร?</option>
+      <option value="q7">Saturn rings ทำไมยังคงอยู่ ไม่หายไป?</option>
+      <option value="q8">JWST ดูดาวเคราะห์นอกระบบยังไง?</option>
+      <option value="other">อื่นๆ (เขียนเอง)</option>
+    </select>
+    <textarea id="q-text" rows="2" placeholder="เขียนคำถามของทีม"></textarea>
+  </div>
+</div>
+
+<!-- BONUS · AFFECTIVE + SELF-RATING + CONFIDENCE -->
+<h3 style="font-family:'Orbitron'; font-size:12px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 8px;">🎨 BONUS · เก็บข้อมูลเพิ่มเติม</h3>
+
+<div class="bonus-wrap">
+  <div class="bonus-card">
+    <h5>😊 ความรู้สึกวันนี้</h5>
+    <div class="emoji-row" id="emoji-row">
+      <button class="emoji-btn" data-v="love">😍<span class="label">สนุก</span></button>
+      <button class="emoji-btn" data-v="think">🤔<span class="label">คิดเยอะ</span></button>
+      <button class="emoji-btn" data-v="mind">🤯<span class="label">ทึ่ง</span></button>
+      <button class="emoji-btn" data-v="tired">🥱<span class="label">เหนื่อย</span></button>
+      <button class="emoji-btn" data-v="lost">😵<span class="label">งง</span></button>
+    </div>
+  </div>
+
+  <div class="bonus-card">
+    <h5>⭐ ทีมเข้าใจบิกแบง</h5>
+    <div class="star-row" id="star-row">
+      <div class="star" data-v="1">★</div>
+      <div class="star" data-v="2">★</div>
+      <div class="star" data-v="3">★</div>
+      <div class="star" data-v="4">★</div>
+      <div class="star" data-v="5">★</div>
+    </div>
+    <p class="muted" style="font-size: 11px; margin-top: 4px;" id="star-lbl">เลือกระดับ 1-5</p>
+  </div>
+
+  <div class="bonus-card">
+    <h5>🎯 ความมั่นใจสอบผ่าน</h5>
+    <div class="slider-wrap">
+      <div class="slider-val" id="slider-val">50</div>
+      <input type="range" id="confidence" min="0" max="100" step="5" value="50" oninput="updSlider()">
+    </div>
+    <p class="muted" style="font-size: 11px; text-align: center;">ถ้าสอบตอนนี้ · ได้กี่ %</p>
+  </div>
+</div>
+
+<!-- Research instruments · Cognitive Load (Paas) + Difficulty Perception -->
+<div class="research-row">
+  <div class="cl-card">
+    <h5>🧠 ใช้สมาธิในการเรียนแค่ไหน</h5>
+    <div class="sub">เลื่อนตามความรู้สึกตอนทำกิจกรรม</div>
+    <div class="cl-slider">
+      <div class="vlbl"><span id="cl-val">5</span><span style="font-size:12px;color:var(--text-faint)"> / 9</span></div>
+      <input type="range" id="cog-load" min="1" max="9" step="1" value="5" oninput="updCL()">
+      <div class="scale-row">
+        <span>น้อยมาก</span><span>ปานกลาง</span><span>หนักมาก</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="diff-card">
+    <h5>🎢 ส่วนไหนยากที่สุด</h5>
+    <div class="sub">เลือก 1 ส่วน · ครูจะใช้ปรับการสอน</div>
+    <div class="diff-chips" id="diff-chips">
+      <div class="diff-chip" data-v="tilt">🌍 ฤดูกาล/แกนเอียง 23.5°</div>
+      <div class="diff-chip" data-v="pluto">🌑 Pluto reclassification</div>
+      <div class="diff-chip" data-v="belts">🪨 Asteroid · Kuiper · Oort</div>
+      <div class="diff-chip" data-v="terrjov">🪐 ดาวหิน vs ดาวก๊าซ</div>
+      <div class="diff-chip" data-v="kepler">📐 วงรี · Kepler Laws</div>
+      <div class="diff-chip" data-v="none">😌 ไม่มีอะไรยาก</div>
+    </div>
+  </div>
+</div>
+
+<div class="center mt-20">
+  <button class="btn primary finish-btn" id="finishBtn" onclick="submit()">✓ ยืนยัน · ส่ง Exit Ticket</button>
+</div>
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag p">P · สะท้อนคิด · Metacognition</span>
+  <span class="ped-tag a">A · ประเมินตนเอง</span>
+  <span class="ped-tag">วPA 6 · Feedback</span>
+  <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+  <span class="ped-tag">Research · 3-2-1 Journal Data</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js?v=99"></script>
+  <script src="../shared/telemetry-sync.js"></script>
 <script>
-const POOL_3 = [
-  '6 ขั้นกำเนิดระบบสุริยะ', 'frost line · inner=หิน outer=ยักษ์', 'asteroid belt โล่ง 1M km',
-  'ดาวยักษ์มีแก่นแข็ง', 'พลูโต = ดาวเคราะห์แคระ', 'heliopause 120 AU',
-  'Oort Cloud 70,000 AU', '4 ปัจจัย habitable', 'Kepler T²=a³', 'Voyager 1 · 2012',
-];
-const POOL_2 = [
-  'Vault สร้างโดยใคร?', 'มีดาวอื่นที่มีชีวิตจริงไหม',
-  'ทางช้างเผือกมีอันตรายอะไร', 'ดาวหางที่หายมีอะไรอยู่ข้างใน',
-  'ทำไม TRAPPIST-1 มี 7 ดาว', 'Proxima Centauri มี habitable ไหม',
-];
-const POOL_1 = [
-  'อ่านข่าว NASA Voyager', 'ดู space scale video',
-  'อธิบายให้น้องว่าพลูโตคืออะไร', 'ใช้ Kepler T²=a³ คำนวณดาว',
-  'ไม่กลัว asteroid · เพราะรู้ว่าโล่ง',
-];
-function build(host, pool, max, counter){
-  const h = document.getElementById(host); const c = document.getElementById(counter);
-  pool.forEach(t=>{
-    const el = document.createElement('div'); el.className='chip'; el.textContent=t;
-    el.onclick = ()=>{
-      const cur = h.querySelectorAll('.chip.selected').length;
-      if(!el.classList.contains('selected') && cur>=max) return;
-      el.classList.toggle('selected');
-      c.textContent = h.querySelectorAll('.chip.selected').length;
-    };
-    h.appendChild(el);
+// SECTION 3 · checkbox limit 3
+let selected3 = [];
+document.querySelectorAll('.cpt-item input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const item = inp.closest('.cpt-item');
+    if (inp.checked) {
+      if (selected3.length >= 3) { inp.checked = false; alert('เลือกได้มากสุด 3 ข้อ'); return; }
+      selected3.push(inp.value); item.classList.add('selected');
+    } else {
+      selected3 = selected3.filter(v => v !== inp.value); item.classList.remove('selected');
+    }
+    document.getElementById('cpt-n').textContent = selected3.length;
   });
-}
-build('learn3', POOL_3, 3, 'cnt3');
-build('learn2', POOL_2, 2, 'cnt2');
-build('learn1', POOL_1, 1, 'cnt1');
-
-// Post-test 5 ข้อ · ใช้โจทย์เดียวกับ Pre-test (p01) เพื่อวัด gain ตรง 1:1
-const QS = [
-  { m:'M1', q:'ระบบสุริยะประกอบด้วยอะไรบ้าง?',
-    a:['ดวงอาทิตย์ + 8 ดาวเคราะห์เท่านั้น',
-       'ดวงอาทิตย์ + ดาวเคราะห์ + ดาวเคราะห์น้อย + ดาวหาง + ดาวเคราะห์แคระ + บริวาร',
-       'ดวงอาทิตย์อย่างเดียว',
-       'กาแล็กซีทางช้างเผือกทั้งหมด'], c:1 },
-  { m:'M2', q:'ดาวเคราะห์ชั้นนอก (พฤหัส-เนปจูน) ตรงแกนกลางมีอะไร?',
-    a:['แก๊สล้วนถึงแกน',
-       'มีแก่นแข็ง (rock+ice) ห่อด้วยแก๊ส/น้ำแข็ง',
-       'ของเหลวร้อนหมุนวน',
-       'ว่างเปล่าไม่มีอะไร'], c:1 },
-  { m:'M5', q:'พลูโตจัดเป็นอะไรในปัจจุบัน (IAU 2006)?',
-    a:['ดาวเคราะห์ดวงที่ 9',
-       'ดาวเคราะห์แคระ (dwarf planet)',
-       'ดาวบริวารของเนปจูน',
-       'ดาวหางขนาดใหญ่'], c:1 },
-  { m:'M6', q:'ขอบเขตของระบบสุริยะอยู่ที่ไหน?',
-    a:['จบที่เนปจูน ~30 AU',
-       'heliopause ~120 AU · Oort cloud ~70,000 AU',
-       'เพียง 100 ล้าน กม.',
-       '1 ปีแสง'], c:1 },
-  { m:'M7', q:'เขตเอื้อชีวิต (Habitable zone) ขึ้นกับปัจจัยใดบ้าง?',
-    a:['ระยะห่างจากดาวฤกษ์อย่างเดียว',
-       'น้ำเหลว + อากาศ + อุณหภูมิเหมาะ + ระยะ + ชนิดดาวฤกษ์',
-       'ดวงจันทร์เท่านั้น',
-       'ขนาดของดาวเคราะห์'], c:1 },
-];
-const postArea = document.getElementById('postArea');
-QS.forEach((q,i) => {
-  const card = document.createElement('div'); card.style.cssText='padding:8px; margin:6px 0; border-radius:8px; background:rgba(0,0,0,0.3);';
-  card.innerHTML = `<div style="font-size:12px; margin-bottom:4px;">ข้อ ${i+1} · [${q.m}] ${q.q}</div>
-    <div class="choice-row" style="gap:4px;">
-      ${q.a.map((t,k)=>`<label style="padding:6px;"><input type="radio" name="post${i}" value="${k}"> <span style="font-size:12px;">${t}</span></label>`).join('')}
-    </div>`;
-  postArea.appendChild(card);
 });
 
-document.getElementById('postBtn').onclick = () => {
-  let postCorrect = 0;
-  QS.forEach((q,i) => {
-    const v = document.querySelector(`input[name="post${i}"]:checked`);
-    if(v && Number(v.value)===q.c) postCorrect++;
-  });
-  let preCorrect = 0;
-  try {
-    const pre = JSON.parse(localStorage.getItem('cosmosLog_ep06_submit_p01')) || {};
-    preCorrect = pre.correct || 0;
-  } catch {}
-  const gain = postCorrect - preCorrect;
-  const gc = document.getElementById('gainCard'); gc.style.display='block';
-  gc.innerHTML = `📊 <b>Pre-test:</b> ${preCorrect}/8 → <b>Post-test:</b> ${postCorrect}/8 · <b>Gain: ${gain>=0?'+':''}${gain}</b>`;
-};
-
-setTimeout(()=>{
-  Submit.wirePair({
-    page:'p27', nextHref:'./index.html',
-    getPayload(){
-      const get = (id)=>[...document.querySelectorAll('#'+id+' .chip.selected')].map(e=>e.textContent);
-      let postCorrect = 0;
-      const epAnswers = [];
-      QS.forEach((q,i) => {
-        const v = document.querySelector(`input[name="post${i}"]:checked`);
-        const val = v ? Number(v.value) : -1;
-        const ok = val === q.c;
-        if (ok) postCorrect++;
-        epAnswers.push({ id:'Q'+(i+1), mcode:q.m, ans:val, correct:ok });
-      });
-      if (window.EPSync) EPSync.submit({ ep:6, test:'post', answers: epAnswers });
-      return { l3:get('learn3'), l2:get('learn2'), l1:get('learn1'), badge:'scaleMaster', rank:'CAPTAIN+', postCorrect, postTotal:QS.length };
-    },
-    validate(p){
-      if(p.l3.length<3 || p.l2.length<2 || p.l1.length<1){ alert('เลือกให้ครบ 3-2-1'); return false; }
-      return true;
-    },
-    onSubmit(){
-      try {
-        const b = JSON.parse(localStorage.getItem('cosmosLog_badges')||'[]');
-        if(!b.includes('scaleMaster')) b.push('scaleMaster');
-        localStorage.setItem('cosmosLog_badges', JSON.stringify(b));
-        localStorage.setItem('cosmosLog_rank', 'CAPTAIN+');
-      } catch{}
-      alert('🏆 Badge SCALE MASTER ปลดล็อก!\n📈 ยศใหม่: CAPTAIN+\n\n🪐 EP06 จบสมบูรณ์ · รอ EP07 ทางช้างเผือก');
-      if (window.MysteryBox && MysteryBox.roll) setTimeout(() => MysteryBox.roll({ wrongs:0, page:'p27' }), 1000);
-    }
-  });
-  setTimeout(()=>{ if(Transition && Transition.play) Transition.play('AURORA'); }, 500);
-
-  document.getElementById('btnPlayAgain').onclick = () => {
-    if(!confirm('⚠️ ลบความคืบหน้า EP06 ทั้งหมด?')) return;
-    const removeKeys = Object.keys(localStorage).filter(k => k.startsWith('cosmosLog_ep06'));
-    removeKeys.forEach(k => localStorage.removeItem(k));
-    alert('✓ รีเซ็ตเรียบร้อย · กลับไปหน้าปก');
-    location.href = 'p00-cover.html';
-  };
-}, 200);
-
-/* ===== KPA · วPA Summary rendering ===== */
-function renderKPA(){
-  if (!window.KPA){ document.getElementById('kpaPanel').innerHTML = '<i>KPA tracker ยังไม่โหลด</i>'; return; }
-  const s = KPA.summary();
-  const dom = s.domains || {};
-  const groups = {
-    'K (Knowledge · ความรู้)': ['K1','K2','K3','K4','K5','K6'],
-    'P (Process/Skill · ทักษะ)': ['P1','P2','P3'],
-    'A (Attitude · เจตคติ)':    ['A1','A2','A3'],
-  };
-  let html = '';
-  for (const [title, ids] of Object.entries(groups)){
-    html += `<div style="margin:10px 0;"><b style="color:#64d8ff;">${title}</b><div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:6px; margin-top:6px;">`;
-    ids.forEach(k => {
-      const d = dom[k] || { count:0, correct:0 };
-      const heat = d.count >= 4 ? '#7effb2' : d.count >= 2 ? '#ffcb6b' : (d.count >= 1 ? '#64d8ff' : '#3a3a4a');
-      const fg = d.count >= 1 ? '#021022' : '#9aa3c0';
-      html += `<div style="padding:8px; border-radius:8px; background:${heat}; color:${fg}; text-align:center;">
-        <div style="font-family:Orbitron,monospace; font-size:11px; letter-spacing:.12em;">${k}</div>
-        <div style="font-size:18px; font-weight:800;">${d.count}</div>
-        <div style="font-size:10px;">${d.correct? '✓'+d.correct:'·'}</div>
-      </div>`;
-    });
-    html += '</div></div>';
-  }
-  // วPA
-  const v = s.vpaCounts || {d1:0,d2:0,d3:0};
-  html += `<div style="margin-top:14px; padding:10px 14px; border-radius:10px; background:rgba(0,0,0,0.4);">
-    <b style="color:#ffcb6b;">วPA · evidence ทั้ง 3 ด้าน</b><br>
-    <span style="font-size:13px;">
-      ด้านที่ 1 จัดการเรียนรู้ → <b style="color:#7effb2;">${v.d1}</b> ·
-      ด้านที่ 2 ผลสัมฤทธิ์ → <b style="color:#7effb2;">${v.d2}</b> ·
-      ด้านที่ 3 พัฒนาตนเอง → <b style="color:#7effb2;">${v.d3}</b>
-    </span><br>
-    <span style="font-size:12px; color:#9aa3c0;">รวม log ทั้งหมด: ${s.totalLogs} entries</span>
-  </div>`;
-  document.getElementById('kpaPanel').innerHTML = html;
-}
-renderKPA();
-setInterval(renderKPA, 2500);
-
-document.getElementById('kpaExport').onclick = () => {
-  if (!window.KPA) return;
-  const sname = (localStorage.getItem('cosmosLog_studentName') || 'student').replace(/\s+/g,'_');
-  KPA.download('ep06-kpa-' + sname + '-' + new Date().toISOString().slice(0,10) + '.json');
-};
-document.getElementById('kpaPrint').onclick = () => {
-  window.print();
-};
-
-/* ===== F9 · Achievement Hall ===== */
-function renderAchHall(){
-  const host = document.getElementById('achHall');
-  const prog = document.getElementById('achProgress');
-  if (!host || !prog) return;
-  const A = (EP_CONFIG.gridBoss && EP_CONFIG.gridBoss.achievements) || {};
-  let unlocked = [];
-  try {
-    const raw = localStorage.getItem('cosmosLog_ep06_boss_p24');
-    if (raw) {
-      const d = JSON.parse(raw);
-      unlocked = (d.achievements || []).slice();
-    }
-  } catch(e){}
-  // Note: stored achievements are formatted "icon name", but we want IDs.
-  // Compare by name match for safety.
-  const unlockedIds = new Set();
-  Object.keys(A).forEach(id => {
-    const meta = A[id];
-    const formatted = (meta.icon + ' ' + meta.name);
-    if (unlocked.includes(formatted) || unlocked.includes(id) || unlocked.includes(meta.name)) {
-      unlockedIds.add(id);
-    }
-  });
-  const all = Object.keys(A);
-  prog.textContent = `ปลด ${unlockedIds.size}/${all.length}`;
-  host.innerHTML = '';
-  all.forEach(id => {
-    const meta = A[id];
-    const isOn = unlockedIds.has(id);
-    const chip = document.createElement('div');
-    chip.className = 'ach-hall-chip ' + (isOn ? 'unlocked' : 'locked');
-    chip.title = (isOn ? '✓ ' : '🔒 ') + (meta.desc || '');
-    chip.innerHTML = `${meta.icon} ${meta.name}` + (isOn ? '' : ' · 🔒');
-    chip.onclick = () => alert((isOn ? '✓ ปลดล็อกแล้ว · ' : '🔒 ยังไม่ปลด · ') + (meta.desc || ''));
-    host.appendChild(chip);
+// SECTION 2 · drag-drop scene favorites
+const SCENES = [
+  { id: 's1', icon: '🌍', name: 'Pale Blue Dot · Voyager 1' },
+  { id: 's2', icon: '🪐', name: '6 ดาวเคราะห์ Lab + GENESIS SHARDS' },
+  { id: 's3', icon: '🌎', name: 'ทดลองแกนเอียง 23.5° ด้วยลูกโลก' },
+  { id: 's4', icon: '🪨', name: 'Asteroid · Kuiper · Oort Cloud' },
+  { id: 's5', icon: '🔥', name: 'ดาวหิน vs ดาวก๊าซ Reveal' },
+  { id: 's6', icon: '🌑', name: 'Pluto reclassification 2006' },
+  { id: 's7', icon: '📐', name: 'วงรี · Kepler Laws · perihelion' },
+  { id: 's8', icon: '⚔️', name: 'BOSS · VOID ZERO-FIX 15×15 Maze' },
+];
+function renderSceneSrc() {
+  document.getElementById('scene-src').innerHTML = SCENES.map(s => `
+    <div class="scene-src-card" draggable="true" data-id="${s.id}">
+      <div class="icon">${s.icon}</div>
+      <div>${s.name}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.scene-src-card').forEach(c => {
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.id); c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
   });
 }
-renderAchHall();
+const favs = { fav1: null, fav2: null };
+document.querySelectorAll('.fav-zone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const id = e.dataTransfer.getData('text/plain');
+    if (Object.values(favs).includes(id)) { alert('ฉากนี้ถูกเลือกแล้ว'); return; }
+    const slot = zone.dataset.slot;
+    favs[slot] = id;
+    const s = SCENES.find(x => x.id === id);
+    zone.classList.add('filled');
+    zone.innerHTML = `
+      <div class="zone-lbl">◦ ${slot.toUpperCase()}</div>
+      <div class="picked-card"><span class="icon">${s.icon}</span>${s.name}</div>
+      <textarea placeholder="เพราะอะไร? (1 ประโยค)" data-slot="${slot}"></textarea>
+    `;
+    document.querySelector(`.scene-src-card[data-id="${id}"]`).classList.add('picked');
+  });
+});
+renderSceneSrc();
 
-/* F11 · Print journal button */
-document.getElementById('btnPrintJournal').onclick = () => {
-  if (window.KPA) KPA.log('A2', 'journal-print', { page:'p27' });
-  window.print();
-};
+// SECTION 1 · dropdown
+function onPresetChange() {
+  const v = document.getElementById('q-preset').value;
+  const txt = document.getElementById('q-text');
+  const presetText = {
+    q1: 'ถ้าโลกแกนเอียง 0° จะเป็นยังไง?',
+    q2: 'มี Planet 9 จริงไหม?',
+    q3: 'Mars เคยมีน้ำหรือสิ่งมีชีวิตไหม?',
+    q4: 'Europa ใต้เปลือกน้ำแข็งมีสิ่งมีชีวิตได้ไหม?',
+    q5: 'ดาวเคราะห์น้อยตกใส่โลกอันตรายแค่ไหน?',
+    q6: 'New Horizons ดู Pluto แล้วเจออะไร?',
+    q7: 'Saturn rings ทำไมยังคงอยู่ ไม่หายไป?',
+    q8: 'JWST ดูดาวเคราะห์นอกระบบยังไง?',
+    other: '',
+  };
+  if (v && v !== 'other') txt.value = presetText[v];
+  else txt.focus();
+}
+
+// BONUS · emoji
+let emoji = null;
+document.querySelectorAll('.emoji-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    emoji = b.dataset.v;
+  });
+});
+
+// BONUS · stars
+let stars = 0;
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    stars = parseInt(s.dataset.v);
+    document.querySelectorAll('.star').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= stars));
+    document.getElementById('star-lbl').textContent = `ระดับ ${stars} / 5`;
+  });
+});
+
+// BONUS · slider
+function updSlider() {
+  const v = document.getElementById('confidence').value;
+  document.getElementById('slider-val').textContent = v;
+}
+
+// Cognitive Load (Paas single-item) · 1=very low effort · 9=very high effort
+function updCL() {
+  const v = document.getElementById('cog-load').value;
+  document.getElementById('cl-val').textContent = v;
+}
+
+// Difficulty perception · single chip
+let difficulty = null;
+document.querySelectorAll('.diff-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.diff-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    difficulty = c.dataset.v;
+  });
+});
+
+// Time-on-task tracking · นับตั้งแต่ Book.state.startTime ถ้ามี ไม่งั้นเริ่มที่หน้านี้
+const _journalStart = Date.now();
+
+// SUBMIT
+function _unlockSubmitBtn() {
+  const btn = document.getElementById('finishBtn');
+  if (!btn) return;
+  btn.disabled = false;
+  btn.classList.remove('done');
+  if (btn.dataset.origText) btn.textContent = btn.dataset.origText;
+  else btn.textContent = '✓ ยืนยัน · ส่ง Exit Ticket';
+}
+function submit() {
+  // ถ้า validation ไม่ผ่าน · ปลดล็อคปุ่มที่ book.js เพิ่ง auto-lock ให้กดใหม่ได้
+  if (selected3.length !== 3) { alert('กาถูก 3 ข้อในส่วน "3 สิ่งที่เรียน" ก่อน'); _unlockSubmitBtn(); return; }
+  if (!favs.fav1 || !favs.fav2) { alert('ลาก 2 ฉากมาวางในช่อง Favorite'); _unlockSubmitBtn(); return; }
+  const q = (document.getElementById('q-text').value || '').trim();
+  if (!q) { alert('เขียน 1 คำถามในส่วน "คำถามที่อยากรู้ต่อ"'); _unlockSubmitBtn(); return; }
+  if (!emoji) { alert('เลือกอารมณ์'); _unlockSubmitBtn(); return; }
+  if (stars === 0) { alert('ให้ดาวระดับความเข้าใจ'); _unlockSubmitBtn(); return; }
+
+  const favReasons = {};
+  document.querySelectorAll('textarea[data-slot]').forEach(t => { favReasons[t.dataset.slot] = t.value.trim(); });
+
+  // ── Research metrics ────────────────────────────────
+  // Misconception probe: นับจาก concepts ที่ผู้เรียนเลือก เทียบกับ data-correct ของ chk
+  const mcPicked = [];
+  const correctPicked = [];
+  selected3.forEach(id => {
+    const item = document.querySelector(`.cpt-item[data-id="${id}"]`);
+    if (!item) return;
+    if (item.dataset.correct === '0') mcPicked.push(id); // misconception held
+    else correctPicked.push(id);
+  });
+  const cogLoad = parseInt(document.getElementById('cog-load').value); // 1-9 Paas
+
+  // Time-on-task: ใช้ Book.state.startTime ถ้ามี ไม่งั้น fallback ไปที่ journalStart
+  const epStartTs = (Book.state && Book.state.startTime) || _journalStart;
+  const timeOnTaskSec = Math.round((Date.now() - epStartTs) / 1000);
+
+  const data = {
+    concepts: selected3,
+    concepts_extra: document.getElementById('extra-concept').value.trim(),
+    fav_scenes: favs,
+    fav_reasons: favReasons,
+    question: q,
+    question_preset: document.getElementById('q-preset').value,
+    emoji,
+    stars,
+    confidence: parseInt(document.getElementById('confidence').value),
+    // Research data
+    misconception_picked: mcPicked,
+    misconception_count: mcPicked.length,
+    correct_picked: correctPicked,
+    cognitive_load: cogLoad,
+    difficulty_hardest: difficulty,
+    time_on_ep_sec: timeOnTaskSec,
+    at: Date.now(),
+  };
+  Book.savePageData('p27', data);
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p27', amount:(3), reason:'Exit Ticket submitted' });
+  else Book.addEnergy(3, 'Exit Ticket submitted');
+  Book.addInventory('📒 3-2-1 Journal complete');
+  Book.completePage('p27');
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main" style="padding: 22px;">
+      <h3>✓ EXIT TICKET บันทึกแล้ว</h3>
+      <p>ข้อมูลของทีมพร้อมส่งต่อ EP02 และใช้ในงานวิจัย</p>
+      <p class="mt-10" style="color: var(--accent-gold)">+3 Energy · 📒 3-2-1 Journal</p>
+      <p class="muted mt-10">กด "ต่อไป →" ไปสรุป Journey Map</p>
+    </div>`;
+}
 </script>
-</body></html>
+</body>
+</html>

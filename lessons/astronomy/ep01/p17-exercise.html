@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P17 · แบบฝึกหัด · COSMOS LOG EP01</title>
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
 .bloom-nav {
   display: flex; gap: 4px; flex-wrap: nowrap;
@@ -104,8 +104,15 @@ table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent
 .match-right-slot.filled { border-style: solid; }
 .match-right-slot.correct { border-color: var(--accent-green); background: rgba(126,255,178,0.06); }
 .match-right-slot.wrong { border-color: var(--accent-red); background: rgba(255,92,122,0.06); }
+.match-right-slot.filled { cursor: pointer; }
+.match-right-slot.filled:hover { border-color: var(--accent-red); background: rgba(255,92,122,0.1); }
 .match-right-slot .target-label { font-size: 12px; color: var(--text-faint); margin-right: 8px; }
-.match-right-slot .placed-text { color: var(--text); }
+.match-right-slot .placed-text { color: var(--text); flex: 1; }
+.match-right-slot .undo-x {
+  margin-left: 8px; font-size: 11px; color: var(--accent-red);
+  font-family: 'Orbitron', monospace; opacity: 0.7;
+}
+.match-right-slot.filled:hover .undo-x { opacity: 1; }
 
 /* Rank list (drag order) */
 .rank-wrap {
@@ -242,7 +249,9 @@ table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent
       <div class="match-right-slot" data-accept="m3"><span class="target-label">E ·</span>นิวเคลียสฮีเลียมเกิดจาก p + n</div>
     </div>
   </div>
+  <p class="muted" style="font-size:11px;margin:8px 0 4px">💡 คลิกช่องที่วางแล้ว = เอาคืน · หรือกด "↻ รีเซ็ต" ลบทั้งหมด</p>
   <button class="btn mt-10" onclick="checkMatch()">✓ ตรวจ</button>
+  <button class="btn mt-10" onclick="resetMatch()" style="margin-left:6px">↻ รีเซ็ต</button>
   <div class="fb" id="fb-q4"></div>
 </div>
 
@@ -385,8 +394,7 @@ table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent
   <div class="ex-head"><span class="ex-num">15</span><span class="ex-badge">L6 · CREATE</span><span class="ex-type">short text</span></div>
   <div class="q">สมมติ <b>H₀ ใหญ่ขึ้น 2 เท่า</b> (140 km/s/Mpc) · เอกภพจะเปลี่ยนแปลงอย่างไร? เขียนอย่างน้อย <b>2 ผล</b> ที่จะเกิดขึ้น</div>
   <textarea id="q15a" rows="4" placeholder="เช่น · กาแล็กซีเคลื่อนออกเร็วขึ้น · อายุเอกภพจะสั้นลง · ฯลฯ"></textarea>
-  <p class="muted" style="font-size:11px; margin-top:4px;">💡 คำสำคัญที่ควรมี: เร็วขึ้น, อายุ, ขยายตัว, ระยะ</p>
-  <button class="btn mt-10" onclick="checkText('q15','q15a',['เร็ว','อายุ'],1,'L6')">✓ ตรวจ</button>
+  <button class="btn mt-10" onclick="checkText('q15','q15a',['เร็ว','ห่าง'],1,'L6',true)">✓ ตรวจ</button>
   <div class="fb" id="fb-q15"></div>
 </div>
 
@@ -414,7 +422,7 @@ table.analyze-table th { background: rgba(100,216,255,0.08); color: var(--accent
 </div>
 
 </div></main>
-<script src="../shared/book.js"></script>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
 <script>
 const TOTAL_BY_LEVEL = { L1: 3, L2: 3, L3: 3, L4: 3, L5: 2, L6: 1 };
@@ -514,23 +522,58 @@ function checkNumber(qId, inputId, target, tol, level, lvl) {
 
 // Match drag-drop (Q4)
 const matchState = {};
+
+// เก็บ HTML ดั้งเดิมของแต่ละช่อง · ใช้ตอน reset/undo
+const _q4SlotOriginal = {};
+document.querySelectorAll('#q4 .match-right-slot').forEach(slot => {
+  _q4SlotOriginal[slot.dataset.accept] = slot.innerHTML;
+});
+
+function _q4ClearSlot(slot){
+  if (!slot || !slot.dataset.placed) return;
+  const id = slot.dataset.placed;
+  const src = document.querySelector(`#q4 .match-left-item[data-id="${id}"]`);
+  if (src) { src.classList.remove('placed'); src.draggable = true; }
+  slot.classList.remove('filled','correct','wrong');
+  slot.innerHTML = _q4SlotOriginal[slot.dataset.accept];
+  delete slot.dataset.placed;
+  delete matchState[slot.dataset.accept];
+}
+
+function resetMatch(){
+  if (checked['q4']) return; // ตรวจไปแล้ว · ห้าม reset
+  document.querySelectorAll('#q4 .match-right-slot').forEach(_q4ClearSlot);
+  const fb = document.getElementById('fb-q4');
+  if (fb) fb.classList.remove('show');
+}
+
 document.querySelectorAll('#q4 .match-left-item').forEach(el => {
-  el.addEventListener('dragstart', e => e.dataTransfer.setData('text/plain', el.dataset.id));
+  el.addEventListener('dragstart', e => {
+    if (el.classList.contains('placed')) { e.preventDefault(); return; }
+    e.dataTransfer.setData('text/plain', el.dataset.id);
+  });
 });
 document.querySelectorAll('#q4 .match-right-slot').forEach(slot => {
   slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
   slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
   slot.addEventListener('drop', e => {
     e.preventDefault(); slot.classList.remove('drag-over');
+    if (checked['q4']) return; // ตรวจไปแล้ว · lock
     if (slot.dataset.placed) return;
     const id = e.dataTransfer.getData('text/plain');
     const src = document.querySelector(`#q4 .match-left-item[data-id="${id}"]`);
+    if (!src || src.classList.contains('placed')) return;
     slot.dataset.placed = id;
     slot.classList.add('filled');
     const label = slot.querySelector('.target-label').textContent;
-    slot.innerHTML = `<span class="target-label">${label}</span><span class="placed-text">⇢ ${src.textContent}</span>`;
+    slot.innerHTML = `<span class="target-label">${label}</span><span class="placed-text">⇢ ${src.textContent}</span><span class="undo-x">✕</span>`;
     src.classList.add('placed');
     matchState[slot.dataset.accept] = id;
+  });
+  // คลิกช่องที่วางแล้ว = ดึงคืน
+  slot.addEventListener('click', () => {
+    if (checked['q4']) return;
+    if (slot.dataset.placed) _q4ClearSlot(slot);
   });
 });
 function checkMatch() {
@@ -543,7 +586,7 @@ function checkMatch() {
     else if (placed) slot.classList.add('wrong');
   });
   const ok = correctCount === total;
-  showFB('q4', ok, 'จับคู่ถูกทั้ง 5 คู่', `ถูก ${correctCount}/${total} · ดูสีแดงและลองใหม่`);
+  showFB('q4', ok, 'จับคู่ถูกทั้ง 5 คู่', `ถูก ${correctCount}/${total} · กด "↻ รีเซ็ต" แล้วลองใหม่`);
   markDone('q4', ok ? 1 : 0, 'L2');
 }
 
@@ -574,13 +617,17 @@ function checkRank() {
   markDone('q14', ok ? 1 : 0, 'L5');
 }
 
-function checkText(qId, inputId, keywords, level, lvl) {
+function checkText(qId, inputId, keywords, level, lvl, anyKeyword) {
   if (checked[qId]) return;
   const text = document.getElementById(inputId).value.trim().toLowerCase();
-  if (text.length < 20) { alert('เขียนอย่างน้อย 20 ตัวอักษร'); return; }
+  if (text.length < 3) { alert('เขียนอย่างน้อย 3 ตัวอักษร'); return; }
   const hits = keywords.filter(k => text.includes(k.toLowerCase())).length;
-  const ok = hits >= keywords.length;
-  showFB(qId, ok, 'ใช้คำสำคัญครบ · คิดได้ดี', `ต้องมีคำสำคัญ: ${keywords.join(' · ')}`);
+  const ok = anyKeyword ? hits >= 1 : hits >= keywords.length;
+  const okMsg = anyKeyword ? 'พบคำสำคัญแล้ว · คิดได้ดี' : 'ใช้คำสำคัญครบ · คิดได้ดี';
+  const badMsg = anyKeyword
+    ? `ต้องมีคำสำคัญ <b>อย่างน้อย 1</b> คำ: ${keywords.join(' หรือ ')}`
+    : `ต้องมีคำสำคัญ: ${keywords.join(' · ')}`;
+  showFB(qId, ok, okMsg, badMsg);
   markDone(qId, ok ? 1 : 0, lvl);
 }
 

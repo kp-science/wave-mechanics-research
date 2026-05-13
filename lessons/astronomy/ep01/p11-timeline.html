@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P11 · 6 ยุคอนุภาค · COSMOS LOG EP01</title>
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
 .timeline-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 14px 0; }
 @media (max-width: 1100px) { .timeline-grid { grid-template-columns: repeat(3, 1fr); } }
@@ -195,7 +195,7 @@
   </div>
 </div>
 
-<div class="progress-box" id="progress">เปิดแล้ว <b>0/6</b> ยุค · เปิดครบเพื่อปลดล็อก</div>
+<div class="progress-box" id="progress">ผ่านแล้ว <b>0/6</b> ยุค · ผ่านครบทุกยุคเพื่อปลดล็อก (ต้องตอบถูกหมด · ไม่มีเลือกผิด)</div>
 
 <div id="result"></div>
 
@@ -236,8 +236,8 @@
   </div>
 </div>
 
-<script src="../shared/particles.js"></script>
-<script src="../shared/book.js"></script>
+<script src="../shared/particles.js?v=2"></script>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
 <script>
 let currentEra = null;
@@ -288,10 +288,34 @@ function checkEra() {
     else if (!checked && should) { opt.classList.add('show-missed'); misses++; }
   });
   const total = correctSet.size;
-  document.getElementById('p-result').innerHTML = `
-    <div class="info-card" style="padding:10px 12px; margin:0;">
-      <div style="font-size:13px;">✓ ถูก <b style="color:var(--accent-green)">${hits}/${total}</b> · ขาด <b style="color:var(--accent-gold)">${misses}</b> · เกิน <b style="color:var(--accent-red)">${extras}</b></div>
-    </div>`;
+  const perfect = (hits === total && extras === 0);
+
+  // Track attempts (for energy scaling)
+  const store = Book.state.data.p11 || { eras: [] };
+  store[`attempts${currentEra}`] = (store[`attempts${currentEra}`] || 0) + 1;
+  const attempts = store[`attempts${currentEra}`];
+
+  // Result panel · feedback ที่ชัดเจน + แนะนำ
+  if (perfect) {
+    document.getElementById('p-result').innerHTML = `
+      <div class="info-card" style="padding:12px 14px; margin:0; border-color:var(--accent-green); background:rgba(126,255,178,0.08);">
+        <div style="font-size:14px; color:var(--accent-green); font-weight:700;">✓ ผ่านยุคนี้แล้ว · ${hits}/${total} ครบถ้วน</div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:4px;">ใช้ ${attempts} ครั้ง · กด "✕ ปิด" เพื่อกลับไปไทม์ไลน์</div>
+      </div>`;
+  } else {
+    document.getElementById('p-result').innerHTML = `
+      <div class="info-card" style="padding:12px 14px; margin:0; border-color:var(--accent-red); background:rgba(255,92,122,0.08);">
+        <div style="font-size:14px; color:var(--accent-red); font-weight:700;">✗ ยังไม่ผ่าน</div>
+        <div style="font-size:13px; margin-top:6px;">
+          ✓ ถูก <b style="color:var(--accent-green)">${hits}/${total}</b> ·
+          ❓ ขาด <b style="color:var(--accent-gold)">${misses}</b> ·
+          ⚠ เกิน <b style="color:var(--accent-red)">${extras}</b>
+        </div>
+        <div style="font-size:12px; color:var(--text-dim); margin-top:6px;">
+          ${extras > 0 ? '🔴 ปลดเครื่องหมายที่ผิด · ' : ''}${misses > 0 ? '🟡 เลือกที่ขาดเพิ่ม · ' : ''}แล้วกด "✓ ยืนยัน" อีกครั้ง
+        </div>
+      </div>`;
+  }
 
   // Show ANSWER-KEY legend (only the particles that ACTUALLY exist in this era)
   const leg = document.getElementById('sim-legend');
@@ -302,19 +326,24 @@ function checkEra() {
       return `<span class="sim-legend-chip"><span class="d" style="background:${s.color}">${s.label}</span>${s.name}</span>`;
     }).join('');
 
-  // Mark era revealed
-  const card = document.querySelector(`.era-card[data-era="${currentEra}"]`);
-  if (card) card.classList.add('revealed');
-  const revealed = Book.state.data.p11 || { eras: [] };
-  if (!revealed.eras.includes(currentEra)) {
-    revealed.eras.push(currentEra);
-    const energy = hits === total && extras === 0 ? 3 : 1;
-    Book.addEnergy(energy, `Era ${currentEra}: ${hits}/${total}`);
+  store[`era${currentEra}`] = { hits, misses, extras, perfect };
+  store[`selected${currentEra}`] = selected;
+  store[`correct${currentEra}`] = data.particles;
+
+  if (perfect) {
+    // ผ่านด่าน: mark revealed + นับเข้า progress
+    const card = document.querySelector(`.era-card[data-era="${currentEra}"]`);
+    if (card) card.classList.add('revealed');
+    if (!store.eras) store.eras = [];
+    if (!store.eras.includes(currentEra)) {
+      store.eras.push(currentEra);
+      // energy ลดลงตามจำนวน attempts (3 → 2 → 1)
+      const energy = attempts === 1 ? 3 : (attempts === 2 ? 2 : 1);
+      Book.addEnergy(energy, `Era ${currentEra} ผ่าน · ${attempts} attempts`);
+    }
   }
-  revealed[`era${currentEra}`] = { hits, misses, extras };
-  revealed[`selected${currentEra}`] = selected;       // NEW: user picks
-  revealed[`correct${currentEra}`] = data.particles;  // NEW: answer key
-  Book.savePageData('p11', revealed);
+
+  Book.savePageData('p11', store);
   renderEraParts(currentEra);
   updateProgress();
 }
@@ -340,7 +369,7 @@ function updateProgress() {
   const revealed = Book.state.data.p11?.eras || [];
   const el = document.getElementById('progress');
   if (revealed.length < 6) {
-    el.innerHTML = `เปิดแล้ว <b>${revealed.length}/6</b> ยุค · เหลือ ${6-revealed.length} ยุค`;
+    el.innerHTML = `ผ่านแล้ว <b>${revealed.length}/6</b> ยุค · เหลือ ${6-revealed.length} ยุค (ต้องตอบถูกหมด)`;
   } else {
     el.innerHTML = '<b style="color:var(--accent-green)">✓ ครบ 6 ยุคแล้ว · เข้าใจวิวัฒนาการของเอกภพ</b>';
     if (!Book.state.gates.p11) {

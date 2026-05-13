@@ -42,6 +42,7 @@ window.EP_CONFIG = {
     { id:'p24', title:'การแพทย์ · spinoff',       file:'p24-medicine.html',     act:'D' },
     { id:'p25', title:'Spinoff Quiz',             file:'p25-spinoff-quiz.html', act:'D' },
     { id:'p26', title:'BOSS · Orbital Triage',    file:'p26-boss.html',         act:'D' },
+    { id:'p26b', title:'🏆 Hall of Fame · ทีมชนะ EP07', file:'p26b-halloffame.html', act:'D' },
     { id:'p27', title:'Journal · → EP08',         file:'p27-journal.html',      act:'D' }
   ],
 

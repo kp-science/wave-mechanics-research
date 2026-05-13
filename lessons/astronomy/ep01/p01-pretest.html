@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P01 · Entry Ticket · COSMOS LOG EP01</title>
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
 .entry-q { padding: 16px 18px; background: rgba(0,0,0,0.25); border: 1px solid var(--border); border-radius: 10px; margin: 12px 0; }
 .entry-q .q { font-weight: 600; font-size: 15px; color: var(--text); margin-bottom: 10px; }
@@ -75,7 +75,7 @@
 </div>
 
 <div class="center mt-20">
-  <button class="btn primary" onclick="submitEntry()">✓ ยืนยัน · เข้าสู่ภารกิจ</button>
+  <button id="submitBtn" class="btn primary" onclick="submitEntry()">✓ ยืนยัน · เข้าสู่ภารกิจ</button>
 </div>
 <div id="result"></div>
 
@@ -86,20 +86,57 @@
 </div>
 
 </div></main>
-<script src="../shared/book.js"></script>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
 <script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/team-comp.js?v=2"></script>
 <script src="../shared/ep-sync.js?v=1"></script>
 <script>
+let _entrySubmitted = false;
+
+function renderResult(score, opts) {
+  const note = opts && opts.replay
+    ? '<p class="muted mt-10">บันทึกไว้แล้ว · กด "ต่อไป →" เพื่อเริ่มภารกิจ</p>'
+    : '<p class="muted mt-10">กด "ต่อไป →" เพื่อเริ่มภารกิจ</p>';
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main">
+      <h3>✓ บันทึก Baseline แล้ว</h3>
+      <p>ตอบถูก <b>${score}/5</b> · เก็บไว้เทียบกับหลังเรียน</p>
+      ${note}
+    </div>`;
+}
+
+// ถ้าเคย submit แล้ว: restore คำตอบ + แสดงผลโดยไม่ +energy ซ้ำ
+window.addEventListener('load', () => {
+  const prev = Book.getPageData && Book.getPageData('p01');
+  const done = Book.state && Book.state.gates && Book.state.gates['p01'];
+  if (prev && done) {
+    _entrySubmitted = true;
+    ['e1','e2','e3','e4','e5'].forEach(n => {
+      if (prev[n]) {
+        const r = document.querySelector(`input[name="${n}"][value="${prev[n]}"]`);
+        if (r) r.checked = true;
+      }
+    });
+    const b = document.getElementById('submitBtn');
+    if (b) { b.disabled = true; b.textContent = '✓ บันทึกแล้ว'; }
+    if (typeof prev.score === 'number') renderResult(prev.score, { replay: true });
+  }
+});
+
 function submitEntry() {
+  if (_entrySubmitted || (Book.state && Book.state.gates && Book.state.gates['p01'])) return;
   const ans = ['e1','e2','e3','e4','e5'].map(n => document.querySelector(`input[name="${n}"]:checked`));
   if (ans.some(a => !a)) { alert('กรุณาตอบทั้ง 5 ข้อก่อน'); return; }
+  _entrySubmitted = true;
+  const btn = document.getElementById('submitBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '✓ บันทึกแล้ว'; }
   const score = ans.filter(a => a.value === 'c').length;
   const payload = { score };
   ans.forEach((a,i) => payload['e'+(i+1)] = a.value);
   Book.savePageData('p01', payload);
-  Book.addEnergy(2, 'Entry Ticket');
-  Book.completePage('p01');
+  Book.addEnergy(7, 'Entry Ticket');
+  Book.completePage('p01', { noAutoEnergy: true });
   // Sync to backend (Astronomy-2569)
   if (window.EPSync) {
     EPSync.submit({ ep:1, test:'pre', answers: ans.map((a,i)=>{
@@ -111,12 +148,7 @@ function submitEntry() {
       return { id:'Q'+(i+1), mcode:'EP01-Q'+(i+1), ans:idx, correct:a.value === 'c' };
     }) });
   }
-  document.getElementById('result').innerHTML = `
-    <div class="branch-reveal main">
-      <h3>✓ บันทึก Baseline แล้ว</h3>
-      <p>ตอบถูก <b>${score}/5</b> · เก็บไว้เทียบกับหลังเรียน</p>
-      <p class="muted mt-10">กด "ต่อไป →" เพื่อเริ่มภารกิจ</p>
-    </div>`;
+  renderResult(score);
 }
 </script>
 </body>

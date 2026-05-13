@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P03 · การปะทะ · COSMOS LOG EP01</title>
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
 /* ── HERO VIDEO · The Collision ─────────────────────────── */
 .hero-video {
@@ -80,6 +80,47 @@
   color: rgba(232,236,248,0.5);
   font-size: 10px;
 }
+
+/* Hypothesis card grid · 3 of 8 selection */
+.hypo-counter {
+  display:flex;justify-content:space-between;align-items:center;
+  margin:10px 0 8px;font-size:13px;
+}
+.hypo-counter b { color:#ffcb6b; font-family:'Orbitron',monospace; font-size:16px; }
+.hypo-grid {
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:10px;margin:8px 0 16px;
+}
+.hypo-card {
+  position:relative;cursor:pointer;transition:all 0.25s;
+  padding:14px 12px;border-radius:12px;
+  border:2px solid rgba(255,255,255,0.15);
+  background:linear-gradient(160deg,rgba(22,27,58,0.85),rgba(8,10,24,0.95));
+}
+.hypo-card:hover { border-color:rgba(255,255,255,0.4); transform:translateY(-2px); }
+.hypo-card.selected {
+  border-color:#64d8ff;
+  box-shadow:0 0 20px rgba(100,216,255,0.35);
+  background:linear-gradient(160deg,rgba(100,216,255,0.15),rgba(22,27,58,0.95));
+}
+.hypo-card.selected::after {
+  content:'✓';position:absolute;top:6px;right:6px;
+  background:#64d8ff;color:#0a0a18;
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:14px;
+}
+.hypo-card.locked { opacity:0.45; cursor:not-allowed; }
+.hypo-card.locked:hover { transform:none; border-color:rgba(255,255,255,0.15); }
+.hypo-card .icon { font-size:28px; margin-bottom:6px; display:block; }
+.hypo-card .label {
+  font-weight:700;font-size:13px;color:#e8ecf8;letter-spacing:0.02em;
+  margin-bottom:4px;line-height:1.3;
+}
+.hypo-card .hint {
+  font-size:11px;color:rgba(232,236,248,0.6);line-height:1.4;
+}
+.hypo-submit { text-align:center; margin-top:8px; }
 </style>
 </head>
 <body data-page="p03">
@@ -132,9 +173,16 @@
 </div>
 
 <div class="form-row" id="hypo" style="display:none">
-  <label>💭 ก่อนเริ่ม · ทีมคิดว่า "ศิลาต้นกำเนิด" คืออะไร?</label>
-  <textarea id="hypo-text" rows="2" placeholder="เขียนสั้น ๆ · ไม่ต้องถูก · baseline สำหรับวิจัย"></textarea>
-  <button class="btn primary mt-10" onclick="saveHypo()">📝 บันทึกสมมติฐาน</button>
+  <label>💭 ก่อนเริ่ม · ทีมคิดว่า "ศิลาต้นกำเนิด" น่าจะประกอบด้วยอะไรบ้าง? <span style="opacity:0.7;font-weight:400">เลือก 3 จาก 8</span></label>
+  <p class="muted" style="font-size:12px;margin:4px 0 0">ไม่ต้องถูก · เป็นการคาดเดาก่อนเรียน · ใช้เป็น baseline สำหรับวิจัย conceptual change</p>
+  <div class="hypo-counter">
+    <span>เลือกแล้ว <b id="hypo-count">0</b>/3</span>
+    <span style="font-size:11px;opacity:0.6">กดการ์ดเพื่อเลือก/ยกเลิก</span>
+  </div>
+  <div class="hypo-grid" id="hypo-grid"></div>
+  <div class="hypo-submit">
+    <button id="hypo-btn" class="btn primary" onclick="saveHypo()" disabled>📝 บันทึกสมมติฐาน (เลือกครบ 3 ก่อน)</button>
+  </div>
 </div>
 
 <div id="result"></div>
@@ -146,7 +194,7 @@
 </div>
 
 </div></main>
-<script src="../shared/book.js"></script>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
 <script>
 const lines = [
@@ -177,15 +225,75 @@ function tick() {
   } else { i++; j = 0; setTimeout(tick, 180); }
 }
 tick();
+/* ── Hypothesis Cards · เลือก 3 จาก 8 ─────────────────────
+   correct=true → สอดคล้องกับเนื้อหา (อนุภาคพื้นฐาน · บิกแบง · 13.8 Gyr)
+   correct=false → ตัวลวง · ยังเกี่ยวข้องกับวัตถุในอวกาศ แต่อายุไม่ถึง */
+const HYPO_CARDS = [
+  { id:'quark',    icon:'⚛️',  label:'ควาร์ก & อิเล็กตรอน',  hint:'อนุภาคพื้นฐานเล็กที่สุด',                    correct:true },
+  { id:'proton',   icon:'🔵',  label:'โปรตอน · นิวตรอน',     hint:'นิวคลีออน · ก่อตัวภายในวินาทีแรก',           correct:true },
+  { id:'helium',   icon:'🌟',  label:'นิวเคลียสฮีเลียมยุคแรก', hint:'BBN · 3 นาทีหลังบิกแบง',                    correct:true },
+  { id:'photon',   icon:'💡',  label:'โฟตอน CMB',            hint:'แสงพื้นหลัง · 2.725 K · จากบิกแบง',         correct:true },
+  { id:'plasma',   icon:'🌫️',  label:'พลาสมายุคแรกของเอกภพ',  hint:'ก่อนเอกภพโปร่งแสง · 380,000 ปีหลัง BB',       correct:true },
+  { id:'asteroid', icon:'☄️',  label:'หินอุกกาบาตแถบดาวเคราะห์น้อย', hint:'อายุ ~4.6 Gyr · เก่าเท่าระบบสุริยะ',  correct:false },
+  { id:'comet',    icon:'❄️',  label:'น้ำแข็งจากดาวหาง',      hint:'แถบไคเปอร์ · กำเนิดในระบบสุริยะ',           correct:false },
+  { id:'supernova',icon:'💥',  label:'เศษซากซูเปอร์โนวา',     hint:'โลหะหนัก · เกิดในดาวฤกษ์รุ่นหลัง',          correct:false },
+];
+const HYPO_LIMIT = 3;
+const _hypoSelected = new Set();
+
+function renderHypoGrid() {
+  const grid = document.getElementById('hypo-grid');
+  if (!grid) return;
+  const full = _hypoSelected.size >= HYPO_LIMIT;
+  grid.innerHTML = HYPO_CARDS.map(c => {
+    const sel = _hypoSelected.has(c.id);
+    const lock = !sel && full;
+    const cls = ['hypo-card'];
+    if (sel) cls.push('selected');
+    if (lock) cls.push('locked');
+    return `<div class="${cls.join(' ')}" onclick="toggleHypo('${c.id}')">
+      <span class="icon">${c.icon}</span>
+      <div class="label">${c.label}</div>
+      <div class="hint">${c.hint}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('hypo-count').textContent = _hypoSelected.size;
+  const btn = document.getElementById('hypo-btn');
+  if (btn) {
+    btn.disabled = _hypoSelected.size !== HYPO_LIMIT;
+    btn.textContent = _hypoSelected.size === HYPO_LIMIT
+      ? '📝 บันทึกสมมติฐาน'
+      : `📝 บันทึกสมมติฐาน (เลือกอีก ${HYPO_LIMIT - _hypoSelected.size})`;
+  }
+}
+
+function toggleHypo(id) {
+  if (_hypoSelected.has(id)) _hypoSelected.delete(id);
+  else if (_hypoSelected.size < HYPO_LIMIT) _hypoSelected.add(id);
+  renderHypoGrid();
+}
+
+// init grid (hidden until typewriter finishes)
+renderHypoGrid();
+
 function saveHypo() {
-  const v = document.getElementById('hypo-text').value.trim();
-  if (!v) { alert('เขียนสั้น ๆ สัก 1 ประโยคก็พอ'); return; }
-  Book.savePageData('p03', { hypothesis_pre: v });
-  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (_hypoSelected.size !== HYPO_LIMIT) { alert('กรุณาเลือกให้ครบ ' + HYPO_LIMIT + ' การ์ดก่อน'); return; }
+  const picks = HYPO_CARDS.filter(c => _hypoSelected.has(c.id));
+  const correctCount = picks.filter(c => c.correct).length;
+  Book.savePageData('p03', {
+    hypothesis_pre: picks.map(p => p.id).join(','),
+    hypothesis_labels: picks.map(p => p.label).join(' · '),
+    correct_count: correctCount
+  });
   if (window.Economy) Economy.energyOnce({ page:'p03', amount:(1), reason:'Hypothesis saved' });
   else Book.addEnergy(1, 'Hypothesis saved');
   Book.completePage('p03');
-  document.getElementById('result').innerHTML = '<div class="success">✓ บันทึกสมมติฐานแล้ว · กด "ต่อไป →"</div>';
+  document.getElementById('result').innerHTML = `
+    <div class="success">
+      ✓ บันทึกสมมติฐานแล้ว · ทีมเลือก:<br>
+      <b>${picks.map(p => p.icon + ' ' + p.label).join(' · ')}</b><br>
+      <span style="font-size:12px;opacity:0.7">เก็บเป็น baseline · ครูจะเปิดเผยคำตอบในหน้าถัดไป</span>
+    </div>`;
 }
 </script>
 </body>

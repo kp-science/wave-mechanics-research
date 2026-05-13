@@ -1,229 +1,595 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>EP08 · p27 · 🏆 COMMANDER + S2</title>
-<link rel="stylesheet" href="_page-style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exit Ticket · EP08 · Genesis Again · Season Finale</title>
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
-  .commander-hero { text-align:center; padding:40px 14px;
-    background: radial-gradient(circle at 50% 30%, rgba(255,216,74,.3), transparent 60%);
-    border-radius:18px; border:2px solid var(--genesis-gold); margin:14px 0;
-    box-shadow: 0 0 60px rgba(255,216,74,.3); }
-  .commander-hero .badge { font-size:80px; }
-  .commander-hero h1 { font-size:48px; margin:8px 0; color:var(--genesis-gold); }
-  .summary { background:var(--bg-card); border:1px solid var(--line); border-radius:12px; padding:14px; margin:14px 0; }
-  .stat-row { display:flex; justify-content:space-between; padding:6px 0;
-    border-bottom:1px dashed var(--line-soft); font-size:14px; }
-  .stat-row:last-child { border:none; }
-  .stat-row b { color:var(--genesis-gold); }
-  .ach-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin:14px 0; }
-  .ach { background:var(--bg-card); border:1px solid var(--line); border-radius:10px;
-    padding:10px; text-align:center; opacity:.4; }
-  .ach.unlocked { opacity:1; border-color:var(--genesis-gold); box-shadow:0 0 12px rgba(255,216,74,.2); }
-  .ach .ic { font-size:30px; }
-  .ach .nm { font-weight:700; font-size:12px; margin-top:4px; }
-  .reflect-box { background:#0a0418; border:1px solid var(--line); border-radius:10px; padding:10px; margin:8px 0; }
-  .reflect-box textarea { width:100%; background:#050108; color:var(--text); border:1px solid var(--line);
-    border-radius:8px; padding:8px; font:14px system-ui; }
-  .post-card { background:var(--bg-card); border:1px solid var(--line); border-radius:10px; padding:10px; margin:6px 0; }
-  .andromeda-cliff { background:linear-gradient(180deg, #1a0a30, #050108);
-    border:2px solid var(--cosmic-purple); border-radius:14px; padding:24px; margin:24px 0;
-    text-align:center; box-shadow:0 0 50px rgba(106,58,255,.25); }
-  .andromeda-svg { max-width:380px; margin:14px auto; display:block; }
-  .end-credits { color:var(--text-mute); font-size:12px; line-height:1.8; text-align:center; margin:14px 0;
-    letter-spacing:.05em; }
+.section-321 {
+  padding: 22px 26px;
+  border-radius: 16px;
+  margin: 18px 0;
+  position: relative;
+}
+.section-321::before {
+  content: attr(data-num);
+  position: absolute;
+  top: -18px; left: 20px;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 22px; font-weight: 900;
+  color: var(--section-color); background: var(--bg-0);
+  border: 2px solid var(--section-color);
+  box-shadow: 0 0 20px var(--section-color);
+}
+.section-3 {
+  --section-color: #7effb2;
+  background: linear-gradient(135deg, rgba(126,255,178,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(126,255,178,0.35);
+}
+.section-2 {
+  --section-color: #b980ff;
+  background: linear-gradient(135deg, rgba(185,128,255,0.06), rgba(100,216,255,0.03));
+  border: 1px solid rgba(185,128,255,0.35);
+}
+.section-1 {
+  --section-color: #ffcb6b;
+  background: linear-gradient(135deg, rgba(255,203,107,0.06), rgba(255,92,122,0.03));
+  border: 1px solid rgba(255,203,107,0.35);
+}
+.section-321 h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 14px; letter-spacing: 0.2em;
+  color: var(--section-color); margin-bottom: 4px;
+  padding-left: 54px;
+}
+.section-321 .s-sub {
+  font-size: 13px; color: var(--text-dim);
+  padding-left: 54px; margin-bottom: 16px;
+}
+
+/* 3 · Checkbox grid */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+.cpt-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer; font-size: 13.5px;
+  transition: all 0.2s;
+}
+.cpt-item:hover { border-color: var(--border-strong); }
+.cpt-item input { accent-color: var(--accent-green); width: 18px; height: 18px; flex-shrink: 0; }
+.cpt-item.selected { border-color: var(--accent-green); background: rgba(126,255,178,0.08); }
+.cpt-count {
+  margin-top: 10px; padding: 8px 14px;
+  background: rgba(0,0,0,0.3); border-radius: 100px;
+  font-size: 12px; display: inline-block;
+}
+.cpt-count b { color: var(--accent-green); }
+
+/* 2 · Scene drag pool + 2 drop zones */
+.scene-layout {
+  display: grid; grid-template-columns: 2fr 1fr;
+  gap: 16px; margin: 16px 0;
+}
+@media (max-width: 800px) { .scene-layout { grid-template-columns: 1fr; } }
+.scene-src {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  padding: 14px; background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.scene-src-card {
+  padding: 10px; text-align: center;
+  background: linear-gradient(135deg, rgba(100,216,255,0.08), rgba(185,128,255,0.06));
+  border: 1px solid var(--border-strong); border-radius: 8px;
+  cursor: grab; font-size: 11px; color: var(--text);
+  user-select: none;
+}
+.scene-src-card:hover { transform: translateY(-2px); border-color: var(--accent-2); }
+.scene-src-card.picked { opacity: 0.3; cursor: not-allowed; }
+.scene-src-card .icon { font-size: 22px; margin-bottom: 4px; }
+.fav-zones { display: flex; flex-direction: column; gap: 12px; }
+.fav-zone {
+  padding: 14px; min-height: 140px;
+  background: rgba(185,128,255,0.05);
+  border: 2px dashed rgba(185,128,255,0.4);
+  border-radius: 12px; text-align: center;
+  transition: all 0.2s;
+  display: flex; flex-direction: column; gap: 6px;
+  justify-content: center;
+}
+.fav-zone.drag-over { border-color: var(--accent-2); background: rgba(185,128,255,0.1); }
+.fav-zone.filled {
+  border-style: solid; border-color: var(--accent-2);
+  justify-content: flex-start;
+}
+.fav-zone .zone-lbl { font-family: 'Orbitron'; font-size: 10px; color: var(--accent-2); letter-spacing: 0.2em; }
+.fav-zone .picked-card { font-size: 12px; color: var(--text); }
+.fav-zone .picked-card .icon { font-size: 24px; display: block; }
+.fav-zone textarea { margin-top: 6px; min-height: 44px; font-size: 12px; }
+
+/* 1 · Dropdown + text */
+.q-row {
+  display: grid; grid-template-columns: 1fr; gap: 10px;
+  margin: 14px 0;
+}
+.q-row select, .q-row textarea { width: 100%; }
+
+/* BONUS · emoji + stars + slider */
+.bonus-wrap {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px; margin: 18px 0;
+}
+@media (max-width: 800px) { .bonus-wrap { grid-template-columns: 1fr; } }
+.bonus-card {
+  padding: 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.bonus-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--accent); margin-bottom: 10px;
+}
+.emoji-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.emoji-btn {
+  flex: 1; min-width: 50px;
+  padding: 10px 6px;
+  background: rgba(22,27,58,0.4);
+  border: 1px solid var(--border); border-radius: 10px;
+  cursor: pointer; text-align: center;
+  font-size: 24px;
+  transition: all 0.2s;
+}
+.emoji-btn:hover { transform: translateY(-2px); }
+.emoji-btn.active {
+  border-color: var(--accent-gold);
+  background: rgba(255,203,107,0.1);
+  box-shadow: 0 0 15px rgba(255,203,107,0.3);
+}
+.emoji-btn .label {
+  display: block; font-size: 9px;
+  color: var(--text-faint); margin-top: 4px;
+  font-family: 'Sarabun', sans-serif;
+}
+.star-row { display: flex; gap: 4px; }
+.star {
+  font-size: 28px; cursor: pointer;
+  color: rgba(255,203,107,0.2);
+  transition: all 0.15s;
+}
+.star:hover, .star.on { color: var(--accent-gold); transform: scale(1.1); }
+.slider-wrap { margin: 10px 0; }
+.slider-wrap input[type="range"] {
+  width: 100%; accent-color: var(--accent);
+  -webkit-appearance: none; height: 6px;
+  background: rgba(100,216,255,0.2); border-radius: 100px;
+}
+.slider-wrap input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px;
+  background: var(--accent); border-radius: 50%; cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+}
+.slider-val {
+  text-align: center; font-family: 'Orbitron', sans-serif;
+  font-size: 24px; color: var(--accent); margin: 4px 0;
+}
+.slider-val::after { content: '%'; font-size: 14px; margin-left: 2px; }
+
+/* Cognitive load · Difficulty perception (research-only) */
+.research-row {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; margin: 14px 0;
+}
+@media (max-width: 800px) { .research-row { grid-template-columns: 1fr; } }
+.cl-card, .diff-card {
+  padding: 14px 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border); border-radius: 12px;
+}
+.cl-card h5, .diff-card h5 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px; letter-spacing: 0.2em;
+  color: var(--accent); margin-bottom: 6px;
+}
+.cl-card .sub, .diff-card .sub {
+  font-size: 11px; color: var(--text-faint); margin-bottom: 10px;
+}
+.cl-slider input { width: 100%; accent-color: var(--accent-2); }
+.cl-slider .vlbl {
+  text-align: center; font-family: 'Orbitron', sans-serif;
+  font-size: 22px; color: var(--accent-2); margin: 4px 0;
+}
+.cl-slider .scale-row {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--text-faint); margin-top: 4px;
+}
+.diff-chips {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.diff-chip {
+  padding: 6px 12px; background: rgba(22,27,58,0.4);
+  border: 1px solid var(--border); border-radius: 100px;
+  cursor: pointer; font-size: 12px; color: var(--text-dim);
+  transition: all 0.2s;
+}
+.diff-chip:hover { border-color: var(--border-strong); color: var(--text); }
+.diff-chip.active {
+  background: rgba(255,92,122,0.15);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+}
 </style>
 </head>
 <body data-page="p27">
-<div class="page">
-  <div class="act-badge">ACT D · 7/7 · 🏆 COMMANDER</div>
+<main class="page"><div class="page-inner">
 
-  <div class="commander-hero">
-    <div class="badge">🏆</div>
-    <h1>COMMANDER</h1>
-    <p style="color:var(--quantum-pink);font-size:18px;letter-spacing:.15em;">SEASON 1 COMPLETE</p>
-    <p style="color:var(--text-soft);" id="endingLabel">ending: -</p>
-  </div>
+<div class="page-label">◤ EXIT TICKET · EP08 · 5 นาที · 🏆 SEASON FINALE</div>
+<h1 class="page-title">3-2-1 Journal</h1>
+<h2 class="page-sub">COSMOLOGY · S1 SUMMARY · ENDINGS · 3-2-1 EXIT TICKET</h2>
 
-  <div class="summary">
-    <h3 style="margin-top:0;">📊 สรุป EP08 + ทั้งซีซัน</h3>
-    <div id="kpaStats"></div>
-  </div>
-
-  <h3>🏆 Achievements (12 ลำดับชั้น S1)</h3>
-  <div class="ach-grid" id="achHost"></div>
-
-  <h3>📋 Posttest 5 ข้อ · โจทย์เดียวกับ pretest (เทียบ gain 1:1)</h3>
-  <button class="btn ghost" id="postBtn">▶ ทำ Posttest 5 ข้อ</button>
-  <div id="postHost" style="margin-top:12px;"></div>
-
-  <h3>💬 Reflection · 3-2-1</h3>
-  <div class="reflect-box"><p style="margin:0 0 6px;"><b>3 สิ่งที่เรียนรู้ทั้งซีซัน</b></p><textarea rows="2" id="r3"></textarea></div>
-  <div class="reflect-box"><p style="margin:0 0 6px;"><b>2 สิ่งที่อยากรู้ต่อใน S2</b></p><textarea rows="2" id="r2"></textarea></div>
-  <div class="reflect-box"><p style="margin:0 0 6px;"><b>1 สิ่งที่จะเอาไปใช้จริง</b></p><textarea rows="2" id="r1"></textarea></div>
-
-  <div class="row" style="justify-content:center;flex-wrap:wrap;gap:8px;margin:18px 0;">
-    <button class="btn" id="saveBtn">💾 บันทึก</button>
-    <button class="btn ghost" id="exportBtn">📥 Export JSON ครู</button>
-    <button class="btn ghost" id="printBtn">🖨️ Print PDF</button>
-  </div>
-
-  <div class="andromeda-cliff">
-    <p style="color:var(--cosmic-purple);font-size:13px;letter-spacing:.2em;font-weight:700;">★ NEXT SEASON</p>
-    <h2 style="color:var(--cosmic-purple);font-size:32px;">ANDROMEDA RISING</h2>
-    <svg class="andromeda-svg" viewBox="0 0 380 220" xmlns="http://www.w3.org/2000/svg">
-      <rect width="380" height="220" fill="#050108"/>
-      <g transform="translate(190,110)">
-        <ellipse rx="160" ry="40" fill="none" stroke="#6a3aff" stroke-width="2" opacity=".5" transform="rotate(15)"/>
-        <ellipse rx="120" ry="28" fill="none" stroke="#6a3aff" stroke-width="2" opacity=".7" transform="rotate(15)"/>
-        <ellipse rx="80" ry="18" fill="none" stroke="#fff5e3" stroke-width="2" opacity=".8" transform="rotate(15)"/>
-        <circle r="12" fill="#fff5e3"/>
-      </g>
-      <g opacity=".7">
-        <circle cx="40" cy="40" r="1" fill="#fff"/><circle cx="320" cy="60" r="1.5" fill="#fff"/>
-        <circle cx="60" cy="180" r="1" fill="#fff"/><circle cx="340" cy="170" r="1" fill="#fff"/>
-      </g>
-      <text x="190" y="210" fill="#6a3aff" font-size="11" text-anchor="middle">M31 · Andromeda · 110 km/s ปะทะ Milky Way</text>
-    </svg>
-    <p style="color:var(--text-soft);line-height:1.7;">
-      "Andromeda กำลังเข้าใกล้เรา · 110 km/s<br>
-      จะชน Milky Way ใน 4.5 พันล้านปี<br>
-      <em style="color:var(--quantum-pink);">แต่...สัญญาณจาก Andromeda ผิดปกติ · เริ่มเมื่อ 30 วันก่อน</em>"
-    </p>
-    <p style="color:var(--genesis-gold);font-weight:700;font-size:18px;margin-top:14px;">
-      ← เคน: "เป็นไปได้ไหม · ที่จะมี COSMOS LOG อีกชุด · กำลังบินหาเรา?"
-    </p>
-    <p style="color:var(--cosmic-purple);font-size:13px;letter-spacing:.2em;margin-top:18px;">SEASON 2 · COMING SOON</p>
-  </div>
-
-  <div class="end-credits">
-    ◤ COSMOS LOG · SEASON 1 ◢<br>
-    EP01-EP03 · stellar/spectrum · EP04 · big bang · EP05 · sun<br>
-    EP06 · solar system · EP07 · space tech · EP08 · genesis again<br>
-    8 episodes · 224 pages · ~17 hours · 17 keys · 1 commander<br><br>
-    🌌 จบฤดูกาลที่ 1 🌌
+<div class="teacher-cue" onclick="this.classList.toggle('open')">
+  <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · เก็บข้อมูลวิจัย</div>
+  <div class="teacher-cue-body" onclick="event.stopPropagation()">
+    <div class="role"><span class="tag say">นำเข้า</span><span>"ก่อนจบ · ทบทวนสั้น ๆ แบบ 3-2-1 · บอก 3 สิ่งที่เรียน · 2 ฉากประทับใจ · 1 คำถามที่อยากรู้ต่อ"</span></div>
+    <div class="role"><span class="tag do">ทำ</span><span>ปล่อยให้ทีมตอบเอง · Export JSON ใน P18 จะเก็บคำตอบทั้งหมด</span></div>
+    <div class="role"><span class="tag teach">วิจัย</span><span>Data ที่เก็บ: frequency ของ concept ที่จำได้ · preference ของฉาก · direction ของความอยากรู้ · affective · self-rating · confidence · ใช้วิเคราะห์ conceptual change ได้ละเอียดกว่า pre/post</span></div>
   </div>
 </div>
 
-<script src="../shared/kpa-tracker-v2.js"></script>
+<div class="dialog-box lem" data-speaker="LEMAÎTRE">
+  <div class="txt">🏆 จบ Season 1 · COSMOS LOG · COMMANDER · ขอบันทึกสั้น ๆ · <b>3 · สิ่งที่เรียน · 2 · ฉากที่ประทับใจ · 1 · คำถามที่อยากรู้ต่อ</b></div>
+</div>
+
+<!-- SECTION 3 · CONTENT -->
+<div class="section-321 section-3" data-num="3">
+  <h3>สิ่งที่เรียนรู้วันนี้ (เนื้อหา)</h3>
+  <div class="s-sub">เลือก <b>3 ข้อ</b> ที่ทีมรู้สึกว่า "ใช่" ที่สุด · ตอบตามที่ทีมเข้าใจจริง · ไม่มีถูก/ผิด</div>
+
+  <div class="concept-grid" id="concept-grid">
+    <label class="cpt-item" data-id="c1" data-correct="1"><input type="checkbox" value="c1"><span>Cosmology บูรณาการ: Big Bang → Galaxy → Star → Solar System → EM</span></label>
+    <label class="cpt-item" data-id="c2" data-correct="1"><input type="checkbox" value="c2"><span>Reset Route vs Preserve Route · เลือก ending ของซีรีส์</span></label>
+    <label class="cpt-item" data-id="c3" data-correct="1"><input type="checkbox" value="c3"><span>Andromeda merger ใน 4 พันล้านปี → Milkomeda</span></label>
+    <label class="cpt-item" data-id="c4" data-correct="1"><input type="checkbox" value="c4"><span>Heat Death · Big Crunch · Big Rip = 3 fates ของเอกภพ</span></label>
+    <label class="cpt-item" data-id="c5" data-correct="1"><input type="checkbox" value="c5"><span>Dark Energy เร่งการขยายตัว · ~68% ของเอกภพ</span></label>
+    <label class="cpt-item" data-id="c6" data-correct="1"><input type="checkbox" value="c6"><span>Dark Matter ~27% · Visible matter เพียง 5%</span></label>
+    <label class="cpt-item" data-id="m1" data-correct="0" data-mc="1"><input type="checkbox" value="m1"><span>เอกภพจบลงเสมอ ไม่ขึ้นกับ density</span></label>
+    <label class="cpt-item" data-id="m2" data-correct="0" data-mc="1"><input type="checkbox" value="m2"><span>time travel ย้อนเวลาทำได้แน่นอน</span></label>
+  </div>
+  <div class="cpt-count">เลือกแล้ว · <b id="cpt-n">0</b> / 3</div>
+
+  <div class="form-row mt-20">
+    <label>✍ ถ้ามีความรู้อื่นที่ไม่อยู่ในรายการ · เขียนที่นี่</label>
+    <textarea id="extra-concept" rows="2" placeholder="optional · เช่น 'สเปกตรัม OBAFGKM' · ฯลฯ"></textarea>
+  </div>
+</div>
+
+<!-- SECTION 2 · STORY FAVORITE -->
+<div class="section-321 section-2" data-num="2">
+  <h3>ฉากที่ประทับใจ (เรื่อง)</h3>
+  <div class="s-sub">ลาก <b>2 ฉาก</b> ที่ทีมชอบที่สุดจากซ้ายไปวางในกล่องขวา · แล้วเขียนเหตุผลสั้น ๆ</div>
+
+  <div class="scene-layout">
+    <div class="scene-src" id="scene-src"></div>
+    <div class="fav-zones">
+      <div class="fav-zone" data-slot="fav1">
+        <div class="zone-lbl">◦ FAVORITE 1</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+      <div class="fav-zone" data-slot="fav2">
+        <div class="zone-lbl">◦ FAVORITE 2</div>
+        <div class="picked-card empty">ลากฉากมาวางที่นี่</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1 · QUESTION -->
+<div class="section-321 section-1" data-num="1">
+  <h3>คำถามที่อยากรู้ต่อ (ต่อยอด)</h3>
+  <div class="s-sub">เลือก 1 คำถามจาก dropdown หรือเขียนเอง · จะไปต่อใน EP02</div>
+
+  <div class="q-row">
+    <select id="q-preset" onchange="onPresetChange()">
+      <option value="">-- เลือกคำถาม หรือเลือก "อื่นๆ" เพื่อเขียนเอง --</option>
+      <option value="q1">เอกภพจะจบเมื่อไหร่?</option>
+      <option value="q2">Multiverse จริงไหม?</option>
+      <option value="q3">time travel เป็นไปได้ในทฤษฎีไหม?</option>
+      <option value="q4">Dark energy คืออะไร?</option>
+      <option value="q5">หลุมดำใจกลางกาแล็กซีเป็นยังไง?</option>
+      <option value="q6">เรามี doppelgänger ใน parallel universe ไหม?</option>
+      <option value="q7">หลังจบ S1 ครูอยากให้มีอะไรใน S2?</option>
+      <option value="q8">ดาวเคราะห์นอกระบบที่ใกล้ที่สุดที่อยู่ได้?</option>
+      <option value="other">อื่นๆ (เขียนเอง)</option>
+    </select>
+    <textarea id="q-text" rows="2" placeholder="เขียนคำถามของทีม"></textarea>
+  </div>
+</div>
+
+<!-- BONUS · AFFECTIVE + SELF-RATING + CONFIDENCE -->
+<h3 style="font-family:'Orbitron'; font-size:12px; color:var(--accent); letter-spacing:0.2em; margin:24px 0 8px;">🎨 BONUS · เก็บข้อมูลเพิ่มเติม</h3>
+
+<div class="bonus-wrap">
+  <div class="bonus-card">
+    <h5>😊 ความรู้สึกวันนี้</h5>
+    <div class="emoji-row" id="emoji-row">
+      <button class="emoji-btn" data-v="love">😍<span class="label">สนุก</span></button>
+      <button class="emoji-btn" data-v="think">🤔<span class="label">คิดเยอะ</span></button>
+      <button class="emoji-btn" data-v="mind">🤯<span class="label">ทึ่ง</span></button>
+      <button class="emoji-btn" data-v="tired">🥱<span class="label">เหนื่อย</span></button>
+      <button class="emoji-btn" data-v="lost">😵<span class="label">งง</span></button>
+    </div>
+  </div>
+
+  <div class="bonus-card">
+    <h5>⭐ ทีมเข้าใจบิกแบง</h5>
+    <div class="star-row" id="star-row">
+      <div class="star" data-v="1">★</div>
+      <div class="star" data-v="2">★</div>
+      <div class="star" data-v="3">★</div>
+      <div class="star" data-v="4">★</div>
+      <div class="star" data-v="5">★</div>
+    </div>
+    <p class="muted" style="font-size: 11px; margin-top: 4px;" id="star-lbl">เลือกระดับ 1-5</p>
+  </div>
+
+  <div class="bonus-card">
+    <h5>🎯 ความมั่นใจสอบผ่าน</h5>
+    <div class="slider-wrap">
+      <div class="slider-val" id="slider-val">50</div>
+      <input type="range" id="confidence" min="0" max="100" step="5" value="50" oninput="updSlider()">
+    </div>
+    <p class="muted" style="font-size: 11px; text-align: center;">ถ้าสอบตอนนี้ · ได้กี่ %</p>
+  </div>
+</div>
+
+<!-- Research instruments · Cognitive Load (Paas) + Difficulty Perception -->
+<div class="research-row">
+  <div class="cl-card">
+    <h5>🧠 ใช้สมาธิในการเรียนแค่ไหน</h5>
+    <div class="sub">เลื่อนตามความรู้สึกตอนทำกิจกรรม</div>
+    <div class="cl-slider">
+      <div class="vlbl"><span id="cl-val">5</span><span style="font-size:12px;color:var(--text-faint)"> / 9</span></div>
+      <input type="range" id="cog-load" min="1" max="9" step="1" value="5" oninput="updCL()">
+      <div class="scale-row">
+        <span>น้อยมาก</span><span>ปานกลาง</span><span>หนักมาก</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="diff-card">
+    <h5>🎢 ส่วนไหนยากที่สุด</h5>
+    <div class="sub">เลือก 1 ส่วน · ครูจะใช้ปรับการสอน</div>
+    <div class="diff-chips" id="diff-chips">
+      <div class="diff-chip" data-v="cosmology">🌌 บูรณาการ cosmology</div>
+      <div class="diff-chip" data-v="ending">🎁 Reset vs Preserve</div>
+      <div class="diff-chip" data-v="multiverse">✨ Multiverse</div>
+      <div class="diff-chip" data-v="darkenergy">💫 Dark energy</div>
+      <div class="diff-chip" data-v="forge">⚔️ GENESIS FORGE boss</div>
+      <div class="diff-chip" data-v="none">😌 ไม่มีอะไรยาก</div>
+    </div>
+  </div>
+</div>
+
+<div class="center mt-20">
+  <button class="btn primary finish-btn" id="finishBtn" onclick="submit()">✓ ยืนยัน · ส่ง Exit Ticket</button>
+</div>
+<div id="result"></div>
+
+<div class="ped-tag-row">
+  <span class="ped-tag p">P · สะท้อนคิด · Metacognition</span>
+  <span class="ped-tag a">A · ประเมินตนเอง</span>
+  <span class="ped-tag">วPA 6 · Feedback</span>
+  <span class="ped-tag">วPA 8 · กำกับตนเอง</span>
+  <span class="ped-tag">Research · 3-2-1 Journal Data</span>
+</div>
+
+</div></main>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
-<script src="../shared/hud-v2.js"></script>
-<script src="../shared/coin-energy.js"></script>
-<script src="../shared/mystery-box-v2.js"></script>
-<script src="../shared/research-instruments.js"></script>
-<script src="../shared/pbl-frame.js"></script>
-<script src="../shared/starfield.js"></script>
-<script src="../shared/s1-keyring.js"></script>
-<script src="config.js"></script>
-<script src="../shared/ep08-boot.js"></script>
-<script src="../../../content/astronomy/config.js?v=2"></script>
-<script src="../shared/ep-sync.js?v=1"></script>
 <script>
-  EP08Boot.init({ pageId:'p27' });
-  try { localStorage.setItem('cosmosLog_ep08_lastPage', 'p27'); } catch(e){}
-
-  const ending = localStorage.getItem('cosmosLog_ep08_ending') || 'A';
-  const choice = localStorage.getItem('cosmosLog_ep08_choice') || 'preserve';
-  document.getElementById('endingLabel').textContent = `ending: ${ending} · route: ${choice.toUpperCase()}`;
-
-  // KPA stats
-  const kpa = window.KPA ? KPA.summary() : {};
-  const ringCount = window.S1Keyring ? S1Keyring.count() : { owned:0, total:17 };
-  const stats = document.getElementById('kpaStats');
-  stats.innerHTML = `
-    <div class="stat-row"><span>K (ความรู้)</span><b>${(kpa.domains && kpa.domains.K)||0} entries</b></div>
-    <div class="stat-row"><span>P (ทักษะ)</span><b>${(kpa.domains && kpa.domains.P)||0}</b></div>
-    <div class="stat-row"><span>A (เจตคติ)</span><b>${(kpa.domains && kpa.domains.A)||0}</b></div>
-    <div class="stat-row"><span>เหรียญ</span><b>${kpa.coins||0} 🪙</b></div>
-    <div class="stat-row"><span>พลังงาน</span><b>${kpa.energy||0} ⚡</b></div>
-    <div class="stat-row"><span>S1 keys</span><b>${ringCount.owned}/${ringCount.total}</b></div>
-    <div class="stat-row"><span>Mystery Boxes เปิด</span><b>${(kpa.boxes && kpa.boxes.length)||0}/8</b></div>
-    <div class="stat-row"><span>Ending</span><b>${ending}</b></div>
-  `;
-
-  // Achievements
-  const ach = (EP_CONFIG.boss.achievements) || [];
-  const unlocked = new Set();
-  // simple unlock rules:
-  if (ending === 'A+') ach.forEach(a => unlocked.add(a.id));
-  if (['A','A+'].includes(ending)) ['ach_witness','ach_guardian','ach_voidslayer','ach_son','ach_commander'].forEach(id => unlocked.add(id));
-  if (['B','A','A+'].includes(ending)) { unlocked.add('ach_witness'); unlocked.add('ach_commander'); }
-  if (ringCount.owned >= 17) unlocked.add('ach_infinite');
-  if (ringCount.owned >= 12) unlocked.add('ach_voidslayer');
-
-  const ag = document.getElementById('achHost');
-  ach.forEach(a => {
-    const el = document.createElement('div');
-    el.className = 'ach' + (unlocked.has(a.id) ? ' unlocked' : '');
-    el.innerHTML = `<div class="ic">${a.icon}</div><div class="nm">${a.name}</div>
-                    <div style="font-size:10px;color:var(--text-mute);">${a.need}</div>`;
-    ag.appendChild(el);
+// SECTION 3 · checkbox limit 3
+let selected3 = [];
+document.querySelectorAll('.cpt-item input').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const item = inp.closest('.cpt-item');
+    if (inp.checked) {
+      if (selected3.length >= 3) { inp.checked = false; alert('เลือกได้มากสุด 3 ข้อ'); return; }
+      selected3.push(inp.value); item.classList.add('selected');
+    } else {
+      selected3 = selected3.filter(v => v !== inp.value); item.classList.remove('selected');
+    }
+    document.getElementById('cpt-n').textContent = selected3.length;
   });
+});
 
-  // Posttest
-  document.getElementById('postBtn').onclick = () => {
-    const post = document.getElementById('postHost');
-    post.innerHTML = '';
-    const answers = new Array(10).fill(null);
-    EP_CONFIG.pretest.forEach((q, i) => {
-      const card = document.createElement('div');
-      card.className = 'post-card';
-      card.innerHTML = `<p style="font-size:14px;"><b>ข้อ ${i+1}:</b> ${q.q}</p>` +
-        '<div style="display:flex;flex-direction:column;gap:4px;">' +
-        q.opts.map((o,j) => `<button class="chip" data-i="${i}" data-j="${j}">${o}</button>`).join('') +
-        '</div>';
-      post.appendChild(card);
-    });
-    post.addEventListener('click', e => {
-      const c = e.target.closest('.chip'); if (!c) return;
-      const i = +c.dataset.i, j = +c.dataset.j;
-      answers[i] = j;
-      c.parentElement.querySelectorAll('.chip').forEach(x => x.classList.remove('selected'));
-      c.classList.add('selected');
-      if (answers.every(a => a !== null)) {
-        let r = 0;
-        EP_CONFIG.pretest.forEach((q,k) => { if (answers[k]===q.answer) r++; });
-        const banner = document.createElement('div');
-        banner.className = 'card card-gold';
-        banner.style.marginTop = '10px';
-        const pre = (KPA && KPA.research && (KPA.research().embedded||[]).find(x=>x.id==='pretest'));
-        const preScore = pre ? (pre.data && pre.data.score) || 0 : '?';
-        banner.innerHTML = `
-          <h3 style="margin-top:0;">📊 Posttest: ${r}/5 (${r*10}%)</h3>
-          <p>Pretest: ${preScore}/5 · Posttest: ${r}/5 · Gain: <b style="color:${r>=preScore?'var(--good)':'var(--bad)'};">${preScore !== '?' ? (r-preScore) : '?'}</b></p>
-        `;
-        post.appendChild(banner);
-        if (window.KPA) KPA.research('posttest', { score: r, answers });
-        if (window.EPSync) {
-          const epAnswers = EP_CONFIG.pretest.map((q, k) => ({
-            id:'Q'+(k+1), mcode:q.tag || 'EP08-Q'+(k+1),
-            ans: answers[k] !== null ? answers[k] : -1,
-            correct: answers[k] === q.answer
-          }));
-          EPSync.submit({ ep:8, test:'post', answers: epAnswers });
-        }
-      }
-    });
-    document.getElementById('postBtn').disabled = true;
-  };
+// SECTION 2 · drag-drop scene favorites
+const SCENES = [
+  { id: 's1', icon: '🌌', name: 'GENESIS FORGE boss' },
+  { id: 's2', icon: '🔑', name: '17-key S1 keyring' },
+  { id: 's3', icon: '🌠', name: 'Andromeda merger reveal' },
+  { id: 's4', icon: '👨‍🔬', name: 'Dr.Hubble Mentor reveal' },
+  { id: 's5', icon: '🎁', name: 'Reset choice' },
+  { id: 's6', icon: '💎', name: 'Preserve choice' },
+  { id: 's7', icon: '🏆', name: 'COMMANDER badge' },
+  { id: 's8', icon: '🚀', name: 'S2 cliffhanger' },
+];
+function renderSceneSrc() {
+  document.getElementById('scene-src').innerHTML = SCENES.map(s => `
+    <div class="scene-src-card" draggable="true" data-id="${s.id}">
+      <div class="icon">${s.icon}</div>
+      <div>${s.name}</div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.scene-src-card').forEach(c => {
+    c.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', c.dataset.id); c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+}
+const favs = { fav1: null, fav2: null };
+document.querySelectorAll('.fav-zone').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const id = e.dataTransfer.getData('text/plain');
+    if (Object.values(favs).includes(id)) { alert('ฉากนี้ถูกเลือกแล้ว'); return; }
+    const slot = zone.dataset.slot;
+    favs[slot] = id;
+    const s = SCENES.find(x => x.id === id);
+    zone.classList.add('filled');
+    zone.innerHTML = `
+      <div class="zone-lbl">◦ ${slot.toUpperCase()}</div>
+      <div class="picked-card"><span class="icon">${s.icon}</span>${s.name}</div>
+      <textarea placeholder="เพราะอะไร? (1 ประโยค)" data-slot="${slot}"></textarea>
+    `;
+    document.querySelector(`.scene-src-card[data-id="${id}"]`).classList.add('picked');
+  });
+});
+renderSceneSrc();
 
-  // save / export / print
-  document.getElementById('saveBtn').onclick = () => {
-    const r = { r1:r1.value, r2:r2.value, r3:r3.value, ending, choice };
-    if (window.KPA) {
-      KPA.log('A','A3','S1 final reflection');
-      KPA.research('s1Reflection', r);
-    }
-    alert('💾 บันทึกเรียบร้อย · ครูจะเห็นข้อมูลใน Teacher Console');
+// SECTION 1 · dropdown
+function onPresetChange() {
+  const v = document.getElementById('q-preset').value;
+  const txt = document.getElementById('q-text');
+  const presetText = {
+    q1: 'เอกภพจะจบเมื่อไหร่?',
+    q2: 'Multiverse จริงไหม?',
+    q3: 'time travel เป็นไปได้ในทฤษฎีไหม?',
+    q4: 'Dark energy คืออะไร?',
+    q5: 'หลุมดำใจกลางกาแล็กซีเป็นยังไง?',
+    q6: 'เรามี doppelgänger ใน parallel universe ไหม?',
+    q7: 'หลังจบ S1 ครูอยากให้มีอะไรใน S2?',
+    q8: 'ดาวเคราะห์นอกระบบที่ใกล้ที่สุดที่อยู่ได้?',
+    other: '',
   };
-  document.getElementById('exportBtn').onclick = () => {
-    if (window.KPA && KPA.download) KPA.download('ep08_kpa.json');
-    else {
-      const blob = new Blob([JSON.stringify(KPA && KPA.export ? KPA.export() : {}, null, 2)], {type:'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ep08_kpa.json'; a.click();
-    }
+  if (v && v !== 'other') txt.value = presetText[v];
+  else txt.focus();
+}
+
+// BONUS · emoji
+let emoji = null;
+document.querySelectorAll('.emoji-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.emoji-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    emoji = b.dataset.v;
+  });
+});
+
+// BONUS · stars
+let stars = 0;
+document.querySelectorAll('.star').forEach(s => {
+  s.addEventListener('click', () => {
+    stars = parseInt(s.dataset.v);
+    document.querySelectorAll('.star').forEach(x => x.classList.toggle('on', parseInt(x.dataset.v) <= stars));
+    document.getElementById('star-lbl').textContent = `ระดับ ${stars} / 5`;
+  });
+});
+
+// BONUS · slider
+function updSlider() {
+  const v = document.getElementById('confidence').value;
+  document.getElementById('slider-val').textContent = v;
+}
+
+// Cognitive Load (Paas single-item) · 1=very low effort · 9=very high effort
+function updCL() {
+  const v = document.getElementById('cog-load').value;
+  document.getElementById('cl-val').textContent = v;
+}
+
+// Difficulty perception · single chip
+let difficulty = null;
+document.querySelectorAll('.diff-chip').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('.diff-chip').forEach(x => x.classList.remove('active'));
+    c.classList.add('active');
+    difficulty = c.dataset.v;
+  });
+});
+
+// Time-on-task tracking · นับตั้งแต่ Book.state.startTime ถ้ามี ไม่งั้นเริ่มที่หน้านี้
+const _journalStart = Date.now();
+
+// SUBMIT
+function _unlockSubmitBtn() {
+  const btn = document.getElementById('finishBtn');
+  if (!btn) return;
+  btn.disabled = false;
+  btn.classList.remove('done');
+  if (btn.dataset.origText) btn.textContent = btn.dataset.origText;
+  else btn.textContent = '✓ ยืนยัน · ส่ง Exit Ticket';
+}
+function submit() {
+  // ถ้า validation ไม่ผ่าน · ปลดล็อคปุ่มที่ book.js เพิ่ง auto-lock ให้กดใหม่ได้
+  if (selected3.length !== 3) { alert('กาถูก 3 ข้อในส่วน "3 สิ่งที่เรียน" ก่อน'); _unlockSubmitBtn(); return; }
+  if (!favs.fav1 || !favs.fav2) { alert('ลาก 2 ฉากมาวางในช่อง Favorite'); _unlockSubmitBtn(); return; }
+  const q = (document.getElementById('q-text').value || '').trim();
+  if (!q) { alert('เขียน 1 คำถามในส่วน "คำถามที่อยากรู้ต่อ"'); _unlockSubmitBtn(); return; }
+  if (!emoji) { alert('เลือกอารมณ์'); _unlockSubmitBtn(); return; }
+  if (stars === 0) { alert('ให้ดาวระดับความเข้าใจ'); _unlockSubmitBtn(); return; }
+
+  const favReasons = {};
+  document.querySelectorAll('textarea[data-slot]').forEach(t => { favReasons[t.dataset.slot] = t.value.trim(); });
+
+  // ── Research metrics ────────────────────────────────
+  // Misconception probe: นับจาก concepts ที่ผู้เรียนเลือก เทียบกับ data-correct ของ chk
+  const mcPicked = [];
+  const correctPicked = [];
+  selected3.forEach(id => {
+    const item = document.querySelector(`.cpt-item[data-id="${id}"]`);
+    if (!item) return;
+    if (item.dataset.correct === '0') mcPicked.push(id); // misconception held
+    else correctPicked.push(id);
+  });
+  const cogLoad = parseInt(document.getElementById('cog-load').value); // 1-9 Paas
+
+  // Time-on-task: ใช้ Book.state.startTime ถ้ามี ไม่งั้น fallback ไปที่ journalStart
+  const epStartTs = (Book.state && Book.state.startTime) || _journalStart;
+  const timeOnTaskSec = Math.round((Date.now() - epStartTs) / 1000);
+
+  const data = {
+    concepts: selected3,
+    concepts_extra: document.getElementById('extra-concept').value.trim(),
+    fav_scenes: favs,
+    fav_reasons: favReasons,
+    question: q,
+    question_preset: document.getElementById('q-preset').value,
+    emoji,
+    stars,
+    confidence: parseInt(document.getElementById('confidence').value),
+    // Research data
+    misconception_picked: mcPicked,
+    misconception_count: mcPicked.length,
+    correct_picked: correctPicked,
+    cognitive_load: cogLoad,
+    difficulty_hardest: difficulty,
+    time_on_ep_sec: timeOnTaskSec,
+    at: Date.now(),
   };
-  document.getElementById('printBtn').onclick = () => window.print();
+  Book.savePageData('p27', data);
+  // ⭐ Economy: once-per-page (กันกดซ้ำ)
+  if (window.Economy) Economy.energyOnce({ page:'p27', amount:(3), reason:'Exit Ticket submitted' });
+  else Book.addEnergy(3, 'Exit Ticket submitted');
+  Book.addInventory('📒 3-2-1 Journal complete');
+  Book.completePage('p27');
+  document.getElementById('result').innerHTML = `
+    <div class="branch-reveal main" style="padding: 22px;">
+      <h3>✓ EXIT TICKET บันทึกแล้ว</h3>
+      <p>ข้อมูลของทีมพร้อมส่งต่อ EP02 และใช้ในงานวิจัย</p>
+      <p class="mt-10" style="color: var(--accent-gold)">+3 Energy · 📒 3-2-1 Journal</p>
+      <p class="muted mt-10">กด "ต่อไป →" ไปสรุป Journey Map</p>
+    </div>`;
+}
 </script>
 </body>
 </html>

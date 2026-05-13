@@ -47,6 +47,7 @@ window.EP_CONFIG = {
     { id:'p24', title:'Ending A · PRESERVE',                  file:'p24-ending-preserve.html', act:'D' },
     { id:'p25', title:'🌟 Ending Reset Route',                file:'p25-ending-reset.html',   act:'D' },
     { id:'p26', title:'Farewell · 4 NPC ลาจาก',               file:'p26-farewell.html',       act:'D' },
+    { id:'p26b', title:'🏆 Hall of Fame · ทีมชนะ EP08 (Season Final)', file:'p26b-halloffame.html', act:'D' },
     { id:'p27', title:'Journal · 🏆 COMMANDER + S2',         file:'p27-journal.html',        act:'D' }
   ],
 

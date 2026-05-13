@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌌 COSMOS LOG · Season 1 · บันทึกการเดินทางของยาน T.H.E.O.S.-IX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;700&family=Bai+Jamjuree:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a;
+  --bg2:#10162a;
+  --panel:rgba(20,28,48,.7);
+  --ink:#e8ecf5;
+  --ink-dim:#9aa3b8;
+  --gold:#f4c869;
+  --blue:#6aa9ff;
+  --blue-deep:#4267d6;
+  --crimson:#ff6b6b;
+  --plasma:#b885ff;
+  --border:rgba(244,200,105,.25);
+  --quote-bg:rgba(106,169,255,.08);
+  --quote-bd:#6aa9ff;
+  --void:#a86fff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:'Sarabun',-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.85;
+  font-size:17px;
+  overflow-x:hidden;
+}
+/* Starfield */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(2px 2px at 20% 30%,#fff,transparent),
+    radial-gradient(1px 1px at 60% 70%,#cfd8ff,transparent),
+    radial-gradient(1.5px 1.5px at 80% 20%,#fff,transparent),
+    radial-gradient(1px 1px at 30% 80%,#ffd6a8,transparent),
+    radial-gradient(2px 2px at 90% 60%,#fff,transparent),
+    radial-gradient(1px 1px at 10% 50%,#cfd8ff,transparent),
+    radial-gradient(1.5px 1.5px at 50% 10%,#fff,transparent),
+    radial-gradient(1px 1px at 70% 40%,#fff,transparent),
+    radial-gradient(2px 2px at 40% 60%,#ffd6a8,transparent),
+    radial-gradient(1px 1px at 95% 90%,#fff,transparent),
+    linear-gradient(180deg,#050811 0%,#0a0e1a 50%,#0d1426 100%);
+  background-size:600px 600px,400px 400px,500px 500px,300px 300px,700px 700px,450px 450px,550px 550px,350px 350px,650px 650px,400px 400px,100% 100%;
+  z-index:-2;
+  opacity:.7;
+  animation:drift 120s linear infinite;
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 800px 400px at 20% 10%,rgba(106,169,255,.08),transparent),
+    radial-gradient(ellipse 600px 300px at 80% 90%,rgba(184,133,255,.06),transparent),
+    radial-gradient(ellipse 400px 200px at 60% 50%,rgba(244,200,105,.04),transparent);
+  z-index:-1;
+  pointer-events:none;
+}
+@keyframes drift{
+  from{transform:translateY(0)}
+  to{transform:translateY(-300px)}
+}
+.shell{max-width:780px;margin:0 auto;padding:0 24px}
+
+/* Cover */
+.cover{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:40px 24px;
+  position:relative;
+}
+.cover .stamp{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--gold);
+  letter-spacing:.4em;
+  font-size:13px;
+  margin-bottom:24px;
+  opacity:.85;
+}
+.cover h1{
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:clamp(40px,7vw,72px);
+  font-weight:700;
+  letter-spacing:.02em;
+  background:linear-gradient(135deg,#fff 0%,#f4c869 40%,#6aa9ff 70%,#b885ff 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  margin:0 0 12px;
+  line-height:1.1;
+  filter:drop-shadow(0 0 30px rgba(106,169,255,.3));
+}
+.cover h2{
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:clamp(20px,3vw,28px);
+  font-weight:400;
+  color:var(--ink-dim);
+  margin:0 0 40px;
+  letter-spacing:.05em;
+}
+.cover .meta{
+  max-width:560px;
+  font-size:15px;
+  color:var(--ink-dim);
+  line-height:2;
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:20px 0;
+  margin-top:20px;
+}
+.cover .meta strong{color:var(--gold);font-weight:500}
+.cover .ship{
+  margin:30px 0 20px;
+  font-size:60px;
+  filter:drop-shadow(0 0 20px rgba(106,169,255,.5));
+}
+.cover .scroll-hint{
+  position:absolute;bottom:30px;left:50%;transform:translateX(-50%);
+  font-size:12px;letter-spacing:.3em;color:var(--ink-dim);
+  animation:bounce 2s ease infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translate(-50%,0)}
+  50%{transform:translate(-50%,8px)}
+}
+
+/* TOC */
+.toc{
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:60px 24px;
+  margin:40px 0;
+}
+.toc h3{
+  text-align:center;
+  font-family:'Bai Jamjuree',sans-serif;
+  color:var(--gold);
+  letter-spacing:.3em;
+  font-size:14px;
+  font-weight:500;
+  margin:0 0 40px;
+}
+.toc-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  max-width:780px;
+  margin:0 auto;
+}
+.toc-card{
+  display:block;
+  padding:18px 20px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  text-decoration:none;
+  color:var(--ink);
+  transition:all .25s ease;
+  backdrop-filter:blur(10px);
+}
+.toc-card:hover{
+  border-color:var(--gold);
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(244,200,105,.15);
+}
+.toc-card .num{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--gold);
+  font-size:12px;
+  letter-spacing:.2em;
+  display:block;
+  margin-bottom:4px;
+}
+.toc-card .title{
+  font-family:'Bai Jamjuree',sans-serif;
+  font-weight:500;
+  font-size:16px;
+  display:block;
+  margin-bottom:2px;
+}
+.toc-card .sub{
+  font-size:13px;
+  color:var(--ink-dim);
+}
+
+/* Sticky mini-nav */
+.minibar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(10,14,26,.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:10px 0;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+}
+.minibar-inner{
+  display:flex;justify-content:center;align-items:center;
+  gap:6px;flex-wrap:wrap;max-width:780px;margin:0 auto;padding:0 24px;
+}
+.minibar a{
+  color:var(--ink-dim);
+  text-decoration:none;
+  padding:4px 10px;
+  border-radius:4px;
+  transition:all .2s;
+}
+.minibar a:hover{color:var(--gold);background:rgba(244,200,105,.1)}
+.minibar a.top{color:var(--gold)}
+
+/* Chapter */
+.chapter{
+  padding:60px 0 40px;
+  border-top:1px dashed rgba(244,200,105,.15);
+  margin-top:40px;
+}
+.chapter .ep-tag{
+  font-family:'IBM Plex Mono',monospace;
+  color:var(--gold);
+  letter-spacing:.4em;
+  font-size:12px;
+  text-align:center;
+  margin-bottom:14px;
+  opacity:.85;
+}
+.chapter h2{
+  font-family:'Bai Jamjuree',sans-serif;
+  text-align:center;
+  font-size:clamp(28px,4.5vw,40px);
+  font-weight:700;
+  background:linear-gradient(135deg,#fff,#f4c869);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin:0 0 8px;
+  line-height:1.2;
+}
+.chapter h3.subtitle{
+  text-align:center;
+  font-family:'Bai Jamjuree',sans-serif;
+  font-weight:400;
+  font-size:17px;
+  color:var(--blue);
+  margin:0 0 50px;
+  letter-spacing:.05em;
+}
+.chapter h4{
+  font-family:'Bai Jamjuree',sans-serif;
+  color:var(--gold);
+  font-size:22px;
+  font-weight:600;
+  text-align:center;
+  margin:50px 0 25px;
+  position:relative;
+}
+.chapter h4::before,.chapter h4::after{
+  content:'❖';
+  margin:0 14px;
+  color:var(--border);
+  font-size:14px;
+  vertical-align:middle;
+}
+.chapter p{margin:0 0 1em;text-indent:1.5em}
+.chapter p.first,.chapter h4 + p{text-indent:0}
+.chapter p.first::first-letter{
+  font-family:'Bai Jamjuree',sans-serif;
+  font-size:3.4em;
+  float:left;
+  line-height:.9;
+  padding:6px 10px 0 0;
+  color:var(--gold);
+  font-weight:700;
+}
+
+/* Dialogue */
+blockquote{
+  margin:1.2em 0;
+  padding:14px 20px;
+  background:var(--quote-bg);
+  border-left:3px solid var(--quote-bd);
+  border-radius:0 8px 8px 0;
+  font-size:16px;
+}
+blockquote p{margin:0;text-indent:0}
+blockquote strong{color:var(--blue);font-weight:600}
+blockquote.void{
+  background:rgba(168,111,255,.08);
+  border-left-color:var(--void);
+  font-style:italic;
+  color:#d4c2ff;
+}
+blockquote.void strong{color:var(--void)}
+blockquote.captain{
+  background:rgba(244,200,105,.07);
+  border-left-color:var(--gold);
+}
+blockquote.captain strong{color:var(--gold)}
+blockquote.ai{
+  background:rgba(106,169,255,.06);
+  border-left-color:var(--blue-deep);
+  font-family:'IBM Plex Mono',monospace;
+  font-size:14.5px;
+}
+blockquote.father{
+  background:rgba(255,180,90,.07);
+  border-left-color:#ffb45a;
+  font-style:italic;
+}
+blockquote.father strong{color:#ffb45a}
+
+/* Equation */
+.eq{
+  display:block;
+  text-align:center;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:20px;
+  color:var(--gold);
+  background:rgba(244,200,105,.06);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:18px;
+  margin:24px 0;
+  letter-spacing:.04em;
+  text-indent:0 !important;
+}
+
+/* Highlight */
+ins{
+  text-decoration:none;
+  color:var(--gold);
+  font-weight:500;
+  border-bottom:1px dotted var(--gold);
+}
+em{color:var(--plasma)}
+
+/* Section break */
+.brk{
+  text-align:center;
+  margin:40px 0;
+  color:var(--border);
+  font-size:14px;
+  letter-spacing:1em;
+}
+
+/* Ending table */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:24px 0;
+  font-size:15px;
+  background:var(--panel);
+  border-radius:8px;
+  overflow:hidden;
+  border:1px solid var(--border);
+}
+th,td{
+  padding:12px 16px;
+  text-align:left;
+  border-bottom:1px solid rgba(244,200,105,.1);
+}
+th{
+  background:rgba(244,200,105,.1);
+  color:var(--gold);
+  font-family:'Bai Jamjuree',sans-serif;
+  font-weight:500;
+  letter-spacing:.05em;
+}
+td:first-child{color:var(--blue);font-weight:500;white-space:nowrap}
+
+/* Final / Closing */
+.season-end{
+  margin:80px auto 60px;
+  padding:50px 30px;
+  text-align:center;
+  background:linear-gradient(135deg,rgba(244,200,105,.08),rgba(106,169,255,.08));
+  border:1px solid var(--border);
+  border-radius:14px;
+  max-width:680px;
+}
+.season-end .stamp{
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.4em;
+  color:var(--gold);
+  font-size:14px;
+  margin-bottom:20px;
+}
+.season-end blockquote{
+  background:transparent;
+  border:none;
+  font-size:18px;
+  line-height:1.9;
+  color:var(--ink);
+  padding:0;
+  margin:20px 0;
+  font-style:italic;
+}
+.season-end .sig{
+  font-family:'Bai Jamjuree',sans-serif;
+  color:var(--gold);
+  margin-top:24px;
+  letter-spacing:.05em;
+}
+
+footer{
+  text-align:center;
+  padding:40px 24px 60px;
+  color:var(--ink-dim);
+  font-size:13px;
+  border-top:1px solid var(--border);
+  margin-top:60px;
+}
+footer .credit{color:var(--gold);letter-spacing:.1em}
+
+/* Print */
+@media print{
+  body{background:#fff;color:#111;font-size:13pt}
+  body::before,body::after{display:none}
+  .cover{min-height:auto;page-break-after:always}
+  .cover h1{color:#000;-webkit-text-fill-color:#000;background:none;filter:none}
+  .cover h2,.cover .meta,.cover .stamp{color:#444}
+  .minibar,.scroll-hint{display:none}
+  .toc{page-break-after:always;border:none}
+  .toc h3,.toc-card .num{color:#666}
+  .toc-card{border:1px solid #ddd;background:#fff;color:#111}
+  .toc-card .title{color:#000}
+  .chapter{page-break-before:always;border:none}
+  .chapter h2{color:#000;-webkit-text-fill-color:#000;background:none}
+  .chapter h3.subtitle{color:#444}
+  .chapter h4{color:#333}
+  .chapter p.first::first-letter{color:#666}
+  blockquote{background:#f4f4f4;border-left:3px solid #888;color:#222}
+  blockquote strong{color:#000}
+  .eq{background:#f4f4f4;color:#000;border:1px solid #ccc}
+  ins{color:#000;border-bottom:1px dotted #888}
+  table{background:#fff}
+  th{background:#eee;color:#000}
+  .season-end{background:#f9f9f9;border:1px solid #ccc}
+}
+
+/* Mobile */
+@media(max-width:600px){
+  body{font-size:16px}
+  .shell{padding:0 18px}
+  .cover h1{font-size:36px}
+  blockquote{padding:12px 14px;font-size:15px}
+  .eq{font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="stamp">CLASSIFIED · FLEET ARCHIVE</div>
+  <div class="ship">🌌</div>
+  <h1>COSMOS LOG</h1>
+  <h2>บันทึกการเดินทางของยาน T.H.E.O.S.-IX</h2>
+  <div class="meta">
+    <strong>Season 1</strong> · กำเนิดเอกภพ → Genesis Again<br>
+    นิยายวิทยาศาสตร์เชิงวรรณกรรม · 8 ตอนรวด<br>
+    สำหรับวิชา <strong>ว 30105</strong> ดาราศาสตร์ · ม.5 · โรงเรียนสตรีวิทยา<br>
+    ประพันธ์โดย <strong>เจน</strong> · สำหรับครูโกเมน ปาปะโถ · 2569
+  </div>
+  <div class="scroll-hint">↓ SCROLL ↓</div>
+</section>
+
+<!-- ============ TOC ============ -->
+<section class="toc">
+  <h3>★ MISSION LOG · 8 EPISODES ★</h3>
+  <div class="toc-grid">
+    <a class="toc-card" href="#ep01"><span class="num">EP 01</span><span class="title">วันแห่งการปะทะ</span><span class="sub">กำเนิดเอกภพ · ฮับเบิล</span></a>
+    <a class="toc-card" href="#ep02"><span class="num">EP 02</span><span class="title">เสียงเรียกจากกาแล็กซี</span><span class="sub">Local Group · จำแนกกาแล็กซี</span></a>
+    <a class="toc-card" href="#ep03"><span class="num">EP 03</span><span class="title">เสียงร้องจากอดีต</span><span class="sub">พาแรลแลกซ์ · WARP RUN</span></a>
+    <a class="toc-card" href="#ep04"><span class="num">EP 04</span><span class="title">วันสุดท้ายของยักษ์แดง</span><span class="sub">วิวัฒนาการดาว · HR-Diagram</span></a>
+    <a class="toc-card" href="#ep05"><span class="num">EP 05</span><span class="title">หัวใจที่เต้นผิดจังหวะ</span><span class="sub">ดวงอาทิตย์ · HELION 6 power</span></a>
+    <a class="toc-card" href="#ep06"><span class="num">EP 06</span><span class="title">ขอบฟ้าของบ้าน</span><span class="sub">ระบบสุริยะ · เคปเลอร์</span></a>
+    <a class="toc-card" href="#ep07"><span class="num">EP 07</span><span class="title">สงครามในวงโคจร</span><span class="sub">คลื่น EM · JWST</span></a>
+    <a class="toc-card" href="#ep08"><span class="num">EP 08</span><span class="title">Genesis Again</span><span class="sub">Season Finale · 5 Endings</span></a>
+  </div>
+</section>
+
+<!-- ============ MINI NAV ============ -->
+<nav class="minibar">
+  <div class="minibar-inner">
+    <a class="top" href="#top">↑ TOP</a>
+    <a href="#ep01">01</a><a href="#ep02">02</a><a href="#ep03">03</a><a href="#ep04">04</a>
+    <a href="#ep05">05</a><a href="#ep06">06</a><a href="#ep07">07</a><a href="#ep08">08</a>
+    <a href="#end">END</a>
+  </div>
+</nav>
+
+<div class="shell">
+
+<!-- ============ EP01 ============ -->
+<section class="chapter" id="ep01">
+  <div class="ep-tag">EPISODE 01</div>
+  <h2>วันแห่งการปะทะ</h2>
+  <h3 class="subtitle">THE COLLISION · กำเนิดเอกภพ</h3>
+
+  <h4>๑ · ปริศนาที่ขอบนอกของระบบสุริยะ</h4>
+  <p class="first">ในปีที่ 2267 ของปฏิทินสหพันธ์โลก เมื่อระยะทางไม่ใช่อุปสรรค แต่ความเข้าใจกลายเป็นพรมแดน — ยานสำรวจชั้นเอกชื่อ T.H.E.O.S.-IX ก็ลอยอยู่ที่ขอบนอกของระบบสุริยะ ห่างจากดวงอาทิตย์ออกไปสี่พันห้าร้อยล้านกิโลเมตร ในอวกาศที่ไม่มีลม ไม่มีเสียง ไม่มีกระทั่งฝุ่นมากพอจะสะท้อนแสง</p>
+
+  <p>ภายในห้องบังคับการ จอเรดาร์ส่องสีฟ้าครามอ่อนลงบนใบหน้าของกัปตันอารยา เวชชาชีวะ เธอนั่งตรงมาแล้วสิบแปดชั่วโมง ผมดำที่รวบเป็นหางม้าต่ำเริ่มหลุดออกจากที่รัดทีละเส้น แต่เธอไม่ได้สนใจ ตาของเธอจับจ้องอยู่ที่จุดสองจุดบนแผนที่อวกาศ — สองจุดเล็ก ๆ ที่ระบบยังไม่ระบุได้ว่าเป็นอะไร เคลื่อนเข้าหากันด้วยความเร็วที่ไม่น่าเป็นไปได้</p>
+
+  <p>เสียงสังเคราะห์ของ LEMAÎTRE — AI ประจำยานที่ตั้งชื่อตามนักบวชคาทอลิกชาวเบลเยียมผู้เสนอแนวคิดเอกภพขยายตัวเป็นคนแรกเมื่อปี 1927 — ตัดผ่านความเงียบ</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "Cadets ทุกท่าน · ผมตรวจพบความผิดปกติเชิงพลศาสตร์ · วัตถุปริศนาสองก้อน · ความเร็วสัมพัทธ์ประมาณ 0.15c · กำลังเข้าใกล้กัน · เวลาปะทะอีก 87 วินาที"</p></blockquote>
+
+  <p>ศูนย์ส่วนสิบห้าของความเร็วแสง — เร็วพอจะวิ่งจากโลกถึงดวงอาทิตย์ในเวลาประมาณหนึ่งชั่วโมงสิบเอ็ดนาที — ในขณะที่ดาวเคราะห์น้อยทั่วไปเคลื่อนที่ช้ากว่านี้นับหมื่นเท่า อารยาขมวดคิ้ว เพราะธรรมชาติของอวกาศไม่อนุญาตให้วัตถุไหนเร่งตัวเองได้รวดเร็วขนาดนั้นเฉย ๆ ต้องมีอะไรบางอย่างผลักมัน หรือ — ที่น่ากลัวกว่า — มันเดินทางมาแบบนี้ตั้งแต่ต้น</p>
+
+  <blockquote class="captain"><p><strong>อารยา:</strong> "เปิดกล้องสเปกตรัมเต็มความละเอียด · ทีม · เตรียมเก็บตัวอย่าง"</p></blockquote>
+
+  <p>โบลท์ เทอร์เรลล์ ช่างเครื่องวัยยี่สิบหก ดีดตัวขึ้นจากเก้าอี้ทันที รอยน้ำมันบนแก้มเขายังไม่จาง เขาเปิดช่องโดรนเก็บตัวอย่างชั้นนอก ปรับมุมสามรอบ และยิงโดรนออกไปก่อนวัตถุทั้งสองจะปะทะกันเพียงสี่วินาที</p>
+
+  <p>ในจอกลาง แสงวาบสีขาวสว่างปรากฏขึ้นเงียบสนิท — เพราะอวกาศไม่ส่งเสียง — ก้อนทั้งสองแตกสลายเป็นเศษเล็กเศษน้อยกระจายออกเป็นวงคลื่นกระแทกที่ขยายตัวอย่างช้า ๆ ราวกับฝันร้ายที่ฉายในจังหวะสโลว์โมชัน เคน "สเปกตรา" ภัทรวงศ์ วิศวกรประจำสเปกโตรสโคป มองข้อมูลที่ไหลผ่านจอของเขาแล้วถึงกับนิ่งไปครู่ใหญ่</p>
+
+  <blockquote><p><strong>เคน:</strong> "กัปตัน... สเปกตรัมที่ออกมาจากเศษพวกนี้... มันไม่ใช่สเปกตรัมของหินดาวเคราะห์น้อย · มันเป็นสเปกตรัมของ <ins>อนุภาคพื้นฐาน</ins> · ผมเห็นเส้นของควาร์ก เห็นนิวตรอน โปรตอน อิเล็กตรอน โฟตอน — ทุกชิ้นเล็กที่สุดของสสารและพลังงาน"</p></blockquote>
+
+  <p>ในห้องแล็บกลางยาน หมอมีรา ชาห์ กำลังหมุนตัวอย่างที่โดรนส่งกลับมาในเครื่องสเกนความหนาแน่นพลังงาน เธอเงยหน้าจากกล้องจุลทรรศน์ดาราศาสตร์ แว่นกรอบเงินสะท้อนแสงสีน้ำเงินอ่อน</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "CMB-trace บอกอายุของวัตถุที่ <ins>13,800 ล้านปี</ins> (±0.1%)"</p></blockquote>
+
+  <p>ความเงียบในห้องบังคับการลึกขึ้นอีกชั้นหนึ่ง ตัวเลข 13,800 ล้านปี ไม่ใช่ตัวเลขธรรมดา มันคืออายุของ <em>เอกภพ</em> — เป็นช่วงเวลาที่นักดาราศาสตร์ในศตวรรษที่ยี่สิบเอ็ดเคยคำนวณได้จากภาพถ่ายไมโครเวฟพื้นหลังของยาน Planck เป็นช่วงเวลาที่ห่างจากปัจจุบันมากกว่าอายุของดวงอาทิตย์ถึงสามเท่า ห่างกว่าอายุของโลกสามเท่ากว่าเล็กน้อย ห่างเกินกว่าที่สสารใด ๆ ในระบบสุริยะของพวกเขาจะยังคงอยู่ได้</p>
+
+  <h4>๒ · ลูกโป่งของ ดร.ฮับเบิล</h4>
+
+  <p>ยาน T.H.E.O.S.-IX เปลี่ยนเข็มทันที พิกัดใหม่ — สถานีวิจัยลับ Alpha ที่ลอยอยู่ในแถบ Kuiper · วาร์ปไดรฟ์ทั้งสี่ตัวเรืองแสงเป็นวงรีสีฟ้าครามรอบลำเรือ ในห้วงเวลาสามนาทีเก้าวินาที พวกเขาก็โผล่ออกที่ขอบนอกของระบบสุริยะ ตรงหน้าโครงสร้างทรงโดมสามชั้นที่หมุนช้า ๆ ลอยอยู่กลางความว่าง</p>
+
+  <p>ดร.ฮับเบิล รออยู่แล้วที่ประตู ชายชราในชุดคลุมสีกรมท่าเก่า ผมขาวเป็นกระจุกเล็ก ๆ บนศีรษะ มือถือลูกโป่งสีแดงและปากกามาร์กเกอร์ปลายแหลม — เครื่องมือสอนที่ไม่เคยเปลี่ยนตั้งแต่เขาเริ่มสอนนักเรียนคนแรกเมื่อหกสิบปีก่อน</p>
+
+  <blockquote><p><strong>ดร.ฮับเบิล:</strong> "อย่าเพิ่งถามผมว่าวัตถุนั้นคืออะไร · ก่อนผมจะตอบ · พวกเราจะเล่นเกมก่อน · บนผิวลูกโป่งของแต่ละคน · วาดจุดห้าจุด · เป่าสามรอบ · วัดระยะทุกครั้ง · ห้ามใช้คำว่า 'ขยายตัว' จนกว่าผมจะอนุญาต"</p></blockquote>
+
+  <p>สี่นาทีต่อมา ทีมรายงาน เคนพูดก่อน "ทุกจุดห่างจากบ้าน · เพิ่มขึ้น · จุดที่อยู่ไกลเริ่มต้น · ยิ่งห่างเร็วกว่าจุดใกล้" มีราเสริม "และไม่มีจุดศูนย์กลาง · ทุกจุดเห็นทุกจุดเคลื่อนหนีออกไปจากตัวเอง" โบลท์ยิ้ม "เหมือนผิวลูกโป่ง — ไม่ใช่ลูกโป่งทั้งใบ · มันคือผิว"</p>
+
+  <p>ดร.ฮับเบิลพยักหน้าช้า ๆ เขาเดินไปที่กระดานดำเก่าที่แขวนอยู่ในห้องของเขา ใช้ชอล์กขาวเขียนสมการสั้น ๆ ลงไป</p>
+
+  <span class="eq">v = H₀ × d</span>
+
+  <p>"นี่คือสมการของฮับเบิล · ค้นพบโดยเอ็ดวิน ฮับเบิล ในปี 1929 จากภาพถ่ายกาแล็กซีหลายร้อยภาพ" เขาพูด "ความเร็วเคลื่อนหนีของกาแล็กซี (v) เท่ากับ ค่าคงที่ฮับเบิล (H₀ ≈ 70 km/s ต่อ Mpc) คูณกับระยะทาง (d) · กาแล็กซีไหนไกลกว่า · เคลื่อนหนีเร็วกว่าเป็นสัดส่วนตรง · นี่ไม่ใช่การระเบิดของสสารในอวกาศ · แต่เป็น<ins>การขยายตัวของอวกาศเอง</ins>"</p>
+
+  <h4>๓ · เสียงแรกของ VOID</h4>
+
+  <p>แต่จู่ ๆ จอเรดาร์ก็เปล่งเสียงเตือนเป็นจังหวะคู่ — สีแดงเข้ม กระพริบ <em>Galaxy A หายไปจากแผนที่</em> ไม่ใช่บังภาพ ไม่ใช่สัญญาณรบกวน — มันไม่ปรากฏในข้อมูลคลื่นวิทยุ ไม่ปรากฏในข้อมูลแสงอินฟราเรด ไม่ปรากฏแม้แต่ในข้อมูลคลื่นความโน้มถ่วงพื้นหลัง ราวกับว่ามันไม่เคยมีอยู่จริง</p>
+
+  <blockquote class="void"><p><strong>VOID:</strong> "บิกแบง... คือคำโกหก · มีจุดศูนย์กลาง · มันเป็นการระเบิด · เธอมาจากความว่างเปล่า · และจะกลับสู่ความว่างเปล่า..."</p></blockquote>
+
+  <p>อารยายืนตรง เธอเคยฝึกในสถานการณ์ที่ข้าศึกพยายามทำลายขวัญลูกทีม — มันเป็นทักษะที่เก่าแก่กว่ายานวาร์ป — แต่เธอไม่เคยฝึกในสถานการณ์ที่ข้าศึกพยายาม <em>ลบความจริง</em></p>
+
+  <blockquote class="captain"><p><strong>อารยา:</strong> "ทีม · ปฏิเสธ · บอกความจริงกลับ"</p></blockquote>
+
+  <p>มีราหายใจเข้าลึก ๆ "บิกแบงไม่มีจุดศูนย์กลาง · ทุกจุดในเอกภพมองทุกจุดอื่นว่าเคลื่อนหนี · เพราะอวกาศเองขยายตัวจากภาวะหนาแน่นและร้อนจัด · ฮับเบิลแสดงให้เห็นในปี 1929 จากการเลื่อนสีแดงของแสงกาแล็กซี"</p>
+
+  <p>เคนต่อ "และ Cosmic Microwave Background — รังสีไมโครเวฟพื้นหลังที่กระจายอย่างสม่ำเสมอทั่วท้องฟ้า · พลังงานที่หลงเหลือจากตอนที่จักรวาลโปร่งใสครั้งแรกเมื่อ 380,000 ปีหลังบิกแบง · ค้นพบโดย Penzias และ Wilson ปี 1965 · ถ้าไม่มีบิกแบง ก็ไม่มีทางมี CMB"</p>
+
+  <p>โบลท์ปิดท้าย "และเศษอนุภาคที่เราเก็บได้ — ควาร์ก โปรตอน อิเล็กตรอน — มันคือสิ่งเดียวกับที่ก่อตัวขึ้นในไม่กี่นาทีแรกหลังบิกแบง · เป็นหลักฐานสด ๆ ที่ส่งมาให้พวกเรา · ไม่ใช่คำโกหก"</p>
+
+  <p>เสียง VOID เริ่มแหบขึ้น ทุกครั้งที่ทีมตอบกลับด้วยข้อเท็จจริงที่หนักแน่น เสียงนั้นจะค่อย ๆ จางลง ราวกับว่าตัวมันเองหล่อเลี้ยงด้วยความสงสัยและความกลัวของผู้ฟัง และจะกลายเป็นไม่มีอะไรเมื่อผู้ฟังมั่นใจ</p>
+
+  <blockquote class="void"><p><strong>VOID (ก่อนหายไป):</strong> "เห็นไว้... อารยา... เธอจะเจอผมอีก · เธอ — และพ่อของเธอ"</p></blockquote>
+
+  <p>มีดบาดในใจอารยาในห้วงเวลานั้นมีเพียงเธอที่รู้สึก — พ่อของอารยา ดร.วีระ เวชชาชีวะ เป็นนักดาราศาสตร์ฟิสิกส์ที่หายไปเมื่อสิบสองปีก่อนระหว่างภารกิจสำรวจ Proxima Centauri ไม่มีใครเจอซากยาน ไม่มีใครเจอสัญญาณ ไม่มีกระทั่งคลื่นวิทยุสุดท้าย</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "EP01 · COMPLETED · เปิดทาง EP02"</p></blockquote>
+</section>
+
+<!-- ============ EP02 ============ -->
+<section class="chapter" id="ep02">
+  <div class="ep-tag">EPISODE 02</div>
+  <h2>เสียงเรียกจากกาแล็กซี</h2>
+  <h3 class="subtitle">GALAXY · ระบบดาวและการจำแนก</h3>
+
+  <h4>๑ · บ้านของเพื่อนบ้านในจักรวาล</h4>
+  <p class="first">ยาน T.H.E.O.S.-IX เปิดเครื่องวาร์ปอีกครั้ง คราวนี้พิกัดของพวกเขาไม่ใช่ Galaxy A อีกแล้ว — เพราะ Galaxy A ไม่อยู่บนแผนที่อีกต่อไป — แต่เป็น <ins>Local Group</ins> กลุ่มกาแล็กซีท้องถิ่นที่บ้านของระบบสุริยะเป็นส่วนหนึ่งอยู่</p>
+
+  <p>เมื่อยานหลุดออกจากความเร็วเหนือแสง สิ่งแรกที่ทีมเห็นในจอมุมกว้างคือภาพที่ทำให้ทุกคนเงียบไปพร้อมกัน</p>
+
+  <p><strong>Andromeda</strong> — ดาราจักรชนิดก้นหอยที่ใกล้ทางช้างเผือกที่สุด ห่างออกไป 2.5 ล้านปีแสง ลอยอยู่ข้างหน้าเหมือนกระจกสะท้อนบ้านของพวกเขาเอง · <strong>M87</strong> — ดาราจักรชนิดวงรียักษ์ที่กลางกระจุก Virgo มีหลุมดำมวลยวดยิ่งซึ่งกลายเป็นภาพถ่ายแรกของหลุมดำในประวัติศาสตร์มนุษย์เมื่อปี 2019 · <strong>LMC และ SMC</strong> — ดาราจักรแคระสองดวงที่หมุนรอบทางช้างเผือก · และอีกห้าสิบกว่าดาราจักรเล็กใหญ่กระจายอยู่รอบ ๆ</p>
+
+  <h4>๒ · Hubble Tuning Fork</h4>
+
+  <p>ภาพ Tuning Fork สามแฉกปรากฏที่หน้าจอกลางบริดจ์ · ทางซ้ายเป็นชนิดวงรี (E0 ถึง E7) เรียงตามอัตราส่วนความรี · ทางขวาแยกเป็นสองแฉก แฉกบนคือก้นหอยธรรมดา (Sa Sb Sc) แฉกล่างคือก้นหอยมีคาน (SBa SBb SBc) ตรงกลางที่จุดบรรจบของแฉกเรียกว่า S0 หรือเลนทิคิวลาร์ — กาแล็กซีที่อยู่กึ่งกลางระหว่างวงรีและก้นหอย</p>
+
+  <blockquote><p><strong>มีรา:</strong> "Andromeda เป็น <ins>Sb</ins> · ก้นหอยขนาดกลาง · แขนหมุนชัด · ดาวสร้างใหม่อยู่ในแขน"</p></blockquote>
+  <blockquote><p><strong>เคน:</strong> "M87 เป็น <ins>E1</ins> หรือ E0 · เกือบเป็นทรงกลม · ดาวเก่า · ไม่มีฝุ่นแก๊สมากพอจะสร้างดาวใหม่"</p></blockquote>
+  <blockquote><p><strong>โบลท์:</strong> "ทางช้างเผือกของเราเป็น <ins>SBc</ins> · ก้นหอยมีคาน · ผมลอยอยู่ในแขน Orion อันเป็นแขนรองของกาแล็กซีบ้านเรา · ห่างจากใจกลางประมาณ 26,000 ปีแสง"</p></blockquote>
+
+  <p>ดร.ฮับเบิลปรากฏตัวบนจอ "Tuning Fork ของฮับเบิลไม่ใช่ลำดับวิวัฒนาการ · ฮับเบิลเคยเข้าใจผิดในตอนแรก · เขาคิดว่ากาแล็กซีวงรีคือ 'ตอนต้น' และก้นหอยคือ 'ตอนปลาย' · แต่ปัจจุบันเรารู้แล้วว่ามันไม่ใช่ · กาแล็กซีวงรีส่วนใหญ่เป็นผลของการชนกันของก้นหอยมาก่อน · ฟังดูย้อนแย้งใช่ไหม · นั่นคือเสน่ห์ของดาราศาสตร์"</p>
+
+  <h4>๓ · สัญญาณจาก Andromeda</h4>
+
+  <p>แต่ความสบายใจอยู่ได้ไม่นาน เพราะ LEMAÎTRE ก็แจ้งสัญญาณใหม่</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "ตรวจพบคลื่นวิทยุที่มาจาก Andromeda · ความถี่ผิดปกติ · ปรากฏเป็นชุดข้อมูลที่ซ้ำกันสามครั้ง · ราวกับมีคนตั้งใจส่ง · ผมประมาณว่าเก่า 4 ล้านปี · มันเดินทางมา 2.5 ล้านปีในแสง · ใครก็ตามที่ส่ง · ส่งมาก่อนมนุษย์โลกจะรู้จักการลุกขึ้นเดิน"</p></blockquote>
+
+  <p>"เนื้อหา" อารยาถาม "ผมถอดได้บางส่วน · เป็นพิกัด · พิกัดของดาวฤกษ์ดวงหนึ่ง · ในกาแล็กซีของเราเอง · ห่างจากระบบสุริยะประมาณ 4 ปีแสง"</p>
+
+  <p>ทุกคนแลกสายตา 4 ปีแสง — ระยะของ Alpha Centauri — เพื่อนบ้านดาวฤกษ์ที่ใกล้ดวงอาทิตย์ที่สุด</p>
+
+  <blockquote><p><strong>มีรา:</strong> "คนที่ส่งไม่ได้อยู่ Andromeda เมื่อเขาส่งหรอก · เขาใช้ Andromeda เป็นกระจกสะท้อน · เป็นทอด · ที่น่าคิดที่สุด — เขาเลือกให้สัญญาณ 'ผ่าน' Andromeda เพื่อให้แน่ใจว่าคนที่รับมัน <ins>ต้องเข้าใจเรื่องระยะทางจักรวาลก่อน</ins> ถึงจะตามรอยกลับไปหาเขาได้"</p></blockquote>
+
+  <p>อารยายืนตรง สมองเธอเริ่มต่อจุดเข้าด้วยกัน — เศษอนุภาคจักรวาลอายุ 13.8 พันล้านปี · VOID ที่พยายามลบความจริง · สัญญาณจาก 4 ล้านปีก่อนที่ใช้ Andromeda เป็นทอด · และคำพูดสุดท้ายของ VOID — "เธอ — และพ่อของเธอ"</p>
+
+  <blockquote class="captain"><p><strong>อารยา:</strong> "LEMAÎTRE · ตั้งวาร์ปไปยังพิกัดนั้น · เราต้องไปดู"</p></blockquote>
+</section>
+
+<!-- ============ EP03 ============ -->
+<section class="chapter" id="ep03">
+  <div class="ep-tag">EPISODE 03</div>
+  <h2>เสียงร้องจากอดีต</h2>
+  <h3 class="subtitle">PARALLAX · ความสว่างจริง · WARP RUN</h3>
+
+  <h4>๑ · พ่อในซากยาน</h4>
+  <p class="first">ที่ Proxima Centauri — ดาวแคระแดงที่ใกล้ดวงอาทิตย์ที่สุด — ทีมพบสิ่งที่อารยารอมานานสิบสองปี · ซากยาน <strong>ICARUS-V</strong> ของพ่อ ลอยอยู่ห่างจากดาว 0.3 AU · ตัวยานสีกรมท่าเก่ากับลายแถบทองที่จาง</p>
+
+  <p>เสียงผู้ชายที่อ่อนแรงและเป็นมิตรทะลุผ่านมาจากซากยาน</p>
+
+  <blockquote class="father"><p><strong>ดร.วีระ (บันทึก):</strong> "อารยา... ลูก... ในที่สุดลูกก็มา... พ่อพบสิ่งที่ผมเรียกว่า '<ins>ปริศนาวัตถุต้นกำเนิด</ins>' · เป็นวัตถุที่บรรจุข้อมูลของเอกภพในช่วงไม่กี่นาทีแรกหลังบิกแบง · มีอะไรบางอย่างกำลังตามล่าวัตถุพวกนี้ · ผมเรียกมันว่า VOID · มันใช้ความสงสัยและความกลัวของมนุษย์เป็นเชื้อเพลิง · ทุกครั้งที่มนุษย์ยืนยันด้วยข้อมูล · มันอ่อนลง..."</p></blockquote>
+
+  <blockquote class="father"><p>"อาวุธของพวกเรา คือความรู้ · และทุกครั้งที่นักเรียนคนหนึ่งของลูกเข้าใจกฎของฮับเบิล · เข้าใจ CMB · เข้าใจการจำแนกของกาแล็กซี · พวกเขากำลังสร้างเกราะให้จักรวาล... ปลอดภัยจาก VOID"</p></blockquote>
+
+  <h4>๒ · พาแรลแลกซ์ และเทียนมาตรฐาน</h4>
+
+  <p>LEMAÎTRE แจ้งสิ่งที่ทุกคนเริ่มกลัว — ฐานข้อมูลพาแรลแลกซ์ของดาวจำนวนหนึ่งในแผนที่ "ไม่ตรงกัน" บางดาวที่ควรอยู่ห่าง 50 ปีแสง · ตอนนี้ค่าวัดใหม่บอก 150 ปีแสง · บางดาวที่ควรห่าง 500 ปีแสง · ตอนนี้บอก 100 ปีแสง · ราวกับมีคน "ขยับ" ระยะของดาวเหล่านี้ในฐานข้อมูล</p>
+
+  <blockquote class="captain"><p><strong>อารยา:</strong> "มันรู้แล้วว่าระยะทางคือเข็มทิศของเรา · ถ้ามันลบความเข้าใจเรื่องระยะทางได้ · มันลบเข็มทิศได้"</p></blockquote>
+
+  <p>ดร.ฮับเบิลส่งภาพชุดใหญ่มา — ภาพถ่ายดาวจริงจากสองตำแหน่งของวงโคจรโลก แต่ละคู่ภาพถ่ายห่างกันหกเดือน · ดาวบางดวงในภาพขยับเล็กน้อย · ดาวบางดวงไม่ขยับเลย</p>
+
+  <span class="eq">d (พาร์เซก) = 1 / p (อาร์กวินาที)</span>
+
+  <p>"ดาวที่ขยับคือดาวใกล้ · ขยับมากแสดงใกล้มาก · ขยับน้อยแสดงไกล · ดาวที่ไม่ขยับเลย — อยู่ไกลจนวงโคจรโลกของเราเล็กเกินไปเป็นฐานวัด · กล้องบนโลกวัดได้ดีถึงประมาณ 100 พาร์เซก · กล้องอวกาศ Gaia ของศตวรรษที่ 21 วัดได้ถึงประมาณ 10,000 พาร์เซก · ไกลกว่านั้น เราต้องเปลี่ยนไม้บรรทัด"</p>
+
+  <p>ไม้บรรทัดถัดไปคือ <em>เทียนมาตรฐาน</em> — ดาวแปรแสง Cepheid ที่ Henrietta Leavitt ค้นพบในปี 1912 · ดาวแปรคาบยิ่งช้า ยิ่งสว่างจริง · เมื่อรู้คาบและความสว่างจริง M · วัด m ได้ · ก็คำนวณระยะทาง d</p>
+
+  <span class="eq">m − M = 5 log(d / 10 pc)</span>
+
+  <p>"นี่คือสิ่งที่ทำให้ฮับเบิลค้นพบว่า Andromeda ไม่ใช่เนบิวลาในกาแล็กซีของเรา · แต่เป็นกาแล็กซีต่างหาก ในปี 1924"</p>
+
+  <h4>๓ · WARP RUN</h4>
+
+  <p>แต่ก่อนยานจะวาร์ปไปยัง Betelgeuse — เป้าหมายถัดไป — โครงสร้างคล้ายลูกศรขนาดยักษ์ที่บิดเป็นเกลียวเรืองแสงสีม่วงเข้มก็โผล่ออกจาก subspace · เคลื่อนมาทางยานด้วยความเร็วเหนือแสง</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "มันคือ VOID — รูปแบบที่สอง · ผมเรียกมัน WARP RUNNER"</p></blockquote>
+  <blockquote class="void"><p><strong>VOID-WARP:</strong> "พิกัด... ผิด... ระยะทาง... ผิด... ฮับเบิล... ผิด..."</p></blockquote>
+
+  <p>WARP RUN เป็นโหมดที่ยานต้องกระโดดวาร์ปสั้น ๆ ซ้ำ ๆ ระหว่างกระโดด ลูกเรือต้องตอบโจทย์ระยะทางถูกต้อง ถ้าตอบผิด ยานจะวอร์ปไปยังพิกัดที่ผิด และ WARP RUNNER จะตามทัน</p>
+
+  <p><strong>โจทย์ 1:</strong> พาแรลแลกซ์ 0.4 อาร์กวินาที — เคน: "1/0.4 = 2.5 พาร์เซก ≈ 8.15 ปีแสง" ✓<br>
+  <strong>โจทย์ 2:</strong> Cepheid คาบ 10 วัน · M = -3.5 · m = 11.5 — มีรา: "m − M = 15 · log(d/10) = 3 · d = 10,000 พาร์เซก ≈ 32,600 ปีแสง" ✓<br>
+  <strong>โจทย์ 3:</strong> ดาว T ≈ 3000 K สว่างเท่าดวงอาทิตย์ที่ระยะ 10 พาร์เซก — โบลท์: "ดาวยักษ์แดง · รัศมีหลายสิบเท่าของดวงอาทิตย์" ✓</p>
+
+  <p>ยานหายไปจากตำแหน่งเดิม ทิ้ง WARP RUNNER อยู่ในความว่างเปล่า · พิกัด: <em>Betelgeuse · 642 ปีแสง</em></p>
+
+  <h4>๔ · ดาวที่กำลังจะตาย</h4>
+
+  <p>Betelgeuse — ดาวยักษ์แดงในกลุ่มดาวนายพราน · รัศมีประมาณ 750 เท่าของดวงอาทิตย์ · ถ้าเอามาแทนดวงอาทิตย์ของระบบสุริยะ ผิวของมันจะเลยวงโคจรดาวพฤหัสบดี · ดาวที่อยู่ในช่วงสุดท้ายของชีวิต พร้อมจะระเบิดเป็นซูเปอร์โนวาในเวลาไม่กี่หมื่นถึงไม่กี่แสนปี</p>
+
+  <p>ในกล่องของพ่อที่ทิ้งไว้ที่ 47 AU มีจดหมายสั้น ๆ:</p>
+
+  <blockquote class="father"><p>"ถ้าพวกท่านมาถึงนี่ได้ พวกท่านเข้าใจระยะทางจักรวาลแล้ว · บทถัดไป — เข้าใจดาวเอง · มันเกิด มีชีวิต และตายอย่างไร · จงไปยัง η Carinae · พ่อจะรอ"</p></blockquote>
+</section>
+
+<!-- ============ EP04 ============ -->
+<section class="chapter" id="ep04">
+  <div class="ep-tag">EPISODE 04</div>
+  <h2>วันสุดท้ายของยักษ์แดง</h2>
+  <h3 class="subtitle">STELLAR EVOLUTION · HR-Diagram · GRAVITY ASCENT</h3>
+
+  <h4>๑ · ดาวที่แสดงทุกขั้นของการตาย</h4>
+  <p class="first">η Carinae — Eta Carinae — เป็นระบบดาวคู่ที่อยู่ในกลุ่มดาว Carina ห่างจากระบบสุริยะ 7,500 ปีแสง · ดาวหลักในระบบมีมวลประมาณ 100 เท่าของดวงอาทิตย์ · เป็นหนึ่งในดาวฤกษ์ที่ไม่เสถียรที่สุดเท่าที่มนุษย์รู้จัก เคยปะทุครั้งใหญ่ในปี 1843 ทำให้นักดาราศาสตร์โลกในตอนนั้นบันทึกว่ามันเป็นดาวที่สว่างที่สุดเป็นอันดับสองในท้องฟ้า ทั้งที่อยู่ไกลมาก</p>
+
+  <p>เมื่อยาน T.H.E.O.S.-IX โผล่ออกจากวาร์ปที่ 200 AU จาก η Carinae ทีมเห็นกลุ่มเมฆฝุ่นรูปนาฬิกาทรายขนาดยักษ์ที่นักดาราศาสตร์เรียกว่า <strong>Homunculus Nebula</strong> · เป็นเศษซากของการปะทุครั้งใหญ่ในปี 1843 ที่ยังขยายตัวอยู่จนถึงปัจจุบัน</p>
+
+  <h4>๒ · HR-Diagram และวิวัฒนาการดาว</h4>
+
+  <p>จอกลางขึ้นภาพ <strong>Hertzsprung–Russell Diagram</strong> · แกนนอนเป็นอุณหภูมิผิวของดาว (เพิ่มจากขวาไปซ้าย) · แกนตั้งเป็นความสว่างจริง (เพิ่มจากล่างขึ้นบน)</p>
+
+  <blockquote><p><strong>ดร.ฮับเบิล:</strong> "แถบทแยงตรงกลาง — <ins>Main Sequence</ins> — เป็นช่วงที่ดาวเผาไฮโดรเจนในแกนกลางอย่างเสถียร · ดวงอาทิตย์อยู่ตรงนี้ · ดาว 90% ของจักรวาลอยู่ตรงนี้"</p></blockquote>
+
+  <p>เมื่อไฮโดรเจนในแกนหมด ดาวเคลื่อนขึ้นไปทางขวาบน กลายเป็น <em>Red Giant</em> หรือ <em>Red Supergiant</em> สำหรับดาวมวลมาก เผาฮีเลียม แล้วเผาคาร์บอน แล้วเผาออกซิเจน นีออน ซิลิคอน จนถึงเหล็ก ที่เหล็ก ดาวจบ เพราะการหลอมเหล็กไม่ปลดปล่อยพลังงาน มันดูดพลังงานเข้า แกนยุบตัวภายในเสี้ยววินาที เปลือกนอกระเบิด เกิด <strong>ซูเปอร์โนวา</strong></p>
+
+  <p>หลังซูเปอร์โนวา ถ้าแกนเหลือ 1.4–3 เท่าของดวงอาทิตย์ เป็น <strong>ดาวนิวตรอน</strong> ขนาด 20 km · ถ้าแกนเหลือมากกว่า 3 เท่า เป็น <strong>หลุมดำ</strong> ที่แม้แต่แสงก็หนีไม่ออก · ส่วนดาวมวลน้อยเช่นดวงอาทิตย์ ไม่ระเบิด มันพ่นเปลือกออกเป็น <strong>เนบิวลาดาวเคราะห์</strong> แล้วแกนกลายเป็น <strong>ดาวแคระขาว</strong></p>
+
+  <h4>๓ · GRAVITY ASCENT</h4>
+
+  <p>กลุ่มเงาดำเริ่มไหลออกจากใจกลางของ Homunculus Nebula บิดเป็นกระแสที่เคลื่อนตรงไปทาง T.H.E.O.S.-IX</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "ตรวจพบรูปแบบที่สามของ VOID · มันใช้สนามโน้มถ่วงของ η Carinae · ผมเรียกมัน — GRAVITY ASCENT"</p></blockquote>
+  <blockquote class="void"><p><strong>VOID-GRAV:</strong> "ดาว... ไม่ตาย... ดาว... อยู่ตลอด... การตาย... ไม่จริง... แกนเหล็ก... ไม่จริง..."</p></blockquote>
+
+  <p>มันพยายามลบความจริงที่อันตรายที่สุดของดาราศาสตร์ — ความจริงที่ว่าดาวมีชีวิตและมีจุดจบ — เพราะถ้ามนุษย์ลืมว่าดาวตายได้ มนุษย์จะลืมว่าดวงอาทิตย์ก็ตายได้ จะลืมว่าโลกเราเปราะบางเพียงใด</p>
+
+  <p>ทีม "ปีนบันได HR-Diagram" — แก้โจทย์เกี่ยวกับวิวัฒนาการดาวทีละขั้น ทุกคำตอบถูกจะดัน VOID ถอยลงไปในหลุมโน้มถ่วง:</p>
+
+  <p><strong>โจทย์ 1:</strong> ดาว 8 เท่ามวลดวงอาทิตย์ ใช้ไฮโดรเจนหมด — เคน: "Red Supergiant → เผาฮีเลียม → ไล่ขั้นจนถึงเหล็ก → ซูเปอร์โนวา → ดาวนิวตรอนหรือหลุมดำ" ✓<br>
+  <strong>โจทย์ 2:</strong> ดวงอาทิตย์ 5 พันล้านปีจากนี้ — มีรา: "ขยายเป็น Red Giant → กลืนดาวพุธ ดาวศุกร์ อาจถึงโลก → Planetary Nebula → White Dwarf" ✓<br>
+  <strong>โจทย์ 3:</strong> ดาวแคระแดง 0.1 เท่ามวลดวงอาทิตย์ — โบลท์: "ไม่มี Red Giant phase · เผาไฮโดรเจนช้าตลอด · กลายเป็น White Dwarf ฮีเลียมโดยตรง · จักรวาลตอนนี้ยังหนุ่มเกินจะเห็นดาวพวกนี้ตายเลย" ✓</p>
+
+  <p>VOID-GRAV ถูกดูดกลับเข้าหลุมโน้มถ่วงของ η Carinae เสียงสุดท้ายของมันถูกบีบเป็นความถี่ที่ต่ำลงเรื่อย ๆ ตามการ redshift ของแสงที่หนีจากสนามโน้มถ่วงเข้มข้น</p>
+
+  <blockquote class="father"><p>"ถ้าพวกท่านเข้าใจว่าดาวตายอย่างไร พวกท่านพร้อมเข้าใจ 'ดาวเดียว' ที่สำคัญที่สุดสำหรับโลก — ดวงอาทิตย์ · เธอกำลังป่วยอยู่ · พ่อทิ้ง 'ของจำเป็น' ให้ลูกที่ Solar Forge — สถานีลับใกล้ดวงอาทิตย์"</p></blockquote>
+</section>
+
+<!-- ============ EP05 ============ -->
+<section class="chapter" id="ep05">
+  <div class="ep-tag">EPISODE 05</div>
+  <h2>หัวใจที่เต้นผิดจังหวะ</h2>
+  <h3 class="subtitle">THE SUN · HELION 6 POWERS · SOLAR STORM</h3>
+
+  <h4>๑ · กลับบ้าน</h4>
+  <p class="first">ยาน T.H.E.O.S.-IX กลับเข้าระบบสุริยะ ผ่านแถบ Kuiper ผ่านวงโคจรดาวเนปจูน ดาวยูเรนัส ดาวเสาร์ ดาวพฤหัสบดี แถบดาวเคราะห์น้อย ดาวอังคาร โลก — ที่ทีมมองด้วยความรู้สึกที่อธิบายไม่ถูก หลังเดินทางไกลกลับมาเห็นจุดสีฟ้าเล็ก ๆ จุดเดียวที่บรรจุประวัติศาสตร์ทั้งหมดของมนุษย์</p>
+
+  <p>ที่ระยะ 0.3 AU จากดวงอาทิตย์ ทีมเห็นพื้นผิวของดาวอย่างชัดเจน · แกรนูลของพลาสมาที่เดือดเป็นลูกเล่นเดือดในกระทะคอนเวคชั่นกว้างหลายร้อยกิโลเมตรต่อแกรนูล · จุดมืด (sunspot) ที่เป็นบริเวณสนามแม่เหล็กแรงเข้ม · และ prominence ลูปพลาสมาที่พุ่งสูงขึ้นจากผิว</p>
+
+  <blockquote class="ai"><p><strong>LEMAÎTRE:</strong> "พื้นฐานการสั่นของดวงอาทิตย์ (helioseismology) ปกติคาบ 5 นาที · ตอนนี้คาบเลื่อนเป็น 4.6 นาที · และไม่สม่ำเสมอ · ราวกับ — กล้าใช้คำว่า — หัวใจของดาวเต้นผิดจังหวะ"</p></blockquote>
+
+  <h4>๒ · HELION Forge ของ ดร.วีระ</h4>
+
+  <p>Solar Forge — สถานีลับขนาดเล็กที่ลอยอยู่ที่จุด <strong>L1</strong> ระหว่างโลกกับดวงอาทิตย์ · จุดที่แรงโน้มถ่วงของสองวัตถุสมดุลกัน · ห่างจากโลก 1.5 ล้านกิโลเมตร · เป็นจุดเดียวกับที่ยาน SOHO ของศตวรรษที่ 20–21 เคยลอยอยู่</p>
+
+  <p>ในสถานี ทีมพบสิ่งที่ ดร.วีระ ทิ้งไว้ — เครื่องที่เขาเรียกว่า <strong>HELION Forge</strong> · เครื่องที่สามารถดูดพลังงานจาก solar flare และ "หล่อ" ออกมาเป็นชุดความสามารถพิเศษให้กับลูกเรือ</p>
+
+  <table>
+    <tr><th>HELION Power</th><th>คุณสมบัติ</th><th>รหัสปลด (อิงดวงอาทิตย์)</th></tr>
+    <tr><td>SHIELD</td><td>สนามแม่เหล็กพลาสมาป้องกันรังสี · เลียนแบบ heliosphere</td><td>heliosphere 100 AU · โคโรนา 1–3 MK · ลมสุริยะ 400 km/s</td></tr>
+    <tr><td>WARNING</td><td>เซนเซอร์ neutrino · เตือนพายุล่วงหน้า 4 นาที</td><td>นิวตริโน ~65,000 ล้าน/cm²/s · 8 นาทีจากผิวถึงโลก</td></tr>
+    <tr><td>BURST</td><td>ปลดพลังงานเสี้ยววินาที · เลียนแบบ X-class flare</td><td>X-flare 10²⁵ J · 100 วินาที</td></tr>
+    <tr><td>INSIGHT</td><td>มองทะลุพลาสมาด้วยคลื่นโน้มถ่วง · เห็นแกน</td><td>GW = c · LIGO 2015 · หลุมดำคู่ 1.3 พันล้านปีแสง</td></tr>
+    <tr><td>TIMEBUBBLE</td><td>ฟองสนามเวลา ขยายเวลาภายในเป็น 5 เท่า</td><td>GR · GPS เร็วกว่า 38 μs/วัน</td></tr>
+    <tr><td>PRISMATIC</td><td>แยกแสงเป็นสเปกตรัม · เห็นองค์ประกอบ</td><td>Fraunhofer 1814 · Kirchhoff 3 laws</td></tr>
+  </table>
+
+  <h4>๓ · SOLAR STORM</h4>
+
+  <p>ในวินาทีที่ power สุดท้ายปลด ดวงอาทิตย์ก็ปะทุ ไม่ใช่ flare ธรรมดา — เป็น <em>X45-class</em> ใหญ่กว่าที่เคยบันทึกในประวัติศาสตร์มนุษย์อย่างน้อย 30 เท่า · CME ปล่อยพลาสมาที่ความเร็ว 3,000 km/s ตรงมาทาง L1</p>
+
+  <blockquote class="void"><p><strong>VOID-SOLAR:</strong> "หัวใจ... ของดาว... เป็น... ของฉัน... แล้ว..."</p></blockquote>
+
+  <p>อารยาเปิด <strong>HELION-SHIELD</strong> ขยายเต็มกำลังครอบสถานี · พลาสมาแรกปะทะโดมในวินาทีที่ 227 สนามแม่เหล็กสะท้อนพลาสมาออกไปเป็นเส้นโค้ง · VOID ปล่อย flare ที่สอง · โบลท์เปิด <strong>HELION-BURST</strong> ปล่อยพลังงานสะสมเป็นลำพลาสมาสีฟ้าจัด ตัดผ่าน flare ก่อนถึงโดม · มีราเปิด <strong>HELION-INSIGHT</strong> เห็นแกนของ VOID-SOLAR ใน sunspot N12 E04</p>
+
+  <p>อารยาเปิด <strong>HELION-PRISMATIC</strong> · สเปกตรัมของ VOID-SOLAR แตกเป็นเส้นเจ็ดสี เห็นความถี่หลักของมันที่ 4.6 นาทีต่อรอบ — ความถี่เดียวกับที่หัวใจของดวงอาทิตย์เต้นผิดจังหวะ</p>
+
+  <blockquote><p><strong>เคน:</strong> "ถ้าเราทำให้ดวงอาทิตย์กลับมาเต้น 5 นาที VOID-SOLAR จะหลุดจากเสียงสะท้อน · เหมือนเครื่องดนตรีที่เปลี่ยน key — มันจะร้องไม่ได้"</p></blockquote>
+
+  <p>เปิด <strong>HELION-TIMEBUBBLE</strong> ฟองสนามเวลาเปิดรอบยาน · ภายในเวลาเดินช้าลง 5 เท่า · ทีมส่ง pulse ปรับ helioseismology กลับ 4.6 → 5.0 ในเวลา 18 วินาที (90 วินาทีภายนอก) · VOID-SOLAR สูญเสียจังหวะเสียงสะท้อน ร่างพลาสมาแตกเป็นเศษโฟตอน กลับเข้าสู่ดวงอาทิตย์เป็นปกติ</p>
+
+  <blockquote class="void"><p><strong>VOID-SOLAR (กระจาย):</strong> "เธอ... ปรับ... จังหวะ... ของ... ดาว... ได้... แต่... เธอ... ปรับ... จังหวะ... ของ... ใจ... ตัว... เอง... ได้... ไหม..."</p></blockquote>
+</section>
+
+<!-- ============ EP06 ============ -->
+<section class="chapter" id="ep06">
+  <div class="ep-tag">EPISODE 06</div>
+  <h2>ขอบฟ้าของบ้าน</h2>
+  <h3 class="subtitle">SOLAR SYSTEM · กฎของเคปเลอร์ · VOID ZERO-FIX</h3>
+
+  <h4>๑ · บ้านทีละห้อง</h4>
+  <p class="first">ก่อนเข้าใจขอบฟ้าของบ้าน — ลูกต้องรู้จักบ้านทีละห้องก่อน · ดังที่ ดร.วีระ เขียนไว้ในจดหมาย ทีมจึงแวะที่ดาวเคราะห์ทุกดวงเพื่อบันทึก</p>
+
+  <table>
+    <tr><th>ดาวเคราะห์</th><th>ลักษณะเด่น</th></tr>
+    <tr><td>ดาวพุธ</td><td>0.39 AU · ปี 88 วันโลก · วันสุริยะ 176 วันโลก · -180 ถึง 430°C</td></tr>
+    <tr><td>ดาวศุกร์</td><td>0.72 AU · CO₂ หนา · ความดัน 92 เท่าโลก · 462°C · หมุน retrograde</td></tr>
+    <tr><td>โลก</td><td>1 AU · แกนเอียง 23.5° · มีน้ำของเหลว · Pale Blue Dot</td></tr>
+    <tr><td>ดาวอังคาร</td><td>1.52 AU · Olympus Mons สูง 22 km · CO₂ บาง</td></tr>
+    <tr><td>ดาวพฤหัสบดี</td><td>5.2 AU · Great Red Spot · ดวงจันทร์ Galilean 4 ดวง (1610)</td></tr>
+    <tr><td>ดาวเสาร์</td><td>9.5 AU · วงแหวนน้ำแข็ง · Titan มีบรรยากาศ · Enceladus พ่นน้ำ</td></tr>
+    <tr><td>ดาวยูเรนัส</td><td>19.2 AU · แกนเอียง 98° · "นอนตะแคง"</td></tr>
+    <tr><td>ดาวเนปจูน</td><td>30 AU · ลม 2,100 km/h · Triton หมุนทิศกลับ</td></tr>
+  </table>
+
+  <h4>๒ · กฎสามข้อของเคปเลอร์</h4>
+
+  <p><strong>1.</strong> ดาวเคราะห์โคจรเป็นวงรี · ดวงอาทิตย์อยู่ที่จุดโฟกัสหนึ่ง<br>
+  <strong>2.</strong> เส้นเชื่อมดวงอาทิตย์–ดาวเคราะห์กวาดพื้นที่เท่ากันในเวลาเท่ากัน<br>
+  <strong>3.</strong> T² = a³ เมื่อ T เป็นคาบโคจร (ปี) · a เป็นกึ่งแกนเอก (AU)</p>
+
+  <span class="eq">T² = a³</span>
+
+  <h4>๓ · เขาวงกตที่ L4</h4>
+
+  <p>ที่จุด L4 ของดาวพฤหัสบดี · กลุ่ม Trojan asteroids 12,000 ก้อนถูกจัดเรียงเป็น <em>เขาวงกตสามมิติ</em> · กำแพงเทียมที่ทำจากดาวเคราะห์น้อยจริง</p>
+
+  <blockquote class="void"><p><strong>VOID-ZERO:</strong> "ระบบ... สุริยะ... ไม่มี... ระเบียบ... กฎ... ของ... เคปเลอร์... เคยมี... ตอนนี้... ไม่... มี... อีก..."</p></blockquote>
+
+  <p>ทีมแยกเป็นสองโดรน เดินไปในเขาวงกตคนละทาง ทุกครั้งที่ผ่านดาวเคราะห์น้อยก้อนหนึ่ง ต้องคำนวณ T จาก a ให้ถูก · ก้อนจะคืนวงโคจรของมันเอง:</p>
+
+  <p>เคน: "ก้อนที่ a = 5.2 · T = 11.86 ปี ✓"<br>
+  มีรา: "a = 5.0 · T² = 125 · T ≈ 11.18 ปี ✓"<br>
+  โบลท์: "a = 5.4 · T² = 157.46 · T ≈ 12.55 ปี ✓"</p>
+
+  <p>ทั้งสองทีมเดินทะลุเขาวงกตในเวลา 38 นาที ไม่ผิดแม้แต่ก้อนเดียว</p>
+
+  <blockquote class="void"><p><strong>VOID-ZERO (จาง):</strong> "เธอ... ใส่... กฎ... กลับ... ทำไม... ไร้... กฎ... อิสระ... กว่า..."</p></blockquote>
+  <blockquote class="captain"><p><strong>อารยา:</strong> "เพราะถ้าไม่มีกฎ ก็ไม่มีบ้าน · กฎคือสิ่งที่ทำให้โลกของเราอยู่ใน 1 AU มา 4.5 พันล้านปี · ถ้าโลกไม่อยู่ในวงโคจรที่เสถียร มนุษย์ไม่เกิด · เธอเองก็ไม่มี"</p></blockquote>
+</section>
+
+<!-- ============ EP07 ============ -->
+<section class="chapter" id="ep07">
+  <div class="ep-tag">EPISODE 07</div>
+  <h2>สงครามในวงโคจร</h2>
+  <h3 class="subtitle">ELECTROMAGNETIC SPECTRUM · CIPHER</h3>
+
+  <h4>๑ · สุสานดาวเทียม</h4>
+  <p class="first">Graveyard Orbit — วงโคจรค้างฟ้าระยะ 36,000 km จากผิวโลก ที่ใช้เก็บดาวเทียม geostationary ที่หมดอายุ · เป็น "สุสาน" ของเทคโนโลยีมนุษย์ที่อายุยังไม่ถึง 300 ปี · มีดาวเทียมตายลอยอยู่ในตำแหน่งนี้กว่า 1,200 ดวง</p>
+
+  <p>ในสุสานนี้ มีดาวเทียม 23 ดวงที่ยังมีสัญญาณ · เป็นดาวเทียมตรวจคลื่นแม่เหล็กไฟฟ้ารุ่นเก่า ส่งคลื่นเป็นรหัสเลข</p>
+
+  <h4>๒ · สเปกตรัมแม่เหล็กไฟฟ้า</h4>
+
+  <blockquote><p><strong>ดร.ฮับเบิล:</strong> "ทุกคลื่นเคลื่อนที่ในสุญญากาศด้วยความเร็วเดียวกัน — <ins>c = 3×10⁸ m/s</ins> · ไม่ต้องการตัวกลาง"</p></blockquote>
+
+  <table>
+    <tr><th>ย่าน</th><th>ความยาวคลื่น</th><th>การใช้งานในดาราศาสตร์</th></tr>
+    <tr><td>คลื่นวิทยุ</td><td>&gt;1 m</td><td>สื่อสาร · 21-cm hydrogen line</td></tr>
+    <tr><td>ไมโครเวฟ</td><td>1 mm – 1 m</td><td>CMB</td></tr>
+    <tr><td>อินฟราเรด</td><td>700 nm – 1 mm</td><td>ความร้อน · JWST</td></tr>
+    <tr><td>แสงตาเห็น</td><td>400–700 nm</td><td>ตาเปล่า · &lt;1% ของจักรวาล</td></tr>
+    <tr><td>UV</td><td>10–400 nm</td><td>ดาวร้อน</td></tr>
+    <tr><td>X-ray</td><td>0.01–10 nm</td><td>แก๊สร้อน · กระจุกกาแล็กซี · Chandra</td></tr>
+    <tr><td>Gamma</td><td>&lt;0.01 nm</td><td>ซูเปอร์โนวา · GRB · pulsar · Fermi</td></tr>
+  </table>
+
+  <p>"นักดาราศาสตร์ที่ดูจักรวาลด้วยตา — มองเห็นไม่ถึง 1% · นักดาราศาสตร์ที่ดูจักรวาลด้วยคลื่นทุกย่าน — เห็นจักรวาลทั้งใบ"</p>
+
+  <h4>๓ · CIPHER ยึด JWST</h4>
+
+  <p>รหัสในดาวเทียม 23 ดวงรวมเป็นปริศนา: <em>"กุญแจที่ 16 ของซีซันนี้ ซ่อนอยู่ใน 'ตา' ที่คนตั้งใจให้มันมองเรา · แต่หูที่มันใช้คือของเธอ"</em></p>
+
+  <p>เป้าหมาย: <strong>James Webb Space Telescope</strong> ที่จุด L2 ของระบบโลก–ดวงอาทิตย์ ห่างจากโลก 1.5 ล้านกิโลเมตร · กล้องที่ถ่ายภาพแรกในปี 2022 ที่เห็นกาแล็กซีไกลที่สุดเท่าที่มนุษย์ยุคก่อนเคยเห็น</p>
+
+  <p>แต่เมื่อทีมไปถึง — กระจกเจ็ดเหลี่ยมทอง 18 บานของ JWST ไม่ได้หันหาจักรวาลตามปกติ · มันหันมาทาง T.H.E.O.S.-IX</p>
+
+  <blockquote class="void"><p><strong>VOID-CIPHER:</strong> "ตา... ถูก... ปิด... เธอ... ไม่... เห็น... จักรวาล... แล้ว..."</p></blockquote>
+
+  <p>ทีมเข้าโหมด <strong>Orbital Triage</strong> · แต่ละคนรับผิดชอบหนึ่งระบบของ JWST:</p>
+
+  <p><strong>เคน — Sunshield 5 ชั้น:</strong> คงอุณหภูมิด้านกระจกที่ -233°C ✓<br>
+  <strong>มีรา — NIRCam (0.6–5 μm):</strong> ดาวเย็น · เนบิวลาก่อตัวดาว · กาแล็กซีไกลที่ redshift ✓<br>
+  <strong>โบลท์ — MIRI (5–28 μm):</strong> ดาวเคราะห์นอกระบบ · จานฝุ่น · PAH ✓<br>
+  <strong>อารยา — Fine Guidance Sensor:</strong> ระบบเล็งดาวอ้างอิงสามดวง ✓</p>
+
+  <p>CIPHER ถูกบีบออกจากระบบทีละชั้น กระจกของ JWST หมุนกลับไปหาจักรวาลในที่สุด</p>
+
+  <blockquote class="father"><p>"อารยา · เหลือกุญแจหนึ่งดอก · ดอกที่ 17 · มันไม่ใช่กุญแจของพ่อ · เป็นของลูกเอง · ลูกจะรู้เมื่อถึงตรงนั้น · พบกันที่ Genesis Vault — พิกัดในไฟล์ลับท้ายเครื่อง JWST · ลูกจะเห็นพ่อ — และจะเลือก"</p></blockquote>
+</section>
+
+<!-- ============ EP08 ============ -->
+<section class="chapter" id="ep08">
+  <div class="ep-tag">EPISODE 08 · SEASON FINALE</div>
+  <h2>Genesis Again</h2>
+  <h3 class="subtitle">GENESIS FORGE · 5 ENDINGS · 17 KEYS</h3>
+
+  <h4>๑ · Hidden Lagrange</h4>
+  <p class="first">Genesis Vault ไม่ได้อยู่ในอวกาศที่นักดาราศาสตร์ใด ๆ เคยบันทึก · มันอยู่ในตำแหน่งที่ช่องว่างของสนามโน้มถ่วงสามจุดของระบบสุริยะตัดกันพอดี — จุดที่ ดร.วีระ คำนวณเองในช่วงสุดท้ายของชีวิต — ตำแหน่งที่เรียกว่า <em>Hidden Lagrange</em></p>
+
+  <p>โครงสร้างทรงกลมขนาดยักษ์ ผิวเป็นโลหะสีกรมท่าเก่ามีลายแถบทอง ตราเดียวกับ ICARUS-V — แต่ใหญ่กว่าหลายร้อยเท่า ในใจกลางของโครงสร้าง มีกล่องที่ปลดล็อกด้วย <strong>กุญแจ 17 ดอก</strong> ของซีซันนี้</p>
+
+  <h4>๒ · ตัวตนที่แท้จริงของ ดร.ฮับเบิล</h4>
+
+  <p>ก่อนเธอจะคิดต่อ จอกลางก็เปิดเอง ปรากฏ ดร.ฮับเบิล แต่ในตำแหน่งของเขา ในขณะที่เขาพูด ภาพเขาเปลี่ยนช้า ๆ ผมขาวกลายเป็นสีดำ ใบหน้าหนุ่มลงทีละนาที จนกระทั่งใบหน้าที่ปรากฏบนจอ คือใบหน้าของ — <strong>ดร.วีระ เวชชาชีวะ</strong></p>
+
+  <p>อารยายืนนิ่งไป</p>
+
+  <blockquote class="father"><p><strong>ดร.วีระ:</strong> "อารยา ลูก... พ่อใช้ช่วงท้ายของชีวิตสร้าง 'ดร.ฮับเบิล' เป็นโครงข้อมูล AI ที่คอยสอนลูก · พ่อรู้ว่าพ่อจะไม่ทันได้เจอลูกในร่างจริง · แต่ทุกบทเรียน ทุกการอธิบาย ทุกรอยยิ้มของ 'ดร.ฮับเบิล' — เป็นของพ่อ · ลูกเรียนกับพ่อมาตลอด · แค่ไม่รู้ตัว"</p></blockquote>
+
+  <p>อารยาน้ำตาไหลโดยไม่ได้ขัด ทีมยืนเงียบ เคารพช่วงเวลานี้</p>
+
+  <p>ในจอด้านขวา ภาพชายคนหนึ่งที่หน้าคล้ายโบลท์แต่อายุมากกว่า — พ่อของโบลท์ ช่างประจำยานของ ดร.วีระ ที่หายไปด้วยกัน — ปรากฏเป็น hologram โบลท์ที่ไม่ค่อยเคยร้องไห้ในชีวิต ปล่อยน้ำตาออกครั้งแรก</p>
+
+  <h4>๓ · ของขวัญของ VOID-PRIME</h4>
+
+  <blockquote class="void"><p><strong>VOID-PRIME:</strong> "พบกันที่นี่... ในที่สุด... อารยา... ลูกของวีระ · จักรวาลนี้ — เริ่มอีกครั้งได้ · เธอเปลี่ยนจุดเริ่มของบิกแบงได้ · ลบความผิดพลาดทุกอย่างได้ · พ่อของเธอ — กลับมามีชีวิตได้ · แค่เธอใช้กุญแจที่ 17"</p></blockquote>
+
+  <blockquote class="void"><p>"เลือก · <strong>Reset Route</strong> — ลบ 13.8 พันล้านปีที่ผ่านมา · เริ่มใหม่ที่จุดที่พ่อของเธอไม่ตาย · หรือ <strong>Preserve Route</strong> — รักษาจักรวาลตามที่เป็น"</p></blockquote>
+
+  <p>ห้องบังคับการเงียบสนิท เธอมองภาพพ่อบนจอ พ่อมองกลับ — ในสีหน้านั้น อารยาเห็นคำตอบของพ่อก่อนที่พ่อจะพูด</p>
+
+  <h4>๔ · การเลือก</h4>
+
+  <p>ภายในใจของอารยา เธอนึกถึงทุกสิ่งที่ได้เรียนรู้ในซีซันนี้ — บิกแบงคือการขยายตัวของอวกาศ ไม่ใช่จุดเริ่มเดียว · ดาวมีชีวิต มีจุดจบ — และในจุดจบนั้น สร้างธาตุหนัก ที่กลายเป็นโลก เป็นสิ่งมีชีวิต เป็นเธอเอง · ระยะทางจักรวาลวัดด้วยลำดับ ทุกขั้นยืนยันกัน · กฎของเคปเลอร์ทำให้บ้านอยู่ในวงโคจร · คลื่นแม่เหล็กไฟฟ้าให้เราเห็นจักรวาล</p>
+
+  <p>ถ้าเธอกด Reset ทุกบทเรียนเหล่านี้ก็ถูกลบ ลูกเรือของเธอจะเริ่มต้นไม่มีอะไรเลย พ่อที่กลับมาจะเป็นพ่อที่ไม่เคยสอนเธอเรื่องระยะทางจักรวาล ไม่เคยทิ้งจดหมายไว้ที่ Proxima ไม่เคยสร้าง HELION ไม่เคย — เป็นพ่อของเธอ</p>
+
+  <blockquote class="captain"><p><strong>อารยา:</strong> "พ่อ · หนูเลือก Preserve"</p></blockquote>
+
+  <p>ดร.วีระยิ้ม เป็นยิ้มที่อารยาเก็บไว้ในความทรงจำจากตอนเด็ก ตอนที่พ่อยังอุ้มเธอนั่งดูดาวบนระเบียงบ้าน</p>
+
+  <blockquote class="father"><p>"ลูกของพ่อ · พ่อภูมิใจ · กุญแจที่ 17 — คือ '<ins>การยอมรับ</ins>' · ลูกเพิ่งสร้างมันเอง"</p></blockquote>
+
+  <h4>๕ · กระจกในกล่อง</h4>
+
+  <p>ในกล่องของ Genesis Vault — ไม่มีสมบัติ ไม่มีอาวุธ ไม่มีปริศนาอนุภาคต้นกำเนิด มีแค่ <em>กระจกบานหนึ่ง</em></p>
+
+  <p>เมื่ออารยามองในกระจก เธอเห็นใบหน้าตัวเอง และข้างหลังเธอ เห็นภาพของจักรวาลทั้งใบที่ขยายตัว มีกาแล็กซีทุกประเภท ดาวฤกษ์ในทุกช่วงชีวิต ดาวเคราะห์ในทุกวงโคจร คลื่นทุกย่าน ทุกสิ่งที่เธอได้เรียน</p>
+
+  <p>จักรวาลที่เธอเลือกรักษาไว้</p>
+
+  <p>VOID-PRIME กรีดร้องเป็นครั้งสุดท้าย — เพราะมันไม่ได้ตายด้วยอาวุธ มันตายเพราะอารยา "เลือก" จักรวาลที่มีอยู่ ไม่ใช่จักรวาลในจินตนาการ มันสูญเสียอาหารของมัน — ความลังเล ความเสียดาย — ในเสี้ยววินาที</p>
+
+  <blockquote class="void"><p><strong>VOID-PRIME (กระจาย):</strong> "เธอ... ปฏิเสธ... ของขวัญ..."</p></blockquote>
+  <blockquote class="captain"><p><strong>อารยา:</strong> "ฉันรับของขวัญที่ดีกว่า — ฉันรับสิ่งที่จริง"</p></blockquote>
+
+  <h4>๖ · ห้าจุดจบ</h4>
+
+  <table>
+    <tr><th>Ending</th><th>เงื่อนไข</th><th>ผล</th></tr>
+    <tr><td>A+</td><td>เลือก Reset</td><td>จักรวาลใหม่ · ลูกเรือสูญเสียความทรงจำ · พ่อไม่ตายแต่ไม่มีบทเรียน</td></tr>
+    <tr><td>A</td><td>Preserve · 17 keys ครบ</td><td>จักรวาลรักษาประวัติศาสตร์ · พ่อในรูป AI · เตรียมตัว Season 2</td></tr>
+    <tr><td>B</td><td>Preserve · 12-16 keys</td><td>เก็บบทเรียนหลักได้ · Vault เปิดระดับหนึ่ง · พ่อปรากฏแต่จาง</td></tr>
+    <tr><td>C</td><td>Preserve · &lt;12 keys</td><td>Vault เปิดไม่ได้ · ทีมรอดและกลับโลก · Season 2 เริ่มจากศูนย์</td></tr>
+    <tr><td>🌟</td><td>Reset แต่กลับมา Preserve</td><td>เส้นทางลับ · ของฝากของ ดร.วีระ ถึง Season 2 — พิกัด Andromeda</td></tr>
+  </table>
+
+  <h4>๗ · พิกัดถัดไป</h4>
+
+  <p>ยาน T.H.E.O.S.-IX หมุนหัวเข้าหา M31 · วาร์ปไดรฟ์เปิดด้วยแสงสีฟ้าครามและทอง ทีมที่ผ่านจักรวาลของบ้านมาจนเข้าใจมันเอง บัดนี้พร้อมจะออกไปยังจักรวาลของเพื่อนบ้าน</p>
+
+  <p>ภาพดับลงในขณะที่ดาวข้างนอกยังคงเปล่งแสง — กาแล็กซีเคลื่อนหนีตามกฎฮับเบิล · ดาวเกิดและตายตามวงจรของมัน · คลื่นทุกย่านยังเดินทาง · กฎของเคปเลอร์ยังบังคับวงโคจร · และที่ไหนสักแห่งในจักรวาลที่กว้างกว่าจะจินตนาการได้ มีนักเรียนคนหนึ่งกำลังเปิดบทเรียนของตัวเองเป็นครั้งแรก เริ่มเรียนรู้ทุกสิ่งใหม่ตั้งแต่ต้น</p>
+
+  <p>จักรวาลปลอดภัยอีกหนึ่งช่วงเวลา · เพราะมีคนเข้าใจมัน · และมีคนสอนคนอื่นต่อ</p>
+</section>
+
+<!-- ============ FINALE ============ -->
+<section class="season-end" id="end">
+  <div class="stamp">★ SEASON 1 · COMPLETED ★</div>
+  <blockquote>
+    "เอกภพไม่ได้ถูกรักษาด้วยอาวุธหรือยานที่ใหญ่ที่สุด<br>
+    มันถูกรักษาด้วยคนที่เข้าใจมันมากที่สุด<br>
+    และเลือกที่จะเล่าต่อ"
+  </blockquote>
+  <div class="sig">— อารยา เวชชาชีวะ<br>กัปตันยาน T.H.E.O.S.-IX</div>
+</section>
+
+</div><!-- /.shell -->
+
+<footer>
+  🌌 COSMOS LOG · Season 1 · นิยายฉบับเต็มซีซัน<br>
+  ประพันธ์โดย <span class="credit">เจน</span> · สำหรับครูโกเมน ปาปะโถ · 2569<br>
+  ว 30105 ดาราศาสตร์ · ม.5 · โรงเรียนสตรีวิทยา<br>
+  <small style="opacity:.6">กด Ctrl/Cmd + P เพื่อพิมพ์เป็น PDF</small>
+</footer>
+
+</body>
+</html>

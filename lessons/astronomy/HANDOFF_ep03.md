@@ -99,7 +99,7 @@ p05:20, p06:15, p08:20, p09:15, p11:15, p12:30, p15:20, p16:20
 ```
 astronomy/
 ├── shared/                         ← shared module (ขยายจาก EP02)
-│   ├── book.css?v=6                ← (EP02 เดิม · ไม่แก้)
+│   ├── book.css?v=99                ← (EP02 เดิม · ไม่แก้)
 │   ├── book.js?v=15                ← (EP02 เดิม · ไม่แก้)
 │   ├── sync-client.js              ← rooms · photon · meter · vote · decisions
 │   ├── firebase-config.js          ← optional · fallback BroadcastChannel
@@ -126,7 +126,7 @@ astronomy/
 
 ### Load order ต่อหน้า (ใหม่ EP03)
 ```html
-<link rel="stylesheet" href="../shared/book.css?v=6">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <link rel="stylesheet" href="_page-style.css">
 <script src="../shared/firebase-config.js"></script>
 <script src="./config.js"></script>

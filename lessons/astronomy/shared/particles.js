@@ -1,19 +1,21 @@
 /* ===== COSMOS LOG · Particle Simulation Engine ===== */
 
+/* สีแยกกลุ่มชัดเจน · matter ↔ antimatter ใช้คนละ hue (ไม่ใช่แค่เฉดเดียวกัน)
+   ขนาดอนุภาค ×1.4 ให้เห็นชัดขึ้น · ตัวอักษร label ก็ใหญ่ตาม */
 const PARTICLE_STYLES = {
-  quark:         { color: '#ff5c7a', label: 'q',    size: 7,  name: 'ควาร์ก' },
-  antiquark:     { color: '#ff8fa5', label: 'q̄',    size: 7,  name: 'แอนติควาร์ก' },
-  electron:      { color: '#64d8ff', label: 'e⁻',   size: 6,  name: 'อิเล็กตรอน' },
-  positron:      { color: '#ffcb6b', label: 'e⁺',   size: 6,  name: 'โพซิตรอน' },
-  neutrino:      { color: '#9aa3c0', label: 'ν',    size: 4,  name: 'นิวทริโน' },
-  antineutrino:  { color: '#6a7394', label: 'ν̄',    size: 4,  name: 'แอนตินิวทริโน' },
-  photon:        { color: '#ffe09e', label: 'γ',    size: 5,  name: 'โฟตอน' },
-  neutron:       { color: '#b5bed6', label: 'n',    size: 11, name: 'นิวตรอน' },
-  proton:        { color: '#ff7a94', label: 'p⁺',   size: 11, name: 'โปรตอน (นิวเคลียส H)' },
-  helium_nuc:    { color: '#b980ff', label: 'He²⁺', size: 16, name: 'นิวเคลียสฮีเลียม' },
-  hydrogen_atom: { color: '#7effb2', label: 'H',    size: 14, name: 'อะตอมไฮโดรเจน' },
-  helium_atom:   { color: '#a0e8ff', label: 'He',   size: 18, name: 'อะตอมฮีเลียม' },
-  galaxy:        { color: '#d4b8ff', label: '🌀',   size: 48, name: 'กาแล็กซี' },
+  quark:         { color: '#ff3b6b', label: 'q',    size: 10, name: 'ควาร์ก' },
+  antiquark:     { color: '#c84dff', label: 'q̄',    size: 10, name: 'แอนติควาร์ก' },
+  electron:      { color: '#42c8ff', label: 'e⁻',   size: 9,  name: 'อิเล็กตรอน' },
+  positron:      { color: '#ff8a2c', label: 'e⁺',   size: 9,  name: 'โพซิตรอน' },
+  neutrino:      { color: '#e6ecf8', label: 'ν',    size: 6,  name: 'นิวทริโน' },
+  antineutrino:  { color: '#3a4566', label: 'ν̄',    size: 6,  name: 'แอนตินิวทริโน' },
+  photon:        { color: '#ffe14a', label: 'γ',    size: 7,  name: 'โฟตอน' },
+  neutron:       { color: '#9ba8c4', label: 'n',    size: 15, name: 'นิวตรอน' },
+  proton:        { color: '#ff5b3c', label: 'p⁺',   size: 15, name: 'โปรตอน (นิวเคลียส H)' },
+  helium_nuc:    { color: '#b980ff', label: 'He²⁺', size: 22, name: 'นิวเคลียสฮีเลียม' },
+  hydrogen_atom: { color: '#3aeab8', label: 'H',    size: 19, name: 'อะตอมไฮโดรเจน' },
+  helium_atom:   { color: '#ffd166', label: 'He',   size: 25, name: 'อะตอมฮีเลียม' },
+  galaxy:        { color: '#d4b8ff', label: '🌀',   size: 60, name: 'กาแล็กซี' },
 };
 
 const ERA_DATA = {
@@ -22,7 +24,7 @@ const ERA_DATA = {
     title: 'ยุคแรกสุดของเอกภพ',
     meta: '10⁻⁴³ – 10⁻³² วินาที · 10³² – 10²⁷ เคลวิน',
     event: 'มีพลังงานเกิดขึ้น · อนุภาคพื้นฐานก่อตัวครั้งแรก',
-    speed: 3.2,
+    speed: 1.6,
     particles: ['quark','antiquark','electron','positron','neutrino','antineutrino'],
   },
   2: {
@@ -30,7 +32,7 @@ const ERA_DATA = {
     title: 'ยุคโฟตอนเริ่มปรากฏ',
     meta: '10⁻³² – 10⁻⁶ วินาที · 10²⁷ – 10¹³ เคลวิน',
     event: 'พลังงานเปลี่ยนเป็นสสาร-ปฏิสสาร · ทำลายกันเกิดโฟตอน',
-    speed: 2.5,
+    speed: 1.25,
     particles: ['quark','antiquark','electron','positron','neutrino','antineutrino','photon'],
   },
   3: {
@@ -38,7 +40,7 @@ const ERA_DATA = {
     title: 'ยุคโปรตอนและนิวตรอนเกิด',
     meta: '10⁻⁶ วิ – 3 นาที · 10¹³ – 10⁹ เคลวิน',
     event: 'ควาร์กรวมตัวเป็นโปรตอน (นิวเคลียสไฮโดรเจน) และนิวตรอน',
-    speed: 1.9,
+    speed: 0.95,
     particles: ['electron','positron','neutrino','antineutrino','photon','neutron','proton'],
   },
   4: {
@@ -46,7 +48,7 @@ const ERA_DATA = {
     title: 'ยุคสังเคราะห์นิวเคลียสฮีเลียม',
     meta: '3 นาที – 300,000 ปี · 10⁹ – 5,000 เคลวิน',
     event: 'โปรตอน-นิวตรอนรวมตัวเป็นนิวเคลียสฮีเลียม',
-    speed: 1.3,
+    speed: 0.65,
     particles: ['electron','neutrino','photon','neutron','proton','helium_nuc'],
   },
   5: {
@@ -54,7 +56,7 @@ const ERA_DATA = {
     title: 'ยุคอะตอมเป็นกลาง · CMB เกิด',
     meta: '300,000 – 1,000 ล้านปี · 5,000 – 100 เคลวิน',
     event: 'นิวเคลียสดึงอิเล็กตรอน → อะตอมเป็นกลาง · เอกภพโปร่งแสง · โฟตอนอิสระ (= CMB)',
-    speed: 0.8,
+    speed: 0.4,
     particles: ['neutrino','photon','hydrogen_atom','helium_atom'],
   },
   6: {
@@ -62,7 +64,7 @@ const ERA_DATA = {
     title: 'ยุคกาแล็กซี · ปัจจุบัน',
     meta: '1,000 – 13,800 ล้านปี · 100 – 2.73 เคลวิน',
     event: 'แรงโน้มถ่วงรวมสสาร → เนบิวลา → ดาวฤกษ์ → กาแล็กซี',
-    speed: 0.4,
+    speed: 0.2,
     particles: ['neutrino','photon','galaxy'],
   },
 };

@@ -42,6 +42,7 @@ window.EP_CONFIG = {
     { id:'p19', file:'p19-map.html',       title:'Post-test · Badge',       type:'reflection', time:5 },
     { id:'p17', file:'shop.html',          title:'🛍️ Hubble Trading Post',  type:'setup',      time:3 },
     { id:'p18', file:'warprun.html',       title:'🔥 WARP RUN (climax)',    type:'mixed',      time:7 },
+    { id:'p19a',file:'p26b-halloffame.html', title:'🏆 Hall of Fame · ทีมชนะ EP03', type:'reflection', time:3 },
     { id:'p19b', file:'p27-journal.html', title:'📒 3-2-1 Journal',         type:'reflection', time:5 },
   ],
 

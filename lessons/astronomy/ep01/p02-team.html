@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P02 · Team Setup · COSMOS LOG EP01</title>
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-top: 20px; }
 .team-tile {
   aspect-ratio: 1; border-radius: 16px; border: 2px solid var(--team-color);
   background: linear-gradient(160deg, rgba(22,27,58,0.8), rgba(8,10,24,0.9));
   display: flex; flex-direction: column; justify-content: center; align-items: center;
-  gap: 8px; cursor: pointer; transition: all 0.3s;
+  gap: 6px; cursor: pointer; transition: all 0.3s;
   position: relative; overflow: hidden;
 }
 .team-tile::before {
@@ -22,10 +22,78 @@
 .team-tile:hover::before { opacity: 0.15; }
 .team-tile.selected { box-shadow: 0 0 30px var(--team-color); }
 .team-tile.selected::before { opacity: 0.25; }
-.team-tile .icon { font-size: 40px; z-index: 1; }
+.team-tile.full { cursor: not-allowed; opacity: 0.45; filter: grayscale(0.6); }
+.team-tile.full::after {
+  content: 'เต็มแล้ว'; position: absolute; top: 8px; right: 8px;
+  background: rgba(255,92,122,0.9); color: #fff; font-size: 10px;
+  padding: 3px 8px; border-radius: 6px; font-weight: 700;
+  z-index: 2; letter-spacing: 0.05em;
+}
+.team-tile .icon { font-size: 38px; z-index: 1; }
 .team-tile .name {
   font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 13px;
   letter-spacing: 0.15em; color: var(--team-color); z-index: 1;
+}
+.team-tile .count {
+  font-size: 11px; color: rgba(255,255,255,0.7); z-index: 1;
+  font-family: 'Orbitron', monospace;
+}
+.team-tile .count.warn { color: #ffcb6b; }
+.team-tile .count.full { color: #ff5c7a; }
+.prize-banner {
+  margin: 14px 0; padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(255,203,107,0.15), rgba(255,143,165,0.1));
+  border: 2px solid #ffcb6b; border-radius: 12px;
+  display: flex; align-items: center; gap: 14px;
+}
+.prize-banner .icon { font-size: 32px; }
+.prize-banner .text { flex: 1; }
+.prize-banner .text b { color: #ffcb6b; }
+.prize-banner .text small { display: block; color: rgba(255,255,255,0.7); margin-top: 4px; font-size: 12px; }
+
+/* Character cards */
+.char-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 12px; }
+.char-card {
+  border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.25s;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: linear-gradient(160deg, rgba(22,27,58,0.85), rgba(8,10,24,0.95));
+  position: relative;
+}
+.char-card:hover { border-color: rgba(255,255,255,0.4); transform: translateY(-2px); }
+.char-card.selected {
+  border-color: var(--accent-gold, #ffcb6b);
+  box-shadow: 0 0 24px rgba(255,203,107,0.4);
+}
+.char-card.selected::after {
+  content: '✓'; position: absolute; top: 6px; right: 6px;
+  background: #ffcb6b; color: #0a0a18; width: 22px; height: 22px;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 14px; z-index: 2;
+}
+.char-card .img-wrap {
+  width: 100%; aspect-ratio: 1; overflow: hidden;
+  background: #0a0a18;
+}
+.char-card .img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.char-card .info { padding: 8px 10px 10px; text-align: center; }
+.char-card .info .name {
+  font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 13px;
+  letter-spacing: 0.08em; color: var(--accent-gold, #ffcb6b);
+}
+.char-card .info .role {
+  font-size: 11px; color: rgba(255,255,255,0.7); margin-top: 3px;
+  line-height: 1.4;
+}
+.char-noselect {
+  border-radius: 12px; padding: 10px 12px; cursor: pointer; transition: all 0.25s;
+  border: 2px dashed rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.2); text-align: center; font-size: 12px;
+  color: rgba(255,255,255,0.6); margin-top: 8px;
+}
+.char-noselect:hover { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.9); }
+.char-noselect.selected {
+  border-style: solid; border-color: var(--accent-gold, #ffcb6b);
+  color: var(--accent-gold, #ffcb6b);
 }
 </style>
 </head>
@@ -46,22 +114,30 @@
 
 <p class="muted">แต่ละทีมจะได้รับยานประจำตัว · ชื่อทีม · และตัดสินใจร่วมกันเป็นกลุ่มตลอดภารกิจ</p>
 
+<div class="prize-banner">
+  <div class="icon">🏆</div>
+  <div class="text">
+    <b>ทีมที่คะแนนรวมสูงสุดของ EP นี้ จะได้รับรางวัลจากครู</b>
+    <small>คะแนนทีม = ผลรวม ⚡ ของสมาชิกทุกคน · ดูอันดับสดที่หน้า Hall of Fame ก่อน Journal · จำกัดทีมละ 8 คน</small>
+  </div>
+</div>
+
 <div class="team-grid" id="team-grid"></div>
+<div id="cap-status" class="muted" style="margin-top:8px;font-size:12px;text-align:center"></div>
 
 <div class="form-row">
-  <label>⚡ ชื่อยาน / ชื่อทีม</label>
-  <input type="text" id="team-name" placeholder="เช่น · Stellar Nomads · Void Hunters">
+  <label>⚡ ชื่อยาน / ชื่อทีม <span style="opacity:0.6;font-weight:400">(ไม่กรอกก็ได้)</span></label>
+  <input type="text" id="team-name" placeholder="ปล่อยว่าง = ใช้ชื่อทีม Nebula/Quasar/... ตามที่เลือก">
 </div>
 
 <div class="form-row">
-  <label>🎭 บทบาทหลัก</label>
-  <select id="team-role">
-    <option value="">-- เลือกบทบาท --</option>
-    <option value="NAV">NAV · Navigator (แผนที่กาแล็กซี)</option>
-    <option value="ENG">ENG · Spectral Engineer (วิเคราะห์แสง)</option>
-    <option value="MED">MED · Astrobiologist (ระบบสุริยะ)</option>
-    <option value="MECH">MECH · Warp Mechanic (จรวด-วงโคจร)</option>
-  </select>
+  <label>🎭 ตัวละครที่อยากเล่น <span style="opacity:0.6;font-weight:400">(ไม่เลือกก็ได้)</span></label>
+  <input type="hidden" id="team-role" value="">
+  <div class="char-grid" id="char-grid"></div>
+  <div class="char-noselect" id="char-noselect" onclick="selectChar('')">— ไม่เลือก / ทุกคนเท่ากัน —</div>
+  <small style="opacity:0.65;font-size:11px;display:block;margin-top:8px">
+    ตัวละครจาก COSMOS LOG · เลือกเพื่อจัดบทบาทในทีม (ทีมหนึ่งสามารถมีบทบาทไม่ครบทุกตัวได้)
+  </small>
 </div>
 
 <div class="info-card">
@@ -83,37 +159,137 @@
 </div>
 
 </div></main>
-<script src="../shared/book.js"></script>
+<script src="../shared/book.js?v=99"></script>
   <script src="../shared/telemetry-sync.js"></script>
+<script src="../../../content/astronomy/config.js?v=2"></script>
+<script src="../shared/team-comp.js?v=2"></script>
 <script>
+const EP_NUM = 1;
+let _capacity = { counts:{}, full:new Set(), cap:8, ok:false };
+
+const CHARACTERS = [
+  { id:'ARYA',  name:'กัปตันอารยา', role:'ผู้นำทีม · ตัดสินใจ',       img:'../assets/characters/arya.jpg'  },
+  { id:'BOLT',  name:'โบลท์',        role:'ช่างยาน · WARP Drive',     img:'../assets/characters/bolt.jpg'  },
+  { id:'MEERA', name:'เมียรา',       role:'นักวิเคราะห์ · สเปกตรัม',  img:'../assets/characters/meera.jpg' },
+  { id:'KEN',   name:'เคน',          role:'ผู้บันทึก · เรดาร์',         img:'../assets/characters/ken.jpg'   },
+];
+
+function renderChars() {
+  const grid = document.getElementById('char-grid');
+  if (!grid) return;
+  const cur = document.getElementById('team-role').value;
+  grid.innerHTML = CHARACTERS.map(c => `
+    <div class="char-card ${cur === c.id ? 'selected' : ''}" onclick="selectChar('${c.id}')">
+      <div class="img-wrap"><img src="${c.img}" alt="${c.name}" onerror="this.style.display='none'"></div>
+      <div class="info">
+        <div class="name">${c.name}</div>
+        <div class="role">${c.role}</div>
+      </div>
+    </div>
+  `).join('');
+  const ns = document.getElementById('char-noselect');
+  if (ns) ns.classList.toggle('selected', !cur);
+}
+
+function selectChar(id) {
+  document.getElementById('team-role').value = id || '';
+  renderChars();
+}
+
 function renderGrid() {
   const grid = document.getElementById('team-grid');
-  grid.innerHTML = TEAMS.map(t => `
-    <div class="team-tile" style="--team-color:${t.color}" data-id="${t.id}" onclick="selectTeam(${t.id})">
-      <div class="icon">${t.icon}</div>
-      <div class="name">TEAM ${t.name.toUpperCase()}</div>
-    </div>`).join('');
+  const myTeam = String(Book.state.teamId || '');
+  grid.innerHTML = TEAMS.map(t => {
+    const tid = String(t.id);
+    const n = _capacity.counts[tid] || 0;
+    const cap = _capacity.cap || 8;
+    const full = _capacity.full.has(tid);
+    const isMine = myTeam === tid;
+    const cls = ['team-tile'];
+    if (isMine) cls.push('selected');
+    if (full && !isMine) cls.push('full');
+    const cntCls = full ? 'count full' : (n >= cap-1 ? 'count warn' : 'count');
+    return `
+      <div class="${cls.join(' ')}" style="--team-color:${t.color}" data-id="${t.id}" onclick="selectTeam(${t.id})">
+        <div class="icon">${t.icon}</div>
+        <div class="name">TEAM ${t.name.toUpperCase()}</div>
+        <div class="${cntCls}">${n}/${cap} คน</div>
+      </div>`;
+  }).join('');
   if (Book.state.teamId) {
-    document.querySelector(`.team-tile[data-id="${Book.state.teamId}"]`)?.classList.add('selected');
     document.getElementById('team-name').value = Book.state.teamName || '';
     document.getElementById('team-role').value = Book.state.role || '';
   }
+  const status = document.getElementById('cap-status');
+  if (status){
+    if (!_capacity.ok) status.textContent = '⏳ กำลังตรวจจำนวนสมาชิก...';
+    else status.textContent = `รวมในห้องตอนนี้: ${Object.values(_capacity.counts).reduce((a,b)=>a+b,0)} คน`;
+  }
 }
-function selectTeam(id) {
+
+async function refreshCapacity(){
+  const r = await TeamComp.checkCapacity(EP_NUM);
+  if (r.ok) _capacity = r;
+  renderGrid();
+}
+
+async function selectTeam(id) {
+  const tid = String(id);
+  const oldTid = String(Book.state.teamId || '');
+  // กันเลือกทีมที่เต็มแล้ว (ยกเว้นทีมที่เคยเลือกไว้เอง)
+  if (_capacity.full.has(tid) && oldTid !== tid) {
+    alert('ทีมนี้เต็มแล้วค่ะ (สูงสุด ' + (_capacity.cap||8) + ' คน) · กรุณาเลือกทีมอื่น');
+    return;
+  }
+  if (oldTid === tid) return; // กดทีมเดิม · ไม่ต้องทำอะไร
+
   Book.state.teamId = id;
-  document.querySelectorAll('.team-tile').forEach(el => el.classList.remove('selected'));
-  document.querySelector(`.team-tile[data-id="${id}"]`).classList.add('selected');
   Book.save(); Book.updateHUD();
+
+  // ⭐ Optimistic: อัปเดต count ทันทีก่อน server ตอบ
+  if (oldTid && _capacity.counts[oldTid]) _capacity.counts[oldTid]--;
+  _capacity.counts[tid] = (_capacity.counts[tid] || 0) + 1;
+  // recompute full set
+  _capacity.full = new Set(Object.keys(_capacity.counts).filter(k => _capacity.counts[k] >= (_capacity.cap||8)));
+  renderGrid();
+
+  // ส่งทะเบียนเข้า backend แบบ provisional (ยังไม่มีชื่อทีม/role · จะ update ตอนยืนยัน)
+  try {
+    const provName = document.getElementById('team-name').value.trim() || '';
+    const provRole = document.getElementById('team-role').value || '';
+    await TeamComp.register(EP_NUM, id, provName, provRole);
+  } catch(_){}
+
+  // sync จริงกับ server (กรณีนักเรียนคนอื่นก็พึ่งกด)
+  setTimeout(refreshCapacity, 800);
 }
-function submitTeam() {
+
+async function submitTeam() {
   if (!Book.state.teamId) { alert('กรุณาเลือกยานก่อน'); return; }
-  const name = document.getElementById('team-name').value.trim();
+  const customName = document.getElementById('team-name').value.trim();
   const role = document.getElementById('team-role').value;
-  if (!name) { alert('กรุณาตั้งชื่อทีม'); return; }
-  if (!role) { alert('กรุณาเลือกบทบาท'); return; }
+  // ถ้าไม่กรอกชื่อ → ใช้ชื่อทีมเริ่มต้น (Nebula/Quasar/...)
+  const tDef = TEAMS.find(t => t.id === Book.state.teamId);
+  const name = customName || (tDef && tDef.name) || ('ทีม ' + Book.state.teamId);
+
+  // เช็ค capacity ครั้งสุดท้ายก่อน register (กัน race ระหว่างนักเรียนหลายคน)
+  await refreshCapacity();
+  const tid = String(Book.state.teamId);
+  if (_capacity.full.has(tid)) {
+    alert('เสียใจด้วยค่ะ · ทีมนี้เพิ่งเต็มพอดี · กรุณาเลือกทีมอื่น');
+    Book.state.teamId = null;
+    Book.save();
+    renderGrid();
+    return;
+  }
+
   Book.state.teamName = name;
   Book.state.role = role;
   Book.save(); Book.updateHUD();
+
+  // ส่งทะเบียนเข้า backend (best-effort)
+  try { await TeamComp.register(EP_NUM, Book.state.teamId, name, role); } catch(_){}
+
   // ⭐ Economy: once-per-page (กันกดซ้ำ)
   if (window.Economy) Economy.energyOnce({ page:'p02', amount:(2), reason:'Team formed' });
   else Book.addEnergy(2, 'Team formed');
@@ -121,10 +297,16 @@ function submitTeam() {
   document.getElementById('result').innerHTML = `
     <div class="branch-reveal main">
       <h3>✓ ทีม ${name} พร้อมออกเดินทาง</h3>
-      <p>บทบาทหลัก: ${role} · กด "ต่อไป →" เข้าสู่ภารกิจ</p>
+      ${role ? `<p>บทบาทหลัก: ${role} · กด "ต่อไป →" เข้าสู่ภารกิจ</p>` : `<p>กด "ต่อไป →" เข้าสู่ภารกิจ</p>`}
+      <p class="muted mt-10" style="font-size:12px">🏆 รางวัลทีมชนะของ EP นี้ ดูอันดับที่หน้า Hall of Fame</p>
     </div>`;
 }
+
 renderGrid();
+renderChars();
+refreshCapacity();
+// refresh ทุก 15 วินาที (กรณีนักเรียนคนอื่นเข้าห้องช่วงนี้)
+setInterval(refreshCapacity, 15000);
 </script>
 </body>
 </html>

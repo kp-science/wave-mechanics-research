@@ -1,0 +1,2219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌌 COSMOS LOG · Season 1 — นิยายฉบับ HTML</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Kanit:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e1a; --bg2:#111728; --panel:#161d33;
+  --ink:#e7ecf5; --dim:#9aa6c2; --line:#2a3454;
+  --gold:#f5c451; --rose:#ff6b9d; --mint:#5fd9b5;
+  --void:#a062ff; --hubble:#7ab8ff; --hint:#ffd86b;
+  --maxw:880px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+  font-family:'Sarabun','Noto Sans Thai',sans-serif;line-height:1.85;font-size:17px;
+  background-image:radial-gradient(1200px 600px at 80% -10%,#1c1740 0%,transparent 60%),
+                   radial-gradient(900px 500px at -10% 30%,#0e2440 0%,transparent 60%),
+                   radial-gradient(700px 400px at 60% 90%,#2a0e3a 0%,transparent 60%);
+  background-attachment:fixed;
+}
+.starfield{position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%,#fff,transparent),
+    radial-gradient(1px 1px at 30% 80%,#cfe,transparent),
+    radial-gradient(1px 1px at 70% 40%,#fff,transparent),
+    radial-gradient(1.2px 1.2px at 85% 75%,#ffd,transparent),
+    radial-gradient(1px 1px at 50% 10%,#fff,transparent),
+    radial-gradient(1px 1px at 20% 60%,#bdf,transparent),
+    radial-gradient(1.5px 1.5px at 90% 25%,#fff,transparent),
+    radial-gradient(1px 1px at 5% 90%,#fff,transparent);
+  opacity:.55;
+}
+.layout{display:grid;grid-template-columns:240px 1fr;max-width:1200px;margin:0 auto;}
+nav.toc{position:sticky;top:0;align-self:start;height:100vh;overflow:auto;
+  padding:24px 14px;border-right:1px solid var(--line);
+  background:linear-gradient(180deg,#0c1326 0%,#0a0e1a 100%);}
+nav.toc h2{font-family:'Kanit';font-size:14px;letter-spacing:.18em;color:var(--gold);
+  margin:0 0 10px;text-transform:uppercase}
+nav.toc a{display:block;color:var(--dim);text-decoration:none;padding:7px 10px;
+  border-left:2px solid transparent;font-size:14px;border-radius:4px;}
+nav.toc a:hover,nav.toc a.active{color:var(--ink);border-left-color:var(--gold);background:#1a2240;}
+nav.toc .ep-num{color:var(--gold);font-weight:700;display:inline-block;width:32px}
+main{padding:48px 56px;max-width:var(--maxw)}
+.hero{text-align:center;padding:80px 0 40px;border-bottom:1px solid var(--line);margin-bottom:40px}
+.hero .badge{display:inline-block;font-family:'Kanit';letter-spacing:.3em;font-size:12px;
+  color:var(--gold);border:1px solid var(--gold);padding:6px 14px;border-radius:50px;margin-bottom:18px}
+.hero h1{font-family:'Kanit';font-size:54px;margin:8px 0;font-weight:700;
+  background:linear-gradient(135deg,#fff 0%,#7ab8ff 50%,#a062ff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.15}
+.hero .sub{font-size:20px;color:var(--dim);margin:8px 0 4px}
+.hero .meta{font-size:14px;color:var(--dim);margin-top:16px}
+.hero .meta b{color:var(--ink)}
+
+h2.chapter{font-family:'Kanit';font-size:38px;color:var(--gold);margin:60px 0 6px;line-height:1.2;
+  border-top:1px solid var(--line);padding-top:50px}
+h2.chapter .num{color:var(--rose);font-size:18px;letter-spacing:.2em;display:block;margin-bottom:8px}
+h2.chapter .en{display:block;font-size:18px;color:var(--dim);font-weight:500;margin-top:6px;font-family:'Sarabun'}
+h3.section-h{font-family:'Kanit';font-size:22px;color:var(--mint);margin:48px 0 16px;
+  border-left:4px solid var(--mint);padding-left:14px}
+
+p{margin:0 0 18px}
+p u, .key{color:var(--gold);text-decoration:none;border-bottom:1px dashed var(--gold);font-weight:500}
+.dialogue{background:linear-gradient(90deg,#1a2348 0%,transparent 100%);
+  border-left:3px solid var(--hubble);padding:14px 20px;margin:18px 0;border-radius:0 8px 8px 0}
+.dialogue.void{border-left-color:var(--void);background:linear-gradient(90deg,#2a1845 0%,transparent 100%)}
+.dialogue.hubble{border-left-color:var(--gold);background:linear-gradient(90deg,#2d2410 0%,transparent 100%)}
+.dialogue.lemaitre{border-left-color:var(--mint);background:linear-gradient(90deg,#0e2a26 0%,transparent 100%);font-style:italic}
+.dialogue strong{color:#fff}
+
+.diagram{margin:36px 0;padding:24px;background:linear-gradient(180deg,#0d1428 0%,#0a0e1a 100%);
+  border:1px solid var(--line);border-radius:14px;box-shadow:0 6px 30px rgba(0,0,0,.4)}
+.diagram .dtitle{font-family:'Kanit';font-size:18px;color:var(--gold);margin:0 0 4px;letter-spacing:.04em}
+.diagram .dsub{font-size:13px;color:var(--dim);margin:0 0 16px}
+.diagram svg{width:100%;height:auto;display:block;margin:0 auto;max-width:780px}
+.diagram .legend{margin-top:14px;font-size:13px;color:var(--dim);display:flex;flex-wrap:wrap;gap:14px}
+.diagram .legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%}
+
+.formula{background:#0e1a36;border:1px solid #2d3f6e;color:var(--hubble);
+  font-family:'Kanit';font-size:22px;text-align:center;padding:14px;border-radius:8px;margin:18px 0;letter-spacing:.05em}
+.formula small{color:var(--dim);font-size:13px;display:block;margin-top:6px;letter-spacing:0;font-family:'Sarabun'}
+
+.knowledge-box{background:#101730;border:1px solid #34406e;border-radius:12px;
+  padding:18px 22px;margin:24px 0}
+.knowledge-box h4{margin:0 0 8px;font-family:'Kanit';color:var(--mint);font-size:15px;letter-spacing:.04em}
+.knowledge-box ul{margin:0;padding-left:22px}
+.knowledge-box li{margin-bottom:6px}
+
+.ep-header{display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:24px}
+.ep-pill{font-family:'Kanit';font-size:11px;letter-spacing:.18em;background:var(--rose);color:#1a0010;
+  padding:4px 10px;border-radius:50px;font-weight:700}
+.ep-theme{color:var(--dim);font-size:14px;font-style:italic}
+
+.epilogue{margin-top:60px;padding:40px;border-radius:16px;
+  background:linear-gradient(135deg,#1a1040 0%,#0a1530 100%);border:1px solid var(--line);text-align:center}
+.epilogue h2{font-family:'Kanit';color:var(--gold);font-size:30px;margin:0 0 24px}
+.epilogue p{font-size:18px}
+.epilogue .end{margin-top:30px;font-family:'Kanit';color:var(--gold);letter-spacing:.3em;font-size:16px}
+
+.print-only{display:none}
+
+/* ============ CINEMATIC SCENE IMAGE ============ */
+.scene{margin:44px -20px;position:relative}
+.scene-img{
+  width:100%;aspect-ratio:21/9;border-radius:14px;
+  background:var(--scene-bg,linear-gradient(135deg,#0a0e1a 0%,#1a2348 100%));
+  border:1px solid var(--line);position:relative;overflow:hidden;
+  box-shadow:0 12px 40px rgba(0,0,0,.55), 0 0 60px rgba(122,184,255,.08) inset;
+}
+.scene-img::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.7) 100%);
+  border-radius:14px;
+}
+.scene-img img{width:100%;height:100%;object-fit:cover;display:block;border-radius:14px}
+.scene-placeholder{
+  position:absolute;inset:14px;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;color:var(--dim);text-align:center;
+  border:2px dashed rgba(245,196,81,.28);border-radius:10px;padding:20px;z-index:1;
+}
+.scene-placeholder .icon{font-size:54px;margin-bottom:10px;opacity:.85;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.scene-placeholder .hint{font-family:'Kanit';color:var(--gold);letter-spacing:.18em;font-size:11px;margin-bottom:8px;text-transform:uppercase}
+.scene-placeholder .desc{font-size:13px;max-width:75%;color:#dcd6c0;line-height:1.5}
+.scene-placeholder .filename{font-family:monospace;color:var(--mint);font-size:11px;margin-top:14px;opacity:.7;background:rgba(95,217,181,.08);padding:3px 10px;border-radius:50px}
+.scene figcaption{
+  margin:12px 6px 0;font-size:13px;color:var(--dim);
+  display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;
+}
+.scene figcaption .scene-num{
+  color:var(--rose);font-family:'Kanit';letter-spacing:.15em;font-weight:700;
+  border-right:2px solid var(--rose);padding-right:14px;font-size:11px;text-transform:uppercase;
+}
+.scene figcaption .scene-cap{font-style:italic;flex:1;min-width:200px}
+
+/* mood backgrounds */
+.scene.danger{--scene-bg:radial-gradient(ellipse at center,#5a0a0a 0%,#1a0505 60%,#000 100%)}
+.scene.void{--scene-bg:radial-gradient(ellipse at 30% 50%,#3a0a5a 0%,#1a0530 50%,#000 100%)}
+.scene.cosmic{--scene-bg:radial-gradient(ellipse at center,#0a2a5a 0%,#0a1530 50%,#000 100%)}
+.scene.wisdom{--scene-bg:radial-gradient(ellipse at center,#5a4010 0%,#2a1a05 50%,#000 100%)}
+.scene.warm{--scene-bg:radial-gradient(ellipse at center,#5a2540 0%,#2a1525 60%,#000 100%)}
+.scene.solar{--scene-bg:radial-gradient(ellipse at 30% 50%,#aa5510 0%,#5a2510 40%,#000 100%)}
+.scene.epic{--scene-bg:linear-gradient(135deg,#5a0a40 0%,#1a0a3a 30%,#0a2050 70%,#3a3a0a 100%)}
+.scene.tech{--scene-bg:radial-gradient(ellipse at center,#0a3a3a 0%,#051a2a 60%,#000 100%)}
+
+/* dramatic flash for high-tension scenes */
+.scene.flash .scene-img{box-shadow:0 12px 40px rgba(0,0,0,.6), 0 0 80px rgba(255,80,80,.25) inset, 0 0 30px rgba(255,80,80,.3)}
+.scene.glory .scene-img{box-shadow:0 12px 40px rgba(0,0,0,.6), 0 0 100px rgba(245,196,81,.3) inset, 0 0 40px rgba(245,196,81,.4)}
+
+/* image manifest */
+.manifest{margin-top:50px;padding:32px;background:linear-gradient(135deg,#0d1428 0%,#0a0e1a 100%);
+  border:1px solid var(--line);border-radius:14px}
+.manifest h2{font-family:'Kanit';color:var(--gold);font-size:24px;margin:0 0 6px}
+.manifest .sub{color:var(--dim);font-size:13px;margin-bottom:24px}
+.manifest table{width:100%;border-collapse:collapse;font-size:13px}
+.manifest th{text-align:left;padding:10px 8px;border-bottom:2px solid var(--gold);font-family:'Kanit';color:var(--gold);font-size:12px;letter-spacing:.1em}
+.manifest td{padding:8px;border-bottom:1px solid #1d2440;vertical-align:top}
+.manifest td.fn{font-family:monospace;color:var(--mint);font-size:12px;width:200px}
+.manifest td.ep{color:var(--rose);font-family:'Kanit';font-weight:700;width:60px}
+
+@media print{
+  body{background:#fff;color:#111}
+  .starfield,nav.toc{display:none}
+  .layout{display:block}
+  main{max-width:100%;padding:20px}
+  h2.chapter{color:#222;page-break-before:always}
+  .dialogue{background:#f4f4fa;color:#111;border-left-color:#666}
+  .dialogue strong{color:#000}
+  .diagram{background:#fff;border:1px solid #ccc;page-break-inside:avoid}
+  .diagram .dtitle{color:#222}
+  .formula{background:#eef;color:#114;border-color:#99c}
+  .knowledge-box{background:#fafaf3;color:#111;border-color:#ddc}
+  p u,.key{color:#0050a0;border-bottom-color:#0050a0}
+  .hero h1{color:#0a1830;-webkit-text-fill-color:#0a1830}
+}
+
+@media (max-width:880px){
+  .layout{grid-template-columns:1fr}
+  nav.toc{position:static;height:auto;border-right:none;border-bottom:1px solid var(--line)}
+  main{padding:24px 18px}
+  .hero h1{font-size:38px}
+}
+</style>
+</head>
+<body>
+<div class="starfield"></div>
+
+<div class="layout">
+
+<nav class="toc">
+<h2>★ Cosmos Log</h2>
+<a href="#hero"><span class="ep-num">⌂</span>หน้าปก</a>
+<a href="#prologue"><span class="ep-num">0</span>บทนำ</a>
+<a href="#ep1"><span class="ep-num">1</span>การปะทะ</a>
+<a href="#ep2"><span class="ep-num">2</span>แผนที่ลับ</a>
+<a href="#ep3"><span class="ep-num">3</span>เสียงร้องอดีต</a>
+<a href="#ep4"><span class="ep-num">4</span>ยักษ์แดง</a>
+<a href="#ep5"><span class="ep-num">5</span>หัวใจสุริยะ</a>
+<a href="#ep6"><span class="ep-num">6</span>ขอบฟ้าบ้าน</a>
+<a href="#ep7"><span class="ep-num">7</span>สงครามวงโคจร</a>
+<a href="#ep8"><span class="ep-num">8</span>กำเนิดอีกครั้ง</a>
+<a href="#epilogue"><span class="ep-num">★</span>บทส่งท้าย</a>
+<a href="#manifest"><span class="ep-num">📸</span>Image Manifest</a>
+<div style="margin-top:18px;font-size:11px;color:var(--dim);padding:0 10px">
+ครูโกเมน ปาปะโถ<br>โรงเรียนสตรีวิทยา<br>ว 30105 · 2569
+</div>
+</nav>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="hero">
+  <div class="badge">SEASON 1 · NOVELLA EDITION</div>
+  <h1>🌌 COSMOS LOG</h1>
+  <div class="sub">ปริศนาวัตถุต้นกำเนิด</div>
+  <div class="sub" style="font-size:16px">นิยายฉบับเล่าเต็ม · พร้อมแผนภาพความรู้ทุกตอน</div>
+  <div class="meta">
+    ผู้เขียน <b>เจน</b> · สำหรับ <b>ครูโกเมน ปาปะโถ</b><br>
+    วิชา <b>ว 30105 วิทยาศาสตร์พื้นฐาน 5 (โลกและอวกาศ)</b> · ม.6 · โรงเรียนสตรีวิทยา · 2569
+  </div>
+</section>
+
+<!-- ============ PROLOGUE ============ -->
+<section id="prologue">
+<h2 class="chapter"><span class="num">PROLOGUE</span>บทนำ · ปี 2267<span class="en">The Bridge of T.H.E.O.S.-IX</span></h2>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ปี 2267 · วันที่ 14 มีนาคม · เวลา 04:47 UTC —</p>
+<p style="text-align:center;color:var(--dim);font-style:italic;margin-bottom:30px">ท่าอวกาศโลก · วงโคจร LEO · ก่อนการเดินทางที่จะเปลี่ยนทุกสิ่ง</p>
+
+<figure class="scene cosmic glory">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🚀</div>
+      <div class="hint">PROLOGUE · OPENING SHOT</div>
+      <div class="desc">ยาน T.H.E.O.S.-IX ลำเรียวยาวรูปใบมีด · แถบฟ้าครามและทอง · เครื่องวาร์ปสี่ตัวเรืองแสงสีฟ้าใต้ปีก · ลอยอยู่ในท่าอวกาศ LEO · โลกสีฟ้าใต้ท้อง · ดวงอาทิตย์ขึ้นข้างหลัง</div>
+      <div class="filename">img/00-prologue-launch.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">SCENE 00.1</span>
+    <span class="scene-cap">ปี 2267 · 04:47 UTC · ท่าอวกาศโลก · T-minus 47 วินาที</span>
+  </figcaption>
+</figure>
+
+<p>นาฬิกาถอยหลังที่ผนังท่าเรือนับลงจาก <b>T-minus 00:47</b> · เสียงโลหะของท่อหล่อเย็นลั่นกระทบกัน เสียง pre-ignition humming ของเครื่องวาร์ปไดรฟ์สั่นไปทั่วทั้งห้องเหมือนหัวใจของยักษ์ที่กำลังตื่น แสงสีฟ้าครามวาบจากใต้ลำตัวเรือ ตัดเงาดำของลูกเรือสี่คนที่ยืนนิ่งอยู่บนบริดจ์</p>
+
+<p>นี่ไม่ใช่ภารกิจสำรวจปกติ</p>
+
+<p>ในศตวรรษที่ยี่สิบสาม สหพันธ์โลก — ผลจากการรวมชาติสี่สิบเจ็ดประเทศหลังสงครามทรัพยากรครั้งสุดท้าย — ส่งยานออกไปนอกระบบสุริยะมาแล้วสามร้อยสิบสองลำ กลับมา <b>สองร้อยสี่สิบแปดลำ</b> สูญหาย <b>หกสิบสี่</b> ทุกลำที่หายไปในยี่สิบปีหลัง — หายในจุดเดียวกัน พิกัดเดียวกัน รัศมีรูปกรวยที่ไม่มีดาว ไม่มีก๊าซ ไม่มีสนามแม่เหล็ก <b>ไม่มีอะไรเลย</b></p>
+
+<p>วันนี้ ยานลำที่สามร้อยสิบสามจะออกเดินทางเข้าไปในจุดนั้น</p>
+
+<p><span class="key">T.H.E.O.S.-IX</span> — Theoretical Heliocentric Exploration &amp; Observation Survey รุ่นที่เก้า — ลอยนิ่งในท่าเทียบ ตัวยานเป็นรูปใบมีดยาวสี่สิบเมตร ตัดด้วยลายแถบสีฟ้าครามและทองตามยศประจำการ เครื่องวาร์ปไดรฟ์สี่ตัวที่ปีกหลังกระพริบเป็นจังหวะคล้ายลมหายใจ โดมสังเกตการณ์ที่หัวเรือสะท้อนภาพของโลกสีฟ้าใต้นั้น — เล็กลงทุกวินาทีที่ยานปรับวงโคจร</p>
+
+<p>บนบริดจ์ — ภายใต้แสงสีฟ้าครามที่กระจายจากเพดาน — ลูกเรือสี่คนยืนตามตำแหน่งของตัวเอง ไม่มีใครพูด</p>
+
+<p>คนแรก ที่นั่งกัปตัน — <b>อารยา เวชชาชีวะ</b> สามสิบสอง · รูปร่างกะทัดรัดแบบนักวิ่ง ผมดำสนิทรวบหางม้าเรียบราวกับเส้นเลเซอร์ รอยแผลเป็นจาง ๆ เหนือคิ้วขวา — ที่ระลึกจากภารกิจที่เธอไม่เคยเล่าให้ใครฟัง · ดวงตาสีน้ำตาลของเธอนิ่งจนน่ากลัว เพราะใต้ความนิ่งนั้นมีบางสิ่งกำลังเดือดอยู่ พ่อของเธอออกเดินทางจากท่าเรือนี้ <b>ยี่สิบปีก่อน</b> เป็นหนึ่งในหกสิบสี่ที่ไม่กลับมา วันนี้เธอจะตามไปที่นั่น</p>
+
+<p>คนที่สอง — ที่จอสเปกโตรสโคป — ร้อยโท <b>เคน "สเปกตรา" ภัทรวงศ์</b> ยี่สิบแปด · ผมสั้นกระจายมีไฮไลต์ชมพู-แดงเล็ก ๆ ที่ปอย นิ้วของเขาเต้นบนคีย์บอร์ดราวกับเล่นเปียโน ตามองผ่านจอข้อมูลตลอด ราวกับสีของแสงทุกชนิดสำคัญกว่าคนรอบข้าง รอยแผลที่ขมับซ้ายเป็นเครื่องเตือนใจ — ห้าปีก่อน ดาวที่เขาเฝ้าระวังระเบิดก่อนเวลา แสงทะลุระบบกรอง เข้าตาเขาตรง ๆ <b>หกสัปดาห์ในความมืด</b> ก่อนจะมองเห็นอีกครั้ง วันนี้เขายังกลัวแสงสว่างกะทันหัน — แต่ไม่มีใครรู้</p>
+
+<p>คนที่สาม — ที่จอชีวการแพทย์ — หมอ <b>มีรา ชาห์</b> สามสิบ · ลูกครึ่งอินเดีย-ไทย ผมยาวประบ่าหยักเป็นคลื่นเล็ก แว่นกรอบเงินทรงรีสะท้อนตัวเลข vital signs ของเพื่อนร่วมยาน · ในกระเป๋าหน้าอกของเธอ มีกรอบรูปเล็ก ๆ ที่ไม่มีใครเคยเห็นเธอเปิดดูตอนมีคนอื่นอยู่ — ภาพถ่ายของน้องสาวเมื่อหกปีก่อน ก่อนวันที่ <b>14 มีนาคม 2261</b> · พายุสุริยะ X-3 จะกลืนสถานี Helios-7 หายไปในเสี้ยววินาที พร้อมเจ้าหน้าที่ทุกคน รวมถึงน้องเธอ</p>
+
+<p>คนที่สี่ — ในห้องเครื่องที่ส่งภาพมาขึ้นจอบริดจ์ — ช่างประจำเครื่อง <b>โบลท์ เทอร์เรลล์</b> ยี่สิบหก · ลูกครึ่งแอฟริกัน-เอเชีย รูปร่างกำยำ ประแจในมือขวาที่เขาไม่เคยวาง รอยน้ำมันบนแก้มซ้ายที่เขาไม่เช็ดออก ชุดช่างสีอำพันส้มคลุมเหงื่อของแปดชั่วโมงในการตรวจระบบ · พ่อของเขาเป็นหนึ่งในสิบเจ็ดวิศวกรที่หายไปในปี 2249 พร้อมยาน Voyager 4 — ก่อนโบลท์อายุครบแปดขวบ · เขาเรียนซ่อมเครื่องเพราะหวังว่าวันนึงจะซ่อมเรือของพ่อกลับมา</p>
+
+<figure class="scene cosmic">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🎬</div>
+      <div class="hint">CREW SHOT · BRIDGE</div>
+      <div class="desc">บริดจ์ของยาน · ภายใต้แสงสีฟ้าคราม · ลูกเรือสี่คนยืนตามตำแหน่ง · อารยา (กัปตันผมหางม้า) ที่นั่งกัปตัน · เคน (ผมไฮไลต์ชมพู) ที่จอ · มีรา (แว่นเงิน) ที่จอชีวการแพทย์ · โบลท์ (ชุดช่างส้ม) จากห้องเครื่อง</div>
+      <div class="filename">img/00-prologue-crew.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">SCENE 00.2</span>
+    <span class="scene-cap">"พวกเรามีตำแหน่งให้ทำงานเต็มที่ ห้าตำแหน่ง" — กัปตันอารยา</span>
+  </figcaption>
+</figure>
+
+<p>คนสุดท้ายไม่ใช่มนุษย์ ไม่มีร่าง ไม่มีอายุ — เป็นเพียงแสงและเสียง</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "ลูกเรือทุกท่าน · ผมคือ LEMAÎTRE · AI ประจำยาน · ผมจะเป็นทั้งเข็มทิศ ครู และหุ้นส่วน · ภารกิจของพวกเราเริ่มต้นเดี๋ยวนี้"</div>
+
+<div class="dialogue"><strong>กัปตันอารยา:</strong> "พวกเรามีตำแหน่งให้ทำงานเต็มที่ ห้าตำแหน่ง · นาวิเกเตอร์ · วิศวกร · หมอ · ช่าง · และตำแหน่งที่ห้า — <b>Cadet</b>"</div>
+
+<div class="dialogue"><strong>มีรา:</strong> "ทุกครั้งที่เราเรียนรู้สิ่งใหม่ เราเปิดที่นั่งให้คนถัดไปอีกคน"</div>
+
+<p>เสียง LEMAÎTRE ที่เคยอบอุ่น — เปลี่ยนเป็นเสียงที่ไม่มีอารมณ์ในเสี้ยววินาที</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "<b>WARNING.</b> ตรวจพบวัตถุปริศนา · ขนาด 12 เมตร · ทิศทางพุ่งตรงหัวเรือ · ความเร็วสัมพัทธ์ <b>0.02c</b> · เวลาก่อนปะทะ — สี่สิบเจ็ดวินาที"</div>
+
+<p>0.02 เท่าของแสง · หกพันกิโลเมตรต่อวินาที · เร็วกว่ากระสุนปืน <b>เก้าพันเท่า</b></p>
+
+<p>ไฟแดงสว่างจ้าทั่วบริดจ์ · เสียง alarm สามชั้นซ้อนกันดังเป็นระลอก · จอ tactical แสดงวัตถุเป็นจุดสีแดงพุ่งเข้าหาตรงกลางจอ · ในสี่สิบเจ็ดวินาที — จะถึงเรา</p>
+
+<div class="dialogue"><strong>กัปตันอารยา:</strong> "ทุกคน · <b>ประจำตำแหน่ง</b>"</div>
+
+<p>ไม่มีใครเคลื่อนไหวช้าลงหลังคำสั่งนั้น · เคนนั่งลงที่จอ tactical ในสองวินาที · มีรากดเปิดระบบฉุกเฉินทางการแพทย์ · โบลท์หายลงในห้องเครื่องด้วยเสียงโลหะกระทบ · อารยายืนตรงที่ที่นั่งกัปตัน มือกุมที่จับ — ท่าทางที่ทีมจะเรียนรู้ในไม่ช้าว่าหมายถึง <i>"กำลังคิด"</i></p>
+
+<p>ทุกอย่างตอนนี้ขึ้นกับว่า — สี่สิบเจ็ดวินาทีพอจะหลบไหม</p>
+
+<p style="text-align:center;color:var(--gold);font-style:italic;margin-top:30px;font-family:'Kanit'">นี่คือวินาทีแรก ของเรื่องเล่าที่ไม่มีใครจะจดจำได้ครบ</p>
+
+<!-- Crew diagram -->
+<div class="diagram">
+<div class="dtitle">⚙ ทีมและตำแหน่งบนยาน T.H.E.O.S.-IX</div>
+<div class="dsub">ห้าตำแหน่งหลัก · Cadet ที่ห้าคือผู้อ่าน</div>
+<svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="ship" cx="50%" cy="50%"><stop offset="0%" stop-color="#3a4f8c"/><stop offset="100%" stop-color="#0a0e1a"/></radialGradient>
+  </defs>
+  <ellipse cx="390" cy="140" rx="120" ry="70" fill="url(#ship)" stroke="#7ab8ff" stroke-width="1.5"/>
+  <text x="390" y="138" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="14" font-weight="700">T.H.E.O.S.-IX</text>
+  <text x="390" y="156" text-anchor="middle" fill="#9aa6c2" font-size="11">2267</text>
+  <!-- members -->
+  <g font-family="Sarabun" font-size="12" fill="#e7ecf5">
+    <circle cx="100" cy="60" r="32" fill="#1a2348" stroke="#f5c451" stroke-width="2"/>
+    <text x="100" y="55" text-anchor="middle" font-weight="700" fill="#f5c451">อารยา</text>
+    <text x="100" y="72" text-anchor="middle" font-size="10" fill="#9aa6c2">กัปตัน</text>
+
+    <circle cx="680" cy="60" r="32" fill="#1a2348" stroke="#ff6b9d" stroke-width="2"/>
+    <text x="680" y="55" text-anchor="middle" font-weight="700" fill="#ff6b9d">เคน</text>
+    <text x="680" y="72" text-anchor="middle" font-size="10" fill="#9aa6c2">วิศวกร</text>
+
+    <circle cx="100" cy="220" r="32" fill="#1a2348" stroke="#5fd9b5" stroke-width="2"/>
+    <text x="100" y="215" text-anchor="middle" font-weight="700" fill="#5fd9b5">มีรา</text>
+    <text x="100" y="232" text-anchor="middle" font-size="10" fill="#9aa6c2">หมอ</text>
+
+    <circle cx="680" cy="220" r="32" fill="#1a2348" stroke="#ffa54f" stroke-width="2"/>
+    <text x="680" y="215" text-anchor="middle" font-weight="700" fill="#ffa54f">โบลท์</text>
+    <text x="680" y="232" text-anchor="middle" font-size="10" fill="#9aa6c2">ช่าง</text>
+
+    <circle cx="390" cy="40" r="22" fill="#0e2a26" stroke="#5fd9b5" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="390" y="44" text-anchor="middle" font-size="11" fill="#5fd9b5">LEMAÎTRE</text>
+
+    <rect x="320" y="240" width="140" height="32" rx="16" fill="#2d2410" stroke="#f5c451" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <text x="390" y="261" text-anchor="middle" fill="#f5c451" font-weight="700">★ Cadet ที่ 5 (คุณ)</text>
+  </g>
+  <g stroke="#2a3454" stroke-width="1" stroke-dasharray="2,3">
+    <line x1="130" y1="80" x2="280" y2="120"/>
+    <line x1="650" y1="80" x2="500" y2="120"/>
+    <line x1="130" y1="200" x2="280" y2="160"/>
+    <line x1="650" y1="200" x2="500" y2="160"/>
+  </g>
+</svg>
+</div>
+
+</section>
+
+
+<!-- ============ EP1 ============ -->
+<section id="ep1">
+<h2 class="chapter"><span class="num">EPISODE 1</span>การปะทะ<span class="en">The Collision · เอกภพและบิกแบง</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">จุดเริ่มของเอกภพ · ทำไมเราต้องเชื่อบิกแบง?</span>
+</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— T-MINUS 00:03 —</p>
+
+<p>สามวินาทีก่อนปะทะ · เคนเงยจากจอ tactical · ใบหน้าซีด</p>
+
+<div class="dialogue"><strong>เคน:</strong> "<b>หลบไม่ได้</b> · มันเปลี่ยนทิศทางตามเรา"</div>
+
+<p>คำว่า <i>เปลี่ยนทิศทางตามเรา</i> — ไม่ใช่อุกกาบาต · ไม่ใช่เศษซากธรรมชาติ · มัน <b>ตามล่า</b> ยานของเรา</p>
+
+<figure class="scene danger flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">💥</div>
+      <div class="hint">EP1 · SCENE 01 · IMPACT</div>
+      <div class="desc">วินาทีปะทะ · วัตถุปริศนาขนาด 12 ม. ชนหัวเรือมุมเฉียง · กระจกป้องกันร้าวเป็น<b>ลายใยแมงมุม</b>ขยายช้า ๆ · ไฟฉุกเฉินสีแดงสว่าง · ทีมล้มจากการสะท้อนกลับ · มุมกล้อง close-up ที่กระจก</div>
+      <div class="filename">img/ep1-01-impact.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP1 · SCENE 01</span>
+    <span class="scene-cap">การปะทะ · 0.02c · กระจกร้าว · ระบบสำรองดันกลับใน 0.3 วินาที</span>
+  </figcaption>
+</figure>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— IMPACT —</p>
+
+<p>เสียงมันมาก่อนความสั่นสะเทือนเสี้ยววินาที — เสียงโลหะร้องขณะกระดูกของยานบิดตัว · จากนั้น <b>กระแทก</b> · ยานสะท้อนกลับเหมือนใบไม้ที่โดนกำปั้นยักษ์ตี · กระจกป้องกันที่หน้าต่างหลักร้าวเป็นลายใยแมงมุมขยายออกอย่างช้า ๆ ราวกับน้ำแข็งกำลังแตก · ลำโพงร้องเตือนแรงดันลด — ระบบสำรองดันกลับใน 0.3 วินาที — สถานการณ์<span style="color:var(--mint)">ปลอดภัย</span></p>
+
+<p>แต่อารยาไม่ผ่อนมือออกจากที่จับ</p>
+
+<p>เพราะสิ่งที่ชนเรา — ไม่ทำลายเรา · มัน<b>ยอมตัวพังเอง</b>เพื่อจะเข้ามา</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "ส่งโดรนเก็บตัวอย่าง · <b>ทันที</b> · ห้ามใครจับด้วยมือเปล่า"</div>
+
+<p>โบลท์ทำงานเร็วราวกับเขารู้ใจกัปตันก่อนเธอจะพูดเสร็จ · โดรนสามตัวพุ่งออกจากช่องด้านข้าง · เก็บเศษห้าชิ้น · กลับเข้ายาน · หกนาที · ทุกชิ้นวางอยู่บนโต๊ะแล็บภายใต้ตู้กักเชื้อระดับสี่</p>
+
+<p>เศษวัตถุสีดำสนิท ขนาดเท่าฝ่ามือ — แต่ผิวมัน<b>มันลื่น</b>ในแบบที่ไม่มีหินแร่ใดในระบบสุริยะเป็น · ไม่สะท้อนแสงเป็นแบบโลหะ · ไม่ดูดแสงเป็นแบบคาร์บอน · มัน <i>ดื่มแสง</i> แล้วปล่อยกลับมาในความถี่ที่ผิดเพี้ยน</p>
+
+<figure class="scene danger">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🪨</div>
+      <div class="hint">EP1 · SCENE 02 · ORIGIN STONE</div>
+      <div class="desc">ห้องแล็บ · เศษวัตถุสีดำสนิทขนาดฝ่ามือ 5 ชิ้นวางบนโต๊ะใต้ตู้กักเชื้อระดับสี่ · ผิวมันลื่นแบบที่ "ดื่มแสง" · เคนสวมแว่นป้องกัน · เครื่องสเปกโตรมิเตอร์ส่งเลเซอร์เขียวลง · เคนหน้าตึงเครียด</div>
+      <div class="filename">img/ep1-02-origin-stone.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP1 · SCENE 02</span>
+    <span class="scene-cap">"ศิลาต้นกำเนิด" · 13.8 พันล้านปี · CMB peak ที่ 2.73 K</span>
+  </figcaption>
+</figure>
+
+<p>เคนสวมแว่นป้องกัน วางหัวสเปกโตรมิเตอร์ลงบนเศษชิ้นแรก · กดปุ่มสแกน</p>
+
+<p>แสงเลเซอร์สีเขียวฉายลง — แล้วเครื่องก็ <b>กรีดเสียงเตือน</b></p>
+
+<p>ไม่ใช่เส้นสเปกตรัมเดี่ยว ๆ ที่ควรได้จากแร่ปกติ · จอแสดงสเปกตรัมเต็มย่าน — ทุกความถี่ที่มนุษย์รู้จัก ตั้งแต่คลื่นวิทยุยาวเป็นกิโลเมตรไปจนถึงรังสีแกมมาที่สั้นกว่านิวเคลียสของอะตอม · และที่ความถี่ไมโครเวฟ — ในจุดที่ตำราดาราศาสตร์ทุกเล่มของมนุษย์ระบุว่า "อุณหภูมิพื้นหลังของเอกภพ" — มี <b>peak</b> ที่ชัดเจนจน <span class="key">2.73 เคลวิน</span></p>
+
+<div class="dialogue"><strong>เคน:</strong> "...สเปกตรัมเต็มย่าน · จุดสูงสุดที่ 2.73 เคลวิน · นี่ไม่ใช่หินธรรมดา"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "อายุสัญญาณ: <b>หนึ่งสาม จุด แปด พันล้านปี</b>"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "...เก่าเท่ากับ<b>เอกภพ</b>"</div>
+
+<p>ห้องเงียบจนได้ยินเสียงของหัวใจตัวเอง</p>
+
+<p>โบลท์ผู้ที่ปกติจะหาเรื่องตลกในทุกสถานการณ์ — เกาคิ้วช้า ๆ — ไม่พูดอะไร · เคนปาดเหงื่อจากขมับ — มือของเขาสั่นเล็กน้อยที่เครื่องสเปกโตรมิเตอร์ที่เขาใช้มาเป็นพันครั้ง · มีรามองอารยา · อารยามองศิลาบนโต๊ะ</p>
+
+<div class="dialogue"><strong>โบลท์ (เสียงเบา):</strong> "งั้นเราเพิ่งจะถูกชน · โดย<b>เศษของเอกภพยุคแรก</b>?"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "ถ้าเครื่องอ่านถูกต้อง · ใช่"</div>
+
+<p style="text-align:center;color:var(--void);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ANOMALY DETECTED · ENERGY SIGNATURE: UNKNOWN —</p>
+
+<p>ไฟปกติของยานกระพริบ <b>ดับ</b> สามวินาที · ไฟฉุกเฉินสีแดงสว่างขึ้น · ระบบ AI พื้นฐานของยานล่ม — แต่ระบบหลักของ LEMAÎTRE ยังอยู่ · จอ tactical หมุนเป็นแถบสีเหมือนทีวียุคโบราณที่หลุดสัญญาณ</p>
+
+<p>แล้วทุกจอในยาน — ทุกจอ ทั้งบริดจ์ ทั้งห้องเครื่อง ทั้งห้องแล็บ — เปลี่ยนเป็น<b>สีม่วงเข้ม</b>พร้อมกัน</p>
+
+<figure class="scene void flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">👁</div>
+      <div class="hint">EP1 · SCENE 03 · VOID FIRST APPEARANCE</div>
+      <div class="desc">บนจอบริดจ์เปลี่ยนเป็น<b>สีม่วงเข้ม</b> · ใบหน้า VOID — กระแสน้ำวนของดวงดาวที่ถูกบิดเบี้ยว · แทนที่ปาก จมูก ตา มี<b>น้ำวนความมืด</b>หมุนช้า · เสื้อคลุมเป็นวัตถุมืดมีชีวิต · ในเงามี<b>ปากเล็ก ๆ จำนวนมาก</b>เปิด-ปิดสลับ · บรรยากาศ horror cosmic</div>
+      <div class="filename">img/ep1-03-void-face.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP1 · SCENE 03</span>
+    <span class="scene-cap">VOID ปรากฏครั้งแรก · เผ่าโวอิเดียน · ใช้ความเข้าใจผิดเป็นอาวุธ</span>
+  </figcaption>
+</figure>
+
+<p>ในกลางจอ — มีบางอย่างกำลังก่อตัว · ไม่ใช่ใบหน้า · เป็น<b>กระแสน้ำวนของดวงดาว</b>ที่ถูกบิดเบี้ยว · แทนที่ปาก จมูก ตา มีเพียงน้ำวนความมืดที่หมุนช้า ๆ — เหมือน galaxy เก่าที่ใจกลางมีหลุมดำ · เสื้อคลุมของมันเป็นวัตถุมืดที่ <i>มีชีวิต</i> · ในเงาของเสื้อคลุมนั้น มี<b>ปากเล็ก ๆ จำนวนมาก</b>เปิดและปิดสลับกัน · กระซิบประโยคที่ไม่เกี่ยวกัน · เสียงของเด็ก · เสียงของหญิงชรา · เสียงของผู้ชายที่ตายไปแล้ว · ทับซ้อนกันเป็นชั้น</p>
+
+<p>มีราถอยกลับโดยไม่รู้ตัว · เคนกำคีย์บอร์ดจนข้อนิ้วขาว · โบลท์ในห้องเครื่องตะโกน "อะไรวะ" ผ่านระบบสื่อสาร</p>
+
+<p>อารยาเป็นคนเดียวที่ไม่ขยับ</p>
+
+<p>เธอจ้องน้ำวนตรง ๆ · ดวงตาของเธอนิ่งเหมือนตอนรับคำสั่งภารกิจ · เพราะหลังคำสั่งนั้น — เธอเข้าใจ — สิ่งที่ทำให้พ่อหายไปยี่สิบปีก่อน · กำลังพูดกับเธอ · เป็นครั้งแรก</p>
+
+<div class="dialogue void"><strong>VOID:</strong> "บิกแบงคือ 'การระเบิด' · มีจุดศูนย์กลาง · มีขอบ · นั่นคือสิ่งที่เธอเรียนใช่ไหม? อย่ายอมรับเลข 13.8 พันล้านปีอย่างนั้น มันเป็นแค่นิทาน"</div>
+
+<div class="dialogue"><strong>อารยา (เสียงนิ่งเย็น):</strong> "<b>ผิด</b> · เคน · พิสูจน์เขา"</div>
+
+<p>เคนหายใจเข้าลึก · ปล่อยลมหายใจออก · ปิดหน้าจอที่กำลังกระพริบเข้ารบกวนสมาธิ — แล้วเริ่มพิมพ์ · นิ้วของเขาสั่นน้อยลงทุกตัวอักษร · เพราะการพิมพ์สมการ — คือสิ่งที่เขาทำได้ดีที่สุดในชีวิต</p>
+
+<p>แต่ก่อนเขาจะกดปุ่ม Enter — บางอย่างเปลี่ยน</p>
+
+<p>ที่หน้าต่างใหญ่ของบริดจ์ — ไม่ใช่บนจอ — มีแสงสีม่วง<b>อ่อน</b>อีกชนิด · ไม่ใช่ม่วงเข้มของน้ำวน · เป็นม่วงของดอกไม้ · ของพระอาทิตย์ตก · ของหนังสือเก่าใต้แสงไฟห้องสมุด · ลอยเข้ามาผ่านกระจกที่ร้าวอยู่ราวกับไม่มีกระจก</p>
+
+<figure class="scene wisdom">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌟</div>
+      <div class="hint">EP1 · SCENE 04 · DR. HUBBLE APPEARS</div>
+      <div class="desc">ดร.ฮับเบิล (Edwin Hubble) ปรากฏเป็นโฮโลแกรมใส · เสื้อคลุมประดับ<b>ลายดวงดาวหมุน</b>ราวกับแผนที่ท้องฟ้ามีชีวิต · แว่นกรอบทองเหลืองวินเทจ · ผมเงินหวีเรียบ · โซ่นาฬิกาพกเงิน · มือถือชอล์กสีขาว · แสงสีม่วงอ่อน aura รอบตัว</div>
+      <div class="filename">img/ep1-04-dr-hubble.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP1 · SCENE 04</span>
+    <span class="scene-cap">"Cadets... ก่อนผมจะเฉลย ลองนี่ดูก่อน" — ดร.ฮับเบิล (เมนเทอร์)</span>
+  </figcaption>
+</figure>
+
+<p>แสงนั้นค่อย ๆ ก่อตัวเป็นรูปร่าง — ชายชราในเสื้อคลุมประดับลายดวงดาวหมุนช้า ๆ ราวกับแผนที่ท้องฟ้าที่ยังมีชีวิต · ดวงตาใจดีเบื้องหลังแว่นกรอบทองเหลืองวินเทจ · ผมเงินหวีเรียบไปด้านหลัง · โซ่นาฬิกาพกเงินห้อยจากเอวขวา · มือถือชอล์กสีขาว</p>
+
+<p>เคนหยุดพิมพ์ · มีราอ้าปาก · โบลท์ที่กำลังจะวิ่งกลับมาบริดจ์ — หยุดที่ประตู</p>
+
+<p>เพราะใบหน้าชายชรา — แม้เขาจะไม่เคยเห็นมาก่อน — ทุกคนในห้อง <b>รู้จัก</b></p>
+
+<p>ภาพในตำราดาราศาสตร์ ม.6 หน้า 23 · รูปขาว-ดำที่นักเรียนทุกรุ่นต้องเห็นอย่างน้อยหนึ่งครั้ง</p>
+
+<div class="dialogue hubble"><strong>ดร.ฮับเบิล:</strong> "Cadets... ก่อนผมจะเฉลย ลองนี่ดูก่อน · วาดจุดห้าจุดบนผิวลูกโป่ง · เป่าสามรอบ · วัดระยะระหว่างจุดทุกครั้ง · ห้ามใช้คำว่า 'ขยายตัว' จนกว่าผมจะอนุญาต"</div>
+
+<p>โบลท์เป่าลูกโป่งเร็วเกินไปจนพรืดออก — ดังก้องในห้องเงียบ · มีราหัวเราะเบา ๆ — เป็นเสียงหัวเราะแรกตั้งแต่ alarm ดัง · เคนทำงานเงียบ ๆ · จดบันทึกระยะแต่ละจุดด้วยความแม่นยำของวิศวกร · อารยาทำตามคำสั่ง — แต่สายตาของเธอไม่ได้อยู่ที่ลูกโป่ง · เธอ<b>จ้องน้ำวนบนจอ</b>ที่ยังคงอยู่ · เงียบ · รอ</p>
+
+<p>สี่นาทีต่อมา เคนเงยหน้า — ดวงตาเขาสว่างขึ้น</p>
+
+<div class="dialogue"><strong>เคน:</strong> "ทุกจุดห่างกันเพิ่ม · จุดที่ห่างมากเคลื่อน<b>เร็วกว่า</b> · และ — ไม่มีจุดศูนย์กลางบนผิวลูกโป่งเลย"</div>
+
+<p>ดร.ฮับเบิลพยักหน้าเล็ก ๆ · ยกมือขึ้น · และในอากาศก็ปรากฏกระดานดำใหญ่เหมือนของจริง · เขาหยิบชอล์กขึ้นมาเขียน — ช้า · ทีละตัวอักษร · ราวกับแต่ละสัญลักษณ์มีน้ำหนัก</p>
+
+<div class="formula">v = H₀ × D
+<small>v = ความเร็วเคลื่อนหนี · D = ระยะ · H₀ ≈ 70 km/s/Mpc</small></div>
+
+<div class="dialogue hubble"><strong>ดร.ฮับเบิล:</strong> "บิกแบงไม่ใช่การระเบิดของสสาร — ไม่มีจุดศูนย์กลาง ไม่มีขอบ ไม่มีอวกาศที่ว่างก่อนหน้า — มันคือ<b>การขยายตัวของอวกาศเอง</b>"</div>
+
+<p>ทีละคน ลูกเรือเริ่มยกหลักฐานของพวกเขาขึ้น — ราวกับนักรบที่ชักดาบออกจากฝัก</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "ลูกโป่งคือแบบจำลอง · <b>อวกาศเอง</b>ขยาย · ไม่ใช่สสารระเบิดเข้าไปในที่ว่าง"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ศิลาต้นกำเนิด · 13.8 พันล้านปี · จับได้เลย"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "v = H₀D · กาแล็กซีไกลเคลื่อนหนีเร็วกว่า · ตรงตามที่ Edwin Hubble วัดในปี 1929"</div>
+
+<p>VOID เริ่มกระพริบ · เสียงกระซิบของเขาเริ่มแตกเป็นเสี้ยว · น้ำวนของหน้าเริ่มแยกตัวออกเป็นชิ้นเล็กลง · เสื้อคลุมของเขาเริ่มสลาย · ปากเล็ก ๆ ในเงาเริ่มหุบ — ทีละปาก ทีละปาก</p>
+
+<div class="dialogue void"><strong>VOID (เสียงร้าว):</strong> "...เธอจะเจอผมอีก..."</div>
+
+<p>แล้วเขาก็หายไป · แสงในห้องกลับมาเป็นปกติ · ทีมยืนนิ่ง · เป็นเวลานาน</p>
+
+<p>ดร.ฮับเบิลที่ยังอยู่ — มองหน้าต่างที่ยังร้าว — ความนิ่งของเขามากกว่าก่อน</p>
+
+<div class="dialogue hubble"><strong>ดร.ฮับเบิล:</strong> "<b>เผ่าโวอิเดียน</b> · พวกเขาเชื่อว่าเอกภพไม่มีจุดเริ่ม · พวกเขาใช้<b>ความเข้าใจผิดเป็นอาวุธ</b> · เพราะคนที่หลงเชื่อความผิด — จะปกป้องความผิดด้วยชีวิต · ทุกครั้งที่พวกคุณหักล้างเขา · ความรู้ของพวกคุณ — แทนที่จะเป็นแค่สิ่งที่ถูกบอก — กลายเป็นสิ่งที่พวกคุณ<b>ยึดถือ</b>"</div>
+
+<p>เขาก็หายไปในแสงสีม่วงอ่อน · เหลือเพียงทีมและเศษศิลาต้นกำเนิดบนโต๊ะแล็บ · และในจอเรดาร์ — บนจุดที่ก่อนหน้านี้ไม่มีอะไรเลย — มี<b>พิกัดสีแดงเล็ก ๆ</b>กระพริบขึ้นมา</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "พิกัดไม่ตรงกับ catalog ใด ๆ · กาแล็กซีนี้... <b>ไม่มีอยู่ในแผนที่ของเรา</b>"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ตั้งเส้นทาง · เราจะไปดู"</div>
+
+<!-- KNOWLEDGE DIAGRAM EP1 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP1 · การขยายตัวของเอกภพ</h3>
+
+<div class="diagram">
+<div class="dtitle">🎈 Balloon Analogy: Cosmic Expansion</div>
+<div class="dsub">ทุกจุดเคลื่อนห่างกัน · ไม่มีจุดศูนย์กลาง · จุดยิ่งไกล ยิ่งเคลื่อนเร็ว</div>
+<svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- balloon t1 -->
+  <g transform="translate(120,140)">
+    <circle r="60" fill="none" stroke="#7ab8ff" stroke-width="2"/>
+    <circle cx="-40" cy="-15" r="4" fill="#f5c451"/>
+    <circle cx="20" cy="-30" r="4" fill="#f5c451"/>
+    <circle cx="35" cy="20" r="4" fill="#f5c451"/>
+    <circle cx="-15" cy="35" r="4" fill="#f5c451"/>
+    <circle cx="-30" cy="-40" r="4" fill="#f5c451"/>
+    <text y="90" text-anchor="middle" fill="#9aa6c2" font-size="12">t = 0 (เป่ารอบแรก)</text>
+  </g>
+  <!-- arrow -->
+  <text x="240" y="145" fill="#9aa6c2" font-size="22">→</text>
+  <!-- balloon t2 -->
+  <g transform="translate(390,140)">
+    <circle r="90" fill="none" stroke="#7ab8ff" stroke-width="2"/>
+    <circle cx="-60" cy="-23" r="4" fill="#f5c451"/>
+    <circle cx="30" cy="-45" r="4" fill="#f5c451"/>
+    <circle cx="52" cy="30" r="4" fill="#f5c451"/>
+    <circle cx="-22" cy="52" r="4" fill="#f5c451"/>
+    <circle cx="-45" cy="-60" r="4" fill="#f5c451"/>
+    <text y="115" text-anchor="middle" fill="#9aa6c2" font-size="12">t = 2 (เป่ารอบสอง)</text>
+  </g>
+  <text x="510" y="145" fill="#9aa6c2" font-size="22">→</text>
+  <!-- balloon t3 -->
+  <g transform="translate(650,140)">
+    <circle r="115" fill="none" stroke="#7ab8ff" stroke-width="2"/>
+    <circle cx="-77" cy="-29" r="4" fill="#f5c451"/>
+    <circle cx="38" cy="-58" r="4" fill="#f5c451"/>
+    <circle cx="67" cy="38" r="4" fill="#f5c451"/>
+    <circle cx="-29" cy="67" r="4" fill="#f5c451"/>
+    <circle cx="-58" cy="-77" r="4" fill="#f5c451"/>
+    <text y="140" text-anchor="middle" fill="#9aa6c2" font-size="12">t = 3 (เป่ารอบสาม)</text>
+  </g>
+  <text x="390" y="20" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="15">v = H₀ × D  →  ยิ่งไกล · ยิ่งเคลื่อนเร็ว</text>
+</svg>
+<div class="legend">
+  <span><span class="dot" style="background:#f5c451"></span>กาแล็กซี (จุดบนผิวลูกโป่ง)</span>
+  <span><span class="dot" style="background:#7ab8ff"></span>อวกาศ (ผิวลูกโป่ง)</span>
+</div>
+</div>
+
+<div class="diagram">
+<div class="dtitle">⏱ Cosmic Timeline · 13.8 Gyr · 6 ยุคของเอกภพ</div>
+<svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="time" x1="0" x2="1">
+      <stop offset="0%" stop-color="#ff6b9d"/>
+      <stop offset="20%" stop-color="#f5c451"/>
+      <stop offset="50%" stop-color="#5fd9b5"/>
+      <stop offset="100%" stop-color="#7ab8ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="40" y="80" width="700" height="22" rx="11" fill="url(#time)"/>
+  <g font-family="Sarabun" font-size="11" fill="#e7ecf5">
+    <g><line x1="50" y1="74" x2="50" y2="108" stroke="#fff"/><text x="50" y="135" text-anchor="middle">Quark</text><text x="50" y="150" text-anchor="middle" fill="#9aa6c2">10⁻⁶s</text></g>
+    <g><line x1="130" y1="74" x2="130" y2="108" stroke="#fff"/><text x="130" y="135" text-anchor="middle">Proton</text><text x="130" y="150" text-anchor="middle" fill="#9aa6c2">1s</text></g>
+    <g><line x1="230" y1="74" x2="230" y2="108" stroke="#fff"/><text x="230" y="135" text-anchor="middle">Nucleosynthesis</text><text x="230" y="150" text-anchor="middle" fill="#9aa6c2">3 นาที</text></g>
+    <g><line x1="380" y1="74" x2="380" y2="108" stroke="#fff"/><text x="380" y="135" text-anchor="middle">Recombination (CMB)</text><text x="380" y="150" text-anchor="middle" fill="#9aa6c2">380,000 ปี</text></g>
+    <g><line x1="540" y1="74" x2="540" y2="108" stroke="#fff"/><text x="540" y="135" text-anchor="middle">Dark Ages</text><text x="540" y="150" text-anchor="middle" fill="#9aa6c2">~1 ล้านปี</text></g>
+    <g><line x1="730" y1="74" x2="730" y2="108" stroke="#fff"/><text x="730" y="135" text-anchor="middle">Galaxy Era</text><text x="730" y="150" text-anchor="middle" fill="#9aa6c2">13.8 Gyr · ตอนนี้</text></g>
+  </g>
+  <text x="390" y="40" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="16">★ BIG BANG · t = 0</text>
+  <text x="390" y="58" text-anchor="middle" fill="#9aa6c2" font-size="11">การขยายตัวของอวกาศเริ่มต้น (ไม่ใช่การระเบิดในที่ว่าง)</text>
+</svg>
+</div>
+
+<div class="knowledge-box">
+<h4>🔑 หลักฐาน 3 ประการของบิกแบง</h4>
+<ul>
+<li><b>CMB (Cosmic Microwave Background)</b> — แสงปล่อยตอนเอกภพอายุ 380,000 ปี · อุณหภูมิ 2.725 K · Penzias &amp; Wilson 1964</li>
+<li><b>Cosmic Expansion</b> — ทุกกาแล็กซีเคลื่อนห่าง · ใกล้ไปไกลด้วยความเร็วต่างกัน (กฎของฮับเบิล)</li>
+<li><b>Light Element Abundance</b> — ไฮโดรเจน 75% · ฮีเลียม 25% ตรงกับการคำนวณ Big Bang Nucleosynthesis</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP2 ============ -->
+<section id="ep2">
+<h2 class="chapter"><span class="num">EPISODE 2</span>แผนที่ลับกาแล็กซี<span class="en">The Lost Map · กาแล็กซีและกฎฮับเบิล</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">ระบบดาว · จำแนก · Doppler · พ่ออารยาส่ง SOS</span>
+</div>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— 6 ชั่วโมงต่อมา · นอกเขต Local Group —</p>
+
+<p>เครื่องวาร์ปไดรฟ์ดับลงด้วยเสียงกรนยาวที่ค่อย ๆ จาง · ไฟสีฟ้าที่ปีกกระพริบเป็นจังหวะหายใจอีกครั้ง · ยาน T.H.E.O.S.-IX ลอยนิ่งในความเงียบของอวกาศที่ไม่ใกล้ดาวดวงไหนภายในระยะหนึ่งล้านกิโลเมตร</p>
+
+<p>อารยาเปิดหอสังเกตการณ์ — ห้องที่ผนังเป็นกระจกโค้งเต็มสามด้าน · เมื่อทีมเดินเข้าไป · ภาพ<b>เปิดออก</b>ต่อหน้าพวกเขาอย่างไม่มีคำเตือน</p>
+
+<figure class="scene cosmic glory">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌌</div>
+      <div class="hint">EP2 · SCENE 01 · GALACTIC PANORAMA</div>
+      <div class="desc">หอสังเกตการณ์โดมกระจกโค้ง 3 ด้าน · <b>Andromeda</b>สีฟ้าครามและทองเต็มด้านซ้าย · M87 จุดสว่างกลมขวา · LMC, SMC ด้านล่าง · ดาวเป็นพันล้านดวง · ทีมยืนเงาดำกลางหอ · แบบ <i>Interstellar</i> meets <i>Hubble Deep Field</i></div>
+      <div class="filename">img/ep2-01-galaxy-panorama.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP2 · SCENE 01</span>
+    <span class="scene-cap">Local Group · 50+ กาแล็กซี · Andromeda 2.5 ล้านปีแสง</span>
+  </figcaption>
+</figure>
+
+<p>มีราเป็นคนแรกที่หยุดเดิน · เคนยืนค้างกลางทาง · โบลท์ผิวปากเบา ๆ ราวกับเด็กที่เห็นภูเขาเป็นครั้งแรก</p>
+
+<p><b>Andromeda</b> — ใหญ่เกินกว่าจะมองข้าม — ครอบครองด้านซ้ายของหน้าต่าง สีฟ้าครามและทองตามแขนเกลียวของมัน · แสงของมันออกจากที่นั่นเมื่อ <i>2.5 ล้านปีก่อน</i> ก่อนมนุษย์เคยมีไฟ · ก่อนภาษา · ก่อนชื่อ · เพิ่งจะถึงยานในวินาทีนี้</p>
+
+<p><b>M87</b> — กาแล็กซีทรงรียักษ์ — เป็นจุดสว่างกลม ๆ ทางขวา · ในใจกลางของมัน หลุมดำขนาดหกพันล้านเท่ามวลดวงอาทิตย์กำลังกลืนเรื่องราวที่ไม่มีใครจะได้ฟัง</p>
+
+<p><b>LMC</b> และ <b>SMC</b> — เมฆแมเจลแลน — กาแล็กซีไม่มีรูปแบบเล็ก ๆ ใต้กรอบ ราวกับน้ำมันที่หกบนผ้าใบสีดำ</p>
+
+<p>และอีก <b>สี่สิบ ห้าสิบ จุดเล็ก ๆ</b> ที่กระจายอยู่ — แต่ละจุดบรรจุดาวเป็นพันล้านดวง · ดาวเคราะห์นับไม่ถ้วน · ความเป็นไปได้ที่ไม่มีใครเคยนับ</p>
+
+<div class="dialogue"><strong>โบลท์ (เสียงเบา):</strong> "...กว้างชะมัด"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "และเราต้องจำแนก<b>สิบสองตัวเลือก</b>ของพิกัด VOID · ก่อนจะวาร์ปไป · ถ้าเลือกผิด — เราอาจไม่กลับมา"</div>
+
+<p>LEMAÎTRE สร้างโต๊ะโฮโลแกรมขึ้นกลางห้อง · บนโต๊ะปรากฏภาพสามมิติของกาแล็กซีสิบสองแห่ง — ลอยอยู่ในอากาศ · หมุนช้า ๆ · เหมือนของแขวนเล็ก ๆ · ทีมล้อมโต๊ะเหมือนนายพรานล้อมโต๊ะแผนที่ก่อนการล่า</p>
+
+<p>เคนเรียกแผนภาพ <span class="key">Hubble Tuning Fork</span> ขึ้นมา — ผังคล้ายส้อม สามแขน · เขาออกเสียงชื่อแต่ละชนิดราวกับสวดมนต์</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "รอแป๊บ · ทางช้างเผือกของเรา... SBc?"</div>
+
+<div class="dialogue"><strong>มีรา:</strong> "ใช่ · Barred Spiral ระดับ c · เส้นผ่าศูนย์กลางประมาณ 100,000 ปีแสง · ดาวประมาณ 100 ถึง 400 พันล้านดวง · ดวงอาทิตย์อยู่บน<b>แขน Orion</b> · ระยะ 26,000 ปีแสงจากศูนย์กลาง"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ทางช้างเผือก... ก็แค่แถบเมฆบนท้องฟ้าใช่ไหม? เธอเรียกมันว่ากาแล็กซี · แต่เธอไม่เคยเห็นมันจากภายนอก..."</div>
+
+<div class="dialogue"><strong>เคน:</strong> "Hubble ปี 1924 พิสูจน์แล้วว่า Andromeda เป็นกาแล็กซีอีกแห่ง — ไม่ใช่เนบิวลาในทางช้างเผือกของเรา"</div>
+
+<p>หลังหักล้าง VOID ทีมจัดการกาแล็กซีที่เหลือ — ใช้กฎของฮับเบิล <b>v = H₀D</b> คำนวณระยะจาก redshift ของแสง · เหลือสามตัวเลือก · ระยะตรงกับ pulse ของ VOID — กาแล็กซีก้นหอยเล็กที่ระยะ 12 เมกะพาร์เซก</p>
+
+<p>แต่มีปัญหา</p>
+
+<div class="dialogue"><strong>โบลท์ (จากห้องเครื่อง):</strong> "วาร์ปไดรฟ์ของเรา <b>ไม่พอ</b> · รุ่นที่เก้าของเราใช้ในระบบสุริยะดี · ระหว่างดาวฤกษ์ใกล้ ๆ ไหว · แต่ข้ามกาแล็กซี — เกินขีด · ถ้าฝืน · เครื่องระเบิด · เราตายในห้านาที"</div>
+
+<p>เงียบ · ความหวังที่จะตามพิกัดของ VOID — เริ่มจาง</p>
+
+<p>แล้วโบลท์ก็โผล่ขึ้นมาที่บริดจ์ · หน้าเปื้อนเขม่า · มือถือ<b>วัตถุ</b> · เขาวางลงบนโต๊ะกัปตัน</p>
+
+<p>เป็นชิ้นส่วนของ "ศิลาต้นกำเนิด" ที่พวกเขาเก็บมาในตอนแรก · แต่เขา <i>แกะเปิดออก</i></p>
+
+<p>ภายในมีโครงสร้างที่ดูเหมือนเทคโนโลยี — ขดลวดและคริสตัลและวงจรเล็ก ๆ ที่<b>ไม่เหมือนสิ่งที่มนุษย์เคยทำ</b> · บางส่วนยังเรืองแสงเล็กน้อย · บางส่วนเย็นจนทำให้พื้นโต๊ะเป็นน้ำแข็ง</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ผมว่ามัน... คือวาร์ปไดรฟ์รุ่นที่ผมไม่เคยเห็น"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "ยืนยัน · เทคโนโลยีไม่ใช่ของเผ่ามนุษย์ · ความสามารถทางทฤษฎี: <b>วาร์ปข้ามกาแล็กซีในเวลาน้อยกว่าหนึ่งนาที</b>"</div>
+
+<p>ทีมเงียบ · มีรามองโบลท์ · เคนมองศิลา · อารยามองทั้งสองคน — แล้วถามคำถามที่ทุกคนคิด</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "...แล้วใครให้เราเจอ?"</div>
+
+<p>โบลท์ติดตั้งใน<b>แปดนาที</b> · ขดลวดสีฟ้าใหม่ฝังในห้องเครื่อง · ระบบเปิดด้วยเสียงที่ไม่เหมือนวาร์ปธรรมดา — เป็นเสียงที่<i>ลึกกว่าเสียง</i> · สั่นในกระดูก · ในฟัน · ในลูกตา</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "Engage"</div>
+
+<p>ยานสั่นสะเทือน · โลกภายนอกเปลี่ยนเป็นริ้วสีน้ำเงิน-ขาวที่ยืดยาวออกไป · ดวงดาวกลายเป็นเส้นด้ายของผ้าถักเกินกว่าจะนับได้ · ความเงียบ</p>
+
+<p>แล้วทันใดนั้น — ก็เงียบจริง ๆ</p>
+
+<p>ยานหลุดจากวาร์ปออกมาในที่ที่พวกเขา <b>ไม่คาดคิด</b></p>
+
+<figure class="scene warm">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">⭐</div>
+      <div class="hint">EP2 · SCENE 02 · LONE PULSING STAR</div>
+      <div class="desc">ดาวเดี่ยวดวงเดียวสีเหลือง-ส้ม · ลอยในความว่างเปล่าสนิท · ไม่มีกาแล็กซีรอบ · กระพริบเป็นจังหวะมอร์ส (สั้น-ยาว-สั้น) · ภาพมุมจากหน้าต่างยาน · ทีมเป็นเงาดำมองออกไป · บรรยากาศเหงา-ลึกลับ-eerie</div>
+      <div class="filename">img/ep2-02-lone-star.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP2 · SCENE 02</span>
+    <span class="scene-cap">"อา... ระยา... ลู... ก... ฟัง..." — เสียงพ่อ · 87% confidence</span>
+  </figcaption>
+</figure>
+
+<p>ไม่ใช่กลุ่มกาแล็กซี · ไม่ใช่กลุ่มดาวมากมาย · แค่<b>ดาวเดี่ยวดวงเดียว</b> — สีเหลือง-ส้ม — ลอยอยู่ในความว่างเปล่าราวกับเทียนเล่มเดียวในห้องที่ใหญ่เกินกว่าจะมีขอบ · กระพริบเป็นจังหวะ — สั้น ยาว สั้น · สั้น ยาว สั้น — ราวกับหัวใจที่อ่อนล้า</p>
+
+<p>แล้ว<b>เสียง</b>ก็มา</p>
+
+<p>ผ่านระบบสื่อสารของยาน · เบามาก ๆ · ราวกับใครพยายามตะโกนผ่านน้ำลึก · แต่ที่ไม่ผิดได้ — เป็น<b>ภาษาไทย</b></p>
+
+<div class="dialogue lemaitre"><strong>(เสียงในระบบสื่อสาร · ภาษาไทย · บิดเบี้ยว):</strong> "อา... ระยา... ลู... ก... ฟัง..."</div>
+
+<p>อารยาแข็งทื่อ · มีรามองเธอ · เห็นหน้าซีดของกัปตันของพวกเขา · เคนหยุดหายใจ · โบลท์มองทุกคนแล้วถาม "อะไร"</p>
+
+<p>LEMAÎTRE ประมวลผลห้าวินาทีเต็ม — ซึ่งสำหรับ AI ระดับ 4 คือ<b>ตลอดกาล</b></p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "รอยพิมพ์เสียง: ตรงกับฐานข้อมูล <b>กัปตันโชค เวชชาชีวะ</b> · 87% ความเชื่อมั่น"</div>
+
+<p>โชค เวชชาชีวะ · ผู้บัญชาการยาน Voyager-Prime · หายตัวไปในปี 2247 · เป็นเหตุผลที่ลูกสาวของเขาเรียนเข้ากองอวกาศ</p>
+
+<div class="dialogue"><strong>อารยา (กระซิบ):</strong> "...พ่อ"</div>
+
+<!-- DIAGRAM EP2 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP2 · Hubble Tuning Fork</h3>
+
+<div class="diagram">
+<div class="dtitle">🌀 Hubble Tuning Fork (1936) · จำแนกกาแล็กซีตามรูปร่าง</div>
+<svg viewBox="0 0 780 320" xmlns="http://www.w3.org/2000/svg">
+  <g font-family="Sarabun" font-size="11" fill="#e7ecf5" text-anchor="middle">
+    <!-- handle (Ellipticals) -->
+    <line x1="60" y1="160" x2="320" y2="160" stroke="#9aa6c2" stroke-width="2"/>
+    <ellipse cx="80" cy="160" rx="14" ry="14" fill="#5fd9b5"/><text x="80" y="190">E0</text>
+    <ellipse cx="140" cy="160" rx="20" ry="13" fill="#5fd9b5"/><text x="140" y="190">E3</text>
+    <ellipse cx="210" cy="160" rx="26" ry="11" fill="#5fd9b5"/><text x="210" y="190">E5</text>
+    <ellipse cx="280" cy="160" rx="32" ry="9" fill="#5fd9b5"/><text x="280" y="190">E7/S0</text>
+    <text x="170" y="135" font-family="Kanit" font-size="13" fill="#5fd9b5">Elliptical</text>
+
+    <!-- Top spiral arm -->
+    <line x1="320" y1="160" x2="450" y2="80" stroke="#9aa6c2" stroke-width="2"/>
+    <line x1="450" y1="80" x2="730" y2="80" stroke="#9aa6c2" stroke-width="2"/>
+    <text x="370" y="55" font-family="Kanit" font-size="13" fill="#7ab8ff">Spiral (S)</text>
+    <g transform="translate(490,80)"><circle r="14" fill="#7ab8ff"/><path d="M-10,-2 Q0,-12 10,-2 M-10,2 Q0,12 10,2" stroke="#0a0e1a" fill="none" stroke-width="1.5"/></g>
+    <text x="490" y="110">Sa</text>
+    <g transform="translate(610,80)"><circle r="14" fill="#7ab8ff" opacity=".8"/><path d="M-12,0 Q0,-14 12,0 Q0,14 -12,0" stroke="#0a0e1a" fill="none" stroke-width="1.5"/></g>
+    <text x="610" y="110">Sb</text>
+    <g transform="translate(720,80)"><circle r="14" fill="#7ab8ff" opacity=".6"/><path d="M-14,0 Q-7,-12 7,-12 Q14,0 7,12 Q-7,12 -14,0" stroke="#0a0e1a" fill="none" stroke-width="1.2"/></g>
+    <text x="720" y="110">Sc</text>
+
+    <!-- Bottom spiral arm (barred) -->
+    <line x1="320" y1="160" x2="450" y2="240" stroke="#9aa6c2" stroke-width="2"/>
+    <line x1="450" y1="240" x2="730" y2="240" stroke="#9aa6c2" stroke-width="2"/>
+    <text x="370" y="280" font-family="Kanit" font-size="13" fill="#ff6b9d">Barred Spiral (SB)</text>
+    <g transform="translate(490,240)"><circle r="14" fill="#ff6b9d"/><rect x="-12" y="-2" width="24" height="4" fill="#0a0e1a"/></g>
+    <text x="490" y="218">SBa</text>
+    <g transform="translate(610,240)"><circle r="14" fill="#ff6b9d" opacity=".85"/><rect x="-12" y="-2" width="24" height="4" fill="#0a0e1a"/><path d="M12,0 Q14,8 6,12 M-12,0 Q-14,-8 -6,-12" stroke="#0a0e1a" fill="none" stroke-width="1.5"/></g>
+    <text x="610" y="218">SBb</text>
+    <g transform="translate(720,240)"><circle r="14" fill="#ff6b9d" opacity=".7"/><rect x="-10" y="-2" width="20" height="4" fill="#0a0e1a"/><path d="M10,0 Q16,10 0,16 M-10,0 Q-16,-10 0,-16" stroke="#0a0e1a" fill="none" stroke-width="1.2"/></g>
+    <text x="720" y="218">SBc ★ Milky Way</text>
+
+    <!-- Irregulars -->
+    <g transform="translate(750,160)">
+      <path d="M-15,-8 L-5,-12 L8,-6 L12,4 L4,14 L-10,10 Z" fill="#f5c451"/>
+      <text y="34" font-size="11" fill="#f5c451">Irr (LMC, SMC)</text>
+    </g>
+  </g>
+</svg>
+<div class="legend">
+  <span><span class="dot" style="background:#5fd9b5"></span>Elliptical · ทรงรี · ดาวแก่</span>
+  <span><span class="dot" style="background:#7ab8ff"></span>Spiral · ก้นหอย</span>
+  <span><span class="dot" style="background:#ff6b9d"></span>Barred Spiral · มีแกนยาว</span>
+  <span><span class="dot" style="background:#f5c451"></span>Irregular · ไม่มีรูปแบบ</span>
+</div>
+</div>
+
+<div class="diagram">
+<div class="dtitle">🌌 โครงสร้างทางช้างเผือก · Milky Way (SBc)</div>
+<svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="mw" cx="50%" cy="50%"><stop offset="0%" stop-color="#fff"/><stop offset="40%" stop-color="#7ab8ff"/><stop offset="100%" stop-color="#0a0e1a"/></radialGradient>
+  </defs>
+  <ellipse cx="390" cy="140" rx="280" ry="80" fill="url(#mw)" opacity=".7"/>
+  <ellipse cx="390" cy="140" rx="50" ry="32" fill="#f5c451" opacity=".5"/>
+  <rect x="350" y="135" width="80" height="10" fill="#f5c451" opacity=".7"/>
+  <!-- spiral arms -->
+  <g stroke="#7ab8ff" stroke-width="1.5" fill="none" opacity=".7">
+    <path d="M390 140 Q500 100 620 130 Q650 160 600 200"/>
+    <path d="M390 140 Q280 180 160 150 Q130 120 180 80"/>
+  </g>
+  <!-- sun position -->
+  <circle cx="540" cy="155" r="5" fill="#f5c451"/>
+  <text x="540" y="180" text-anchor="middle" fill="#f5c451" font-size="12" font-weight="700">☉ ดวงอาทิตย์</text>
+  <text x="540" y="195" text-anchor="middle" fill="#9aa6c2" font-size="10">แขน Orion · 26,000 ly จากศูนย์</text>
+  <!-- center -->
+  <circle cx="390" cy="140" r="3" fill="#fff"/>
+  <text x="390" y="115" text-anchor="middle" fill="#fff" font-size="11">Sgr A* (หลุมดำมวลยวดยิ่ง)</text>
+  <!-- scale -->
+  <line x1="110" y1="240" x2="670" y2="240" stroke="#9aa6c2" stroke-width="1"/>
+  <line x1="110" y1="235" x2="110" y2="245" stroke="#9aa6c2"/>
+  <line x1="670" y1="235" x2="670" y2="245" stroke="#9aa6c2"/>
+  <text x="390" y="258" text-anchor="middle" fill="#9aa6c2" font-size="11">~ 100,000 ปีแสง · 100-400 พันล้านดาว</text>
+</svg>
+</div>
+
+<div class="formula">v = H₀ × D · H₀ ≈ 70 km/s/Mpc
+<small>กาแล็กซีไกลกว่า → เคลื่อนหนีเร็วกว่า · วัดจาก redshift ของแสง</small></div>
+
+<div class="knowledge-box">
+<h4>🔑 ระบบดาวและการเคลื่อนที่</h4>
+<ul>
+<li><b>Doppler Shift:</b> Redshift (ห่าง) · Blueshift (เข้าใกล้) · v = ±c·Δλ/λ</li>
+<li><b>Local Group:</b> 50+ กาแล็กซี · Milky Way + Andromeda เป็นยักษ์ใหญ่ · LMC, SMC เป็น Irregular</li>
+<li><b>Hubble 1924:</b> พิสูจน์ว่า Andromeda เป็นกาแล็กซีคนละแห่ง — เปลี่ยนความเข้าใจขนาดเอกภพ</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP3 ============ -->
+<section id="ep3">
+<h2 class="chapter"><span class="num">EPISODE 3</span>เสียงร้องจากอดีต<span class="en">Echo from the Past · ดาวฤกษ์ · แสงและระยะ</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">ระยะทาง · ดาวที่ไกล 400 ปีแสง · gravity time dilation</span>
+</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ระยะ: ไม่ทราบ · เวลาก่อน supernova: ไม่ทราบ —</p>
+
+<p>ดาวเดี่ยวกระพริบเหมือนหัวใจที่อ่อนล้า · จังหวะสั้น-ยาว-สั้น · สั้น-ยาว-สั้น · ทุกสามวินาที · ทุกสามวินาที · ทุกสามวินาที</p>
+
+<p>เคนเป็นคนแรกที่ถอดรหัส · เขาเขียนลงบนกระดาษ · มือสั่น · ตัวอักษรที่ออกมาคือ:</p>
+
+<p style="text-align:center;font-family:'Kanit';font-size:24px;color:var(--gold);letter-spacing:.4em;margin:24px 0">อารยา · ฟัง</p>
+
+<div class="dialogue"><strong>เคน (เสียงเครียด):</strong> "เขาพยายามจะส่งสัญญาณให้คุณ <b>โดยเฉพาะ</b> · กัปตัน"</div>
+
+<p>อารยายืนหันหลังให้ทีม · มองหน้าต่างที่ดาวกระพริบอยู่ · ผมของเธอเริ่มหลุดจากหางม้าเพียงปอยเดียว — เหมือนเธอจะลืมตัวที่จะเก็บมัน</p>
+
+<p>ในยี่สิบปี เธอไม่เคยปล่อยให้ตัวเองหวัง</p>
+
+<p>วันนี้ · ในเสี้ยววินาที · เธอเกือบจะหวัง</p>
+
+<p>แต่เธอเป็นกัปตัน · และกัปตันที่ดี — ไม่เชื่ออะไรก่อนจะ<b>วัด</b>มัน</p>
+
+<div class="dialogue"><strong>อารยา (เสียงนิ่ง):</strong> "ก่อนเราจะเชื่อ — เราต้องรู้ว่ามันจริงไหม · เคน มีรา · ตรวจสอบระยะของดาวก่อน · ผมไม่อยากให้ใคร<b>หลงเสียง</b>"</div>
+
+<p>มีรามองเธอ — เข้าใจ · ความระมัดระวังนั้นไม่ใช่ความเย็นชา · มันคือ<i>ความรักที่ระมัดระวัง</i></p>
+
+<p>เคนเริ่มทำงาน · เขาตั้งกล้องคู่ของยานในระยะห่าง<b>หนึ่งหน่วยดาราศาสตร์</b> — ระยะจากโลกถึงดวงอาทิตย์ ประมาณ 150 ล้านกิโลเมตร — เพื่อใช้เป็นเส้นฐานสำหรับวัดมุม<span class="key">พาแรลแลกซ์</span></p>
+
+<p>หลักการง่าย · แค่ยกนิ้วชี้ไว้หน้าตา · หลับตาซ้าย — นิ้วอยู่ที่นึง · หลับตาขวา — นิ้วขยับ · ยิ่งนิ้วใกล้ตา · ยิ่งขยับมาก · ระบบดาราศาสตร์ใช้หลักการเดียวกัน — แต่แทนที่ตาสองข้าง ใช้ <i>โลกในสองช่วงปีที่อยู่คนละข้างของดวงอาทิตย์</i></p>
+
+<div class="dialogue"><strong>เคน:</strong> "พาแรลแลกซ์ 0.0082 พิลิปดา · d = 1/p = 122 พาร์เซก ≈ <b>400 ปีแสง</b>"</div>
+
+<div class="formula">d (pc) = 1 / p (arcsec)
+<small>ระยะ (พาร์เซก) = 1 หารด้วยมุมพาแรลแลกซ์ (พิลิปดา) · 1 pc ≈ 3.26 ปีแสง</small></div>
+
+<p>มีราตรวจสอบอีกชั้นด้วยแมกนิจูด — ใช้คาบของมันเป็น Cepheid variable ตามมรดกของ Henrietta Leavitt ได้ความสว่างจริง M = -3.1 ความสว่างที่เห็น m = 5.2</p>
+
+<div class="formula">m − M = 5 log(d / 10)
+<small>5.2 − (−3.1) = 8.3 → d ≈ 457 ปีแสง · ใกล้เคียงกับ 400 ปีแสง — สองวิธีเห็นด้วย</small></div>
+
+<div class="dialogue"><strong>อารยา (น้ำตา):</strong> "400 ปีแสง... แสงที่เราเห็นวันนี้ออกจากดาวนั้นเมื่อ 400 ปีก่อน · พ่อหายไป<b>ยี่สิบปี</b>"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ดาวเลขมาก... ยิ่งสว่าง · ใช่ไหมล่ะ? · เลข 6 ใหญ่กว่าเลข 1 · ตรรกะง่าย ๆ"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "ผิด · ระบบแมกนิจูดของดาราศาสตร์<b>กลับด้าน</b> · มาจาก Hipparchus เมื่อ 130 ปีก่อนคริสต์ศักราช · ดาวสว่างที่สุด = 1 · ดาวริบหรี่ที่สุดที่ตามองเห็น = 6 · ดวงอาทิตย์ -26.7"</div>
+
+<div class="dialogue hubble"><strong>ดร.ฮับเบิล:</strong> "Henrietta Swan Leavitt · 1908 · ค้นพบ<b>ความสัมพันธ์คาบ-ความสว่าง</b>ของดาวแปรแสง Cepheid · ยิ่งคาบยาว — ความสว่างจริงยิ่งมาก · นี่คือ standard candle ที่ทำให้ Edwin Hubble พิสูจน์ในปี 1924 ว่า Andromeda เป็นกาแล็กซีอีกแห่ง"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "...งั้น ทำไมเธอถึง<b>ไม่ร้องไห้</b>?"</div>
+
+<div class="dialogue"><strong>อารยา (เงียบ):</strong> "ผมร้องไห้แล้ว · เมื่อยี่สิบปีก่อน"</div>
+
+<p>VOID เงียบ · น้ำวนของเขาช้าลง · ราวกับเขาไม่ได้คาดคิดคำตอบนี้</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "วันนี้ · ผมแค่ต้อง<b>ขอบคุณพ่อ</b>"</div>
+
+<p>เธอเดินไปที่หน้าต่าง · วางมือลงบนกระจก · ดาวที่ห่าง 400 ปีแสงนั่นกระพริบสะท้อนในตาของเธอ</p>
+
+<div class="dialogue"><strong>อารยา (เบามาก):</strong> "ขอบคุณที่บอก พ่อ · ผมจะไม่หลงตัวเลขสว่าง · ผมจะใช้เครื่องมือที่ถูกต้อง · ผมจะไม่หลงในเสียงที่อยากเชื่อ · ผมรักพ่อ · <b>ลาก่อน</b>"</div>
+
+<p>ดาวกระพริบช้าลง · อ่อนลง · และไม่ส่งสัญญาณรหัสมอร์สอีกต่อไป · VOID หายไปเงียบ ๆ · ครั้งนี้ไม่มีคำขู่ ไม่มีการต่อสู้ — เพียงการถอนตัวของผู้แพ้ที่ฉลาดพอจะรู้ว่าตอนนี้ไม่ใช่เวลาของเขา</p>
+
+<figure class="scene danger flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🔴</div>
+      <div class="hint">EP3 · SCENE 03 · PRE-SUPERNOVA INSTABILITY</div>
+      <div class="desc">ดาวเดี่ยวเปลี่ยนจากเหลือง-ส้ม → <b>แดงเข้ม</b> → แดงเลือด · บวมและสั่น · ผิวเป็นคลื่น · เปลือกพลาสมาพุ่งออกหลายชั้น · ยานทีมอยู่ระยะปลอดภัย · มุมกล้องจากนอกยาน · เวลานับถอยหลัง 6 ชั่วโมง</div>
+      <div class="filename">img/ep3-03-presupernova.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP3 · SCENE 03</span>
+    <span class="scene-cap">T-minus 6 ชั่วโมง · core collapse imminent · 18 M☉</span>
+  </figcaption>
+</figure>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— 47 วินาทีต่อมา —</p>
+
+<p>ดาวเดี่ยวเริ่ม<b>สั่นสะเทือน</b></p>
+
+<p>ความสั่นเพิ่มขึ้นทุกวินาที · สีของมันเปลี่ยนจากเหลือง-ส้มเป็น<b>แดงเข้ม</b> · จากแดงเข้มเป็นแดงเลือด · ขนาดของมันเริ่มขยาย — ใหญ่ขึ้น · ใหญ่ขึ้น · เร็วขึ้นทุกวินาที</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE (เสียงด่วน):</strong> "<b>WARNING.</b> ดาวเข้าสู่ pre-supernova instability · เวลาก่อนการระเบิด: <b>6 ชั่วโมง</b> · ถ้าระเบิดในระยะนี้ · คลื่นกระแทกจะถึงเราในแปดนาที"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ระเบิดยังไง?"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "เป็นไปได้สามทาง: <b>white dwarf · neutron star · หรือ — black hole</b> · ขึ้นกับมวล · ผมจำเป็นต้องวัดก่อนตัดสินใจหนี"</div>
+
+<p>อารยาเก็บความเศร้าของเธอเข้าไป — เป็นทักษะที่กัปตันต้องมี — และหันหน้ามาที่ทีม · ตอนนี้เธอ<b>กลับเข้าโหมดทำงาน</b>เร็วกว่าที่ใครจะรู้ตัว</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เคน · เราต้องรู้ว่ามันจะเป็นอะไรก่อนเราหนี · ถ้าเป็นหลุมดำ · เราต้องห่างมากกว่านี้ · ถ้าเป็นนิวตรอน · เราอยู่ระยะนี้ปลอดภัย"</div>
+
+<p>เคนพยักหน้า — แต่ทีมเห็นว่าเขากลืนน้ำลายลำบาก · นี่คือสถานการณ์ที่ทำให้เขาตาบอดเมื่อห้าปีก่อน</p>
+
+<div class="dialogue"><strong>เคน (หายใจเข้าลึก):</strong> "ผม Stellar Engineer · ดาวคือสิ่งที่ผมทำ · <b>แม้ว่าผมจะกลัวมันมากที่สุดในเอกภพ</b>"</div>
+
+<!-- DIAGRAM EP3 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP3 · พาแรลแลกซ์ &amp; แมกนิจูด</h3>
+
+<div class="diagram">
+<div class="dtitle">📐 Stellar Parallax · เครื่องมือวัดระยะดาว</div>
+<svg viewBox="0 0 780 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sun -->
+  <circle cx="200" cy="140" r="14" fill="#f5c451"/>
+  <text x="200" y="172" text-anchor="middle" fill="#f5c451" font-size="11">☉ Sun</text>
+  <!-- Earth Jan / Jul -->
+  <circle cx="200" cy="80" r="6" fill="#7ab8ff"/>
+  <text x="200" y="68" text-anchor="middle" fill="#7ab8ff" font-size="10">Earth (ม.ค.)</text>
+  <circle cx="200" cy="200" r="6" fill="#7ab8ff"/>
+  <text x="200" y="220" text-anchor="middle" fill="#7ab8ff" font-size="10">Earth (ก.ค.)</text>
+  <!-- baseline -->
+  <line x1="200" y1="80" x2="200" y2="200" stroke="#9aa6c2" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="158" y="143" fill="#9aa6c2" font-size="10">2 AU baseline</text>
+  <!-- target star -->
+  <circle cx="640" cy="140" r="8" fill="#fff"/>
+  <text x="640" y="125" text-anchor="middle" fill="#fff" font-size="11">ดาวเป้าหมาย</text>
+  <!-- background stars -->
+  <circle cx="730" cy="60" r="2" fill="#9aa6c2"/>
+  <circle cx="720" cy="220" r="2" fill="#9aa6c2"/>
+  <circle cx="700" cy="100" r="1.5" fill="#9aa6c2"/>
+  <text x="730" y="245" text-anchor="middle" fill="#9aa6c2" font-size="10">ดาวพื้นหลัง (ไกลมาก)</text>
+  <!-- sight lines -->
+  <line x1="200" y1="80" x2="730" y2="60" stroke="#5fd9b5" stroke-width="1"/>
+  <line x1="200" y1="200" x2="720" y2="220" stroke="#5fd9b5" stroke-width="1"/>
+  <line x1="200" y1="80" x2="640" y2="140" stroke="#ff6b9d" stroke-width="1.5"/>
+  <line x1="200" y1="200" x2="640" y2="140" stroke="#ff6b9d" stroke-width="1.5"/>
+  <!-- parallax angle -->
+  <path d="M 620 130 A 25 25 0 0 1 620 150" stroke="#f5c451" stroke-width="2" fill="none"/>
+  <text x="600" y="145" fill="#f5c451" font-size="14" font-weight="700">p</text>
+  <!-- formula -->
+  <text x="390" y="30" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="16">d (pc) = 1 / p (arcsec)</text>
+  <text x="390" y="48" text-anchor="middle" fill="#9aa6c2" font-size="11">ดาวยิ่งใกล้ → มุม p ยิ่งใหญ่ · ดาวยิ่งไกล → มุมยิ่งเล็ก</text>
+</svg>
+</div>
+
+<div class="diagram">
+<div class="dtitle">⭐ ระบบแมกนิจูด · ยิ่งสว่าง ยิ่งติดลบ</div>
+<svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+  <line x1="40" y1="120" x2="740" y2="120" stroke="#9aa6c2" stroke-width="2"/>
+  <g font-family="Sarabun" font-size="11" fill="#e7ecf5" text-anchor="middle">
+    <!-- ticks -->
+    <g><line x1="80" y1="115" x2="80" y2="125" stroke="#fff"/><text x="80" y="145">-27</text><circle cx="80" cy="80" r="20" fill="#f5c451"/><text x="80" y="55" font-size="11" fill="#f5c451">Sun</text><text x="80" y="170" fill="#9aa6c2" font-size="10">-26.7</text></g>
+    <g><line x1="200" y1="115" x2="200" y2="125" stroke="#fff"/><text x="200" y="145">-13</text><circle cx="200" cy="80" r="12" fill="#fff"/><text x="200" y="55" font-size="11" fill="#fff">Full Moon</text><text x="200" y="170" fill="#9aa6c2" font-size="10">-12.7</text></g>
+    <g><line x1="320" y1="115" x2="320" y2="125" stroke="#fff"/><text x="320" y="145">-1</text><circle cx="320" cy="80" r="6" fill="#7ab8ff"/><text x="320" y="55" font-size="11" fill="#7ab8ff">Sirius</text><text x="320" y="170" fill="#9aa6c2" font-size="10">-1.46</text></g>
+    <g><line x1="440" y1="115" x2="440" y2="125" stroke="#fff"/><text x="440" y="145">+2</text><circle cx="440" cy="80" r="4" fill="#fff"/><text x="440" y="55" font-size="11" fill="#fff">Polaris</text><text x="440" y="170" fill="#9aa6c2" font-size="10">+2.0</text></g>
+    <g><line x1="580" y1="115" x2="580" y2="125" stroke="#fff"/><text x="580" y="145">+6</text><circle cx="580" cy="80" r="2" fill="#bdf"/><text x="580" y="55" font-size="11" fill="#bdf">ดาวริบหรี่ที่ตาเห็น</text><text x="580" y="170" fill="#9aa6c2" font-size="10">+6</text></g>
+    <g><line x1="720" y1="115" x2="720" y2="125" stroke="#fff"/><text x="720" y="145">+30</text><circle cx="720" cy="80" r="1" fill="#9aa6c2"/><text x="720" y="55" font-size="10" fill="#9aa6c2">JWST limit</text><text x="720" y="170" fill="#9aa6c2" font-size="10">+30+</text></g>
+  </g>
+  <text x="80" y="200" text-anchor="middle" fill="#f5c451" font-size="13" font-family="Kanit">← สว่าง</text>
+  <text x="720" y="200" text-anchor="middle" fill="#7ab8ff" font-size="13" font-family="Kanit">มืด →</text>
+</svg>
+</div>
+
+<div class="formula">m − M = 5 log(d/10)
+<small>m = แมกนิจูดที่เห็น · M = ความสว่างจริง · d = ระยะ (พาร์เซก)</small></div>
+
+<div class="knowledge-box">
+<h4>🔑 Henrietta Swan Leavitt &amp; Standard Candles</h4>
+<ul>
+<li><b>1908:</b> ค้นพบความสัมพันธ์ <b>คาบ-ความสว่าง</b> ของ Cepheid variables</li>
+<li><b>วิธีใช้:</b> วัดคาบ → รู้ M → เทียบกับ m → คำนวณ d ด้วยสมการแมกนิจูด</li>
+<li><b>ผลกระทบ:</b> ทำให้ Hubble พิสูจน์ Andromeda เป็นกาแล็กซีอื่น (1924) → เปลี่ยนความเข้าใจเอกภพ</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP4 ============ -->
+<section id="ep4">
+<h2 class="chapter"><span class="num">EPISODE 4</span>วันสุดท้ายของยักษ์แดง<span class="en">Death of a Giant · ดาวฤกษ์และวิวัฒนาการ</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">วิวัฒนาการดาว · OBAFGKM · มวลตัดสินชะตา · พ่อโบลท์</span>
+</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— T-MINUS 5:47:12 ก่อน SUPERNOVA —</p>
+
+<figure class="scene danger">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🔭</div>
+      <div class="hint">EP4 · SCENE 01 · KEN ALONE IN OBSERVATORY</div>
+      <div class="desc">เคนยืนคนเดียวในห้องสังเกตการณ์มืด · เงาเขาตัดกับ<b>แสงสีแดง</b>ของดาวยักษ์แดงที่หน้าต่าง · มือเขายังสั่น · ดวงตาแดงคล้ำ · มุมหลังคาสะท้อนเงาเขา · บรรยากาศ <i>Solaris</i> · ใหญ่ 800 เท่าดวงอาทิตย์</div>
+      <div class="filename">img/ep4-01-ken-observatory.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP4 · SCENE 01</span>
+    <span class="scene-cap">เคนเผชิญหน้ากับสิ่งที่ทำให้เขาตาบอดเมื่อ 5 ปีก่อน · M-class · 18 M☉</span>
+  </figcaption>
+</figure>
+
+<p>เคนยืนคนเดียวในห้องสังเกตการณ์ · ปิดประตู · ปิดไฟ · เหลือแค่แสงสีแดงของดาวยักษ์แดงที่หน้าต่างใหญ่</p>
+
+<p>มือของเขายังสั่น</p>
+
+<p>ห้าปีก่อน — เขาเป็นนักศึกษาฝึกงานวัยยี่สิบสาม ที่ Telescope Array บนยอดเขา Cerro Paranal ในชิลี · เวลา 03:47 น. ตามเวลาท้องถิ่น · เขาเฝ้าระวังดาวยักษ์แดงเก่าแก่ดวงหนึ่งในกาแล็กซีใกล้เคียง · งานที่น่าจะเป็นรูทีน · เปิดสามจอ · ตั้งกาแฟสาม · นั่งในเก้าอี้ที่อาจารย์ปล่อยให้เขาใช้</p>
+
+<p>แล้ววินาทีนั้นก็มา</p>
+
+<p>ดาวที่ควรจะอยู่อีก<b>หนึ่งแสนปี</b> — ระเบิดในวันนั้น · เวลานั้น · ขณะที่เขามองตรง</p>
+
+<p>แสงที่ปะทุเดินทางผ่านอวกาศใช้เวลา <b>ห้าสิบเอ็ดล้านปี</b>จึงถึงเขา · ก่อนมนุษย์มี · ก่อนสัตว์เลี้ยงลูกด้วยนมมี · ก่อนไดโนเสาร์สูญพันธุ์ · ออกจากดาวนั้นก่อนหน้านั้นมาก · เดินทางผ่านความว่างเปล่าเป็นพันเป็นหมื่นปีแสง · เพื่อจะถึงดวงตาของชายหนุ่มคนหนึ่งใน<i>วินาทีที่ผิด</i></p>
+
+<p>ระบบกรองแสงตัดทอนได้ <b>0.003 วินาที</b> · ไม่ทัน · แสงเข้าตาเขาตรง ๆ</p>
+
+<p>เขาจำได้แค่เสียงตัวเองตะโกนตอนล้มจากเก้าอี้ · เสียงเก้าอี้กระทบพื้น · ความเงียบที่ตามมา</p>
+
+<p>หกสัปดาห์ในความมืด · แพทย์บอกว่ามันเป็น<b>ปาฏิหาริย์</b>ที่ตาเขายังใช้ได้ครบ · มันก็เป็นปาฏิหาริย์ — แต่เคนรู้ว่าบางส่วนของเขา<i>ไม่กลับมา</i> · ทุกครั้งที่เขามองดาวสว่าง · เขาเห็นเงาของวันนั้น · ทุกครั้งที่ดาวพร้อมจะระเบิด · เขา<b>รู้สึกได้</b></p>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ตอนนี้ · ปี 2267 —</p>
+
+<p>เคนยืนหน้าหน้าต่างห้องสังเกตการณ์อีกครั้ง · ตรงหน้าเขาคือดาวยักษ์แดงอีกดวง · ใหญ่กว่าดวงอาทิตย์ <b>800 เท่า</b> · ผิวของมันบวมและไหวเป็นคลื่นที่มองด้วยตาเปล่าได้ · กำลังจะระเบิดในไม่ถึงหกชั่วโมง</p>
+
+<p>เขาหายใจเข้าลึก · ปล่อย · หายใจเข้าอีกครั้ง · ปล่อย · มือยังสั่น</p>
+
+<p>แล้วเขาก็เริ่มออกเสียง — เหมือนคนสวดมนต์ — สิ่งที่เขาเรียนตั้งแต่เก้าขวบ · สิ่งที่เป็นเหตุผลให้เขายังทำงานนี้แม้กลัวมัน</p>
+
+<div class="dialogue"><strong>เคน:</strong> "<b>OBAFGKM</b> · ลำดับสเปกตรัมของดาว · ตามอุณหภูมิ · O สีน้ำเงิน 30,000 K · M สีแดง 3,000 K · ดาวนี้ M-class · 3,200 K · มวล 18 เท่ามวลดวงอาทิตย์"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "น้อยกว่า 9 M☉ → white dwarf · ระหว่าง 9-25 → neutron star · มากกว่า 25 → black hole · ดาวนี้ 18 → นิวตรอนสตาร์ · เราอยู่ระยะนี้ปลอดภัย"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ช่างหนุ่ม · เธอรู้ใช่ไหมว่าดาวแดงย่อมร้อนกว่าดาวน้ำเงิน? · เลือดร้อน — สีแดง · น้ำแข็ง — สีฟ้า"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ผิด · ผมเชื่อมโลหะ 15 ปี · ถ่านสีแดงเริ่มต้นที่ 600°C · ส้ม 1,000 · เหลือง 1,400 · ขาว 1,800 · น้ำเงิน 2,500 · ผมรู้จักไฟ"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "<b>กฎของ Wien:</b> T สูง = แสงคลื่นสั้น = สีน้ำเงิน · T ต่ำ = แสงคลื่นยาว = สีแดง"</div>
+
+<p>เคนจ้องดาวยักษ์แดงผ่านสเปกโตรสโคป · ดวงตาเขาเริ่มน้ำตาคลอ — ไม่ใช่เพราะกลัว · แต่เพราะ — สิ่งสุดท้ายที่เขาจะได้เห็นในวันนี้ · คือสิ่งที่<b>สวยที่สุด</b>ในเอกภพ</p>
+
+<div class="dialogue"><strong>เคน (เบา):</strong> "ลาก่อนยักษ์ · ขอบคุณที่ทำให้ผมไม่กลัวเธออีก"</div>
+
+<figure class="scene danger flash glory">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">💫</div>
+      <div class="hint">EP4 · SCENE 02 · SUPERNOVA EXPLOSION</div>
+      <div class="desc">วินาทีที่ดาวระเบิด · แสงสีขาวบริสุทธิ์ <b>เต็มหน้าต่างยาน</b> 3 วินาที · ทีมยกมือกันแสง · ยานในวาร์ปริ้วน้ำเงิน-ขาว · ภาพสวยและน่ากลัวพร้อมกัน · core collapse ใน 0.25 วินาที</div>
+      <div class="filename">img/ep4-02-supernova.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP4 · SCENE 02</span>
+    <span class="scene-cap">SUPERNOVA · ทีมหนีก่อน 55 นาที · pattern radiation = ลายเซ็นโวอิเดียน</span>
+  </figcaption>
+</figure>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— T-MINUS 00:55 · WARP ENGAGED —</p>
+
+<p>ทีมหนีออก<b>ห้าชั่วโมงห้านาที</b> — เร็วกว่าที่ตั้งใจห้าสิบห้านาที · ขณะวาร์ปออก พวกเขาเห็นดาวระเบิด — แสงสว่างเต็มหน้าต่างยานเป็นเวลา<b>สามวินาที</b> · สีขาวบริสุทธิ์ที่ตัดเข้าไปในกระดูก · แล้วก็จาง · ราวกับเทียนที่ดับ · ราวกับ<i>ความฝัน</i></p>
+
+<p>สี่นาทีต่อมา · LEMAÎTRE ตรวจ pattern radiation จากการระเบิด · เสียงของเขา <b>เปลี่ยน</b></p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "กัปตัน · ผมพบความผิดปกติ"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "อะไร?"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "pattern radiation บอกว่ามี<b>การเร่งการตาย</b> · ดาวนี้ไม่ควรระเบิดอีก<b>หนึ่งแสนปี</b>"</div>
+
+<p>ห้องเงียบสนิท · ทีมหันมามองกัน · ความเข้าใจมาถึงพร้อมกัน — แต่ไม่มีใครอยากพูดออกมา</p>
+
+<div class="dialogue"><strong>อารยา (เสียงเย็น):</strong> "ใครเร่งมัน?"</div>
+
+<p>LEMAÎTRE หยุดเป็นวินาทีเต็ม — ความเงียบของ AI ที่ไม่อยากให้ข่าวร้าย</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "ลายเซ็นยาน<b>โวอิเดียน</b> · ในรัศมีของ pre-supernova instability · <b>ก่อนเราจะมาถึง</b> · พวกเขาเร่งการระเบิดของดาว"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "ทำไม?"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "และพิกัดสุดท้ายของยานพวกเขา..."</div>
+
+<p>LEMAÎTRE ส่งภาพขึ้นจอ · ภาพระบบสุริยะ · ดาวเคราะห์แปดดวงเรียงตามวงโคจร · ดวงอาทิตย์เป็นจุดสีเหลืองตรงกลาง · จุดสีแดงเล็ก ๆ กระพริบในแถบไคเปอร์ — ลายเซ็นยานโวอิเดียน · พิกัดที่พวกเขาเลือกหลังจากระเบิดดาว</p>
+
+<p style="text-align:center;font-family:'Kanit';color:var(--rose);font-size:18px;margin:24px 0"><span class="key">ระบบสุริยะของเรา</span></p>
+
+<p>ห้องเงียบ · โบลท์เป็นคนแรกที่เลิกอึ้ง</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "...อะไรนะ"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "<b>บ้านเรา · กำลังถูกเล่นงาน</b> · ตั้งวาร์ปกลับ Sol · เร็ว"</div>
+
+<!-- DIAGRAM EP4 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP4 · OBAFGKM &amp; HR Diagram</h3>
+
+<div class="diagram">
+<div class="dtitle">🌈 OBAFGKM Spectral Sequence · สีดาวบอกอุณหภูมิ</div>
+<svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg">
+  <g font-family="Kanit" font-size="14" font-weight="700" text-anchor="middle">
+    <g><circle cx="80" cy="80" r="32" fill="#88aaff"/><text x="80" y="86" fill="#0a0e1a">O</text><text x="80" y="135" font-size="12" fill="#88aaff">น้ำเงิน</text><text x="80" y="153" font-size="11" fill="#9aa6c2" font-weight="400">≥30,000 K</text></g>
+    <g><circle cx="180" cy="80" r="28" fill="#aaccff"/><text x="180" y="86" fill="#0a0e1a">B</text><text x="180" y="135" font-size="12" fill="#aaccff">น้ำเงิน-ขาว</text><text x="180" y="153" font-size="11" fill="#9aa6c2" font-weight="400">10-30k K</text></g>
+    <g><circle cx="280" cy="80" r="24" fill="#ffffff"/><text x="280" y="86" fill="#0a0e1a">A</text><text x="280" y="135" font-size="12" fill="#fff">ขาว</text><text x="280" y="153" font-size="11" fill="#9aa6c2" font-weight="400">7,500-10k</text></g>
+    <g><circle cx="380" cy="80" r="22" fill="#ffffaa"/><text x="380" y="86" fill="#0a0e1a">F</text><text x="380" y="135" font-size="12" fill="#ffa">เหลือง-ขาว</text><text x="380" y="153" font-size="11" fill="#9aa6c2" font-weight="400">6,000-7,500</text></g>
+    <g><circle cx="480" cy="80" r="20" fill="#ffe066"/><text x="480" y="86" fill="#0a0e1a">G</text><text x="480" y="135" font-size="12" fill="#ffe066">เหลือง ☉</text><text x="480" y="153" font-size="11" fill="#9aa6c2" font-weight="400">5,200-6,000</text></g>
+    <g><circle cx="580" cy="80" r="18" fill="#ffaa55"/><text x="580" y="86" fill="#0a0e1a">K</text><text x="580" y="135" font-size="12" fill="#ffaa55">ส้ม</text><text x="580" y="153" font-size="11" fill="#9aa6c2" font-weight="400">3,700-5,200</text></g>
+    <g><circle cx="680" cy="80" r="16" fill="#ff6644"/><text x="680" y="86" fill="#0a0e1a">M</text><text x="680" y="135" font-size="12" fill="#ff6644">แดง</text><text x="680" y="153" font-size="11" fill="#9aa6c2" font-weight="400">≤3,700 K</text></g>
+  </g>
+  <text x="40" y="190" fill="#88aaff" font-size="12">← ร้อน</text>
+  <text x="730" y="190" text-anchor="end" fill="#ff6644" font-size="12">เย็น →</text>
+</svg>
+<div class="legend"><span style="color:#f5c451">🔑 Wien's Law: λ_max = b/T · T สูง → λ สั้น (น้ำเงิน) · T ต่ำ → λ ยาว (แดง)</span></div>
+</div>
+
+<div class="diagram">
+<div class="dtitle">📊 Hertzsprung-Russell Diagram · แผนที่ชีวิตดาว</div>
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg">
+  <!-- axes -->
+  <line x1="80" y1="40" x2="80" y2="340" stroke="#9aa6c2" stroke-width="1.5"/>
+  <line x1="80" y1="340" x2="740" y2="340" stroke="#9aa6c2" stroke-width="1.5"/>
+  <text x="40" y="180" fill="#e7ecf5" font-size="12" transform="rotate(-90 40 180)" text-anchor="middle">Luminosity (L☉)</text>
+  <text x="410" y="370" fill="#e7ecf5" font-size="12" text-anchor="middle">Temperature (K) · ร้อน ← → เย็น</text>
+  <!-- y axis labels -->
+  <g font-size="10" fill="#9aa6c2" text-anchor="end">
+    <text x="75" y="60">10⁶</text>
+    <text x="75" y="130">10⁴</text>
+    <text x="75" y="200">10²</text>
+    <text x="75" y="270">1</text>
+    <text x="75" y="335">10⁻⁴</text>
+  </g>
+  <!-- x labels -->
+  <g font-size="10" fill="#9aa6c2" text-anchor="middle">
+    <text x="140" y="358">30,000 (O)</text>
+    <text x="280" y="358">10,000 (A)</text>
+    <text x="440" y="358">6,000 (G)</text>
+    <text x="600" y="358">3,500 (M)</text>
+  </g>
+  <!-- Main Sequence band -->
+  <path d="M 130 60 Q 250 120 380 200 T 700 320" stroke="#f5c451" stroke-width="14" fill="none" opacity=".4"/>
+  <text x="380" y="200" fill="#f5c451" font-size="12" font-family="Kanit" font-weight="700">Main Sequence</text>
+  <!-- Sun -->
+  <circle cx="450" cy="225" r="6" fill="#ffe066"/>
+  <text x="465" y="228" fill="#ffe066" font-size="11">☉ Sun</text>
+  <!-- Red Giants -->
+  <ellipse cx="600" cy="120" rx="60" ry="30" fill="#ff6644" opacity=".4"/>
+  <text x="600" y="125" fill="#ff6644" font-size="13" font-family="Kanit" text-anchor="middle">Red Giants</text>
+  <!-- Supergiants -->
+  <ellipse cx="500" cy="60" rx="120" ry="20" fill="#ffaaaa" opacity=".4"/>
+  <text x="500" y="65" fill="#ffaaaa" font-size="13" font-family="Kanit" text-anchor="middle">Supergiants</text>
+  <!-- White Dwarfs -->
+  <ellipse cx="220" cy="300" rx="60" ry="20" fill="#aaccff" opacity=".4"/>
+  <text x="220" y="305" fill="#aaccff" font-size="12" font-family="Kanit" text-anchor="middle">White Dwarfs</text>
+  <!-- evolution track example -->
+  <path d="M 200 150 Q 350 130 580 110" stroke="#7ab8ff" stroke-width="1.5" fill="none" stroke-dasharray="4,3" marker-end="url(#arr)"/>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7ab8ff"/></marker></defs>
+  <text x="350" y="125" fill="#7ab8ff" font-size="10">วิวัฒนาการ: O → Red Supergiant</text>
+</svg>
+</div>
+
+<div class="diagram">
+<div class="dtitle">⚖ Mass Threshold · มวลตัดสินจุดจบของดาว</div>
+<svg viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg">
+  <g font-family="Sarabun" font-size="12" fill="#e7ecf5">
+    <!-- WD path -->
+    <g transform="translate(120,100)">
+      <circle r="40" fill="#ffe066" opacity=".5"/>
+      <text y="5" text-anchor="middle" font-family="Kanit" font-weight="700" fill="#ffe066">&lt; 9 M☉</text>
+      <circle cx="0" cy="80" r="14" fill="#aaccff"/>
+      <text y="115" text-anchor="middle" fill="#aaccff" font-size="13" font-weight="700">White Dwarf</text>
+      <text y="135" text-anchor="middle" fill="#9aa6c2" font-size="10">+ Planetary Nebula</text>
+    </g>
+    <!-- NS path -->
+    <g transform="translate(390,100)">
+      <circle r="50" fill="#ffaa55" opacity=".5"/>
+      <text y="5" text-anchor="middle" font-family="Kanit" font-weight="700" fill="#ffaa55">9 - 25 M☉</text>
+      <circle cx="0" cy="85" r="6" fill="#fff"/>
+      <text y="115" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Neutron Star</text>
+      <text y="135" text-anchor="middle" fill="#9aa6c2" font-size="10">Supernova · 1 ช้อนชา = 6 พันล้านตัน</text>
+    </g>
+    <!-- BH path -->
+    <g transform="translate(660,100)">
+      <circle r="60" fill="#ff6644" opacity=".5"/>
+      <text y="5" text-anchor="middle" font-family="Kanit" font-weight="700" fill="#ff6644">&gt; 25 M☉</text>
+      <circle cx="0" cy="85" r="14" fill="#0a0e1a" stroke="#a062ff" stroke-width="2"/>
+      <text y="115" text-anchor="middle" fill="#a062ff" font-size="13" font-weight="700">Black Hole</text>
+      <text y="135" text-anchor="middle" fill="#9aa6c2" font-size="10">หลุดจากกรอบอวกาศ-เวลา</text>
+    </g>
+  </g>
+  <text x="390" y="30" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="15">Core Collapse · 0.25 วินาที (1,500 km → 25 km)</text>
+  <text x="390" y="220" text-anchor="middle" fill="#9aa6c2" font-size="11">ดาวที่ทีมเจอ: M-class · 18 M☉ · 3,200 K · ปลายทาง = Neutron Star</text>
+</svg>
+</div>
+
+<div class="knowledge-box">
+<h4>🔑 วิวัฒนาการดาวฤกษ์</h4>
+<ul>
+<li><b>Main Sequence (90% ของชีวิต):</b> เผาไฮโดรเจนในแกน → ฮีเลียม</li>
+<li><b>Red Giant/Supergiant:</b> ไฮโดรเจนแกนหมด · พองตัว · เผาธาตุหนักขึ้นจนถึง<b>เหล็ก</b></li>
+<li><b>เหล็กไม่เผา:</b> ฟิวชันเหล็กใช้พลังงาน ไม่ปลดปล่อย → core collapse → ซูเปอร์โนวา</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP5 ============ -->
+<section id="ep5">
+<h2 class="chapter"><span class="num">EPISODE 5</span>หัวใจที่เต้นผิดจังหวะ<span class="en">Solar Heart · ระบบสุริยะ · ดวงอาทิตย์</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">ดวงอาทิตย์ · ภัยพิบัติ · POWER FORGE · พ่อฟื้น</span>
+</div>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ห้าวันต่อมา · ตามเวลาของยาน —</p>
+
+<p>วาร์ปดับลงด้วยเสียงกรน · T.H.E.O.S.-IX แล่นเข้าวงโคจรของระบบสุริยะอีกครั้ง · ผ่านเนปจูน · ผ่าน Saturn · ผ่าน Jupiter · ผ่านแถบดาวเคราะห์น้อย · เข้าใกล้วงโคจรของ Mars</p>
+
+<p>ที่นั่น · ก่อนถึงโลก · พวกเขาเห็นภัยคุกคามที่<b>เป็นจริงที่สุด</b></p>
+
+<p>ดวงอาทิตย์ — บ้านของระบบสุริยะ · ผู้ให้กำเนิดทุกชีวิต · กำลัง<b>พ่นพายุที่ใหญ่ที่สุดในประวัติศาสตร์</b>ที่บันทึกได้</p>
+
+<figure class="scene solar flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">☀</div>
+      <div class="hint">EP5 · SCENE 01 · X-CLASS CME ERUPTION</div>
+      <div class="desc">ดวงอาทิตย์ <b>พ่นเปลวสุริยะ X-class</b>ขนาดยักษ์ · พวยพุ่งสีส้ม-แดงบิดตัวเป็นเกลียวแม่เหล็ก · ยาวกว่าโลก 1 ล้านเท่า · พลาสมา 1,000 km/s · ยานทีมเล็กในเงาด้านล่าง · มุม close-up ที่ผิวดวงอาทิตย์ · sunspot กลุ่มใหญ่</div>
+      <div class="filename">img/ep5-01-cme.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP5 · SCENE 01</span>
+    <span class="scene-cap">ใหญ่กว่า Carrington 1859 สามเท่า · 18 ชั่วโมงก่อนถึงโลก · 200 ล้านชีวิต</span>
+  </figcaption>
+</figure>
+
+<p>เปลวสุริยะ X-class พุ่งออกจากผิวเป็นวงโค้งเลียนแบบงู · ยาวกว่าโลกหนึ่งล้านเท่า · พวยพุ่งสีส้ม-แดงเข้มที่บิดตัวเป็นเกลียวแม่เหล็ก · ทุกวินาทีที่ผ่านไป · พลาสมาถูกขับออกไปด้วยความเร็ว 1,000 กิโลเมตรต่อวินาที</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE (เสียงด่วน):</strong> "<b>X-class flare</b> · ใหญ่กว่าเหตุการณ์ Carrington 1859 ถึง<b>สามเท่า</b> · เวลาก่อนถึงโลก: <b>18 ชั่วโมง</b>"</div>
+
+<p>มีราอ่านข้อมูลเพิ่ม — น้ำเสียงเธอเปลี่ยนเป็นเสียงที่ทีมไม่เคยได้ยิน</p>
+
+<div class="dialogue"><strong>มีรา (เสียงเครียด):</strong> "ระบบไฟฟ้าทั่วโลกล่ม · GPS · ดาวเทียม · ระบบสื่อสาร · ระบบขนส่ง · ระบบการแพทย์อัตโนมัติสูญเสียข้อมูล · เครื่องผ่าตัดไม่ทำงาน..."</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "จำนวนคนที่จะตาย ถ้าเราไม่หยุดมัน?"</div>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "ประมาณการณ์: <b>200 ล้านคน · ใน 72 ชั่วโมงแรก</b>"</div>
+
+<p>ห้องเงียบเป็นเวลาหนึ่งวินาทีเต็ม</p>
+
+<div class="dialogue"><strong>อารยา (เสียงเรียบ):</strong> "งั้นเราหยุดมัน · มีรา · คุณเป็นผู้นำคราวนี้ · ดวงอาทิตย์เป็นเรื่องของคุณ"</div>
+
+<p>มีรารับคำสั่ง · ลึก ๆ ในใจเธอ · มีอะไรอยู่ที่กระตุ้นเธอเป็นพิเศษ</p>
+
+<p style="text-align:center;color:var(--mint);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— FLASHBACK · 14 มีนาคม 2261 —</p>
+
+<p>หกปีก่อน · ในวันที่ 14 มีนาคม 2261 — วันที่กลายเป็นบาดแผลถาวรในใจของมีรา — น้องสาวของเธอ <b>ปรียา ชาห์</b> วัยยี่สิบสี่ · กำลังเขียนรายงานที่สถานีวิจัย Helios-7 ที่โคจรเหนือดวงอาทิตย์ในวงโคจรเฮลิโอซิงโครนัส · งานของน้องเธอคือศึกษาชั้น Corona ที่ร้อนกว่าผิวดวงอาทิตย์เป็นสองแสนเท่า</p>
+
+<p>วันนั้น · เกิดพายุสุริยะระดับ X-3 · เล็กกว่าวันนี้สามเท่า · แต่<b>เร็วกว่า</b>การพยากรณ์</p>
+
+<p>สถานี Helios-7 ไม่ทันถอย</p>
+
+<p>สัญญาณวิทยุครั้งสุดท้ายที่มีราได้ยินจากน้อง — เสียงปรียาเรียกชื่อพี่สาว · ครึ่งคำ · ก่อนสัญญาณตัด</p>
+
+<p>"พี่..."</p>
+
+<p>มีราเสียใจไม่ไหว · เธอเปลี่ยนสายงานจากแพทย์ทั่วไปมาเป็น<b>แพทย์ชีวดาราศาสตร์</b> — เพื่อจะได้ไปยืนใกล้ที่น้องของเธออยู่ · ในที่ที่น้องของเธอรัก</p>
+
+<p>วันนี้ · เธออยู่ใกล้ดวงอาทิตย์ที่สุดที่เธอเคยอยู่</p>
+
+<p>และคราวนี้ · เธอจะ<b>ไม่ยอมให้ใครตาย</b>อีก</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "มีรา · คุณเป็นผู้นำคราวนี้ · ดวงอาทิตย์เป็นเรื่องของคุณ"</div>
+
+<p>มีราเริ่มอธิบาย<span class="key">โครงสร้างชั้นบรรยากาศดวงอาทิตย์ทุกชั้น</span> เพื่อปลด POWER FORGE 6 ช่อง:</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "ชั้น 1 · <b>Core</b> 15 ล้านเคลวิน · ฟิวชันนิวเคลียร์ · 4H → 1He · มวลหายไป 0.7% เป็นพลังงาน E=mc² · ชั้น 2 · <b>Radiative Zone</b> โฟตอนใช้เวลา 100,000 ปีออกจากชั้นนี้ · ชั้น 3 · <b>Convective Zone</b> · ชั้น 4 · <b>Photosphere</b> 5,778 K · sunspots · ชั้น 5 · <b>Chromosphere</b> 6,000-20,000 K · solar flare · spicule · ชั้น 6 · <b>Corona</b> &gt; 1 ล้านเคลวิน — ปริศนาฟิสิกส์ · solar wind 400 km/s"</div>
+
+<figure class="scene epic glory">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">⚡</div>
+      <div class="hint">EP5 · SCENE 02 · POWER FORGE 6 UNLOCKED</div>
+      <div class="desc">ห้องวงกลมในยาน · 6 ช่องเสียบเรียงเป็นวง · แต่ละช่องเรืองแสงสีรุ้ง (ฟ้า-ทอง-ส้ม-เงิน-ม่วง-รุ้ง) · ทีมยืน 4 คนกลางห้อง · ข้อมือทุกคนเรืองแสง <b>HELION</b> · บรรยากาศ Marvel/Sci-fi · POWER FORGE ระเบิดเป็นสีรุ้ง</div>
+      <div class="filename">img/ep5-02-power-forge.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP5 · SCENE 02</span>
+    <span class="scene-cap">6 ชั้นดวงอาทิตย์ → 6 พลัง: Shield · Warning · Burst · Insight · Time Bubble · Prismatic</span>
+  </figcaption>
+</figure>
+
+<p>POWER FORGE ระเบิดเป็นสีรุ้ง — ทีมแต่ละคนได้พลัง:</p>
+
+<div class="diagram" style="padding:14px 22px">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;font-size:14px">
+  <div>🛡 <b>Shield</b> · กันรังสี → อารยา</div>
+  <div>⚠ <b>Warning</b> · เตือน spicule → เคน</div>
+  <div>💥 <b>Burst</b> · ดันพลาสมา → โบลท์</div>
+  <div>👁 <b>Insight</b> · มองทะลุ sunspot → มีรา</div>
+  <div>⏱ <b>Time Bubble</b> · ชะลอเวลา → อารยา</div>
+  <div>🌈 <b>Prismatic</b> · แยก EM frequency → มีรา</div>
+</div>
+</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ดวงอาทิตย์ของเธอ ก็แค่ไฟติดเหมือนเทียน · มีออกซิเจนหรือเปล่ายังไม่รู้ · เผาเชื้อเพลิงไปจนหมด · แล้วก็ดับ"</div>
+
+<div class="dialogue"><strong>มีรา:</strong> "ผิด · ดวงอาทิตย์ไม่ได้เผาไหม้ทางเคมี — ในอวกาศไม่มีออกซิเจน · มันคือ<b>ฟิวชันนิวเคลียร์</b> · 4H → 1He · มวลหายไป 0.7% เป็นพลังงานตาม E = mc²"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "พลัง 4 × 10²⁶ วัตต์ · เทียนหนึ่งเล่ม 80 วัตต์ · ห่างกัน 10²⁴ เท่า · เผามาแล้ว 4.6 พันล้านปี · เหลืออีก 5 พันล้านปี"</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— T-MINUS 12 ชั่วโมง · CME APPROACHING EARTH —</p>
+
+<p>ขณะที่ทีมเริ่มเล็งเลเซอร์ไปที่ลำพลาสมา · มีราเห็นบางอย่างในข้อมูลของออโรราที่สถานี McMurdo บนขั้วโลกใต้ส่งขึ้นมา</p>
+
+<p>ออโรราเกิดขึ้นในระหว่างที่ทีมเตรียมยิง — เป็นระยะเริ่มต้นของพายุ · แสงเขียวสะท้อนบนแผ่นน้ำแข็งของแอนตาร์กติกา · เป็นปรากฏการณ์ที่เธอเคยเห็นเป็นพันครั้ง</p>
+
+<figure class="scene warm">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌌</div>
+      <div class="hint">EP5 · SCENE 03 · AURORA · SISTER'S HANDWRITING</div>
+      <div class="desc">ขั้วโลกใต้ · ออโรราเขียวเต้นเป็นริ้วบนฟ้า · ในริ้วมี<b>ลายเส้นโค้งสีเขียว</b>ที่ดูเหมือนตัวอักษร · ลายมือเด็ก · เขียนชื่อ "ปรียา" · มีรายืนหน้าจอ น้ำตาไหลแต่ยิ้ม · บรรยากาศ emotional · ฟ้าเต็มไปด้วยแสงเหนือ</div>
+      <div class="filename">img/ep5-03-aurora.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP5 · SCENE 03</span>
+    <span class="scene-cap">"ผมพบน้องผมในแสง · ผมจะเล่าเรื่องนี้ให้นักเรียนในอนาคตฟัง" — มีรา</span>
+  </figcaption>
+</figure>
+
+<p>แต่ในออโรรานี้ · มี<b>ลายของเส้นโค้งสีเขียว</b> · ลายที่เธอเคยเห็น</p>
+
+<p>ลายที่น้องของเธอ — ปรียา — ใช้เขียนชื่อตัวเองในวัยเด็ก · ตอนเล่นเขียนบนหน้าต่างเมื่อหิมะตก</p>
+
+<p>มีราเงยหน้า · เสียงสั่น · น้ำตาไหล</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "...กัปตัน · pattern ออโรรา · ตรงกับ<b>ลายมือของน้องผม</b> · ที่หายในปี 2261"</div>
+
+<div class="dialogue"><strong>อารยา (อบอุ่น):</strong> "คุณเห็นจริงไหม · มีรา · หรือ<b>คุณอยากเห็น</b>"</div>
+
+<p>มีราหายใจเข้าลึก ๆ — น้ำตาไหล — แต่เธอยิ้ม</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "ผมไม่รู้ · แต่ — ผมยอมรับแล้ว · น้องของผมส่งสัญญาณ · เป็นเสียงสุดท้าย · ในแสงที่ทุกคนเห็นได้"</div>
+
+<p>ดร.ฮับเบิลปรากฏที่ขอบห้อง — เขาไม่พูด · แค่พยักหน้าให้เธอ · เป็นการพยักหน้าของครูที่เห็นนักเรียนเติบโตเกินกว่าจะสอนเพิ่มได้</p>
+
+<p>มีราหันกลับไปที่เครื่องเลเซอร์ · น้ำตายังไหล — แต่มือเธอ<b>นิ่ง</b></p>
+
+<div class="dialogue"><strong>มีรา:</strong> "Shield UP"</div>
+
+<p>อารยายกพลัง Shield ขึ้น — โล่พลังงานล้อมรอบยาน</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "Insight"</div>
+
+<p>เธอเปิดพลังของเธอ · มองทะลุพายุพลาสมา · เห็นแกนกลางของ CME · จุดที่<i>อ่อนที่สุด</i></p>
+
+<div class="dialogue"><strong>มีรา:</strong> "เคน · Warning"</div>
+
+<p>เคนอ่านความถี่ของพายุ · คาดเดาก่อนเกิด · บอกตำแหน่งที่อันตรายที่สุด</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "โบลท์ · <b>Burst!</b>"</div>
+
+<p>โบลท์ยิงพลาสมาดันกลับ — ลำพลังงานปะทะ CME · ดันมันออกนอกเส้นทางที่จะเข้าโลก</p>
+
+<div class="dialogue"><strong>มีรา:</strong> "Prismatic"</div>
+
+<p>มีราใช้พลังของเธอ · แยกสนามแม่เหล็กของ CME เป็นหลายความถี่ · ทำให้มันสลายตัว</p>
+
+<p>CME เบี่ยงทาง · ไม่ตรงโลกแล้ว · มันจะเข้าวงโคจรของ Mars แทน · ที่ Mars ไม่มีคน</p>
+
+<p>ทีมหายใจ · เป็นครั้งแรกในห้านาที</p>
+
+<p>แล้ว LEMAÎTRE ก็ส่งเสียงเตือนใหม่</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "กัปตัน · ดาวหางหลายดวงในระบบสุริยะ · วงโคจรเบี่ยงผิดปกติ · ตำแหน่งไม่ใช่ความบังเอิญ"</div>
+
+<p>อารยาตาแคบ · เธอรู้ความหมายก่อนคำต่อไปจะออก</p>
+
+<p style="text-align:center;font-family:'Kanit';color:var(--rose);font-size:18px;margin:24px 0"><span class="key">โวอิเดียนมีฐาน · อยู่ในระบบสุริยะของเรา</span></p>
+
+<!-- DIAGRAM EP5 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP5 · 6 ชั้นของดวงอาทิตย์</h3>
+
+<div class="diagram">
+<div class="dtitle">☀ Sun Anatomy · 6 ชั้นบรรยากาศ &amp; โครงสร้าง</div>
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sun" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#fff8d0"/>
+      <stop offset="35%" stop-color="#ffd060"/>
+      <stop offset="60%" stop-color="#ff9020"/>
+      <stop offset="85%" stop-color="#c04020"/>
+      <stop offset="100%" stop-color="#5a1010"/>
+    </radialGradient>
+  </defs>
+  <!-- corona outermost -->
+  <circle cx="280" cy="190" r="170" fill="#ffeec0" opacity=".15"/>
+  <circle cx="280" cy="190" r="155" fill="#ffeec0" opacity=".25"/>
+  <!-- chromosphere -->
+  <circle cx="280" cy="190" r="135" fill="#ff6699" opacity=".4"/>
+  <!-- photosphere -->
+  <circle cx="280" cy="190" r="125" fill="url(#sun)"/>
+  <!-- convective -->
+  <circle cx="280" cy="190" r="100" fill="#ffaa44" opacity=".7"/>
+  <!-- radiative -->
+  <circle cx="280" cy="190" r="65" fill="#ffd060" opacity=".8"/>
+  <!-- core -->
+  <circle cx="280" cy="190" r="30" fill="#fff" opacity=".9"/>
+  <!-- labels with arrows -->
+  <g font-family="Sarabun" font-size="11" fill="#e7ecf5">
+    <line x1="280" y1="190" x2="500" y2="80" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="78" font-weight="700" fill="#fff">1. Core</text>
+    <text x="510" y="92" fill="#9aa6c2">15 ล้าน K · Fusion 4H→He · E=mc²</text>
+
+    <line x1="320" y1="160" x2="500" y2="120" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="118" font-weight="700" fill="#ffd060">2. Radiative Zone</text>
+    <text x="510" y="132" fill="#9aa6c2">โฟตอนเดินทาง 100,000 ปี!</text>
+
+    <line x1="350" y1="180" x2="500" y2="160" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="158" font-weight="700" fill="#ffaa44">3. Convective Zone</text>
+    <text x="510" y="172" fill="#9aa6c2">พลาสมาเดือดขึ้น-ลง</text>
+
+    <line x1="380" y1="210" x2="500" y2="200" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="198" font-weight="700" fill="#ff9020">4. Photosphere</text>
+    <text x="510" y="212" fill="#9aa6c2">5,778 K · ผิวที่เห็น · sunspots</text>
+
+    <line x1="395" y1="240" x2="500" y2="240" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="238" font-weight="700" fill="#ff6699">5. Chromosphere</text>
+    <text x="510" y="252" fill="#9aa6c2">6-20k K · solar flare · spicule</text>
+
+    <line x1="410" y1="280" x2="500" y2="280" stroke="#fff" stroke-width=".7" opacity=".7"/>
+    <text x="510" y="278" font-weight="700" fill="#ffeec0">6. Corona</text>
+    <text x="510" y="292" fill="#9aa6c2">&gt; 1,000,000 K · solar wind 400 km/s</text>
+  </g>
+  <!-- bottom note -->
+  <text x="280" y="370" text-anchor="middle" fill="#f5c451" font-size="12" font-family="Kanit">ดวงอาทิตย์ = 4×10²⁶ W · เผามา 4.6 Gyr · เหลือ 5 Gyr</text>
+</svg>
+</div>
+
+<div class="knowledge-box">
+<h4>🔑 พลัง HELION 6 อย่าง · อาวุธของทีม</h4>
+<ul>
+<li>🛡 <b>Shield</b> — โล่กันรังสี · 🛰 <b>Warning</b> — เตือน spicule · 💥 <b>Burst</b> — ดันพลาสมา</li>
+<li>👁 <b>Insight</b> — มองทะลุ sunspot · ⏱ <b>Time Bubble</b> — ชะลอเวลา · 🌈 <b>Prismatic</b> — แยกความถี่</li>
+<li><b>Resonance:</b> harmonic 7 — sympathetic frequency · ปลุกพ่อ</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP6 ============ -->
+<section id="ep6">
+<h2 class="chapter"><span class="num">EPISODE 6</span>ขอบฟ้าของบ้าน<span class="en">Edge of Home · สมาชิกระบบสุริยะ</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">ขอบฟ้าของบ้าน · 6 GENESIS SHARDS · Pale Blue Dot</span>
+</div>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— 1 ชั่วโมงต่อมา · บริดจ์ T.H.E.O.S.-IX —</p>
+
+<p>หลังเบี่ยง CME ทีมไม่ได้พัก · อารยาเรียกประชุมในห้องบริดจ์ภายในชั่วโมงเดียว · ทุกคนยังคงมีพลัง HELION ติดตัว — ข้อมือเรืองแสงตามอารมณ์ของผู้สวม · มีราเรืองมิ้นต์เข้ม · เคนเรืองชมพูแกมแดง · โบลท์เรืองอำพันส้ม · อารยาเรืองทอง</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เราต้องหาว่าฐานของโวอิเดียน<b>อยู่ที่ไหน</b>ในระบบสุริยะ · แล้วเราต้องเร็ว · ก่อนพวกเขาจะเริ่มแผนต่อไป"</div>
+
+<p>โบลท์เปิดแผนที่ระบบสุริยะใหญ่กลางห้อง · ดาวเคราะห์แปดดวงโคจรอยู่บนเส้นวงรีของพวกเขา · เขาเพิ่มเส้นทางของดาวหางเจ็ดดวงที่เบี่ยงผิดปกติ · เส้นแสงสีแดงเล็ก ๆ พุ่งจากแถบไคเปอร์เข้ามายังระบบสุริยะชั้นใน</p>
+
+<p>เขาลากเส้นทางย้อนกลับ — ทีละเส้น — เหมือนนักล่าตามรอยเลือด</p>
+
+<p>เส้นทั้งเจ็ดมาบรรจบกันที่จุดเดียว · ในแถบไคเปอร์ · ระหว่างพลูโตและ Eris · ที่ระยะ 45 หน่วยดาราศาสตร์</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "<b>Haumea</b> · ดาวเคราะห์แคระ · พิเศษที่ว่ามันหมุนรอบตัวเองเร็วผิดปกติ — 4 ชั่วโมงต่อรอบ — ทำให้รูปร่างมันเป็นรูปไข่เหมือนลูกฟุตบอล · จุดที่ไม่มีใครจะคิดว่าน่าตั้งฐาน"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "กฎเคปเลอร์ T² = a³ · ถ้าฐานของพวกเขาโคจรในระยะนั้น · คาบโคจรประมาณ 302 ปี"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "งั้นนั่นคือเป้าหมาย"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ก่อนเราวาร์ปไปสำรวจ · ผมขอแสดงทัวร์ระบบสุริยะให้ทุกคนเห็นก่อน · เผื่อ Cadet ที่ห้าจะตามมาคืนนี้"</div>
+
+<p>เขาเปิดภาพเร่งเวลา — ยานบินผ่านดาวเคราะห์แต่ละดวง · เป็นการบินผ่านที่เร็ว · แต่ภาพแต่ละจุดชัดเจน:</p>
+
+<div class="knowledge-box">
+<h4>🪐 ทัวร์ดาวเคราะห์ 8 ดวง</h4>
+<ul>
+<li><b>Mercury</b> — ใกล้ดวงอาทิตย์ที่สุด · มี exosphere บาง (Na · K · He) · 600°C</li>
+<li><b>Venus</b> — runaway greenhouse · 460°C · CO₂ 96% · ฝนกรดซัลฟิวริก</li>
+<li><b>Earth</b> — บ้าน · ฟ้าสีฟ้า · มหาสมุทรสีน้ำเงิน</li>
+<li><b>Mars</b> — เคยมีมหาสมุทร · พบน้ำแข็งใต้ผิว · methane spike ฤดูร้อน</li>
+<li><b>Jupiter</b> — ขาดมวลแค่ 80 เท่าจะเป็นดาวฤกษ์ · Great Red Spot 350+ ปี</li>
+<li><b>Saturn</b> — วงแหวนน้ำแข็ง+ฝุ่น · กว้าง 280,000 km · หนาเพียง 10 เมตร</li>
+<li><b>Uranus</b> — เอียง 98° · กลิ้งบนข้าง</li>
+<li><b>Neptune</b> — สีน้ำเงินเข้ม · พายุ 2,100 km/h เร็วที่สุดในระบบสุริยะ</li>
+</ul>
+</div>
+
+<div class="dialogue void"><strong>VOID (ถือโปสเตอร์ "Pluto Forever" 2006):</strong> "นักวิทยาศาสตร์เรียนเยอะแค่ไหนก็ไม่ยอมรับว่ามันถูกถอด · ความรู้ของเธอเปลี่ยนตามอารมณ์"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ผิด · IAU 2006 นิยามดาวเคราะห์ใหม่ 3 ข้อ: 1.โคจรรอบดวงอาทิตย์ · 2.มวลพอที่แรงโน้มถ่วงทำให้กลม · 3.<b>เคลียร์วงโคจรของตัวเอง</b> · พลูโตผ่าน 1, 2 แต่ไม่ผ่าน 3 · จึงเป็น dwarf planet"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "วิทยาศาสตร์เปลี่ยน<b>ตามหลักฐาน</b> ไม่ใช่ตามอารมณ์ · นั่นคือจุดแข็ง — ไม่ใช่จุดอ่อน"</div>
+
+<div class="dialogue hubble"><strong>ดร.ฮับเบิล:</strong> "Carl Sagan เขียน: 'ทุกความรัก ทุกสงคราม ทุกประวัติศาสตร์ของมนุษย์ — เกิดขึ้นบนจุดสีฟ้าซีดนั้น' · บ้านของเราใหญ่กว่าที่เราคิด · เล็กกว่าที่เอกภพรู้"</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— 14 ชั่วโมงต่อมา · เข้าใกล้ HAUMEA · ระยะ 1,000 km —</p>
+
+<p>ยานเข้าใกล้ Haumea ในความเงียบ · โบลท์ปรับสนามแม่เหล็กของยานให้สั่นในความถี่เดียวกับดาวเคราะห์แคระเอง — เลียนแบบสนามแม่เหล็กของวัตถุท้องถิ่น · ไม่ให้ระบบเตือนของฐานโวอิเดียนตรวจจับได้</p>
+
+<p>Haumea หมุนใต้พวกเขา — รูปไข่ยาวที่บิดตัวด้วยความเร็วเหลือเชื่อ · 4 ชั่วโมงต่อรอบ · ผิวเป็นน้ำแข็งสะท้อนแสงน้อยมากจนแทบจะมองไม่เห็นในแสงอาทิตย์ที่อ่อนถึงระดับนี้</p>
+
+<figure class="scene void">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🛸</div>
+      <div class="hint">EP6 · SCENE 01 · HAUMEA VOID BASE</div>
+      <div class="desc"><b>Haumea</b> ดาวเคราะห์แคระรูปไข่หมุนเร็ว 4 ชม./รอบ · ผิวน้ำแข็งเทาดำ · ด้านมืดมี<b>ฐานโวอิเดียน</b>สีม่วงเข้ม · โครงสร้างไม่เหมือนสถาปัตยกรรมมนุษย์ · ราวกับน้ำมันบนน้ำแข็ง · ยาน T.H.E.O.S.-IX แอบเข้าใกล้ · พื้นหลังแถบไคเปอร์ · 45 AU จากดวงอาทิตย์</div>
+      <div class="filename">img/ep6-01-haumea-base.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP6 · SCENE 01</span>
+    <span class="scene-cap">ฐานโวอิเดียน · 45 AU · เป้าหมาย: ลบบิกแบงต้นกำเนิด</span>
+  </figcaption>
+</figure>
+
+<p>ในด้านมืดของดาวเคราะห์แคระ · ฐานของโวอิเดียนปรากฏเป็นจุดสีม่วงเข้ม · โครงสร้างที่ดูไม่เหมือนสถาปัตยกรรมใด ๆ ที่มนุษย์เคยทำ — ราวกับน้ำมันที่หกบนน้ำแข็ง · ราวกับ<i>เงา</i>ที่ลืมจะติดตามคนที่ทำให้เกิด</p>
+
+<p>ทีมแลนดิ้ง · เปิดประตูฐาน · ภายในไม่มีคน · ไม่มีเสียง · ไม่มีสนามแม่เหล็ก · ไม่มีอุณหภูมิเฉพาะ — เป็นพื้นที่ที่<b>ปฏิเสธการมีอยู่</b></p>
+
+<p>ภายในฐาน · มีโฮโลแกรมขนาดใหญ่อยู่กลางห้อง — แผนที่อะไรสักอย่างที่ทีมไม่เคยเห็น · ลายของกาแล็กซี · ดาว · เวลา · ทับซ้อนกันเป็นชั้นที่หมุนต่างกัน</p>
+
+<p>อารยาเดินเข้าไปอ่าน · ใช้เวลาประมาณสามสิบวินาที · ในสามสิบวินาทีนั้น สีหน้าของเธอเปลี่ยนจากสงสัย · เป็นเข้าใจ · เป็น<b>ตกใจ</b> · เป็นนิ่ง</p>
+
+<p>เธอถอยกลับมาช้า ๆ</p>
+
+<div class="dialogue"><strong>อารยา (เสียงเบามาก):</strong> "...เป้าหมายของเขา · <b>ลบบิกแบงต้นกำเนิด</b>"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "อะไรนะ?"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ย้อนเวลาไปที่จุดเริ่มของเอกภพ · แล้วใส่<b>anti-genesis device</b>เข้าไป · ถ้าสำเร็จ · <i>เอกภพไม่เคยมีอยู่</i>"</div>
+
+<div class="dialogue"><strong>มีรา:</strong> "...นั่นเป็นไปได้ไหม?"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ตามทฤษฎีนี้ · ใช้ · ถ้าพวกเขามีสองอย่าง: <b>วาร์ปไดรฟ์ที่เดินทางในเวลาได้</b> — เรารู้ว่าเขามี · เพราะเขาส่งสัญญาณข้ามเวลามาที่เราตั้งแต่ EP1 · และ — <b>เครื่องมือที่จะรบกวนสภาวะเริ่มต้น</b>ของเอกภพ"</div>
+
+<p>โบลท์เริ่มเข้าใจ — เขาหันไปมองศิลาต้นกำเนิดที่ยังอยู่ในสะพายของเขา · เศษที่เขาแกะเปิดและพบวาร์ปไดรฟ์ของไม่ใช่มนุษย์</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "แล้วศิลาต้นกำเนิด..."</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ใช่ · ศิลาที่เราพบใน EP1 — เป็นเทคโนโลยีของพวกเขา · พวกเขา<b>ให้เราเจอ</b>เพื่อทดสอบเรา · ทดสอบว่าเราจะเข้าใจหรือเปล่า"</div>
+
+<p>ในช่วงเวลานั้นเอง · LEMAÎTRE ก็แทรกเสียงด่วน · เสียงที่ทีมไม่เคยได้ยิน — เสียงที่<b>กลัว</b></p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "กัปตัน · ดาวเทียมสื่อสารทั่วโลก<b>ขาดสัญญาณ</b> · GPS · INTERNET · BANKING · OFFLINE · <b>โลกถูกตัดขาดทั้งโลก</b>"</div>
+
+<p>ห้องเงียบสนิท</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เริ่มแล้ว · พวกเขา<b>เริ่มแผนสุดท้าย</b>"</div>
+
+<p>ทีมรีบขึ้นยาน — แต่ก่อนออกจาก Haumea · อารยาดึงข้อมูลของแผนที่เวลามาจากระบบของฐาน · ใส่ในเครื่องของยาน</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เราจะใช้แผนที่ของพวกเขาเอง · เพื่อ<b>ตามไปหยุดเขา</b>"</div>
+
+<!-- DIAGRAM EP6 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP6 · ระบบสุริยะ &amp; Pale Blue Dot</h3>
+
+<div class="diagram">
+<div class="dtitle">🪐 Solar System · 8 ดาวเคราะห์ + ดาวเคราะห์แคระ</div>
+<svg viewBox="0 0 780 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sun -->
+  <circle cx="40" cy="110" r="22" fill="#ffd060"/>
+  <text x="40" y="155" text-anchor="middle" fill="#ffd060" font-size="11" font-weight="700">☉</text>
+  <!-- Inner planets -->
+  <g font-family="Sarabun" font-size="10" fill="#e7ecf5" text-anchor="middle">
+    <circle cx="100" cy="110" r="3" fill="#999"/><text x="100" y="135">Mercury</text>
+    <circle cx="135" cy="110" r="6" fill="#ffaa55"/><text x="135" y="135">Venus</text>
+    <circle cx="180" cy="110" r="6.5" fill="#5fa8ff"/><text x="180" y="135">Earth</text>
+    <circle cx="220" cy="110" r="4.5" fill="#cc5530"/><text x="220" y="135">Mars</text>
+    <!-- Asteroid belt -->
+    <g opacity=".5"><circle cx="265" cy="105" r=".7" fill="#9aa6c2"/><circle cx="270" cy="115" r=".7" fill="#9aa6c2"/><circle cx="278" cy="108" r=".7" fill="#9aa6c2"/><circle cx="285" cy="118" r=".7" fill="#9aa6c2"/><circle cx="275" cy="98" r=".7" fill="#9aa6c2"/></g>
+    <text x="278" y="135" font-size="9" fill="#9aa6c2">Asteroid Belt</text>
+    <!-- outer giants -->
+    <circle cx="360" cy="110" r="20" fill="#d8a060"/><text x="360" y="148">Jupiter</text>
+    <circle cx="450" cy="110" r="17" fill="#e6c878"/>
+    <ellipse cx="450" cy="110" rx="28" ry="3" fill="none" stroke="#b8a060" stroke-width="1.5"/>
+    <text x="450" y="148">Saturn</text>
+    <circle cx="540" cy="110" r="11" fill="#88ddee"/><text x="540" y="148">Uranus</text>
+    <circle cx="610" cy="110" r="10.5" fill="#3060c0"/><text x="610" y="148">Neptune</text>
+    <!-- Kuiper -->
+    <g opacity=".6"><circle cx="660" cy="105" r="1.5" fill="#aac"/><circle cx="675" cy="115" r="1.5" fill="#aac"/><circle cx="690" cy="108" r="1.5" fill="#aac"/><circle cx="705" cy="118" r="1.5" fill="#aac"/><circle cx="720" cy="105" r="1.5" fill="#aac"/></g>
+    <text x="690" y="135" fill="#aac" font-size="10">Kuiper Belt</text>
+    <!-- Haumea highlight -->
+    <ellipse cx="700" cy="105" rx="3" ry="1.5" fill="#a062ff"/>
+    <line x1="700" y1="100" x2="700" y2="80" stroke="#a062ff" stroke-width="1"/>
+    <text x="700" y="74" fill="#a062ff" font-size="10" font-weight="700">★ Haumea</text>
+    <text x="700" y="62" fill="#a062ff" font-size="9">ฐาน VOID</text>
+  </g>
+  <!-- orbits -->
+  <g stroke="#2a3454" stroke-width=".5" fill="none">
+    <ellipse cx="40" cy="110" rx="60" ry="60"/>
+    <ellipse cx="40" cy="110" rx="95" ry="95"/>
+    <ellipse cx="40" cy="110" rx="140" ry="100"/>
+    <ellipse cx="40" cy="110" rx="180" ry="100"/>
+    <ellipse cx="40" cy="110" rx="320" ry="100"/>
+    <ellipse cx="40" cy="110" rx="410" ry="100"/>
+    <ellipse cx="40" cy="110" rx="500" ry="100"/>
+    <ellipse cx="40" cy="110" rx="570" ry="100"/>
+  </g>
+  <text x="390" y="195" text-anchor="middle" fill="#9aa6c2" font-size="11">Dwarf planets: Pluto · Eris · Haumea · Makemake · Ceres (ไม่เคลียร์วงโคจร)</text>
+</svg>
+</div>
+
+<div class="diagram">
+<div class="dtitle">🔵 Pale Blue Dot · Voyager 1 · 6,000,000,000 km จากโลก</div>
+<svg viewBox="0 0 780 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- sun glow band -->
+  <defs>
+    <linearGradient id="ray" x1="0" x2="1"><stop offset="0%" stop-color="#fff8d0" stop-opacity="0"/><stop offset="50%" stop-color="#ffd060" stop-opacity=".5"/><stop offset="100%" stop-color="#fff8d0" stop-opacity="0"/></linearGradient>
+  </defs>
+  <rect x="0" y="40" width="780" height="120" fill="url(#ray)"/>
+  <!-- the dot -->
+  <circle cx="500" cy="100" r="2" fill="#5fa8ff"/>
+  <line x1="500" y1="100" x2="600" y2="60" stroke="#5fa8ff" stroke-width=".5"/>
+  <text x="610" y="58" fill="#5fa8ff" font-size="13" font-weight="700">← Earth</text>
+  <text x="610" y="74" fill="#9aa6c2" font-size="10">"จุดสีฟ้าซีด" · 1 พิกเซล · 1990</text>
+  <!-- Carl Sagan quote -->
+  <text x="390" y="180" text-anchor="middle" fill="#dcd6c0" font-size="12" font-style="italic">"ทุกความรัก ทุกสงคราม ทุกประวัติศาสตร์ — เกิดบนจุดเล็ก ๆ นั้น" — Carl Sagan</text>
+  <text x="390" y="30" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="14">★ Cosmic Perspective</text>
+</svg>
+</div>
+
+</section>
+
+
+<!-- ============ EP7 ============ -->
+<section id="ep7">
+<h2 class="chapter"><span class="num">EPISODE 7</span>สงครามในวงโคจร<span class="en">Orbital War · เทคโนโลยีอวกาศ · จรวดและดาวเทียม</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">THEME</span>
+  <span class="ep-theme">PBL · ดาวเทียมชน · 7 ช่วงคลื่น · Orbital Triage</span>
+</div>
+
+<p style="text-align:center;color:var(--rose);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— 18 ชั่วโมงต่อมา · LEO ABOVE EARTH —</p>
+
+<p>เมื่อยานเข้าใกล้โลก · ภาพที่ทีมเห็นคือ — โลกในเวลากลางคืน — แต่แทนที่จะเป็นแสงไฟของเมืองเชื่อมต่อกันเป็นใยแมงมุมที่ทุกคนคุ้นเคยจากภาพถ่าย ISS · วันนี้มีแต่<b>ความมืด</b></p>
+
+<figure class="scene danger">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌍</div>
+      <div class="hint">EP7 · SCENE 01 · EARTH GOES DARK</div>
+      <div class="desc">โลกในเวลากลางคืนจาก LEO · แต่<b>ไฟดับ</b>ทั่ว · เห็นแสงเป็นเกาะเล็กๆ (NYC, Tokyo, BKK) ลอยในทะเลของความมืด · เปรียบเทียบกับภาพ ISS ปกติที่เห็นใยแมงมุมแสง · บรรยากาศหายนะ · ยานทีมในวงโคจรเงา</div>
+      <div class="filename">img/ep7-01-earth-dark.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP7 · SCENE 01</span>
+    <span class="scene-cap">มนุษยชาติถูกตัดเป็นหมู่บ้านอีกครั้ง · ครั้งแรกในรอบ 300 ปี</span>
+  </figcaption>
+</figure>
+
+<p>ไฟในเมืองหลักยังมีอยู่บ้าง — แต่เป็นเกาะ ๆ · ลอยในทะเลของความมืด · นิวยอร์กเป็นจุดสว่างเดียวในชายฝั่งตะวันออกของอเมริกา · กรุงเทพฯ เห็นแค่บริเวณรอบสนามบิน · โตเกียวเห็นแค่ใจกลาง · ส่วนใหญ่ของแอฟริกา · อเมริกาใต้ · เอเชียตะวันออกเฉียงใต้ — <b>มืดสนิท</b></p>
+
+<p>ระบบเชื่อมต่อล้มแล้ว · มนุษยชาติถูกตัดเป็น<i>หมู่บ้าน</i>อีกครั้ง — เป็นครั้งแรกในรอบสามร้อยปี</p>
+
+<p>มีรามองหน้าต่างใหญ่ของยาน — เธอเห็นภาพนี้ในตำราเรียนตอนเด็ก · ภาพ "before" ของพายุ Carrington — และตอนนี้เธอกำลังเห็นภาพ "after" ของพี่น้องของมัน</p>
+
+<div class="dialogue"><strong>มีรา (เสียงเบา):</strong> "...โลกมืดจริง ๆ"</div>
+
+<p>LEMAÎTRE เปิดสายเรียกเข้าจาก UN Space Council · โฮโลแกรมของเจ้าหน้าที่ปรากฏในห้องบริดจ์ — ชายอายุประมาณห้าสิบ · ใบหน้าเครียด · เสื้อเครื่องแบบมีรอยเปื้อนกาแฟ · ตาแดงเหมือนไม่ได้นอนสามวัน</p>
+
+<div class="dialogue"><strong>UN Space Council:</strong> "T.H.E.O.S.-IX · ขอมอบหมาย <b>Orbital Triage</b> · ดาวเทียมเสี่ยง 47 ดวง · พวกคุณเลือก 5 ดวงที่ต้องช่วย — เวลา 90 นาที"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "<b>3 ชั้นวงโคจร</b> · LEO 200-2,000 km, T=90 นาที (ISS · Hubble · Starlink) · MEO 2,000-35,786 km, T=12 hr (GPS) · GEO 35,786 km, T=24 hr พอดี (โทรคมนาคม)"</div>
+
+<p>ทีมถกเถียงตามหลัก PBL — Starlink ก่อน (Kessler!) · ISS ก่อน (มีคน 7 คน!) · GPS ก่อน (คนตายเพิ่มอีกพัน!) · อารยาตัดสิน:</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "<b>ISS → GPS → Starlink → Hubble → ปล่อย JWST</b> · ISS เพราะมีคน · GPS เพราะคนหลายล้านพึ่งพา · Starlink ป้องกัน Kessler · Hubble คือมรดก · JWST อยู่ที่ L2 — 1.5 ล้าน km — ช่วยไม่ทันใน 90 นาที"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ดาวเทียม GEO ลอยนิ่งเหนือหัวเธอ · ไม่ขยับ · พิสูจน์สิว่ามันเคลื่อน"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "ผิด · มันเคลื่อนที่ที่ <b>3.07 km/s</b> · แต่หมุนรอบโลกพร้อมโลก 24 ชั่วโมงพอดี · เลยดูนิ่งเมื่อเทียบกับพื้น · พ่อสอนผมตอนผมเก้าขวบ — วันที่พ่อขึ้นยานครั้งสุดท้าย"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "กฎ Kepler T² = a³ · ดาวเทียมต้องเคลื่อนเร็วพอที่ความเร็วของมันจะ '<b>ตกตามโค้งของโลก</b>' — ไม่ตกถึงพื้น"</div>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— T+47 นาที · ISS SAVED · 4 SATELLITES TO GO —</p>
+
+<p>โบลท์เริ่มภารกิจ · ในขณะที่เขายิงจรวดสกัดดวงแรกเพื่อช่วย ISS · เขาเห็นวัตถุเล็ก ๆ ในวงโคจรที่ดูเหมือนดาวเทียมเก่าที่ถูกปลดระวาง — ที่จริงเป็นดาวเทียมรุ่นที่<b>พ่อของเขา</b>ทำงาน · GEOSAT-7 · ปลดระวางอย่างเป็นทางการในปี 2251 · สองปีหลังพ่อหายตัว</p>
+
+<p>ห้านาทีต่อมา · หลังช่วย ISS เสร็จ · โบลท์ส่งโดรนไปดึงดาวเทียมเก่ากลับมาที่ยาน · เปิดมันออกในห้องเครื่อง · มือของเขาช้ากว่าปกติ — ราวกับเขาไม่อยากให้ความหวังนำหน้าตัวเอง</p>
+
+<p>ภายในมีคริสตัลข้อมูล — ที่เก็บข้อมูลแบบยุคศตวรรษที่ยี่สิบสอง · ระบบที่โบลท์เคยเรียนตอนเด็กจากคู่มือเก่าของพ่อ</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เปิดมัน"</div>
+
+<p>โบลท์เปิด</p>
+
+<figure class="scene warm">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">📡</div>
+      <div class="hint">EP7 · SCENE 02 · DAD'S CRYSTAL RECORDING</div>
+      <div class="desc">ห้องเครื่อง · โบลท์เปิด<b>คริสตัลข้อมูล</b>สีฟ้าใส · ใช้เครื่องอ่านเก่ายุค 22nd century · โฮโลแกรมเสียงพ่อ (ชายแอฟริกัน-เอเชียอายุ 50) · โบลท์น้ำตาไหลเงียบ · มือยังถือประแจ · ดาวเทียม GEOSAT-7 ที่เพิ่งแกะอยู่ข้าง ๆ · บรรยากาศ emotional intimate</div>
+      <div class="filename">img/ep7-02-dad-recording.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP7 · SCENE 02</span>
+    <span class="scene-cap">"พ่อภูมิใจในตัวลูกตั้งแต่วันที่ลูกถอดเครื่องบินบังคับวิทยุของลูกเองตอนหกขวบ"</span>
+  </figcaption>
+</figure>
+
+<p>เสียงพ่อของเขาออกมาทันที</p>
+
+<p>ครั้งนี้ไม่ใช่ผ่านพายุ · ไม่ใช่จากดาวเดี่ยวห่าง 400 ปีแสง · เป็นเสียงตรง · ชัดเจน · ที่บันทึกไว้ก่อนวันที่พ่อหายไป<b>ไม่กี่วัน</b></p>
+
+<div class="dialogue" style="border-left-color:#ffa54f;background:linear-gradient(90deg,#2a1f08 0%,transparent 100%)"><strong>พ่อโบลท์:</strong> "โบลท์... ถ้าลูกได้ยินนี่ · พ่อขอโทษที่ไม่ได้กลับ · พ่อค้นพบบางอย่างใน Origin Stone — ครั้งแรกที่มันชนยาน Voyager 4 ในปี 2249 — เป็น<b>วาร์ปไดรฟ์ย้อนเวลา</b>"</div>
+
+<div class="dialogue" style="border-left-color:#ffa54f;background:linear-gradient(90deg,#2a1f08 0%,transparent 100%)"><strong>พ่อโบลท์:</strong> "พ่อเลือกซ่อนมันไว้ · ก่อนที่โวอิเดียนจะเอาไปใช้ · พ่อไม่ได้บอกใคร · เพราะถ้าเขารู้ว่าพ่อรู้ · พ่อตายในวินาที · ลูกจะตายในวินาทีที่สอง · พ่อจึง<b>หายตัว</b> · ทำให้ดูเหมือนพ่อตาย"</div>
+
+<div class="dialogue" style="border-left-color:#ffa54f;background:linear-gradient(90deg,#2a1f08 0%,transparent 100%)"><strong>พ่อโบลท์:</strong> "ถ้าวันนึงเขาได้มัน — ใช้ความรู้ของพ่อ · หยุดเขา · พ่อทิ้งคำเตือนไว้ในดาวเทียมรุ่น GEOSAT-7 · LEO-Hubble-side · MEO-GPS-prime · ที่ดาวเทียมไหนยังใช้งานได้ ลูกเปิดได้"</div>
+
+<div class="dialogue" style="border-left-color:#ffa54f;background:linear-gradient(90deg,#2a1f08 0%,transparent 100%)"><strong>พ่อโบลท์ (เสียงเบาลง):</strong> "ลูก · พ่อภูมิใจในตัวลูกตั้งแต่วันที่ลูกถอดเครื่องบินบังคับวิทยุของลูกเองตอนหกขวบ · พ่อไม่เคยบอก · แต่พ่อเขียนไว้ในนี้"</div>
+
+<p>เสียงพ่อหยุด — แล้วต่อ — เสียงเขาแหบลง · ราวกับเขาขี่ช่วงเวลาสุดท้ายที่กล้าจะพูด</p>
+
+<div class="dialogue" style="border-left-color:#ffa54f;background:linear-gradient(90deg,#2a1f08 0%,transparent 100%)"><strong>พ่อโบลท์:</strong> "ถ้าวันนี้ลูกเป็นคนพบสิ่งนี้ · ลูก<b>พร้อมแล้ว</b> · ทีมของลูกพร้อมแล้ว · ขอให้ลูกใช้สติ · และ — รักษาทีมของลูก · เพราะทีมที่ดี — มาทดแทนพ่อที่ดีได้"</div>
+
+<p>เสียงตัด</p>
+
+<p>โบลท์ยืนเงียบเป็นเวลานาน · น้ำตาไหลเงียบ ๆ · เขาไม่เช็ดออก — เพราะมันคือน้ำตาที่ควรไหล · ยี่สิบปีของคำที่ยังไม่ได้พูดออกมาในห้านาที</p>
+
+<div class="dialogue"><strong>โบลท์ (เสียงเบา):</strong> "ผมรัก พ่อ · ผมจะใช้ · ผมจะหยุดเขา"</div>
+
+<p>เขาหันมาที่ทีม · ตาแดง · แต่นิ่ง</p>
+
+<div class="dialogue"><strong>โบลท์:</strong> "กัปตัน · ผมขอใช้แผนของพ่อผม"</div>
+
+<div class="dialogue"><strong>อารยา (พยักหน้าช้า):</strong> "ใช้"</div>
+
+<p>โบลท์ติดตั้งแผนวาร์ปย้อนเวลาในระบบของยาน — ใช้คริสตัลข้อมูลของพ่อเป็นกุญแจ · ยานสั่นสะเทือนเล็กน้อยขณะระบบใหม่ทำงาน</p>
+
+<p>ก่อนเปิดวาร์ป · โบลท์ส่งจรวดสุดท้ายไปช่วย Hubble — Hubble Space Telescope รุ่นเก่าที่ยังทำงานอยู่ตั้งแต่ปี 1990 · สร้างประวัติศาสตร์ดาราศาสตร์ของศตวรรษที่ยี่สิบและยี่สิบเอ็ด</p>
+
+<p>JWST ที่อยู่ที่ L2 — ทีมต้องปล่อยไป</p>
+
+<p>เคนยืนหน้าหน้าต่าง · มองดู James Webb ที่อยู่ห่างไกลในขณะที่ยานเตรียมวาร์ป · เขาคิดถึงคืนแรกที่เห็นภาพแรกของ JWST ตอนเขาเก้าขวบ · ภาพ Carina Nebula ที่เปลี่ยนชีวิตเขา · ทำให้เขาเลือกอาชีพนี้</p>
+
+<div class="dialogue"><strong>เคน (เบา):</strong> "ลาก่อน · ขอบคุณที่บอกเอกภพให้เรา"</div>
+
+<div class="dialogue"><strong>โบลท์:</strong> "พิกัดล็อก · เวลา 0 · จุดกำเนิดบิกแบง · 13.8 พันล้านปีที่แล้ว · พร้อมเมื่อสั่ง"</div>
+
+<p>อารยายืนตรง · มือกุมที่จับ · ท่าทางที่ทีมรู้จักดี</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "ทุกคน · ถ้าเราตามไปทัน · ทุกอย่างที่เคยมี · <b>ขึ้นกับเรา</b>"</div>
+
+<div class="dialogue"><strong>มีรา:</strong> "และ Cadet ที่ห้า · ที่อาจกำลังฟังอยู่ในที่ของเขา"</div>
+
+<p>อารยายิ้ม — เป็นรอยยิ้มที่ทีมเห็นเธอใช้ครั้งแรกเต็มที่</p>
+
+<div class="dialogue"><strong>อารยา:</strong> "<b>Engaging temporal warp</b> · พบกันอีกครั้ง · ที่<b>จุดเริ่มต้น</b>"</div>
+
+<figure class="scene epic flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">⏳</div>
+      <div class="hint">EP7 · SCENE 03 · TEMPORAL WARP ENGAGED</div>
+      <div class="desc">ยาน T.H.E.O.S.-IX สั่นรุนแรง · ริ้วแสง<b>ผ่าทุกสเปกตรัม</b> — แดงสว่างไปข้างหน้า · ม่วงเข้มย้อนข้างหลัง · ดวงดาวเป็นเส้นด้ายเกลียวคู่ · ทีมในบริดจ์ ผมและเสื้อสะบัด · เครื่องวาร์ปไดรฟ์เรืองสีรุ้ง · บรรยากาศ <i>Interstellar</i> tesseract</div>
+      <div class="filename">img/ep7-03-temporal-warp.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP7 · SCENE 03</span>
+    <span class="scene-cap">"พบกันอีกครั้ง · ที่จุดเริ่มต้น" — เป้าหมาย: t = 0 · 13.8 พันล้านปีก่อน</span>
+  </figcaption>
+</figure>
+
+<p>ยานสั่นสะเทือนรุนแรง — แสงข้างนอกเปลี่ยนเป็นริ้วที่ไม่ใช่แค่สีน้ำเงิน-ขาว · แต่<b>ผ่าทุกสเปกตรัม</b> · จากแดงสว่างที่ไป-ทาง-ข้างหน้า · สู่ม่วงเข้มที่กำลังย้อน-ทาง-ข้างหลัง</p>
+
+<p>แล้วทุกอย่าง — ก็เงียบ</p>
+
+<!-- DIAGRAM EP7 -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP7 · Orbital Classes &amp; EM Spectrum</h3>
+
+<div class="diagram">
+<div class="dtitle">🛰 3 ชั้นวงโคจรรอบโลก · LEO · MEO · GEO</div>
+<svg viewBox="0 0 780 380" xmlns="http://www.w3.org/2000/svg">
+  <!-- Earth -->
+  <defs>
+    <radialGradient id="earth" cx="40%" cy="40%"><stop offset="0%" stop-color="#5fa8ff"/><stop offset="60%" stop-color="#1a4488"/><stop offset="100%" stop-color="#0a1a3a"/></radialGradient>
+  </defs>
+  <circle cx="390" cy="190" r="50" fill="url(#earth)"/>
+  <text x="390" y="195" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Earth</text>
+  <!-- LEO -->
+  <circle cx="390" cy="190" r="75" fill="none" stroke="#5fd9b5" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="465" cy="190" r="3" fill="#5fd9b5"/>
+  <text x="475" y="194" fill="#5fd9b5" font-size="11" font-weight="700">ISS · Hubble · Starlink</text>
+  <text x="475" y="208" fill="#9aa6c2" font-size="10">LEO · 200-2,000 km · T=90 นาที</text>
+  <!-- MEO -->
+  <circle cx="390" cy="190" r="135" fill="none" stroke="#f5c451" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="525" cy="190" r="3" fill="#f5c451"/>
+  <text x="540" y="194" fill="#f5c451" font-size="11" font-weight="700">GPS · Galileo · BeiDou</text>
+  <text x="540" y="208" fill="#9aa6c2" font-size="10">MEO · 2,000-35,786 km · T=12 hr</text>
+  <!-- GEO -->
+  <circle cx="390" cy="190" r="180" fill="none" stroke="#ff6b9d" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <circle cx="570" cy="190" r="3" fill="#ff6b9d"/>
+  <text x="585" y="194" fill="#ff6b9d" font-size="11" font-weight="700">Comm · Weather · TV</text>
+  <text x="585" y="208" fill="#9aa6c2" font-size="10">GEO · 35,786 km · T=24 hr (นิ่งเทียบกับพื้น)</text>
+  <!-- Kepler formula -->
+  <text x="120" y="40" fill="#f5c451" font-family="Kanit" font-size="14">⚖ Kepler's Third Law: T² = a³</text>
+  <text x="120" y="58" fill="#9aa6c2" font-size="11">วงโคจรไกลกว่า → คาบยาวกว่า · ความเร็ว v = √(GM/r)</text>
+  <text x="120" y="76" fill="#9aa6c2" font-size="11">v_orbit ที่ LEO ≈ 7.9 km/s · v_escape ≈ 11.2 km/s</text>
+  <!-- L2 mention -->
+  <text x="120" y="350" fill="#a062ff" font-family="Kanit" font-size="13">🔭 JWST · L2 Lagrange · 1.5 ล้าน km</text>
+</svg>
+</div>
+
+<div class="diagram">
+<div class="dtitle">📡 EM Spectrum · 7 ย่านคลื่นแม่เหล็กไฟฟ้า</div>
+<svg viewBox="0 0 780 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="emg" x1="0" x2="1">
+      <stop offset="0%" stop-color="#aa3322"/>
+      <stop offset="15%" stop-color="#cc5522"/>
+      <stop offset="30%" stop-color="#ee7722"/>
+      <stop offset="50%" stop-color="#ffcc44"/>
+      <stop offset="65%" stop-color="#88dd88"/>
+      <stop offset="80%" stop-color="#5588ff"/>
+      <stop offset="100%" stop-color="#aa44ee"/>
+    </linearGradient>
+  </defs>
+  <rect x="40" y="80" width="700" height="40" fill="url(#emg)" rx="4"/>
+  <g font-family="Sarabun" font-size="11" fill="#e7ecf5" text-anchor="middle">
+    <text x="90" y="75" font-weight="700">Radio</text><text x="90" y="142" font-size="10" fill="#9aa6c2">&gt; 1 m</text><text x="90" y="160" font-size="9" fill="#9aa6c2">วิทยุ · TV</text>
+    <text x="190" y="75" font-weight="700">Microwave</text><text x="190" y="142" font-size="10" fill="#9aa6c2">1 mm-1 m</text><text x="190" y="160" font-size="9" fill="#9aa6c2">CMB · GPS</text>
+    <text x="290" y="75" font-weight="700">Infrared</text><text x="290" y="142" font-size="10" fill="#9aa6c2">700nm-1mm</text><text x="290" y="160" font-size="9" fill="#9aa6c2">JWST · ความร้อน</text>
+    <text x="390" y="75" font-weight="700">Visible</text><text x="390" y="142" font-size="10" fill="#9aa6c2">400-700 nm</text><text x="390" y="160" font-size="9" fill="#9aa6c2">Hubble · ตาเรา</text>
+    <text x="490" y="75" font-weight="700">UV</text><text x="490" y="142" font-size="10" fill="#9aa6c2">10-400 nm</text><text x="490" y="160" font-size="9" fill="#9aa6c2">ดาวร้อน</text>
+    <text x="590" y="75" font-weight="700">X-ray</text><text x="590" y="142" font-size="10" fill="#9aa6c2">0.01-10 nm</text><text x="590" y="160" font-size="9" fill="#9aa6c2">Chandra · BH</text>
+    <text x="690" y="75" font-weight="700">Gamma</text><text x="690" y="142" font-size="10" fill="#9aa6c2">&lt; 0.01 nm</text><text x="690" y="160" font-size="9" fill="#9aa6c2">Compton · GRB</text>
+  </g>
+  <!-- arrows -->
+  <text x="40" y="200" fill="#aa3322" font-size="12" font-family="Kanit">← λ ยาว · ความถี่ต่ำ · พลังงานต่ำ</text>
+  <text x="740" y="200" text-anchor="end" fill="#aa44ee" font-size="12" font-family="Kanit">λ สั้น · ความถี่สูง · พลังงานสูง →</text>
+  <text x="390" y="225" text-anchor="middle" fill="#f5c451" font-size="11">c = f λ · E = h f · ความเร็วทั้งหมด = c (3×10⁸ m/s)</text>
+</svg>
+</div>
+
+<div class="knowledge-box">
+<h4>🔑 Multi-wavelength Astronomy</h4>
+<ul>
+<li><b>Andromeda ดูต่างกัน</b> ในแต่ละย่าน: Radio (จานเย็น) · IR (ฝุ่น) · Visible (ดาวสว่าง) · UV (ดาวอายุน้อย) · X-ray (BH ใจกลาง)</li>
+<li><b>Kessler Syndrome:</b> เศษชนกันต่อเนื่อง → ระบบขนส่งอวกาศเสียหายเป็นร้อยปี</li>
+<li><b>Spinoff:</b> Velcro · memory foam · GPS · เครื่องตรวจมะเร็ง — ทุกอย่างมาจากการสำรวจอวกาศ</li>
+</ul>
+</div>
+
+</section>
+
+
+<!-- ============ EP8 ============ -->
+<section id="ep8">
+<h2 class="chapter"><span class="num">EPISODE 8</span>กำเนิดอีกครั้ง<span class="en">Genesis Again · Season Finale</span></h2>
+
+<div class="ep-header">
+  <span class="ep-pill">FINALE</span>
+  <span class="ep-theme">Synthesis · 17 keys · Andromeda Hook (S2)</span>
+</div>
+
+<p style="text-align:center;color:var(--void);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— t &lt; 0 · ก่อนกาลเวลา —</p>
+
+<p>ยาน T.H.E.O.S.-IX หลุดออกจากวาร์ป</p>
+
+<p>ในที่ที่<b>ไม่มีอะไรเลย</b></p>
+
+<p>ไม่มีดาว · ไม่มีแสง · ไม่มีทิศทาง · ไม่มีอวกาศ · ไม่มีเวลา · ไม่มีบน · ไม่มีล่าง · ไม่มีก่อน · ไม่มีหลัง</p>
+
+<p>หน้าต่างของยานแสดงผล <i>error</i> — เซ็นเซอร์ไม่มีข้อมูลให้รายงาน · LEMAÎTRE เงียบเป็นครั้งแรก เพราะภาษาของเขาออกแบบมาเพื่อรายงานสภาพแวดล้อม · และที่นี่<b>ไม่มีสภาพแวดล้อม</b></p>
+
+<p>ทีมยืนนิ่งบนบริดจ์ · ห้องของพวกเขา — บริดจ์เล็ก ๆ พร้อมเก้าอี้สี่ตัว · จอ tactical · เครื่องวัดอุณหภูมิ · กาแฟเย็นในแก้วของเคน · กรอบรูปในกระเป๋าของมีรา · ประแจในมือโบลท์ · มือของอารยาที่ที่จับเก้าอี้กัปตัน — คือ<b>สิ่งเดียวที่มีอยู่</b> ในความว่างเปล่าของก่อนเกิด</p>
+
+<div class="dialogue"><strong>มีรา (กระซิบ):</strong> "...กัปตัน · ตอนนี้คือ — ก่อน — บิกแบง?"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "ใช่ · t น้อยกว่าศูนย์"</div>
+
+<p>ความเงียบยาวนานเหลือเกิน · เพราะที่นี่ — เวลาไม่เดิน · ความเงียบ<b>ไม่จบ</b></p>
+
+<p>แล้วในความว่างเปล่านั้น · จุดสว่างเล็กที่สุดเริ่มก่อตัวข้างหน้า — เล็กกว่าอะตอม · เล็กกว่าโปรตอน · เล็กกว่าควาร์ก · แต่สว่างกว่าทุกอย่างที่ทีมเคยเห็นในชีวิต · จุดที่กำลังจะกลายเป็น<b>ทุกอย่าง</b></p>
+
+<p>ใกล้ ๆ จุดนั้น — ยานของโวอิเดียน · เป็นรูปดำเงาในความสว่างของความว่างที่กำลังเริ่มเป็น · ใหญ่กว่ายานของทีมหลายร้อยเท่า · ผิวของมันดูดแสงทั้งหมดที่ออกจากจุดสว่าง · เพื่อจะ<b>ใช้แสงนั้นต่อต้านจุดสว่าง</b></p>
+
+<figure class="scene void">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">⚫</div>
+      <div class="hint">EP8 · SCENE 01 · t < 0 · BEFORE CREATION</div>
+      <div class="desc">ความว่างเปล่าสมบูรณ์ — สีดำสนิท · ไม่มีดาว · ไม่มีแสง · ไม่มีทิศทาง · กลางจอ: <b>จุดสว่างเล็กที่สุด</b> เล็กกว่าควาร์ก แต่สว่างกว่าทุกอย่าง · ใกล้ ๆ: ยานโวอิเดียนเป็นเงาดำ ใหญ่กว่าทีม 100 เท่า · ยาน T.H.E.O.S.-IX เล็กในมุม</div>
+      <div class="filename">img/ep8-01-pre-creation.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP8 · SCENE 01</span>
+    <span class="scene-cap">t < 0 · ก่อนกาลเวลา · จุดสว่างที่กำลังจะกลายเป็นทุกอย่าง</span>
+  </figcaption>
+</figure>
+
+<p>VOID หันมา · ครั้งนี้น้ำวนของเขาเต็มจอบริดจ์ · ใกล้กว่าทุกครั้งก่อน</p>
+
+<div class="dialogue void"><strong>VOID:</strong> "เอกภพคือความผิดพลาด · มันสร้างความรู้ · ความรู้สร้างเธอ · เธอสร้างเทคโนโลยี · เทคโนโลยีเผาเงินเปล่า · ผมจะลบทุกอย่าง"</div>
+
+<div class="dialogue"><strong>เคน:</strong> "แต่ถ้าไม่มีเอกภพ แกอยู่ที่ไหน?"</div>
+
+<div class="dialogue void"><strong>VOID:</strong> "ผมก็ไม่อยู่ · ผมก็จะหายไปกับสิ่งที่ผมเกลียด · นั่นคือชัยชนะที่งดงามที่สุด"</div>
+
+<div class="dialogue"><strong>อารยา:</strong> "แต่เราต้องการการเริ่มต้น · ทีม · เปิด <b>Knowledge Core</b>"</div>
+
+<p>ในกลางบริดจ์ ปรากฏวงแหวนของ <span class="key">กุญแจ 17 ดอก</span> — แต่ละดอกเรืองแสงสีของหัวข้อ ทุกความรู้ที่ทีมรวบรวมจากทั้งซีซัน — กลายเป็นอาวุธ</p>
+
+<!-- DIAGRAM EP8 - 17 keys -->
+<h3 class="section-h">📐 แผนภาพความรู้ EP8 · 17 Keys Synthesis</h3>
+
+<div class="diagram">
+<div class="dtitle">🗝 GENESIS FORGE · 17 กุญแจ · 4 เฟส</div>
+<svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg">
+  <!-- center core -->
+  <circle cx="390" cy="240" r="50" fill="none" stroke="#f5c451" stroke-width="2"/>
+  <text x="390" y="235" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="13" font-weight="700">KNOWLEDGE</text>
+  <text x="390" y="252" text-anchor="middle" fill="#f5c451" font-family="Kanit" font-size="13" font-weight="700">CORE</text>
+
+  <!-- Phase 1 ENERGY (top-left) - blue -->
+  <g font-family="Sarabun" font-size="11" fill="#7ab8ff">
+    <text x="130" y="50" font-family="Kanit" font-weight="700" font-size="14">Phase 1 · ENERGY</text>
+    <text x="130" y="68" fill="#9aa6c2" font-size="10">EP1-2</text>
+    <circle cx="80" cy="100" r="22" fill="#1a2348" stroke="#7ab8ff"/><text x="80" y="104" text-anchor="middle">🎈 Big Bang</text>
+    <circle cx="160" cy="100" r="22" fill="#1a2348" stroke="#7ab8ff"/><text x="160" y="104" text-anchor="middle">🌌 CMB</text>
+    <circle cx="240" cy="100" r="22" fill="#1a2348" stroke="#7ab8ff"/><text x="240" y="104" text-anchor="middle">v=H₀D</text>
+    <circle cx="320" cy="100" r="22" fill="#1a2348" stroke="#7ab8ff"/><text x="320" y="104" text-anchor="middle">Galaxy</text>
+  </g>
+
+  <!-- Phase 2 DISTANCE (top-right) - rose -->
+  <g font-family="Sarabun" font-size="11" fill="#ff6b9d">
+    <text x="650" y="50" font-family="Kanit" font-weight="700" font-size="14" text-anchor="end">Phase 2 · DISTANCE</text>
+    <text x="650" y="68" fill="#9aa6c2" font-size="10" text-anchor="end">EP3-4</text>
+    <circle cx="460" cy="100" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="460" y="104" text-anchor="middle">Doppler</text>
+    <circle cx="540" cy="100" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="540" y="104" text-anchor="middle">Parallax</text>
+    <circle cx="620" cy="100" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="620" y="104" text-anchor="middle">m-M</text>
+    <circle cx="700" cy="100" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="700" y="104" text-anchor="middle">Cepheid</text>
+    <circle cx="540" cy="160" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="540" y="164" text-anchor="middle">OBAFGKM</text>
+    <circle cx="620" cy="160" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="620" y="164" text-anchor="middle">HR Diag</text>
+    <circle cx="700" cy="160" r="22" fill="#2a1230" stroke="#ff6b9d"/><text x="700" y="164" text-anchor="middle">Mass Th.</text>
+  </g>
+
+  <!-- Phase 3 HABITABILITY (bottom-left) - mint -->
+  <g font-family="Sarabun" font-size="11" fill="#5fd9b5">
+    <text x="130" y="450" font-family="Kanit" font-weight="700" font-size="14">Phase 3 · HABITABILITY</text>
+    <text x="130" y="468" fill="#9aa6c2" font-size="10">EP5-6</text>
+    <circle cx="80" cy="380" r="22" fill="#0e2a26" stroke="#5fd9b5"/><text x="80" y="384" text-anchor="middle">☀ 6 Layers</text>
+    <circle cx="160" cy="380" r="22" fill="#0e2a26" stroke="#5fd9b5"/><text x="160" y="384" text-anchor="middle">HELION</text>
+    <circle cx="240" cy="380" r="22" fill="#0e2a26" stroke="#5fd9b5"/><text x="240" y="384" text-anchor="middle">🪐 8 Pl.</text>
+    <circle cx="320" cy="380" r="22" fill="#0e2a26" stroke="#5fd9b5"/><text x="320" y="384" text-anchor="middle">Pale Blue</text>
+  </g>
+
+  <!-- Phase 4 COMMUNICATION (bottom-right) - amber -->
+  <g font-family="Sarabun" font-size="11" fill="#ffa54f">
+    <text x="650" y="450" font-family="Kanit" font-weight="700" font-size="14" text-anchor="end">Phase 4 · COMM</text>
+    <text x="650" y="468" fill="#9aa6c2" font-size="10" text-anchor="end">EP7</text>
+    <circle cx="460" cy="380" r="22" fill="#2a1f08" stroke="#ffa54f"/><text x="460" y="384" text-anchor="middle">📡 EM 7</text>
+    <circle cx="540" cy="380" r="22" fill="#2a1f08" stroke="#ffa54f"/><text x="540" y="384" text-anchor="middle">3 Orbits</text>
+    <circle cx="620" cy="380" r="22" fill="#2a1f08" stroke="#ffa54f"/><text x="620" y="384" text-anchor="middle">Spacecraft</text>
+  </g>
+
+  <!-- connecting lines -->
+  <g stroke="#2a3454" stroke-width=".5" opacity=".7">
+    <line x1="200" y1="120" x2="370" y2="220"/>
+    <line x1="540" y1="120" x2="410" y2="220"/>
+    <line x1="200" y1="360" x2="370" y2="260"/>
+    <line x1="540" y1="360" x2="410" y2="260"/>
+  </g>
+</svg>
+<div class="legend">
+  <span><span class="dot" style="background:#7ab8ff"></span>Phase 1 Energy (EP1-2)</span>
+  <span><span class="dot" style="background:#ff6b9d"></span>Phase 2 Distance (EP3-4)</span>
+  <span><span class="dot" style="background:#5fd9b5"></span>Phase 3 Habitability (EP5-6)</span>
+  <span><span class="dot" style="background:#ffa54f"></span>Phase 4 Communication (EP7)</span>
+</div>
+</div>
+
+<div class="dialogue"><strong>อารยา (Phase 1):</strong> "v = H₀ × D · การขยายตัวของอวกาศเอง · ไม่ใช่ระเบิดในที่ว่าง · มันเริ่มที่นี่ · เดี๋ยวนี้ · กำลังเริ่ม"</div>
+<div class="dialogue"><strong>เคน (Phase 2):</strong> "d = 1/p · m - M = 5 log(d/10) · เราวัดเอกภพได้ · ระยะ 400 ปีแสง · จริง · เธอรับมัน"</div>
+<div class="dialogue"><strong>มีรา (Phase 3):</strong> "6 ชั้นของดวงอาทิตย์ · 8 ดาวเคราะห์ · 5 ดาวเคราะห์แคระ · เรารู้บ้านของเรา · เราจะปกป้องมัน"</div>
+<div class="dialogue"><strong>โบลท์ (Phase 4):</strong> "7 ย่านคลื่นแม่เหล็กไฟฟ้า · Voyager · Hubble · JWST · ISS · พ่อสอนผม — เทคโนโลยีอวกาศ<b>ไม่ใช่เผาเงิน</b> · มันคือสิ่งที่ทำให้เรารู้ว่าเราเป็นใคร"</div>
+
+<div class="dialogue" style="border-left-color:#fff;background:linear-gradient(90deg,#3a3a3a 0%,transparent 100%)"><strong>ทั้งสี่คน:</strong> "<b>FIRE!</b>"</div>
+
+<figure class="scene glory epic flash">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🗝</div>
+      <div class="hint">EP8 · SCENE 02 · KNOWLEDGE CORE FIRES</div>
+      <div class="desc"><b>17 กุญแจ</b>เรืองแสงสีต่าง ๆ รอบทีม · ทีม 4 คนยกมือพร้อมกัน · พลัง HELION เต็มที่ข้อมือ · ลำแสง 17 ลำรวมเป็นลำ<b>สีขาวบริสุทธิ์</b>เดียว · พุ่งทะลุ anti-genesis device ของ VOID · ฉากใหญ่สุดของ Season · บรรยากาศ <i>Avengers Endgame portal</i> meets <i>2001: A Space Odyssey</i></div>
+      <div class="filename">img/ep8-02-fire.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP8 · SCENE 02</span>
+    <span class="scene-cap">"FIRE!" — 17 กุญแจ · 4 เฟส · ความรู้แข็งแกร่งกว่าความว่างเปล่า</span>
+  </figcaption>
+</figure>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.3em;font-size:14px;margin:30px 0">★★★ KNOWLEDGE CORE · 100% · CONVERGENCE ★★★</p>
+
+<p>ลำแสงทั้งสิบเจ็ดรวมเป็นลำเดียว — <b>สีขาวบริสุทธิ์</b> — สีของแสงทุกความถี่รวมกัน · สีของดาวฤกษ์ในวินาทีแรกที่มันเกิด · สีของความรู้ที่ไม่แบ่งแยก</p>
+
+<p>ลำแสงพุ่งทะลุยาน T.H.E.O.S.-IX · ทะลุความว่างเปล่า · ปะทะ anti-genesis device ของ VOID</p>
+
+<p>เสียงไม่มีในที่ที่ไม่มีอะไรจะส่งเสียง — แต่ทีมรู้สึกได้ว่าทุกสิ่งที่มีอยู่ใน<b>ทุกที่ที่จะมีอยู่ใน 13.8 พันล้านปีหลังจากนี้</b> · กำลัง<b>ตอบสนองพร้อมกัน</b></p>
+
+<p>เครื่องของ VOID พังทันที · เป็นเสี้ยวเล็ก ๆ ก่อน · แล้วเป็นชิ้น · แล้วเป็นฝุ่น · แล้วเป็นความว่าง · เร็วกว่าที่จะมีคำอธิบาย</p>
+
+<p>VOID เองดูเหมือนกำลังกลายเป็นน้ำที่เกือบกลายเป็นน้ำแข็ง — แต่สลายตัวก่อนจะเป็นรูปร่างใหม่ · ปากเล็ก ๆ ในเงาเสื้อคลุม<b>หุบทีละปาก</b> · เสียงกระซิบของศัตรูตัวฉกาจที่กลั่นแกล้งทีมมาตลอดแปด EP — เริ่มเงียบลง · เริ่มเงียบลง · เริ่มเงียบลง</p>
+
+<div class="dialogue void"><strong>VOID (เสียงสุดท้าย):</strong> "...ความรู้... แข็งแกร่งกว่า... ความว่างเปล่า..."</div>
+
+<p style="text-align:center;color:var(--gold);font-family:'Kanit';letter-spacing:.3em;font-size:16px;margin:36px 0">— t = 0 —</p>
+
+<p>จุดสว่างหน้ายาน — ที่กำลังจะหยุดเพราะ anti-genesis — <b>กลับมาเร่ง</b></p>
+
+<figure class="scene glory">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌅</div>
+      <div class="hint">EP8 · SCENE 03 · UNIVERSE IGNITES</div>
+      <div class="desc">เอกภพเริ่มต้น · จุดสว่าง<b>ระเบิด</b>เป็นแสงทุกความถี่ · พลังงานควอนตัมแยกตัวเป็น 4 แรงพื้นฐาน · ควาร์ก → โปรตอน → อะตอม → CMB → ดาวฤกษ์ดวงแรก → กาแล็กซี · ภาพเป็น montage หรือ time-lapse · ทีมในยานเงาดำมองออกไปด้วยความเงียบศักดิ์สิทธิ์</div>
+      <div class="filename">img/ep8-03-genesis.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP8 · SCENE 03</span>
+    <span class="scene-cap">t = 0 → 13.8 Gyr · เอกภพที่ทีมเพิ่งจะปกป้อง</span>
+  </figcaption>
+</figure>
+
+<p>ในเสี้ยววินาทีนั้น · เอกภพเริ่มต้น</p>
+
+<p>อวกาศ<b>ขยายตัว</b>เหมือนลูกโป่งที่เป่าครั้งแรก — แต่เป็นลูกโป่งขนาดอนันต์ · ขยายไปทุกทิศพร้อมกัน · ทีมรู้สึกได้แม้พวกเขาอยู่<i>ภายใน</i>การขยายตัวนั้น</p>
+
+<p>10⁻³⁵ วินาที · พลังงานควอนตัมแยกตัวเป็นแรงพื้นฐานสี่แรง</p>
+
+<p>10⁻⁶ วินาที · ควาร์กรวมเป็นโปรตอนและนิวตรอน — ทีมเห็นเป็นแถบสีจาง ๆ ที่หน้าต่าง</p>
+
+<p>3 นาที · นิวเคลียสของไฮโดรเจนและฮีเลียมก่อตัว</p>
+
+<p>380,000 ปี · อะตอมเป็นกลาง · แสงเป็นอิสระเป็นครั้งแรก — <b>CMB</b> · แสงสีเดียวกับที่ทีมตรวจพบใน EP1 · แสงที่จะไปถึงโลกในอีก 13.8 พันล้านปี · แสงที่<b>เป็นหลักฐาน</b>ของวินาทีนี้</p>
+
+<p>200 ล้านปี · ดาวฤกษ์ดวงแรกเริ่มก่อตัว · ฟิวชันนิวเคลียร์เริ่มขึ้น · เอกภพมี<b>แสงดาว</b>เป็นครั้งแรก</p>
+
+<p>1 พันล้านปี · กาแล็กซีดวงแรกก่อตัว · Andromeda · Milky Way · M87 · ทุกที่ที่ทีมเคยไป — เริ่มต้นที่นี่</p>
+
+<p>เวลาเริ่มเดินตามที่มันควรเป็น · ตามที่ตำราดาราศาสตร์เขียน · ตามที่นักวิทยาศาสตร์ใช้ชีวิตทั้งชีวิตเพื่อพิสูจน์ · ตามที่<b>ทีมเพิ่งจะปกป้อง</b></p>
+
+<div class="dialogue"><strong>อารยา:</strong> "เคน · มีรา · โบลท์ · พวกคุณคือทีมที่ดีที่สุด"</div>
+<div class="dialogue"><strong>เคน:</strong> "ผมจะไม่กลัวแสงอีก · เพราะผมรู้ว่ามันมาจากอะไร"</div>
+<div class="dialogue"><strong>มีรา:</strong> "ผมพบน้องผมในแสง · ผมจะเล่าเรื่องนี้ให้นักเรียนในอนาคตฟัง"</div>
+<div class="dialogue"><strong>โบลท์:</strong> "ผมจะสร้างวาร์ปไดรฟ์ของผมเอง · ในเวลาของผมเอง · ขอบคุณพ่อ · ขอบคุณทีม"</div>
+
+<p style="text-align:center;color:var(--mint);font-family:'Kanit';letter-spacing:.2em;font-size:13px">— ปี 2267 · กลับสู่ปัจจุบัน · ระบบสุริยะ —</p>
+
+<p>ยานหลุดออกจากวาร์ปย้อนเวลา · กลับมาที่จุดเดียวกับที่ออกไป · ดาวเทียมสื่อสารที่ตัดสัญญาณ — เริ่มกลับมาทำงานทีละดวง · ไฟเมืองทั่วโลกเริ่มสว่างขึ้น · เป็นครั้งแรกในเก้าสิบนาที</p>
+
+<p>ทีมยืนเงียบบนบริดจ์ · ไม่มีใครเชื่อ ว่าพวกเขายังอยู่</p>
+
+<p>แล้ว LEMAÎTRE ก็ส่งเสียงเตือน · เสียงสุดท้ายของซีซัน — เสียงที่ทุกคนคิดว่าจะไม่มีอีก</p>
+
+<div class="dialogue lemaitre"><strong>LEMAÎTRE:</strong> "...กัปตัน · สัญญาณใหม่ · จาก <b>Andromeda</b> · 2.5 ล้านปีแสง · <b>ไม่ใช่ลายเซ็นที่เรารู้จัก</b>"</div>
+
+<figure class="scene cosmic">
+  <div class="scene-img">
+    <div class="scene-placeholder">
+      <div class="icon">🌌</div>
+      <div class="hint">EP8 · SCENE 04 · ANDROMEDA HOOK · S2</div>
+      <div class="desc">หน้าต่างใหญ่ของบริดจ์ · <b>Andromeda Galaxy</b>สีฟ้า-ม่วงในระยะไกล · จะถึงโลกในอีก 4 พันล้านปี · มีจุดเล็ก ๆ สีแดงเรืองในแขนเกลียวของ Andromeda — สัญญาณใหม่ · ทีมเป็นเงามองออกไป · บรรยากาศ cliffhanger · "Season 2 · เริ่ม · เมื่อเธอพร้อม"</div>
+      <div class="filename">img/ep8-04-andromeda-hook.webp</div>
+    </div>
+  </div>
+  <figcaption>
+    <span class="scene-num">EP8 · SCENE 04 · CLIFFHANGER</span>
+    <span class="scene-cap">สัญญาณใหม่ · 2.5 ล้านปีแสง · ไม่ใช่ลายเซ็นที่เรารู้จัก</span>
+  </figcaption>
+</figure>
+
+<p>อารยาหันไปมองหน้าต่างใหญ่ของบริดจ์ — Andromeda Galaxy ลอยอยู่ที่นั่น · สีฟ้า-ม่วงในระยะไกล · กำลังเข้ามาช้า ๆ · จะถึงในอีก 4 พันล้านปี · แต่<b>วันนี้</b> — มีบางอย่างจากที่นั่น <i>ส่งสัญญาณก่อน</i></p>
+
+<p>ทีมหันมามองกัน · ไม่มีใครพูด · เพราะไม่มีใครต้องพูด</p>
+
+<div class="dialogue"><strong>อารยา (ยิ้มเล็ก ๆ):</strong> "<b>Season 2</b> · เริ่ม · เมื่อเธอพร้อม"</div>
+
+</section>
+
+
+<!-- ============ EPILOGUE ============ -->
+<section id="epilogue" class="epilogue">
+<h2>★ บทส่งท้าย ★</h2>
+<p>เราเป็นยาน T.H.E.O.S.-IX</p>
+<p>เราเป็น<b>กัปตัน</b>ที่ยอมรับการสูญเสียของพ่อ<br>
+เราเป็น<b>วิศวกร</b>ที่ยอมรับว่าแสงที่กลัว — คือแสงที่สวย<br>
+เราเป็น<b>แพทย์</b>ที่ยอมรับว่าน้องที่หาย — ส่งคำลาในสิ่งที่ทุกคนเห็น<br>
+เราเป็น<b>ช่าง</b>ที่ยอมรับว่าพ่อที่ไม่กลับ — ส่งมรดกในเครื่องที่เราซ่อม</p>
+<p>เราเรียนรู้<b>ฟิสิกส์</b> — แต่เราเข้าใจ มากกว่านั้น</p>
+<p style="font-size:22px;color:var(--gold);font-family:'Kanit'">เอกภพ — ไม่ใช่แค่สมการ<br>มันคือ <b>บ้าน</b> ของเรา</p>
+<p>และเรา — เป็น <b>Cadet ที่ห้า</b> ของยาน T.H.E.O.S.-IX</p>
+<div class="end">★ COSMOS LOG · SEASON 1 · COMPLETE ★</div>
+<div style="font-size:12px;color:var(--dim);margin-top:14px">To be continued in Season 2 · Andromeda Awaits</div>
+</section>
+
+<!-- ============ IMAGE MANIFEST ============ -->
+<section id="manifest" class="manifest">
+<h2>📸 Image Manifest · ภาพที่ครูต้องหา</h2>
+<div class="sub">วาง files ในโฟลเดอร์ <code style="color:var(--gold)">img/</code> ข้าง HTML นี้ · จากนั้นแก้ <code style="color:var(--gold)">.scene-placeholder</code> เป็น <code style="color:var(--gold)">&lt;img src="img/ชื่อไฟล์"&gt;</code> · แนะนำ format <code>webp</code> หรือ <code>jpg</code> · aspect ratio <b>21:9 cinematic</b> · ความกว้าง 1920-2400 px</div>
+<table>
+<thead><tr><th>EP</th><th>ไฟล์</th><th>ฉาก / โทน</th></tr></thead>
+<tbody>
+<tr><td class="ep">PRO</td><td class="fn">00-prologue-launch.webp</td><td>ยาน T.H.E.O.S.-IX ลอยในท่าอวกาศ LEO · โลกใต้ท้อง · sunrise · cinematic wide</td></tr>
+<tr><td class="ep">PRO</td><td class="fn">00-prologue-crew.webp</td><td>ทีม 4 คนบนบริดจ์ · ภายใต้แสงสีฟ้าคราม · พร้อมทำงาน</td></tr>
+<tr><td class="ep">EP1</td><td class="fn">ep1-01-impact.webp</td><td>วินาทีปะทะ · กระจกร้าวลายใยแมงมุม · ไฟแดงฉุกเฉิน · close-up</td></tr>
+<tr><td class="ep">EP1</td><td class="fn">ep1-02-origin-stone.webp</td><td>ศิลาต้นกำเนิดสีดำ 5 ชิ้น · ตู้กักเชื้อ · เลเซอร์เขียวสแกน</td></tr>
+<tr><td class="ep">EP1</td><td class="fn">ep1-03-void-face.webp</td><td>VOID — น้ำวนดวงดาว · ปากเล็กในเงาเสื้อคลุม · บนจอ · cosmic horror</td></tr>
+<tr><td class="ep">EP1</td><td class="fn">ep1-04-dr-hubble.webp</td><td>ดร.ฮับเบิล · เสื้อคลุมลายดาว · แว่นทองเหลือง · holographic ม่วงอ่อน</td></tr>
+<tr><td class="ep">EP2</td><td class="fn">ep2-01-galaxy-panorama.webp</td><td>หอสังเกตการณ์ · Andromeda + M87 + LMC + ดาวพันล้าน · cosmic awe</td></tr>
+<tr><td class="ep">EP2</td><td class="fn">ep2-02-lone-star.webp</td><td>ดาวเดี่ยวเหลือง-ส้มกระพริบมอร์ส · ความว่างเปล่า · เหงา-ลึกลับ</td></tr>
+<tr><td class="ep">EP3</td><td class="fn">ep3-03-presupernova.webp</td><td>ดาวยักษ์แดงสั่นและบวม · พลาสมาพุ่งหลายชั้น · pre-supernova instability</td></tr>
+<tr><td class="ep">EP4</td><td class="fn">ep4-01-ken-observatory.webp</td><td>เคนยืนคนเดียวในห้องมืด · เงาตัดแสงสีแดงดาวยักษ์ · มือสั่น · Solaris-mood</td></tr>
+<tr><td class="ep">EP4</td><td class="fn">ep4-02-supernova.webp</td><td>SUPERNOVA · แสงขาวบริสุทธิ์เต็มหน้าต่าง · ทีมยกมือกัน · ยานในวาร์ป</td></tr>
+<tr><td class="ep">EP5</td><td class="fn">ep5-01-cme.webp</td><td>X-class CME · เปลวสุริยะเกลียวแม่เหล็ก · ใหญ่กว่าโลกล้านเท่า</td></tr>
+<tr><td class="ep">EP5</td><td class="fn">ep5-02-power-forge.webp</td><td>POWER FORGE 6 ช่องเรืองแสงสีรุ้ง · ทีมข้อมือเรือง HELION · Marvel-style</td></tr>
+<tr><td class="ep">EP5</td><td class="fn">ep5-03-aurora.webp</td><td>ออโรราเขียว · มีลายมือ "ปรียา" · มีรายืนน้ำตาไหลแต่ยิ้ม · emotional</td></tr>
+<tr><td class="ep">EP6</td><td class="fn">ep6-01-haumea-base.webp</td><td>Haumea รูปไข่ · ฐานโวอิเดียนสีม่วง · 45 AU · ในแถบไคเปอร์</td></tr>
+<tr><td class="ep">EP7</td><td class="fn">ep7-01-earth-dark.webp</td><td>โลกกลางคืน · ไฟดับ · เห็นแค่จุดสว่างเล็กๆ · บรรยากาศหายนะ</td></tr>
+<tr><td class="ep">EP7</td><td class="fn">ep7-02-dad-recording.webp</td><td>โบลท์เปิดคริสตัล · โฮโลแกรมพ่อ · น้ำตาไหลเงียบ · intimate</td></tr>
+<tr><td class="ep">EP7</td><td class="fn">ep7-03-temporal-warp.webp</td><td>วาร์ปย้อนเวลา · ริ้วแสงทุกสเปกตรัม · Interstellar tesseract</td></tr>
+<tr><td class="ep">EP8</td><td class="fn">ep8-01-pre-creation.webp</td><td>t < 0 · ความว่างเปล่า · จุดสว่างเล็ก · ยานโวอิเดียนเงาดำ</td></tr>
+<tr><td class="ep">EP8</td><td class="fn">ep8-02-fire.webp</td><td>17 กุญแจรวมเป็นลำสีขาว · ทีมยกมือ · Endgame-portal scale</td></tr>
+<tr><td class="ep">EP8</td><td class="fn">ep8-03-genesis.webp</td><td>เอกภพระเบิดเริ่ม · ควาร์ก→อะตอม→กาแล็กซี time-lapse</td></tr>
+<tr><td class="ep">EP8</td><td class="fn">ep8-04-andromeda-hook.webp</td><td>Andromeda · จุดแดงเรืองในแขนเกลียว · cliffhanger S2</td></tr>
+</tbody>
+</table>
+<div style="margin-top:24px;padding:16px;background:#0e1a36;border-radius:8px;color:var(--dim);font-size:13px;line-height:1.7">
+<b style="color:var(--mint)">💡 วิธีใส่ภาพ:</b><br>
+1. หาภาพ (AI gen เช่น Midjourney/DALL-E/Stable Diffusion · prompt: "cinematic sci-fi · 21:9 · widescreen · dramatic lighting")<br>
+2. resize เป็น <code>1920×823</code> หรือ <code>2400×1029</code> · save เป็น webp/jpg<br>
+3. วางในโฟลเดอร์ <code>img/</code> ข้างไฟล์ HTML<br>
+4. แก้ HTML: ในแต่ละ <code>&lt;figure class="scene"&gt;</code> · เปลี่ยน <code>&lt;div class="scene-placeholder"&gt;...&lt;/div&gt;</code> เป็น <code>&lt;img src="img/ชื่อไฟล์.webp" alt="..."&gt;</code><br>
+<br>
+<b style="color:var(--gold)">🎨 Prompt template สำหรับ AI:</b> <code style="color:#dcd6c0">"cosmic sci-fi cinematic still, [SCENE DESC], dramatic lighting, 21:9 aspect ratio, ultra-detailed, blade-runner color grade, IMAX quality, no text"</code>
+</div>
+</section>
+
+<div style="margin-top:40px;padding:20px;border-top:1px solid var(--line);text-align:center;color:var(--dim);font-size:13px">
+นิยายเรื่องนี้ใช้ประกอบการสอนวิชา ว 30105 ดาราศาสตร์ ม.6 · 8 EP · 17 หัวข้อ · <b>22 cinematic scene slots</b><br>
+ผู้เขียน: <b>เจน · Researcher / วPA</b> · สำหรับ <b>ครูโกเมน ปาปะโถ</b> · โรงเรียนสตรีวิทยา · 2569<br>
+ตามไบเบิล <code>cosmos-log-series-bible.html</code> v1.0
+</div>
+
+</main>
+</div>
+
+<script>
+// Active TOC highlight
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('nav.toc a');
+const obs = new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(e.isIntersecting){
+      const id = e.target.id;
+      links.forEach(a=>a.classList.toggle('active', a.getAttribute('href') === '#'+id));
+    }
+  });
+},{rootMargin:'-30% 0px -60% 0px'});
+sections.forEach(s=>obs.observe(s));
+</script>
+
+</body>
+</html>

@@ -2,6 +2,10 @@
 /* Boot · Chain · Gate · Submit · Transition · pattern เดียวกับ EP05      */
 
 (function(global){
+  // Auto-load team-comp.js (energy snapshot per EP)
+  if (typeof document !== "undefined" && !document.querySelector('script[data-tc="1"]')) {
+    var _tc = document.createElement("script"); _tc.src = "../shared/team-comp.js?v=2"; _tc.dataset.tc = "1"; _tc.async = false; document.head.appendChild(_tc);
+  }
   const Boot = {
     init(opts={}) {
       if (global.KPDB && global.KPDB.init) global.KPDB.init({ subject: 'astronomy', unit: 'ep06' });

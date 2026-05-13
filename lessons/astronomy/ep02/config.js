@@ -36,6 +36,7 @@ window.EP_CONFIG = {
     { id:'p19', file:'p19-map.html',      title:'Journey Map · Post-test',type:'reflection',time:5 },
     { id:'p17', file:'p17-shop.html',     title:'ตลาด · ก่อนตีบอสสุดท้าย',  type:'setup',      time:5 },
     { id:'p17b',file:'p17b-finalboss.html',title:'BOSS สุดท้าย · 15 คลื่น',  type:'mixed',      time:10 },
+    { id:'p17d',file:'p26b-halloffame.html', title:'🏆 Hall of Fame · ทีมชนะ EP02', type:'reflection', time:3 },
     { id:'p18', file:'p27-journal.html',      title:"Journal 3-2-1 · ปิดเล่ม",type:'reflection', time:4 },
   ],
 

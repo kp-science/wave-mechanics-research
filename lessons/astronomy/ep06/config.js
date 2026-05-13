@@ -66,6 +66,7 @@ window.EP_CONFIG = {
     { id:'p24', file:'p24-boss-grid.html',        title:'🔥 VOID ZERO-FIX · Grid Boss',        type:'mixed',   time:10 },
     { id:'p25', file:'p25-rescue-ending.html',    title:'🌌 4 endings A+/A/B/C',              type:'story',   time:4 },
     { id:'p26', file:'p26-satellite-fail.html',   title:'ดาวเทียมโลกดับ · cliffhanger',       type:'story',   time:3 },
+    { id:'p26b', file:'p26b-halloffame.html',          title:'🏆 Hall of Fame · ทีมชนะ EP06',                  type:'reflection', time:3 },
     { id:'p27', file:'p27-journal.html',          title:'🏆 Scale Master · 3-2-1',            type:'reflection', time:4 },
   ],
 

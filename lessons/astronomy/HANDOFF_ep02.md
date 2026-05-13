@@ -76,7 +76,7 @@ astronomy/
 
 ### Load order ทุกหน้า EP02 (สำคัญ · cache-bust v=5 ปัจจุบัน)
 ```html
-<link rel="stylesheet" href="../shared/book.css?v=5">
+<link rel="stylesheet" href="../shared/book.css?v=99">
 <script src="../shared/book.js?v=5"></script>
 <script src="./config.js?v=2"></script>   <!-- sets window.EP_CONFIG -->
 <script src="../shared/game.js?v=2"></script>

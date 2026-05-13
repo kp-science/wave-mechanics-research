@@ -18,7 +18,7 @@
     }
     need('activity-sync.js');
     need('activity-registry.js');
-    need('economy.js'); // ⭐ 2-tier currency engine
+    need('economy.js?v=4'); // ⭐ 2-tier currency engine (chip moved to top:64px to avoid covering footer)
   } catch(_){}
 })();
 
@@ -40,8 +40,9 @@ const PAGES = [
   { id: 'p15', file: 'p15-warp.html',       title: 'วาร์ป',                type: 'story',      time: 3 },
   { id: 'p16', file: 'p16-review.html',     title: 'รีวิวหนัง · เรียงฉาก',   type: 'puzzle',  time: 7 },
   { id: 'p17', file: 'p17-exercise.html',   title: 'แบบฝึกหัด · Bloom',      type: 'puzzle',  time: 10 },
-  { id: 'p18', file: 'p17-exit.html',       title: 'Exit Ticket · 3-2-1',   type: 'reflection', time: 5 },
-  { id: 'p19', file: 'p16-map.html',        title: 'Journey Map',         type: 'reflection', time: 10 },
+  { id: 'p18', file: 'p18-posttest.html',   title: 'Post-test · วัดหลัง EP01', type: 'puzzle',  time: 5 },
+  { id: 'p18b',file: 'p18b-halloffame.html',title: '🏆 Hall of Fame · ทีมชนะ', type: 'reflection', time: 3 },
+  { id: 'p19', file: 'p27-journal.html',    title: 'Exit · 3-2-1 Journal',  type: 'reflection', time: 5 },
 ];
 
 const TEAMS = [
@@ -65,6 +66,18 @@ const Book = {
     this.restoreFinishBtn();
     this.bindButtonFeedback();
     this._syncFooterNext();
+    this._loadTeamComp();
+  },
+
+  /* Auto-load team-comp.js (snapshot energy ตอนเข้า EP · ไม่ว่าหน้าไหน) */
+  _loadTeamComp() {
+    if (window.TeamComp) return;
+    if (document.querySelector('script[data-tc="1"]')) return;
+    const s = document.createElement('script');
+    s.src = '../shared/team-comp.js?v=2';
+    s.dataset.tc = '1';
+    s.async = false;
+    document.head.appendChild(s);
   },
 
   /* Universal feedback ทุกครั้งที่กดปุ่ม .finish-btn (รวมปุ่ม phase กลาง)
