@@ -3385,24 +3385,19 @@ async function openTeacher(){
 }
 
 function enterTeacherMode(){
-  // ถ้าครูเคยเลือกหน่วยไว้ใน dropdown · refresh แล้วยังอยู่หน่วยเดิม
-  // (URL ไม่มี ?unit= แต่ pref บอก unit ของวิชาเดียวกัน → redirect)
-  try {
-    const pref = JSON.parse(localStorage.getItem('teacher_unit_pref') || 'null');
-    if (pref && pref.course === window.KP_COURSE && !window.KP_UNIT){
-      const subj = (window.KP_SUBJECTS || []).find(s => s.id === pref.course);
-      const topic = subj && (subj.topics || []).find(t => t.id === pref.topicId);
-      if (topic && topic.unit){
-        const params = new URLSearchParams(location.search);
-        params.set('unit', topic.unit);
-        location.search = params.toString();
-        return;  // จะ reload เข้า init() ใหม่ด้วย ?unit=
-      }
-    }
-  } catch(_){}
+  // ⭐ ถ้า URL ไม่มี ?unit= → ให้ครูเห็น view-topics เลือกหัวข้อก่อน (เหมือนนักเรียน)
+  // ครู login ครั้งเดียวคุมทั้งวิชา · ต้องเห็นภาพรวมว่ามี topic ใดบ้างที่เปิด
+  if (!window.KP_UNIT) {
+    document.getElementById('topBar').style.display = 'flex';
+    document.getElementById('userLabel').textContent = `👨‍🏫 โหมดครู · ${KP_CONFIG.teacherShort}`;
+    const sBtn = document.querySelector('#topBar .btn-logout');
+    if (sBtn) sBtn.setAttribute('onclick', 'logoutTeacher()');
+    showTopics(window.KP_COURSE);  // ← แสดงหน้าเลือกหัวข้อ
+    return;
+  }
+  // มี ?unit=X แล้ว → เข้า Dashboard ของหน่วยนั้นโดยตรง (ครูเลือกแล้วจาก view-topics หรือใช้ URL ตรง)
   document.getElementById('topBar').style.display = 'flex';
   document.getElementById('userLabel').textContent = `👨‍🏫 โหมดครู · ${KP_CONFIG.teacherShort}`;
-  // ซ่อนปุ่ม "ออกจากระบบ" ของนักเรียนใน topBar ขณะเป็นครู และเพิ่ม handler ของครูแทน
   const sBtn = document.querySelector('#topBar .btn-logout');
   if (sBtn) sBtn.setAttribute('onclick', 'logoutTeacher()');
   showView('view-teacher');
