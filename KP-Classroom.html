@@ -1801,6 +1801,24 @@ function wsIdToSheet(wsId){
     const prefix = map[baseKey] || (baseKey.charAt(0).toUpperCase() + baseKey.slice(1));
     return `SHM_${prefix}_P${plan}`;
   }
+  // 1.6) Sound unit pattern: sound-plan{N}-{tool}[-{suffix}] → Sound_<Cap>_P{N}
+  // ใช้แยก Sheet ของหน่วยเสียงออกจากคลื่นกล/SHM (เก็บคนละชีท: Physics3-Sound-2569)
+  const sn = wsId.match(/^sound-plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
+  if (sn){
+    const [, plan, tool] = sn;
+    const map = {
+      'engage':'Engage','cc':'CC','poe':'POE','matrix':'Matrix','spot':'Spot',
+      'calc':'Calc','exercise':'Exercise','exit':'Exit','mj':'MJ','tl':'TL',
+      'rubric':'Rubric','ob':'OB',
+      'f1':'F_Fourtier','f2':'F_Fourtier','f3':'F_Fourtier','f4':'F_Fourtier','f5':'F_Fourtier',
+      'f6':'F_Fourtier','f7':'F_Fourtier','f8':'F_Fourtier','f9':'F_Fourtier','f10':'F_Fourtier','f11':'F_Fourtier'
+    };
+    const baseKey = tool.toLowerCase();
+    const prefix = map[baseKey] || (baseKey.charAt(0).toUpperCase() + baseKey.slice(1));
+    return `Sound_${prefix}_P${plan}`;
+  }
+  // 1.7) Sound TL (shared across plans · ไม่ผูกกับแผน) → Sound_TL
+  if (/^sound-tl/i.test(wsId)) return 'Sound_TL';
   // 2) Pattern parse
   const m = wsId.match(/^plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
   if (!m) return null;
