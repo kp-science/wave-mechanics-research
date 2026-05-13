@@ -50,8 +50,11 @@ window.KP_SUBJECTS = [
         icon: '🔊',
         status: 'open',
         numPlans: 11,
-        unit: 'sound',  // ← scaffold พร้อมที่ content/physics3/units/sound/ · เปลี่ยน status:'open' หลังเติม plans
-        dbUrl: null     // ← null = ใช้ API_URL ของวิชา · ถ้าอยากแยกชีท → deploy backend แล้ววาง URL
+        unit: 'sound',  // ← content pack ที่ content/physics3/units/sound/ · 11 แผน · 165 ไฟล์สื่อ
+        // ⚠️ TODO: deploy Sound backend ตาม _private/SETUP_Sound_Backend.md แล้วแทน URL ด้านล่าง
+        // ปัจจุบัน null = ใช้ API_URL ของคลื่น (ข้อมูล Sound_* จะปนกับชีทคลื่น)
+        // หลังแทนแล้ว · refresh browser · Dashboard ใน ?unit=sound จะเริ่มอ่าน Sheet `Physics3-Sound-2569`
+        dbUrl: 'TODO_DEPLOY_SOUND_BACKEND'
       },
       {
         id: 'light',
