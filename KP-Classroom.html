@@ -1213,11 +1213,39 @@ function selectTopic(subjectId, topicId){
   state.unit = topic.unit || null;
   try { localStorage.setItem(LS_NAV, JSON.stringify({subject: subjectId, topic: topicId, unit: topic.unit || null})); } catch(_){}
 
-  // ถ้า content pack ปัจจุบันตรงกับ subject + unit นี้ → แสดงบ้านตรงๆ ไม่ต้อง reload
-  // เงื่อนไข: subject ตรง · unit ตรง (ทั้งสองฝั่งเป็น null = waves เดิม)
   const wantUnit = topic.unit || null;
   const sameSubject = window.KP_COURSE === subjectId;
   const sameUnit    = (window.KP_UNIT || null) === wantUnit;
+
+  // ─── Teacher mode: ไปที่ Teacher Dashboard (ไม่ใช่ showHome ของนักเรียน)
+  const isTeacher = sessionStorage.getItem(TEACHER_SESS) === 'yes'
+                 || localStorage.getItem(TEACHER_SESS)   === 'yes';
+  if (isTeacher && !state.student){
+    if (topic.current && sameSubject && sameUnit){
+      // content pack ตรงอยู่แล้ว · ไม่ต้อง reload → render dashboard เลย
+      window.KP_UNIT = wantUnit;
+      document.getElementById('topBar').style.display = 'flex';
+      document.getElementById('userLabel').textContent = `👨‍🏫 โหมดครู · ${KP_CONFIG.teacherShort}`;
+      const sBtn = document.querySelector('#topBar .btn-logout');
+      if (sBtn) sBtn.setAttribute('onclick', 'logoutTeacher()');
+      showView('view-teacher');
+      renderTeacherShell();
+      switchTeacherTab('overview');
+      if (isApiConfigured()){
+        loadSettings().catch(e => console.warn('warm settings cache:', e));
+      }
+      return;
+    }
+    // ต่าง pack → reload URL · onLoad จะเข้า enterTeacherMode (มี ?unit= → view-teacher)
+    const tparams = new URLSearchParams(location.search);
+    tparams.set('course', subjectId);
+    if (wantUnit) tparams.set('unit', wantUnit);
+    else tparams.delete('unit');
+    location.search = tparams.toString();
+    return;
+  }
+
+  // ─── Student mode (เดิม)
   if (topic.current && sameSubject && sameUnit){
     showHome();
     return;
