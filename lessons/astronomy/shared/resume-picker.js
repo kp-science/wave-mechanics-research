@@ -48,33 +48,80 @@
     });
     const nextIdx = Math.min(lastDoneIdx + 1, pages.length - 1);
     const pct = Math.round((done.filter(Boolean).length / pages.length) * 100);
-    return { done, lastDoneIdx, nextIdx, pct };
+    const paceIdx = getPaceUnlockedIdx();      // -1 = ครู lock ทั้งหมด · null = ไม่มี pace
+    // maxAllowedIdx = หน้าสูงสุดที่นักเรียนเข้าได้
+    //   - progress: ทำได้ถึง lastDone + 1 (next)
+    //   - pace:     ครูอนุญาตถึง paceIdx
+    //   - ผลรวม = min(ทั้งสอง)
+    let maxAllowedIdx = nextIdx;
+    if (paceIdx !== null) maxAllowedIdx = Math.min(maxAllowedIdx, paceIdx);
+    return { done, lastDoneIdx, nextIdx, paceIdx, maxAllowedIdx, pct };
+  }
+
+  /* ---- pace lock detection ---- */
+  // คืน index ของหน้าสูงสุดที่ครูปลดล็อค · null ถ้าไม่มี pace control · -1 ถ้าครู lock ทั้งหมด
+  function getPaceUnlockedIdx(){
+    try {
+      const roomCode = localStorage.getItem('paceRoom');
+      if (!roomCode) return null;
+      const raw = localStorage.getItem('paceLocal_' + roomCode);
+      if (!raw) return null;
+      const p = JSON.parse(raw);
+      if (!p) return null;
+      // ถ้า unlockedUpTo เป็นค่าว่าง = lock ทุกหน้า
+      if (!p.unlockedUpTo) return -1;
+      const idx = pages.findIndex(pg => pg.id === p.unlockedUpTo);
+      return idx;  // -1 ถ้าไม่เจอใน EP นี้ · ไม่ตรง EP ก็คือไม่ lock
+    } catch(e) { return null; }
   }
 
   /* ---- render ---- */
   function render(){
     const mount = document.getElementById('resume-picker');
     if (!mount) return;
-    const { done, nextIdx, pct } = compute();
+    const { done, nextIdx, paceIdx, maxAllowedIdx, pct } = compute();
     const hasProgress = done.some(Boolean);
+    const allLocked = paceIdx === -1;  // ครู lock ทุกหน้า
 
     const items = pages.map((p, i) => {
-      const ok    = done[i];
-      const isNext = !ok && i === nextIdx && hasProgress;
-      const icon  = ok ? '✓' : (isNext ? '▶' : '○');
-      const cls   = 'rp-row' + (ok ? ' rp-done' : '') + (isNext ? ' rp-next' : '');
-      const time  = p.time ? '<span class="rp-time">' + p.time + ' นาที</span>' : '';
-      return '<a class="' + cls + '" href="' + p.file + '">' +
-               '<span class="rp-mark">' + icon + '</span>' +
-               '<span class="rp-pid">' + p.id.toUpperCase() + '</span>' +
-               '<span class="rp-title">' + (p.title || p.file) + '</span>' +
-               time +
-             '</a>';
+      const ok      = done[i];
+      const isNext  = !ok && i === nextIdx && hasProgress;
+      const locked  = i > maxAllowedIdx;  // เกินขอบเขตที่อนุญาต = locked
+      const icon    = locked ? '🔒' : (ok ? '✓' : (isNext ? '▶' : '○'));
+      let cls       = 'rp-row';
+      if (ok)     cls += ' rp-done';
+      if (isNext && !locked) cls += ' rp-next';
+      if (locked) cls += ' rp-locked';
+      const time    = p.time ? '<span class="rp-time">' + p.time + ' นาที</span>' : '';
+      const inner   = '<span class="rp-mark">' + icon + '</span>' +
+                      '<span class="rp-pid">' + p.id.toUpperCase() + '</span>' +
+                      '<span class="rp-title">' + (p.title || p.file) + '</span>' +
+                      time;
+      // หน้าที่ locked → render เป็น <div> ไม่ใช่ <a> · กดไม่ได้
+      if (locked) return '<div class="' + cls + '" title="ครูยังไม่เปิดหน้านี้">' + inner + '</div>';
+      return '<a class="' + cls + '" href="' + p.file + '">' + inner + '</a>';
     }).join('');
 
-    const resumeBtn = hasProgress
-      ? '<a class="rp-resume" href="' + pages[nextIdx].file + '">▶ ทำต่อจาก ' + pages[nextIdx].id.toUpperCase() + ' · ' + pages[nextIdx].title + '</a>'
-      : '<a class="rp-resume" href="' + pages[0].file + '">▶ เริ่มภารกิจ ' + pages[0].id.toUpperCase() + '</a>';
+    // ปุ่ม "ทำต่อ"
+    let resumeBtn;
+    if (allLocked) {
+      resumeBtn = '<span class="rp-resume rp-resume-locked">🔒 ครูยังไม่เปิดหน้าเรียน</span>';
+    } else if (hasProgress) {
+      const target = Math.min(nextIdx, maxAllowedIdx);
+      if (target < 0) {
+        resumeBtn = '<span class="rp-resume rp-resume-locked">🔒 ครูยังไม่เปิดหน้าถัดไป</span>';
+      } else {
+        resumeBtn = '<a class="rp-resume" href="' + pages[target].file + '">▶ ทำต่อจาก ' + pages[target].id.toUpperCase() + ' · ' + pages[target].title + '</a>';
+      }
+    } else if (maxAllowedIdx >= 0) {
+      resumeBtn = '<a class="rp-resume" href="' + pages[0].file + '">▶ เริ่มภารกิจ ' + pages[0].id.toUpperCase() + '</a>';
+    } else {
+      resumeBtn = '<span class="rp-resume rp-resume-locked">🔒 ครูยังไม่เปิดหน้าเรียน</span>';
+    }
+
+    const paceBanner = (paceIdx !== null && paceIdx >= 0)
+      ? '<div class="rp-pace-info">🎓 ครูเปิดถึงหน้า <b>' + pages[paceIdx].id.toUpperCase() + '</b> · ' + (pages[paceIdx].title || '') + '</div>'
+      : (allLocked ? '<div class="rp-pace-info rp-pace-locked">🔒 ครูยังไม่เปิดให้เข้าหน้าใด · รอครูเปิดประตู</div>' : '');
 
     mount.innerHTML =
       '<div class="rp-card">' +
@@ -85,6 +132,7 @@
           '</div>' +
           '<div class="rp-bar"><div class="rp-fill" style="width:' + pct + '%"></div></div>' +
         '</div>' +
+        paceBanner +
         '<div class="rp-actions">' +
           resumeBtn +
           (hasProgress ? '<button class="rp-reset" type="button">🗑 ล้างความก้าวหน้า · เริ่มใหม่</button>' : '') +
@@ -154,6 +202,14 @@
       .rp-done .rp-title { color:#9aa3c0; text-decoration:line-through; text-decoration-color:rgba(126,255,178,0.4); }
       .rp-next .rp-title { color:#fff; font-weight:600; }
       .rp-time { font-family:'Space Grotesk',monospace; font-size:11px; color:#6a7394; white-space:nowrap; }
+      .rp-locked { opacity:0.45; cursor:not-allowed; }
+      .rp-locked:hover { background:rgba(0,0,0,0.2); border-color:rgba(120,140,220,0.15); transform:none; }
+      .rp-locked .rp-mark { background:rgba(255,92,122,0.15); color:#ff8fa5; }
+      .rp-locked .rp-title { color:#6a7394; }
+      .rp-resume-locked { display:inline-block; background:rgba(255,92,122,0.15); color:#ff8fa5; padding:11px 22px; border-radius:10px; border:1.5px dashed rgba(255,92,122,0.5); font-weight:700; font-size:15px; cursor:not-allowed; }
+      .rp-pace-info { background:rgba(100,216,255,0.1); border:1px solid rgba(100,216,255,0.35); border-radius:8px; padding:8px 12px; margin-bottom:10px; font-size:13px; color:#64d8ff; }
+      .rp-pace-info b { color:#fff; font-weight:700; }
+      .rp-pace-info.rp-pace-locked { background:rgba(255,92,122,0.1); border-color:rgba(255,92,122,0.4); color:#ff8fa5; }
     `;
     const s = document.createElement('style');
     s.id = 'rp-style';
