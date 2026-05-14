@@ -1218,9 +1218,10 @@ function selectTopic(subjectId, topicId){
   const sameUnit    = (window.KP_UNIT || null) === wantUnit;
 
   // ─── Teacher mode: ไปที่ Teacher Dashboard (ไม่ใช่ showHome ของนักเรียน)
-  const isTeacher = sessionStorage.getItem(TEACHER_SESS) === 'yes'
-                 || localStorage.getItem(TEACHER_SESS)   === 'yes';
-  if (isTeacher && !state.student){
+  // ⚠️ ใช้ isTeacherAuthed() เพราะ TEACHER_SESS เก็บค่า '1' ไม่ใช่ 'yes' (เคยเช็คผิดทำให้ตกลงไป student flow)
+  // ⚠️ ไม่ใช้ !state.student เพราะอาจมี student session เก่าค้าง · ครูคลิกการ์ด = เจตนาเข้า dashboard ครู
+  const isTeacher = isTeacherAuthed();
+  if (isTeacher){
     if (topic.current && sameSubject && sameUnit){
       // content pack ตรงอยู่แล้ว · ไม่ต้อง reload → render dashboard เลย
       window.KP_UNIT = wantUnit;
@@ -1236,12 +1237,18 @@ function selectTopic(subjectId, topicId){
       }
       return;
     }
-    // ต่าง pack → reload URL · onLoad จะเข้า enterTeacherMode (มี ?unit= → view-teacher)
+    // ต่าง pack (subject หรือ unit) → reload URL · onLoad จะเข้า enterTeacherMode (มี ?unit= → view-teacher)
     const tparams = new URLSearchParams(location.search);
     tparams.set('course', subjectId);
     if (wantUnit) tparams.set('unit', wantUnit);
     else tparams.delete('unit');
-    location.search = tparams.toString();
+    const newSearch = '?' + tparams.toString();
+    if (newSearch === location.search) {
+      // URL ตรงกัน (กรณี astronomy ที่ไม่มี unit) → setter ไม่ trigger reload · บังคับด้วยมือ
+      location.reload();
+    } else {
+      location.search = tparams.toString();
+    }
     return;
   }
 
@@ -1327,6 +1334,18 @@ async function logout(){
 // SHOW HOME — optimistic UI (render ทันที · โหลดที่ background)
 // ═══════════════════════════════════════════════════════════
 function showHome(){
+  // กรณีไม่มี student session (เช่น ครูเผลอเรียก showHome) → redirect ไป teacher dashboard
+  if (!state.student){
+    console.warn('[showHome] no student session · redirecting to teacher dashboard');
+    if (isTeacherAuthed()){
+      showView('view-teacher');
+      renderTeacherShell();
+      switchTeacherTab('overview');
+      return;
+    }
+    showView('view-login');
+    return;
+  }
   // Auto-set subject/topic ถ้ายังไม่มี (fallback สำหรับโค้ดเก่าที่เรียก showHome ตรงๆ)
   if (!state.topic){
     state.subject = window.KP_COURSE || 'physics3';
