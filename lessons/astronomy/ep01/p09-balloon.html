@@ -9,20 +9,33 @@
 .before-panel { background: linear-gradient(135deg, rgba(185,128,255,0.05), rgba(100,216,255,0.03)); border: 1px solid rgba(185,128,255,0.3); border-radius: 14px; padding: 22px 26px; margin-bottom: 20px; }
 .predict-q { padding: 14px 16px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: 10px; margin: 10px 0; }
 .predict-q .q { font-weight: 600; font-size: 14.5px; color: var(--text); margin-bottom: 10px; }
+
+.sim-frame-wrap { position: relative; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin: 14px 0; }
+.sim-frame-wrap iframe { display:block; width:100%; height: 720px; border: 1px solid var(--border); border-radius: 8px; background: #06090f; }
+.sim-tools { display:flex; gap:10px; flex-wrap:wrap; margin-top:8px; }
+.sim-tools .btn-mini { padding: 6px 14px; background: rgba(100,216,255,0.08); border: 1px solid var(--border); color: var(--text-dim); border-radius: 6px; font-size: 12px; cursor: pointer; text-decoration:none; }
+.sim-tools .btn-mini:hover { color: var(--accent); border-color: var(--accent); }
+
 table.data-table { width: 100%; border-collapse: collapse; margin: 14px 0; }
 table.data-table th, table.data-table td { padding: 10px 12px; border: 1px solid var(--border); text-align: center; font-size: 13px; }
 table.data-table th { background: rgba(100,216,255,0.08); color: var(--accent); font-family: 'Orbitron'; font-size: 11px; letter-spacing: 0.15em; }
-table.data-table input { padding: 6px 8px; text-align: center; }
+table.data-table input { padding: 6px 8px; text-align: center; width: 90%; }
+table.data-table td.calc { color: var(--accent-gold); font-weight: 600; }
+
+.dt-row { display:flex; align-items:center; gap:10px; margin: 8px 0 14px; flex-wrap:wrap; }
+.dt-row label { font-size: 13px; color: var(--text-dim); }
+.dt-row input { width: 80px; padding: 6px 8px; text-align: center; }
+
 .canvas-wrap { position: relative; background: rgba(0,0,0,0.4); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 14px 0; }
 canvas.graph {
   display: block; width: 100%; height: auto;
   background: repeating-linear-gradient(0deg, transparent, transparent 24px, rgba(100,216,255,0.08) 24px, rgba(100,216,255,0.08) 25px),
               repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(100,216,255,0.08) 24px, rgba(100,216,255,0.08) 25px);
-  border: 1px solid var(--border); border-radius: 8px; cursor: crosshair;
+  border: 1px solid var(--border); border-radius: 8px;
 }
-.canvas-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-.canvas-toolbar button { padding: 6px 14px; background: rgba(100,216,255,0.08); border: 1px solid var(--border); color: var(--text-dim); border-radius: 6px; font-size: 12px; cursor: pointer; }
-.canvas-toolbar button.active { background: var(--accent); color: var(--bg-0); }
+.graph-stats { display:flex; gap:18px; margin-top:10px; flex-wrap:wrap; font-size:12px; color: var(--text-dim); }
+.graph-stats b { color: var(--accent-gold); font-family: 'Share Tech Mono', monospace; margin-left:4px; }
+
 .chk-list { display: flex; flex-direction: column; gap: 8px; margin: 14px 0; }
 </style>
 </head>
@@ -37,10 +50,10 @@ canvas.graph {
   <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · สำคัญ 20 นาที</div>
   <div class="teacher-cue-body" onclick="event.stopPropagation()">
     <div class="role"><span class="tag do">Before · 4 นาที</span><span>ให้ทีมคาดการณ์ 3 ข้อก่อน · ไม่มีผิดไม่มีถูก · บันทึกความคิดแรก</span></div>
-    <div class="role"><span class="tag do">Activity · 14 นาที</span><span>แจกลูกโป่ง · ปากกามาร์กเกอร์ · ไม้บรรทัด · เดินดูแต่ละโต๊ะ</span></div>
-    <div class="role"><span class="tag dont">ห้าม</span><span><b>ห้ามพูดคำว่า "การขยาย" · "ฮับเบิล" ก่อนถึง P10</b> · Experience Before Labeling</span></div>
-    <div class="role"><span class="tag say">ถาม</span><span>"สังเกตไหมว่าจุดห่างกัน?" "คู่ไหนห่างกันเร็วที่สุด?" ไม่ให้คำตอบ</span></div>
-    <div class="role"><span class="tag do">After · 2 นาที</span><span>ปิดกิจกรรม · ส่งข้อมูล · พาไป P10 ดร.ฮับเบิล</span></div>
+    <div class="role"><span class="tag do">Activity · 14 นาที</span><span>ใช้ <b>Simulation Tab 1</b> เท่านั้น · เป่า 1 → คลิกอ้างอิง→กาแล็กซี (ก-ง) อ่าน d₁ → เป่า 2 → อ่าน d₂ → กรอกตาราง</span></div>
+    <div class="role"><span class="tag dont">ห้าม</span><span><b>ห้ามพูดคำว่า "การขยาย" · "ฮับเบิล" ก่อนถึง P10</b> · ห้ามให้นักเรียนกด Tab "ทฤษฎี" ของ sim · Experience Before Labeling</span></div>
+    <div class="role"><span class="tag say">ถาม</span><span>"กาแล็กซีไหนเคลื่อนเร็วสุด?" "ทำไม?" "ถ้าย้ายไปยืนที่ ก จะเห็นอะไร?" ไม่ให้คำตอบ</span></div>
+    <div class="role"><span class="tag do">After · 2 นาที</span><span>ปิดกิจกรรม · ส่งข้อมูล · พาไป P10 ดร.ฮับเบิล เฉลย slope</span></div>
   </div>
 </div>
 
@@ -48,7 +61,7 @@ canvas.graph {
 <div class="phase-tag phase-before">◤ BEFORE · คาดการณ์ก่อนลงมือ (4 นาที)</div>
 <div class="before-panel">
   <div class="dialog-box hubble" data-speaker="ดร.ฮับเบิล">
-    <div class="txt">ก่อนแตะลูกโป่ง · ผมอยากให้ทีมลองคาดเดาก่อน 3 ข้อ · จะช่วยให้ระหว่างทำ · ทีมตั้งใจสังเกตสิ่งที่สำคัญ</div>
+    <div class="txt">ก่อนเริ่มทดลอง · ผมอยากให้ทีมลองคาดเดาก่อน 3 ข้อ · จะช่วยให้ระหว่างทำ · ทีมตั้งใจสังเกตสิ่งที่สำคัญ</div>
   </div>
 
   <div class="predict-q">
@@ -57,13 +70,13 @@ canvas.graph {
     <label class="radio-opt"><input type="radio" name="p1" value="no-center"><span>ไม่มี · ทุกจุดขยายพร้อมกัน</span></label>
   </div>
   <div class="predict-q">
-    <div class="q">2 · จุด "ไกล" กับ "ใกล้" เคลื่อนที่ต่างกันไหม?</div>
-    <label class="radio-opt"><input type="radio" name="p2" value="far-faster"><span>จุดไกลเคลื่อนเร็วกว่า</span></label>
-    <label class="radio-opt"><input type="radio" name="p2" value="far-slower"><span>จุดไกลเคลื่อนช้ากว่า</span></label>
+    <div class="q">2 · กาแล็กซี "ไกล" กับ "ใกล้" เคลื่อนที่ต่างกันไหม?</div>
+    <label class="radio-opt"><input type="radio" name="p2" value="far-faster"><span>กาแล็กซีไกลเคลื่อนเร็วกว่า</span></label>
+    <label class="radio-opt"><input type="radio" name="p2" value="far-slower"><span>กาแล็กซีไกลเคลื่อนช้ากว่า</span></label>
     <label class="radio-opt"><input type="radio" name="p2" value="same"><span>เคลื่อนเท่ากันหมด</span></label>
   </div>
   <div class="predict-q">
-    <div class="q">3 · ถ้าอยู่บนจุดในเอกภพ · จุดอื่นจะ "เข้าหา" หรือ "เคลื่อนออก"?</div>
+    <div class="q">3 · ถ้ายืนอยู่บนกาแล็กซีในเอกภพ · กาแล็กซีอื่นจะ "เข้าหา" หรือ "เคลื่อนออก"?</div>
     <label class="radio-opt"><input type="radio" name="p3" value="away"><span>เคลื่อนออกทุกทิศ</span></label>
     <label class="radio-opt"><input type="radio" name="p3" value="toward"><span>เคลื่อนเข้าหาทุกทิศ</span></label>
     <label class="radio-opt"><input type="radio" name="p3" value="mixed"><span>ผสม บางอันเข้าบางอันออก</span></label>
@@ -75,65 +88,93 @@ canvas.graph {
 </div>
 
 <!-- ACTIVITY -->
-<div class="phase-tag phase-activity">◤ ACTIVITY · ทดลองลูกโป่ง (14 นาที)</div>
+<div class="phase-tag phase-activity">◤ ACTIVITY · ทดลองลูกโป่งจำลอง (14 นาที)</div>
 <div class="info-card">
-  <h4>🧪 ขั้นตอนการทดลอง · ทำที่โต๊ะกลุ่ม</h4>
-  <p><b>1.</b> รับลูกโป่งแฟบ + ปากกามาร์กเกอร์ · วาดจุด 5 จุด (A, B, C, D, E)</p>
-  <p><b>2.</b> วัดระยะห่าง 3 คู่: A-B, B-C, C-D · บันทึกช่อง "ก่อนเป่า"</p>
-  <p><b>3.</b> เป่า 1/3 · วัดซ้ำ 3 คู่</p>
-  <p><b>4.</b> เป่า 2/3 · วัดซ้ำ</p>
-  <p><b>5.</b> เป่าเต็ม · วัดซ้ำ</p>
+  <h4>🧪 ขั้นตอนการทดลอง · ใช้ Simulation ด้านล่าง</h4>
+  <p><b>1.</b> ตั้งค่า: จำนวนกาแล็กซี <b>4 ดวง</b> · อัตราขยาย <b>a = 2.0</b> · เวลา Δt <b>5 วินาที</b></p>
+  <p><b>2.</b> กด <b>"🎈 เป่าครั้งที่ 1"</b> · คลิกกาแล็กซี<span style="color:#ff6b6b">อ้างอิง</span> แล้วคลิก ก/ข/ค/ง อ่านระยะ d₁ → กรอกในตาราง</p>
+  <p><b>3.</b> กด <b>"💨 เป่าครั้งที่ 2"</b> · รอ 5 วินาที · คลิก ref → กาแล็กซี อ่าน d₂ → กรอกในตาราง</p>
+  <p><b>4.</b> ระบบจะคำนวณ <b>Δd = d₂ − d₁</b> และ <b>v = Δd/Δt</b> · กราฟ v กับ d₁ ปรากฏอัตโนมัติ</p>
+  <p class="muted"><b>หมายเหตุ:</b> ใช้แค่ Tab "🎬 Simulation" เท่านั้น · ห้ามเปิด Tab "ทฤษฎี" ก่อน P10</p>
 </div>
 
-<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ BALLOON DATA INPUT · กรอกระยะ (cm)</h3>
-<table class="data-table">
-  <thead><tr><th>คู่จุด</th><th>ก่อนเป่า</th><th>รอบ 1 · 1/3</th><th>รอบ 2 · 2/3</th><th>รอบ 3 · เต็ม</th><th>อัตราขยาย</th></tr></thead>
-  <tbody>
-    <tr><td>A-B</td>
-      <td><input type="number" step="0.1" id="ab-0" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="ab-1" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="ab-2" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="ab-3" oninput="calc()"></td>
-      <td id="r-ab" style="color:var(--accent-gold)">—</td></tr>
-    <tr><td>B-C</td>
-      <td><input type="number" step="0.1" id="bc-0" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="bc-1" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="bc-2" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="bc-3" oninput="calc()"></td>
-      <td id="r-bc" style="color:var(--accent-gold)">—</td></tr>
-    <tr><td>C-D</td>
-      <td><input type="number" step="0.1" id="cd-0" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="cd-1" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="cd-2" oninput="calc()"></td>
-      <td><input type="number" step="0.1" id="cd-3" oninput="calc()"></td>
-      <td id="r-cd" style="color:var(--accent-gold)">—</td></tr>
-  </tbody>
-</table>
-
-<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ GRAPH · วาดกราฟระยะ vs รอบเป่า</h3>
-<div class="canvas-wrap">
-  <canvas class="graph" id="graph" width="800" height="350"></canvas>
-  <div class="canvas-toolbar">
-    <button onclick="setColor('#64d8ff', this)" class="active">🔵 A-B</button>
-    <button onclick="setColor('#ff8fa5', this)">🔴 B-C</button>
-    <button onclick="setColor('#ffcb6b', this)">🟡 C-D</button>
-    <button onclick="clearGraph()">🗑 ล้างกราฟ</button>
+<div class="sim-frame-wrap">
+  <iframe id="sim-frame"
+    src="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/45.%20expanding-universe-balloon.html"
+    title="Balloon Universe Simulation · Lab 45"
+    loading="lazy"
+    allow="fullscreen"></iframe>
+  <div class="sim-tools">
+    <a class="btn-mini" href="https://kp-science.github.io/physics-simulations/Virtual%20Physics%20Lab%2002/45.%20expanding-universe-balloon.html" target="_blank" rel="noopener">↗ เปิดในแท็บใหม่ (เต็มจอ)</a>
+    <button class="btn-mini" onclick="document.getElementById('sim-frame').contentWindow.location.reload()">↺ รีเซ็ต Simulation</button>
   </div>
 </div>
 
-<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ OBSERVATION · สิ่งที่ทีมสังเกตเห็นจริง</h3>
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ DATA INPUT · กรอกค่าที่อ่านจาก Simulation</h3>
+
+<div class="dt-row">
+  <label>⏱ เวลาที่ใช้เป่าครั้งที่ 2 · Δt =</label>
+  <input type="number" step="0.1" id="dt" value="5.0" oninput="calc()">
+  <span style="color:var(--text-dim); font-size:12px;">วินาที</span>
+  <span style="margin-left:auto; font-size:12px; color:var(--text-dim);">(ค่า default ใน sim = 5 วินาที)</span>
+</div>
+
+<table class="data-table">
+  <thead><tr>
+    <th>กาแล็กซี</th>
+    <th>d₁ · เป่าครั้งที่ 1 (ซม.)</th>
+    <th>d₂ · เป่าครั้งที่ 2 (ซม.)</th>
+    <th>Δd = d₂−d₁ (ซม.)</th>
+    <th>v = Δd/Δt (ซม./วิ)</th>
+  </tr></thead>
+  <tbody id="data-tbody">
+    <tr><td>ก</td>
+      <td><input type="number" step="0.1" id="g0-d1" oninput="calc()" placeholder="ใกล้สุด"></td>
+      <td><input type="number" step="0.1" id="g0-d2" oninput="calc()"></td>
+      <td class="calc" id="g0-dd">—</td>
+      <td class="calc" id="g0-v">—</td></tr>
+    <tr><td>ข</td>
+      <td><input type="number" step="0.1" id="g1-d1" oninput="calc()"></td>
+      <td><input type="number" step="0.1" id="g1-d2" oninput="calc()"></td>
+      <td class="calc" id="g1-dd">—</td>
+      <td class="calc" id="g1-v">—</td></tr>
+    <tr><td>ค</td>
+      <td><input type="number" step="0.1" id="g2-d1" oninput="calc()"></td>
+      <td><input type="number" step="0.1" id="g2-d2" oninput="calc()"></td>
+      <td class="calc" id="g2-dd">—</td>
+      <td class="calc" id="g2-v">—</td></tr>
+    <tr><td>ง</td>
+      <td><input type="number" step="0.1" id="g3-d1" oninput="calc()" placeholder="ไกลสุด"></td>
+      <td><input type="number" step="0.1" id="g3-d2" oninput="calc()"></td>
+      <td class="calc" id="g3-dd">—</td>
+      <td class="calc" id="g3-v">—</td></tr>
+  </tbody>
+</table>
+
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ GRAPH · v กับ d₁ (อัตโนมัติจากข้อมูล)</h3>
+<div class="canvas-wrap">
+  <canvas class="graph" id="graph" width="800" height="350"></canvas>
+  <div class="graph-stats">
+    <div>ความชันเส้นแนวโน้ม · slope = <b id="g-slope">—</b> /วินาที</div>
+    <div>ความตรงเชิงเส้น · R² = <b id="g-r2">—</b></div>
+    <div>Δt ใช้คำนวณ = <b id="g-dt">5.00 s</b></div>
+  </div>
+</div>
+
+<h3 style="font-family:'Orbitron'; font-size:14px; color:var(--accent); letter-spacing:0.2em; margin:20px 0 8px;">◦ OBSERVATION · สิ่งที่ทีมสังเกตเห็นจากการทดลอง</h3>
 <div class="chk-list" id="chk-list">
-  <label class="chk-item" data-correct="true"><input type="checkbox"><span>ทุกคู่จุดห่างกันมากขึ้นพร้อมกัน</span></label>
-  <label class="chk-item" data-correct="true"><input type="checkbox"><span>อัตราส่วนการขยายของทุกคู่ใกล้เคียงกัน</span></label>
-  <label class="chk-item" data-correct="true"><input type="checkbox"><span>ไม่มีจุดไหนเป็น "ศูนย์กลาง" ของการขยาย</span></label>
-  <label class="chk-item" data-correct="false"><input type="checkbox"><span>มีจุดกลางที่จุดอื่นเคลื่อนออกจาก</span></label>
-  <label class="chk-item" data-correct="false"><input type="checkbox"><span>จุดที่อยู่ใกล้กันเคลื่อนเร็วกว่าจุดไกล</span></label>
-  <label class="chk-item" data-correct="true"><input type="checkbox"><span>จุดที่ไกลกันมากขึ้นเคลื่อนด้วยความเร็วสัมพัทธ์มากกว่า</span></label>
-  <label class="chk-item" data-correct="false"><input type="checkbox"><span>ลูกโป่งระเบิด · จุดกระจายออก</span></label>
+  <label class="chk-item" data-correct="true"><input type="checkbox"><span>ทุกกาแล็กซีมีระยะเพิ่มขึ้นพร้อมกันหลังเป่าครั้งที่ 2</span></label>
+  <label class="chk-item" data-correct="true"><input type="checkbox"><span>กาแล็กซีที่อยู่ไกล (ง) มี Δd มากกว่ากาแล็กซีใกล้ (ก)</span></label>
+  <label class="chk-item" data-correct="true"><input type="checkbox"><span>กาแล็กซีที่อยู่ไกลกว่าเคลื่อนที่เร็วกว่า (v มากกว่า)</span></label>
+  <label class="chk-item" data-correct="true"><input type="checkbox"><span>กราฟ v กับ d₁ เป็น "เส้นตรง" ผ่านจุดกำเนิด</span></label>
+  <label class="chk-item" data-correct="true"><input type="checkbox"><span>ไม่มีกาแล็กซีไหนเป็น "ศูนย์กลาง" ของการเคลื่อนออก</span></label>
+  <label class="chk-item" data-correct="false"><input type="checkbox"><span>มีกาแล็กซีกลางที่อื่น ๆ เคลื่อนออกจาก</span></label>
+  <label class="chk-item" data-correct="false"><input type="checkbox"><span>กาแล็กซีใกล้เคลื่อนเร็วกว่ากาแล็กซีไกล</span></label>
+  <label class="chk-item" data-correct="false"><input type="checkbox"><span>ความเร็วทุกกาแล็กซีเท่ากัน</span></label>
 </div>
 
 <div class="form-row">
-  <label>✍ สรุปข้อสังเกต (1-2 ประโยค)</label>
+  <label>✍ สรุปข้อสังเกต · ความเร็ว v สัมพันธ์กับระยะ d₁ อย่างไร? (1-2 ประโยค)</label>
   <textarea id="summary" rows="3" placeholder="เขียนด้วยคำพูดของทีม · ยังไม่ต้องใช้ศัพท์วิชาการ"></textarea>
 </div>
 
@@ -144,7 +185,7 @@ canvas.graph {
 
 <div class="ped-tag-row">
   <span class="ped-tag k">K1 การขยายตัว</span>
-  <span class="ped-tag p">P1 แบบจำลอง</span>
+  <span class="ped-tag p">P1 แบบจำลอง · กราฟเส้นตรง</span>
   <span class="ped-tag a">A2 ทีมเวิร์ก</span>
   <span class="ped-tag">วPA 3 · สร้างความรู้เอง</span>
   <span class="ped-tag">วPA 5 · พัฒนาทักษะ</span>
@@ -152,7 +193,7 @@ canvas.graph {
 
 </div></main>
 <script src="../shared/book.js?v=99"></script>
-  <script src="../shared/telemetry-sync.js"></script>
+<script src="../shared/telemetry-sync.js"></script>
 <script>
 function savePred() {
   const p1 = document.querySelector('input[name="p1"]:checked');
@@ -162,82 +203,123 @@ function savePred() {
   const data = Book.getPageData('p09') || {};
   data.predictions = { p1: p1.value, p2: p2.value, p3: p3.value };
   Book.savePageData('p09', data);
-  // ⭐ Economy: once-per-page (กันกดซ้ำ)
-  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(2), reason:'Predictions saved' });
+  if (window.Economy) Economy.energyOnce({ page:'p09', amount:2, reason:'Predictions saved' });
   else Book.addEnergy(2, 'Predictions saved');
   const btn = document.getElementById('save-pred');
   btn.textContent = '✓ บันทึกแล้ว · ทดลองได้เลย';
   btn.disabled = true;
 }
 
-const pairs = ['ab','bc','cd'];
+const GAL_KEYS = ['g0','g1','g2','g3'];
+const GAL_LABELS = ['ก','ข','ค','ง'];
+
 function calc() {
+  const dt = parseFloat(document.getElementById('dt').value) || 5.0;
+  document.getElementById('g-dt').textContent = dt.toFixed(2) + ' s';
+  const rows = [];
   const data = Book.getPageData('p09') || {};
-  data.balloon = {};
-  pairs.forEach(p => {
-    const v0 = parseFloat(document.getElementById(`${p}-0`).value);
-    const v3 = parseFloat(document.getElementById(`${p}-3`).value);
-    if (v0 > 0 && v3 > 0) {
-      const r = (v3/v0).toFixed(2);
-      document.getElementById(`r-${p}`).textContent = `${r}×`;
-      data.balloon[p] = { v0, v3, ratio: +r };
+  data.balloon = { dt, galaxies: {} };
+
+  GAL_KEYS.forEach((g, i) => {
+    const d1 = parseFloat(document.getElementById(`${g}-d1`).value);
+    const d2 = parseFloat(document.getElementById(`${g}-d2`).value);
+    const ddEl = document.getElementById(`${g}-dd`);
+    const vEl  = document.getElementById(`${g}-v`);
+    if (Number.isFinite(d1) && Number.isFinite(d2)) {
+      const dd = d2 - d1;
+      const v  = dd / dt;
+      ddEl.textContent = dd.toFixed(2);
+      vEl.textContent  = v.toFixed(3);
+      data.balloon.galaxies[GAL_LABELS[i]] = { d1, d2, dd:+dd.toFixed(3), v:+v.toFixed(4) };
+      if (d1 > 0) rows.push({ d1, v });
+    } else {
+      ddEl.textContent = '—';
+      vEl.textContent  = '—';
     }
   });
+
   Book.savePageData('p09', data);
+  drawGraph(rows, dt);
 }
 
-// Graph canvas
-let ctx, color = '#64d8ff';
+/* ====== GRAPH ====== */
 const cv = document.getElementById('graph');
-ctx = cv.getContext('2d');
-function drawAxes() {
+const ctx = cv.getContext('2d');
+const PAD = { l: 60, r: 30, t: 24, b: 44 };
+
+function drawAxes(maxX, maxY) {
+  ctx.clearRect(0,0,cv.width,cv.height);
   ctx.strokeStyle = 'rgba(100,216,255,0.5)';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(50, 20); ctx.lineTo(50, cv.height - 30);
-  ctx.lineTo(cv.width - 20, cv.height - 30); ctx.stroke();
-  ctx.fillStyle = 'rgba(232,236,248,0.7)';
+  ctx.moveTo(PAD.l, PAD.t); ctx.lineTo(PAD.l, cv.height - PAD.b);
+  ctx.lineTo(cv.width - PAD.r, cv.height - PAD.b); ctx.stroke();
+  ctx.fillStyle = 'rgba(232,236,248,0.85)';
   ctx.font = '12px Sarabun';
-  ctx.fillText('ระยะ (cm)', 10, 15);
-  ctx.fillText('รอบเป่า', cv.width - 70, cv.height - 10);
-  for (let i = 0; i <= 4; i++) {
-    const x = 50 + i * ((cv.width - 70) / 4);
-    ctx.fillText(i, x - 3, cv.height - 15);
+  ctx.fillText('v (ซม./วิ)', 8, PAD.t + 6);
+  ctx.fillText('d₁ (ซม.)', cv.width - PAD.r - 50, cv.height - 14);
+  ctx.font = '11px "Share Tech Mono"';
+  ctx.fillStyle = 'rgba(232,236,248,0.6)';
+  for (let i = 0; i <= 5; i++) {
+    const x = PAD.l + i * (cv.width - PAD.l - PAD.r) / 5;
+    const y = cv.height - PAD.b - i * (cv.height - PAD.t - PAD.b) / 5;
+    ctx.fillText((maxX * i / 5).toFixed(1), x - 8, cv.height - PAD.b + 14);
+    ctx.fillText((maxY * i / 5).toFixed(2), 6, y + 4);
   }
 }
-drawAxes();
-let drawing = false, lastX = 0, lastY = 0;
-function getPos(e) {
-  const r = cv.getBoundingClientRect();
-  const t = e.touches ? e.touches[0] : e;
-  return { x: (t.clientX - r.left) * (cv.width/r.width), y: (t.clientY - r.top) * (cv.height/r.height) };
-}
-cv.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
-cv.addEventListener('mousemove', e => {
-  if (!drawing) return;
-  const p = getPos(e);
-  ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke();
-  lastX = p.x; lastY = p.y;
-});
-cv.addEventListener('mouseup', () => drawing = false);
-cv.addEventListener('mouseleave', () => drawing = false);
-cv.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; });
-cv.addEventListener('touchmove', e => {
-  e.preventDefault(); if (!drawing) return;
-  const p = getPos(e);
-  ctx.strokeStyle = color; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke();
-  lastX = p.x; lastY = p.y;
-});
-cv.addEventListener('touchend', () => drawing = false);
 
-function setColor(c, btn) {
-  color = c;
-  document.querySelectorAll('.canvas-toolbar button').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
+function drawGraph(rows, dt) {
+  const maxX = Math.max(8, ...rows.map(r => r.d1)) * 1.15;
+  const maxY = Math.max(0.5, ...rows.map(r => r.v))  * 1.20;
+  drawAxes(maxX, maxY);
+  const X = d => PAD.l + d / maxX * (cv.width - PAD.l - PAD.r);
+  const Y = v => cv.height - PAD.b - v / maxY * (cv.height - PAD.t - PAD.b);
+
+  // points
+  ctx.fillStyle = '#64d8ff';
+  rows.forEach(r => {
+    ctx.beginPath(); ctx.arc(X(r.d1), Y(r.v), 6, 0, Math.PI*2); ctx.fill();
+  });
+
+  // best-fit line through origin (slope = mean v / mean d)
+  let slope = NaN, r2 = NaN;
+  if (rows.length >= 2) {
+    let sxy = 0, sxx = 0;
+    rows.forEach(r => { sxy += r.d1 * r.v; sxx += r.d1 * r.d1; });
+    slope = sxy / sxx;
+    // R²
+    const meanY = rows.reduce((s,r)=>s+r.v,0) / rows.length;
+    let ssRes = 0, ssTot = 0;
+    rows.forEach(r => {
+      const yHat = slope * r.d1;
+      ssRes += (r.v - yHat) ** 2;
+      ssTot += (r.v - meanY) ** 2;
+    });
+    r2 = ssTot > 0 ? 1 - ssRes / ssTot : 1;
+
+    ctx.strokeStyle = '#ffcb6b';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6,4]);
+    ctx.beginPath();
+    ctx.moveTo(X(0), Y(0));
+    ctx.lineTo(X(maxX), Y(slope * maxX));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  document.getElementById('g-slope').textContent = Number.isFinite(slope) ? slope.toFixed(3) : '—';
+  document.getElementById('g-r2').textContent    = Number.isFinite(r2)    ? r2.toFixed(3)    : '—';
+
+  // save to data
+  const data = Book.getPageData('p09') || {};
+  if (data.balloon) {
+    data.balloon.slope = Number.isFinite(slope) ? +slope.toFixed(4) : null;
+    data.balloon.r2    = Number.isFinite(r2)    ? +r2.toFixed(4)    : null;
+    Book.savePageData('p09', data);
+  }
 }
-function clearGraph() { ctx.clearRect(0,0,cv.width,cv.height); drawAxes(); }
+
+drawAxes(10, 1);
 
 function submit() {
   const items = document.querySelectorAll('#chk-list .chk-item');
@@ -255,16 +337,18 @@ function submit() {
   data.summary = summary;
   Book.savePageData('p09', data);
   const bonus = summary.length > 30 ? 2 : 0;
-  // ⭐ Economy: once-per-page (กันกดซ้ำ)
-  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(Math.max(3, correct + bonus - wrong)), reason:'P09 Balloon Lab' });
+  if (window.Economy) Economy.energyOnce({ page:'p09', amount:Math.max(3, correct + bonus - wrong), reason:'P09 Balloon Lab' });
   else Book.addEnergy(Math.max(3, correct + bonus - wrong), 'P09 Balloon Lab');
-  Book.addDiscovery('การขยายตัว · ไม่มีศูนย์กลาง');
-  Book.addInventory('🎈 Balloon Data · อัตราขยาย');
+  Book.addDiscovery('การขยายตัว · ไม่มีศูนย์กลาง · v ∝ d');
+  Book.addInventory('🎈 Balloon Data · slope (a−1)/Δt');
   Book.completePage('p09');
+  const slopeTxt = document.getElementById('g-slope').textContent;
+  const r2Txt    = document.getElementById('g-r2').textContent;
   document.getElementById('result').innerHTML = `
     <div class="branch-reveal main">
       <h3>✓ ข้อมูลส่งไปยัง ดร.ฮับเบิล แล้ว</h3>
       <p>ข้อสังเกตถูก ${correct} · ข้อผิด ${wrong}</p>
+      <p>ความชันกราฟ v-d₁ = <b>${slopeTxt}</b> /วินาที · R² = <b>${r2Txt}</b></p>
       <p class="muted mt-10">ดร.ฮับเบิล กำลังเตรียมอธิบายในหน้าถัดไป · กด "ต่อไป →"</p>
     </div>`;
 }
