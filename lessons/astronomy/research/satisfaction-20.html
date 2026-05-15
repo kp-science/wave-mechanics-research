@@ -226,6 +226,7 @@ async function sendToBackend(payload){
       const Q_KEY = 'wave_sat_astronomy_queue';
       const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
       q.push(payload);
+      if (q.length > 50) q.splice(0, q.length - 50);
       localStorage.setItem(Q_KEY, JSON.stringify(q));
     } catch(_){}
     return { ok:false, reason:e.message };
@@ -288,6 +289,7 @@ btn.onclick = async () => {
   document.getElementById('resultBox').scrollIntoView({behavior:'smooth'});
 };
 
+// Background: retry queued payloads — use direct fetch to avoid double-enqueue
 window.addEventListener('load', async () => {
   try {
     const Q_KEY = 'wave_sat_astronomy_queue';
@@ -295,8 +297,14 @@ window.addEventListener('load', async () => {
     if (!q.length || !API_URL) return;
     const remaining = [];
     for (const item of q){
-      const r = await sendToBackend(item);
-      if (!r.ok) remaining.push(item);
+      try {
+        const r = await fetch(API_URL, {
+          method:'POST', mode:'cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(item)
+        });
+        if (!r.ok) remaining.push(item);
+      } catch(_) { remaining.push(item); }
     }
     localStorage.setItem(Q_KEY, JSON.stringify(remaining));
   } catch(_){}
