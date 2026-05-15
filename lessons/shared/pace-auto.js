@@ -38,7 +38,7 @@
   if (!API_URL) { console.warn('[pace-auto] no API_URL for course=' + course); return; }
 
   const ROOM = 'auto_' + course;
-  const POLL_MS = 2000;
+  const POLL_MS = 8000;
 
   // ── State ───────────────────────────────────────────────────
   const State = {
