@@ -64,8 +64,8 @@
           const epAnswers = EP_CONFIG.pretest.map((q, i) => ({
             id: 'Q'+(i+1),
             mcode: q.tag || 'EP07-Q'+(i+1),
-            ans: (res.answers && res.answers[i] !== undefined) ? Number(res.answers[i]) : -1,
-            correct: (res.answers && Number(res.answers[i]) === q.answer)
+            ans: (res.answers && res.answers[i] != null) ? Number(res.answers[i].pick) : -1,
+            correct: !!(res.answers && res.answers[i] && res.answers[i].correct)
           }));
           EPSync.submit({ ep:7, test:'pre', answers: epAnswers });
         }

@@ -114,6 +114,8 @@
 
   function finishPage() {
     // เก็บ pre-test answers เป็น baseline (ไม่ให้ energy · baseline จริง)
+    const unanswered = ['q1','q2','q3','q4','q5'].filter(q => !document.querySelector(`input[name="${q}"]:checked`));
+    if (unanswered.length) { alert(`กรุณาตอบให้ครบทุกข้อ (เหลืออีก ${unanswered.length} ข้อ)`); return; }
     const answers = {};
     const correctMap = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'b' };
     const epAnswers = [];

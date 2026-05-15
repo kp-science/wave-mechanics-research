@@ -53,6 +53,7 @@
       try {
         const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
         q.push(payload);
+        if (q.length > 50) q.splice(0, q.length - 50);
         localStorage.setItem(Q_KEY, JSON.stringify(q));
       } catch(_){}
       return { ok:false, reason:e.message };
