@@ -141,6 +141,7 @@ async function sendToBackend(payload){
       const Q_KEY = 'wave_ft_astronomy_queue';
       const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
       q.push(payload);
+      if (q.length > 50) q.splice(0, q.length - 50);
       localStorage.setItem(Q_KEY, JSON.stringify(q));
     } catch(_){}
     return { ok:false, reason:e.message };
@@ -209,9 +210,9 @@ function updateProgress(){
   btn.textContent = done < TOTAL ? `🔒 เหลืออีก ${TOTAL-done} ข้อ` : '📤 ส่ง FT-02';
 }
 
-btn.onclick = async () => {
+btn.onclick = () => {
   btn.disabled = true;
-  btn.textContent = '⏳ กำลังส่ง...';
+  btn.textContent = '✓ บันทึกแล้ว';
 
   let correct = 0;
   const detailed = QS.map((q,i) => {
@@ -227,7 +228,7 @@ btn.onclick = async () => {
     return { id:q.id, ep:q.ep, mcode:q.mcode, kcode:q.kcode, ans, correct:ok, confidence:conf, category };
   });
 
-  // Get pretest baseline first to include in payload
+  // Get pretest baseline
   let pre = 0;
   try {
     const key = 'wave_ft_astronomy';
@@ -257,7 +258,7 @@ btn.onclick = async () => {
     ua: navigator.userAgent.slice(0,80)
   };
 
-  // Save locally
+  // Save locally immediately
   try {
     const key = 'wave_ft_astronomy';
     const saved = JSON.parse(localStorage.getItem(key) || '{}');
@@ -266,13 +267,7 @@ btn.onclick = async () => {
     localStorage.setItem(key, JSON.stringify(saved));
   } catch(_){}
 
-  // Send to Apps Script (with retry queue fallback)
-  const result = await sendToBackend(payload);
-  const syncTag = result.ok
-    ? '<span style="background:#16a34a;padding:4px 12px;border-radius:100px;font-size:12px;color:#fff">☁️ ส่งขึ้น Sheet แล้ว</span>'
-    : '<span style="background:#ca8a04;padding:4px 12px;border-radius:100px;font-size:12px;color:#fff">⚠️ บันทึกในเครื่อง · จะส่งเมื่อ online</span>';
-  // syncTag จะถูกแทรกในส่วน msg ด้านล่าง
-
+  // Show result immediately — don't wait for network
   document.getElementById('preScore').textContent = `${pre}/${TOTAL}`;
   document.getElementById('postScore').textContent = `${post}/${TOTAL}`;
   document.getElementById('gainAbs').textContent = `${absGain >= 0 ? '+' : ''}${absGain}`;
@@ -296,28 +291,43 @@ btn.onclick = async () => {
   } else {
     msgText = '💡 ลองทบทวน EP ที่ตอบผิดบ่อย';
   }
-  msg.innerHTML = msgText + '<div style="margin-top:10px">' + syncTag + '</div>';
+  const syncEl = document.createElement('div');
+  syncEl.style.marginTop = '10px';
+  syncEl.innerHTML = '<span style="background:#0ea5e9;padding:4px 12px;border-radius:100px;font-size:12px;color:#fff">⏳ กำลังส่งขึ้น Sheet...</span>';
+  msg.innerHTML = msgText;
+  msg.appendChild(syncEl);
 
   document.getElementById('resultBox').classList.add('show');
-  btn.disabled = true;
-  btn.textContent = '✓ ส่งแล้ว';
   document.getElementById('resultBox').scrollIntoView({behavior:'smooth'});
+
+  // Send in background — UI already shown
+  sendToBackend(payload).then(result => {
+    syncEl.innerHTML = result.ok
+      ? '<span style="background:#16a34a;padding:4px 12px;border-radius:100px;font-size:12px;color:#fff">☁️ ส่งขึ้น Sheet แล้ว</span>'
+      : '<span style="background:#ca8a04;padding:4px 12px;border-radius:100px;font-size:12px;color:#fff">⚠️ บันทึกในเครื่อง · จะส่งเมื่อ online</span>';
+  });
 };
 
 function goHome(){
   location.href = '../../KP-Classroom.html?course=astronomy';
 }
 
-// Background: retry queued payloads when online
+// Background: retry queued payloads — use direct fetch to avoid double-enqueue
 window.addEventListener('load', async () => {
   try {
     const Q_KEY = 'wave_ft_astronomy_queue';
     const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
     if (!q.length || !API_URL) return;
     const remaining = [];
-    for (const item of q){
-      const r = await sendToBackend(item);
-      if (!r.ok) remaining.push(item);
+    for (const item of q) {
+      try {
+        const r = await fetch(API_URL, {
+          method:'POST', mode:'cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(item)
+        });
+        if (!r.ok) remaining.push(item);
+      } catch(_) { remaining.push(item); }
     }
     localStorage.setItem(Q_KEY, JSON.stringify(remaining));
   } catch(_){}
