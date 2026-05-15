@@ -783,12 +783,8 @@ Book.pace = {
     const pages = Book.getPages();
     const t = pages.find(p => p.id === target);
     if (!t) return;
-    // ⭐ Auto-jump mode: countdown แล้วเด้งไปอัตโนมัติ · นักเรียนทั้งห้องเปิดหน้าเดียวกันพร้อมกัน
-    if (pace.auto === true || pace.auto === 'true') {
-      this.startAutoJump(t, pace);
-    } else {
-      this.showBanner(t);
-    }
+    // Auto-jump ถูกถอดออกแล้ว · แสดงเฉพาะ banner แจ้งเตือน · นักเรียนกดต่อไปเองตามจังหวะ
+    this.showBanner(t);
   },
 
   // ⭐ Auto-jump: countdown 3 วินาที (ยกเลิกได้) · ป้องกัน double-jump ด้วย key เดียวกัน

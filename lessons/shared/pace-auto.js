@@ -234,10 +234,8 @@
     }
     State.lastKey = key;
     applyLock(findNextEls(), shouldLock());
-    // Auto-jump trigger
-    if (pace && pace.auto && pace.page && pace.page !== currentPageId() && pageOrder(pace.page) > pageOrder(currentPageId())) {
-      startAutoJump(pace.page, pace);
-    } else if (pace && pace.page && pace.page !== currentPageId() && !pace.auto) {
+    // Auto-jump ถูกถอดออกแล้ว · แสดงเฉพาะ banner แจ้งเตือนหน้าที่ครูปลดถึง · นักเรียนกดต่อไปเอง
+    if (pace && pace.page && pace.page !== currentPageId()) {
       showBannerInfo('🔔 ครูพาไปหน้า <b>' + String(pace.page).toUpperCase() + '</b> · กด "ต่อไป" เพื่อตาม', 'linear-gradient(135deg,#0ea5e9,#0284c7)');
     } else {
       hideBanner();
