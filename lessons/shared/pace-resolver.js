@@ -106,12 +106,14 @@
 
     /**
      * Shared force-jump helper · เรียกจาก EP*Gate._check ตอนรับ pace ใหม่
-     * - ถ้า pace.auto && pace.page !== currentPageId → countdown 3 วิ → location.href
-     * - de-dupe ด้วย key (page|at) กัน trigger ซ้ำ
+     * Auto-jump ถูกถอดออกแล้ว · ระบบใช้เพดาน (unlockedUpTo) อย่างเดียว · maybeForceJump เป็น no-op
+     * (เก็บ signature ไว้กัน caller ใน ep0X-boot.js พัง · คืน false เสมอ)
      */
     _autoJumpKey: null,
     _autoJumpTimer: null,
     maybeForceJump(pace, currentPageId, pages) {
+      return false;
+      // eslint-disable-next-line no-unreachable
       if (!pace || !pace.auto || !pace.page) return false;
       if (pace.page === currentPageId) return false;
       const target = (pages || []).find(p => p.id === pace.page);
