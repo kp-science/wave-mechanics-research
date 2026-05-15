@@ -251,7 +251,7 @@ const Book = {
     if (Book.pace && Book.pace.enabled && Book.pace.unlockedUpTo) {
       const unlockedIdx = pages.findIndex(p => p.id === Book.pace.unlockedUpTo);
       console.info('[Book.next] pace check · idx=' + idx + ' unlockedUpTo=' + Book.pace.unlockedUpTo + ' unlockedIdx=' + unlockedIdx);
-      if (unlockedIdx >= 0 && idx > unlockedIdx) {
+      if (unlockedIdx >= 0 && idx >= unlockedIdx) {
         Book.pace.flashLocked();
         return;
       }
@@ -849,7 +849,7 @@ Book.pace = {
     const unlockedIdx = pages.findIndex(p => p.id === this.unlockedUpTo);
     if (unlockedIdx < 0) return;
     const uPage = pages[unlockedIdx];
-    if (idx > unlockedIdx) {
+    if (idx >= unlockedIdx) {
       btn.classList.add('pace-locked');
       btn.disabled = true;
       btn.textContent = '🔒 รอครูปลดล็อค';
