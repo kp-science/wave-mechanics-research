@@ -226,15 +226,16 @@ async function sendToBackend(payload){
       const Q_KEY = 'wave_consent_astronomy_queue';
       const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
       q.push(payload);
+      if (q.length > 50) q.splice(0, q.length - 50);
       localStorage.setItem(Q_KEY, JSON.stringify(q));
     } catch(_){}
     return { ok:false, reason:e.message };
   }
 }
 
-btn.onclick = async () => {
+btn.onclick = () => {
   btn.disabled = true;
-  btn.textContent = '⏳ กำลังส่ง...';
+  btn.textContent = '✓ บันทึกแล้ว';
   const parentEl = document.querySelector('input[name="parent"]:checked');
   const payload = {
     action:'submitConsent',
@@ -254,11 +255,7 @@ btn.onclick = async () => {
     localStorage.setItem('wave_consent_astronomy', JSON.stringify(payload));
   } catch(_){}
 
-  const result = await sendToBackend(payload);
-  const syncTag = result.ok
-    ? '<span style="background:#16a34a;padding:2px 10px;border-radius:100px;font-size:12px">☁️ ส่งขึ้น Sheet แล้ว</span>'
-    : '<span style="background:#ca8a04;padding:2px 10px;border-radius:100px;font-size:12px">⚠️ บันทึกไว้ในเครื่อง · จะส่งเมื่อ online</span>';
-
+  // Show result immediately — don't wait for network
   const box = document.getElementById('resultBox');
   if (consentChoice === 'declined'){
     box.classList.add('result-decline');
@@ -268,10 +265,17 @@ btn.onclick = async () => {
     document.getElementById('resultTitle').textContent = '✅ ขอบคุณที่ยินดีเข้าร่วมการวิจัย';
     document.getElementById('resultMsg').textContent = 'ข้อมูลของนักเรียนจะถูกใช้เพื่อพัฒนาการเรียนการสอน · เก็บเป็นความลับ';
   }
-  document.getElementById('syncTag').innerHTML = syncTag;
+  const syncEl = document.getElementById('syncTag');
+  syncEl.innerHTML = '<span style="background:#0ea5e9;padding:2px 10px;border-radius:100px;font-size:12px">⏳ กำลังส่งขึ้น Sheet...</span>';
   box.classList.add('show');
-  btn.textContent = '✓ ส่งแล้ว';
   box.scrollIntoView({behavior:'smooth'});
+
+  // Send in background
+  sendToBackend(payload).then(result => {
+    syncEl.innerHTML = result.ok
+      ? '<span style="background:#16a34a;padding:2px 10px;border-radius:100px;font-size:12px">☁️ ส่งขึ้น Sheet แล้ว</span>'
+      : '<span style="background:#ca8a04;padding:2px 10px;border-radius:100px;font-size:12px">⚠️ บันทึกไว้ในเครื่อง · จะส่งเมื่อ online</span>';
+  });
 };
 
 window.addEventListener('load', async () => {
@@ -280,9 +284,15 @@ window.addEventListener('load', async () => {
     const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
     if (!q.length || !API_URL) return;
     const remaining = [];
-    for (const item of q){
-      const r = await sendToBackend(item);
-      if (!r.ok) remaining.push(item);
+    for (const item of q) {
+      try {
+        const r = await fetch(API_URL, {
+          method:'POST', mode:'cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify(item)
+        });
+        if (!r.ok) remaining.push(item);
+      } catch(_) { remaining.push(item); }
     }
     localStorage.setItem(Q_KEY, JSON.stringify(remaining));
   } catch(_){}
