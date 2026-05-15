@@ -6702,6 +6702,16 @@ async function loadSummaryData(force){
       return;
     }
     _summaryData = (r.data || []).filter(row => row.s_num !== '📊 สรุปรวม');
+    // Astronomy: normalize EP_Summary keys → physics3-compatible (s_id/s_name/s_num/s_room/N_gain)
+    if (isAstro){
+      _summaryData.forEach(row => {
+        if (row.s_id === undefined)   row.s_id   = row.student_id;
+        if (row.s_name === undefined) row.s_name = row.name;
+        if (row.s_num === undefined)  row.s_num  = row.no;
+        if (row.s_room === undefined) row.s_room = row.class;
+        if (row.N_gain === undefined) row.N_gain = row.normalizedGain;
+      });
+    }
     // Normalize s_room · Apps Script converts Google Sheets auto-parsed dates (e.g. "5/1" → 2024-05-01) to ISO string
     _summaryData.forEach(row => { row.s_room = _normRoom(row.s_room); });
     const rooms = [...new Set(_summaryData.map(r => r.s_room).filter(Boolean))].sort((a,b) => String(a).localeCompare(String(b), 'th', {numeric:true}));
@@ -8614,12 +8624,14 @@ async function loadPostPlanData_astronomy(plan){
     } catch(e){ return null; }
   };
 
-  const [epPre, epPost, activity, boss, pages] = await Promise.all([
+  const [epPre, epPost, activity, boss, pages, ob, gr] = await Promise.all([
     fetchSheet('EP_Pre_Raw'),
     fetchSheet('EP_Post_Raw'),
     fetchSheet('Activity_Raw'),
     fetchSheet('Boss_Engagement'),
-    fetchSheet(`EP${plan}_Pages`)
+    fetchSheet(`EP${plan}_Pages`),
+    fetchSheet(`OB_P${plan}`),
+    fetchSheet(`GR_P${plan}`)
   ]);
 
   // Filter rows by ep=plan
@@ -8632,6 +8644,8 @@ async function loadPostPlanData_astronomy(plan){
   const actRows = filterEp(activity);
   const bossRows = filterEp(boss);
   const pageRows = (pages && pages.data) || [];
+  const obRows = (ob && ob.data) || [];
+  const grRows = (gr && gr.data) || [];
 
   // Transform to physics3-like f_pre / f_post structure
   // Two-tier categorization: correct → Sound · incorrect+M-code → Misconception · incorrect no M → No-K
@@ -8653,6 +8667,8 @@ async function loadPostPlanData_astronomy(plan){
   data.activity = { data: actRows, count: actRows.length };
   data.boss = { data: bossRows, count: bossRows.length };
   data.pages = { data: pageRows, count: pageRows.length };
+  data.ob = { data: obRows, count: obRows.length };
+  data.gr = { data: grRows, count: grRows.length };
 
   // Attendance — unique student_id across all sources
   const ids = new Set();
