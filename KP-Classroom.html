@@ -582,6 +582,7 @@ body.printing-tool #topBar{display:none !important}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="lessons/shared/collect-client.js"></script>
+<script src="lessons/astronomy/shared/firebase-config.js"></script>
 </head>
 <body>
 
@@ -5027,43 +5028,42 @@ async function paceRefreshState(){
   paceMarkActiveCard();
 }
 
+function _paceWriteFirebase(roomCode, pace) {
+  if (!window.FirebaseConfig || !window.FirebaseConfig.isConfigured()) return;
+  window.FirebaseConfig.init().then(db => {
+    if (!db) return;
+    window.FirebaseConfig.set(db.ref('pace/' + roomCode), pace);
+  }).catch(() => {});
+}
+
 async function paceSetCurrent(pageId){
   const subject = window.KP_COURSE || '';
   const ep = paceCurrentEp();
   const auto = !!paceState.auto;
-  try {
-    await fetch(API_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({
-        action: 'paceSetOpen', code: paceAutoCode(),
-        page: pageId, unlockedUpTo: pageId,
-        ep, subject, auto
-      })
-    });
-  } catch(e){ alert('ส่งไม่สำเร็จ: ' + e.message); return; }
-  // optimistic: update local state ทันที (ไม่ต้องรอ poll)
-  paceState.current = { page: pageId, unlockedUpTo: pageId, ep, subject, auto, at: Date.now() };
+  const pace = { page: pageId, unlockedUpTo: pageId, ep, subject, auto, at: Date.now() };
+  // Firebase write is instant — students' listeners fire in <1s
+  _paceWriteFirebase(paceAutoCode(), pace);
+  // Apps Script write persists to Sheet (fire-and-forget)
+  fetch(API_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ action: 'paceSetOpen', code: paceAutoCode(), page: pageId, unlockedUpTo: pageId, ep, subject, auto })
+  }).catch(() => {});
+  paceState.current = pace;
   updatePaceStatusBox();
   paceMarkActiveCard();
   const verb = auto ? '🚀 พาทุกคนไป' : '🔓 ปลดถึง';
-  paceFlashToast(verb + ' ' + pageId.toUpperCase() + ' · นักเรียนเด้งภายใน ~2 วินาที');
+  paceFlashToast(verb + ' ' + pageId.toUpperCase() + ' · นักเรียนเด้งทันที');
 }
 
 async function paceClear(){
   if (!confirm('ปิด pace mode? นักเรียนจะกดต่อไปได้อิสระ')) return;
-  try {
-    await fetch(API_URL, {
-      method:'POST', mode:'no-cors',
-      headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({
-        action:'paceSetOpen', code: paceAutoCode(),
-        page:'p99', unlockedUpTo:'p99',
-        ep: paceCurrentEp(), subject: window.KP_COURSE||'',
-        auto: false
-      })
-    });
-  } catch {}
+  _paceWriteFirebase(paceAutoCode(), { page: 'p99', unlockedUpTo: 'p99', ep: paceCurrentEp(), subject: window.KP_COURSE||'', auto: false, at: Date.now() });
+  fetch(API_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({ action:'paceSetOpen', code: paceAutoCode(), page:'p99', unlockedUpTo:'p99', ep: paceCurrentEp(), subject: window.KP_COURSE||'', auto: false })
+  }).catch(() => {});
   paceState.current = null;
   updatePaceStatusBox();
   paceMarkActiveCard();

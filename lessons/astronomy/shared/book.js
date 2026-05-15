@@ -757,11 +757,19 @@ Book.pace = {
 
   _loadClient(cb) {
     if (window.PaceClient) { cb(); return; }
-    const s = document.createElement('script');
-    s.src = '../../shared/pace-client.js?v=1';
-    s.onload = cb;
-    s.onerror = () => console.warn('PaceClient load failed');
-    document.head.appendChild(s);
+    const loadPaceClient = () => {
+      const s = document.createElement('script');
+      s.src = '../../shared/pace-client.js?v=1';
+      s.onload = cb;
+      s.onerror = () => console.warn('PaceClient load failed');
+      document.head.appendChild(s);
+    };
+    if (window.FirebaseConfig) { loadPaceClient(); return; }
+    const fc = document.createElement('script');
+    fc.src = '../shared/firebase-config.js?v=1';
+    fc.onload = loadPaceClient;
+    fc.onerror = loadPaceClient;
+    document.head.appendChild(fc);
   },
 
   onRemote(pace) {

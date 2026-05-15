@@ -3,17 +3,15 @@
 /* ถ้าไม่ใส่ · sync-client.js จะ fallback เป็น BroadcastChannel อัตโนมัติ  */
 
 (function(global){
-  // ⚠️ TODO: ใส่ config ของ Firebase Realtime Database ของคุณที่นี่
-  // สมัครฟรีที่ https://console.firebase.google.com → Create Project → Realtime Database
-  const FIREBASE_CREDENTIALS = null;
-  /* ตัวอย่าง:
   const FIREBASE_CREDENTIALS = {
-    apiKey: "AIzaSy...",
-    authDomain: "cosmos-log.firebaseapp.com",
-    databaseURL: "https://cosmos-log-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "cosmos-log",
+    apiKey: "AIzaSyBTtSjqno1IVku27_J0lFY2dU0y8nq9B5U",
+    authDomain: "kp-science-f11ff.firebaseapp.com",
+    databaseURL: "https://kp-science-f11ff-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "kp-science-f11ff",
+    storageBucket: "kp-science-f11ff.firebasestorage.app",
+    messagingSenderId: "352992735315",
+    appId: "1:352992735315:web:c88b220ffc750862ab16a6"
   };
-  */
 
   global.FirebaseConfig = {
     isConfigured: () => FIREBASE_CREDENTIALS !== null,

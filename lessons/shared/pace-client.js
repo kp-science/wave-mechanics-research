@@ -15,10 +15,12 @@
   let lastSeenKey = null;
   let localChannel = null;
   let localChannelListener = null;
+  let _fbRef = null;
+  let _fbUnsubscribe = null;
 
-  // Firebase realtime cache (populated โดย KPDB.watchPace)
-  const _fbCache = {};   // { roomCode: pace }
-  const _fbSubscribed = {};  // { roomCode: true }
+  // Legacy cache (used by peek() firebase mode)
+  const _fbCache = {};
+  const _fbSubscribed = {};
 
   function _ensureFirebaseSub(subject, roomCode) {
     if (_fbSubscribed[roomCode]) return;
@@ -29,6 +31,11 @@
         _fbCache[roomCode] = pace;
       }, { subject });
     } catch (e) { _fbSubscribed[roomCode] = false; }
+  }
+
+  function _startPolling(opts, interval) {
+    tick(opts);
+    timer = setInterval(() => tick(opts), interval);
   }
 
   function paceKey(p) {
@@ -95,7 +102,6 @@
       const interval = opts.intervalMs || DEFAULT_INTERVAL_MS;
 
       if (opts.mode === 'local') {
-        // instant notify via BroadcastChannel
         try {
           localChannel = new BroadcastChannel(LOCAL_CHANNEL_PREFIX + (opts.roomCode || 'default'));
           localChannelListener = (ev) => {
@@ -106,15 +112,37 @@
             try { opts.onChange(pace); } catch (e) {}
           };
           localChannel.addEventListener('message', localChannelListener);
-        } catch (e) { /* fallback to polling only */ }
+        } catch (e) {}
+        _startPolling(opts, interval);
+        return;
       }
 
-      tick(opts);
-      timer = setInterval(() => tick(opts), interval);
+      // Firebase realtime listener — eliminates polling entirely
+      if (window.FirebaseConfig && window.FirebaseConfig.isConfigured()) {
+        window.FirebaseConfig.init().then(db => {
+          if (!db) { _startPolling(opts, interval); return; }
+          const roomCode = opts.roomCode || 'default';
+          _fbRef = db.ref('pace/' + roomCode);
+          _fbUnsubscribe = window.FirebaseConfig.onValue(_fbRef, snap => {
+            const pace = snap.val();
+            if (!pace) return;
+            const key = paceKey(pace);
+            if (!key || key === lastSeenKey) return;
+            lastSeenKey = key;
+            try { opts.onChange(pace); } catch (e) { console.warn('PaceClient onChange error', e); }
+          });
+        }).catch(() => { _startPolling(opts, interval); });
+        return;
+      }
+
+      // No Firebase — fall back to polling Apps Script
+      _startPolling(opts, interval);
     },
 
     stop() {
       if (timer) { clearInterval(timer); timer = null; }
+      if (_fbUnsubscribe) { try { _fbUnsubscribe(); } catch (e) {} _fbUnsubscribe = null; }
+      _fbRef = null;
       if (localChannel) {
         try { localChannel.removeEventListener('message', localChannelListener); localChannel.close(); } catch (e) {}
         localChannel = null; localChannelListener = null;
