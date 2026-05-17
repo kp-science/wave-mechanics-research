@@ -4998,10 +4998,10 @@ function updateCollectStatusBox(){
 }
 
 function paceLoadConfig(){
-  paceState.auto = localStorage.getItem('teacher_pace_auto') !== '0'; // default ON
+  paceState.auto = false; // Auto-jump removed · ใช้ระบบเพดาน (unlockedUpTo) อย่างเดียว
 }
 function paceSaveConfig(){
-  localStorage.setItem('teacher_pace_auto', paceState.auto ? '1' : '0');
+  // no-op · ไม่มี Auto-jump UI ให้บันทึกแล้ว
 }
 
 function paceMakeId(no){
@@ -5039,7 +5039,7 @@ function _paceWriteFirebase(roomCode, pace) {
 async function paceSetCurrent(pageId){
   const subject = window.KP_COURSE || '';
   const ep = paceCurrentEp();
-  const auto = !!paceState.auto;
+  const auto = false;
   const pace = { page: pageId, unlockedUpTo: pageId, ep, subject, auto, at: Date.now() };
   // Firebase write is instant — students' listeners fire in <1s
   _paceWriteFirebase(paceAutoCode(), pace);
@@ -5052,8 +5052,7 @@ async function paceSetCurrent(pageId){
   paceState.current = pace;
   updatePaceStatusBox();
   paceMarkActiveCard();
-  const verb = auto ? '🚀 พาทุกคนไป' : '🔓 ปลดถึง';
-  paceFlashToast(verb + ' ' + pageId.toUpperCase() + ' · นักเรียนเด้งทันที');
+  paceFlashToast('🔓 ปลดถึง ' + pageId.toUpperCase() + ' · นักเรียนกดต่อไปได้ถึงหน้านี้');
 }
 
 async function paceClear(){
@@ -5095,19 +5094,12 @@ function renderPacePanel(){
     <div style="margin-bottom:14px;padding:12px 16px;background:linear-gradient(135deg,#fff7e6,#fff);border:2px solid #ff9800;border-radius:12px;box-shadow:0 2px 8px rgba(255,152,0,.12)">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
         <div style="font-weight:800;color:#bf6500;font-size:15px">🎛 Teacher Pace Control</div>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;font-weight:700;color:${paceState.auto?'#15803d':'#475569'};padding:5px 11px;background:${paceState.auto?'rgba(22,163,74,0.10)':'#f8fafc'};border:1.5px dashed ${paceState.auto?'#16a34a':'#cbd5e1'};border-radius:6px">
-          <input type="checkbox" id="paceAutoChk" ${paceState.auto?'checked':''} onchange="paceState.auto=this.checked;paceSaveConfig();renderPacePanel();renderMediaBody();"
-            style="width:16px;height:16px;cursor:pointer">
-          🚀 Auto-jump · เด้งนักเรียนพร้อมกัน
-        </label>
         <div id="paceStatusBox" style="margin-left:auto;font-size:13px"></div>
         <button onclick="paceClear()" style="padding:6px 12px;background:#dc2626;color:#fff;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px" title="ปิด pace mode · ปลดทุกหน้า · นักเรียนเดินอิสระ">✕ ปิด pace</button>
       </div>
       <div style="margin-top:8px;font-size:11px;color:#666;line-height:1.6">
-        💡 ระบบเปิดอัตโนมัติ — ครูกด <b>🚀 พาทุกคนมาที่นี่</b> บนการ์ดด้านล่าง · นักเรียนทุกคนที่ login วิชา <b>${escapeHtml(window.KP_COURSE||'astronomy')}</b> จะเด้งภายใน <b>~2 วินาที</b> · ไม่ต้องกรอก room code, ไม่ต้องส่ง link
-        ${paceState.auto
-          ? '<br>✅ <b>Auto-jump เปิด:</b> นักเรียน countdown 3 วิ แล้วเด้งหน้าใหม่อัตโนมัติ'
-          : '<br>⚪ <b>Auto-jump ปิด:</b> นักเรียนเห็น banner "ไปเลย →" ให้กดเอง'}
+        💡 ครูกด <b>🔓 ปลดถึงนี่</b> บนการ์ดด้านล่าง → ตั้งเพดานหน้าที่นักเรียนเดินได้ถึง · นักเรียนใน <b>${escapeHtml(window.KP_COURSE||'astronomy')}</b> ที่ถึงหน้าเพดานแล้ว ปุ่ม "ต่อไป →" จะกลายเป็น 🔒 รอครูปลดล็อค · ไม่ต้องกรอก room code, ไม่ต้องส่ง link
+        <br>⚪ คนที่อยู่หน้าก่อนหน้าเพดานยังเดินตามจังหวะตัวเองได้ปกติ (ไม่ถูกลากย้อน-ลากตาม)
       </div>
     </div>
   `;
@@ -5185,10 +5177,10 @@ function renderMediaBody(){
         // Pace lock button: เฉพาะหน้าที่ map เป็น page id ได้ (skip launcher/FT/consent)
         const paceId = paceMakeId(it.no);
         const isHtml = !isExternal && /\.html?(\?|#|$)/i.test(it.file);
-        const lockLabel = paceState.auto ? '🚀 พาทุกคนมาที่นี่' : '🔓 ปลดถึงนี่';
-        const lockTitle = paceState.auto ? 'นักเรียนทั้งห้องจะเด้งมาหน้านี้อัตโนมัติ (countdown 3 วิ)' : 'ปลด lock ปุ่มต่อไป · นักเรียนกดเดินเองได้';
+        const lockLabel = '🔓 ปลดถึงนี่';
+        const lockTitle = 'ตั้งเพดานหน้านี้ · นักเรียนที่ถึงหน้านี้แล้ว ปุ่ม "ต่อไป" จะล็อกจนกว่าครูจะปลดต่อ';
         const lockBtn = (paceId && isHtml)
-          ? `<button class="pace-lock-btn ${paceState.auto?'auto':''}" data-pace-id="${paceId}" onclick="event.preventDefault();event.stopPropagation();paceSetCurrent('${paceId}')" title="${lockTitle}">${lockLabel}</button>`
+          ? `<button class="pace-lock-btn" data-pace-id="${paceId}" onclick="event.preventDefault();event.stopPropagation();paceSetCurrent('${paceId}')" title="${lockTitle}">${lockLabel}</button>`
           : '';
         return `
           <div class="media-card-wrap" style="position:relative" ${paceId?`data-pace-id="${paceId}"`:''}>
