@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8"><title>Infographic แผนที่ 37 — ปฏิบัติการ Snell's Law และ TIR</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#fef3c7;color:#1a202c;font-size:15px;line-height:1.6}
+.hero{background:linear-gradient(135deg,#78350f,#b45309,#d97706);color:#fff;padding:36px 40px 28px}
+.hero-top{display:flex;gap:24px;flex-wrap:wrap}
+.hero-badge{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 20px;text-align:center;min-width:110px}
+.hero-badge .plan-num{font-size:36px;font-weight:800}.hero-badge .plan-label{font-size:12px;opacity:.85}
+.hero-info{flex:1}.hero-info h1{font-size:28px;font-weight:800;margin-bottom:6px}
+.hero-info .subtitle{font-size:16px;opacity:.9;margin-bottom:12px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:rgba(255,255,255,.18);border-radius:20px;padding:3px 12px;font-size:13px}
+.hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+.meta-item{font-size:14px;opacity:.92}
+.container{max-width:1100px;margin:0 auto;padding:28px 20px 40px}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07);margin-bottom:20px}
+.section-heading{font-size:20px;font-weight:800;margin:28px 0 14px;padding-left:14px;border-left:5px solid #d97706}
+.concept-box{background:linear-gradient(135deg,#fef3c7,#fde68a);border-left:5px solid #d97706;border-radius:12px;padding:16px 18px;margin-bottom:20px;line-height:1.75}
+.refr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:760px){.refr-grid{grid-template-columns:1fr}}
+.refr-card{border-radius:12px;padding:16px;background:#fef3c7;border-left:4px solid #d97706}
+.refr-card.b{background:#fde68a;border-color:#b45309}.refr-card.c{background:#fcd34d;border-color:#92400e}
+.refr-card-title{font-weight:700;font-size:15px;margin-bottom:6px}
+.refr-card-sub{font-size:13.5px;color:#4a5568}
+.refr-card-note{font-size:12.5px;color:#718096;margin-top:6px}
+.formula-box{background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;padding:14px 18px;margin:14px 0}
+.formula-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #cbd5e0;flex-wrap:wrap}
+.formula-row:last-child{border-bottom:none}
+.formula-tag{background:#b45309;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;min-width:80px;text-align:center}
+.formula{font-family:'Cambria Math',serif;font-size:16px;color:#78350f;font-weight:600;flex:1;min-width:200px}
+.misc-box{background:#fff5f5;border:1.5px solid #fc8181;border-radius:12px;padding:14px;margin-top:14px}
+.misc-title{font-weight:700;color:#c53030;font-size:14px;margin-bottom:10px}
+.misc-item{display:flex;gap:10px;margin-bottom:10px}
+.misc-id{background:#c53030;color:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+.misc-text{font-size:13.5px}.misc-correct{font-size:13px;color:#276749;font-weight:600;margin-top:3px}
+.obj-group{margin-bottom:14px}
+.obj-type{display:inline-flex;gap:6px;font-weight:700;font-size:14px;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+.obj-type.k{background:#fde68a;color:#78350f}.obj-type.p{background:#c6f6d5;color:#1c4532}.obj-type.a{background:#feebc8;color:#652b19}
+.obj-list{list-style:none}.obj-list li{padding:4px 0 4px 26px;position:relative;font-size:14px}
+.obj-list li::before{content:'✓';position:absolute;left:0;color:#38a169}
+.obj-code{display:inline-block;background:#78350f;color:#fff;border-radius:4px;font-size:11px;padding:1px 6px;margin-right:4px;font-weight:700}
+.obj-code.p{background:#1c4532}.obj-code.a{background:#652b19}
+.phase{display:flex;gap:14px;margin-bottom:16px}
+.phase-dot{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.phase-dot.tlc{background:#7e57c2}.phase-dot.act{background:#0ea5e9}.phase-dot.ft{background:#d97706}
+.phase-dot.engage{background:#2e7d32}.phase-dot.explore{background:#ef6c00}
+.phase-dot.explain{background:#c62828}.phase-dot.elaborate{background:#8d6e63}.phase-dot.mj{background:#4e342e}
+.phase-body{flex:1}
+.phase-head{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;align-items:center}
+.phase-name{font-size:17px;font-weight:700;color:#78350f}
+.phase-time{background:#edf2f7;border-radius:20px;padding:2px 10px;font-size:12.5px;color:#4a5568;font-weight:600}
+.vpa-badge{background:#fef3c7;border-radius:20px;padding:2px 10px;font-size:12px;color:#78350f;font-weight:600}
+.obj-badge{background:#fff4cc;border-radius:20px;padding:2px 10px;font-size:12px;color:#8a6d00;font-weight:700}
+.misc-badge{background:#ffe4d6;border-radius:20px;padding:2px 10px;font-size:12px;color:#b53c00;font-weight:700}
+.poe-chip{display:inline-flex;border-radius:8px;padding:2px 10px;font-size:12.5px;font-weight:800;color:#fff}
+.poe-chip.p{background:#5a67d8}.poe-chip.o{background:#dd6b20}.poe-chip.e{background:#38a169}
+.activity-badge{background:#e0f2fe;border-radius:20px;padding:2px 10px;font-size:12px;color:#075985;font-weight:700}
+.phase-activities{list-style:none}.phase-activities li{padding:6px 0;border-bottom:1px dashed #edf2f7;font-size:14px}
+.li-text{position:relative;padding-left:18px}.li-text::before{content:'▸';position:absolute;left:0;color:#a0aec0}
+.tool-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8;font-size:14px}
+.tool-num{background:#fef3c7;color:#78350f;border-radius:50%;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+.assess-table,.vpa-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+.assess-table th,.vpa-table th{background:#78350f;color:#fff;padding:8px 10px;text-align:left}
+.assess-table td,.vpa-table td{padding:8px 10px;border-bottom:1px solid #e2e8f0}
+.rubric-strip{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.rubric-score{flex:1;min-width:80px;border-radius:10px;padding:10px;text-align:center;border:2px solid #fcd34d;background:#fef3c7;color:#78350f}
+.rubric-score .score-num{font-size:26px;font-weight:800}.rubric-score .score-desc{font-size:12px;margin-top:4px}
+.sim-banner{background:linear-gradient(90deg,#78350f,#d97706);border-radius:12px;padding:14px 18px;margin:14px 0;color:#fff;display:flex;gap:14px;flex-wrap:wrap}
+.sim-banner-title{font-weight:700;font-size:15px}.sim-banner-sub{font-size:13px;opacity:.9}
+.sim-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700}
+.footer{text-align:center;padding:20px;color:#a0aec0;font-size:13px;border-top:1px solid #e2e8f0;margin-top:10px}
+</style></head><body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge"><div class="plan-num">37</div><div class="plan-label">แผนการสอน</div></div>
+    <div class="hero-info">
+      <p style="font-size:13px;opacity:.75;margin-bottom:4px;font-weight:600;">ว30203 ฟิสิกส์ 3 · บทที่ 10 แสงเชิงคลื่น · ม.5</p>
+      <h1>ปฏิบัติการ Snell's Law และการสะท้อนกลับหมด (TIR)</h1>
+      <div class="subtitle">หน่วยแสง · แผนเสริมที่ 1 · คาบ 75–76</div>
+      <div class="hero-tags">
+        <span class="tag">🔬 Hands-on Lab</span>
+        <span class="tag">📐 Snell's Law (1621)</span>
+        <span class="tag">🌈 Total Internal Reflection</span>
+        <span class="tag">🧠 วPA ด้านที่ 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ Misconception M37.1–M37.4</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item">⏱ <strong>คาบ 75–76 · 100 นาที</strong></div>
+    <div class="meta-item">👨‍🏫 นายโกเมน ปาปะโถ</div>
+    <div class="meta-item">📚 สสวท. ฟิสิกส์ เล่ม 3 · 10.4 + Hecht Ch.4</div>
+    <div class="meta-item">🎯 ตัวชี้วัด ว 2.3 ม.5</div>
+    <div class="meta-item">🏫 โรงเรียนสตรีวิทยา</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    <strong>ปฏิบัติการ Snell's Law</strong> เป็นการทดลองที่<strong>วัดดัชนีหักเหของวัสดุ (n)</strong> และค้นพบ <strong>มุมวิกฤต (critical angle, θ_c)</strong> ที่ทำให้เกิด TIR<br>
+    • Snell's Law: <strong>n₁ sin θ₁ = n₂ sin θ₂</strong> · θ₁, θ₂ วัดจากเส้นปกติ (normal)<br>
+    • ดัชนีหักเห <strong>n = c/v</strong> · n ของอากาศ ≈ 1.00 · น้ำ ≈ 1.33 · แก้ว ≈ 1.50 · เพชร ≈ 2.42<br>
+    • <strong>TIR เกิดเมื่อ:</strong> (1) แสงเดินจาก n₁ &gt; n₂ (จากตัวกลางหนาแน่นกว่า → น้อยกว่า) (2) θ₁ &gt; θ_c<br>
+    • <strong>มุมวิกฤต:</strong> sin θ_c = n₂/n₁ · ใช้ใน <strong>เส้นใยนำแสง (fiber optic)</strong> · ปริซึมกล้องส่องทางไกล
+  </div>
+
+  <div class="refr-grid">
+    <div class="refr-card a">
+      <div class="refr-card-title">📐 Snell's Law — การหักเห</div>
+      <div class="refr-card-sub">n₁ sin θ₁ = n₂ sin θ₂ · n สูงกว่า → แสงเบนเข้าเส้นปกติ</div>
+      <div class="refr-card-note">แก้ M37.1 · ทุกมุมหักเหได้ ไม่ใช่แค่บางมุม</div>
+    </div>
+    <div class="refr-card b">
+      <div class="refr-card-title">🌈 มุมวิกฤต θ_c</div>
+      <div class="refr-card-sub">sin θ_c = n₂/n₁ · เกิดที่ θ_refracted = 90°</div>
+      <div class="refr-card-note">น้ำ→อากาศ θ_c ≈ 48.8° · แก้ว→อากาศ ≈ 41.8°</div>
+    </div>
+    <div class="refr-card c">
+      <div class="refr-card-title">🔦 TIR ในชีวิตจริง</div>
+      <div class="refr-card-sub">fiber optic · ปริซึมกล้องส่อง · ภาพในเพชรประกาย</div>
+      <div class="refr-card-note">แก้ M37.4 · TIR ต้องจาก n สูง→ต่ำ · ไม่ใช่ทุกการสะท้อน</div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-row"><span class="formula-tag">Snell</span><span class="formula">n₁ sin θ₁ = n₂ sin θ₂</span><span>มุมจากเส้นปกติ</span></div>
+    <div class="formula-row"><span class="formula-tag">n</span><span class="formula">n = c / v</span><span>c = 3×10⁸ m/s ในสุญญากาศ</span></div>
+    <div class="formula-row"><span class="formula-tag">θ_c</span><span class="formula">sin θ_c = n₂ / n₁ (n₁ &gt; n₂)</span><span>มุมวิกฤต</span></div>
+    <div class="formula-row"><span class="formula-tag">λ</span><span class="formula">λ_medium = λ_vacuum / n</span><span>f คงที่ · v และ λ เปลี่ยน</span></div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 37</div>
+    <div class="misc-item"><span class="misc-id">M37.1</span><div><div class="misc-text">❌ <em>"แสงตกตั้งฉาก (θ₁ = 0°) ก็หักเหเป็นมุมอื่น"</em></div><div class="misc-correct">✅ ที่ θ₁ = 0° · sin θ₁ = 0 → sin θ₂ = 0 → θ₂ = 0° · แสงผ่านตรง</div></div></div>
+    <div class="misc-item"><span class="misc-id">M37.2</span><div><div class="misc-text">❌ <em>"ความถี่ของแสงเปลี่ยนเมื่อเข้าตัวกลางใหม่"</em></div><div class="misc-correct">✅ f คงที่ · v และ λ เปลี่ยน · สีของแสง (ขึ้นกับ f) จึงไม่เปลี่ยน</div></div></div>
+    <div class="misc-item"><span class="misc-id">M37.3</span><div><div class="misc-text">❌ <em>"TIR เกิดได้ทุกทิศของแสง"</em></div><div class="misc-correct">✅ TIR เกิดเฉพาะ n₁ &gt; n₂ (เช่น แก้ว→อากาศ) · ทิศตรงข้าม (อากาศ→แก้ว) ไม่เกิด</div></div></div>
+    <div class="misc-item" style="margin-bottom:0;"><span class="misc-id">M37.4</span><div><div class="misc-text">❌ <em>"กระจกธรรมดาก็เป็น TIR"</em></div><div class="misc-correct">✅ กระจกใช้ฟิล์มโลหะ (metallic reflection) ต่างกัน · TIR คือสะท้อนภายในตัวกลาง 100% โดยไม่ต้องใช้ผิวสะท้อน</div></div></div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="card">
+    <div class="obj-group">
+      <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+      <ul class="obj-list">
+        <li><span class="obj-code">K37.1</span>ใช้ Snell's Law คำนวณ θ_refracted หรือ n เมื่อรู้ตัวแปรอื่น (M37.1, M37.2) · F37 ≥ 80%</li>
+        <li><span class="obj-code">K37.2</span>อธิบายเงื่อนไข TIR และมุมวิกฤต θ_c (M37.3, M37.4) · Rubric ≥ 3/4</li>
+      </ul>
+    </div>
+    <div class="obj-group">
+      <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+      <ul class="obj-list">
+        <li><span class="obj-code p">P37.1</span>ใช้ ray box ฉายแสงผ่านปริซึมกึ่งวงกลม · วัดมุมแม่นยำ ±1° · Lab Rubric ≥ 2.0/3.0</li>
+        <li><span class="obj-code p">P37.2</span>สร้างกราฟ sin θ₁ vs sin θ₂ → slope = n₂/n₁ · หา n ของแก้ว · %error &lt; 5%</li>
+      </ul>
+    </div>
+    <div class="obj-group" style="margin-bottom:0;">
+      <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+      <ul class="obj-list">
+        <li><span class="obj-code a">A37.1</span>จัดการ Lab อย่างปลอดภัย (ระวัง laser pointer) · OB-37</li>
+        <li><span class="obj-code a">A37.2</span>วิเคราะห์ %error ของ n_lab vs n_textbook · MJ-37 ≥ 70%</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sim-banner">
+    <div style="flex:1;">
+      <div class="sim-banner-title">🔬 PhET — Bending Light</div>
+      <div class="sim-banner-sub">https://phet.colorado.edu/sims/html/bending-light/latest/bending-light_th.html</div>
+    </div>
+    <span class="sim-badge">Pre-lab</span>
+    <span class="sim-badge">เห็น θ_c ชัดเจน</span>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + POE · 9 ขั้น)</h2>
+  <div class="card">
+
+    <div class="phase"><div class="phase-dot tlc">TLC</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Traffic Light · Pre</span><span class="phase-time">0–5 นาที</span><span class="vpa-badge">วPA 4, 7</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนชู 🟢🟡🔴 ตอบ: "ดินสอจุ่มในแก้วน้ำดูหักงอ เพราะอะไร?"</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot act">ACT</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">ทบทวน · Kahoot</span><span class="phase-time">5–12 นาที</span><span class="vpa-badge">วPA 2</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนเล่น Kahoot 5 ข้อ — การสะท้อน · การหักเห · ดัชนีหักเห (จากแผน light 1-3)</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot ft">F-Pre</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Four-tier Pre · F37</span><span class="phase-time">12–22 นาที</span><span class="obj-badge">K37.1, K37.2</span><span class="misc-badge">M37.1–4</span><span class="vpa-badge">วPA 2, 6</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F37-Pre 5 ข้อ · เน้น M37.2 (f คงที่) · M37.3 (TIR ทิศทาง)</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot engage">E1</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Engage · เพชร 4C + fiber optic</span><span class="phase-time">22–30 นาที</span><span class="obj-badge">K37.2</span><span class="misc-badge">M37.3</span><span class="poe-chip p">🔮 P</span><span class="vpa-badge">วPA 1, 4</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนดูภาพเพชรประกายและ fiber optic · ตั้งคำถาม "แสงในเพชร/สาย optic เคลื่อนที่อย่างไร?"</span></li><li><span class="li-text">นักเรียนเขียน Predict ลง POE-37 ช่อง P</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot explore">E2</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Explore · ปฏิบัติการ 2 ฐาน</span><span class="phase-time">30–65 นาที</span><span class="obj-badge">P37.1, P37.2</span><span class="misc-badge">M37.1, M37.3</span><span class="poe-chip o">👁 O</span><span class="activity-badge">35 นาที · 2 ฐาน</span><span class="vpa-badge">วPA 3, 7</span></div>
+      <ul class="phase-activities">
+        <li><span class="li-text">นักเรียนกลุ่ม 4 คน หมุน 2 ฐาน — <strong>ฐาน A Snell:</strong> ใช้ ray box ฉายแสงผ่านปริซึมกึ่งวงกลม · วัด θ₁, θ₂ 6 ค่า (15°, 30°, 45°, 60°, 70°) · บันทึก sin θ₁, sin θ₂</span></li>
+        <li><span class="li-text"><strong>ฐาน B TIR:</strong> ฉายแสงจากด้านโค้งของปริซึม → แสงออกด้านแบน · เพิ่ม θ₁ จนแสงสะท้อนกลับ 100% · บันทึก θ_c</span></li>
+        <li><span class="li-text">นักเรียนสร้างกราฟ sin θ₂ vs sin θ₁ (ฐาน A) → slope = n₁/n₂ = 1/n_glass · คำนวณ n_glass · เทียบ θ_c จากฐาน B</span></li>
+      </ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot explain">E3</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Explain · CER + เปรียบเทียบกลุ่ม</span><span class="phase-time">65–78 นาที</span><span class="obj-badge">K37.1, K37.2</span><span class="poe-chip e">✍️ E</span><span class="vpa-badge">วPA 3, 5, 6</span></div>
+      <ul class="phase-activities"><li><span class="li-text">แต่ละกลุ่มเขียน n_glass บนกระดาน · เทียบ 1.5 · อภิปราย %error</span></li><li><span class="li-text">นักเรียนเขียน Explain ใน POE-37 ช่อง E · ครูย้ำเงื่อนไข TIR (แก้ M37.3)</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot elaborate">E4</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Elaborate · ใบงาน 37.1 + 37.2</span><span class="phase-time">78–88 นาที</span><span class="obj-badge">K37.1, K37.2</span><span class="misc-badge">M37.1–4</span><span class="vpa-badge">วPA 5, 8</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนทำใบงาน 37.1 Calc 5 ข้อ + Challenge: คำนวณ θ_c ของเพชร (n=2.42) · เทียบเปรียบกับแก้ว</span></li><li><span class="li-text">นักเรียนทำใบงาน 37.2 Spot the Error · มาร์ค M37.1–4</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot ft">F-Post</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Four-tier Post · F37</span><span class="phase-time">88–95 นาที</span><span class="vpa-badge">วPA 6</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F37-Post · Hake gain</span></li></ul>
+    </div></div>
+
+    <div class="phase"><div class="phase-dot mj">MJ</div><div class="phase-body">
+      <div class="phase-head"><span class="phase-name">Metacognitive Journal 3-2-1</span><span class="phase-time">95–100 นาที</span><span class="vpa-badge">วPA 6, 8</span></div>
+      <ul class="phase-activities"><li><span class="li-text">นักเรียนเขียน MJ-37 · <strong>3:</strong> สิ่งที่เข้าใจ · <strong>2:</strong> ตัวอย่าง TIR ในชีวิต · <strong>1:</strong> คำถามค้างใจ</span></li></ul>
+    </div></div>
+
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อ อุปกรณ์ และแหล่งการเรียนรู้</h2>
+  <div class="card">
+    <div class="tool-item"><span class="tool-num">1</span><div><strong>Ray box หรือ laser pointer</strong> · 1 ชุด/กลุ่ม × 8 กลุ่ม</div></div>
+    <div class="tool-item"><span class="tool-num">2</span><div><strong>ปริซึมกึ่งวงกลม (semicircular)</strong> อะคริลิก/แก้ว · n ≈ 1.5</div></div>
+    <div class="tool-item"><span class="tool-num">3</span><div><strong>ไม้โปรแทรกเตอร์ + กระดาษกราฟ</strong> วาดเส้นทางแสง</div></div>
+    <div class="tool-item"><span class="tool-num">4</span><div><strong>ดินสอ + ไม้บรรทัด</strong> สำหรับ mark angles</div></div>
+    <div class="tool-item"><span class="tool-num">5</span><div><strong>แก้วน้ำ + ดินสอ</strong> สำหรับขั้น Engage (ดินสอหักงอ)</div></div>
+    <div class="tool-item"><span class="tool-num">6</span><div><strong>สื่อ02 POE-37</strong> ใบบันทึก · ตาราง θ₁, θ₂, sin θ · Canvas กราฟ</div></div>
+    <div class="tool-item"><span class="tool-num">7</span><div><strong>สื่อ03 ใบงาน 37.1 Calc</strong> 5 ข้อ + Challenge เพชร</div></div>
+    <div class="tool-item"><span class="tool-num">8</span><div><strong>สื่อ04 ใบงาน 37.2 Spot the Error</strong> 4 ข้อ</div></div>
+    <div class="tool-item"><span class="tool-num">9</span><div><strong>สื่อ05 F37 Four-tier Pre/Post</strong></div></div>
+    <div class="tool-item"><span class="tool-num">10</span><div><strong>สื่อ06–10</strong> TL-37 · MJ-37 · OB-37 · Lab Rubric · CER</div></div>
+    <div class="tool-item"><span class="tool-num">11</span><div><strong>PhET Bending Light</strong> · Pre-lab</div></div>
+  </div>
+
+  <h2 class="section-heading">📊 การวัดและประเมินผล</h2>
+  <table class="assess-table">
+    <thead><tr><th>ด้าน / วัตถุประสงค์</th><th>ตัวแปรที่วัด</th><th>เครื่องมือ</th><th>เกณฑ์ผ่าน</th></tr></thead>
+    <tbody>
+      <tr><td>K37.1 Snell's Law</td><td>% Sound</td><td>F37 Post</td><td>≥ 80%</td></tr>
+      <tr><td>K37.2 TIR + θ_c</td><td>คะแนนใบงาน</td><td>ใบงาน 37.1</td><td>≥ 4/5 ข้อ</td></tr>
+      <tr><td>P37.1 จัดการ Lab</td><td>Lab Rubric</td><td>OB-37</td><td>≥ 2.0/3.0</td></tr>
+      <tr><td>P37.2 %error n_glass</td><td>n_lab vs 1.5</td><td>POE-37 + กราฟ</td><td>%error &lt; 5%</td></tr>
+      <tr><td>A37.1 ปลอดภัย Lab</td><td>OB</td><td>OB-37</td><td>≥ 80%</td></tr>
+      <tr><td>A37.2 วิเคราะห์ error</td><td>MJ</td><td>MJ-37</td><td>≥ 70%</td></tr>
+      <tr><td>M37.1 → M37.4</td><td>% ลด</td><td>F37 Tier 4</td><td>ลด ≥ 20%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rubric-strip">
+    <div class="rubric-score"><div class="score-num">0</div><div class="score-desc">ไม่ทำ Lab</div></div>
+    <div class="rubric-score"><div class="score-num">1</div><div class="score-desc">%error &gt; 10%</div></div>
+    <div class="rubric-score"><div class="score-num">2</div><div class="score-desc">%error 5–10%</div></div>
+    <div class="rubric-score"><div class="score-num">3</div><div class="score-desc">%error &lt; 5%</div></div>
+  </div>
+
+  <h2 class="section-heading">🧠 การเชื่อมโยงกับ วPA ด้านที่ 1 (8 ตัวชี้วัด)</h2>
+  <table class="vpa-table">
+    <thead><tr><th>#</th><th>ตัวชี้วัด วPA ด้านที่ 1</th><th>หลักฐาน/กิจกรรม</th><th>ขั้นของแผน</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>เข้าถึงและเข้าใจบทเรียน</td><td>ดินสอจุ่มน้ำ · ภาพเพชร · Lab จริง</td><td>E1, E2</td></tr>
+      <tr><td>2</td><td>เชื่อมโยงความรู้เดิม</td><td>Kahoot ทบทวน · TL-Pre · F37-Pre</td><td>ACT, TLC, F-Pre</td></tr>
+      <tr><td>3</td><td>สร้างความรู้เอง</td><td>Lab 2 ฐาน · กราฟ sin θ · CER</td><td>E2, E3</td></tr>
+      <tr><td>4</td><td>กระตุ้นแรงจูงใจ</td><td>เพชร · fiber optic · Lab hands-on</td><td>TLC, E1, E4</td></tr>
+      <tr><td>5</td><td>พัฒนาทักษะนวัตกรรม</td><td>Spot the Error · Challenge เพชร</td><td>E4</td></tr>
+      <tr><td>6</td><td>ข้อมูลย้อนกลับ</td><td>F-Post · %error · MJ</td><td>F-Post, MJ</td></tr>
+      <tr><td>7</td><td>จัดการตนเอง</td><td>TL-card · Lab บทบาท</td><td>TLC, E2</td></tr>
+      <tr><td>8</td><td>นำไปต่อยอด</td><td>MJ · fiber optic · endoscope · กล้องเลนส์</td><td>E4, MJ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">Infographic แผน 37 · ปฏิบัติการ Snell's Law และ TIR · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+</body></html>

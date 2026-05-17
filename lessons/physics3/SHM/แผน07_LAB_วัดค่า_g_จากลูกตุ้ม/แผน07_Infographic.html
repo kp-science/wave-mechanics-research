@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 19 — ปฏิบัติการวัดค่า g จากลูกตุ้ม</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun',sans-serif;background:#eefbf7;color:#1a202c;font-size:15px;line-height:1.6}
+  .hero{background:linear-gradient(135deg,#115e59 0%,#0d9488 50%,#14b8a6 100%);color:#fff;padding:36px 40px 28px}
+  .hero-top{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .hero-badge{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 20px;text-align:center;min-width:110px}
+  .hero-badge .plan-num{font-size:36px;font-weight:800}
+  .hero-badge .plan-label{font-size:12px;opacity:.85}
+  .hero-info{flex:1}
+  .hero-info h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .hero-info .subtitle{font-size:16px;opacity:.9;margin-bottom:12px}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:rgba(255,255,255,.18);border-radius:20px;padding:3px 12px;font-size:13px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+  .meta-item{font-size:14px;opacity:.92}
+  .container{max-width:1100px;margin:0 auto;padding:28px 20px 40px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid-2{grid-template-columns:1fr}}
+  .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+  .card-header{display:flex;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+  .card-icon{font-size:22px}.card-title{font-size:17px;font-weight:700}
+  .section-heading{font-size:20px;font-weight:800;margin:28px 0 14px;padding-left:14px;border-left:5px solid #0d9488}
+  .concept-box{background:linear-gradient(135deg,#ccfbf1,#a7f3d0);border-left:5px solid #0d9488;border-radius:12px;padding:16px 18px;margin-bottom:20px;line-height:1.75}
+  .refr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+  @media(max-width:760px){.refr-grid{grid-template-columns:1fr}}
+  .refr-card{border-radius:12px;padding:16px;background:#ccfbf1;border-left:4px solid #0d9488}
+  .refr-card.b{background:#d1fae5;border-color:#10b981}
+  .refr-card.c{background:#ecfdf5;border-color:#059669}
+  .refr-card-title{font-weight:700;font-size:15px;margin-bottom:6px}
+  .refr-card-sub{font-size:13.5px;color:#4a5568}
+  .refr-card-note{font-size:12.5px;color:#718096;margin-top:6px}
+  .formula-box{background:#f0fdfa;border:1.5px solid #5eead4;border-radius:12px;padding:14px 18px;margin:14px 0}
+  .formula-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #cbd5e0;flex-wrap:wrap}
+  .formula-row:last-child{border-bottom:none}
+  .formula-tag{background:#0d9488;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;min-width:80px;text-align:center}
+  .formula{font-family:'Cambria Math',serif;font-size:16px;color:#115e59;font-weight:600;flex:1;min-width:200px}
+  .misc-box{background:#fff5f5;border:1.5px solid #fc8181;border-radius:12px;padding:14px;margin-top:14px}
+  .misc-title{font-weight:700;color:#c53030;font-size:14px;margin-bottom:10px}
+  .misc-item{display:flex;gap:10px;margin-bottom:10px}
+  .misc-id{background:#c53030;color:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+  .misc-text{font-size:13.5px}.misc-correct{font-size:13px;color:#276749;font-weight:600;margin-top:3px}
+  .obj-group{margin-bottom:14px}
+  .obj-type{display:inline-flex;gap:6px;font-weight:700;font-size:14px;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+  .obj-type.k{background:#99f6e4;color:#134e4a}
+  .obj-type.p{background:#c6f6d5;color:#1c4532}
+  .obj-type.a{background:#feebc8;color:#652b19}
+  .obj-list{list-style:none}
+  .obj-list li{padding:4px 0 4px 26px;position:relative;font-size:14px}
+  .obj-list li::before{content:'✓';position:absolute;left:0;color:#38a169;font-weight:700}
+  .obj-code{display:inline-block;background:#134e4a;color:#fff;border-radius:4px;font-size:11px;padding:1px 6px;margin-right:4px;font-weight:700}
+  .obj-code.p{background:#1c4532}.obj-code.a{background:#652b19}
+  .phase{display:flex;gap:14px;margin-bottom:16px;position:relative}
+  .phase::before{content:'';position:absolute;left:24px;top:52px;bottom:-16px;width:2px;background:#e2e8f0}
+  .phase:last-child::before{display:none}
+  .phase-dot{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;z-index:1}
+  .phase-dot.tlc{background:#7e57c2}.phase-dot.act{background:#0ea5e9}.phase-dot.ft{background:#0d9488}
+  .phase-dot.engage{background:#2e7d32}.phase-dot.explore{background:#ef6c00}
+  .phase-dot.explain{background:#c62828}.phase-dot.elaborate{background:#8d6e63}.phase-dot.mj{background:#4e342e}
+  .phase-body{flex:1}
+  .phase-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .phase-name{font-size:17px;font-weight:700;color:#115e59}
+  .phase-time{background:#edf2f7;border-radius:20px;padding:2px 10px;font-size:12.5px;color:#4a5568;font-weight:600}
+  .vpa-badge{background:#ccfbf1;border-radius:20px;padding:2px 10px;font-size:12px;color:#115e59;font-weight:600}
+  .obj-badge{background:#fff4cc;border-radius:20px;padding:2px 10px;font-size:12px;color:#8a6d00;font-weight:700}
+  .misc-badge{background:#ffe4d6;border-radius:20px;padding:2px 10px;font-size:12px;color:#b53c00;font-weight:700}
+  .poe-chip{display:inline-flex;border-radius:8px;padding:2px 10px;font-size:12.5px;font-weight:800;color:#fff}
+  .poe-chip.p{background:#5a67d8}.poe-chip.o{background:#dd6b20}.poe-chip.e{background:#38a169}
+  .activity-badge{background:#e0f2fe;border-radius:20px;padding:2px 10px;font-size:12px;color:#075985;font-weight:700}
+  .phase-activities{list-style:none}
+  .phase-activities li{padding:6px 0;border-bottom:1px dashed #edf2f7;font-size:14px}
+  .li-text{position:relative;padding-left:18px}
+  .li-text::before{content:'▸';position:absolute;left:0;color:#a0aec0}
+  .tool-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8;font-size:14px}
+  .tool-num{background:#ccfbf1;color:#115e59;border-radius:50%;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .assess-table,.vpa-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  .assess-table th,.vpa-table th{background:#115e59;color:#fff;padding:8px 10px;text-align:left}
+  .assess-table td,.vpa-table td{padding:8px 10px;border-bottom:1px solid #e2e8f0}
+  .assess-table tr:nth-child(even) td,.vpa-table tr:nth-child(even) td{background:#f7fafc}
+  .rubric-strip{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .rubric-score{flex:1;min-width:80px;border-radius:10px;padding:10px;text-align:center;border:2px solid transparent}
+  .rubric-score .score-num{font-size:26px;font-weight:800}
+  .rubric-score .score-desc{font-size:12px;margin-top:4px}
+  .rubric-score:nth-child(1){background:#fff5f5;border-color:#fc8181;color:#c53030}
+  .rubric-score:nth-child(2){background:#fffaf0;border-color:#f6ad55;color:#c05621}
+  .rubric-score:nth-child(3){background:#f0fff4;border-color:#9ae6b4;color:#276749}
+  .rubric-score:nth-child(4){background:#ccfbf1;border-color:#5eead4;color:#115e59}
+  .sim-banner{background:linear-gradient(90deg,#115e59,#14b8a6);border-radius:12px;padding:14px 18px;margin:14px 0;color:#fff;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .sim-banner-title{font-weight:700;font-size:15px}
+  .sim-banner-sub{font-size:13px;opacity:.9}
+  .sim-badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:4px 12px;font-size:12.5px;font-weight:700}
+  .footer{text-align:center;padding:20px;color:#a0aec0;font-size:13px;border-top:1px solid #e2e8f0;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">19</div>
+      <div class="plan-label">แผนการสอน</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px;opacity:.75;margin-bottom:4px;font-weight:600;letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 11 SHM · ม.5</p>
+      <h1>ปฏิบัติการวัดค่า g จากลูกตุ้มอย่างง่าย</h1>
+      <div class="subtitle">หน่วย SHM · แผนเสริมที่ 1 · คาบ 39–40</div>
+      <div class="hero-tags">
+        <span class="tag">🔬 Hands-on Lab</span>
+        <span class="tag">📐 T = 2π√(L/g) → g = 4π²L/T²</span>
+        <span class="tag">🧠 วPA ด้านที่ 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ Misconception M19.1–M19.4</span>
+        <span class="tag">📊 กราฟ T² vs L</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item">⏱ <strong>คาบ 39–40 · 100 นาที</strong></div>
+    <div class="meta-item">👨‍🏫 นายโกเมน ปาปะโถ</div>
+    <div class="meta-item">📚 สสวท. ฟิสิกส์ เล่ม 3 · 11.2 + Halliday Ch.15</div>
+    <div class="meta-item">🎯 ตัวชี้วัด ว 5.2 ม.5/3</div>
+    <div class="meta-item">🏫 โรงเรียนสตรีวิทยา</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    <strong>ปฏิบัติการวัด g</strong> เป็นการทดลองคลาสสิกที่ยืนยันสมการลูกตุ้มอย่างง่าย และวัด<strong>ค่าความเร่งโน้มถ่วงโลก g</strong> ที่จุดทดลอง<br>
+    • ปรับสมการ T = 2π√(L/g) → <strong>g = 4π²L/T²</strong> · วัด T ที่ L ต่าง ๆ → คำนวณ g<br>
+    • สร้าง <strong>กราฟ T² vs L</strong> → เส้นตรงผ่าน origin · ความชัน slope = 4π²/g → g = 4π²/slope<br>
+    • วิธีกราฟดีกว่าวิธีจุดเดียว — ลด random error · ค่า g ที่กรุงเทพ ≈ 9.78 m/s² (ที่ละติจูด 13.7°N)<br>
+    • <strong>เงื่อนไข:</strong> มุมเล็ก (θ &lt; 15°) · เชือกเบา · ลูกตุ้มขนาดเล็ก · จับเวลา ≥ 20 รอบเพื่อลด %error
+  </div>
+
+  <div class="refr-grid">
+    <div class="refr-card a">
+      <div class="refr-card-title">📐 จาก T → g</div>
+      <div class="refr-card-sub">g = 4π²L/T² · ใส่ L, T ลงสูตรได้ g ทันที</div>
+      <div class="refr-card-note">วิธีจุดเดียว · เร็วแต่ %error สูง</div>
+    </div>
+    <div class="refr-card b">
+      <div class="refr-card-title">📊 กราฟ T² vs L</div>
+      <div class="refr-card-sub">slope = 4π²/g → g = 4π²/slope</div>
+      <div class="refr-card-note">วิธีกราฟ · ลด random error · r² ≥ 0.95</div>
+    </div>
+    <div class="refr-card c">
+      <div class="refr-card-title">⏱ ลดความผิดพลาด</div>
+      <div class="refr-card-sub">จับเวลา 20–30 รอบ → หาร 20/30</div>
+      <div class="refr-card-note">แก้ M19.4 · จับ 1 รอบ %error 5–10% · จับ 20 รอบ %error &lt; 1%</div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-row"><span class="formula-tag">T</span><span class="formula">T = 2π × √(L / g)</span><span>คาบของลูกตุ้ม (s) · มุมเล็ก</span></div>
+    <div class="formula-row"><span class="formula-tag">g</span><span class="formula">g = 4π² × L / T²</span><span>ความเร่งโน้มถ่วง · วิธีจุดเดียว</span></div>
+    <div class="formula-row"><span class="formula-tag">slope</span><span class="formula">slope = 4π² / g</span><span>ของกราฟ T² (y) vs L (x)</span></div>
+    <div class="formula-row"><span class="formula-tag">%error</span><span class="formula">%error = |g_lab − g_true| / g_true × 100</span><span>g_true = 9.78 m/s² (กรุงเทพ)</span></div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 19</div>
+    <div class="misc-item">
+      <span class="misc-id">M19.1</span>
+      <div>
+        <div class="misc-text">❌ <em>"ค่า g บนโลกเท่ากันทุกที่เป๊ะ ๆ 9.8 m/s²"</em></div>
+        <div class="misc-correct">✅ g แตกต่างตามละติจูดและความสูง · ขั้วโลก 9.83 · เส้นศูนย์สูตร 9.78 · ภูเขาสูงน้อยกว่าระดับน้ำทะเล</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M19.2</span>
+      <div>
+        <div class="misc-text">❌ <em>"จับเวลา 1 รอบก็พอ เพราะคาบคงที่"</em></div>
+        <div class="misc-correct">✅ จับ 20 รอบลด random error จากปฏิกิริยาคน (≈ 0.2 s) ลง 20 เท่า · %error ลดจาก ~10% → &lt; 1%</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M19.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"กราฟ T vs L ก็ใช้หา g ได้ ไม่จำเป็นต้อง T²"</em></div>
+        <div class="misc-correct">✅ กราฟ T vs L จะได้เส้นโค้ง (T ∝ √L) · ต้อง T² vs L จึงได้เส้นตรงผ่าน origin · slope ให้ค่า g ที่ชัดเจน</div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M19.4</span>
+      <div>
+        <div class="misc-text">❌ <em>"แอมพลิจูดยิ่งใหญ่ ยิ่งได้ค่า g แม่นยำ"</em></div>
+        <div class="misc-correct">✅ มุมต้อง &lt; 15° เพื่อให้ sin θ ≈ θ · แอมพลิจูดใหญ่ → ออกจาก SHM → ใช้สมการนี้ไม่ได้</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><span class="card-title">ด้านความรู้ ทักษะ และเจตคติ (KPA)</span></div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K19.1</span>แปลงสมการ T = 2π√(L/g) เป็น g = 4π²L/T² และ T² = (4π²/g)L (M19.3) · F19 ≥ 80%</li>
+          <li><span class="obj-code">K19.2</span>อธิบายเหตุผลที่ g แตกต่างตามตำแหน่งบนโลก (M19.1) · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P19.1</span>วัด L, T อย่างถูกต้อง (จับเวลา ≥ 20 รอบ · มุม &lt; 15°) · Lab Rubric ≥ 2.0/3.0</li>
+          <li><span class="obj-code p">P19.2</span>สร้างกราฟ T² vs L · หา slope · คำนวณ g จาก slope · %error &lt; 5%</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A19.1</span>ทำงานเป็นทีม Lab อย่างมีระบบ — แบ่งบทบาท ผู้จับเวลา/ผู้นับ/ผู้บันทึก · OB-19</li>
+          <li><span class="obj-code a">A19.2</span>ยอมรับ %error ที่ได้ · วิเคราะห์แหล่งที่มาของ error ไม่กลบเกลื่อน · MJ-19 ≥ 70%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">💪</span><span class="card-title">สมรรถนะ &amp; คุณลักษณะ</span></div>
+      <div style="font-size:13.5px;line-height:1.8;">
+        <strong>สมรรถนะสำคัญ:</strong> การสื่อสาร · การคิด · การแก้ปัญหา · ทักษะชีวิต · การใช้เทคโนโลยี · ทำงานเป็นทีม
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:14px;">คุณลักษณะอันพึงประสงค์:</strong>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">🏆 มีวินัย</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">📖 ใฝ่เรียนรู้</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">🔬 ซื่อสัตย์</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">🤝 รับผิดชอบ</span>
+        </div>
+      </div>
+      <div style="margin-top:18px;">
+        <strong style="font-size:14px;">กระบวนการ POE:</strong>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <span class="poe-chip p">🔮 P · Predict</span>
+          <span class="poe-chip o">👁 O · Observe</span>
+          <span class="poe-chip e">✍️ E · Explain</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-banner">
+    <div style="flex:1;">
+      <div class="sim-banner-title">🔬 PhET Simulation — Pendulum Lab</div>
+      <div class="sim-banner-sub">https://phet.colorado.edu/sims/html/pendulum-lab/latest/pendulum-lab_th.html</div>
+    </div>
+    <span class="sim-badge">Pre-lab tutorial</span>
+    <span class="sim-badge">เปรียบเทียบ Lab จริง</span>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + POE · 9 ขั้น)</h2>
+  <div class="card">
+
+    <div class="phase">
+      <div class="phase-dot tlc">TLC</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Traffic Light · Pre</span><span class="phase-time">0–5 นาที</span><span class="vpa-badge">วPA 4, 7</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนชู 🟢🟡🔴 ตอบ: "ค่า g บนยอดดอยอินทนนท์ vs ที่กรุงเทพ ค่าใดมากกว่า?"</span></li><li><span class="li-text">นักเรียนและครูร่วมตั้งเป้าหมาย: "วัดค่า g ที่ห้องเรียนเรา ให้ %error &lt; 5%"</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot act">ACT</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">ทบทวน · Kahoot</span><span class="phase-time">5–12 นาที</span><span class="vpa-badge">วPA 2</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนเล่น Kahoot 5 ข้อ — สมการลูกตุ้ม · เงื่อนไขมุมเล็ก · ความสัมพันธ์ T-L (จากแผน SHM 2)</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot ft">F-Pre</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Four-tier Pre · F19</span><span class="phase-time">12–22 นาที</span><span class="obj-badge">K19.1, K19.2</span><span class="misc-badge">M19.1–4</span><span class="vpa-badge">วPA 2, 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F19-Pre 5 ข้อ · เน้น M19.1 (g แตกต่างกัน) และ M19.3 (กราฟ T² vs L)</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot engage">E1</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Engage · "g บนภูเขาเอเวอเรสต์"</span><span class="phase-time">22–30 นาที</span><span class="obj-badge">K19.2</span><span class="misc-badge">M19.1</span><span class="poe-chip p">🔮 P</span><span class="vpa-badge">วPA 1, 4</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนดูข้อมูลค่า g ในที่ต่าง ๆ (ขั้วโลก/กรุงเทพ/ดอยอินทนนท์/เอเวอเรสต์) · ตั้งคำถาม "เพราะอะไร?"</span></li><li><span class="li-text">นักเรียนเขียน Predict ลง POE-19 ช่อง P — "ค่า g ที่ห้องเรียนเราจะใกล้เคียงค่าใด?" พร้อมเหตุผล</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot explore">E2</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Explore · ปฏิบัติการวัด g · 5 ค่าของ L</span><span class="phase-time">30–65 นาที</span><span class="obj-badge">P19.1, P19.2</span><span class="misc-badge">M19.2, M19.4</span><span class="poe-chip o">👁 O</span><span class="activity-badge">35 นาที</span><span class="vpa-badge">วPA 3, 7</span></div>
+        <ul class="phase-activities">
+          <li><span class="li-text">นักเรียนกลุ่ม 4 คน รับชุดอุปกรณ์ — แบ่งบทบาท ผู้จับเวลา · ผู้นับ · ผู้ปล่อยลูกตุ้ม · ผู้บันทึก</span></li>
+          <li><span class="li-text">นักเรียนวัด L 5 ค่า (20, 40, 60, 80, 100 cm) · ที่แต่ละ L จับเวลา 20 รอบ × 3 ครั้ง · มุม &lt; 15° · ค่า T เฉลี่ย</span></li>
+          <li><span class="li-text">นักเรียนบันทึก L, t, T, T² ลงตาราง POE-19 ตาราง O · คำนวณ g (วิธีจุดเดียว) ทุก L</span></li>
+          <li><span class="li-text">นักเรียนสร้างกราฟ T² (y) vs L (x) บนกระดาษกราฟ · ลากเส้นตรง best-fit · วัด slope</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot explain">E3</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Explain · CER + เปรียบเทียบกลุ่ม</span><span class="phase-time">65–78 นาที</span><span class="obj-badge">K19.1, P19.2</span><span class="poe-chip e">✍️ E</span><span class="vpa-badge">วPA 3, 5, 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">แต่ละกลุ่มเขียน g_lab (วิธีกราฟ) บนกระดาน · เปรียบเทียบกับ g_true = 9.78 m/s² · คำนวณ %error</span></li><li><span class="li-text">นักเรียนและครูร่วมอภิปรายความต่างของ g_lab แต่ละกลุ่ม · แหล่งของ error (ปฏิกิริยาคน · เชือกยืด · ลม)</span></li><li><span class="li-text">นักเรียนเขียน Explain ใน POE-19 ช่อง E — เปรียบเทียบ Predict กับผลที่ได้</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot elaborate">E4</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Elaborate · ใบงาน 19.1 Calc + 19.2 Spot the Error</span><span class="phase-time">78–88 นาที</span><span class="obj-badge">K19.1, K19.2, P19.2</span><span class="misc-badge">M19.1–4</span><span class="vpa-badge">วPA 5, 8</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำใบงาน 19.1 Calc 5 ข้อ — รวม Challenge: ค่า g บนดวงจันทร์จากนาฬิกาลูกตุ้ม</span></li><li><span class="li-text">นักเรียนทำใบงาน 19.2 Spot the Error — มาร์ค M19.1–4 ใน 4 ข้อความผิด</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot ft">F-Post</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Four-tier Post · F19</span><span class="phase-time">88–95 นาที</span><span class="obj-badge">K19.1, K19.2</span><span class="misc-badge">M19.1–4</span><span class="vpa-badge">วPA 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F19-Post (parallel form) · ระบบคำนวณ Hake gain</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot mj">MJ</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Metacognitive Journal 3-2-1</span><span class="phase-time">95–100 นาที</span><span class="obj-badge">A19.2</span><span class="vpa-badge">วPA 6, 8</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนเขียน MJ-19 · <strong>3:</strong> สิ่งที่เข้าใจ · <strong>2:</strong> วิธี Lab อื่นที่วัด g ได้ · <strong>1:</strong> คำถามค้างใจ</span></li></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อ อุปกรณ์ และแหล่งการเรียนรู้</h2>
+  <div class="card">
+    <div class="tool-item"><span class="tool-num">1</span><div><strong>ลูกตุ้มมาตรฐาน</strong> ลูกเหล็กกลม ∅ 2 cm · 50 g · 1 ลูก/กลุ่ม × 8 กลุ่ม</div></div>
+    <div class="tool-item"><span class="tool-num">2</span><div><strong>เชือกไนลอน</strong> ความยาว 120 cm · เบา · ไม่ยืด · 1 เส้น/กลุ่ม</div></div>
+    <div class="tool-item"><span class="tool-num">3</span><div><strong>เสาขาตั้ง + คลิปยึด</strong> ความสูงปรับได้ 1.5 m · 1 ชุด/กลุ่ม</div></div>
+    <div class="tool-item"><span class="tool-num">4</span><div><strong>นาฬิกาจับเวลาดิจิทัล</strong> ความละเอียด 0.01 s · 1 เรือน/กลุ่ม (หรือใช้ smartphone)</div></div>
+    <div class="tool-item"><span class="tool-num">5</span><div><strong>ไม้บรรทัด/สายวัด</strong> 150 cm · ความละเอียด 1 mm · ไม้โปรแทรกเตอร์ (เช็คมุม)</div></div>
+    <div class="tool-item"><span class="tool-num">6</span><div><strong>สื่อ02 POE-19</strong> ใบบันทึก · ตาราง L,t,T,T² · Canvas กราฟ T² vs L</div></div>
+    <div class="tool-item"><span class="tool-num">7</span><div><strong>สื่อ03 ใบงาน 19.1 Calc</strong> 5 ข้อ + Challenge g ดวงจันทร์</div></div>
+    <div class="tool-item"><span class="tool-num">8</span><div><strong>สื่อ04 ใบงาน 19.2 Spot the Error</strong> 4 ข้อความ · มาร์ค M19.1–4</div></div>
+    <div class="tool-item"><span class="tool-num">9</span><div><strong>สื่อ05 F19 Four-tier Pre/Post</strong> 5 ข้อ · Apps Script</div></div>
+    <div class="tool-item"><span class="tool-num">10</span><div><strong>สื่อ06–10</strong> TL-19 · MJ-19 · OB-19 · Lab Rubric · CER Live Board</div></div>
+    <div class="tool-item"><span class="tool-num">11</span><div><strong>PhET Pendulum Lab</strong> · Pre-lab tutorial · ใช้บน device</div></div>
+  </div>
+
+  <h2 class="section-heading">📊 การวัดและประเมินผล</h2>
+  <table class="assess-table">
+    <thead><tr><th>ด้าน / วัตถุประสงค์</th><th>ตัวแปรที่วัด</th><th>เครื่องมือ</th><th>เกณฑ์ผ่าน</th></tr></thead>
+    <tbody>
+      <tr><td>K19.1 แปลงสมการ g</td><td>% Sound concept</td><td>F19 Four-tier Post</td><td>≥ 80%</td></tr>
+      <tr><td>K19.2 g แตกต่างตามที่</td><td>คะแนนใบงาน</td><td>ใบงาน 19.1 Calc</td><td>≥ 4/5 ข้อ</td></tr>
+      <tr><td>P19.1 จัดการ Lab</td><td>Lab Rubric</td><td>OB-19 ครูสังเกต</td><td>≥ 2.0/3.0</td></tr>
+      <tr><td>P19.2 % error</td><td>g_lab vs 9.78</td><td>POE-19 + กราฟ</td><td>%error &lt; 5%</td></tr>
+      <tr><td>A19.1 ทีมเวิร์ก</td><td>OB</td><td>OB-19</td><td>≥ 80% "ดี"</td></tr>
+      <tr><td>A19.2 วิเคราะห์ error</td><td>MJ คุณภาพ</td><td>MJ-19</td><td>≥ 70%</td></tr>
+      <tr><td>M19.1 → M19.4</td><td>% Misconception ลด</td><td>F19 Tier 4</td><td>ลด ≥ 20%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rubric-strip">
+    <div class="rubric-score"><div class="score-num">0</div><div class="score-desc">ไม่ทำ Lab</div></div>
+    <div class="rubric-score"><div class="score-num">1</div><div class="score-desc">%error &gt; 10%</div></div>
+    <div class="rubric-score"><div class="score-num">2</div><div class="score-desc">%error 5–10%</div></div>
+    <div class="rubric-score"><div class="score-num">3</div><div class="score-desc">%error &lt; 5%</div></div>
+  </div>
+
+  <h2 class="section-heading">🧠 การเชื่อมโยงกับ วPA ด้านที่ 1 (8 ตัวชี้วัด)</h2>
+  <table class="vpa-table">
+    <thead><tr><th>#</th><th>ตัวชี้วัด วPA ด้านที่ 1</th><th>หลักฐาน/กิจกรรม</th><th>ขั้นของแผน</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>เข้าถึงและเข้าใจบทเรียน</td><td>Lab ของจริง · ข้อมูล g จริงในโลก · ภาษา ม.5</td><td>E1, E2</td></tr>
+      <tr><td>2</td><td>เชื่อมโยงความรู้เดิม</td><td>Kahoot ทบทวน T = 2π√(L/g) · TL-Pre · F19-Pre</td><td>ACT, TLC, F-Pre</td></tr>
+      <tr><td>3</td><td>สร้างความรู้เอง</td><td>Lab 5 ค่า L · สร้างกราฟเอง · CER Live Board</td><td>E2, E3</td></tr>
+      <tr><td>4</td><td>กระตุ้นแรงจูงใจ</td><td>g บนเอเวอเรสต์/ดวงจันทร์ · Lab hands-on</td><td>TLC, E1, E4</td></tr>
+      <tr><td>5</td><td>พัฒนาทักษะนวัตกรรม</td><td>Calc + Spot the Error · กราฟ T² vs L · ข้อ Challenge</td><td>E4</td></tr>
+      <tr><td>6</td><td>ข้อมูลย้อนกลับ</td><td>F-Post vs Pre · %error feedback · MJ</td><td>F-Post, E3, MJ</td></tr>
+      <tr><td>7</td><td>จัดการตนเอง (SRL)</td><td>TL-card · กลุ่ม Lab แบ่งบทบาท · เวลา 35 นาที</td><td>TLC, E2</td></tr>
+      <tr><td>8</td><td>นำไปต่อยอด</td><td>MJ 3-2-1 · วิธี Lab อื่น (Kater pendulum · gravimeter)</td><td>E4, MJ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">Infographic แผน 19 · ปฏิบัติการวัดค่า g จากลูกตุ้ม · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+</body>
+</html>

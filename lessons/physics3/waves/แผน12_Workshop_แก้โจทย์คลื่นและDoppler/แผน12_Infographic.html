@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infographic แผนที่ 12 — Workshop แก้โจทย์คลื่นและ Doppler</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun',sans-serif;background:#eff6ff;color:#1a202c;font-size:15px;line-height:1.6}
+  .hero{background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 50%,#3b82f6 100%);color:#fff;padding:36px 40px 28px;position:relative}
+  .hero-top{display:flex;align-items:flex-start;gap:24px;flex-wrap:wrap}
+  .hero-badge{background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.3);border-radius:16px;padding:10px 20px;text-align:center;min-width:110px}
+  .hero-badge .plan-num{font-size:36px;font-weight:800}
+  .hero-badge .plan-label{font-size:12px;opacity:.85}
+  .hero-info{flex:1}
+  .hero-info h1{font-size:28px;font-weight:800;margin-bottom:6px}
+  .hero-info .subtitle{font-size:16px;opacity:.9;margin-bottom:12px}
+  .hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+  .tag{background:rgba(255,255,255,.18);border-radius:20px;padding:3px 12px;font-size:13px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.2)}
+  .meta-item{display:flex;align-items:center;gap:6px;font-size:14px;opacity:.92}
+  .container{max-width:1100px;margin:0 auto;padding:28px 20px 40px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  @media(max-width:760px){.grid-2{grid-template-columns:1fr}}
+  .card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.07)}
+  .card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #e2e8f0}
+  .card-icon{font-size:22px}.card-title{font-size:17px;font-weight:700}
+  .section-heading{font-size:20px;font-weight:800;margin:28px 0 14px;padding-left:14px;border-left:5px solid #2563eb}
+  .concept-box{background:linear-gradient(135deg,#dbeafe,#bfdbfe);border-left:5px solid #2563eb;border-radius:12px;padding:16px 18px;margin-bottom:20px;line-height:1.75}
+  .refr-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+  @media(max-width:760px){.refr-grid{grid-template-columns:1fr}}
+  .refr-card{border-radius:12px;padding:16px;background:#eff6ff;border-left:4px solid #2563eb}
+  .refr-card.a{background:#dbeafe;border-color:#1d4ed8}
+  .refr-card.b{background:#e0e7ff;border-color:#4338ca}
+  .refr-card.c{background:#ede9fe;border-color:#6d28d9}
+  .refr-card-title{font-weight:700;font-size:15px;margin-bottom:6px}
+  .refr-card-sub{font-size:13.5px;color:#4a5568;margin-bottom:6px}
+  .refr-card-note{font-size:12.5px;color:#718096;margin-top:6px}
+  .formula-box{background:#f0f9ff;border:1.5px solid #7dd3fc;border-radius:12px;padding:14px 18px;margin:14px 0}
+  .formula-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px dashed #cbd5e0;flex-wrap:wrap}
+  .formula-row:last-child{border-bottom:none}
+  .formula-tag{background:#1d4ed8;color:#fff;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700;min-width:80px;text-align:center}
+  .formula{font-family:'Cambria Math',serif;font-size:16px;color:#1e3a8a;font-weight:600;flex:1;min-width:200px}
+  .misc-box{background:#fff5f5;border:1.5px solid #fc8181;border-radius:12px;padding:14px;margin-top:14px}
+  .misc-title{font-weight:700;color:#c53030;font-size:14px;margin-bottom:10px}
+  .misc-item{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+  .misc-id{background:#c53030;color:#fff;border-radius:8px;padding:2px 8px;font-size:12px;font-weight:700;flex-shrink:0}
+  .misc-text{font-size:13.5px}.misc-correct{font-size:13px;color:#276749;font-weight:600;margin-top:3px}
+  .obj-group{margin-bottom:14px}
+  .obj-type{display:inline-flex;gap:6px;font-weight:700;font-size:14px;padding:3px 12px;border-radius:20px;margin-bottom:8px}
+  .obj-type.k{background:#bfdbfe;color:#1e3a8a}
+  .obj-type.p{background:#c6f6d5;color:#1c4532}
+  .obj-type.a{background:#feebc8;color:#652b19}
+  .obj-list{list-style:none}
+  .obj-list li{padding:4px 0 4px 26px;position:relative;font-size:14px}
+  .obj-list li::before{content:'✓';position:absolute;left:0;color:#38a169;font-weight:700}
+  .obj-code{display:inline-block;background:#1e3a8a;color:#fff;border-radius:4px;font-size:11px;padding:1px 6px;margin-right:4px;font-weight:700}
+  .obj-code.p{background:#1c4532}.obj-code.a{background:#652b19}
+  .phase{display:flex;gap:14px;margin-bottom:16px;position:relative}
+  .phase::before{content:'';position:absolute;left:24px;top:52px;bottom:-16px;width:2px;background:#e2e8f0}
+  .phase:last-child::before{display:none}
+  .phase-dot{width:50px;height:50px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;z-index:1}
+  .phase-dot.tlc{background:#7e57c2}.phase-dot.act{background:#0ea5e9}.phase-dot.ft{background:#2563eb}
+  .phase-dot.engage{background:#2e7d32}.phase-dot.explore{background:#ef6c00}
+  .phase-dot.explain{background:#c62828}.phase-dot.elaborate{background:#8d6e63}.phase-dot.mj{background:#4e342e}
+  .phase-body{flex:1}
+  .phase-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .phase-name{font-size:17px;font-weight:700;color:#1e3a8a}
+  .phase-time{background:#edf2f7;border-radius:20px;padding:2px 10px;font-size:12.5px;color:#4a5568;font-weight:600}
+  .vpa-badge{background:#dbeafe;border-radius:20px;padding:2px 10px;font-size:12px;color:#1e3a8a;font-weight:600}
+  .obj-badge{background:#fff4cc;border-radius:20px;padding:2px 10px;font-size:12px;color:#8a6d00;font-weight:700}
+  .misc-badge{background:#ffe4d6;border-radius:20px;padding:2px 10px;font-size:12px;color:#b53c00;font-weight:700}
+  .poe-chip{display:inline-flex;border-radius:8px;padding:2px 10px;font-size:12.5px;font-weight:800;color:#fff}
+  .poe-chip.p{background:#5a67d8}.poe-chip.o{background:#dd6b20}.poe-chip.e{background:#38a169}
+  .activity-badge{background:#e0f2fe;border-radius:20px;padding:2px 10px;font-size:12px;color:#075985;font-weight:700}
+  .phase-activities{list-style:none}
+  .phase-activities li{padding:6px 0;border-bottom:1px dashed #edf2f7;font-size:14px}
+  .li-text{position:relative;padding-left:18px}
+  .li-text::before{content:'▸';position:absolute;left:0;color:#a0aec0}
+  .tool-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid #f0f4f8;font-size:14px}
+  .tool-num{background:#dbeafe;color:#1e3a8a;border-radius:50%;width:26px;height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+  .assess-table,.vpa-table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:10px}
+  .assess-table th,.vpa-table th{background:#1e3a8a;color:#fff;padding:8px 10px;text-align:left}
+  .assess-table td,.vpa-table td{padding:8px 10px;border-bottom:1px solid #e2e8f0}
+  .assess-table tr:nth-child(even) td,.vpa-table tr:nth-child(even) td{background:#f7fafc}
+  .rubric-strip{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .rubric-score{flex:1;min-width:80px;border-radius:10px;padding:10px;text-align:center;border:2px solid transparent}
+  .rubric-score .score-num{font-size:26px;font-weight:800}
+  .rubric-score .score-desc{font-size:12px;margin-top:4px}
+  .rubric-score:nth-child(1){background:#fff5f5;border-color:#fc8181;color:#c53030}
+  .rubric-score:nth-child(2){background:#fffaf0;border-color:#f6ad55;color:#c05621}
+  .rubric-score:nth-child(3){background:#f0fff4;border-color:#9ae6b4;color:#276749}
+  .rubric-score:nth-child(4){background:#dbeafe;border-color:#60a5fa;color:#1e3a8a}
+  .footer{text-align:center;padding:20px;color:#a0aec0;font-size:13px;border-top:1px solid #e2e8f0;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-badge">
+      <div class="plan-num">12</div>
+      <div class="plan-label">แผนการสอน</div>
+    </div>
+    <div class="hero-info">
+      <p style="font-size:13px;opacity:.75;margin-bottom:4px;font-weight:600;letter-spacing:1px;">ว30203 ฟิสิกส์ 3 · บทที่ 9 คลื่นกล · ม.5</p>
+      <h1>Workshop แก้โจทย์คลื่นและปรากฏการณ์ Doppler</h1>
+      <div class="subtitle">หน่วยคลื่นกล · แผนเสริมที่ 2 · คาบ 23–24</div>
+      <div class="hero-tags">
+        <span class="tag">📝 Workshop · PISA + PAT2</span>
+        <span class="tag">🚗 Doppler Effect</span>
+        <span class="tag">🧠 วPA ด้านที่ 1 · 8 ตัวชี้วัด</span>
+        <span class="tag">⚠️ Misconception M12.1–M12.4</span>
+        <span class="tag">📊 3 ระดับความยาก</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-meta">
+    <div class="meta-item">⏱ <strong>คาบ 23–24 · 100 นาที</strong></div>
+    <div class="meta-item">👨‍🏫 นายโกเมน ปาปะโถ</div>
+    <div class="meta-item">📚 สสวท. ฟิสิกส์ เล่ม 3 · 9.7-9.8</div>
+    <div class="meta-item">🎯 ตัวชี้วัด ว 5.2 ม.5/5</div>
+    <div class="meta-item">🏫 โรงเรียนสตรีวิทยา</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <h2 class="section-heading">💡 สาระสำคัญ</h2>
+  <div class="concept-box">
+    <strong>Workshop แก้โจทย์</strong> เป็นคาบประยุกต์ที่นำสมการคลื่นกลทั้งหมดมาฝึก<strong>ไล่ระดับความยาก 3 ระดับ</strong> เน้น Doppler Effect เป็นแกนหลัก<br>
+    • <strong>Doppler:</strong> f' = f × (v ± vₒ)/(v ∓ vₛ) — เครื่องหมายขึ้นกับทิศทางสัมพัทธ์ระหว่างแหล่งกำเนิดกับผู้สังเกต<br>
+    • ผู้สังเกตเข้าหาแหล่งกำเนิด → vₒ บวก (เพิ่ม f') · ผู้สังเกตถอยห่าง → vₒ ลบ<br>
+    • แหล่งกำเนิดเข้าหาผู้สังเกต → vₛ บวกในตัวหาร (เพิ่ม f') · แหล่งกำเนิดถอยห่าง → vₛ ลบ<br>
+    • <strong>การแทรกสอด:</strong> Δl = nλ (เสริม) · Δl = (n+½)λ (หักล้าง) · <strong>Beat:</strong> fb = |f₁ − f₂|
+  </div>
+
+  <div class="refr-grid">
+    <div class="refr-card a">
+      <div class="refr-card-title">🚓 Doppler — แหล่งกำเนิดเคลื่อนที่</div>
+      <div class="refr-card-sub">รถพยาบาลเข้าหา → เสียงสูงขึ้น · ออกห่าง → เสียงต่ำลง</div>
+      <div class="refr-card-note">แก้ M12.1 · ความถี่จริงไม่เปลี่ยน เปลี่ยนแค่ที่ผู้สังเกตได้ยิน</div>
+    </div>
+    <div class="refr-card b">
+      <div class="refr-card-title">🏃 Doppler — ผู้สังเกตเคลื่อนที่</div>
+      <div class="refr-card-sub">วิ่งเข้าหาแหล่งกำเนิด → ความถี่ที่ได้ยินสูงขึ้น</div>
+      <div class="refr-card-note">แก้ M12.2 · vₒ และ vₛ ให้ผลต่างกัน (asymmetric)</div>
+    </div>
+    <div class="refr-card c">
+      <div class="refr-card-title">🎵 Beat &amp; การแทรกสอด</div>
+      <div class="refr-card-sub">2 แหล่งกำเนิดความถี่ใกล้กัน → ได้ยิน "วูบวาบ" fb = |f₁−f₂|</div>
+      <div class="refr-card-note">ช่างจูนเครื่องดนตรีใช้ลด beat → ตรงเสียง</div>
+    </div>
+  </div>
+
+  <div class="formula-box">
+    <div class="formula-row"><span class="formula-tag">Doppler</span><span class="formula">f' = f × (v ± vₒ) / (v ∓ vₛ)</span><span>v = อัตราเร็วเสียงในตัวกลาง</span></div>
+    <div class="formula-row"><span class="formula-tag">Beat</span><span class="formula">f_beat = |f₁ − f₂|</span><span>จำนวนครั้ง "วูบ" ต่อวินาที</span></div>
+    <div class="formula-row"><span class="formula-tag">Interference</span><span class="formula">Δl = nλ (เสริม) · (n+½)λ (หักล้าง)</span><span>n = 0, 1, 2, ...</span></div>
+    <div class="formula-row"><span class="formula-tag">Standing</span><span class="formula">fₙ = nv / (2L)</span><span>เชือก/ท่อเปิด 2 ปลาย</span></div>
+  </div>
+
+  <div class="misc-box">
+    <div class="misc-title">⚠️ Misconception เป้าหมาย 4 ตัวในแผน 12</div>
+    <div class="misc-item">
+      <span class="misc-id">M12.1</span>
+      <div>
+        <div class="misc-text">❌ <em>"ความถี่ของแหล่งกำเนิดเปลี่ยนเมื่อมันเคลื่อนที่"</em></div>
+        <div class="misc-correct">✅ แหล่งกำเนิดยังสั่นที่ความถี่เดิม · เพียง wavelength ที่เดินทางถึงผู้สังเกตเปลี่ยน</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M12.2</span>
+      <div>
+        <div class="misc-text">❌ <em>"แหล่งกำเนิดเคลื่อนที่ vs ผู้สังเกตเคลื่อนที่ ให้ผลเหมือนกัน"</em></div>
+        <div class="misc-correct">✅ สมการต่างกัน · ผู้สังเกตเคลื่อน → เปลี่ยน v ที่เห็นคลื่น · แหล่งกำเนิดเคลื่อน → เปลี่ยน λ</div>
+      </div>
+    </div>
+    <div class="misc-item">
+      <span class="misc-id">M12.3</span>
+      <div>
+        <div class="misc-text">❌ <em>"Beat = การแทรกสอดเชิงพื้นที่"</em></div>
+        <div class="misc-correct">✅ Beat เป็นปรากฏการณ์ทาง<strong>เวลา</strong> (เปลี่ยน amplitude ตามเวลา) · ไม่ใช่ทางพื้นที่</div>
+      </div>
+    </div>
+    <div class="misc-item" style="margin-bottom:0;">
+      <span class="misc-id">M12.4</span>
+      <div>
+        <div class="misc-text">❌ <em>"การแทรกสอดของคลื่นเกิดเฉพาะคลื่นแสง"</em></div>
+        <div class="misc-correct">✅ เกิดกับทุกคลื่น — น้ำ เสียง แสง · ตัวอย่าง: Quincke tube ใช้คลื่นเสียงแทรกสอด</div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">🎯 จุดประสงค์การเรียนรู้</h2>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-icon">📋</span><span class="card-title">ด้านความรู้ ทักษะ และเจตคติ (KPA)</span></div>
+      <div class="obj-group">
+        <div class="obj-type k">🧠 ด้านความรู้ (K)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code">K12.1</span>เลือกใช้สมการ Doppler ที่ถูกต้องตามทิศการเคลื่อนที่ของแหล่งกำเนิด/ผู้สังเกต (M12.1, M12.2) · F12 ≥ 80%</li>
+          <li><span class="obj-code">K12.2</span>แยกแยะ Beat กับการแทรกสอดเชิงพื้นที่ (M12.3, M12.4) · Rubric ≥ 3/4</li>
+        </ul>
+      </div>
+      <div class="obj-group">
+        <div class="obj-type p">🔬 ด้านทักษะกระบวนการ (P)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code p">P12.1</span>แก้โจทย์ Doppler 3 ระดับ — พื้นฐาน สสวท. · PISA · PAT2/สอวน. · เป้า ≥ 70%</li>
+          <li><span class="obj-code p">P12.2</span>แปลงสถานการณ์จริงเป็นสมการ — ระบุตัวแปร · เลือกเครื่องหมาย · ตรวจสอบหน่วย</li>
+        </ul>
+      </div>
+      <div class="obj-group" style="margin-bottom:0;">
+        <div class="obj-type a">❤️ ด้านเจตคติ (A)</div>
+        <ul class="obj-list">
+          <li><span class="obj-code a">A12.1</span>ทำงานเป็นกลุ่ม Jigsaw แบ่งโจทย์ — สอนเพื่อน · รับผิดชอบโจทย์ตน · OB-12</li>
+          <li><span class="obj-code a">A12.2</span>ไม่ท้อกับโจทย์ยาก · ลองทำหลายวิธี · MJ-12 ≥ 70%</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-icon">💪</span><span class="card-title">สมรรถนะ &amp; คุณลักษณะ</span></div>
+      <div style="font-size:13.5px;line-height:1.8;">
+        <strong>สมรรถนะสำคัญ:</strong> การสื่อสาร · การคิด · การแก้ปัญหา · ทักษะชีวิต · การใช้เทคโนโลยี · การทำงานเป็นทีม
+      </div>
+      <div style="margin-top:12px;">
+        <strong style="font-size:14px;">คุณลักษณะอันพึงประสงค์:</strong>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">🏆 มีวินัย</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">📖 ใฝ่เรียนรู้</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">💪 มุ่งมั่นทำงาน</span>
+          <span style="background:#f7fafc;border:1.5px solid #e2e8f0;border-radius:20px;padding:4px 14px;font-size:13.5px;">🤝 รับผิดชอบ</span>
+        </div>
+      </div>
+      <div style="margin-top:18px;">
+        <strong style="font-size:14px;">รูปแบบ:</strong> Workshop + Jigsaw + Think-Pair-Share + Gallery Walk
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-heading">📚 กิจกรรมการเรียนรู้ (5E + POE · 9 ขั้น)</h2>
+  <div class="card">
+
+    <div class="phase">
+      <div class="phase-dot tlc">TLC</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Traffic Light · Pre</span><span class="phase-time">0–5 นาที</span><span class="vpa-badge">วPA 4, 7</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนชู 🟢🟡🔴 ตอบ: "รถพยาบาลที่ผ่านหน้าเรา ความถี่เสียงจริงเปลี่ยนหรือไม่?"</span></li><li><span class="li-text">นักเรียนและครูร่วมตั้งเป้าหมายของคาบ: "แก้โจทย์ Doppler ได้ทุกระดับ"</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot act">ACT</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">ทบทวน · Kahoot</span><span class="phase-time">5–12 นาที</span><span class="vpa-badge">วPA 2</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนเล่น Kahoot 6 ข้อ — v=fλ · ฮาร์มอนิก · การซ้อนทับ · การแทรกสอด (จากแผน 7-11)</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot ft">F-Pre</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Four-tier Pre · F12</span><span class="phase-time">12–22 นาที</span><span class="obj-badge">K12.1, K12.2</span><span class="misc-badge">M12.1–4</span><span class="vpa-badge">วPA 2, 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F12-Pre 5 ข้อบน device · เน้น M12.1 (เครื่องหมาย Doppler) และ M12.3 (Beat vs interference)</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot engage">E1</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Engage · วิดีโอรถพยาบาล</span><span class="phase-time">22–30 นาที</span><span class="obj-badge">K12.1</span><span class="misc-badge">M12.1</span><span class="poe-chip p">🔮 P</span><span class="vpa-badge">วPA 1, 4</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนดูวิดีโอรถพยาบาลผ่านหน้ากล้อง · สังเกตการเปลี่ยน pitch ของเสียง</span></li><li><span class="li-text">นักเรียนเขียน Predict ลง POE-12 ช่อง P — "ความถี่ที่คนขับได้ยินเปลี่ยนหรือไม่?" พร้อมเหตุผล</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot explore">E2</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Explore · Jigsaw 3 ระดับโจทย์</span><span class="phase-time">30–60 นาที</span><span class="obj-badge">P12.1, P12.2</span><span class="poe-chip o">👁 O</span><span class="activity-badge">Jigsaw 30 นาที</span><span class="vpa-badge">วPA 3, 7</span></div>
+        <ul class="phase-activities">
+          <li><span class="li-text">นักเรียนกลุ่ม 4 คน ได้รับโจทย์ Doppler ระดับต่างกัน — <strong>คน 1:</strong> ระดับ 1 พื้นฐาน สสวท. · <strong>คน 2:</strong> ระดับ 2 PISA (สถานการณ์จริง) · <strong>คน 3:</strong> ระดับ 3 PAT2/สอวน. · <strong>คน 4:</strong> Beat + การแทรกสอด</span></li>
+          <li><span class="li-text">นักเรียนแก้โจทย์ตนคนเดียวก่อน 10 นาที · จากนั้นรวมกลุ่ม "expert" คนระดับเดียวกันแลกเปลี่ยน 10 นาที</span></li>
+          <li><span class="li-text">นักเรียนกลับกลุ่มเดิม สอนเพื่อนโจทย์ของตน · ทุกคนต้องเขียนคำตอบของทุกข้อใน POE-12 ตาราง O</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot explain">E3</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Explain · Gallery Walk + CER</span><span class="phase-time">60–75 นาที</span><span class="obj-badge">K12.1, K12.2</span><span class="poe-chip e">✍️ E</span><span class="vpa-badge">วPA 3, 5, 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนแต่ละกลุ่มนำเสนอวิธีคิดของข้อที่ยากที่สุด — บนกระดาน Live Board · ใช้รูปแบบ Claim-Evidence-Reasoning</span></li><li><span class="li-text">นักเรียนและครูร่วมอภิปรายเปรียบเทียบวิธีการต่าง ๆ · เลือกวิธีที่กระชับและถูกต้องที่สุดเป็น "model solution"</span></li><li><span class="li-text">นักเรียนเขียน Explain ลง POE-12 ช่อง E — เปรียบเทียบกับ Predict ตอนต้น</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot elaborate">E4</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Elaborate · Spot the Error + Challenge</span><span class="phase-time">75–88 นาที</span><span class="obj-badge">K12.1, P12.2</span><span class="misc-badge">M12.1, M12.2</span><span class="vpa-badge">วPA 5, 8</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำใบงาน 12.2 Spot the Error — 4 ข้อความผิดเกี่ยวกับ Doppler (เครื่องหมาย vs ทิศการเคลื่อนที่)</span></li><li><span class="li-text">ข้อ Challenge: นักเรียนวิเคราะห์การวัดความเร็วรถด้วยเรดาห์จราจร (radar gun) ใช้ Doppler ของคลื่นแม่เหล็กไฟฟ้า</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot ft">F-Post</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Four-tier Post · F12</span><span class="phase-time">88–95 นาที</span><span class="obj-badge">K12.1, K12.2</span><span class="misc-badge">M12.1–4</span><span class="vpa-badge">วPA 6</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนทำ F12-Post (parallel form) · ระบบคำนวณ Hake gain และเปรียบเทียบ misconception</span></li></ul>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-dot mj">MJ</div>
+      <div class="phase-body">
+        <div class="phase-head"><span class="phase-name">Metacognitive Journal 3-2-1</span><span class="phase-time">95–100 นาที</span><span class="obj-badge">A12.2</span><span class="vpa-badge">วPA 6, 8</span></div>
+        <ul class="phase-activities"><li><span class="li-text">นักเรียนเขียน MJ-12 · <strong>3:</strong> สิ่งที่เข้าใจ · <strong>2:</strong> ปรากฏการณ์ Doppler ในชีวิตจริง · <strong>1:</strong> คำถามค้างใจ</span></li></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 class="section-heading">🛠 สื่อ อุปกรณ์ และแหล่งการเรียนรู้</h2>
+  <div class="card">
+    <div class="tool-item"><span class="tool-num">1</span><div><strong>วิดีโอ Doppler รถพยาบาล/รถไฟ</strong> · YouTube + slow-motion clip</div></div>
+    <div class="tool-item"><span class="tool-num">2</span><div><strong>สื่อ02 POE-12</strong> ใบบันทึก · Predict/Observe/Explain · Canvas วิธีคิด</div></div>
+    <div class="tool-item"><span class="tool-num">3</span><div><strong>สื่อ03 ใบงาน 12.1 Jigsaw</strong> 4 โจทย์ × 3 ระดับ · ตอบในกระดาษ + ภาพอธิบาย</div></div>
+    <div class="tool-item"><span class="tool-num">4</span><div><strong>สื่อ04 ใบงาน 12.2 Spot the Error</strong> 4 ข้อความผิด · มาร์ค canvas</div></div>
+    <div class="tool-item"><span class="tool-num">5</span><div><strong>สื่อ05 F12 Four-tier Pre/Post</strong> 5 ข้อ · เก็บ Apps Script</div></div>
+    <div class="tool-item"><span class="tool-num">6</span><div><strong>สื่อ06 TL-12 · Traffic Light</strong> · Pre + Post</div></div>
+    <div class="tool-item"><span class="tool-num">7</span><div><strong>สื่อ07 MJ-12 · Metacognitive Journal</strong> 3-2-1 + Goal Setting</div></div>
+    <div class="tool-item"><span class="tool-num">8</span><div><strong>สื่อ08 OB-12 · แบบสังเกตพฤติกรรม</strong> · ครูใช้</div></div>
+    <div class="tool-item"><span class="tool-num">9</span><div><strong>สื่อ09 Rubric Workshop</strong> · เกณฑ์ 0–3 ต่อข้อ</div></div>
+    <div class="tool-item"><span class="tool-num">10</span><div><strong>สื่อ10 CER Live Board</strong> · Padlet สำหรับ Gallery Walk</div></div>
+    <div class="tool-item"><span class="tool-num">11</span><div><strong>สื่อ11 Doppler Simulator</strong> · PhET Wave Interference</div></div>
+  </div>
+
+  <h2 class="section-heading">📊 การวัดและประเมินผล</h2>
+  <table class="assess-table">
+    <thead><tr><th>ด้าน / วัตถุประสงค์</th><th>ตัวแปรที่วัด</th><th>เครื่องมือ</th><th>เกณฑ์ผ่าน</th></tr></thead>
+    <tbody>
+      <tr><td>K12.1 สมการ Doppler</td><td>% Sound concept</td><td>F12 Four-tier Post</td><td>≥ 80%</td></tr>
+      <tr><td>K12.2 Beat vs interference</td><td>คะแนนใบงาน</td><td>ใบงาน 12.2</td><td>≥ 3/4 ข้อ</td></tr>
+      <tr><td>P12.1 แก้โจทย์ 3 ระดับ</td><td>คะแนน Jigsaw</td><td>ใบงาน 12.1</td><td>เฉลี่ย ≥ 70%</td></tr>
+      <tr><td>P12.2 แปลงโจทย์</td><td>Workshop Rubric</td><td>Rubric 0–3</td><td>≥ 2.0/3.0</td></tr>
+      <tr><td>A12.1 Jigsaw ทีมเวิร์ก</td><td>OB</td><td>OB-12</td><td>≥ 80% "ดี"</td></tr>
+      <tr><td>A12.2 ไม่ท้อโจทย์ยาก</td><td>MJ</td><td>MJ-12</td><td>≥ 70%</td></tr>
+      <tr><td>M12.1 → M12.4</td><td>% ลด Pre→Post</td><td>F12 Tier 4</td><td>ลด ≥ 20%</td></tr>
+    </tbody>
+  </table>
+
+  <div class="rubric-strip">
+    <div class="rubric-score"><div class="score-num">0</div><div class="score-desc">ไม่ทำ</div></div>
+    <div class="rubric-score"><div class="score-num">1</div><div class="score-desc">เลือกสมการผิด</div></div>
+    <div class="rubric-score"><div class="score-num">2</div><div class="score-desc">สมการถูก · คำนวณผิด</div></div>
+    <div class="rubric-score"><div class="score-num">3</div><div class="score-desc">ถูกครบ · ตรวจหน่วย</div></div>
+  </div>
+
+  <h2 class="section-heading">🧠 การเชื่อมโยงกับ วPA ด้านที่ 1 (8 ตัวชี้วัด)</h2>
+  <table class="vpa-table">
+    <thead><tr><th>#</th><th>ตัวชี้วัด วPA ด้านที่ 1</th><th>หลักฐาน/กิจกรรม</th><th>ขั้นของแผน</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>เข้าถึงและเข้าใจบทเรียน</td><td>วิดีโอรถพยาบาล · สถานการณ์จริง PISA · ภาษาเหมาะ ม.5</td><td>E1, E2</td></tr>
+      <tr><td>2</td><td>เชื่อมโยงความรู้เดิม</td><td>Kahoot ทบทวน v=fλ · ฮาร์มอนิก · TL-Pre · F12-Pre</td><td>ACT, TLC, F-Pre</td></tr>
+      <tr><td>3</td><td>สร้างความรู้เอง</td><td>Jigsaw 3 ระดับ · นักเรียนสอนเพื่อน · CER Gallery Walk</td><td>E2, E3</td></tr>
+      <tr><td>4</td><td>กระตุ้นแรงจูงใจ</td><td>วิดีโอ Doppler · radar gun · Beat ในเครื่องดนตรี</td><td>TLC, E1, E4</td></tr>
+      <tr><td>5</td><td>พัฒนาทักษะนวัตกรรม</td><td>Spot the Error · ข้อ Challenge radar · 3 ระดับโจทย์</td><td>E4</td></tr>
+      <tr><td>6</td><td>ข้อมูลย้อนกลับ</td><td>F-Post vs Pre · Gallery Walk feedback · MJ</td><td>F-Post, E3, MJ</td></tr>
+      <tr><td>7</td><td>จัดการตนเอง (SRL)</td><td>TL-card · Jigsaw แบ่งบทบาท · Expert group time management</td><td>TLC, E2</td></tr>
+      <tr><td>8</td><td>นำไปต่อยอด</td><td>MJ 3-2-1 · เชื่อม radar gun · Sonar ทางการแพทย์ · เตรียมหน่วยเสียง</td><td>E4, MJ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="footer">Infographic แผน 12 · Workshop แก้โจทย์คลื่นและ Doppler · ครูโกเมน ปาปะโถ · โรงเรียนสตรีวิทยา · ปีการศึกษา 2569</div>
+</div>
+
+</body>
+</html>
