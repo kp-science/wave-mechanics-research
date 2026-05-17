@@ -40,6 +40,25 @@ UNITS = [
 
 FONT = "TH SarabunPSK"
 
+# ─── มาตรฐานขนาดและการย่อหน้า (Layout System) ────────────────
+SZ_H1 = 18      # หัวข้อใหญ่ ๑. ๒. ๓. ...
+SZ_H2 = 16      # หัวข้อกิจกรรม ๗.X
+SZ_H3 = 14      # หัวข้อย่อย ๖.๑ ๖.๒ + bold sub-heading
+SZ_BODY = 14    # ย่อหน้าหลัก
+SZ_BULLET = 14  # bullet/numbered
+SZ_TABLE = 12   # ข้อความในตาราง
+SZ_TAGS = 12    # tag line [วPA: ...]
+SZ_NOTE = 11    # หมายเหตุเล็ก
+
+# Indent system (cm) — เป็นมาตรฐานเดียวทั้งเอกสาร
+IND_BODY = 0.6        # ย่อหน้าหลัก (เพิ่มจาก 0.3 → 0.6 ให้โผล่ชัด)
+IND_BODY_FL = 0.8     # first-line indent ของย่อหน้าบรรยาย
+IND_H3 = 0.3          # หัวข้อย่อย
+IND_BULLET = 1.2      # bullet
+IND_BULLET_FL = -0.5  # hanging indent ของ bullet
+IND_NUMBER = 1.2      # numbered
+IND_NUMBER_FL = -0.7  # hanging indent ของ numbered
+
 # ─────────────────────────────────────────────────────────────
 # Thai line-break helper
 def th_break(s):
@@ -91,7 +110,6 @@ def add_h1(doc, text, *, color=(0x1f,0x2d,0x5c)):
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_before = Pt(14)
     p.paragraph_format.space_after = Pt(6)
-    # bottom border
     pPr = p._element.get_or_add_pPr()
     pBdr = OxmlElement("w:pBdr")
     btm = OxmlElement("w:bottom")
@@ -102,44 +120,50 @@ def add_h1(doc, text, *, color=(0x1f,0x2d,0x5c)):
     pBdr.append(btm)
     pPr.append(pBdr)
     r = p.add_run(th_break(text))
-    set_th_font(r, size=18, bold=True, color=color)
+    set_th_font(r, size=SZ_H1, bold=True, color=color)
     return p
 
 def add_h2(doc, text, *, color=(0x2c,0x5f,0xa0)):
-    """หัวข้อรอง — ขั้น 5E"""
+    """หัวข้อกิจกรรม ๗.X — ขั้น 5E"""
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    p.paragraph_format.space_before = Pt(10)
+    p.paragraph_format.space_before = Pt(12)
     p.paragraph_format.space_after = Pt(4)
     r = p.add_run(th_break(text))
-    set_th_font(r, size=16, bold=True, color=color)
+    set_th_font(r, size=SZ_H2, bold=True, color=color)
     return p
 
-def add_h3(doc, text):
+def add_h3(doc, text, *, indent=IND_H3):
+    """หัวข้อย่อย ๖.๑ ๖.๒ และ subheading bold"""
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_before = Pt(6)
     p.paragraph_format.space_after = Pt(2)
+    p.paragraph_format.left_indent = Cm(indent)
     r = p.add_run(th_break(text))
-    set_th_font(r, size=14, bold=True, color=(0x2d,0x3d,0x5a))
+    set_th_font(r, size=SZ_H3, bold=True, color=(0x2d,0x3d,0x5a))
     return p
 
-def add_bullet(doc, text, *, size=14, indent=0.5):
+def add_bullet(doc, text, *, size=SZ_BULLET):
+    """bullet มาตรฐาน · indent 1.2cm · hanging -0.5"""
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_after = Pt(2)
-    p.paragraph_format.left_indent = Cm(indent + 0.5)
-    p.paragraph_format.first_line_indent = Cm(-0.5)
+    p.paragraph_format.left_indent = Cm(IND_BULLET)
+    p.paragraph_format.first_line_indent = Cm(IND_BULLET_FL)
+    p.paragraph_format.line_spacing = 1.4
     r = p.add_run("•  " + th_break(text))
     set_th_font(r, size=size)
     return p
 
-def add_numbered(doc, num, text, *, size=14, indent=0.5):
+def add_numbered(doc, num, text, *, size=SZ_BULLET):
+    """numbered มาตรฐาน · indent 1.2cm · hanging -0.7"""
     p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.space_after = Pt(2)
-    p.paragraph_format.left_indent = Cm(indent + 0.8)
-    p.paragraph_format.first_line_indent = Cm(-0.8)
+    p.paragraph_format.left_indent = Cm(IND_NUMBER)
+    p.paragraph_format.first_line_indent = Cm(IND_NUMBER_FL)
+    p.paragraph_format.line_spacing = 1.4
     r = p.add_run(f"{num}.  " + th_break(text))
     set_th_font(r, size=size)
     return p
@@ -475,22 +499,23 @@ def build_docx(unit_info, html_path, out_path):
     concept = data.get("concept", "")
     lines = [l.strip(" •·-") for l in concept.split("\n") if l.strip()]
     if lines:
-        # paragraph แรกบรรยายความ
-        add_para(doc, lines[0], size=14, space_after=4, indent_left=0.3, line_spacing=1.4)
-        # bullet ที่เหลือ
+        add_para(doc, lines[0], size=SZ_BODY, space_after=4,
+                 indent_left=IND_BODY, first_line_indent=IND_BODY_FL, line_spacing=1.5)
         for line in lines[1:]:
-            add_bullet(doc, line, size=13.5, indent=0.3)
+            add_bullet(doc, line)
 
     # ────────────── ๒. มาตรฐานการเรียนรู้และตัวชี้วัด
     add_h1(doc, "๒. มาตรฐานการเรียนรู้และตัวชี้วัด")
-    add_para(doc, "กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี · สาระที่ 5 พลังงาน (สำหรับหน่วยคลื่น/SHM/เสียง) หรือสาระที่ 2 วิทยาศาสตร์กายภาพ (สำหรับหน่วยแสง) ตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พุทธศักราช 2551 (ฉบับปรับปรุง พ.ศ. 2560)", size=13.5, indent_left=0.3, line_spacing=1.4)
+    add_para(doc, "กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี · สาระที่ 5 พลังงาน (สำหรับหน่วยคลื่น/SHM/เสียง) หรือสาระที่ 2 วิทยาศาสตร์กายภาพ (สำหรับหน่วยแสง) ตามหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พุทธศักราช 2551 (ฉบับปรับปรุง พ.ศ. 2560)",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, line_spacing=1.5)
     add_h3(doc, "ตัวชี้วัด/ผลการเรียนรู้")
-    add_bullet(doc, indicator, size=13.5)
-    add_bullet(doc, f"อ้างอิงเนื้อหา: {chapter_text} (สสวท. ฟิสิกส์ เล่ม 3 · ม.5)", size=13.5)
+    add_bullet(doc, indicator)
+    add_bullet(doc, f"อ้างอิงเนื้อหา: {chapter_text} (สสวท. ฟิสิกส์ เล่ม 3 · ม.5)")
 
     # ────────────── ๓. จุดประสงค์การเรียนรู้ (K/P/A)
     add_h1(doc, "๓. จุดประสงค์การเรียนรู้ (K · P · A)")
-    add_para(doc, "จุดประสงค์การเรียนรู้แบ่งเป็น 3 ด้านตามแนวทาง KPA โดยแต่ละจุดประสงค์มีรหัสและเกณฑ์การวัดที่ชัดเจน เพื่อให้สามารถประเมินได้อย่างเป็นรูปธรรม", size=13.5, indent_left=0.3, line_spacing=1.4)
+    add_para(doc, "จุดประสงค์การเรียนรู้แบ่งเป็น 3 ด้านตามแนวทาง KPA โดยแต่ละจุดประสงค์มีรหัสและเกณฑ์การวัดที่ชัดเจน เพื่อให้สามารถประเมินได้อย่างเป็นรูปธรรม",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, line_spacing=1.5)
     rows = []
     for k in data["K"]: rows.append(["K (ความรู้)", k["code"], k["text"], "Pre/Post-test ≥ 80% Sound"])
     for p_ in data["P"]: rows.append(["P (ทักษะ)", p_["code"], p_["text"], "Rubric ≥ 2.0/3.0"])
@@ -501,7 +526,8 @@ def build_docx(unit_info, html_path, out_path):
 
     # ────────────── ๔. สมรรถนะของผู้เรียน
     add_h1(doc, "๔. สมรรถนะของผู้เรียน")
-    add_para(doc, "แผนนี้ออกแบบให้นักเรียนได้พัฒนาสมรรถนะสำคัญตามหลักสูตรแกนกลาง 6 ด้าน ดังนี้", size=13.5, indent_left=0.3, line_spacing=1.4)
+    add_para(doc, "แผนนี้ออกแบบให้นักเรียนได้พัฒนาสมรรถนะสำคัญตามหลักสูตรแกนกลาง 6 ด้าน ดังนี้",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, line_spacing=1.5)
     for i, c in enumerate([
         "การสื่อสาร — นำเสนอ Claim/Evidence/Reasoning ในขั้น Explain ได้ชัดเจน รับ-ส่งสารกับเพื่อนและครูอย่างมีประสิทธิภาพ",
         "การคิด — วิเคราะห์ผลการทดลอง เชื่อมโยงข้อมูลจาก POE และตัดสินใจเลือกแนวทางแก้ปัญหา",
@@ -509,16 +535,17 @@ def build_docx(unit_info, html_path, out_path):
         "ทักษะชีวิตและการใช้เทคโนโลยี — ใช้ Simulation และเครื่องมือ Lab อย่างปลอดภัยและคุ้มค่า",
         "การรวมพลังทำงานเป็นทีม — แบ่งหน้าที่และจัดการเวลาในกลุ่มทดลอง 3 ฐานอย่างเป็นระบบ",
     ], 1):
-        add_numbered(doc, thai_num(i), c, size=13.5)
+        add_numbered(doc, thai_num(i), c)
 
     # ────────────── ๕. คุณลักษณะอันพึงประสงค์
     add_h1(doc, "๕. คุณลักษณะอันพึงประสงค์")
-    add_para(doc, "ครูเฝ้าสังเกตและบันทึกคุณลักษณะของนักเรียนตลอดคาบเรียนด้วย OB sheet โดยเฉพาะ:", size=13.5, indent_left=0.3, line_spacing=1.4)
+    add_para(doc, "ครูเฝ้าสังเกตและบันทึกคุณลักษณะของนักเรียนตลอดคาบเรียนด้วย OB sheet โดยเฉพาะ:",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, line_spacing=1.5)
     for c in ["มีวินัย — เข้าร่วมกิจกรรมตรงเวลา · ทำงานในเวลาที่กำหนด",
               "ใฝ่เรียนรู้ — ตั้งคำถาม · ค้นคว้าเพิ่มเติม · ทำการบ้านครบ",
               "มุ่งมั่นในการทำงาน — ไม่ท้อกับโจทย์ยาก · ลองหลายวิธี",
               "ซื่อสัตย์ทางวิทยาศาสตร์ — รายงานผลการทดลองตามที่วัดได้จริง · ยอมรับข้อมูลที่ขัดกับความเชื่อเดิม"]:
-        add_bullet(doc, c, size=13.5)
+        add_bullet(doc, c)
 
     # ────────────── ๖. สาระการเรียนรู้และ Misconceptions เป้าหมาย
     add_h1(doc, "๖. สาระการเรียนรู้และ Misconceptions เป้าหมาย")
@@ -527,17 +554,19 @@ def build_docx(unit_info, html_path, out_path):
         for i, c in enumerate(data["refr_cards"], 1):
             txt = f"({thai_num(i)}) {c['title']} — {c['sub']}"
             if c["note"]: txt += f" · {c['note']}"
-            add_para(doc, txt, size=13.5, space_after=3, indent_left=0.3, line_spacing=1.4)
+            add_para(doc, txt, size=SZ_BODY, space_after=3,
+                     indent_left=IND_BODY, line_spacing=1.5)
     if data.get("formulas"):
         add_h3(doc, "สมการสำคัญ")
         for f in data["formulas"]:
             line = f"[{f['tag']}]  {f['formula']}"
             if f["note"]: line += f"   ({f['note']})"
-            add_bullet(doc, line, size=13.5)
+            add_bullet(doc, line)
 
     if data["misc"]:
         add_h3(doc, "๖.๒ Misconceptions เป้าหมาย")
-        add_para(doc, "ครูออกแบบคาบนี้เพื่อแก้ misconception ที่ฝังลึกของนักเรียน โดยใช้ Concept Cartoon ในขั้น Engage และ Four-tier Diagnostic ในขั้น Pre/Post เพื่อวัดการเปลี่ยนแปลงเชิงมโนทัศน์ (Conceptual Change) อย่างเป็นรูปธรรม", size=13.5, indent_left=0.3, space_after=6, line_spacing=1.4)
+        add_para(doc, "ครูออกแบบคาบนี้เพื่อแก้ misconception ที่ฝังลึกของนักเรียน โดยใช้ Concept Cartoon ในขั้น Engage และ Four-tier Diagnostic ในขั้น Pre/Post เพื่อวัดการเปลี่ยนแปลงเชิงมโนทัศน์ (Conceptual Change) อย่างเป็นรูปธรรม",
+                 size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, space_after=6, line_spacing=1.5)
         mrows = []
         for m in data["misc"]:
             mrows.append([m["id"], "★" if "★" in m["id"] or "1" in m["id"] else "", m["wrong"], m["correct"]])
@@ -547,8 +576,11 @@ def build_docx(unit_info, html_path, out_path):
     # ────────────── ๗. กิจกรรมการเรียนรู้
     add_pagebreak(doc)
     add_h1(doc, "๗. กิจกรรมการเรียนรู้ (5E + POE)")
-    add_para(doc, "รูปแบบการจัดการเรียนรู้: สืบเสาะหาความรู้ 5E ของ BSCS (Engage → Explore → Explain → Elaborate → Evaluate) ร่วมกับเทคนิค Predict–Observe–Explain (POE) ของ White & Gunstone (1992) รวม 9 ขั้นย่อย ใช้เวลาทั้งหมด 100 นาที (2 คาบ ๆ ละ 50 นาที)", size=13.5, indent_left=0.3, space_after=4, line_spacing=1.5)
-    add_para(doc, "ภาษาที่ใช้: Child-centered บรรยายตาม 5W1H (ใคร ทำอะไร ที่ไหน อย่างไร เพื่ออะไร ภายในเวลาเท่าใด) แต่ละย่อหน้าระบุชัด — ครูทำอะไร · นักเรียนทำอะไร · เพื่อบรรลุเป้าหมายใด", size=13.5, indent_left=0.3, space_after=8, line_spacing=1.5, italic=True, color=(0x55,0x55,0x55))
+    add_para(doc, "รูปแบบการจัดการเรียนรู้: สืบเสาะหาความรู้ 5E ของ BSCS (Engage → Explore → Explain → Elaborate → Evaluate) ร่วมกับเทคนิค Predict–Observe–Explain (POE) ของ White & Gunstone (1992) รวม 9 ขั้นย่อย ใช้เวลาทั้งหมด 100 นาที (2 คาบ ๆ ละ 50 นาที)",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, space_after=4, line_spacing=1.5)
+    add_para(doc, "ภาษาที่ใช้: Child-centered บรรยายตาม 5W1H (ใคร ทำอะไร ที่ไหน อย่างไร เพื่ออะไร ภายในเวลาเท่าใด) แต่ละย่อหน้าระบุชัด — ครูทำอะไร · นักเรียนทำอะไร · เพื่อบรรลุเป้าหมายใด",
+             size=SZ_NOTE+1, indent_left=IND_BODY, space_after=8, line_spacing=1.4,
+             italic=True, color=(0x55,0x55,0x55))
 
     for idx, ph in enumerate(data["phases"], 1):
         info = get_phase_info(ph["code"])
@@ -565,69 +597,60 @@ def build_docx(unit_info, html_path, out_path):
         if ph.get("poe"): tags.append("POE: " + ph["poe"])
         if tags:
             add_para(doc, "   ".join("[" + t + "]" for t in tags),
-                     size=11.5, color=(0x55,0x55,0x55), italic=True,
-                     indent_left=0.3, space_after=6)
+                     size=SZ_TAGS, color=(0x55,0x55,0x55), italic=True,
+                     indent_left=IND_BODY, space_after=6)
 
-        # บรรยาย 3 ย่อหน้า + activities เป็น sub-bullets
-        # 1) ครูทำอะไร
-        p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.left_indent = Cm(0.3)
-        p.paragraph_format.line_spacing = 1.5
-        r = p.add_run("ครู: "); set_th_font(r, size=13.5, bold=True, color=(0x1f,0x4e,0x79))
-        r = p.add_run(th_break(strip_html(info["teacher"]))); set_th_font(r, size=13.5)
+        # บรรยาย 3 ย่อหน้า · ครู / นักเรียน / เป้าหมาย
+        for label, txt, color in [
+            ("ครู", info["teacher"], (0x1f,0x4e,0x79)),
+            ("นักเรียน", info["student"], (0x2e,0x7d,0x32)),
+            ("เป้าหมาย", info["goal"], (0xb7,0x4d,0x00)),
+        ]:
+            p = doc.add_paragraph()
+            p.paragraph_format.space_after = Pt(4)
+            p.paragraph_format.left_indent = Cm(IND_BODY)
+            p.paragraph_format.line_spacing = 1.5
+            r = p.add_run(f"{label}: "); set_th_font(r, size=SZ_BODY, bold=True, color=color)
+            r = p.add_run(th_break(strip_html(txt))); set_th_font(r, size=SZ_BODY)
 
-        # 2) นักเรียนทำอะไร
-        p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(4)
-        p.paragraph_format.left_indent = Cm(0.3)
-        p.paragraph_format.line_spacing = 1.5
-        r = p.add_run("นักเรียน: "); set_th_font(r, size=13.5, bold=True, color=(0x2e,0x7d,0x32))
-        r = p.add_run(th_break(strip_html(info["student"]))); set_th_font(r, size=13.5)
-
-        # 3) เป้าหมาย/วPA
-        p = doc.add_paragraph()
-        p.paragraph_format.space_after = Pt(6)
-        p.paragraph_format.left_indent = Cm(0.3)
-        p.paragraph_format.line_spacing = 1.5
-        r = p.add_run("เป้าหมาย: "); set_th_font(r, size=13.5, bold=True, color=(0xb7,0x4d,0x00))
-        r = p.add_run(th_break(strip_html(info["goal"]))); set_th_font(r, size=13.5)
-
-        # 4) รายละเอียดกิจกรรมเฉพาะแผนนี้ (activities จาก infographic)
+        # 4) รายละเอียดกิจกรรมเฉพาะแผนนี้
         if ph.get("activities"):
-            add_h3(doc, "ลำดับกิจกรรมในขั้นนี้")
+            add_h3(doc, "ลำดับกิจกรรมในขั้นนี้", indent=IND_BODY)
             for i, act in enumerate(ph["activities"], 1):
-                add_numbered(doc, thai_num(i), act, size=13, indent=0.5)
+                add_numbered(doc, thai_num(i), act)
 
     # ────────────── ๘. สื่อ อุปกรณ์ และแหล่งการเรียนรู้
     add_pagebreak(doc)
     add_h1(doc, "๘. สื่อ อุปกรณ์ และแหล่งการเรียนรู้")
-    add_para(doc, "สื่อและเครื่องมือต่อไปนี้ออกแบบให้ทำงานสอดคล้องกันตลอดคาบ — Concept Cartoon ในขั้น Engage · ใบบันทึก POE ในขั้น Explore-Explain · ใบงาน Calc และ Spot the Error ในขั้น Elaborate · Four-tier Diagnostic ก่อน-หลังเรียน · TL-card และ MJ-journal สำหรับ formative assessment", size=13.5, indent_left=0.3, space_after=6, line_spacing=1.4)
+    add_para(doc, "สื่อและเครื่องมือต่อไปนี้ออกแบบให้ทำงานสอดคล้องกันตลอดคาบ — Concept Cartoon ในขั้น Engage · ใบบันทึก POE ในขั้น Explore-Explain · ใบงาน Calc และ Spot the Error ในขั้น Elaborate · Four-tier Diagnostic ก่อน-หลังเรียน · TL-card และ MJ-journal สำหรับ formative assessment",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, space_after=6, line_spacing=1.5)
     if data.get("sim"):
         add_h3(doc, "Simulation หลัก")
-        add_bullet(doc, f"{data['sim']['title']}", size=13.5, indent=0.3)
-        add_bullet(doc, f"URL: {data['sim']['url']}", size=12, indent=0.6)
+        add_bullet(doc, f"{data['sim']['title']}")
+        add_bullet(doc, f"URL: {data['sim']['url']}", size=SZ_TABLE)
         if data['sim'].get("badges"):
-            add_bullet(doc, "โหมดที่ใช้: " + " · ".join(data["sim"]["badges"]), size=12, indent=0.6)
+            add_bullet(doc, "โหมดที่ใช้: " + " · ".join(data["sim"]["badges"]), size=SZ_TABLE)
     add_h3(doc, "รายการสื่อและอุปกรณ์")
     for i, tool in enumerate(data.get("tools", []), 1):
-        add_numbered(doc, thai_num(i), tool, size=13, indent=0.5)
+        add_numbered(doc, thai_num(i), tool)
 
     # ────────────── ๙. การวัดและประเมินผล
     add_h1(doc, "๙. การวัดและประเมินผล")
-    add_para(doc, "แผนนี้ใช้ทั้ง Formative Assessment (TL-card · Four-tier Pre/Post · POE Rubric · MJ Journal) และ Summative Assessment (ใบงาน Calc + Spot the Error) เพื่อตอบโจทย์การประเมิน 3 ด้าน — การเปลี่ยนแปลงเชิงมโนทัศน์ · ทักษะกระบวนการ · เจตคติ — อย่างครบถ้วน ครูสามารถดูผลประเมินอัตโนมัติได้ที่ KP-Classroom Teacher Dashboard ผ่านระบบ Apps Script", size=13.5, indent_left=0.3, space_after=6, line_spacing=1.5)
+    add_para(doc, "แผนนี้ใช้ทั้ง Formative Assessment (TL-card · Four-tier Pre/Post · POE Rubric · MJ Journal) และ Summative Assessment (ใบงาน Calc + Spot the Error) เพื่อตอบโจทย์การประเมิน 3 ด้าน — การเปลี่ยนแปลงเชิงมโนทัศน์ · ทักษะกระบวนการ · เจตคติ — อย่างครบถ้วน ครูสามารถดูผลประเมินอัตโนมัติได้ที่ KP-Classroom Teacher Dashboard ผ่านระบบ Apps Script",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, space_after=6, line_spacing=1.5)
     if data.get("assess"):
         add_table(doc, ["สิ่งที่ต้องการวัด", "ตัวแปร", "เครื่องมือ", "เกณฑ์ผ่าน"],
                   data["assess"], col_widths_cm=[5.0, 4.0, 4.0, 3.7])
     if data.get("rubric"):
         add_h3(doc, "เกณฑ์ Rubric ของกิจกรรมหลัก (0–3 คะแนน)")
         for r in data["rubric"]:
-            add_bullet(doc, f"คะแนน {r['score']} — {r['desc']}", size=13)
+            add_bullet(doc, f"คะแนน {r['score']} — {r['desc']}")
 
     # ────────────── ๑๐. การเชื่อมโยงกับ วPA ด้านที่ 1
     add_pagebreak(doc)
     add_h1(doc, "๑๐. การเชื่อมโยงกับ วPA ด้านที่ 1")
-    add_para(doc, "แผนนี้ได้รับการออกแบบให้ตอบโจทย์ตัวชี้วัด วPA ด้านที่ 1 ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน ครบทั้ง 8 ตัวชี้วัด หลักฐานทั้งหมดสามารถนำไปประกอบรายงานการประเมินวิทยฐานะเชี่ยวชาญได้โดยตรง โดยเชื่อมโยงกับกิจกรรมและสื่อในแต่ละขั้นของ 5E ดังตารางต่อไปนี้", size=13.5, indent_left=0.3, space_after=6, line_spacing=1.5)
+    add_para(doc, "แผนนี้ได้รับการออกแบบให้ตอบโจทย์ตัวชี้วัด วPA ด้านที่ 1 ทักษะการจัดการเรียนรู้และการจัดการชั้นเรียน ครบทั้ง 8 ตัวชี้วัด หลักฐานทั้งหมดสามารถนำไปประกอบรายงานการประเมินวิทยฐานะเชี่ยวชาญได้โดยตรง โดยเชื่อมโยงกับกิจกรรมและสื่อในแต่ละขั้นของ 5E ดังตารางต่อไปนี้",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL, space_after=6, line_spacing=1.5)
     if data.get("vpa"):
         rows = []
         for v in data["vpa"]:
@@ -639,17 +662,22 @@ def build_docx(unit_info, html_path, out_path):
     # ────────────── ๑๑. บันทึกหลังการสอน
     add_pagebreak(doc)
     add_h1(doc, "๑๑. บันทึกหลังการจัดการเรียนรู้")
-    add_para(doc, "ครูบันทึกผลการสอนทันทีหลังจบคาบ เพื่อสะท้อนคิดและปรับการสอนครั้งต่อไป (Reflective Practice) ข้อมูลในส่วนนี้เป็นหลักฐานสำคัญสำหรับงานวิจัย วPA ของครูเอง", size=13.5, indent_left=0.3, space_after=6, italic=True, color=(0x55,0x55,0x55), line_spacing=1.4)
+    add_para(doc, "ครูบันทึกผลการสอนทันทีหลังจบคาบ เพื่อสะท้อนคิดและปรับการสอนครั้งต่อไป (Reflective Practice) ข้อมูลในส่วนนี้เป็นหลักฐานสำคัญสำหรับงานวิจัย วPA ของครูเอง",
+             size=SZ_BODY, indent_left=IND_BODY, first_line_indent=IND_BODY_FL,
+             space_after=6, italic=True, color=(0x55,0x55,0x55), line_spacing=1.5)
     for label in ["๑๑.๑ ผลที่เกิดกับผู้เรียน — ด้านความรู้ (K)",
                   "๑๑.๒ ผลที่เกิดกับผู้เรียน — ด้านทักษะกระบวนการ (P)",
                   "๑๑.๓ ผลที่เกิดกับผู้เรียน — ด้านเจตคติ (A)",
                   "๑๑.๔ ปัญหา/อุปสรรค ระหว่างการสอน",
                   "๑๑.๕ แนวทางปรับปรุง/พัฒนา ในการสอนครั้งต่อไป",
                   "๑๑.๖ ข้อเสนอแนะของผู้บริหาร/ผู้นิเทศ"]:
-        add_h3(doc, label)
+        add_h3(doc, label, indent=IND_BODY)
         for _ in range(3):
-            add_para(doc, "................................................................................................................................",
-                     size=13, color=(0x99,0x99,0x99), space_after=4)
+            p = doc.add_paragraph()
+            p.paragraph_format.left_indent = Cm(IND_BODY)
+            p.paragraph_format.space_after = Pt(4)
+            r = p.add_run("................................................................................................................................")
+            set_th_font(r, size=SZ_BODY, color=(0x99,0x99,0x99))
 
     # ลงนาม
     add_para(doc, "", size=14, space_before=12)
