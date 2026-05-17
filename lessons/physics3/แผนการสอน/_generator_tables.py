@@ -202,37 +202,28 @@ KPA = {
     },
 }
 
-# Units (6 units, 40 plans, 80 periods)
+# Units (4 หน่วยการเรียนรู้ตามหลักสูตร · 40 แผน · 80 คาบ)
+# Plans 39 (Diagnostic) + 40 (Capstone) จัดอยู่ในหน่วย 4 แสงเชิงคลื่น (ปลายภาคบูรณาการ)
 UNITS = [
     {
-        "no": 1, "name": "คลื่นกล", "outcomes": ["1", "2"], "plans": 12, "periods": 24, "score": 20,
+        "no": 1, "name": "คลื่นกล", "outcomes": ["1", "2"], "plans": 12, "periods": 24, "score": 25,
         "topics": "การเกิดและสมบัติของคลื่น · อัตราเร็วคลื่น · คลื่นต่อเนื่อง+เฟส · การซ้อนทับ+ฮอยเกนส์ · การสะท้อน · การหักเห · การแทรกสอด · การเลี้ยวเบน · คลื่นนิ่งและบูรณาการ · ทบทวน · Lab Melde · Workshop Doppler",
         "plan_range": "1–12",
     },
     {
-        "no": 2, "name": "การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย (SHM)", "outcomes": ["3"], "plans": 8, "periods": 16, "score": 15,
+        "no": 2, "name": "การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย (SHM)", "outcomes": ["3"], "plans": 8, "periods": 16, "score": 20,
         "topics": "นิยาม SHM · ลูกตุ้มอย่างง่าย · มวลสปริง · เฟส x,v,a · พลังงาน · damped + resonance · Lab วัด g · Workshop ประยุกต์",
         "plan_range": "13–20",
     },
     {
-        "no": 3, "name": "เสียงและการได้ยิน", "outcomes": ["4", "5", "6", "7"], "plans": 13, "periods": 26, "score": 25,
+        "no": 3, "name": "เสียงและการได้ยิน", "outcomes": ["4", "5", "6", "7"], "plans": 13, "periods": 26, "score": 30,
         "topics": "การเกิดและการเคลื่อนที่ของเสียง · การกระจัด+คลื่นความดัน · อัตราเร็วเสียง · พฤติกรรมเสียง · ความเข้ม+ระดับเสียง · การได้ยิน+มลพิษ · pitch+คุณภาพเสียง · คลื่นนิ่งในท่อ · บีต · ดอปเพลอร์+คลื่นกระแทก · การประยุกต์ · Lab resonance · STEM เครื่องดนตรี",
         "plan_range": "21–33",
     },
     {
-        "no": 4, "name": "แสงเชิงคลื่น", "outcomes": ["8"], "plans": 5, "periods": 10, "score": 10,
-        "topics": "แนวคิดแสงเชิงคลื่น+สลิตคู่ · การเลี้ยวเบนผ่านสลิตเดี่ยว · การเลี้ยวเบนผ่านเกรตติง · Lab Snell+TIR · Workshop ทัศนอุปกรณ์",
-        "plan_range": "34–38",
-    },
-    {
-        "no": 5, "name": "ทบทวนรวม (Two-tier Diagnostic)", "outcomes": ["1","2","3","4","5","6","7","8"], "plans": 1, "periods": 2, "score": 10,
-        "topics": "Two-tier Diagnostic Test 20 ข้อ · ทบทวนรวม 4 หน่วย · Misconception identification · Personal Learning Plan",
-        "plan_range": "39",
-    },
-    {
-        "no": 6, "name": "Capstone Project บูรณาการ", "outcomes": ["1","2","3","4","5","6","7","8"], "plans": 1, "periods": 2, "score": 20,
-        "topics": "นำเสนอโครงงานบูรณาการ ≥ 2 หน่วย · Engineering Design Cycle · Peer Review · Mini-concert/Demo · Award Ceremony",
-        "plan_range": "40",
+        "no": 4, "name": "แสงเชิงคลื่นและบูรณาการรวม", "outcomes": ["1","2","3","4","5","6","7","8"], "plans": 7, "periods": 14, "score": 25,
+        "topics": "แนวคิดแสงเชิงคลื่น+สลิตคู่ · การเลี้ยวเบนผ่านสลิตเดี่ยว · การเลี้ยวเบนผ่านเกรตติง · Lab Snell+TIR · Workshop ทัศนอุปกรณ์ · Two-tier Diagnostic ทบทวนรวม · Capstone นำเสนอโครงงานบูรณาการ",
+        "plan_range": "34–40",
     },
 ]
 
@@ -280,10 +271,10 @@ PLANS = [
     (36, 4, "แสงเชิงคลื่น", "การเลี้ยวเบนของแสงผ่านเกรตติง", 2, "8", "1,2,3,5", "3,4,6", "5E+POE · การทดลอง · 1"),
     (37, 4, "แสงเชิงคลื่น", "ปฏิบัติการ Snell's Law และ TIR", 2, "8", "1,2,3,4,5", "3,4,6", "5E+POE · การทดลอง (hands-on) · 1, 2"),
     (38, 4, "แสงเชิงคลื่น", "Workshop ทัศนอุปกรณ์ · กล้อง ตา กล้องส่อง", 2, "8", "1,2,3,5", "3,4,6", "5E+POE · Jigsaw+การแก้ปัญหา · 1, 3"),
-    # review (39)
-    (39, 5, "ทบทวนรวม", "Two-tier Diagnostic ทบทวนรวม", 2, "1,2,3,4,5,6,7,8", "1,2,5", "3,4,6", "5E · การวัดมโนทัศน์+การถามตอบ · 1"),
-    # capstone (40)
-    (40, 6, "Capstone", "นำเสนอโครงงานบูรณาการ", 2, "1,2,3,4,5,6,7,8", "1,2,3,4,5", "3,4,6,8", "PBL+5E · โครงงาน+การนำเสนอ · 1, 2, 3, 4"),
+    # review (39) — อยู่ในหน่วย 4 แสงเชิงคลื่น (ปลายภาคบูรณาการ)
+    (39, 4, "แสงเชิงคลื่นและบูรณาการรวม", "Two-tier Diagnostic ทบทวนรวม", 2, "1,2,3,4,5,6,7,8", "1,2,5", "3,4,6", "5E · การวัดมโนทัศน์+การถามตอบ · 1"),
+    # capstone (40) — อยู่ในหน่วย 4 แสงเชิงคลื่น
+    (40, 4, "แสงเชิงคลื่นและบูรณาการรวม", "นำเสนอโครงงานบูรณาการ (Capstone)", 2, "1,2,3,4,5,6,7,8", "1,2,3,4,5", "3,4,6,8", "PBL+5E · โครงงาน+การนำเสนอ · 1, 2, 3, 4"),
 ]
 
 # ─── ไฟล์ 04 — ตารางการวิเคราะห์มาตรฐาน ตัวชี้วัด ────────────
@@ -389,70 +380,47 @@ def build_05():
     for ri, u in enumerate(UNITS, 1):
         cells = t.rows[ri].cells
         outc = "ผลการเรียนรู้ที่\n" + ", ".join(u["outcomes"])
-        # form
-        form_lines = []
-        form_lines.append("รูปแบบ/เทคนิค:")
-        form_lines.append("• สืบเสาะหาความรู้ 5E + POE")
-        if u["no"] in (1,2,3,4):
-            form_lines.append("• การทดลอง/ปฏิบัติการ Lab")
-            form_lines.append("• Concept Cartoon + CER")
+        # รูปแบบ/เทคนิค + สื่อ
+        form_lines = ["รูปแบบ/เทคนิค:",
+                      "• สืบเสาะหาความรู้ 5E + POE",
+                      "• การทดลอง/ปฏิบัติการ Lab",
+                      "• Concept Cartoon + CER"]
         if u["no"] == 3:
             form_lines.append("• STEM Engineering Design")
-        if u["no"] == 5:
+        if u["no"] == 4:
             form_lines.append("• Two-tier Diagnostic Test")
-        if u["no"] == 6:
-            form_lines.append("• Project-Based Learning")
+            form_lines.append("• Project-Based Learning (Capstone)")
             form_lines.append("• Gallery Walk + Peer Review")
-        form_lines.append("")
-        form_lines.append("สื่อการจัดการเรียนรู้:")
-        form_lines.append("• Infographic แผนการสอน")
-        form_lines.append("• POE Sheet / ใบงาน Calc / Spot the Error")
-        form_lines.append("• Four-tier Diagnostic (Apps Script)")
-        form_lines.append("• PhET / Simulation interactive")
-        if u["no"] in (1,2,3,4):
-            form_lines.append("• อุปกรณ์ทดลองจริง (Lab kit)")
+        form_lines += ["",
+                       "สื่อการจัดการเรียนรู้:",
+                       "• Infographic แผนการสอน",
+                       "• POE Sheet / ใบงาน Calc / Spot the Error",
+                       "• Four-tier Diagnostic (Apps Script)",
+                       "• PhET / Simulation interactive",
+                       "• อุปกรณ์ทดลองจริง (Lab kit)"]
         form_text = "\n".join(form_lines)
 
-        work_lines = []
-        if u["no"] != 6:
-            work_lines.append("• ใบบันทึก POE 3 ฐาน")
-            work_lines.append("• ใบงานคำนวณ Calc")
-            work_lines.append("• ใบงาน Spot the Error")
-            work_lines.append("• Metacognitive Journal 3-2-1")
-            if u["no"] == 3:
-                work_lines.append("• เครื่องดนตรี STEM (ชิ้นงาน)")
-        else:
-            work_lines.append("• ชิ้นงาน/Demo Capstone")
-            work_lines.append("• Presentation 10 นาที")
-            work_lines.append("• Design Brief + Build Sheet")
-            work_lines.append("• Final Reflection")
-        if u["no"] == 5:
-            work_lines = [
-                "• Two-tier Test 20 ข้อ",
-                "• Personal Learning Plan",
-                "• MJ Final 3-2-1",
-            ]
+        # ชิ้นงาน/ภาระงาน
+        work_lines = ["• ใบบันทึก POE 3 ฐาน",
+                      "• ใบงานคำนวณ Calc",
+                      "• ใบงาน Spot the Error",
+                      "• Metacognitive Journal 3-2-1"]
+        if u["no"] == 3:
+            work_lines.append("• เครื่องดนตรี STEM (ชิ้นงาน)")
+        if u["no"] == 4:
+            work_lines += ["• Two-tier Test 20 ข้อ + Personal Learning Plan",
+                           "• ชิ้นงาน/Demo Capstone + Presentation 10 นาที"]
         work_text = "\n".join(work_lines)
 
-        tool_lines = [
-            "• Four-tier Pre/Post (F-test)",
-            "• POE Rubric (0–3)",
-            "• แบบสังเกตพฤติกรรม (OB)",
-            "• Traffic Light Card",
-        ]
-        if u["no"] == 6:
-            tool_lines = [
-                "• Capstone Rubric 5 มิติ",
-                "• Peer Evaluation Sheet",
-                "• Q&A Random Check",
-                "• Satisfaction Survey 20 ข้อ",
-            ]
-        if u["no"] == 5:
-            tool_lines = [
-                "• Two-tier auto-scoring",
-                "• Hake gain calculator",
-                "• Diagnostic Report",
-            ]
+        # เครื่องมือวัด
+        tool_lines = ["• Four-tier Pre/Post (F-test)",
+                      "• POE Rubric (0–3)",
+                      "• แบบสังเกตพฤติกรรม (OB)",
+                      "• Traffic Light Card",
+                      "• MJ 3-2-1 Reflection"]
+        if u["no"] == 4:
+            tool_lines += ["• Capstone Rubric 5 มิติ + Peer Evaluation",
+                           "• Hake gain + Diagnostic Report"]
         tool_text = "\n".join(tool_lines)
 
         set_cell(cells[0], f"หน่วยที่ {u['no']}\n{u['name']}",
