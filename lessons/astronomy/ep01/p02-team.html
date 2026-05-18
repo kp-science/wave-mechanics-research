@@ -100,23 +100,30 @@
 .teacher-reset-bar {
   margin-top: 10px; padding: 10px 14px;
   background: rgba(255,80,80,0.08); border: 1.5px dashed rgba(255,100,100,0.4);
-  border-radius: 10px; display: flex; align-items: center; gap: 10px;
-  flex-wrap: wrap;
+  border-radius: 10px;
 }
 .teacher-reset-bar .reset-label {
-  flex: 1; font-size: 12px; color: rgba(255,180,180,0.9);
-  line-height: 1.4;
+  font-size: 12px; color: rgba(255,180,180,0.9);
+  line-height: 1.4; margin-bottom: 8px;
+}
+.teacher-reset-bar .btn-row {
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
 }
 .btn-reset {
   background: rgba(255,80,80,0.15); color: #ff8080;
   border: 1.5px solid rgba(255,80,80,0.5); border-radius: 8px;
-  padding: 7px 16px; font-size: 12px; font-weight: 700;
+  padding: 7px 14px; font-size: 12px; font-weight: 700;
   cursor: pointer; transition: all 0.2s; white-space: nowrap;
   font-family: inherit;
 }
 .btn-reset:hover {
   background: rgba(255,80,80,0.28); color: #ffaaaa;
   border-color: rgba(255,80,80,0.8);
+}
+.btn-reset.active {
+  background: rgba(255,80,80,0.4); color: #fff;
+  border-color: #ff5c7a;
+  box-shadow: 0 0 12px rgba(255,92,122,0.5);
 }
 </style>
 </head>
@@ -133,8 +140,12 @@
     <div class="role"><span class="tag say">จัด</span><span>แบ่งทีมละ 4-5 คน · ให้เลือกยาน · ตั้งชื่อทีม · เลือกบทบาทหลัก 1 คน</span></div>
     <div class="role"><span class="tag do">อำนวย</span><span>ถ้าทีมตัดสินใจนานเกิน 2 นาที ให้ใบ้หรือสุ่ม</span></div>
     <div class="teacher-reset-bar">
-      <div class="reset-label">🔄 <b>เปลี่ยนห้องเรียน</b> — ถามเลขห้องใหม่ + ล้างการเลือกทีม + กรองสมาชิกตามห้องใหม่ <span id="cur-class-label" style="opacity:0.75"></span></div>
-      <button class="btn-reset" onclick="resetTeamPage()">🔄 เปลี่ยนห้อง / รีเซต</button>
+      <div class="reset-label">🔄 <b>เปลี่ยนห้อง / รีเซต</b> — กดเลขห้องที่จะสอน · ระบบจะกรองสมาชิกเฉพาะห้องนั้น + ล้างการเลือกทีมในอุปกรณ์นี้ <span id="cur-class-label" style="opacity:0.85;font-weight:700"></span></div>
+      <div class="btn-row">
+        <button class="btn-reset" data-cls="5"  onclick="resetTeamPage('5')">🚀 เริ่มห้อง 5</button>
+        <button class="btn-reset" data-cls="7"  onclick="resetTeamPage('7')">🚀 เริ่มห้อง 7</button>
+        <button class="btn-reset" data-cls="12" onclick="resetTeamPage('12')">🚀 เริ่มห้อง 12</button>
+      </div>
     </div>
   </div>
 </div>
@@ -337,23 +348,27 @@ function _getStu() {
 function _updateClassLabel() {
   const el = document.getElementById('cur-class-label');
   if (!el) return;
-  const cls = _getStu().class || '';
-  el.textContent = cls ? `· ห้องปัจจุบัน: ${cls}` : '· ⚠️ ยังไม่ระบุห้อง — กดเปลี่ยนห้องเพื่อกรองข้อมูลถูกห้อง';
+  const cls = String(_getStu().class || '');
+  el.textContent = cls ? `· กรองห้อง: ${cls}` : '· ⚠️ ยังไม่ระบุห้อง';
+  // ไฮไลต์ปุ่มของห้องปัจจุบัน
+  document.querySelectorAll('.btn-reset[data-cls]').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-cls') === cls);
+  });
 }
 
-function resetTeamPage() {
+function resetTeamPage(newClass) {
+  const trimmed = String(newClass || '').trim();
+  if (!trimmed) return;
   const stu = _getStu();
-  const curClass = stu.class || '';
-  const newClass = prompt(
-    'ห้องที่กำลังจะสอน?\n\n' +
-    'ใส่เลขห้อง (เช่น 7, 12, 8) เพื่อให้ระบบกรองสมาชิกเฉพาะห้องนี้\n\n' +
-    'ห้องเดิม: ' + (curClass || '(ไม่ระบุ)') + '\n\n' +
-    '*จะล้างการเลือกทีมในอุปกรณ์นี้ด้วย · ข้อมูลในเซิร์ฟเวอร์ไม่ถูกลบ',
-    curClass
-  );
-  if (newClass === null) return; // cancelled
-  const trimmed = String(newClass).trim();
-  if (!trimmed) { alert('ต้องใส่เลขห้อง'); return; }
+  const curClass = String(stu.class || '');
+
+  if (!confirm(
+    'เริ่มสอนห้อง ' + trimmed + '?\n\n' +
+    (curClass && curClass !== trimmed ? '(ห้องเดิม: ' + curClass + ' → จะเปลี่ยนเป็น ' + trimmed + ')\n\n' : '') +
+    '• กรองสมาชิกเฉพาะห้อง ' + trimmed + '\n' +
+    '• ล้างการเลือกทีม / ชื่อทีม / ตัวละคร ในอุปกรณ์นี้\n' +
+    '• ข้อมูลนักเรียนในเซิร์ฟเวอร์ไม่ถูกลบ'
+  )) return;
 
   // 1) อัปเดต wave_student.class · ทำให้ checkCapacity กรองเฉพาะห้องนี้
   try {
