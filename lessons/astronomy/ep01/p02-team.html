@@ -95,6 +95,29 @@
   border-style: solid; border-color: var(--accent-gold, #ffcb6b);
   color: var(--accent-gold, #ffcb6b);
 }
+
+/* ─── Teacher Reset ────────────────────────────── */
+.teacher-reset-bar {
+  margin-top: 10px; padding: 10px 14px;
+  background: rgba(255,80,80,0.08); border: 1.5px dashed rgba(255,100,100,0.4);
+  border-radius: 10px; display: flex; align-items: center; gap: 10px;
+  flex-wrap: wrap;
+}
+.teacher-reset-bar .reset-label {
+  flex: 1; font-size: 12px; color: rgba(255,180,180,0.9);
+  line-height: 1.4;
+}
+.btn-reset {
+  background: rgba(255,80,80,0.15); color: #ff8080;
+  border: 1.5px solid rgba(255,80,80,0.5); border-radius: 8px;
+  padding: 7px 16px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  font-family: inherit;
+}
+.btn-reset:hover {
+  background: rgba(255,80,80,0.28); color: #ffaaaa;
+  border-color: rgba(255,80,80,0.8);
+}
 </style>
 </head>
 <body data-page="p02">
@@ -109,6 +132,10 @@
   <div class="teacher-cue-body" onclick="event.stopPropagation()">
     <div class="role"><span class="tag say">จัด</span><span>แบ่งทีมละ 4-5 คน · ให้เลือกยาน · ตั้งชื่อทีม · เลือกบทบาทหลัก 1 คน</span></div>
     <div class="role"><span class="tag do">อำนวย</span><span>ถ้าทีมตัดสินใจนานเกิน 2 นาที ให้ใบ้หรือสุ่ม</span></div>
+    <div class="teacher-reset-bar">
+      <div class="reset-label">🔄 <b>เปลี่ยนห้องเรียน</b> — ล้างการเลือกทีมในหน้านี้ (เฉพาะอุปกรณ์นี้) เพื่อเริ่มสอนห้องใหม่</div>
+      <button class="btn-reset" onclick="resetTeamPage()">🔄 รีเซตสำหรับห้องใหม่</button>
+    </div>
   </div>
 </div>
 
@@ -300,6 +327,23 @@ async function submitTeam() {
       ${role ? `<p>บทบาทหลัก: ${role} · กด "ต่อไป →" เข้าสู่ภารกิจ</p>` : `<p>กด "ต่อไป →" เข้าสู่ภารกิจ</p>`}
       <p class="muted mt-10" style="font-size:12px">🏆 รางวัลทีมชนะของ EP นี้ ดูอันดับที่หน้า Hall of Fame</p>
     </div>`;
+}
+
+function resetTeamPage() {
+  if (!confirm('รีเซตสำหรับห้องใหม่?\n\nจะล้างการเลือกทีม / ชื่อทีม / ตัวละคร ในอุปกรณ์นี้\n(ข้อมูลนักเรียนในเซิร์ฟเวอร์ไม่ถูกลบ)')) return;
+  Book.state.teamId   = null;
+  Book.state.teamName = '';
+  Book.state.role     = '';
+  delete Book.state.gates['p02'];
+  Book.save();
+  Book.updateHUD();
+  document.getElementById('team-name').value = '';
+  document.getElementById('team-role').value = '';
+  document.getElementById('result').innerHTML = '';
+  _capacity = { counts:{}, full:new Set(), cap:8, ok:false };
+  renderGrid();
+  renderChars();
+  refreshCapacity();
 }
 
 renderGrid();
