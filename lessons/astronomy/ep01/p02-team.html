@@ -133,8 +133,8 @@
     <div class="role"><span class="tag say">จัด</span><span>แบ่งทีมละ 4-5 คน · ให้เลือกยาน · ตั้งชื่อทีม · เลือกบทบาทหลัก 1 คน</span></div>
     <div class="role"><span class="tag do">อำนวย</span><span>ถ้าทีมตัดสินใจนานเกิน 2 นาที ให้ใบ้หรือสุ่ม</span></div>
     <div class="teacher-reset-bar">
-      <div class="reset-label">🔄 <b>เปลี่ยนห้องเรียน</b> — ล้างการเลือกทีมในหน้านี้ (เฉพาะอุปกรณ์นี้) เพื่อเริ่มสอนห้องใหม่</div>
-      <button class="btn-reset" onclick="resetTeamPage()">🔄 รีเซตสำหรับห้องใหม่</button>
+      <div class="reset-label">🔄 <b>เปลี่ยนห้องเรียน</b> — ถามเลขห้องใหม่ + ล้างการเลือกทีม + กรองสมาชิกตามห้องใหม่ <span id="cur-class-label" style="opacity:0.75"></span></div>
+      <button class="btn-reset" onclick="resetTeamPage()">🔄 เปลี่ยนห้อง / รีเซต</button>
     </div>
   </div>
 </div>
@@ -329,20 +329,49 @@ async function submitTeam() {
     </div>`;
 }
 
-function resetTeamPage() {
-  if (!confirm('รีเซตสำหรับห้องใหม่?\n\nจะล้างการเลือกทีม / ชื่อทีม / ตัวละคร ในอุปกรณ์นี้\n(ข้อมูลนักเรียนในเซิร์ฟเวอร์ไม่ถูกลบ)')) return;
+function _getStu() {
+  try { return JSON.parse(localStorage.getItem('wave_student') || '{}'); }
+  catch(_) { return {}; }
+}
 
-  // 1) ล้าง state ใน memory
+function _updateClassLabel() {
+  const el = document.getElementById('cur-class-label');
+  if (!el) return;
+  const cls = _getStu().class || '';
+  el.textContent = cls ? `· ห้องปัจจุบัน: ${cls}` : '· ⚠️ ยังไม่ระบุห้อง — กดเปลี่ยนห้องเพื่อกรองข้อมูลถูกห้อง';
+}
+
+function resetTeamPage() {
+  const stu = _getStu();
+  const curClass = stu.class || '';
+  const newClass = prompt(
+    'ห้องที่กำลังจะสอน?\n\n' +
+    'ใส่เลขห้อง (เช่น 7, 12, 8) เพื่อให้ระบบกรองสมาชิกเฉพาะห้องนี้\n\n' +
+    'ห้องเดิม: ' + (curClass || '(ไม่ระบุ)') + '\n\n' +
+    '*จะล้างการเลือกทีมในอุปกรณ์นี้ด้วย · ข้อมูลในเซิร์ฟเวอร์ไม่ถูกลบ',
+    curClass
+  );
+  if (newClass === null) return; // cancelled
+  const trimmed = String(newClass).trim();
+  if (!trimmed) { alert('ต้องใส่เลขห้อง'); return; }
+
+  // 1) อัปเดต wave_student.class · ทำให้ checkCapacity กรองเฉพาะห้องนี้
+  try {
+    stu.class = trimmed;
+    localStorage.setItem('wave_student', JSON.stringify(stu));
+  } catch(_){}
+
+  // 2) ล้าง team state ใน memory
   Book.state.teamId   = null;
   Book.state.teamName = '';
   Book.state.role     = '';
   if (Book.state.gates) {
-    delete Book.state.gates['p01']; // entry ticket gate (กันค้างจากห้องเดิม)
-    delete Book.state.gates['p02']; // team selection gate
+    delete Book.state.gates['p01'];
+    delete Book.state.gates['p02'];
   }
   Book.save();
 
-  // 2) Belt-and-suspenders · เขียน localStorage ตรงๆ กันกรณี Book.save ไม่ persist
+  // 3) Belt-and-suspenders · เขียน localStorage ตรงๆ กันกรณี Book.save ไม่ persist
   try {
     const raw = localStorage.getItem('cosmosLog_state');
     if (raw) {
@@ -353,12 +382,14 @@ function resetTeamPage() {
     }
   } catch(_){}
 
-  // 3) ล้าง energy snapshot ของ EP1 (ให้เริ่มนับศูนย์ใหม่)
+  // 4) ล้าง energy snapshot ของ EP1
   localStorage.removeItem('cosmosLog_epStart_1');
 
-  // 4) Reload หน้าให้ DOM/HUD/grid clean หมด
+  // 5) Reload หน้าให้ DOM/HUD/grid clean หมด + filter ห้องใหม่
   location.reload();
 }
+
+_updateClassLabel();
 
 renderGrid();
 renderChars();
