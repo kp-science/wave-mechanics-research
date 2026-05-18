@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FT-01 · Pre-test หลัก · COSMOS LOG · ดาราศาสตร์ ว 30105</title>
-<link rel="stylesheet" href="../../content/astronomy/_ft.css?v=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="../../content/astronomy/_ft.css?v=2">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#0a0e27,#1a1d3a);color:#e2e8f0;padding:20px;min-height:100vh;line-height:1.6}
@@ -165,15 +168,32 @@ area.addEventListener('click', (e) => {
 });
 
 function updateProgress(){
-  // ข้อจะนับว่าเสร็จเมื่อมีทั้งคำตอบ + confidence
-  let done = 0;
+  let answered = 0, done = 0;
   for (let i = 0; i < TOTAL; i++){
+    if (answers[i] !== undefined) answered++;
     if (answers[i] !== undefined && confidences[i] !== undefined) done++;
   }
   fill.style.width = (done/TOTAL*100) + '%';
-  txt.textContent = `ตอบครบ ${done} / ${TOTAL} (คำตอบ + ความมั่นใจ)`;
+
+  if (answered < TOTAL){
+    txt.textContent = `ตอบแล้ว ${answered} / ${TOTAL} ข้อ`;
+    btn.textContent = `🔒 ยังตอบไม่ครบ (เหลืออีก ${TOTAL-answered} ข้อ)`;
+  } else if (done < TOTAL){
+    txt.textContent = `✅ ตอบครบแล้ว · กรุณาเลือกระดับความมั่นใจให้ครบ (เหลืออีก ${TOTAL-done} ข้อ)`;
+    btn.textContent = `🔒 เลือกความมั่นใจอีก ${TOTAL-done} ข้อ`;
+    // เลื่อนไปข้อแรกที่ยังไม่ได้เลือกความมั่นใจ
+    for (let i = 0; i < TOTAL; i++){
+      if (confidences[i] === undefined){
+        document.getElementById('q-'+i).scrollIntoView({behavior:'smooth', block:'center'});
+        document.getElementById('q-'+i).style.borderColor = '#fbbf24';
+        break;
+      }
+    }
+  } else {
+    txt.textContent = `✅ ครบทุกข้อ · พร้อมส่ง`;
+    btn.textContent = '📤 ส่ง FT-01 (Baseline)';
+  }
   btn.disabled = done < TOTAL;
-  btn.textContent = done < TOTAL ? `🔒 เหลืออีก ${TOTAL-done} ข้อ` : '📤 ส่ง FT-01 (Baseline)';
 }
 
 // Send-to-backend with retry queue (Apps Script doPost)
