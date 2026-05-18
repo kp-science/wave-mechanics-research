@@ -331,19 +331,33 @@ async function submitTeam() {
 
 function resetTeamPage() {
   if (!confirm('รีเซตสำหรับห้องใหม่?\n\nจะล้างการเลือกทีม / ชื่อทีม / ตัวละคร ในอุปกรณ์นี้\n(ข้อมูลนักเรียนในเซิร์ฟเวอร์ไม่ถูกลบ)')) return;
+
+  // 1) ล้าง state ใน memory
   Book.state.teamId   = null;
   Book.state.teamName = '';
   Book.state.role     = '';
-  delete Book.state.gates['p02'];
+  if (Book.state.gates) {
+    delete Book.state.gates['p01']; // entry ticket gate (กันค้างจากห้องเดิม)
+    delete Book.state.gates['p02']; // team selection gate
+  }
   Book.save();
-  Book.updateHUD();
-  document.getElementById('team-name').value = '';
-  document.getElementById('team-role').value = '';
-  document.getElementById('result').innerHTML = '';
-  _capacity = { counts:{}, full:new Set(), cap:8, ok:false };
-  renderGrid();
-  renderChars();
-  refreshCapacity();
+
+  // 2) Belt-and-suspenders · เขียน localStorage ตรงๆ กันกรณี Book.save ไม่ persist
+  try {
+    const raw = localStorage.getItem('cosmosLog_state');
+    if (raw) {
+      const s = JSON.parse(raw);
+      s.teamId = null; s.teamName = ''; s.role = '';
+      if (s.gates) { delete s.gates.p01; delete s.gates.p02; }
+      localStorage.setItem('cosmosLog_state', JSON.stringify(s));
+    }
+  } catch(_){}
+
+  // 3) ล้าง energy snapshot ของ EP1 (ให้เริ่มนับศูนย์ใหม่)
+  localStorage.removeItem('cosmosLog_epStart_1');
+
+  // 4) Reload หน้าให้ DOM/HUD/grid clean หมด
+  location.reload();
 }
 
 renderGrid();
