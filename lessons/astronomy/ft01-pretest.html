@@ -167,6 +167,7 @@ area.addEventListener('click', (e) => {
   updateProgress();
 });
 
+let _scrolledOnceAfterAllAnswered = false;
 function updateProgress(){
   let answered = 0, done = 0;
   for (let i = 0; i < TOTAL; i++){
@@ -178,16 +179,20 @@ function updateProgress(){
   if (answered < TOTAL){
     txt.textContent = `ตอบแล้ว ${answered} / ${TOTAL} ข้อ`;
     btn.textContent = `🔒 ยังตอบไม่ครบ (เหลืออีก ${TOTAL-answered} ข้อ)`;
+    _scrolledOnceAfterAllAnswered = false;
   } else if (done < TOTAL){
     txt.textContent = `✅ ตอบครบแล้ว · กรุณาเลือกระดับความมั่นใจให้ครบ (เหลืออีก ${TOTAL-done} ข้อ)`;
     btn.textContent = `🔒 เลือกความมั่นใจอีก ${TOTAL-done} ข้อ`;
-    // เลื่อนไปข้อแรกที่ยังไม่ได้เลือกความมั่นใจ
-    for (let i = 0; i < TOTAL; i++){
-      if (confidences[i] === undefined){
-        document.getElementById('q-'+i).scrollIntoView({behavior:'smooth', block:'center'});
-        document.getElementById('q-'+i).style.borderColor = '#fbbf24';
-        break;
+    // เลื่อนไปข้อแรกที่ยังไม่ได้เลือกความมั่นใจ — ครั้งเดียวต่อรอบ
+    // (กันหน้าเด้งทุกคลิกตอนกด confidence แล้วทำให้บราว์เซอร์ค้าง)
+    if (!_scrolledOnceAfterAllAnswered){
+      for (let i = 0; i < TOTAL; i++){
+        if (confidences[i] === undefined){
+          document.getElementById('q-'+i).scrollIntoView({behavior:'smooth', block:'center'});
+          break;
+        }
       }
+      _scrolledOnceAfterAllAnswered = true;
     }
   } else {
     txt.textContent = `✅ ครบทุกข้อ · พร้อมส่ง`;
