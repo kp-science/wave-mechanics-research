@@ -127,11 +127,19 @@ const CONF_LABELS = [
   {n:4, t:'มั่นใจมาก',     emo:'💪'}
 ];
 
-// Send-to-backend with retry queue
+// Send-to-backend with retry queue + timeout
+const FETCH_TIMEOUT_MS = 8000;
+function _fetchWithTimeout(url, opts){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+  return fetch(url, { ...opts, signal: ctrl.signal })
+    .finally(() => clearTimeout(t));
+}
+
 async function sendToBackend(payload){
   if (!API_URL) return { ok:false, reason:'no apiUrl' };
   try {
-    const r = await fetch(API_URL, {
+    const r = await _fetchWithTimeout(API_URL, {
       method:'POST',
       mode:'cors',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
@@ -146,6 +154,7 @@ async function sendToBackend(payload){
       q.push(payload);
       if (q.length > 50) q.splice(0, q.length - 50);
       localStorage.setItem(Q_KEY, JSON.stringify(q));
+      console.warn('[FT-02] enqueued · queue size =', q.length, '· reason:', e.message);
     } catch(_){}
     return { ok:false, reason:e.message };
   }
@@ -336,26 +345,49 @@ function goHome(){
   location.href = '../../KP-Classroom.html?course=astronomy';
 }
 
-// Background: retry queued payloads — use direct fetch to avoid double-enqueue
-window.addEventListener('load', async () => {
+// Background: retry queued payloads — throttled · idle · non-blocking
+// เดิม flush ทุกตัวพร้อมกัน → ถ้าคิวมี 50 ตัว + network ช้า ทำให้บราว์เซอร์ค้าง
+// ใหม่: รอ idle 1.5s แล้วทำทีละ 3 ตัวต่อรอบ
+const Q_KEY = 'wave_ft_astronomy_queue';
+const FLUSH_BATCH = 3;
+const FLUSH_GAP_MS = 1500;
+
+async function _flushQueueBatch(){
   try {
-    const Q_KEY = 'wave_ft_astronomy_queue';
     const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
-    if (!q.length || !API_URL) return;
-    const remaining = [];
-    for (const item of q) {
+    if (!q.length || !API_URL) return false;
+    console.info('[FT-02] flushing queue · size =', q.length);
+    const batch = q.slice(0, FLUSH_BATCH);
+    const rest = q.slice(FLUSH_BATCH);
+    const failed = [];
+    for (const item of batch) {
       try {
-        const r = await fetch(API_URL, {
+        const r = await _fetchWithTimeout(API_URL, {
           method:'POST', mode:'cors',
           headers:{'Content-Type':'text/plain;charset=utf-8'},
           body: JSON.stringify(item)
         });
-        if (!r.ok) remaining.push(item);
-      } catch(_) { remaining.push(item); }
+        if (!r.ok) failed.push(item);
+      } catch(_){ failed.push(item); }
     }
-    localStorage.setItem(Q_KEY, JSON.stringify(remaining));
-  } catch(_){}
-});
+    localStorage.setItem(Q_KEY, JSON.stringify([...rest, ...failed]));
+    return (rest.length + failed.length) > 0;
+  } catch(_){ return false; }
+}
+
+function _startFlush(){
+  const tick = async () => {
+    const hasMore = await _flushQueueBatch();
+    if (hasMore) setTimeout(tick, FLUSH_GAP_MS);
+  };
+  setTimeout(tick, 1500);
+}
+
+if ('requestIdleCallback' in window) {
+  requestIdleCallback(_startFlush, { timeout: 3000 });
+} else {
+  window.addEventListener('load', _startFlush);
+}
 
 updateProgress();
 </script>
