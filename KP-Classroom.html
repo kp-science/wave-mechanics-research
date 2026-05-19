@@ -1832,6 +1832,9 @@ function wsIdToSheet(wsId){
   // 1.4) SHM unit-wide patterns (FT01/FT02 ครอบทุกแผน · ไม่ผูกกับ plan เดียว)
   if (/^shm-ft01[-_]?/i.test(wsId)) return 'SHM_FT01';
   if (/^shm-ft02[-_]?/i.test(wsId)) return 'SHM_FT02';
+  // 1.4b) SHM F5 Four-tier — wsId ใช้ชื่อ pretest/post แต่ควรลงชีทเดียวกับ f5-pre/f5-post
+  if (/^shm-plan5-pretest$/i.test(wsId)) return 'SHM_F_Fourtier_P5';
+  if (/^shm-plan5-post(test)?$/i.test(wsId)) return 'SHM_F_Fourtier_P5';
   // 1.5) SHM unit pattern: shm-plan{N}-{tool}[-{suffix}] → SHM_<Cap>_P{N}
   // ใช้แยก Sheet ของ SHM ออกจากคลื่นกล (เก็บคนละชีท)
   const sm = wsId.match(/^shm-plan(\d+)-([a-z0-9]+)(?:-(.+))?$/i);
@@ -4959,9 +4962,16 @@ function paceAutoCode(){ return 'auto_' + (window.KP_COURSE || 'astronomy'); }
 // ครูเปิด/ปิดการเก็บข้อมูลต่อห้อง · default: ปิด · เปิดเฉพาะคาบสอน
 let collectState = { enabled: false, at: 0 };
 
+// ใช้ endpoint ของหัวข้อปัจจุบัน (SHM/sound/light ต่างมี backend คนละตัว)
+// ถ้าไม่มี topic-specific endpoint → fallback เป็น API_URL (waves)
+function collectApiUrl(){
+  const topicUrl = getTopicDbUrl();
+  return (topicUrl && topicUrl.startsWith('https://script.google.com/')) ? topicUrl : API_URL;
+}
+
 async function collectRefreshState(){
   if (!window.CollectClient) return;
-  const st = await window.CollectClient.fetchState(API_URL, paceAutoCode());
+  const st = await window.CollectClient.fetchState(collectApiUrl(), paceAutoCode());
   if (st) collectState = st;
   updateCollectStatusBox();
 }
@@ -4974,7 +4984,7 @@ async function collectToggle(){
     if (!confirm('🔴 ปิดเก็บข้อมูลห้องนี้?\n\nระบบจะหยุดบันทึกข้อมูลใหม่ทั้งหมด · ข้อมูลเดิมยังอยู่ใน Sheet')) return;
   }
   try {
-    await window.CollectClient.set(next, { apiUrl: API_URL, roomCode: paceAutoCode() });
+    await window.CollectClient.set(next, { apiUrl: collectApiUrl(), roomCode: paceAutoCode() });
   } catch(e){ alert('ส่งไม่สำเร็จ: ' + e.message); return; }
   // optimistic — ใช้ค่า next ก่อน · re-fetch หลัง 1 วิ ยืนยัน
   collectState = { enabled: next, at: Date.now() };
