@@ -689,17 +689,18 @@ def build_docx(unit_info, html_path, out_path):
                      size=SZ_TAGS, color=(0x55,0x55,0x55), italic=True,
                      indent_left=IND_BODY, space_after=6)
 
-        # บรรยาย 3 ย่อหน้า · ครู / นักเรียน / เป้าหมาย
+        # บรรยายรวม 1 ย่อหน้า — ครู · นักเรียน · เป้าหมาย (inline narrative)
+        p = doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(6)
+        p.paragraph_format.left_indent = Cm(IND_BODY)
+        p.paragraph_format.first_line_indent = Cm(IND_BODY_FL)
+        p.paragraph_format.line_spacing = 1.5
         for label, txt, color in [
-            ("ครู", info["teacher"], (0x1f,0x4e,0x79)),
-            ("นักเรียน", info["student"], (0x2e,0x7d,0x32)),
-            ("เป้าหมาย", info["goal"], (0xb7,0x4d,0x00)),
+            ("ครู: ", info["teacher"], (0x1f,0x4e,0x79)),
+            ("  นักเรียน: ", info["student"], (0x2e,0x7d,0x32)),
+            ("  การวัดและเป้าหมาย: ", info["goal"], (0xb7,0x4d,0x00)),
         ]:
-            p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(4)
-            p.paragraph_format.left_indent = Cm(IND_BODY)
-            p.paragraph_format.line_spacing = 1.5
-            r = p.add_run(f"{label}: "); set_th_font(r, size=SZ_BODY, bold=True, color=color)
+            r = p.add_run(label); set_th_font(r, size=SZ_BODY, bold=True, color=color)
             r = p.add_run(th_break(strip_html(txt))); set_th_font(r, size=SZ_BODY)
 
         # 4) รายละเอียดกิจกรรมเฉพาะแผนนี้
