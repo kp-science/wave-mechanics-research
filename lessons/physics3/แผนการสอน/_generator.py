@@ -26,8 +26,9 @@ def strip_html(s):
     if not s: return ""
     return re.sub(r"<[^>]+>", "", s)
 
-BASE = Path("/Users/komanepapato/Documents/วิจัย/wave-mechanics-research/lessons/physics3")
+BASE = Path("/Users/komane/Documents/วิจัย/wave-mechanics-research/lessons/physics3")
 OUTDIR = BASE / "แผนการสอน"
+LOGO_PATH = str(BASE.parent.parent.parent / "assets" / "logo_satriwit.png")
 
 UNITS = [
     ("waves",    "หน่วยที่ 1 คลื่นกล",           "บทที่ 9 คลื่นกล",      "ม.5", "ว 5.2 ม.5/1-5",  12),
@@ -37,6 +38,21 @@ UNITS = [
     ("review",   "หน่วยทบทวนรวม",                 "Two-tier Diagnostic", "ม.5", "ทบทวน ว 5.2 + ว 2.3", 1),
     ("capstone", "หน่วย Capstone Project",        "บูรณาการตลอดเทอม",   "ม.5", "บูรณาการ ว 5.2 + ว 2.3", 1),
 ]
+
+# ชื่อหน่วยและหมายเลขสำหรับ header มาตรฐาน
+UNIT_DISPLAY = {
+    "waves":    ("1", "คลื่น"),
+    "SHM":      ("2", "การเคลื่อนที่แบบฮาร์มอนิกอย่างง่าย"),
+    "sound":    ("3", "เสียง"),
+    "light":    ("4", "แสงเชิงคลื่น"),
+    "review":   ("—", "ทบทวนรวม"),
+    "capstone": ("—", "Capstone Project"),
+}
+
+# override title สำหรับแผนที่ต้องการชื่อแตกต่างจาก Infographic HTML
+TITLE_OVERRIDE = {
+    ("waves", 1): "ธรรมชาติของคลื่นและชนิดของคลื่น",
+}
 
 FONT = "TH SarabunPSK"
 
@@ -441,6 +457,125 @@ def get_phase_info(code):
     }
 
 # ─────────────────────────────────────────────────────────────
+# Cover helpers — header มาตรฐานราชการ
+
+def _remove_table_borders(table):
+    """ลบเส้นขอบตารางทุกด้าน"""
+    tbl = table._tbl
+    tblPr = tbl.find(qn("w:tblPr"))
+    if tblPr is None:
+        tblPr = OxmlElement("w:tblPr")
+        tbl.insert(0, tblPr)
+    tblBorders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "none"); el.set(qn("w:sz"), "0")
+        el.set(qn("w:space"), "0"); el.set(qn("w:color"), "auto")
+        tblBorders.append(el)
+    tblPr.append(tblBorders)
+
+def _extract_periods_text(data):
+    """ดึงข้อมูลเวลาเรียนจาก meta → 'X คาบ (Y นาที)'"""
+    import re
+    for m in data.get("meta", []):
+        minutes_m = re.search(r"(\d+)\s*นาที", m)
+        if minutes_m:
+            rng = re.search(r"คาบ\s*(\d+)[–\-](\d+)", m)
+            mins = minutes_m.group(1)
+            if rng:
+                n = int(rng.group(2)) - int(rng.group(1)) + 1
+                return f"{n} คาบ ({mins} นาที)"
+            single = re.search(r"คาบ\s*(\d+)\b", m)
+            if single:
+                return f"1 คาบ ({mins} นาที)"
+    subtitle = data.get("subtitle", "")
+    rng = re.search(r"คาบที่\s*(\d+)[–\-](\d+)", subtitle)
+    if rng:
+        n = int(rng.group(2)) - int(rng.group(1)) + 1
+        return f"{n} คาบ"
+    return "2 คาบ (100 นาที)"
+
+def _add_run_th(para, text, size=14, bold=False, underline=False, color=None):
+    """เพิ่ม run ใน paragraph ของ cell"""
+    r = para.add_run(th_break(text))
+    set_th_font(r, size=size, bold=bold, color=color)
+    if underline:
+        r.font.underline = True
+    return r
+
+def build_cover_standard(doc, data, unit_key, plan_num, logo_path=None):
+    """สร้าง header แบบมาตรฐานราชการ พร้อมตราโรงเรียน"""
+    unit_num, unit_short = UNIT_DISPLAY.get(unit_key, ("—", "—"))
+    title = TITLE_OVERRIDE.get((unit_key, plan_num), data.get("title", "-"))
+    periods = _extract_periods_text(data)
+
+    # 2-col table (no border): left=text info · right=logo
+    cover_t = doc.add_table(rows=1, cols=2)
+    cover_t.autofit = False
+    cover_t.columns[0].width = Cm(13.2)
+    cover_t.columns[1].width = Cm(3.3)
+    _remove_table_borders(cover_t)
+
+    left = cover_t.rows[0].cells[0]
+    right = cover_t.rows[0].cells[1]
+    left.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+    right.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+    # แผนการจัดการเรียนรู้ที่ N (centered, bold, underline)
+    p = left.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_after = Pt(4)
+    _add_run_th(p, f"แผนการจัดการเรียนรู้ที่ {plan_num}", size=16, bold=True, underline=True)
+
+    # รายวิชา: ว30203 ฟิสิกส์ 3   มัธยมศึกษาปีที่ 5   กลุ่มสาระ...
+    p = left.add_paragraph()
+    p.paragraph_format.space_after = Pt(2)
+    _add_run_th(p, "รายวิชา: ", bold=True)
+    _add_run_th(p, "ว30203 ฟิสิกส์ 3   ")
+    _add_run_th(p, "มัธยมศึกษาปีที่ ", bold=True)
+    _add_run_th(p, "5   ")
+    _add_run_th(p, "กลุ่มสาระการเรียนรู้", bold=True)
+    _add_run_th(p, "วิทยาศาสตร์และเทคโนโลยี")
+
+    # หน่วยที่ X :ชื่อหน่วย
+    p = left.add_paragraph()
+    p.paragraph_format.space_after = Pt(2)
+    _add_run_th(p, "หน่วยที่ ", bold=True)
+    _add_run_th(p, f"{unit_num} :{unit_short}")
+
+    # เรื่อง: ...   เวลา: X คาบ (Y นาที)
+    p = left.add_paragraph()
+    p.paragraph_format.space_after = Pt(2)
+    _add_run_th(p, "เรื่อง: ", bold=True)
+    _add_run_th(p, f"{title}   ")
+    _add_run_th(p, "เวลา: ", bold=True)
+    _add_run_th(p, periods)
+
+    # ชื่อครูผู้สอน: นายโกเมน ปาปะโถ
+    p = left.add_paragraph()
+    p.paragraph_format.space_after = Pt(6)
+    _add_run_th(p, "ชื่อครูผู้สอน: ", bold=True)
+    _add_run_th(p, "นายโกเมน ปาปะโถ")
+
+    # Logo (right cell)
+    if logo_path and Path(logo_path).exists():
+        rp = right.paragraphs[0]
+        rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = rp.add_run()
+        r.add_picture(logo_path, height=Cm(3.5))
+
+    # เส้นคั่นหลัง header
+    p_div = doc.add_paragraph()
+    p_div.paragraph_format.space_before = Pt(2)
+    p_div.paragraph_format.space_after = Pt(8)
+    pPr = p_div._element.get_or_add_pPr()
+    pBdr = OxmlElement("w:pBdr")
+    btm = OxmlElement("w:bottom")
+    btm.set(qn("w:val"), "single"); btm.set(qn("w:sz"), "8")
+    btm.set(qn("w:space"), "1"); btm.set(qn("w:color"), "000000")
+    pBdr.append(btm); pPr.append(pBdr)
+
+# ─────────────────────────────────────────────────────────────
 # Build one DOCX (เวอร์ชันใหม่ · บรรยายความ + วPA)
 def build_docx(unit_info, html_path, out_path):
     unit_key, unit_full, chapter_text, grade, indicator, _ = unit_info
@@ -452,47 +587,10 @@ def build_docx(unit_info, html_path, out_path):
         sec.top_margin = Cm(1.8); sec.bottom_margin = Cm(1.8)
         sec.left_margin = Cm(2.0); sec.right_margin = Cm(1.8)
 
-    plan_num_th = thai_num(data.get('plan_num','-'))
+    plan_num_int = int(data.get('plan_num', 1))
 
-    # ────────────── COVER (2-column table)
-    cover_t = doc.add_table(rows=1, cols=2)
-    cover_t.autofit = False
-    cover_t.columns[0].width = Cm(4.5)
-    cover_t.columns[1].width = Cm(12.5)
-    left = cover_t.rows[0].cells[0]
-    right = cover_t.rows[0].cells[1]
-    left.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    right.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    set_cell_shading(left, "1f4e79")
-    # left: plan number
-    left.text = ""
-    p = left.paragraphs[0]; p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p.add_run("แผนการจัดการเรียนรู้\nที่ "); set_th_font(r, size=14, bold=True, color=(255,255,255))
-    p2 = left.add_paragraph(); p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = p2.add_run(plan_num_th); set_th_font(r, size=42, bold=True, color=(255,255,255))
-    # right: title + info
-    right.text = ""
-    p = right.paragraphs[0]
-    r = p.add_run("รายวิชา ว 30203 ฟิสิกส์ 3"); set_th_font(r, size=13, bold=True)
-    p = right.add_paragraph()
-    r = p.add_run(f"ระดับชั้น {grade}   ภาคเรียนที่ ๑   ปีการศึกษา ๒๕๖๙"); set_th_font(r, size=13)
-    p = right.add_paragraph()
-    r = p.add_run(f"{unit_full}   {chapter_text}"); set_th_font(r, size=13)
-    p = right.add_paragraph()
-    r = p.add_run("เรื่อง "); set_th_font(r, size=14, bold=True)
-    r = p.add_run(data.get("title","-")); set_th_font(r, size=16, bold=True, color=(0x1f,0x4e,0x79))
-    p = right.add_paragraph()
-    if data.get("subtitle"):
-        r = p.add_run(data["subtitle"]); set_th_font(r, size=12, color=(0x55,0x55,0x55), italic=True)
-    p = right.add_paragraph()
-    period_line = "  ·  ".join(data.get("meta", [])[:3])
-    r = p.add_run(period_line); set_th_font(r, size=12)
-    p = right.add_paragraph()
-    r = p.add_run("ครูผู้สอน นายโกเมน ปาปะโถ   กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี"); set_th_font(r, size=12)
-    p = right.add_paragraph()
-    r = p.add_run("โรงเรียนสตรีวิทยา"); set_th_function = set_th_font(r, size=12, bold=True)
-
-    add_para(doc, "", size=10, space_after=4)
+    # ────────────── COVER — header มาตรฐานราชการ + ตราโรงเรียน
+    build_cover_standard(doc, data, unit_key, plan_num_int, logo_path=LOGO_PATH)
 
     # ────────────── ๑. สาระสำคัญ
     add_h1(doc, "๑. สาระสำคัญ")
@@ -711,17 +809,23 @@ def find_infographic(unit_key, plan_num):
                 return f
     return None
 
-def main():
+def main(units_filter=None):
+    """
+    units_filter: list of unit keys to process, e.g. ["waves"]
+                  None = process all units
+    """
     OUTDIR.mkdir(exist_ok=True)
     summary = []
-    for unit in UNITS:
+    targets = [u for u in UNITS if units_filter is None or u[0] in units_filter]
+    for unit in targets:
         key, _, _, _, _, n = unit
         for i in range(1, n+1):
             html = find_infographic(key, i)
             if not html:
                 summary.append(f"  ❌ {key} แผน{i}: ไม่พบ infographic")
                 continue
-            outname = f"{key}_แผน{i:02d}_{html.parent.name.split('_',1)[-1]}.docx"
+            dir_suffix = html.parent.name.split("_", 1)[-1] if "_" in html.parent.name else html.parent.name
+            outname = f"waves_แผน{i:02d}_{dir_suffix}.docx" if key == "waves" else f"{key}_แผน{i:02d}_{dir_suffix}.docx"
             outpath = OUTDIR / outname
             try:
                 build_docx(unit, html, outpath)
@@ -733,4 +837,6 @@ def main():
     print(f"\nรวม {len([s for s in summary if s.startswith('  ✅')])} ไฟล์ใน {OUTDIR}")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    filter_arg = sys.argv[1:] if len(sys.argv) > 1 else None
+    main(units_filter=filter_arg)
