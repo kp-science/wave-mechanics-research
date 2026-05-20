@@ -28,7 +28,7 @@ def strip_html(s):
 
 BASE = Path("/Users/komane/Documents/วิจัย/wave-mechanics-research/lessons/physics3")
 OUTDIR = BASE / "แผนการสอน"
-LOGO_PATH = str(BASE.parent.parent.parent / "assets" / "logo_satriwit.png")
+LOGO_PATH = str(BASE.parent.parent / "assets" / "logo_satriwit.png")
 
 UNITS = [
     ("waves",    "หน่วยที่ 1 คลื่นกล",           "บทที่ 9 คลื่นกล",      "ม.5", "ว 5.2 ม.5/1-5",  12),
@@ -504,31 +504,29 @@ def _add_run_th(para, text, size=14, bold=False, underline=False, color=None):
     return r
 
 def build_cover_standard(doc, data, unit_key, plan_num, logo_path=None):
-    """สร้าง header แบบมาตรฐานราชการ พร้อมตราโรงเรียน"""
+    """สร้าง header แบบมาตรฐานราชการ — โลโก้กลางบน · ชื่อแผน · ข้อมูลวิชา"""
     unit_num, unit_short = UNIT_DISPLAY.get(unit_key, ("—", "—"))
     title = TITLE_OVERRIDE.get((unit_key, plan_num), data.get("title", "-"))
     periods = _extract_periods_text(data)
 
-    # 2-col table (no border): left=text info · right=logo
-    cover_t = doc.add_table(rows=1, cols=2)
-    cover_t.autofit = False
-    cover_t.columns[0].width = Cm(13.2)
-    cover_t.columns[1].width = Cm(3.3)
-    _remove_table_borders(cover_t)
+    # ── โลโก้โรงเรียน (กลาง บนสุด)
+    if logo_path and Path(logo_path).exists():
+        p_logo = doc.add_paragraph()
+        p_logo.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_logo.paragraph_format.space_before = Pt(0)
+        p_logo.paragraph_format.space_after = Pt(4)
+        r = p_logo.add_run()
+        r.add_picture(logo_path, height=Cm(3.0))
 
-    left = cover_t.rows[0].cells[0]
-    right = cover_t.rows[0].cells[1]
-    left.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-    right.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-
-    # แผนการจัดการเรียนรู้ที่ N (centered, bold, underline)
-    p = left.paragraphs[0]
+    # ── แผนการจัดการเรียนรู้ที่ N (กลาง · bold)
+    p = doc.add_paragraph()
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.space_before = Pt(0)
     p.paragraph_format.space_after = Pt(4)
-    _add_run_th(p, f"แผนการจัดการเรียนรู้ที่ {plan_num}", size=16, bold=True, underline=True)
+    _add_run_th(p, f"แผนการจัดการเรียนรู้ที่ {plan_num}", size=14, bold=True)
 
-    # รายวิชา: ว30203 ฟิสิกส์ 3   มัธยมศึกษาปีที่ 5   กลุ่มสาระ...
-    p = left.add_paragraph()
+    # ── รายวิชา: ว30203 ฟิสิกส์ 3   มัธยมศึกษาปีที่ 5   กลุ่มสาระ...
+    p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(2)
     _add_run_th(p, "รายวิชา: ", bold=True)
     _add_run_th(p, "ว30203 ฟิสิกส์ 3   ")
@@ -537,34 +535,27 @@ def build_cover_standard(doc, data, unit_key, plan_num, logo_path=None):
     _add_run_th(p, "กลุ่มสาระการเรียนรู้", bold=True)
     _add_run_th(p, "วิทยาศาสตร์และเทคโนโลยี")
 
-    # หน่วยที่ X :ชื่อหน่วย
-    p = left.add_paragraph()
+    # ── หน่วยที่ X :ชื่อหน่วย
+    p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(2)
     _add_run_th(p, "หน่วยที่ ", bold=True)
     _add_run_th(p, f"{unit_num} :{unit_short}")
 
-    # เรื่อง: ...   เวลา: X คาบ (Y นาที)
-    p = left.add_paragraph()
+    # ── เรื่อง: ...   เวลา: X คาบ (Y นาที)
+    p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(2)
     _add_run_th(p, "เรื่อง: ", bold=True)
     _add_run_th(p, f"{title}   ")
     _add_run_th(p, "เวลา: ", bold=True)
     _add_run_th(p, periods)
 
-    # ชื่อครูผู้สอน: นายโกเมน ปาปะโถ
-    p = left.add_paragraph()
+    # ── ชื่อครูผู้สอน: นายโกเมน ปาปะโถ
+    p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(6)
     _add_run_th(p, "ชื่อครูผู้สอน: ", bold=True)
     _add_run_th(p, "นายโกเมน ปาปะโถ")
 
-    # Logo (right cell)
-    if logo_path and Path(logo_path).exists():
-        rp = right.paragraphs[0]
-        rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        r = rp.add_run()
-        r.add_picture(logo_path, height=Cm(3.5))
-
-    # เส้นคั่นหลัง header
+    # ── เส้นคั่นหลัง header
     p_div = doc.add_paragraph()
     p_div.paragraph_format.space_before = Pt(2)
     p_div.paragraph_format.space_after = Pt(8)
