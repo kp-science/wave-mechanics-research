@@ -35,13 +35,13 @@ window.KP_PLAN_MEDIA = {
     meta: 'ดาราศาสตร์ · ม.5 · คาบ 1–2 · COSMOS LOG · Season 1 · 20 หน้า · 🏆 Team Competition',
     sections: [
       { title:'📜 ก่อนเริ่มงานวิจัย', items:[
-        { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent.html',
+        { cls:'sim', no:'R0', t:'หนังสือยินยอมเข้าร่วมการวิจัย', file:'../research/consent-v2.html',
           d:'อ่านและเลือกความยินยอม · ทำครั้งเดียว · ปฏิเสธได้',
           meta:'~3 นาที · ทำก่อนเป็นอันดับแรก',
           chips:[['k','Consent'],['k','จริยธรรมวิจัย']] }
       ]},
       { title:'📋 FT-01 · Pre-test หลัก (ทำก่อนเรียน · 20 ข้อ)', items:[
-        { cls:'sim', no:'FT', t:'FT-01 · Pre-test หลัก (Baseline)', file:'../ft01-pretest.html',
+        { cls:'sim', no:'FT', t:'FT-01 · Pre-test หลัก (Baseline)', file:'../ft01-pretest-v2.html',
           d:'20 ข้อ · ครอบคลุม EP01-EP08 · เก็บ baseline สำหรับคำนวณ Hake\'s gain',
           meta:'~15 นาที · ทำครั้งเดียวก่อนเริ่ม Season 1',
           chips:[['k','Pre-test'],['k','20 ข้อ'],['k','ทำก่อน EP01']] }
