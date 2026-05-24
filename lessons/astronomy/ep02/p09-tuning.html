@@ -22,9 +22,9 @@
   .tf-fork {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    grid-template-rows: repeat(3, 64px);
+    grid-template-rows: repeat(3, minmax(96px, auto));
     gap: 10px;
-    padding: 18px;
+    padding: 26px 18px 18px;
     background: rgba(3,4,12,0.5);
     border: 1px solid var(--accent);
     border-radius: 12px;
@@ -42,8 +42,10 @@
     border: 1px dashed var(--border);
     background: rgba(100,216,255,0.04);
     border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px;
     min-height: 48px;
+    padding: 4px;
     font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 0.1em; color: var(--text-faint);
     transition: all 0.12s;
   }
@@ -54,6 +56,37 @@
   .tf-slot.wrong   { border-color: var(--accent-red);   background: rgba(255,92,122,0.1); }
 
   .slot-hint { opacity: 0.4; font-size: 9px; }
+
+  /* ─── Knowledge indicator (เปิดเมื่อวางการ์ด) ────────── */
+  .tf-meta {
+    width: 100%;
+    display: flex; flex-direction: column; gap: 2px;
+    font-family: 'Sarabun', sans-serif;
+    pointer-events: none;
+    animation: metaIn 0.35s ease-out;
+  }
+  @keyframes metaIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+  .tf-bar {
+    height: 5px; border-radius: 100px; overflow: hidden;
+    background: rgba(255,255,255,0.08);
+  }
+  .tf-bar > span {
+    display: block; height: 100%; border-radius: 100px;
+    width: 0; transition: width 0.6s cubic-bezier(.2,.7,.3,1);
+  }
+  .tf-bar.E  > span { background: linear-gradient(90deg, #ffcb6b 0%, #ff8fa5 100%); }
+  .tf-bar.S  > span { background: linear-gradient(90deg, #64d8ff 0%, #7effb2 100%); }
+  .tf-bar.SB > span { background: linear-gradient(90deg, #b980ff 0%, #ff8fa5 100%); }
+  .tf-meta-text {
+    font-size: 9px; letter-spacing: 0; line-height: 1.15;
+    color: rgba(255,255,255,0.75); text-align: center;
+    font-family: 'Sarabun', sans-serif;
+  }
+  .tf-meta-num {
+    font-family: 'Orbitron', monospace; font-size: 9px;
+    color: var(--accent-gold); letter-spacing: 0.05em;
+  }
+  .tf-meta.Irr .tf-meta-text { color: #7effb2; }
 
   /* Grid positions */
   .pos-E0  { grid-column: 1; grid-row: 2; }
@@ -68,14 +101,15 @@
   .pos-Irr { grid-column: 7; grid-row: 2; }
 
   .fork-label { position: absolute; font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 0.15em; color: var(--text-dim); pointer-events: none; }
-  .fork-label.stem  { top: 2px; left: 18px; color: #ffcb6b; }
-  .fork-label.top   { top: 2px; right: 30%; color: #64d8ff; }
-  .fork-label.bot   { bottom: 2px; right: 30%; color: #b980ff; }
-  .fork-label.irr   { top: 2px; right: 8px; color: #7effb2; }
+  .fork-label.stem  { top: 6px; left: 18px; color: #ffcb6b; }
+  .fork-label.top   { top: 6px; right: 30%; color: #64d8ff; }
+  .fork-label.bot   { bottom: 6px; right: 30%; color: #b980ff; }
+  .fork-label.irr   { top: 6px; right: 8px; color: #7effb2; }
 
   @media (max-width: 640px) {
-    .tf-fork { grid-template-rows: repeat(3, 52px); gap: 6px; padding: 10px; }
+    .tf-fork { grid-template-rows: repeat(3, minmax(80px, auto)); gap: 6px; padding: 22px 10px 10px; }
     .tf-slot { font-size: 9px; }
+    .tf-meta-text { font-size: 8.5px; }
   }
 </style>
 <script src="../shared/drag-drop-touch-polyfill.js"></script>
@@ -238,6 +272,50 @@
     { id:'Irr', type:'Irr', label:'Irr' },
   ];
 
+  /* Knowledge metric ของแต่ละการ์ด · แสดงเป็น bar + text ตอนวางถูก slot
+     · E series → ความรี (eccentricity) · ใช้เลขตามชื่อ E0=0% E5=50% E7=70%
+     · S/SB series → ระดับ "แขนเปิด + หมุนเร็ว" (a/b/c = 30/60/90%)
+     · Irr → ไม่มีรูปแบบ */
+  const TF_INFO = {
+    E0:  { metric: 0,  label:'รี 0%',  text:'กลมที่สุด · ดาวเคลื่อนสุ่ม' },
+    E5:  { metric: 50, label:'รี 50%', text:'รีปานกลาง · เริ่มมีการหมุน' },
+    E7:  { metric: 70, label:'รี 70%', text:'รียาว · หมุนชัดเจน' },
+    Sa:  { metric: 30, label:'แขนแน่น',  text:'bulge ใหญ่ · หมุนช้า' },
+    Sb:  { metric: 60, label:'แขนกลาง',  text:'bulge ปานกลาง' },
+    Sc:  { metric: 90, label:'แขนเปิด',  text:'bulge เล็ก · หมุนเร็ว' },
+    SBa: { metric: 30, label:'คาน+แน่น', text:'มีคาน · หมุนช้า' },
+    SBb: { metric: 60, label:'คาน+กลาง', text:'มีคาน · ปานกลาง' },
+    SBc: { metric: 90, label:'คาน+เปิด', text:'มีคาน · หมุนเร็ว' },
+    Irr: { metric: 0,  label:'CHAOS',    text:'ไม่มีรูปแบบแน่นอน' },
+  };
+
+  function renderMeta(slot, card) {
+    if (!card) return;
+    const info = TF_INFO[card.dataset.id];
+    if (!info) return;
+    const type = card.dataset.type;
+    // ลบ meta เก่าก่อน (กันซ้ำ)
+    const old = slot.querySelector('.tf-meta');
+    if (old) old.remove();
+
+    const meta = document.createElement('div');
+    meta.className = 'tf-meta ' + type;
+    if (type === 'Irr') {
+      meta.innerHTML = `<div class="tf-meta-text">${info.text}</div>`;
+    } else {
+      meta.innerHTML = `
+        <div class="tf-bar ${type}"><span style="width:0"></span></div>
+        <div class="tf-meta-text"><span class="tf-meta-num">${info.label}</span> · ${info.text}</div>
+      `;
+    }
+    slot.appendChild(meta);
+    // animate bar fill ใน next frame
+    requestAnimationFrame(() => {
+      const bar = meta.querySelector('.tf-bar > span');
+      if (bar) bar.style.width = info.metric + '%';
+    });
+  }
+
   function buildTF() {
     const pool = document.getElementById('tfPool');
     if (!pool || pool.dataset.built) return;
@@ -267,6 +345,7 @@
         slot.innerHTML = '';
         slot.appendChild(card);
         slot.classList.add('filled');
+        renderMeta(slot, card);
       });
       slot.addEventListener('dblclick', () => {
         const card = slot.querySelector('.tf-item');
