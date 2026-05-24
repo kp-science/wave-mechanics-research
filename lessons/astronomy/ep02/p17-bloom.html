@@ -22,7 +22,7 @@
   .streak-indicator { padding: 8px 14px; background: rgba(255,169,92,0.1); border: 1px solid rgba(255,169,92,0.4); border-radius: 100px; display: inline-block; font-family: monospace; color: #ffa95c; font-size: 13px; }
 </style>
 </head>
-<body data-page="p17" data-type="puzzle">
+<body data-page="pBloom" data-type="puzzle">
 
 <div class="page"><div class="page-inner">
   <div class="page-label puzzle">องก์ 3 · Scene 17 · RESOLUTION 2 · BOSS RUSH</div>
@@ -59,7 +59,7 @@
 
 <script src="../shared/book.js?v=15"></script>
   <script src="../shared/telemetry-sync.js"></script>
-<script src="./config.js?v=7"></script>
+<script src="./config.js?v=9"></script>
 <script src="../shared/game.js?v=2"></script>
 <script src="../shared/items.js?v=2"></script>
 <script src="../shared/corruption.js?v=2"></script>
@@ -121,17 +121,17 @@
         levelScore[q.lv][0]++;
         streak++;
         maxStreak = Math.max(maxStreak, streak);
-        Obj.hit('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'p17' });
+        Obj.hit('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'pBloom' });
       } else {
         streak = 0;
-        Obj.miss('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'p17' });
+        Obj.miss('K' + (q.lv === 'L1' ? '1' : q.lv === 'L2' ? '2' : q.lv === 'L3' ? '3' : '4'), { page:'pBloom' });
       }
     });
 
     // streak bonus
     const streakBonus = Math.floor(maxStreak / 3) * 10;
     // ⭐ Economy: once-per-page (กันกดซ้ำ)
-  if (window.Economy) Economy.energyOnce({ page:'p17', amount:(correct * 5 + streakBonus), reason:'bloom' });
+  if (window.Economy) Economy.energyOnce({ page:'pBloom', amount:(correct * 5 + streakBonus), reason:'bloom' });
   else Book.addEnergy(correct * 5 + streakBonus, 'bloom');
 
     // medal
@@ -146,8 +146,8 @@
     document.getElementById('medalText').textContent = medal;
     document.getElementById('medalLabel').textContent = mlbl + ` · streak bonus +${streakBonus}`;
 
-    Book.savePageData('p17', { correct, levelScore, maxStreak, medal });
-    Book.completePage('p17', {
+    Book.savePageData('pBloom', { correct, levelScore, maxStreak, medal });
+    Book.completePage('pBloom', {
       score: correct, max: 15,
       msg: `${medal} ${mlbl} · streak สูงสุด ${maxStreak} · bonus +${streakBonus}`
     });

@@ -33,10 +33,12 @@ window.EP_CONFIG = {
     { id:'p14', file:'p14-boss.html',     title:'BOSS · VOID 3 Phase',   type:'mixed',      time:7 },
     { id:'p15', file:'p15-warp.html',     title:'Warp · Cliffhanger',    type:'story',      time:3 },
     { id:'p16', file:'p16-recap.html',    title:'Movie Recap',           type:'puzzle',     time:6 },
-    { id:'p19', file:'p19-map.html',      title:'Journey Map · Post-test',type:'reflection',time:5 },
+    { id:'pBloom',file:'p17-bloom.html',  title:'Bloom · 15 ข้อ',         type:'puzzle',     time:8 },
     { id:'p17', file:'p17-shop.html',     title:'ตลาด · ก่อนตีบอสสุดท้าย',  type:'setup',      time:5 },
     { id:'p17b',file:'p17b-finalboss.html',title:'BOSS สุดท้าย · 15 คลื่น',  type:'mixed',      time:10 },
+    { id:'p20', file:'p20-posttest.html', title:'📊 Post-test · วัดหลัง EP02', type:'puzzle',  time:5 },
     { id:'p17d',file:'p26b-halloffame.html', title:'🏆 Hall of Fame · ทีมชนะ EP02', type:'reflection', time:3 },
+    { id:'p19', file:'p19-map.html',      title:'Journey Map',           type:'reflection', time:5 },
     { id:'p18', file:'p27-journal.html',      title:"Journal 3-2-1 · ปิดเล่ม",type:'reflection', time:4 },
   ],
 
