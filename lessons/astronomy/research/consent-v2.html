@@ -207,7 +207,7 @@ function updateBtn(){
   }
 }
 
-async function sendToBackend(payload){
+async function sendToBackend(payload, fromQueue){
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), 8000);
   try {
@@ -222,17 +222,22 @@ async function sendToBackend(payload){
     return { ok:true };
   } catch(e){
     clearTimeout(timer);
-    try {
-      const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
-      q.push(payload);
-      if (q.length > 50) q.splice(0, q.length - 50);
-      localStorage.setItem(Q_KEY, JSON.stringify(q));
-    } catch(_){}
+    if (!fromQueue) {
+      try {
+        const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
+        q.push(payload);
+        if (q.length > 50) q.splice(0, q.length - 50);
+        localStorage.setItem(Q_KEY, JSON.stringify(q));
+      } catch(_){}
+    }
     return { ok:false, reason: e.name === 'AbortError' ? 'timeout' : e.message };
   }
 }
 
+let _submitting = false;
 btn.onclick = () => {
+  if (_submitting) return;
+  _submitting = true;
   btn.disabled = true;
   btn.textContent = '✓ บันทึกแล้ว';
   const parentEl = document.querySelector('input[name="parent"]:checked');

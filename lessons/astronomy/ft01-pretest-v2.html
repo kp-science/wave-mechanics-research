@@ -266,7 +266,7 @@ function fetchWithTimeout(url, opts){
   return fetch(url, {...opts, signal: ctrl.signal}).finally(() => clearTimeout(t));
 }
 
-async function sendToBackend(payload){
+async function sendToBackend(payload, fromQueue){
   try {
     const r = await fetchWithTimeout(API_URL, {
       method:'POST', mode:'cors',
@@ -276,15 +276,21 @@ async function sendToBackend(payload){
     if (!r.ok) throw new Error('HTTP '+r.status);
     return { ok:true };
   } catch(e){
-    const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
-    q.push(payload);
-    if (q.length > 50) q.splice(0, q.length - 50);
-    localStorage.setItem(Q_KEY, JSON.stringify(q));
+    // กัน recursion: ถ้าเรียกจาก queue retry แล้ว ไม่ต้อง re-queue
+    if (!fromQueue) {
+      const q = JSON.parse(localStorage.getItem(Q_KEY) || '[]');
+      q.push(payload);
+      if (q.length > 50) q.splice(0, q.length - 50);
+      localStorage.setItem(Q_KEY, JSON.stringify(q));
+    }
     return { ok:false, reason:e.message };
   }
 }
 
+let _submitting = false;
 submitBtn.onclick = () => {
+  if (_submitting) return;       // กัน double-click race
+  _submitting = true;
   submitBtn.disabled = true;
   submitBtn.textContent = '✓ บันทึกแล้ว';
 
@@ -332,7 +338,7 @@ window.addEventListener('load', () => {
       if (!q.length) return;
       const remaining = [];
       for (let i = 0; i < Math.min(q.length, 3); i++){
-        const r = await sendToBackend(q[i]).catch(() => ({ok:false}));
+        const r = await sendToBackend(q[i], true).catch(() => ({ok:false}));
         if (!r.ok) remaining.push(q[i]);
       }
       if (q.length > 3) remaining.push(...q.slice(3));

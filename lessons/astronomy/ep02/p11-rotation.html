@@ -4,17 +4,101 @@
 <meta charset="UTF-8">
 <title>EP02 · P11 · Galaxy Rotation</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
-  .sim-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 16px; margin: 20px 0; }
-  @media (max-width: 720px) { .sim-wrap { grid-template-columns: 1fr; } }
-  canvas#simCanvas { width: 100%; background: radial-gradient(circle at 50% 50%, #1a1540, #03040c); border-radius: 12px; border: 1px solid var(--border); display: block; }
-  .controls { padding: 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; }
-  .controls label { display: block; margin: 10px 0 4px; font-size: 12px; color: var(--text-dim); }
-  .controls input[type=range] { width: 100%; }
-  .controls .val { color: var(--accent-gold); font-family: monospace; }
-  .observe-list { padding: 14px; background: rgba(185,128,255,0.05); border: 1px dashed var(--border); border-radius: 10px; margin: 14px 0; }
-  .observe-list label { display: block; margin: 6px 0; font-size: 14px; cursor: pointer; }
+  .sim-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 16px 0;
+  }
+  @media (max-width: 820px) { .sim-grid { grid-template-columns: 1fr; } }
+
+  .sim-card {
+    background: radial-gradient(ellipse at 50% 35%, #1a1540 0%, #03040c 70%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+    position: relative;
+  }
+  .sim-card .sim-label {
+    position: absolute; top: 8px; left: 12px;
+    font-family: 'Orbitron', sans-serif; font-size: 10px;
+    letter-spacing: 0.18em; color: var(--accent-gold);
+    pointer-events: none;
+  }
+  .sim-card canvas { width: 100%; height: 320px; display: block; border-radius: 8px; }
+
+  .legend {
+    position: absolute; bottom: 8px; right: 10px;
+    font-family: 'Sarabun', sans-serif; font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    background: rgba(3,4,12,0.6); padding: 6px 10px; border-radius: 6px;
+    line-height: 1.6; pointer-events: none;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .legend .l-line { display: inline-block; width: 22px; height: 0; vertical-align: middle; margin-right: 4px; }
+  .legend .l-newton { border-top: 2px dashed #ffcb6b; }
+  .legend .l-observed { border-top: 2px solid #64d8ff; }
+
+  .controls {
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 12px 0;
+  }
+  .controls .ctrl-row { margin: 10px 0; }
+  .controls label {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 0 0 6px; font-size: 13px; color: var(--text-dim);
+  }
+  .controls .val {
+    color: var(--accent-gold); font-family: monospace; font-weight: 700;
+    background: rgba(255,203,107,0.08); padding: 2px 8px; border-radius: 4px;
+  }
+  .controls input[type=range] { width: 100%; accent-color: #64d8ff; }
+  .controls .hint {
+    font-size: 11px; color: var(--text-faint); margin-top: 2px;
+    font-family: 'Sarabun', sans-serif;
+  }
+
+  .observe-list {
+    padding: 14px;
+    background: rgba(185,128,255,0.05);
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    margin: 14px 0;
+  }
+  .observe-list b { color: var(--accent); font-size: 14px; }
+  .observe-list .obs-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-top: 10px;
+  }
+  @media (max-width: 640px) { .observe-list .obs-grid { grid-template-columns: 1fr; } }
+  .observe-list label {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 10px 12px; background: rgba(3,4,12,0.4);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+    cursor: pointer; font-size: 13px; transition: all 0.2s;
+    line-height: 1.4;
+  }
+  .observe-list label:hover { border-color: var(--accent); background: rgba(100,216,255,0.06); }
+  .observe-list label input { margin-top: 2px; flex-shrink: 0; }
+  .observe-list label.picked { border-color: var(--accent-gold); background: rgba(255,203,107,0.08); }
+
+  .btn-reset {
+    width: 100%; margin-top: 10px;
+    padding: 10px;
+    background: rgba(255,80,80,0.1);
+    color: #ff8080;
+    border: 1.5px solid rgba(255,80,80,0.4);
+    border-radius: 8px;
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-reset:hover { background: rgba(255,80,80,0.2); }
 </style>
 </head>
 <body data-page="p11" data-type="puzzle">
@@ -28,42 +112,61 @@
   </div>
 
   <div class="narrative">
-    <span class="hubble-voice">"มีสิ่งที่ฉันอธิบายไม่ได้ในกาแล็กซี · ลองเล่น sim นี้ · แล้วบอกฉันว่าเจออะไรแปลก"</span>
+    <span class="hubble-voice">"มีสิ่งที่ฉันอธิบายไม่ได้ในกาแล็กซี · ลองปรับ slider · ดูทั้ง <b>ภาพหมุน</b> และ <b>กราฟความเร็ว</b> · แล้วบอกฉันว่าเจออะไรแปลก"</span>
   </div>
 
-  <div class="sim-wrap">
-    <canvas id="simCanvas" width="600" height="400"></canvas>
-    <div class="controls">
-      <label>มวลศูนย์กลาง <span class="val" id="vMass">50</span></label>
-      <input type="range" id="mass" min="10" max="100" value="50">
-
-      <label>Dark Matter Halo <span class="val" id="vDm">0</span>%</label>
-      <input type="range" id="dm" min="0" max="100" value="0">
-
-      <label>ความเร็วฐาน <span class="val" id="vSpd">1.0</span>×</label>
-      <input type="range" id="spd" min="5" max="30" value="10">
-
-      <button class="finish-btn" style="width:100%;margin-top:14px" onclick="resetSim()">🔁 reset</button>
+  <div class="sim-grid">
+    <div class="sim-card">
+      <div class="sim-label">▸ GALAXY · TOP VIEW</div>
+      <canvas id="galCanvas" width="500" height="400"></canvas>
     </div>
+    <div class="sim-card">
+      <div class="sim-label">▸ ROTATION CURVE · v vs r</div>
+      <canvas id="curveCanvas" width="500" height="400"></canvas>
+      <div class="legend">
+        <div><span class="l-line l-newton"></span> Newton (คาดการณ์)</div>
+        <div><span class="l-line l-observed"></span> ที่สังเกตได้จริง</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-row">
+      <label>🌟 มวลที่มองเห็น (Visible Mass) <span class="val" id="vMass">50</span></label>
+      <input type="range" id="mass" min="10" max="100" value="50">
+      <div class="hint">มวลของดาว+ก๊าซในจาน · มีผลกับโค้ง Newton (ลดเร็วที่ขอบ)</div>
+    </div>
+    <div class="ctrl-row">
+      <label>🌑 Dark Matter Halo <span class="val" id="vDm">0%</span></label>
+      <input type="range" id="dm" min="0" max="100" value="0">
+      <div class="hint">มวลที่มองไม่เห็น · halo ห่อกาแล็กซี · ทำให้โค้งที่สังเกตได้ <b>แบน</b>ที่ขอบ</div>
+    </div>
+    <button class="btn-reset" onclick="resetSim()">🔁 reset · เริ่มใหม่</button>
   </div>
 
   <div class="observe-list">
     <b>✍️ สังเกตอะไรบ้าง? (ติ๊ก 1+ ข้อ)</b>
-    <label><input type="checkbox" name="obs" value="outerFast"> ขอบนอกหมุนเร็วเกินไป (ถ้าเทียบกับที่ควรเป็น)</label>
-    <label><input type="checkbox" name="obs" value="flatCurve"> กราฟความเร็วค่อนข้างแบน · ไม่ลดลงที่ขอบ</label>
-    <label><input type="checkbox" name="obs" value="dmEffect"> เมื่อเพิ่ม Dark Matter · ขอบเร็วขึ้น</label>
-    <label><input type="checkbox" name="obs" value="centerFast"> ใจกลางหมุนเร็วกว่าขอบ</label>
-    <label><input type="checkbox" name="obs" value="linear"> ความเร็วแปรตามระยะ</label>
+    <div class="obs-grid">
+      <label><input type="checkbox" name="obs" value="outerFast"> 🚀 ดาวที่ขอบหมุนเร็วกว่าที่เส้น <b>Newton</b> ทำนาย</label>
+      <label><input type="checkbox" name="obs" value="flatCurve"> 📈 เส้น "ที่สังเกตได้จริง" <b>แบน</b> · ไม่ลดที่ขอบ</label>
+      <label><input type="checkbox" name="obs" value="dmEffect"> 🌑 เมื่อเพิ่ม Dark Matter · เส้นแบนขึ้น</label>
+      <label><input type="checkbox" name="obs" value="massEffect"> 🌟 เพิ่ม Visible Mass · ใจกลางหมุนเร็วขึ้น</label>
+      <label><input type="checkbox" name="obs" value="twoCurves"> 🔍 เส้น 2 เส้นต่างกัน · แปลว่ามีอะไรที่มองไม่เห็น</label>
+      <label><input type="checkbox" name="obs" value="centerSlow"> 🐢 ใจกลางหมุนช้ากว่าขอบ <span style="color:#ff8080;font-size:11px">(คำลวง)</span></label>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--text-faint)">
+      💡 มี 1 ข้อเป็น <b>คำลวง</b> · อย่าเลือกผิด · ดู graph จริง ๆ ก่อนตอบ
+    </div>
   </div>
 
   <details class="teacher-cue" open>
     <summary>🎙️ Teacher Cue · P11 · บทบาท: กระตุ้น Socratic</summary>
     <div class="tc-body">
-      <b>เปิด:</b> "ลองเล่น sim · ปรับ mass · ปรับ Dark Matter · แล้วดูว่าเกิดอะไร"<br>
-      <b>ระหว่าง:</b> ถามนำ "ขอบนอกเร็วเกินไปหรือช้าเกินไป · ถ้ามีแค่มวลที่เห็น"<br>
-      <b>ปิด:</b> "เก็บคำถามนี้ไว้ · เราจะกลับมาตอบใน EP อื่น" (teaser dark matter)<br>
-      <b>Item:</b> ตอบถูก "outerFast" + "flatCurve" ใน try แรก → ⏱️ Warp Fuel<br>
-      <b>🖼️ เจน:</b> [CLIP-P11] Galaxy rotation curve animation
+      <b>เปิด:</b> "ลองเลื่อน Dark Matter จาก 0 → 100 · มองที่ <b>กราฟ</b> ก่อน · แล้วค่อยมองที่ galaxy"<br>
+      <b>ระหว่าง:</b> ถาม "ทำไม 2 เส้นต้องต่างกัน · กฎ Newton ทำนายอะไร · ที่จริงเห็นอะไร"<br>
+      <b>ปิด:</b> "ขอบของกาแล็กซีหมุนเร็วเกินกว่าที่มวลที่เห็นจะอธิบายได้ · เก็บคำถามนี้ไว้" (teaser dark matter)<br>
+      <b>Item:</b> ตอบถูก outerFast + flatCurve + <b>ไม่ติ๊ก centerSlow</b> ใน try แรก → ⏱️ Warp Fuel<br>
+      <b>⛔ ห้ามพูด:</b> "Dark Matter คืออะไร" (รอ EP04/EP06)
     </div>
   </details>
 
@@ -82,90 +185,269 @@
 <script>
   setTimeout(() => { Book.state.ep='ep02'; Book.save(); startSim(); }, 50);
 
-  const cv = document.getElementById('simCanvas');
-  const ctx = cv.getContext('2d');
+  /* ═════ Galaxy canvas ═════ */
+  const galCv = document.getElementById('galCanvas');
+  const galCtx = galCv.getContext('2d');
+  /* ═════ Rotation curve canvas ═════ */
+  const curCv = document.getElementById('curveCanvas');
+  const curCtx = curCv.getContext('2d');
+
   let stars = [], raf = null;
   let simStartTime = Date.now();
 
+  // ดาว 150 ดวง · กระจาย radial uniform · ระยะ 0.08 - 0.95 ของ canvas radius
   function mkStars() {
     stars = [];
-    for (let i=0; i<150; i++) {
-      const r = Math.random() * 0.48 + 0.02;
-      stars.push({ r, theta: Math.random()*Math.PI*2, color: Math.random() < 0.3 ? '#ffcb6b' : '#fff' });
+    for (let i = 0; i < 150; i++) {
+      // bias ให้ดาวกระจายตามจาน — sqrt distribution
+      const r = Math.sqrt(Math.random()) * 0.88 + 0.08;
+      stars.push({
+        r,
+        theta: Math.random() * Math.PI * 2,
+        // สีตามระยะ — inner=โซนแดง · mid=เหลือง · outer=ฟ้า (ให้เห็น velocity gradient)
+        color: r < 0.3 ? '#ff8fa5' : (r < 0.6 ? '#ffcb6b' : '#64d8ff'),
+        size: r < 0.3 ? 2.0 : (r < 0.6 ? 1.6 : 1.3),
+      });
     }
   }
 
-  function startSim() { mkStars(); animate(); bind(); }
+  function startSim() { mkStars(); bind(); animate(); }
 
   function bind() {
-    ['mass','dm','spd'].forEach(id => {
-      document.getElementById(id).addEventListener('input', () => {
-        document.getElementById('v'+id.charAt(0).toUpperCase()+id.slice(1)).textContent =
-          id==='spd' ? (document.getElementById('spd').value/10).toFixed(1) : document.getElementById(id).value + (id==='dm'?'':'');
+    ['mass', 'dm'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', () => {
+        const valEl = document.getElementById('v' + id.charAt(0).toUpperCase() + id.slice(1));
+        if (id === 'dm') valEl.textContent = el.value + '%';
+        else valEl.textContent = el.value;
       });
     });
   }
 
-  function velocity(r) {
+  /* ───────── Physics ─────────
+   * Newton (เส้นคาด): v_kepler(r) = √(M/r) * k   → ลดลงที่ r ใหญ่
+   * Observed (เส้นจริง): v_obs(r) = √(M/r + DM·r·c) * k
+   *   เทอม DM·r ทำให้ v² เพิ่มเชิงเส้นกับ r → v flat ที่ r ใหญ่ (asymptote)
+   * คืนค่าในช่วง 0-1.4 (plot units) · ใน animation จะคูณ ANIM_SPEED ให้หมุนเห็น
+   * ─────────────────────────── */
+  const PLOT_K = 0.055;      // tune ให้ peak ≈ 1.3 ที่ r=0.18, M=100
+  const ANIM_SPEED = 0.04;   // คูณตอน rotate stars
+
+  function vNewton(r, M) {
+    return Math.sqrt(M / r) * PLOT_K;
+  }
+  function vObserved(r, M, DM) {
+    const dmFrac = DM / 100;
+    return Math.sqrt(M / r + dmFrac * M * r * 2.5) * PLOT_K;
+  }
+
+  /* ═════ Galaxy animation ═════ */
+  function drawGalaxy() {
+    const W = galCv.width, H = galCv.height;
+    galCtx.clearRect(0, 0, W, H);
+
     const M = +document.getElementById('mass').value;
-    const DM = +document.getElementById('dm').value / 100;
-    // Keplerian: v ~ sqrt(M/r) · Dark Matter: flatten at large r
-    const kepler = Math.sqrt(M / (r * 100 + 1)) * 0.5;
-    const flat = DM * 0.3;
-    return kepler + flat;
+    const DM = +document.getElementById('dm').value;
+    const cx = W / 2, cy = H / 2;
+    const R = Math.min(W, H) * 0.43;
+
+    // ───── Dark matter halo (วงรัศมีใหญ่จาง ๆ · เห็นเมื่อ DM > 0) ─────
+    if (DM > 0) {
+      const haloR = R * 1.15;
+      const grad = galCtx.createRadialGradient(cx, cy, R * 0.6, cx, cy, haloR);
+      grad.addColorStop(0, `rgba(126, 80, 200, 0)`);
+      grad.addColorStop(0.7, `rgba(126, 80, 200, ${0.05 + DM / 1000})`);
+      grad.addColorStop(1, `rgba(126, 80, 200, 0)`);
+      galCtx.fillStyle = grad;
+      galCtx.beginPath(); galCtx.arc(cx, cy, haloR, 0, Math.PI * 2); galCtx.fill();
+    }
+
+    // ───── Center bulge ─────
+    galCtx.fillStyle = '#ffcb6b';
+    galCtx.shadowBlur = 24; galCtx.shadowColor = '#ffcb6b';
+    galCtx.beginPath();
+    galCtx.arc(cx, cy, 6 + M / 18, 0, Math.PI * 2);
+    galCtx.fill();
+    galCtx.shadowBlur = 0;
+
+    // ───── Stars (orbit ตามเส้น observed) ─────
+    stars.forEach(s => {
+      const v = vObserved(s.r, M, DM);
+      s.theta += v * ANIM_SPEED;
+      const x = cx + Math.cos(s.theta) * s.r * R;
+      const y = cy + Math.sin(s.theta) * s.r * R * 0.7;
+      galCtx.fillStyle = s.color;
+      galCtx.beginPath(); galCtx.arc(x, y, s.size, 0, Math.PI * 2); galCtx.fill();
+    });
+  }
+
+  /* ═════ Rotation curve graph ═════ */
+  function drawCurve() {
+    const W = curCv.width, H = curCv.height;
+    curCtx.clearRect(0, 0, W, H);
+
+    const M = +document.getElementById('mass').value;
+    const DM = +document.getElementById('dm').value;
+
+    const padL = 50, padR = 18, padT = 40, padB = 38;
+    const gw = W - padL - padR, gh = H - padT - padB;
+
+    // ── Axes ──
+    curCtx.strokeStyle = 'rgba(255,255,255,0.18)';
+    curCtx.lineWidth = 1;
+    curCtx.beginPath();
+    curCtx.moveTo(padL, padT); curCtx.lineTo(padL, padT + gh); curCtx.lineTo(padL + gw, padT + gh);
+    curCtx.stroke();
+
+    // grid
+    curCtx.strokeStyle = 'rgba(255,255,255,0.06)';
+    for (let i = 1; i <= 4; i++) {
+      const yy = padT + gh * (i / 4);
+      curCtx.beginPath(); curCtx.moveTo(padL, yy); curCtx.lineTo(padL + gw, yy); curCtx.stroke();
+    }
+    for (let i = 1; i <= 4; i++) {
+      const xx = padL + gw * (i / 4);
+      curCtx.beginPath(); curCtx.moveTo(xx, padT); curCtx.lineTo(xx, padT + gh); curCtx.stroke();
+    }
+
+    // ── Labels ──
+    curCtx.fillStyle = 'rgba(255,255,255,0.7)';
+    curCtx.font = "11px 'Sarabun', sans-serif";
+    curCtx.fillText('ระยะจากศูนย์ (r) →', padL + gw / 2 - 50, padT + gh + 28);
+    curCtx.save();
+    curCtx.translate(16, padT + gh / 2 + 50);
+    curCtx.rotate(-Math.PI / 2);
+    curCtx.fillText('ความเร็ว (v) →', 0, 0);
+    curCtx.restore();
+
+    // Y-axis fixed scale 0 → 1.4 (สอดคล้องกับ v range)
+    const yMax = 1.4;
+    curCtx.fillStyle = 'rgba(255,255,255,0.4)';
+    curCtx.font = "9px monospace";
+    for (let i = 0; i <= 4; i++) {
+      const yy = padT + gh * (1 - i / 4);
+      curCtx.fillText((yMax * i / 4).toFixed(1), padL - 24, yy + 3);
+    }
+    // X-axis labels
+    curCtx.fillText('0', padL - 4, padT + gh + 14);
+    curCtx.fillText('ใจกลาง', padL + 4, padT - 6);
+    curCtx.fillText('ขอบ', padL + gw - 28, padT - 6);
+
+    // plot helper: r range 0.18 → 1.0 (เลี่ยง singularity ที่ r=0 + กัน peak ทะลุ yMax)
+    const R_MIN = 0.18, R_MAX = 1.0;
+    const rToPx = r => padL + (r - R_MIN) / (R_MAX - R_MIN) * gw;
+    const vToPy = v => padT + gh - Math.min(v, yMax) / yMax * gh;
+
+    // ── Newton curve (dashed orange) ──
+    curCtx.strokeStyle = '#ffcb6b';
+    curCtx.setLineDash([6, 5]);
+    curCtx.lineWidth = 2.4;
+    curCtx.beginPath();
+    for (let i = 0; i <= 100; i++) {
+      const r = R_MIN + (i / 100) * (R_MAX - R_MIN);
+      const v = vNewton(r, M);
+      const px = rToPx(r), py = vToPy(v);
+      if (i === 0) curCtx.moveTo(px, py); else curCtx.lineTo(px, py);
+    }
+    curCtx.stroke();
+    curCtx.setLineDash([]);
+
+    // ── Observed curve (solid cyan) ──
+    curCtx.strokeStyle = '#64d8ff';
+    curCtx.lineWidth = 2.8;
+    curCtx.shadowBlur = 8; curCtx.shadowColor = '#64d8ff';
+    curCtx.beginPath();
+    for (let i = 0; i <= 100; i++) {
+      const r = R_MIN + (i / 100) * (R_MAX - R_MIN);
+      const v = vObserved(r, M, DM);
+      const px = rToPx(r), py = vToPy(v);
+      if (i === 0) curCtx.moveTo(px, py); else curCtx.lineTo(px, py);
+    }
+    curCtx.stroke();
+    curCtx.shadowBlur = 0;
+
+    // ── Anomaly highlight ── (เมื่อ DM > 10 แสดงพื้นที่ระหว่าง 2 เส้น)
+    if (DM > 10) {
+      curCtx.fillStyle = 'rgba(255,143,165,0.12)';
+      curCtx.beginPath();
+      for (let i = 0; i <= 100; i++) {
+        const r = R_MIN + (i / 100) * (R_MAX - R_MIN);
+        const v = vObserved(r, M, DM);
+        const px = rToPx(r), py = vToPy(v);
+        if (i === 0) curCtx.moveTo(px, py); else curCtx.lineTo(px, py);
+      }
+      for (let i = 100; i >= 0; i--) {
+        const r = R_MIN + (i / 100) * (R_MAX - R_MIN);
+        const v = vNewton(r, M);
+        const px = rToPx(r), py = vToPy(v);
+        curCtx.lineTo(px, py);
+      }
+      curCtx.closePath();
+      curCtx.fill();
+
+      curCtx.fillStyle = 'rgba(255,143,165,0.9)';
+      curCtx.font = "bold 11px 'Sarabun', sans-serif";
+      curCtx.fillText('⚠ ส่วนต่าง = มวลที่หายไป?', padL + gw - 170, padT + gh - 14);
+    }
   }
 
   function animate() {
-    ctx.clearRect(0,0,cv.width,cv.height);
-    // center
-    ctx.fillStyle = '#ffcb6b';
-    ctx.beginPath(); ctx.arc(cv.width/2, cv.height/2, 8, 0, Math.PI*2); ctx.fill();
-    ctx.shadowBlur = 20; ctx.shadowColor = '#ffcb6b';
-    ctx.fill(); ctx.shadowBlur = 0;
-
-    const spd = +document.getElementById('spd').value / 10;
-    stars.forEach(s => {
-      s.theta += velocity(s.r) * 0.02 * spd;
-      const x = cv.width/2 + Math.cos(s.theta) * s.r * cv.width * 0.7;
-      const y = cv.height/2 + Math.sin(s.theta) * s.r * cv.height * 0.7;
-      ctx.fillStyle = s.color;
-      ctx.beginPath(); ctx.arc(x, y, 1.5, 0, Math.PI*2); ctx.fill();
-    });
+    drawGalaxy();
+    drawCurve();
     raf = requestAnimationFrame(animate);
   }
 
   function resetSim() {
     document.getElementById('mass').value = 50;
     document.getElementById('dm').value = 0;
-    document.getElementById('spd').value = 10;
-    ['mass','dm','spd'].forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
+    ['mass', 'dm'].forEach(id => document.getElementById(id).dispatchEvent(new Event('input')));
     mkStars();
   }
+
+  // tick visual feedback
+  document.querySelectorAll('.observe-list label').forEach(lbl => {
+    lbl.addEventListener('click', () => {
+      setTimeout(() => {
+        const cb = lbl.querySelector('input');
+        lbl.classList.toggle('picked', cb.checked);
+      }, 0);
+    });
+  });
 
   function finishPage() {
     const checked = [...document.querySelectorAll('input[name="obs"]:checked')].map(x => x.value);
     const keyObs = checked.includes('outerFast') && checked.includes('flatCurve');
+    const trap = checked.includes('centerSlow'); // คำลวง — ติ๊กแล้วโดน penalty
     const elapsed = Date.now() - simStartTime;
     const keyCount = (checked.includes('outerFast') ? 1 : 0) + (checked.includes('flatCurve') ? 1 : 0);
 
-    // 🔑 ตั้ง gate ก่อน scoring
     Book.completePage('p11', {
       score: keyCount, max: 2,
-      msg: `จับประเด็นสำคัญได้ ${keyCount}/2 · ทั้งหมด ${checked.length} ข้อสังเกต`
+      msg: `จับประเด็น ${keyCount}/2 · ทั้งหมด ${checked.length} ข้อ${trap ? ' · ⚠️ ติ๊กคำลวง' : ''}`
     });
 
     try {
-      if (checked.length >= 2) {
-        Game.award({ base: 10 + checked.length * 3, page:'p11', objective:'P1' });
-        Obj.hit('P2', { page:'p11' });
+      if (checked.length >= 2 && !trap) {
+        Game.award({ base: 10 + checked.length * 3, page: 'p11', objective: 'P1' });
+        Obj.hit('P2', { page: 'p11' });
+      } else if (trap) {
+        Game.penalty({ amount: 5, page: 'p11', objective: 'P1' });
       } else {
-        Game.penalty({ amount: 3, page:'p11', objective:'P1' });
+        Game.penalty({ amount: 3, page: 'p11', objective: 'P1' });
       }
-      if (keyObs && elapsed < 180000) { Items.grant('warpFuel', { from:'p11' }); Book.addCoin(10, 'p11-key-obs-fast'); }
-      else if (keyObs) Book.addCoin(5, 'p11-key-obs');
-      Book.savePageData('p11', { observations: checked, elapsedMs: elapsed });
-    } catch(e){ console.warn('p11 scoring failed', e); }
-    document.getElementById('status').textContent = `✓ บันทึก ${checked.length} ข้อสังเกต`;
+      if (keyObs && !trap && elapsed < 180000) {
+        Items.grant('warpFuel', { from: 'p11' });
+        Book.addCoin(10, 'p11-key-obs-fast');
+      } else if (keyObs && !trap) {
+        Book.addCoin(5, 'p11-key-obs');
+      }
+      Book.savePageData('p11', { observations: checked, elapsedMs: elapsed, trap });
+    } catch (e) { console.warn('p11 scoring failed', e); }
+
+    const msg = trap
+      ? `⚠️ ติ๊กคำลวง "centerSlow" · ใจกลางหมุนเร็วกว่าขอบเสียอีก · ลองดู graph อีกครั้ง`
+      : `✓ บันทึก ${checked.length} ข้อสังเกต${keyObs ? ' · จับประเด็นครบ' : ''}`;
+    document.getElementById('status').textContent = msg;
     const btn = document.getElementById('finishBtn');
     btn.classList.add('done'); btn.disabled = true; btn.textContent = '✓ ส่งแล้ว';
   }

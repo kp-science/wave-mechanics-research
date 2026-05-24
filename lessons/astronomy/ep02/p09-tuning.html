@@ -111,6 +111,130 @@
     .tf-slot { font-size: 9px; }
     .tf-meta-text { font-size: 8.5px; }
   }
+
+  /* ───── Phase 3 · Hybrid Self-Defense (chips + stance + optional text) ───── */
+  .q-section {
+    margin: 18px 0;
+    padding: 14px 16px;
+    background: rgba(100,216,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .q-label {
+    display: block;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .q-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 4px 0 10px;
+  }
+  .pos-chips {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    margin: 6px 0 12px;
+  }
+  @media (max-width: 640px) { .pos-chips { grid-template-columns: repeat(3, 1fr); } }
+  .pos-chip {
+    padding: 8px 6px;
+    text-align: center;
+    background: rgba(3,4,12,0.4);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+  }
+  .pos-chip:hover { border-color: var(--accent); }
+  .pos-chip.picked {
+    border-color: var(--accent-gold);
+    background: rgba(255,203,107,0.14);
+    color: var(--accent-gold);
+    box-shadow: 0 0 16px rgba(255,203,107,0.25);
+  }
+  .pos-chip.E   { color: #ffcb6b; }
+  .pos-chip.S   { color: #64d8ff; }
+  .pos-chip.SB  { color: #b980ff; }
+  .pos-chip.Irr { color: #7effb2; }
+
+  .evidence-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 10px;
+  }
+  .ev-chip {
+    padding: 7px 12px;
+    background: rgba(3,4,12,0.4);
+    border: 1.5px solid var(--border);
+    border-radius: 100px;
+    font-size: 12.5px;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s;
+    user-select: none;
+    line-height: 1.3;
+  }
+  .ev-chip:hover { border-color: var(--accent); }
+  .ev-chip.picked {
+    border-color: var(--accent-green);
+    background: rgba(126,255,178,0.12);
+    color: var(--accent-green);
+  }
+  .ev-chip.picked::before { content: '✓ '; font-weight: 700; }
+
+  .stance-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 6px 0 12px;
+  }
+  @media (max-width: 480px) { .stance-row { grid-template-columns: 1fr; } }
+  .stance-btn {
+    padding: 12px;
+    text-align: center;
+    background: rgba(3,4,12,0.4);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .stance-btn .st-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+  .stance-btn .st-text { font-size: 12px; color: var(--text-dim); }
+  .stance-btn:hover { border-color: var(--accent); }
+  .stance-btn.picked {
+    border-color: var(--accent-gold);
+    background: rgba(255,203,107,0.12);
+    box-shadow: 0 0 18px rgba(255,203,107,0.25);
+  }
+  .stance-btn.picked .st-text { color: var(--accent-gold); font-weight: 700; }
+
+  .opt-text {
+    width: 100%;
+    padding: 8px 10px;
+    background: rgba(3,4,12,0.3);
+    border: 1px dashed var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+    margin-top: 4px;
+  }
+  .opt-text::placeholder { color: var(--text-faint); }
+  .opt-label {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin: 6px 0 2px;
+  }
 </style>
 <script src="../shared/drag-drop-touch-polyfill.js"></script>
 </head>
@@ -193,21 +317,74 @@
 
     <div id="forkRecap" style="margin:10px 0;padding:10px;background:rgba(100,216,255,0.05);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-dim)"></div>
 
-    <div style="margin:14px 0">
-      <label style="display:block;margin-bottom:6px;font-weight:700">
-        ① ตำแหน่งไหนที่คุณ<span style="color:var(--accent-green)">มั่นใจที่สุด</span> · เพราะสังเกตเห็นอะไร?
-      </label>
-      <textarea id="j1" rows="3" style="width:100%;padding:10px;background:rgba(3,4,12,0.5);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:14px;resize:vertical" placeholder="เช่น · ผมมั่นใจว่า E0 อยู่ซ้ายสุด เพราะรูปกลมที่สุด ไม่มีแขน ไม่มีคาน..."></textarea>
+    <!-- ───── Q1: Confidence + Evidence ───── -->
+    <div class="q-section">
+      <label class="q-label">① ตำแหน่งไหนที่คุณ<span style="color:var(--accent-green)">มั่นใจที่สุด</span>?</label>
+      <div class="q-sub">เลือก 1 ตำแหน่ง</div>
+      <div class="pos-chips" id="q1Pos">
+        <div class="pos-chip E"   data-pos="E0">E0</div>
+        <div class="pos-chip E"   data-pos="E5">E5</div>
+        <div class="pos-chip E"   data-pos="E7">E7</div>
+        <div class="pos-chip S"   data-pos="Sa">Sa</div>
+        <div class="pos-chip S"   data-pos="Sb">Sb</div>
+        <div class="pos-chip S"   data-pos="Sc">Sc</div>
+        <div class="pos-chip SB"  data-pos="SBa">SBa</div>
+        <div class="pos-chip SB"  data-pos="SBb">SBb</div>
+        <div class="pos-chip SB"  data-pos="SBc">SBc</div>
+        <div class="pos-chip Irr" data-pos="Irr">Irr</div>
+      </div>
+
+      <div class="q-sub" style="margin-top:8px">เพราะสังเกตเห็นอะไร? (เลือก 1+ ข้อ)</div>
+      <div class="evidence-chips" id="q1Evidence">
+        <div class="ev-chip" data-ev="round">รูปร่างกลม · ไม่มีแขน</div>
+        <div class="ev-chip" data-ev="elongated">รูปร่างรียาว</div>
+        <div class="ev-chip" data-ev="spiralArms">มีแขนกังหัน · ไม่มีคาน</div>
+        <div class="ev-chip" data-ev="bar">มีคานตรงกลาง</div>
+        <div class="ev-chip" data-ev="noShape">ไม่มีรูปแบบชัดเจน</div>
+        <div class="ev-chip" data-ev="stemOrder">อยู่ใน sequence ของ stem (กลม→รี)</div>
+        <div class="ev-chip" data-ev="armOpenness">เรียงจากแขนแน่นไปเปิด</div>
+        <div class="ev-chip" data-ev="bulgeSize">bulge ใจกลางเปลี่ยนขนาด</div>
+      </div>
+
+      <div class="opt-label">📝 เพิ่มเหตุผลของตัวเอง (ไม่บังคับ)</div>
+      <textarea class="opt-text" id="q1Text" rows="2" placeholder="เขียนความคิดของตัวเองสั้นๆ..."></textarea>
     </div>
 
-    <div style="margin:14px 0">
-      <label style="display:block;margin-bottom:6px;font-weight:700">
-        ② สมมติเพื่อนแย้งว่า <span style="color:var(--accent-red)">"Sa ควรอยู่แขนล่าง (คู่กับ SBa)"</span> · คุณจะตอบอย่างไร?
-      </label>
-      <textarea id="j2" rows="3" style="width:100%;padding:10px;background:rgba(3,4,12,0.5);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:inherit;font-size:14px;resize:vertical" placeholder="เช่น · ผมไม่เห็นด้วย เพราะ Sa ไม่มีแท่งคานตรงกลาง แต่ SBa มี..."></textarea>
+    <!-- ───── Q2: Stance + Evidence ───── -->
+    <div class="q-section">
+      <label class="q-label">② เพื่อนแย้งว่า <span style="color:var(--accent-red)">"Sa ควรอยู่แขนล่าง (คู่กับ SBa)"</span></label>
+      <div class="q-sub">จุดยืนของคุณ?</div>
+      <div class="stance-row" id="q2Stance">
+        <div class="stance-btn" data-stance="agree">
+          <span class="st-icon">😬</span>
+          <span class="st-text">เห็นด้วย</span>
+        </div>
+        <div class="stance-btn" data-stance="disagree">
+          <span class="st-icon">⚔️</span>
+          <span class="st-text">ไม่เห็นด้วย</span>
+        </div>
+        <div class="stance-btn" data-stance="unsure">
+          <span class="st-icon">🤔</span>
+          <span class="st-text">ไม่แน่ใจ</span>
+        </div>
+      </div>
+
+      <div class="q-sub" style="margin-top:8px">เหตุผลที่สนับสนุน? (เลือก 1+ ข้อ)</div>
+      <div class="evidence-chips" id="q2Evidence">
+        <div class="ev-chip" data-ev="saNoBar">Sa มีแขน · ไม่มีคาน · ต่าง SBa</div>
+        <div class="ev-chip" data-ev="saFamilyS">Sa อยู่ตระกูล S เหมือน Sb/Sc</div>
+        <div class="ev-chip" data-ev="sbaHasBar">SBa มีคานชัดเจน · ต่าง Sa</div>
+        <div class="ev-chip" data-ev="armFamily">แขนบน = S · แขนล่าง = SB</div>
+        <div class="ev-chip" data-ev="hubbleFamily">Hubble เรียงตาม family ไม่ใช่ความรี</div>
+        <div class="ev-chip" data-ev="bothSpiral">ทั้ง Sa และ SBa มีแขน · จริง ๆ คล้ายกัน</div>
+        <div class="ev-chip" data-ev="onlyBar">ต่างกันแค่ "มี/ไม่มีคาน"</div>
+      </div>
+
+      <div class="opt-label">📝 เพิ่มเหตุผลของตัวเอง (ไม่บังคับ)</div>
+      <textarea class="opt-text" id="q2Text" rows="2" placeholder="เขียนความคิดของตัวเองสั้นๆ..."></textarea>
     </div>
 
-    <p style="font-size:11px;color:var(--text-faint)">💡 ครูอ่านบันทึกย้อนหลังได้จาก Teacher Panel · ไม่ต้องออกมานำเสนอ</p>
+    <p style="font-size:11px;color:var(--text-faint)">💡 ครูดู Teacher Panel เห็นทั้ง chip ที่เลือก + ข้อความเพิ่มเติม</p>
     <button id="finishBtn" class="finish-btn" onclick="finishPage()">✓ บันทึก · จบ Lab</button>
   </div>
 
@@ -409,30 +586,74 @@
     box.innerHTML = `📊 ผังที่คุณวาง: <b style="color:var(--accent)">${correct}/${slots.length}</b> ตำแหน่งถูก${placed < slots.length ? ` · (ยังไม่ได้วาง ${slots.length - placed} ช่อง)` : ''} · เขียนบันทึกเพื่อปกป้องความคิดของคุณ`;
   }
 
-  function finishPage() {
-    const j1 = (document.getElementById('j1').value || '').trim();
-    const j2 = (document.getElementById('j2').value || '').trim();
-    const wrote1 = j1.length >= 10;
-    const wrote2 = j2.length >= 10;
-    const defended = wrote1 && wrote2;
+  /* ───── Phase 3 chip handlers ───── */
+  // Single-select: position (Q1) + stance (Q2)
+  document.querySelectorAll('#q1Pos .pos-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('#q1Pos .pos-chip').forEach(c => c.classList.remove('picked'));
+      chip.classList.add('picked');
+    });
+  });
+  document.querySelectorAll('#q2Stance .stance-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#q2Stance .stance-btn').forEach(b => b.classList.remove('picked'));
+      btn.classList.add('picked');
+    });
+  });
+  // Multi-select: evidence chips
+  document.querySelectorAll('.evidence-chips .ev-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('picked'));
+  });
 
-    if (!wrote1 || !wrote2) {
-      alert('กรุณาเขียนบันทึกทั้ง 2 ข้อ (อย่างน้อยข้อละ 10 ตัวอักษร)');
+  function _pickedPos(containerId) {
+    return document.querySelector(`#${containerId} .picked`)?.dataset.pos || '';
+  }
+  function _pickedStance(containerId) {
+    return document.querySelector(`#${containerId} .picked`)?.dataset.stance || '';
+  }
+  function _pickedEvidence(containerId) {
+    return [...document.querySelectorAll(`#${containerId} .picked`)].map(c => c.dataset.ev);
+  }
+
+  function finishPage() {
+    const q1Pos = _pickedPos('q1Pos');
+    const q1Ev  = _pickedEvidence('q1Evidence');
+    const q1Tx  = (document.getElementById('q1Text').value || '').trim();
+    const q2St  = _pickedStance('q2Stance');
+    const q2Ev  = _pickedEvidence('q2Evidence');
+    const q2Tx  = (document.getElementById('q2Text').value || '').trim();
+
+    // Validation: ต้องเลือก position + ≥1 evidence ใน Q1, stance + ≥1 evidence ใน Q2
+    const missing = [];
+    if (!q1Pos)        missing.push('ข้อ ① เลือกตำแหน่งที่มั่นใจ');
+    if (q1Ev.length < 1) missing.push('ข้อ ① เลือกเหตุผล (chip) อย่างน้อย 1 ข้อ');
+    if (!q2St)         missing.push('ข้อ ② เลือกจุดยืน (เห็นด้วย/ไม่เห็นด้วย/ไม่แน่ใจ)');
+    if (q2Ev.length < 1) missing.push('ข้อ ② เลือกเหตุผล (chip) อย่างน้อย 1 ข้อ');
+    if (missing.length) {
+      alert('กรุณาทำให้ครบ:\n• ' + missing.join('\n• '));
       return;
     }
 
+    const defended = true;
+
     Obj.hit('A1', { page:'p09' });
     Obj.hit('A2', { page:'p09' });
-    // ⭐ Economy: once-per-page (กันกดซ้ำ)
-  if (window.Economy) Economy.energyOnce({ page:'p09', amount:(+10), reason:'journal-defend' });
-  else Book.addEnergy(+10, 'journal-defend');
-    if (j1.length >= 40 && j2.length >= 40) Book.addCoin(5, 'journal-thorough');
+    if (window.Economy) Economy.energyOnce({ page:'p09', amount:(+10), reason:'journal-defend' });
+    else Book.addEnergy(+10, 'journal-defend');
+    // Bonus: เลือก evidence เยอะ (วิเคราะห์ลึก) หรือมี text เพิ่มเติม
+    const totalEv = q1Ev.length + q2Ev.length;
+    if (totalEv >= 4) Book.addCoin(5, 'journal-thorough-chips');
+    if (q1Tx.length >= 20 && q2Tx.length >= 20) Book.addCoin(3, 'journal-thorough-text');
 
-    Book.savePageData('p09', { predictScore, arrangeCorrect, journal1: j1, journal2: j2 });
+    Book.savePageData('p09', {
+      predictScore, arrangeCorrect,
+      q1: { position: q1Pos, evidence: q1Ev, text: q1Tx },
+      q2: { stance: q2St, evidence: q2Ev, text: q2Tx },
+    });
     const composite = (Number(predictScore) ? 1 : 0) + (arrangeCorrect ? 1 : 0) + (defended ? 1 : 0);
     Book.completePage('p09', {
       score: composite, max: 3,
-      msg: `Predict ${predictScore ? '✓' : '✗'} · Tuning fork ${arrangeCorrect ? '✓' : '✗'} · บันทึกปกป้องความคิด ✓`
+      msg: `Predict ${predictScore ? '✓' : '✗'} · Tuning fork ${arrangeCorrect ? '✓' : '✗'} · ปกป้องความคิด ✓ (${totalEv} เหตุผล)`
     });
     document.querySelectorAll('.phase-tab').forEach(t => t.classList.add('done'));
     const btn = document.getElementById('finishBtn');
