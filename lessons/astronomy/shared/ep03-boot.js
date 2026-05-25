@@ -11,8 +11,9 @@
       if (global.KPDB && global.KPDB.init) global.KPDB.init({ subject: 'astronomy', unit: 'ep03' });
       // Sync
       global.Sync && global.Sync.init();
-      // Auto-create solo room if no state · so Photon/VoidHunter work offline
-      if (global.Sync && !global.Sync.getState()) {
+      // Auto-create solo room if no state AND no room code · so Photon/VoidHunter work offline
+      // ถ้ามี room code แล้ว (นักเรียน join ผ่าน join.html) → รอ Firebase โหลด ไม่ทับ
+      if (global.Sync && !global.Sync.getState() && !global.Sync.getRoomCode()) {
         global.Sync.createRoom({ code: 'SOLO' });
       }
       // Firebase lazy-load if configured

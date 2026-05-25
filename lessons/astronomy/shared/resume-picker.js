@@ -86,7 +86,8 @@
     const items = pages.map((p, i) => {
       const ok      = done[i];
       const isNext  = !ok && i === nextIdx && hasProgress;
-      const locked  = i > maxAllowedIdx;  // เกินขอบเขตที่อนุญาต = locked
+      // หน้าที่ทำเสร็จแล้ว → กลับเข้าได้เสมอ (ทบทวน/แก้ไข) แม้ pace จะถอยกลับ
+      const locked  = !ok && i > maxAllowedIdx;
       const icon    = locked ? '🔒' : (ok ? '✓' : (isNext ? '▶' : '○'));
       let cls       = 'rp-row';
       if (ok)     cls += ' rp-done';
