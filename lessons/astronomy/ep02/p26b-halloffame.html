@@ -107,7 +107,9 @@ async function loadRanking(){
 }
 function finishHOF(){
   Book.completePage('p17d');
-  document.getElementById('result').innerHTML = '<div class="branch-reveal main"><h3>✓ บันทึกแล้ว</h3><p class="muted">กด "ต่อไป →" เพื่อไปหน้า Journal</p></div>';
+  document.getElementById('result').innerHTML = '<div class="branch-reveal main"><h3>✓ บันทึกแล้ว</h3><p class="muted">กำลังไปหน้า Journal 3-2-1...</p></div>';
+  // ปุ่มเขียน "ไปหน้าถัดไป" → พาไปจริง (กันนักเรียนปิดแท็บก่อนทำ Journal)
+  setTimeout(() => { try { Book.next(); } catch(_) {} }, 1200);
 }
 loadRanking();
 setInterval(loadRanking, 20000);
