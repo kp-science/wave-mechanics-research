@@ -444,13 +444,15 @@ function resetTeamPage(newClass) {
   }
   Book.save();
 
+  // ใช้ per-EP key (Book._storageKey) · fallback legacy ถ้า book.js เก่า
+  const _key = (Book && Book._storageKey) ? Book._storageKey() : 'cosmosLog_state_ep02';
   try {
-    const raw = localStorage.getItem('cosmosLog_state');
+    const raw = localStorage.getItem(_key);
     if (raw) {
       const s = JSON.parse(raw);
       s.teamId = null; s.teamName = ''; s.role = '';
       if (s.gates) { delete s.gates.p01; delete s.gates.p02; }
-      localStorage.setItem('cosmosLog_state', JSON.stringify(s));
+      localStorage.setItem(_key, JSON.stringify(s));
     }
   } catch(_){}
 

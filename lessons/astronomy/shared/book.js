@@ -155,38 +155,72 @@ const Book = {
     }, 150);
   },
 
+  /* ⭐ Per-EP storage key (2026-05-25)
+   * เดิม EP01 + EP02 ใช้ key เดียวกัน `cosmosLog_state` → page IDs ทับซ้อน
+   * (เช่น p09 ใน EP01 = ลูกโป่งเอกภพ, p09 ใน EP02 = Tuning Fork) → bug:
+   * นักเรียนทำ EP01 แล้วเปิด EP02 จะเห็นหน้าขึ้น ✓ ทั้งที่ยังไม่ได้ทำ
+   * แก้: ใช้ `cosmosLog_state_ep01` / `cosmosLog_state_ep02` แยกกัน + migrate
+   */
+  _storageKey() {
+    const m = (typeof location !== 'undefined') ? location.pathname.match(/\/ep0?(\d+)\//) : null;
+    const ep = m ? ('ep' + String(m[1]).padStart(2, '0')) : 'ep01';
+    return 'cosmosLog_state_' + ep;
+  },
+
+  _normalizeState(s) {
+    if (!s.gates || typeof s.gates !== 'object') s.gates = {};
+    if (!s.data || typeof s.data !== 'object') s.data = {};
+    if (!s.discoveries) s.discoveries = [];
+    if (!s.inventory) s.inventory = [];
+    if (!s.log) s.log = [];
+    if (!s.startTime || isNaN(s.startTime)) s.startTime = Date.now();
+    if (typeof s.energy !== 'number' || isNaN(s.energy)) s.energy = 0;
+    if (typeof s.coins !== 'number' || isNaN(s.coins)) s.coins = 0;
+    if (typeof s.streak !== 'number') s.streak = 0;
+    if (typeof s.corruption !== 'number') s.corruption = 0;
+    if (!s.bet) s.bet = null;
+    if (!s.betHistory) s.betHistory = [];
+    if (!s.decisions) s.decisions = [];
+    if (!s.retries) s.retries = {};
+    if (!s.itemsUsed) s.itemsUsed = [];
+    if (!s.objectives) s.objectives = {};
+    if (!s.boss) s.boss = null;
+    return s;
+  },
+
   load() {
+    const key = this._storageKey();
+    const epId = key.replace('cosmosLog_state_', '');
+    // 1. ลอง load จาก per-EP key (path หลัก)
     try {
-      const raw = localStorage.getItem('cosmosLog_state');
+      const raw = localStorage.getItem(key);
       if (raw) {
         const s = JSON.parse(raw);
-        // Migrate old state from ep01-scene.html monolith
-        if (!s.gates || typeof s.gates !== 'object') s.gates = {};
-        if (!s.data || typeof s.data !== 'object') s.data = {};
-        if (!s.discoveries) s.discoveries = [];
-        if (!s.inventory) s.inventory = [];
-        if (!s.log) s.log = [];
-        if (!s.startTime || isNaN(s.startTime)) s.startTime = Date.now();
-        if (typeof s.energy !== 'number' || isNaN(s.energy)) s.energy = 0;
-        if (typeof s.coins !== 'number' || isNaN(s.coins)) s.coins = 0;
-        // EP02 game-layer fields (ignored by EP01)
-        if (typeof s.streak !== 'number') s.streak = 0;
-        if (typeof s.corruption !== 'number') s.corruption = 0;
-        if (!s.bet) s.bet = null;
-        if (!s.betHistory) s.betHistory = [];
-        if (!s.decisions) s.decisions = [];
-        if (!s.retries) s.retries = {};
-        if (!s.itemsUsed) s.itemsUsed = [];
-        if (!s.objectives) s.objectives = {};
-        if (!s.boss) s.boss = null;
-        if (!s.ep) s.ep = 'ep01';
-        // Migrate old monolith gates → new page gates
-        if (s.teamId && !s.gates.p01 && s.entryTicket) s.gates.p01 = true;
-        if (s.teamId && !s.gates.p02) s.gates.p02 = true;
+        this._normalizeState(s);
+        s.ep = epId;
         return s;
       }
-    } catch(e) { console.warn('State load failed', e); }
-    return this.defaultState();
+    } catch(e) { console.warn('State load failed (new key)', e); }
+    // 2. Migration ครั้งเดียว · จาก legacy shared key — เฉพาะถ้า ep ตรงกัน
+    try {
+      const oldRaw = localStorage.getItem('cosmosLog_state');
+      if (oldRaw) {
+        const s = JSON.parse(oldRaw);
+        if (s && s.ep === epId) {
+          this._normalizeState(s);
+          // Migrate old monolith gates (EP01 backward compat)
+          if (s.teamId && !s.gates.p01 && s.entryTicket) s.gates.p01 = true;
+          if (s.teamId && !s.gates.p02) s.gates.p02 = true;
+          localStorage.setItem(key, JSON.stringify(s));
+          console.info('[Book] migrated state shared → ' + key);
+          return s;
+        }
+      }
+    } catch(e) { console.warn('State migration failed', e); }
+    // 3. Fresh state
+    const fresh = this.defaultState();
+    fresh.ep = epId;
+    return fresh;
   },
 
   defaultState() {
@@ -215,11 +249,16 @@ const Book = {
     };
   },
 
-  save() { localStorage.setItem('cosmosLog_state', JSON.stringify(this.state)); },
+  save() {
+    // sync state.ep กับ URL · กัน mismatch ตอน save ผิดที่
+    const key = this._storageKey();
+    this.state.ep = key.replace('cosmosLog_state_', '');
+    localStorage.setItem(key, JSON.stringify(this.state));
+  },
 
   reset() {
     if (!confirm('ล้างข้อมูลทั้งหมด เริ่มใหม่?')) return;
-    localStorage.removeItem('cosmosLog_state');
+    localStorage.removeItem(this._storageKey());
     const first = this.getPages()[0];
     location.href = first ? first.file : 'p01-entry.html';
   },

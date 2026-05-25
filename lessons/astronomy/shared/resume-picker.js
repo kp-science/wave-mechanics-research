@@ -21,11 +21,35 @@
   const epId  = cfg.id || 'ep??';
   const pages = cfg.pages;
 
+  /* ---- per-EP storage key (2026-05-25)
+   *  EP01-02 เคยใช้ `cosmosLog_state` ร่วมกัน → page id ทับซ้อน (เช่น p09)
+   *  ตอนนี้แยกเป็น `cosmosLog_state_ep01` / `cosmosLog_state_ep02`
+   *  มี fallback อ่าน legacy key เผื่อยังไม่ migrate
+   */
+  function _stateKey() {
+    return 'cosmosLog_state_' + epId;
+  }
+  function _readBookState() {
+    try {
+      const raw = localStorage.getItem(_stateKey());
+      if (raw) return JSON.parse(raw);
+    } catch(e){}
+    // fallback legacy key — เฉพาะถ้า ep ตรงกัน (กัน leak จาก EP อื่น)
+    try {
+      const raw = localStorage.getItem('cosmosLog_state');
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s && s.ep === epId) return s;
+      }
+    } catch(e){}
+    return {};
+  }
+
   /* ---- progress detection ---- */
   function isComplete(pageId){
     // 1) EP01-02 gates
     try {
-      const s = JSON.parse(localStorage.getItem('cosmosLog_state') || '{}');
+      const s = _readBookState();
       if (s.gates && s.gates[pageId]) return true;
     } catch(e){}
     // 2) per-page submit (EP03-06)
@@ -155,17 +179,14 @@
     Object.keys(localStorage)
       .filter(k => k.startsWith('cosmosLog_' + epId + '_'))
       .forEach(k => localStorage.removeItem(k));
-    // EP01-02 ใช้ cosmosLog_state (shared) — ล้างเฉพาะ gates ของ pages ที่ ep นี้มี
+    // EP01-02 — ลบ per-EP key (ตอนนี้แยกกันแล้ว · ปลอดภัย ไม่กระทบ EP อื่น)
+    try { localStorage.removeItem(_stateKey()); } catch(e){}
+    // legacy key — ลบเฉพาะถ้าเป็นของ ep นี้ (กันลบของ EP อื่นที่ยังไม่ migrate)
     try {
-      const s = JSON.parse(localStorage.getItem('cosmosLog_state') || '{}');
-      if (s.gates) {
-        pages.forEach(p => delete s.gates[p.id]);
-        // ถ้าเป็น EP01/02 ลบ state ทั้งก้อนเลยดีกว่า (gates ของ ep01/ep02 ใช้ key เดียวกัน อันตราย)
-        if (epId === 'ep01' || epId === 'ep02') {
-          localStorage.removeItem('cosmosLog_state');
-        } else {
-          localStorage.setItem('cosmosLog_state', JSON.stringify(s));
-        }
+      const oldRaw = localStorage.getItem('cosmosLog_state');
+      if (oldRaw) {
+        const s = JSON.parse(oldRaw);
+        if (s && s.ep === epId) localStorage.removeItem('cosmosLog_state');
       }
     } catch(e){}
     render();
