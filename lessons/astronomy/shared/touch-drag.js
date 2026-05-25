@@ -12,8 +12,12 @@
 /* ใช้ document.elementsFromPoint หา drop target ตอน touchend                 */
 
 (function(global){
+  // Auto-scroll · เลื่อน viewport เมื่อนิ้วใกล้ขอบจอ · ป้องกัน drop zone อยู่นอกวิว
+  const EDGE_ZONE = 90;
+  const MAX_SCROLL_SPEED = 16;
+
   const TouchDrag = {
-    current: null,  // { payload, ghost, sourceEl, offsetX, offsetY }
+    current: null,  // { payload, ghost, sourceEl, offsetX, offsetY, lastTouch, scrollRaf }
 
     makeDraggable(el, getPayload, opts) {
       opts = opts || {};
@@ -56,6 +60,8 @@
           g.style.left = (t.clientX - this.current.offsetX) + 'px';
           g.style.top  = (t.clientY - this.current.offsetY) + 'px';
         }
+        this.current.lastTouch = { clientX: t.clientX, clientY: t.clientY };
+        this._ensureScrollLoop();
         // hover feedback
         const hit = this._findDropTarget(t.clientX, t.clientY);
         if (hit !== this.current.lastTarget) {
@@ -93,9 +99,40 @@
 
     _cleanup() {
       if (!this.current) return;
+      if (this.current.scrollRaf) cancelAnimationFrame(this.current.scrollRaf);
       if (this.current.ghost) this.current.ghost.remove();
       if (this.current.lastTarget) this.current.lastTarget.classList.remove('touch-drag-over');
       this.current = null;
+    },
+
+    _ensureScrollLoop() {
+      if (!this.current || this.current.scrollRaf) return;
+      const tick = () => {
+        if (!this.current) return;
+        this.current.scrollRaf = null;
+        const lt = this.current.lastTouch;
+        if (!lt) return;
+        const vh = window.innerHeight;
+        const y = lt.clientY;
+        let dy = 0;
+        if (y < EDGE_ZONE) dy = -Math.ceil(MAX_SCROLL_SPEED * (1 - y / EDGE_ZONE));
+        else if (y > vh - EDGE_ZONE) dy = Math.ceil(MAX_SCROLL_SPEED * (1 - (vh - y) / EDGE_ZONE));
+        if (dy !== 0) {
+          const before = window.scrollY;
+          window.scrollBy(0, dy);
+          if (window.scrollY !== before) {
+            // re-check hover target หลัง scroll · เผื่อ drop zone โผล่เข้ามา
+            const hit = this._findDropTarget(lt.clientX, lt.clientY);
+            if (hit !== this.current.lastTarget) {
+              if (this.current.lastTarget) this.current.lastTarget.classList.remove('touch-drag-over');
+              if (hit) hit.classList.add('touch-drag-over');
+              this.current.lastTarget = hit;
+            }
+          }
+        }
+        this.current.scrollRaf = requestAnimationFrame(tick);
+      };
+      this.current.scrollRaf = requestAnimationFrame(tick);
     },
   };
 

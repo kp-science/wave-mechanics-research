@@ -9,6 +9,9 @@
   if (!('ontouchstart' in window) && !navigator.maxTouchPoints) return;
 
   const THRESHOLD = 5;
+  // Auto-scroll · เมื่อนิ้วใกล้ขอบจอบน/ล่าง · ป้องกัน drop zone อยู่นอก viewport
+  const EDGE_ZONE = 90;     // px จากขอบ
+  const MAX_SCROLL_SPEED = 16;  // px/frame
   let src = null;
   let started = false;
   let lastOver = null;
@@ -16,6 +19,8 @@
   let ghost = null;
   let startX = 0, startY = 0;
   let lastDropAllowed = false;
+  let lastTouch = null;
+  let scrollRaf = null;
 
   function makeDataTransfer() {
     const data = {};
@@ -87,8 +92,41 @@
 
   function cleanup() {
     if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost);
+    if (scrollRaf) { cancelAnimationFrame(scrollRaf); scrollRaf = null; }
     ghost = null; src = null; started = false; lastOver = null; dt = null; lastDropAllowed = false;
+    lastTouch = null;
   }
+
+  // Auto-scroll loop — เลื่อน viewport อัตโนมัติถ้านิ้วใกล้ขอบจอ
+  // (ป้องกัน drop zone อยู่นอก viewport บนมือถือจอเล็ก)
+  function scrollLoop() {
+    scrollRaf = null;
+    if (!started || !lastTouch) return;
+    const vh = window.innerHeight;
+    const y = lastTouch.clientY;
+    let dy = 0;
+    if (y < EDGE_ZONE) {
+      dy = -Math.ceil(MAX_SCROLL_SPEED * (1 - y / EDGE_ZONE));
+    } else if (y > vh - EDGE_ZONE) {
+      dy = Math.ceil(MAX_SCROLL_SPEED * (1 - (vh - y) / EDGE_ZONE));
+    }
+    if (dy !== 0) {
+      const before = window.scrollY;
+      window.scrollBy(0, dy);
+      // ถ้าเลื่อนได้จริง → re-check element ใต้นิ้ว (เผื่อ drop zone โผล่เข้ามา)
+      if (window.scrollY !== before) {
+        const elUnder = elementUnder(lastTouch);
+        if (elUnder !== lastOver) {
+          if (lastOver) fireEvent(lastOver, 'dragleave', lastTouch);
+          if (elUnder) fireEvent(elUnder, 'dragenter', lastTouch);
+          lastOver = elUnder;
+        }
+        if (elUnder) lastDropAllowed = !fireEvent(elUnder, 'dragover', lastTouch);
+      }
+    }
+    scrollRaf = requestAnimationFrame(scrollLoop);
+  }
+  function ensureScrollLoop() { if (!scrollRaf && started) scrollRaf = requestAnimationFrame(scrollLoop); }
 
   document.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return;
@@ -112,6 +150,8 @@
     }
     if (e.cancelable) e.preventDefault();
     moveGhost(t);
+    lastTouch = { clientX: t.clientX, clientY: t.clientY, pageX: t.pageX, pageY: t.pageY };
+    ensureScrollLoop();  // kick auto-scroll ถ้านิ้วใกล้ขอบจอ
     const elUnder = elementUnder(t);
     if (elUnder !== lastOver) {
       if (lastOver) fireEvent(lastOver, 'dragleave', t);
