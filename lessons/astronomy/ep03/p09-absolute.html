@@ -278,6 +278,20 @@
     <div class="step-hint">
       ใช้สูตร <b>M = m − 5×log₁₀(d/10)</b> · พิมพ์ค่า M (±0.3 ผ่าน) · 🧮 calculator FAB ใช้ได้ทุกเมื่อ (กด <b>C</b>)
     </div>
+
+    <!-- Mini M-calculator -->
+    <div style="margin:10px 0 14px;padding:14px;background:rgba(212,184,255,0.06);border:1px solid rgba(212,184,255,0.3);border-radius:12px;">
+      <div style="font-family:Orbitron,sans-serif;font-size:11px;color:#d4b8ff;letter-spacing:0.1em;margin-bottom:10px;">🧮 QUICK CALC · แทนค่า m, d แล้วได้ M</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;" id="starQuickBtns"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div class="calc-input"><label>m (apparent magnitude)</label><input type="number" id="mcInpM" step="0.01" placeholder="เช่น −1.46" oninput="mcCompute()"></div>
+        <div class="calc-input"><label>d (pc · ระยะทาง)</label><input type="number" id="mcInpD" step="0.1" min="0.001" placeholder="เช่น 2.64" oninput="mcCompute()"></div>
+      </div>
+      <div id="mcResult" style="padding:12px 14px;background:rgba(0,0,0,0.35);border-radius:8px;font-family:monospace;font-size:13px;color:#9aa3c0;line-height:1.8;min-height:48px;">
+        ← เลือกดาว หรือพิมพ์ m และ d เอง
+      </div>
+    </div>
+
     <div id="measureList"></div>
     <div class="step-nav">
       <button class="back" onclick="go(1)">← กลับ</button>
@@ -768,6 +782,52 @@ document.getElementById('next1').onclick = () => {
   go(2);
 };
 
+/* ==================== MINI CALC (Step 3) ==================== */
+function renderMiniCalc() {
+  const btns = document.getElementById('starQuickBtns');
+  if (!btns) return;
+  btns.innerHTML = COMPUTE_TARGETS.map(t =>
+    `<button onclick="mcFill(${t.m},${t.d},'${t.name}')"
+      style="padding:6px 12px;background:rgba(100,216,255,0.08);border:1px solid #64d8ff;color:#64d8ff;border-radius:20px;cursor:pointer;font-size:12px;font-family:inherit;"
+      id="mcBtn_${t.id}">${t.name}</button>`
+  ).join('');
+}
+window.mcFill = function(m, d, name) {
+  document.getElementById('mcInpM').value = m;
+  document.getElementById('mcInpD').value = d;
+  document.querySelectorAll('#starQuickBtns button').forEach(b => {
+    b.style.background = 'rgba(100,216,255,0.08)';
+    b.style.borderColor = '#64d8ff';
+    b.style.color = '#64d8ff';
+  });
+  const t = COMPUTE_TARGETS.find(x => x.name === name);
+  if (t) {
+    const btn = document.getElementById('mcBtn_' + t.id);
+    if (btn) { btn.style.background = 'rgba(255,203,107,0.15)'; btn.style.borderColor = '#ffcb6b'; btn.style.color = '#ffcb6b'; }
+  }
+  mcCompute(name);
+};
+function mcCompute(name) {
+  const m = parseFloat(document.getElementById('mcInpM').value);
+  const d = parseFloat(document.getElementById('mcInpD').value);
+  const el = document.getElementById('mcResult');
+  if (isNaN(m) || isNaN(d) || d <= 0) {
+    el.innerHTML = '<span style="color:#9aa3c0;">← ป้อนค่า m และ d ให้ครบ</span>';
+    return;
+  }
+  const ratio = d / 10;
+  const log10ratio = Math.log10(ratio);
+  const term = 5 * log10ratio;
+  const M = m - term;
+  const label = typeof name === 'string' ? name + ' · ' : '';
+  el.innerHTML =
+    `<span style="color:#9aa3c0;">${label}M = m − 5 × log₁₀(d/10)</span><br>` +
+    `<span style="color:#c8cde0;">= ${m >= 0 ? '+' : ''}${m} − 5 × log₁₀(${ratio.toFixed(3)})</span><br>` +
+    `<span style="color:#c8cde0;">= ${m >= 0 ? '+' : ''}${m} − 5 × (${log10ratio.toFixed(4)})</span><br>` +
+    `<span style="color:#c8cde0;">= ${m >= 0 ? '+' : ''}${m} − (${term.toFixed(4)})</span><br>` +
+    `<span style="color:#7effb2;font-size:16px;font-weight:700;">M = ${M >= 0 ? '+' : ''}${M.toFixed(2)}</span>`;
+}
+
 /* ==================== STEP 2 COMPUTE ==================== */
 function renderComputeList() {
   document.getElementById('measureList').innerHTML = COMPUTE_TARGETS.map((t,i) => {
@@ -1097,7 +1157,7 @@ function updatePeerGate() {
 function renderStep(s) {
   if (s === 0) renderPredict();
   else if (s === 1) { updateCalc(); renderCalcQ(); renderShowdownGuess(); drawShowdown(); }
-  else if (s === 2) renderComputeList();
+  else if (s === 2) { renderComputeList(); renderMiniCalc(); }
   else if (s === 3) { renderRulers(); renderApplyQ(); }
   else if (s === 4) {
     renderStmtList('obsList', OBS_STMTS, state.obsClass);
