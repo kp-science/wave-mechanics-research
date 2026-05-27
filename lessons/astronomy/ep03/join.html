@@ -2,110 +2,195 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EP03 · Join Mission</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>EP03 · Team Setup · Join Mission</title>
 <link rel="stylesheet" href="../shared/book.css?v=99">
 <style>
-  body { font-family:'Sarabun',sans-serif; background:#05060f; color:#e8ecf8; min-height:100vh; }
-  .wrap { max-width:680px; margin:0 auto; padding:40px 20px; }
-  h1 { font-family:'Orbitron',sans-serif; text-align:center; font-size:28px; letter-spacing:0.1em; color:#64d8ff; margin-bottom:20px; }
-  .step { padding:20px; background:rgba(22,27,58,0.6); border:1px solid rgba(120,140,220,0.3); border-radius:14px; margin:16px 0; }
-  .step h3 { font-family:'Orbitron',sans-serif; font-size:14px; letter-spacing:0.15em; color:#ffcb6b; margin-bottom:12px; }
-  .step.done { border-color:#7effb2; opacity:0.7; }
-  input, select { width:100%; padding:12px 14px; background:rgba(0,0,0,0.3); border:1px solid #444; color:#e8ecf8;
-                  border-radius:8px; font-size:16px; font-family:inherit; margin-top:6px; box-sizing:border-box; }
-  input:focus { border-color:#64d8ff; outline:none; }
-  .code-input { text-align:center; font-family:Orbitron,monospace; font-size:32px; letter-spacing:0.3em; }
-  .btn { width:100%; padding:14px; background:rgba(126,255,178,0.1); border:2px solid #7effb2; color:#7effb2;
-         border-radius:10px; font-size:14px; font-family:inherit; font-weight:700; cursor:pointer; margin-top:12px; letter-spacing:0.1em; }
-  .btn:hover { background:rgba(126,255,178,0.2); }
-  .btn.alt { border-color:#64d8ff; color:#64d8ff; background:rgba(100,216,255,0.1); }
+/* === Hero · เลียน EP01 p02-team.html === */
+body { font-family:'Sarabun',sans-serif; background:#05060f; color:#e8ecf8; min-height:100vh; padding-top:20px; }
+.page { max-width:900px; margin:0 auto; padding:20px 18px 80px; }
+.page-label { font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:0.2em; color:#64d8ff; text-align:center; opacity:0.8; }
+.page-title { font-family:'Orbitron',sans-serif; font-size:34px; letter-spacing:0.05em; color:#fff; text-align:center; margin:10px 0 4px; }
+.page-sub { font-family:'Orbitron',sans-serif; color:#b980ff; font-size:14px; letter-spacing:0.18em; margin:0 0 14px; text-align:center; }
+.muted { color:#9aa3c0; font-size:13px; text-align:center; }
 
-  /* Team tiles (เหมือน EP01) */
-  .team-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:10px; }
-  .team-tile { aspect-ratio:1; border-radius:14px; border:2px solid var(--c); background:linear-gradient(160deg, rgba(22,27,58,0.8), rgba(8,10,24,0.9));
-               display:flex; flex-direction:column; justify-content:center; align-items:center; gap:4px; cursor:pointer;
-               position:relative; overflow:hidden; transition:all .3s; }
-  .team-tile::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at center, var(--c) 0%, transparent 70%); opacity:0; transition:opacity .3s; }
-  .team-tile:hover::before { opacity:0.15; }
-  .team-tile.selected { box-shadow:0 0 24px var(--c); }
-  .team-tile.selected::before { opacity:0.25; }
-  .team-tile.full { cursor:not-allowed; opacity:0.45; filter:grayscale(0.6); }
-  .team-tile.full::after { content:'เต็ม'; position:absolute; top:6px; right:6px; background:rgba(255,92,122,0.9); color:#fff;
-                          font-size:10px; padding:2px 7px; border-radius:6px; font-weight:700; z-index:2; }
-  .team-tile .icon { font-size:30px; z-index:1; }
-  .team-tile .name { font-family:Orbitron,sans-serif; font-weight:700; font-size:12px; letter-spacing:0.12em; color:var(--c); z-index:1; }
-  .team-tile .count { font-size:11px; color:rgba(255,255,255,0.7); z-index:1; font-family:Orbitron,monospace; }
-  .team-tile .count.warn { color:#ffcb6b; }
-  .team-tile .count.full { color:#ff5c7a; }
-  .cap-status { margin-top:8px; font-size:12px; text-align:center; color:#9aa3c0; }
+/* === Form rows (room + name) === */
+.form-row { margin:14px 0; padding:14px 16px; background:rgba(22,27,58,0.5); border:1px solid rgba(120,140,220,0.25); border-radius:12px; }
+.form-row label { display:block; font-size:12px; color:#9aa3c0; font-family:'Orbitron',sans-serif; letter-spacing:0.12em; margin-bottom:6px; }
+.form-row input { width:100%; padding:10px 14px; background:rgba(0,0,0,0.4); border:1px solid #2a3050; color:#e8ecf8; border-radius:8px; font-family:inherit; font-size:15px; box-sizing:border-box; }
+.form-row input:focus { border-color:#64d8ff; outline:none; }
+.dual-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+@media(max-width:520px) { .dual-row { grid-template-columns:1fr; } }
 
-  .roles { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
-  .role-btn { padding:14px; background:rgba(100,216,255,0.06); border:2px solid rgba(120,140,220,0.3); color:#e8ecf8;
-              border-radius:10px; cursor:pointer; font-family:inherit; text-align:left; transition:all .15s; }
-  .role-btn:hover:not(.active) { border-color:#64d8ff; transform:translateY(-2px); }
-  .role-btn.active { border-color:#7effb2; background:rgba(126,255,178,0.15); }
-  .role-btn .icon { font-size:22px; display:block; margin-bottom:4px; }
-  .role-btn .name { font-weight:700; font-size:14px; }
-  .role-btn .desc { font-size:11px; color:#9aa3c0; margin-top:3px; }
-  .status { padding:10px 12px; background:rgba(100,216,255,0.06); border-left:3px solid #64d8ff; margin:10px 0; font-size:13px; border-radius:0 8px 8px 0; }
-  .roster { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
-  .roster-chip { padding:4px 10px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; border-radius:12px; font-size:11px; color:#64d8ff; }
-  .prize { margin:14px 0; padding:12px 16px;
-           background:linear-gradient(135deg, rgba(255,203,107,0.15), rgba(255,143,165,0.1));
-           border:2px solid #ffcb6b; border-radius:12px; display:flex; align-items:center; gap:12px; font-size:13px; }
-  .prize .icon { font-size:28px; }
-  .prize b { color:#ffcb6b; }
-  .prize small { display:block; color:rgba(255,255,255,0.7); margin-top:3px; font-size:11px; }
-  .back { display:inline-block; margin-top:20px; color:#9aa3c0; text-decoration:none; font-size:13px; }
+/* === Prize banner (เหมือน EP01) === */
+.prize-banner {
+  margin:14px 0; padding:14px 18px;
+  background:linear-gradient(135deg, rgba(255,203,107,0.15), rgba(255,143,165,0.1));
+  border:2px solid #ffcb6b; border-radius:12px;
+  display:flex; align-items:center; gap:14px;
+}
+.prize-banner .icon { font-size:32px; }
+.prize-banner .text { flex:1; }
+.prize-banner .text b { color:#ffcb6b; }
+.prize-banner .text small { display:block; color:rgba(255,255,255,0.7); margin-top:4px; font-size:12px; }
+
+/* === Team grid (copy EP01 p02-team.html) === */
+.team-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:14px; margin-top:14px; }
+.team-tile {
+  aspect-ratio:1; border-radius:16px; border:2px solid var(--team-color);
+  background:linear-gradient(160deg, rgba(22,27,58,0.8), rgba(8,10,24,0.9));
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  gap:6px; cursor:pointer; transition:all 0.3s;
+  position:relative; overflow:hidden;
+}
+.team-tile::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at center, var(--team-color) 0%, transparent 70%);
+  opacity:0; transition:opacity 0.3s;
+}
+.team-tile:hover::before { opacity:0.15; }
+.team-tile.selected { box-shadow:0 0 30px var(--team-color); }
+.team-tile.selected::before { opacity:0.25; }
+.team-tile.full { cursor:not-allowed; opacity:0.45; filter:grayscale(0.6); }
+.team-tile.full::after {
+  content:'เต็มแล้ว'; position:absolute; top:8px; right:8px;
+  background:rgba(255,92,122,0.9); color:#fff; font-size:10px;
+  padding:3px 8px; border-radius:6px; font-weight:700;
+  z-index:2; letter-spacing:0.05em;
+}
+.team-tile .icon { font-size:38px; z-index:1; }
+.team-tile .name {
+  font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px;
+  letter-spacing:0.15em; color:var(--team-color); z-index:1;
+}
+.team-tile .count {
+  font-size:11px; color:rgba(255,255,255,0.7); z-index:1;
+  font-family:'Orbitron',monospace;
+}
+.team-tile .count.warn { color:#ffcb6b; }
+.team-tile .count.full { color:#ff5c7a; }
+.cap-status { margin-top:10px; font-size:12px; color:#9aa3c0; text-align:center; }
+
+/* === Role cards (เลียน .char-card ของ EP01) === */
+.role-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-top:12px; }
+.role-card {
+  border-radius:12px; padding:14px 12px; cursor:pointer; transition:all 0.25s;
+  border:2px solid rgba(255,255,255,0.15);
+  background:linear-gradient(160deg, rgba(22,27,58,0.85), rgba(8,10,24,0.95));
+  text-align:center; position:relative;
+}
+.role-card:hover { border-color:rgba(255,255,255,0.4); transform:translateY(-2px); }
+.role-card.selected {
+  border-color:#ffcb6b;
+  box-shadow:0 0 24px rgba(255,203,107,0.4);
+  background:linear-gradient(160deg, rgba(255,203,107,0.12), rgba(8,10,24,0.95));
+}
+.role-card.selected::after {
+  content:'✓'; position:absolute; top:6px; right:6px;
+  background:#ffcb6b; color:#0a0a18; width:22px; height:22px;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:14px; z-index:2;
+}
+.role-card .icon { font-size:30px; display:block; margin-bottom:6px; }
+.role-card .name { font-family:'Orbitron',sans-serif; font-weight:700; font-size:13px; letter-spacing:0.08em; color:#ffcb6b; }
+.role-card .desc { font-size:11px; color:rgba(255,255,255,0.7); margin-top:4px; line-height:1.45; }
+
+/* === Info card + center === */
+.info-card { padding:14px 16px; background:rgba(100,216,255,0.06); border:1px solid rgba(100,216,255,0.25); border-radius:12px; margin:18px 0; }
+.info-card h4 { color:#64d8ff; font-size:13px; letter-spacing:0.12em; font-family:'Orbitron',sans-serif; margin-bottom:8px; }
+.info-card p { margin:4px 0; font-size:13px; color:#c8cde0; line-height:1.6; }
+.info-card b { color:#7effb2; }
+.center { text-align:center; }
+.mt-20 { margin-top:20px; }
+.btn { padding:14px 28px; border-radius:10px; cursor:pointer; font-family:inherit; font-weight:700; font-size:15px; letter-spacing:0.08em; border:2px solid; background:none; }
+.btn.primary { background:rgba(126,255,178,0.15); border-color:#7effb2; color:#7effb2; min-width:240px; }
+.btn.primary:hover:not(:disabled) { background:rgba(126,255,178,0.28); box-shadow:0 0 20px rgba(126,255,178,0.4); }
+.btn.primary:disabled { opacity:0.4; cursor:not-allowed; }
+.btn.alt { background:rgba(100,216,255,0.1); border-color:#64d8ff; color:#64d8ff; }
+.btn.alt:hover { background:rgba(100,216,255,0.2); }
+.btn-row { display:flex; gap:8px; }
+.code-input { text-transform:uppercase; text-align:center; font-family:'Orbitron',monospace; letter-spacing:0.3em; font-size:18px !important; }
+.status-line { margin-top:8px; font-size:11px; color:#9aa3c0; }
+.status-line b { color:#7effb2; }
+.back { display:inline-block; margin-top:18px; color:#9aa3c0; text-decoration:none; font-size:13px; }
+.back:hover { color:#fff; }
+.roster { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.roster-chip { padding:4px 10px; background:rgba(100,216,255,0.1); border:1px solid #64d8ff; border-radius:12px; font-size:11px; color:#64d8ff; }
 </style>
 </head>
-<body>
+<body data-page="join">
 
-<div class="wrap">
-  <h1>🚀 JOIN MISSION · EP03</h1>
+<div class="page">
 
-  <div class="prize">
+  <div class="page-label">◤ JOIN MISSION · EP03 · 2 นาที</div>
+  <h1 class="page-title">เลือกยานของทีมคุณ</h1>
+  <h2 class="page-sub">TEAM SELECTION · COSMOS LOG EP03</h2>
+
+  <p class="muted">แต่ละทีมจะได้รับยานประจำตัว · ชื่อทีม · และตัดสินใจร่วมกันเป็นกลุ่มตลอดภารกิจ</p>
+
+  <div class="prize-banner">
     <div class="icon">🏆</div>
-    <div>
+    <div class="text">
       <b>ทีมที่คะแนน ⚡ เฉลี่ย/คน สูงสุดของ EP นี้ จะได้รับรางวัลจากครู</b>
-      <small>ใช้ค่าเฉลี่ย ⚡ ต่อคน · ทีมเล็ก-ใหญ่แข่งกันยุติธรรม · ดูอันดับสดที่ Hall of Fame ก่อน Journal</small>
+      <small>ใช้ค่าเฉลี่ย ⚡ ต่อคน · ทีมเล็ก-ใหญ่แข่งกันยุติธรรม · ดูอันดับสดที่ Hall of Fame ก่อน Journal · จำกัด 8 คน/ทีม</small>
     </div>
   </div>
 
-  <div class="step" id="step1">
-    <h3>ขั้นที่ 1 · ใส่รหัสห้อง</h3>
-    <input class="code-input" id="roomInput" maxlength="4" placeholder="ABCD" autocapitalize="characters">
-    <button class="btn" onclick="doJoin()">ENTER ROOM</button>
-    <div class="status">💡 ครูให้รหัส 4 ตัวอักษร · หรือเริ่มเอง (solo) ด้านล่าง</div>
-    <button class="btn alt" onclick="doSolo()">▶ เล่นคนเดียว (Solo Mode)</button>
+  <!-- Row 1: ห้อง + ชื่อ (compact · ทั้งสองช่องวางคู่กัน) -->
+  <div class="dual-row">
+    <div class="form-row">
+      <label>🔑 รหัสห้อง</label>
+      <input type="text" id="roomInput" class="code-input" maxlength="4" placeholder="ABCD" autocapitalize="characters">
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn alt" style="flex:1;padding:9px;font-size:12px;" onclick="doJoin()">ENTER ROOM</button>
+        <button class="btn alt" style="flex:1;padding:9px;font-size:12px;" onclick="doSolo()">▶ SOLO</button>
+      </div>
+      <div class="status-line" id="roomStatus">ครูให้รหัส 4 ตัวอักษร · หรือกด SOLO</div>
+    </div>
+    <div class="form-row">
+      <label>👤 ชื่อเล่นของคุณ</label>
+      <input type="text" id="nameInput" placeholder="เช่น น้องอารยา" maxlength="24">
+      <div class="status-line" id="nameStatus" style="margin-top:10px;">พิมพ์ชื่อ · ระบบจะ auto-save</div>
+    </div>
   </div>
 
-  <div class="step" id="step2" style="display:none;">
-    <h3>ขั้นที่ 2 · ใส่ชื่อของคุณ</h3>
-    <input id="nameInput" placeholder="ชื่อเล่น" maxlength="24">
-    <button class="btn" onclick="doName()">ยืนยันชื่อ</button>
-  </div>
-
-  <!-- รวม team + role + start ในหน้าเดียว · แบบ EP01 p02-team.html -->
-  <div class="step" id="step3" style="display:none;">
-    <h3>ขั้นที่ 3 · เลือกยานทีม · ชื่อทีม · บทบาท</h3>
-
-    <label style="display:block;font-size:12px;color:#9aa3c0;margin-bottom:4px;">🚀 ยานของทีม <span style="opacity:0.6">(จำกัด 8 คน/ทีม)</span></label>
+  <!-- Team grid (เหมือน EP01) -->
+  <div class="form-row">
+    <label>🚀 ยานของทีม (เลือก 1 ใน 6)</label>
     <div class="team-grid" id="teamGrid"></div>
     <div class="cap-status" id="capStatus">⏳ กำลังตรวจจำนวนสมาชิก...</div>
-
-    <label style="display:block;margin-top:18px;font-size:12px;color:#9aa3c0;">⚡ ชื่อยาน / ชื่อทีม <span style="opacity:0.6">(ไม่กรอกก็ได้ · ใช้ชื่อมาตรฐาน Nebula/Quasar/...)</span></label>
-    <input id="teamNameInput" placeholder="เช่น Nebula Riders" maxlength="32">
-
-    <label style="display:block;margin-top:18px;font-size:12px;color:#9aa3c0;">🎭 บทบาทในทีม</label>
-    <div class="roles" id="roles"></div>
-    <div class="status" id="rosterStatus" style="margin-top:10px;"></div>
-
-    <button class="btn" id="startBtn" onclick="finalizeAndStart()" disabled style="margin-top:18px;">🔒 เลือกยาน + บทบาทก่อน</button>
   </div>
 
-  <a class="back" href="index.html">← กลับ</a>
+  <!-- Team name -->
+  <div class="form-row">
+    <label>⚡ ชื่อยาน / ชื่อทีม <span style="opacity:0.6;font-weight:400;text-transform:none;letter-spacing:0;">(ไม่กรอกก็ได้ · ใช้ Nebula/Quasar/... อัตโนมัติ)</span></label>
+    <input type="text" id="teamNameInput" placeholder="เช่น Nebula Riders" maxlength="32">
+  </div>
+
+  <!-- Role grid -->
+  <div class="form-row">
+    <label>🎭 บทบาทในทีม</label>
+    <div class="role-grid" id="roleGrid"></div>
+  </div>
+
+  <!-- Roster (sync info) -->
+  <div class="form-row" id="rosterRow" style="display:none;">
+    <label>👥 สมาชิกที่อยู่ในห้องเดียวกัน</label>
+    <div id="rosterStatus"></div>
+  </div>
+
+  <div class="info-card">
+    <h4>📋 กฎการเล่น</h4>
+    <p>• ทุกหน้ามีภารกิจ · ทำเสร็จได้ <b>⚡ Photon</b></p>
+    <p>• Hall of Fame จัดอันดับด้วย <b>⚡ เฉลี่ย/คน</b> ของทีม · ทีมเล็กก็ชนะได้</p>
+    <p>• คะแนนเฉพาะ EP นี้ · ไม่สะสมข้าม EP</p>
+  </div>
+
+  <div class="center mt-20">
+    <button class="btn primary" id="startBtn" onclick="finalizeAndStart()" disabled>🔒 กรอกข้อมูล + เลือกทีม + บทบาท ให้ครบ</button>
+  </div>
+
+  <div class="center"><a class="back" href="index.html">← กลับ Launcher</a></div>
 </div>
 
 <script src="../shared/firebase-config.js"></script>
@@ -116,8 +201,6 @@
 <script src="../shared/team-comp.js?v=2"></script>
 <script>
 const EP_NUM = 3;
-
-// TEAMS (6 ทีม · เหมือน EP01 · จาก shared/book.js)
 const TEAMS = [
   { id:1, name:'Nebula',    color:'#64d8ff', icon:'🌌' },
   { id:2, name:'Quasar',    color:'#b980ff', icon:'💫' },
@@ -126,19 +209,18 @@ const TEAMS = [
   { id:5, name:'Horizon',   color:'#ffcb6b', icon:'🔭' },
   { id:6, name:'Voyager',   color:'#ff8fa5', icon:'🚀' },
 ];
-
-let _capacity = { counts:{}, full:new Set(), cap:8, ok:false };
-let _selectedTeam = null;
-
-Sync.init();
-
-// ─── localStorage state ───
-// Book.js ใช้ key per-EP เช่น `cosmosLog_state_ep03` (อ่านที่ p26b-halloffame)
-// team-comp.js fallback อ่าน `cosmosLog_state` (legacy · ไม่มี EP suffix)
-// ต้องเขียนทั้ง 2 key เพื่อให้ทุกหน้าอ่านได้
 const STATE_KEY_EP = 'cosmosLog_state_ep03';
 const STATE_KEY_LEGACY = 'cosmosLog_state';
 
+let _capacity = { counts:{}, full:new Set(), cap:8, ok:false };
+let _selectedTeam = null;
+let _selectedRole = null;
+let _roomReady = false;
+let _nameReady = false;
+
+Sync.init();
+
+// ─── State helpers ─────────────────────────────────
 function _loadState(){
   try {
     const raw = localStorage.getItem(STATE_KEY_EP) || localStorage.getItem(STATE_KEY_LEGACY);
@@ -151,7 +233,6 @@ function _saveState(patch){
   const json = JSON.stringify(s);
   localStorage.setItem(STATE_KEY_EP, json);
   localStorage.setItem(STATE_KEY_LEGACY, json);
-  // เผื่อ Book ถูกโหลด (cross-EP): sync state เข้า Book.state ด้วย
   if (window.Book && Book.state) {
     Object.assign(Book.state, patch);
     if (typeof Book.save === 'function') { try { Book.save(); } catch(_){} }
@@ -159,33 +240,47 @@ function _saveState(patch){
   return s;
 }
 
-// ─── Step 1 · Room ───────────────────────────────────────
+// ─── Room ─────────────────────────────────────────
 function doJoin() {
   const code = document.getElementById('roomInput').value.toUpperCase().trim();
-  if (!code || code.length < 3) { alert('ใส่รหัสห้อง'); return; }
+  if (!code || code.length < 3) { alert('ใส่รหัสห้อง 3-4 ตัวอักษร'); return; }
   Sync.joinRoom(code);
-  advance(2);
+  _roomReady = true;
+  document.getElementById('roomStatus').innerHTML = '✓ เข้าห้อง <b>' + code + '</b> แล้ว';
+  document.getElementById('roomInput').value = code;
+  refreshCapacity();
+  _updateStartBtn();
 }
-
 function doSolo() {
   const code = Sync.createRoom({});
-  alert('สร้างห้องใหม่: ' + code + ' (solo)');
+  _roomReady = true;
   document.getElementById('roomInput').value = code;
-  advance(2);
-}
-
-// ─── Step 2 · Name ───────────────────────────────────────
-function doName() {
-  const name = document.getElementById('nameInput').value.trim();
-  if (!name) { alert('ใส่ชื่อก่อน'); return; }
-  Sync.setName(name);
-  _saveState({ name });
+  document.getElementById('roomStatus').innerHTML = '✓ Solo · ห้อง <b>' + code + '</b>';
   refreshCapacity();
-  renderRoles();
-  advance(3);
+  _updateStartBtn();
 }
 
-// ─── Step 3 · Team (เลือกยานทีม · เหมือน EP01) ───────
+// ─── Name (auto-save on blur/change) ─────────────
+function _bindName() {
+  const inp = document.getElementById('nameInput');
+  inp.addEventListener('input', () => {
+    const n = inp.value.trim();
+    if (n.length >= 1) {
+      _nameReady = true;
+      document.getElementById('nameStatus').innerHTML = '✓ ชื่อ <b>' + n + '</b>';
+    } else {
+      _nameReady = false;
+      document.getElementById('nameStatus').textContent = 'พิมพ์ชื่อ · ระบบจะ auto-save';
+    }
+    _updateStartBtn();
+  });
+  inp.addEventListener('change', () => {
+    const n = inp.value.trim();
+    if (n) { Sync.setName(n); _saveState({ name:n }); }
+  });
+}
+
+// ─── Team grid ────────────────────────────────────
 function renderTeams() {
   const host = document.getElementById('teamGrid');
   host.innerHTML = TEAMS.map(t => {
@@ -198,9 +293,9 @@ function renderTeams() {
     if (isMine) cls.push('selected');
     if (full && !isMine) cls.push('full');
     const cntCls = full ? 'count full' : (n >= cap-1 ? 'count warn' : 'count');
-    return `<div class="${cls.join(' ')}" style="--c:${t.color}" onclick="pickTeam(${t.id})">
+    return `<div class="${cls.join(' ')}" style="--team-color:${t.color}" data-id="${t.id}" onclick="pickTeam(${t.id})">
       <div class="icon">${t.icon}</div>
-      <div class="name">${t.name.toUpperCase()}</div>
+      <div class="name">TEAM ${t.name.toUpperCase()}</div>
       <div class="${cntCls}">${n}/${cap} คน</div>
     </div>`;
   }).join('');
@@ -208,9 +303,9 @@ function renderTeams() {
   if (_capacity.ok) status.textContent = 'รวมในห้องตอนนี้: ' + Object.values(_capacity.counts).reduce((a,b)=>a+b,0) + ' คน';
 }
 
-let _selectedRole = null;
-
 async function pickTeam(id) {
+  if (!_roomReady) { alert('กรอกรหัสห้อง / SOLO ก่อน'); return; }
+  if (!_nameReady) { alert('พิมพ์ชื่อก่อนเลือกทีม'); return; }
   const tid = String(id);
   const oldTid = String(_selectedTeam || '');
   if (_capacity.full.has(tid) && oldTid !== tid) {
@@ -219,12 +314,10 @@ async function pickTeam(id) {
   }
   if (oldTid === tid) return;
   _selectedTeam = id;
-  // Optimistic update count
   if (oldTid && _capacity.counts[oldTid]) _capacity.counts[oldTid]--;
   _capacity.counts[tid] = (_capacity.counts[tid] || 0) + 1;
   _capacity.full = new Set(Object.keys(_capacity.counts).filter(k => _capacity.counts[k] >= (_capacity.cap||8)));
   renderTeams();
-  // Save + provisional register
   _saveState({ teamId: id });
   try {
     const provName = document.getElementById('teamNameInput').value.trim() || '';
@@ -240,53 +333,70 @@ async function refreshCapacity(){
   renderTeams();
 }
 
-// ─── Role (อยู่ในขั้นเดียวกับ team) ───────────────────
+// ─── Role grid ────────────────────────────────────
 function renderRoles() {
-  const roles = EP_CONFIG.roles;
-  const host = document.getElementById('roles');
+  const roles = (window.EP_CONFIG && EP_CONFIG.roles) || [];
+  const host = document.getElementById('roleGrid');
   host.innerHTML = roles.map(r => `
-    <button class="role-btn ${_selectedRole === r.id ? 'active' : ''}" data-role="${r.id}" onclick="pickRole('${r.id}')">
+    <div class="role-card ${_selectedRole === r.id ? 'selected' : ''}" data-role="${r.id}" onclick="pickRole('${r.id}')">
       <span class="icon">${r.icon}</span>
-      <span class="name">${r.name}</span>
+      <div class="name">${r.name}</div>
       <div class="desc">${r.desc}</div>
-    </button>
+    </div>
   `).join('');
 }
-
 function pickRole(roleId) {
+  if (!_roomReady || !_nameReady) { alert('กรอกห้อง + ชื่อ ก่อน'); return; }
   _selectedRole = roleId;
   Sync.setRole(roleId);
   _saveState({ role: roleId });
-  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === roleId));
+  renderRoles();
   updateRoster();
   _updateStartBtn();
 }
 
+// ─── Roster info ──────────────────────────────────
+function updateRoster() {
+  const s = Sync.getState();
+  const roles = (window.EP_CONFIG && EP_CONFIG.roles) || [];
+  const host = document.getElementById('rosterStatus');
+  if (!s || !s.roster || !s.roster.length) {
+    document.getElementById('rosterRow').style.display = 'none';
+    return;
+  }
+  document.getElementById('rosterRow').style.display = 'block';
+  host.innerHTML = '<div class="roster">' +
+    s.roster.map(m => {
+      const r = roles.find(x => x.id === m.role);
+      return '<span class="roster-chip">' + (r?r.icon:'?') + ' ' + (m.name||'…') + '</span>';
+    }).join('') + '</div>';
+}
+
+// ─── Start button gating ─────────────────────────
 function _updateStartBtn() {
   const btn = document.getElementById('startBtn');
   if (!btn) return;
-  const haveTeam = _selectedTeam != null;
-  const haveRole = !!_selectedRole;
-  if (haveTeam && haveRole) {
+  const need = [];
+  if (!_roomReady) need.push('ห้อง');
+  if (!_nameReady) need.push('ชื่อ');
+  if (_selectedTeam == null) need.push('ทีม');
+  if (!_selectedRole) need.push('บทบาท');
+  if (need.length === 0) {
     btn.disabled = false;
-    btn.textContent = '▶ ยืนยันทีม · เริ่มภารกิจ';
+    btn.textContent = '✓ ยืนยันทีม · เริ่มภารกิจ';
   } else {
     btn.disabled = true;
-    const need = [];
-    if (!haveTeam) need.push('เลือกยาน');
-    if (!haveRole) need.push('เลือกบทบาท');
-    btn.textContent = '🔒 ' + need.join(' + ') + 'ก่อน';
+    btn.textContent = '🔒 รอ: ' + need.join(' + ');
   }
 }
 
 async function finalizeAndStart() {
-  if (!_selectedTeam) { alert('เลือกยานทีมก่อน'); return; }
-  if (!_selectedRole) { alert('เลือกบทบาทก่อน'); return; }
+  if (!_selectedTeam || !_selectedRole) { alert('เลือกทีม + บทบาทก่อน'); return; }
   // final capacity check (กัน race)
   await refreshCapacity();
   const tid = String(_selectedTeam);
   if (_capacity.full.has(tid)) {
-    alert('เสียใจด้วย · ทีมนี้เพิ่งเต็มพอดี · กรุณาเลือกทีมอื่น');
+    alert('เสียใจด้วย · ทีมนี้เพิ่งเต็มพอดี · เลือกทีมอื่น');
     _selectedTeam = null;
     renderTeams();
     _updateStartBtn();
@@ -295,71 +405,50 @@ async function finalizeAndStart() {
   const tDef = TEAMS.find(t => t.id === _selectedTeam);
   const customName = document.getElementById('teamNameInput').value.trim();
   const teamName = customName || (tDef && tDef.name) || ('ทีม ' + _selectedTeam);
-  _saveState({ teamId: _selectedTeam, teamName, role: _selectedRole });
+  const myName = document.getElementById('nameInput').value.trim();
+  _saveState({ teamId:_selectedTeam, teamName, role:_selectedRole, name:myName });
+  Sync.setName(myName);
   try { await TeamComp.register(EP_NUM, _selectedTeam, teamName, _selectedRole); } catch(_){}
-  startGame();
-}
-
-function updateRoster() {
-  const s = Sync.getState();
-  const roles = EP_CONFIG.roles;
-  const host = document.getElementById('rosterStatus');
-  if (!s || !s.roster) { host.innerHTML = 'ห้อง: ' + (Sync.getRoomCode()||'—'); return; }
-  host.innerHTML = '<b>ทีม Sync (' + s.roster.length + '):</b><div class="roster">' +
-    s.roster.map(m => {
-      const r = roles.find(x => x.id === m.role);
-      return '<span class="roster-chip">' + (r?r.icon:'?') + ' ' + (m.name||'...') + '</span>';
-    }).join('') + '</div>';
-}
-
-// ─── Step nav (3 ขั้น: room → name → team+role+start) ───
-function advance(n) {
-  for (let i=1; i<=3; i++) {
-    const s = document.getElementById('step'+i);
-    if (!s) continue;
-    s.style.display = (i <= n) ? 'block' : 'none';
-    if (i < n) s.classList.add('done');
-  }
-}
-
-function startGame() {
-  // หลังเลือกทีมเสร็จ → กลับเข้า story flow ที่ p02-sos (ฉาก SOS decode)
+  // กลับเข้า story flow ที่ p02-sos
   location.href = 'p02-sos.html';
 }
 
-// React to remote roster changes
-Sync.on((ev) => { updateRoster(); });
+// ─── React + resume ──────────────────────────────
+Sync.on(() => updateRoster());
+_bindName();
+renderTeams();
+renderRoles();
 
-// Resume if already joined (3 ขั้น: room → name → team+role+start)
 setTimeout(() => {
   const s = _loadState();
   const code = Sync.getRoomCode();
   if (code) {
     document.getElementById('roomInput').value = code;
-    const me = Sync.getMe();
-    if (me.name) {
-      document.getElementById('nameInput').value = me.name;
-      refreshCapacity();
-      // restore team + role selection ถ้ามี
-      if (s.teamId) {
-        _selectedTeam = s.teamId;
-        document.getElementById('teamNameInput').value = s.teamName || '';
-        renderTeams();
-      }
-      const r = me.role || s.role;
-      if (r) _selectedRole = r;
-      renderRoles();
-      updateRoster();
-      _updateStartBtn();
-      advance(3);
-    } else {
-      advance(2);
-    }
+    document.getElementById('roomStatus').innerHTML = '✓ ห้อง <b>' + code + '</b>';
+    _roomReady = true;
+    refreshCapacity();
   }
-}, 80);
+  const me = Sync.getMe();
+  if (me.name || s.name) {
+    const n = me.name || s.name;
+    document.getElementById('nameInput').value = n;
+    document.getElementById('nameStatus').innerHTML = '✓ ชื่อ <b>' + n + '</b>';
+    _nameReady = true;
+  }
+  if (s.teamId) {
+    _selectedTeam = s.teamId;
+    document.getElementById('teamNameInput').value = s.teamName || '';
+    renderTeams();
+  }
+  if (me.role || s.role) {
+    _selectedRole = me.role || s.role;
+    renderRoles();
+  }
+  updateRoster();
+  _updateStartBtn();
+}, 100);
 
-// Auto-refresh capacity ทุก 15 วินาที
-setInterval(() => { if (document.getElementById('step3').style.display !== 'none') refreshCapacity(); }, 15000);
+setInterval(refreshCapacity, 15000);
 </script>
 
 </body>
