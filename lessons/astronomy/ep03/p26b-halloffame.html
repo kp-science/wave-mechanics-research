@@ -111,8 +111,9 @@ async function loadRanking(){
   renderRanking(r.ranking);
 }
 function finishHOF(){
-  Book.completePage('p19a');
-  document.getElementById('result').innerHTML = '<div class="branch-reveal main"><h3>✓ บันทึกแล้ว</h3><p class="muted">กด "ต่อไป →" เพื่อไปหน้า Journal</p></div>';
+  try { Book.completePage('p19a'); } catch(_) {}
+  document.getElementById('result').innerHTML = '<div class="branch-reveal main"><h3>✓ บันทึกแล้ว</h3><p class="muted">กำลังไป Journal...</p></div>';
+  setTimeout(() => { location.href = 'p27-journal.html'; }, 600);
 }
 loadRanking();
 setInterval(loadRanking, 20000);

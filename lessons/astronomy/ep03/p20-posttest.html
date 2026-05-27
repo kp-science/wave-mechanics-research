@@ -48,8 +48,9 @@
 
   <div class="btn-pair">
     <button class="submit-btn" id="submitBtn" disabled>🔒 ตอบครบ 5 ข้อก่อน</button>
+    <button class="next-btn" id="nextBtn" disabled>🔒 รอส่ง Post-test</button>
   </div>
-  <div class="gate-hint" id="gateHint">🤫 ตอบ + เลือกความมั่นใจครบทุกข้อ</div>
+  <div class="gate-hint" id="gateHint">🤫 ตอบ + เลือกความมั่นใจครบทุกข้อ · ส่งแล้วไป Hall of Fame</div>
   <div id="result"></div>
 </div>
 
@@ -227,6 +228,15 @@ setTimeout(() => {
     submitBtn.classList.remove('armed');
     submitBtn.classList.add('done');
     submitBtn.textContent = '✓ ส่งแล้ว';
+
+    // Unlock next button → ไป Hall of Fame
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) {
+      nextBtn.disabled = false;
+      nextBtn.classList.add('armed');
+      nextBtn.textContent = '▶ ไป Hall of Fame →';
+      nextBtn.onclick = () => { location.href = 'p26b-halloffame.html'; };
+    }
   };
 }, 200);
 </script>
