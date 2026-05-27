@@ -45,13 +45,13 @@
 <div class="teacher-cue" onclick="this.classList.toggle('open')">
   <div class="teacher-cue-head">👩‍🏫 TEACHER CUE · ประกาศผลทีม</div>
   <div class="teacher-cue-body" onclick="event.stopPropagation()">
-    <div class="role"><span class="tag say">เปิด</span><span>"จบ EP03 แล้ว · มาดูทีมที่ทำคะแนนรวม ⚡ สูงสุดของ EP นี้"</span></div>
+    <div class="role"><span class="tag say">เปิด</span><span>"จบ EP03 แล้ว · มาดูทีมที่ทำคะแนน ⚡ เฉลี่ยต่อคน สูงสุดของ EP นี้"</span></div>
     <div class="role"><span class="tag do">ทำ</span><span>กดปุ่ม "🔄 รีเฟรช" หลังนักเรียนทุกคนเข้าหน้านี้แล้ว · รอ 30 วินาทีให้ข้อมูล sync</span></div>
     <div class="role"><span class="tag do">มอบ</span><span>รางวัลให้ทีมอันดับ 1 ของห้อง · จากนั้นกด "ต่อไป →" ไป Journal</span></div>
-    <div class="role"><span class="tag dont">หมายเหตุ</span><span>คะแนนเฉพาะ EP นี้ (snapshot ตอนเริ่ม) · ไม่สะสมข้าม EP</span></div>
+    <div class="role"><span class="tag dont">หมายเหตุ</span><span>จัดอันดับด้วย <b>ค่าเฉลี่ย ⚡ / คน</b> (ทีมเล็ก-ใหญ่แข่งกันยุติธรรม) · tiebreaker = ⚡ รวม · เฉพาะ EP นี้ ไม่สะสมข้าม EP</span></div>
   </div>
 </div>
-<div class="info-card"><p style="margin:0;">คะแนนทีม = ผลรวม ⚡ ที่สมาชิกได้เฉพาะใน EP นี้ · ทีมอันดับ 1 ได้รับรางวัลจากครู 🏆</p></div>
+<div class="info-card"><p style="margin:0;">คะแนนทีม = <b>ค่าเฉลี่ย ⚡ ต่อคน</b> ของสมาชิกใน EP นี้ · ทีมเล็ก-ใหญ่แข่งกันยุติธรรม · ทีมอันดับ 1 ได้รับรางวัลจากครู 🏆</p></div>
 <div class="hof-wrap" id="hof-wrap"><div class="hof-loading">⏳ กำลังโหลดอันดับ...</div></div>
 <div class="center mt-20">
   <button class="btn" onclick="loadRanking()">🔄 รีเฟรชอันดับ</button>
@@ -70,9 +70,14 @@ const TEAM_COLORS = {1:'#64d8ff',2:'#b980ff',3:'#ff5c7a',4:'#7effb2',5:'#ffcb6b'
 const TEAM_ICONS = {1:'🌌',2:'💫',3:'⚡',4:'🌠',5:'🔭',6:'🚀'};
 let _submitted = false;
 async function ensureSubmitted(){ if (_submitted) return; _submitted = true; try { await TeamComp.submitFinalScore(EP_NUM); } catch(_){} }
+function fmt(n){ return (Math.round(n * 10) / 10).toFixed(1); }
 function renderRanking(ranking){
   const wrap = document.getElementById('hof-wrap');
   if (!ranking || !ranking.length){ wrap.innerHTML = '<div class="hof-empty">ยังไม่มีทีมส่งคะแนน · รอเพื่อนเข้าหน้านี้แล้วกดรีเฟรช</div>'; return; }
+  // จัดอันดับใหม่ด้วย avg (energy เฉลี่ยต่อคน) ทำให้ทีมเล็ก-ใหญ่แข่งกันยุติธรรม
+  // ถ้า avg เท่ากัน ใช้ score (sum) เป็น tiebreaker
+  ranking = ranking.slice().map(t => ({ ...t, avg: t.avg != null ? t.avg : (t.members > 0 ? t.score / t.members : 0) }))
+                          .sort((a,b) => b.avg - a.avg || b.score - a.score);
   const myTid = String(Book.state.teamId || '');
   const top3 = ranking.slice(0,3);
   const winner = ranking[0];
@@ -85,15 +90,15 @@ function renderRanking(ranking){
       const c = TEAM_COLORS[t.teamId] || '#64d8ff';
       const ic = TEAM_ICONS[t.teamId] || '🚀';
       const crown = rank===1?'👑':(rank===2?'🥈':'🥉');
-      return '<div class="hof-pod rank-'+rank+'" style="--c:'+c+'"><div class="crown">'+crown+'</div><div class="icon">'+ic+'</div><div class="tname" style="color:'+c+'">TEAM '+(t.teamName||'').toUpperCase()+'</div><div class="score">⚡ '+t.score+'</div><div class="members">'+t.members+' คน</div></div>';
+      return '<div class="hof-pod rank-'+rank+'" style="--c:'+c+'"><div class="crown">'+crown+'</div><div class="icon">'+ic+'</div><div class="tname" style="color:'+c+'">TEAM '+(t.teamName||'').toUpperCase()+'</div><div class="score">⚡ '+fmt(t.avg)+'</div><div class="members">เฉลี่ย · รวม '+t.score+' · '+t.members+' คน</div></div>';
     }).join('') + '</div>';
   }
-  const winBanner = winner ? '<div class="winner-banner"><h3>🏆 ทีมชนะของ EP'+String(EP_NUM).padStart(2,'0')+'</h3><p class="big" style="color:'+(TEAM_COLORS[winner.teamId]||'#ffcb6b')+'">'+(TEAM_ICONS[winner.teamId]||'🚀')+' TEAM '+(winner.teamName||'').toUpperCase()+'</p><p>คะแนนรวม <b style="color:#ffcb6b">⚡ '+winner.score+'</b> · '+winner.members+' คน</p><p class="muted" style="font-size:12px;margin-top:6px">รับรางวัลจากครู 🎁</p></div>' : '';
-  const listHTML = '<div style="margin-top:14px"><h3 style="font-size:14px;letter-spacing:0.1em;color:rgba(255,255,255,0.7)">อันดับทั้งหมด</h3>' + ranking.map((t,i)=>{
+  const winBanner = winner ? '<div class="winner-banner"><h3>🏆 ทีมชนะของ EP'+String(EP_NUM).padStart(2,'0')+'</h3><p class="big" style="color:'+(TEAM_COLORS[winner.teamId]||'#ffcb6b')+'">'+(TEAM_ICONS[winner.teamId]||'🚀')+' TEAM '+(winner.teamName||'').toUpperCase()+'</p><p>เฉลี่ย <b style="color:#ffcb6b">⚡ '+fmt(winner.avg)+'</b> / คน · รวม ⚡ '+winner.score+' · '+winner.members+' คน</p><p class="muted" style="font-size:12px;margin-top:6px">รับรางวัลจากครู 🎁</p></div>' : '';
+  const listHTML = '<div style="margin-top:14px"><h3 style="font-size:14px;letter-spacing:0.1em;color:rgba(255,255,255,0.7)">อันดับทั้งหมด · เรียงตามค่าเฉลี่ย ⚡/คน</h3>' + ranking.map((t,i)=>{
     const c = TEAM_COLORS[t.teamId] || '#64d8ff';
     const ic = TEAM_ICONS[t.teamId] || '🚀';
     const mine = String(t.teamId) === myTid ? 'mine' : '';
-    return '<div class="hof-row '+mine+'" style="--c:'+c+'"><span class="rank">#'+(i+1)+'</span><span style="font-size:20px">'+ic+'</span><span class="name" style="color:'+c+'">TEAM '+(t.teamName||'').toUpperCase()+'</span><span class="meta">'+t.members+' คน</span><span class="score">⚡ '+t.score+'</span></div>';
+    return '<div class="hof-row '+mine+'" style="--c:'+c+'"><span class="rank">#'+(i+1)+'</span><span style="font-size:20px">'+ic+'</span><span class="name" style="color:'+c+'">TEAM '+(t.teamName||'').toUpperCase()+'</span><span class="meta">'+t.members+' คน · รวม '+t.score+'</span><span class="score">⚡ '+fmt(t.avg)+'</span></div>';
   }).join('') + '</div>';
   wrap.innerHTML = winBanner + podiumHTML + listHTML;
 }

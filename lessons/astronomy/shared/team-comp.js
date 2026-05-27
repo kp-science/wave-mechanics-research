@@ -229,6 +229,13 @@
       teams[tid].members += 1;
       teams[tid].memberList.push({ name:row.name, no:row.no, energy:Number(row.energy||0) });
     });
+    // เพิ่ม avg = score / members (ทีมไม่มีสมาชิก → 0)
+    // เพื่อให้ทีมที่จำนวนคนต่างกันแข่งกันยุติธรรม
+    Object.values(teams).forEach(t => {
+      t.avg = t.members > 0 ? (t.score / t.members) : 0;
+    });
+    // sort default ยังคงใช้ score (sum) เพื่อ backward-compat กับ EP เดิม
+    // EP ที่ต้องการ ranking แบบยุติธรรม ให้ sort ใหม่ด้วย .avg ตอน render
     const ranking = Object.values(teams).sort((a,b) => b.score - a.score);
     return { ok:true, ranking };
   }
