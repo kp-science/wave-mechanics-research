@@ -87,24 +87,22 @@
     <button class="btn" onclick="doName()">ยืนยันชื่อ</button>
   </div>
 
+  <!-- รวม team + role + start ในหน้าเดียว · แบบ EP01 p02-team.html -->
   <div class="step" id="step3" style="display:none;">
-    <h3>ขั้นที่ 3 · เลือกยานทีม (จำกัด 8 คน/ทีม)</h3>
+    <h3>ขั้นที่ 3 · เลือกยานทีม · ชื่อทีม · บทบาท</h3>
+
+    <label style="display:block;font-size:12px;color:#9aa3c0;margin-bottom:4px;">🚀 ยานของทีม <span style="opacity:0.6">(จำกัด 8 คน/ทีม)</span></label>
     <div class="team-grid" id="teamGrid"></div>
     <div class="cap-status" id="capStatus">⏳ กำลังตรวจจำนวนสมาชิก...</div>
-    <label style="display:block;margin-top:14px;font-size:12px;color:#9aa3c0;">⚡ ชื่อยาน / ชื่อทีม <span style="opacity:0.6">(ไม่กรอกก็ได้ · จะใช้ชื่อมาตรฐาน)</span></label>
+
+    <label style="display:block;margin-top:18px;font-size:12px;color:#9aa3c0;">⚡ ชื่อยาน / ชื่อทีม <span style="opacity:0.6">(ไม่กรอกก็ได้ · ใช้ชื่อมาตรฐาน Nebula/Quasar/...)</span></label>
     <input id="teamNameInput" placeholder="เช่น Nebula Riders" maxlength="32">
-    <button class="btn" onclick="doTeam()">ยืนยันทีม</button>
-  </div>
 
-  <div class="step" id="step4" style="display:none;">
-    <h3>ขั้นที่ 4 · เลือกบทบาท</h3>
+    <label style="display:block;margin-top:18px;font-size:12px;color:#9aa3c0;">🎭 บทบาทในทีม</label>
     <div class="roles" id="roles"></div>
-    <div class="status" id="rosterStatus"></div>
-  </div>
+    <div class="status" id="rosterStatus" style="margin-top:10px;"></div>
 
-  <div class="step" id="step5" style="display:none;">
-    <h3>✓ พร้อม</h3>
-    <button class="btn" onclick="startGame()">▶ เริ่มภารกิจ · ไปที่ P00</button>
+    <button class="btn" id="startBtn" onclick="finalizeAndStart()" disabled style="margin-top:18px;">🔒 เลือกยาน + บทบาทก่อน</button>
   </div>
 
   <a class="back" href="index.html">← กลับ</a>
@@ -183,6 +181,7 @@ function doName() {
   Sync.setName(name);
   _saveState({ name });
   refreshCapacity();
+  renderRoles();
   advance(3);
 }
 
@@ -209,6 +208,8 @@ function renderTeams() {
   if (_capacity.ok) status.textContent = 'รวมในห้องตอนนี้: ' + Object.values(_capacity.counts).reduce((a,b)=>a+b,0) + ' คน';
 }
 
+let _selectedRole = null;
+
 async function pickTeam(id) {
   const tid = String(id);
   const oldTid = String(_selectedTeam || '');
@@ -227,29 +228,10 @@ async function pickTeam(id) {
   _saveState({ teamId: id });
   try {
     const provName = document.getElementById('teamNameInput').value.trim() || '';
-    await TeamComp.register(EP_NUM, id, provName, '');
+    await TeamComp.register(EP_NUM, id, provName, _selectedRole || '');
   } catch(_){}
   setTimeout(refreshCapacity, 800);
-}
-
-async function doTeam() {
-  if (!_selectedTeam) { alert('เลือกยานทีมก่อน'); return; }
-  // final capacity check
-  await refreshCapacity();
-  const tid = String(_selectedTeam);
-  if (_capacity.full.has(tid)) {
-    alert('เสียใจด้วย · ทีมนี้เพิ่งเต็มพอดี · กรุณาเลือกทีมอื่น');
-    _selectedTeam = null;
-    renderTeams();
-    return;
-  }
-  const tDef = TEAMS.find(t => t.id === _selectedTeam);
-  const customName = document.getElementById('teamNameInput').value.trim();
-  const teamName = customName || (tDef && tDef.name) || ('ทีม ' + _selectedTeam);
-  _saveState({ teamId: _selectedTeam, teamName });
-  try { await TeamComp.register(EP_NUM, _selectedTeam, teamName, ''); } catch(_){}
-  renderRoles();
-  advance(4);
+  _updateStartBtn();
 }
 
 async function refreshCapacity(){
@@ -258,12 +240,12 @@ async function refreshCapacity(){
   renderTeams();
 }
 
-// ─── Step 4 · Role ───────────────────────────────────────
+// ─── Role (อยู่ในขั้นเดียวกับ team) ───────────────────
 function renderRoles() {
   const roles = EP_CONFIG.roles;
   const host = document.getElementById('roles');
   host.innerHTML = roles.map(r => `
-    <button class="role-btn" data-role="${r.id}" onclick="pickRole('${r.id}')">
+    <button class="role-btn ${_selectedRole === r.id ? 'active' : ''}" data-role="${r.id}" onclick="pickRole('${r.id}')">
       <span class="icon">${r.icon}</span>
       <span class="name">${r.name}</span>
       <div class="desc">${r.desc}</div>
@@ -271,17 +253,51 @@ function renderRoles() {
   `).join('');
 }
 
-async function pickRole(roleId) {
+function pickRole(roleId) {
+  _selectedRole = roleId;
   Sync.setRole(roleId);
   _saveState({ role: roleId });
-  // อัปเดต TeamComp ด้วย role
-  try {
-    const s = _loadState();
-    await TeamComp.register(EP_NUM, s.teamId, s.teamName || '', roleId);
-  } catch(_){}
   document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === roleId));
   updateRoster();
-  advance(5);
+  _updateStartBtn();
+}
+
+function _updateStartBtn() {
+  const btn = document.getElementById('startBtn');
+  if (!btn) return;
+  const haveTeam = _selectedTeam != null;
+  const haveRole = !!_selectedRole;
+  if (haveTeam && haveRole) {
+    btn.disabled = false;
+    btn.textContent = '▶ ยืนยันทีม · เริ่มภารกิจ (ไป P00)';
+  } else {
+    btn.disabled = true;
+    const need = [];
+    if (!haveTeam) need.push('เลือกยาน');
+    if (!haveRole) need.push('เลือกบทบาท');
+    btn.textContent = '🔒 ' + need.join(' + ') + 'ก่อน';
+  }
+}
+
+async function finalizeAndStart() {
+  if (!_selectedTeam) { alert('เลือกยานทีมก่อน'); return; }
+  if (!_selectedRole) { alert('เลือกบทบาทก่อน'); return; }
+  // final capacity check (กัน race)
+  await refreshCapacity();
+  const tid = String(_selectedTeam);
+  if (_capacity.full.has(tid)) {
+    alert('เสียใจด้วย · ทีมนี้เพิ่งเต็มพอดี · กรุณาเลือกทีมอื่น');
+    _selectedTeam = null;
+    renderTeams();
+    _updateStartBtn();
+    return;
+  }
+  const tDef = TEAMS.find(t => t.id === _selectedTeam);
+  const customName = document.getElementById('teamNameInput').value.trim();
+  const teamName = customName || (tDef && tDef.name) || ('ทีม ' + _selectedTeam);
+  _saveState({ teamId: _selectedTeam, teamName, role: _selectedRole });
+  try { await TeamComp.register(EP_NUM, _selectedTeam, teamName, _selectedRole); } catch(_){}
+  startGame();
 }
 
 function updateRoster() {
@@ -296,9 +312,9 @@ function updateRoster() {
     }).join('') + '</div>';
 }
 
-// ─── Step nav ────────────────────────────────────────────
+// ─── Step nav (3 ขั้น: room → name → team+role+start) ───
 function advance(n) {
-  for (let i=1; i<=5; i++) {
+  for (let i=1; i<=3; i++) {
     const s = document.getElementById('step'+i);
     if (!s) continue;
     s.style.display = (i <= n) ? 'block' : 'none';
@@ -313,7 +329,7 @@ function startGame() {
 // React to remote roster changes
 Sync.on((ev) => { updateRoster(); });
 
-// Resume if already joined
+// Resume if already joined (3 ขั้น: room → name → team+role+start)
 setTimeout(() => {
   const s = _loadState();
   const code = Sync.getRoomCode();
@@ -323,22 +339,18 @@ setTimeout(() => {
     if (me.name) {
       document.getElementById('nameInput').value = me.name;
       refreshCapacity();
+      // restore team + role selection ถ้ามี
       if (s.teamId) {
         _selectedTeam = s.teamId;
         document.getElementById('teamNameInput').value = s.teamName || '';
         renderTeams();
-        renderRoles();
-        if (me.role || s.role) {
-          const r = me.role || s.role;
-          document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('active', b.dataset.role === r));
-          updateRoster();
-          advance(5);
-        } else {
-          advance(4);
-        }
-      } else {
-        advance(3);
       }
+      const r = me.role || s.role;
+      if (r) _selectedRole = r;
+      renderRoles();
+      updateRoster();
+      _updateStartBtn();
+      advance(3);
     } else {
       advance(2);
     }
