@@ -4206,8 +4206,28 @@ async function renderStudentsTab(){
       </ul>
     </div>
 
+    <!-- ➕ เพิ่มทีละคน (ไม่กระทบคนอื่น · ไม่ clear session คนอื่น) -->
+    <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:10px;padding:14px;margin-bottom:14px">
+      <div style="font-weight:700;color:#166534;margin-bottom:8px">➕ เพิ่มนักเรียนทีละคน (ไม่กระทบคนอื่น)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
+        <input type="text" id="addOneId"     placeholder="รหัสนักเรียน *" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+        <input type="text" id="addOneName"   placeholder="ชื่อ-สกุล *" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+        <input type="text" id="addOneRoom"   placeholder="ห้อง เช่น ม.5/4" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+        <input type="text" id="addOneBirth"  placeholder="วันเกิด DDMMYYYY *" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+        <input type="text" id="addOneNumber" placeholder="เลขที่ (optional)" style="padding:6px 10px;border:1.5px solid #cbd5e1;border-radius:6px;font-family:inherit">
+      </div>
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn-sm" style="background:#16a34a" onclick="doAddOneStudent()">➕ เพิ่มคนเดียว</button>
+        <button class="btn-sm" style="background:#64748b;font-size:12px" onclick="fillAddOneFromId()">↻ ใช้รหัสเป็น password</button>
+        <span id="addOneStat" style="font-size:13px"></span>
+      </div>
+      <div style="font-size:12px;color:#475569;margin-top:6px">
+        💡 ปุ่ม "ใช้รหัสเป็น password" จะเติมช่อง "วันเกิด" ด้วยรหัสนักเรียน · password = รหัสนักเรียน (เปลี่ยน/Reset ทีหลังได้)
+      </div>
+    </div>
+
     <div class="upload-area">
-      <label style="font-weight:700">📝 วางรายชื่อที่นี่:</label>
+      <label style="font-weight:700">📝 วางรายชื่อที่นี่ (อัปโหลดทีเดียวต้นเทอม):</label>
       <textarea id="stuPaste" placeholder="ตัวอย่าง (คั่นด้วย Tab):
 47111	สมหญิง รักเรียน	5/1	15082551	1
 47112	สมศรี มีเพื่อน	5/1	22092551	2
@@ -4330,6 +4350,62 @@ async function doUploadMasterRoster(){
       stat.textContent = `✅ เสร็จสิ้น (${_rosterCache.length} คนในระบบ)`;
       document.getElementById('stuPaste').value = '';
     }, 2000);
+  } catch(e){
+    stat.textContent = '❌ ผิดพลาด: ' + e.message;
+  }
+}
+
+function fillAddOneFromId(){
+  const sid = document.getElementById('addOneId').value.trim();
+  if (!sid){ document.getElementById('addOneStat').textContent = '⚠️ กรอกรหัสนักเรียนก่อน'; return; }
+  document.getElementById('addOneBirth').value = sid;
+  document.getElementById('addOneStat').textContent = `✅ ตั้ง password = ${sid}`;
+}
+
+async function doAddOneStudent(){
+  const sid   = document.getElementById('addOneId').value.trim();
+  const name  = document.getElementById('addOneName').value.trim();
+  const room  = document.getElementById('addOneRoom').value.trim();
+  const birth = document.getElementById('addOneBirth').value.trim();
+  const num   = document.getElementById('addOneNumber').value.trim();
+  const stat  = document.getElementById('addOneStat');
+
+  if (!sid || !name || !birth){
+    stat.textContent = '⚠️ ต้องกรอก รหัส + ชื่อ + วันเกิด/password';
+    return;
+  }
+  if (!ROSTER_URL){ stat.textContent = '❌ ไม่พบ rosterApiUrl ใน config'; return; }
+
+  // ตรวจ duplicate ฝั่ง client ก่อน (เร็วและให้ feedback ชัด)
+  const dup = _rosterCache.find(s => String(s.student_id).trim() === sid);
+  if (dup){
+    stat.textContent = `⚠️ รหัส ${sid} มีอยู่แล้ว: ${dup.full_name}`;
+    return;
+  }
+
+  stat.textContent = '⏳ กำลังเพิ่ม...';
+  try {
+    await fetch(ROSTER_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {'Content-Type': 'text/plain;charset=utf-8'},
+      body: JSON.stringify({
+        action:'addStudent', teacher_pw: getTeacherPassword(),
+        student_id: sid, full_name: name, room, birthdate: birth, number: num
+      })
+    });
+    stat.textContent = `⏳ ส่งคำขอแล้ว · กำลังตรวจสอบ...`;
+    setTimeout(async () => {
+      await loadMasterRoster();
+      const added = _rosterCache.find(s => String(s.student_id).trim() === sid);
+      if (added){
+        stat.textContent = `✅ เพิ่ม ${name} (${sid}) สำเร็จ (รวม ${_rosterCache.length} คน)`;
+        ['addOneId','addOneName','addOneRoom','addOneBirth','addOneNumber'].forEach(id => document.getElementById(id).value = '');
+        renderRosterList();
+      } else {
+        stat.textContent = `⚠️ ไม่พบในรายชื่อหลังบันทึก · ลอง redeploy Apps Script (New version) แล้วลองใหม่`;
+      }
+    }, 2500);
   } catch(e){
     stat.textContent = '❌ ผิดพลาด: ' + e.message;
   }

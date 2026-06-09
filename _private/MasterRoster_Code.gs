@@ -30,6 +30,8 @@ function doPost(e) {
     if (action === 'login')            return handleLogin(data);
     if (action === 'logout')           return handleLogout(data);
     if (action === 'uploadRoster')     return handleUploadRoster(data);
+    if (action === 'addStudent')       return handleAddStudent(data);
+    if (action === 'deleteStudent')    return handleDeleteStudent(data);
     if (action === 'resetPassword')    return handleResetPassword(data);
     if (action === 'forceLogout')      return handleForceLogout(data);
     if (action === 'updateEnrollment') return handleUpdateEnrollment(data);
@@ -294,6 +296,58 @@ function handleUploadRoster(data) {
     sheet.getRange(2, 1, data2.length, ROSTER_HEADERS.length).setValues(data2);
   }
   return jsonOut({status:'ok', count: data2.length});
+}
+
+// ─── [4b] ADD STUDENT (เพิ่มทีละคน · ไม่กระทบคนอื่น) ───────────────
+// Request: { action:'addStudent', teacher_pw, student_id, full_name, room,
+//            birthdate (DDMMYYYY/DD-MM-YYYY/DD/MM/YYYY หรือใส่รหัสนักเรียนเป็น password),
+//            number?, note? }
+// - Append แถวเดียว · ไม่ clear ของเดิม · ไม่กระทบ session คนอื่น
+// - เช็ค duplicate student_id ก่อน
+function handleAddStudent(data) {
+  if (!checkTeacherPw_(data.teacher_pw))
+    return jsonOut({status:'error', message:'unauthorized'});
+
+  const sid  = String(data.student_id || '').trim();
+  const name = String(data.full_name || '').trim();
+  const room = String(data.room || '').trim();
+  const birth = normBirthdate_(data.birthdate);
+  const num  = String(data.number || '').trim();
+  const note = String(data.note || '');
+
+  if (!sid)   return jsonOut({status:'error', message:'ต้องระบุรหัสนักเรียน'});
+  if (!name)  return jsonOut({status:'error', message:'ต้องระบุชื่อ-สกุล'});
+  if (!birth) return jsonOut({status:'error', message:'ต้องระบุวันเกิด/password'});
+
+  const existing = findStudentRow_(sid);
+  if (existing) {
+    return jsonOut({status:'error', message:`รหัส ${sid} มีอยู่แล้ว: ${existing.data.full_name}`});
+  }
+
+  const sheet = ensureRosterSheet_();
+  const hash = sha256_(birth);
+  sheet.appendRow([
+    sid, name, room, birth, hash,
+    '',      // session_token
+    '',      // token_created
+    '',      // last_login
+    note,
+    num
+  ]);
+  return jsonOut({status:'ok', student_id: sid, added: true});
+}
+
+// ─── [4c] DELETE STUDENT (ลบทีละคน · ไม่กระทบคนอื่น) ────────────────
+// Request: { action:'deleteStudent', teacher_pw, student_id }
+function handleDeleteStudent(data) {
+  if (!checkTeacherPw_(data.teacher_pw))
+    return jsonOut({status:'error', message:'unauthorized'});
+  const sid = String(data.student_id || '').trim();
+  if (!sid) return jsonOut({status:'error', message:'ต้องระบุรหัสนักเรียน'});
+  const found = findStudentRow_(sid);
+  if (!found) return jsonOut({status:'error', message:'student not found'});
+  found.sheet.deleteRow(found.rowNum);
+  return jsonOut({status:'ok', student_id: sid, deleted: true});
 }
 
 // ─── [5] RESET PASSWORD (กลับเป็นวันเกิด) ───────────────────────────
