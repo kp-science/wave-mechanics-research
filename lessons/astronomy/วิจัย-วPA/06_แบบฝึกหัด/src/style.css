@@ -1,0 +1,139 @@
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'TH Sarabun New', 'THSarabunNew', sans-serif;
+  font-size: 16pt;
+  line-height: 1.42;
+  color: #111;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.page {
+  width: 210mm; height: 297mm;
+  padding: 11mm 14mm 9mm 14mm;
+  page-break-after: always;
+  position: relative;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.page:last-child { page-break-after: auto; }
+.hdr {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 13.5pt; color: #333;
+  border-bottom: 1.2pt solid #444;
+  padding-bottom: 1.5mm; margin-bottom: 4mm;
+}
+.hdr b { font-size: 14pt; }
+
+h1 { font-size: 24pt; margin: 0 0 2mm 0; line-height: 1.2; }
+h2 { font-size: 19pt; margin: 4mm 0 1.5mm 0; line-height: 1.25; }
+h3 { font-size: 17pt; margin: 3mm 0 1mm 0; }
+p { margin: 0 0 2.5mm 0; text-align: justify; }
+i, .sym { font-style: italic; font-family: 'TH Sarabun New'; }
+
+.namebox {
+  display: flex; gap: 6mm; font-size: 15pt;
+  border: 1pt solid #888; border-radius: 2mm;
+  padding: 2mm 4mm; margin: 2mm 0 4mm 0;
+}
+.namebox span { flex: 1; }
+
+.figure { text-align: center; margin: 2.5mm 0; }
+.figure svg { display: block; margin: 0 auto; }
+.caption { font-size: 14.5pt; color: #333; text-align: center; margin-top: 1mm; }
+
+.formula {
+  text-align: center; font-size: 21pt;
+  border: 1.4pt solid #333; border-radius: 2.5mm;
+  padding: 2.5mm 4mm; width: 70%; margin: 3.5mm auto;
+  background: #fafafa;
+}
+.formula .note { font-size: 13.5pt; color: #444; }
+
+.notebox {
+  border: 1.2pt solid #555; border-left: 4pt solid #555;
+  border-radius: 1.5mm; background: #f6f6f6;
+  padding: 2mm 4mm; margin: 3mm 0; font-size: 15pt;
+}
+.notebox b { font-size: 15.5pt; }
+
+.predictbox {
+  border: 1.6pt solid #222; border-radius: 2.5mm;
+  padding: 3mm 4mm; margin: 2mm 0 4mm 0;
+}
+.predictbox .tag {
+  display: inline-block; font-weight: bold; font-size: 15pt;
+  background: #222; color: #fff; border-radius: 1.5mm;
+  padding: 0.5mm 3mm; margin-bottom: 1.5mm;
+}
+.answerline {
+  border-bottom: 1pt dotted #999; min-height: 8mm; margin: 1.5mm 0;
+}
+.twocol { display: flex; gap: 4mm; }
+.twocol > div { flex: 1; }
+.miniblank {
+  border: 1pt solid #aaa; border-radius: 1.5mm; padding: 1.5mm 3mm;
+  min-height: 16mm; font-size: 14pt; color: #555;
+}
+
+.steps5 {
+  display: flex; justify-content: center; gap: 2mm; flex-wrap: wrap;
+  font-size: 13.5pt; color: #333;
+  border: 1pt dashed #888; border-radius: 2mm;
+  padding: 1.5mm 2mm; margin: 2mm 0 3mm 0;
+}
+.steps5 span { white-space: nowrap; }
+.steps5 .arr { color: #888; }
+
+.prob { margin: 0 0 2mm 0; }
+.prob .no {
+  display: inline-block; font-weight: bold;
+  min-width: 7mm;
+}
+.choices {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0 4mm; padding-left: 8mm; margin-top: 1mm;
+}
+.choices.one { grid-template-columns: 1fr; }
+.ws { width: 100%; }
+.spoterror {
+  border: 1.6pt solid #333; border-radius: 2.5mm;
+  padding: 2.5mm 4mm; margin: 2mm 0;
+}
+.spoterror .tag {
+  display: inline-block; font-weight: bold; font-size: 15pt;
+  border: 1.4pt solid #222; border-radius: 1.5mm;
+  padding: 0 3mm; margin-bottom: 1mm;
+}
+.studentwork {
+  font-size: 15pt; background: #f4f4f4; border-radius: 1.5mm;
+  padding: 2mm 4mm; margin: 1.5mm 0;
+}
+
+table.std { border-collapse: collapse; width: 100%; font-size: 15pt; margin: 2mm 0; }
+table.std th, table.std td { border: 1pt solid #555; padding: 1mm 2.5mm; vertical-align: top; }
+table.std th { background: #ececec; text-align: center; }
+
+/* teacher plan */
+table.timeline { font-size: 14pt; }
+table.timeline td.min { text-align: center; white-space: nowrap; font-weight: bold; }
+.motivbox {
+  border: 1.5pt solid #333; border-radius: 2.5mm;
+  padding: 2.5mm 4mm; margin: 2mm 0; font-size: 14.5pt;
+}
+.motivbox h3 { margin-top: 0; }
+.rolechip {
+  display: inline-block; font-size: 12.5pt; font-weight: bold;
+  border: 1pt solid #333; border-radius: 1.2mm; padding: 0 1.8mm;
+  white-space: nowrap;
+}
+
+/* axis tick labels: white halo so curves don't strike through */
+svg text.tick { paint-order: stroke; stroke: #fff; stroke-width: 3.5px; fill: #111; }
+
+/* solutions */
+.sol { margin: 0 0 3mm 0; }
+.sol .no { font-weight: bold; }
+.sol .ans { font-weight: bold; }
+.solbox { border-left: 3pt solid #999; padding-left: 3mm; margin: 1mm 0 2.5mm 2mm; font-size: 15pt; }
